@@ -44,6 +44,7 @@ import ResourcesManagement from './ResourcesManagement';
 import SettingsSidebar from '../components/SettingsSidebar';
 import CustomerSwitcher from '../components/CustomerSwitcher';
 import ServicesConfiguration from '../components/ServicesConfiguration';
+import ScannerPinSettings from '../components/ScannerPinSettings';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
