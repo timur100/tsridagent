@@ -99,7 +99,7 @@ async def get_all_services_mongodb_summary():
                         "error": None
                     }
                 
-                elif service_type == 'ticketing':
+                elif service_type == 'support' or service_type == 'ticketing':
                     # Get ticketing_db info
                     ticketing_db = client['ticketing_db']
                     collection_names = await ticketing_db.list_collection_names()
