@@ -383,8 +383,7 @@ class TicketingMicroserviceTester:
                 "description": "This is a test ticket created during microservice testing",
                 "priority": "medium",
                 "category": "technical",
-                "location_code": "BERN01",
-                "customer_email": "admin@tsrid.com"
+                "location_id": "BERN01"
             }
             
             response = self.session.post("http://localhost:8103/api/tickets", json=ticket_data)
