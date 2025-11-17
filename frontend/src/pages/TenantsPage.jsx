@@ -16,6 +16,7 @@ import { Card } from '../components/ui/card';
 
 const TenantsPage = () => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,7 +24,6 @@ const TenantsPage = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPlan, setFilterPlan] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [selectedTenant, setSelectedTenant] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
