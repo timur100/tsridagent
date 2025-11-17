@@ -131,6 +131,9 @@ backend:
         - working: true
           agent: "main"
           comment: "✅ Registered Ticketing Service in verification_db.service_configs collection with service_id, service_type='ticketing', base_url='http://localhost:8103'. Service appears in Admin Portal Microservices page with green status badge, MongoDB info, and toggle switch."
+        - working: true
+          agent: "testing"
+          comment: "✅ ADMIN PORTAL INTEGRATION VERIFIED: Ticketing Service properly registered and visible in Admin Portal services list via GET /api/portal/services. Service details correct: service_id='ticketing_service_001', service_name='Ticketing Service', service_type='ticketing', base_url='http://localhost:8103'. MongoDB info correctly displays via GET /api/portal/mongodb-summary?service_type=ticketing showing database_name='ticketing_db', 1 collection (tickets), 1 total document."
   
   - task: "MongoDB Summary Route Extension"
     implemented: true
