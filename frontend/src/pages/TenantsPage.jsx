@@ -889,15 +889,17 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
         <div className="p-6 space-y-6">
           {/* Basic Info */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Tenant-Informationen</h3>
+            <h3 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Tenant-Informationen
+            </h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Name (ID)</p>
-                <p className="font-medium">{tenant.name}</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name (ID)</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Domain</p>
-                <p className="font-medium">{tenant.domain || '-'}</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Status</p>
