@@ -27,7 +27,9 @@ import {
   Edit2,
   Trash2,
   Server,
-  ExternalLink
+  ExternalLink,
+  Database,
+  Info
 } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
