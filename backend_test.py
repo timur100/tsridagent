@@ -373,16 +373,48 @@ class OrderServiceTester:
             )
             return False
     
-    def test_get_location_by_code(self):
-        """Test GET /api/locations/code/BERN01"""
+    def test_get_order_by_number(self):
+        """Test GET /api/orders/number/{order_number}"""
         try:
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations/code/BERN01")
+            # First, get all orders to find a valid order number
+            orders_response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
+            if orders_response.status_code != 200:
+                self.log_result(
+                    "Get Order by Number", 
+                    False, 
+                    f"Failed to get orders list for test setup. Status: {orders_response.status_code}",
+                    orders_response.text
+                )
+                return False
+            
+            orders = orders_response.json()
+            if not orders:
+                self.log_result(
+                    "Get Order by Number", 
+                    False, 
+                    "No orders found to test with",
+                    None
+                )
+                return False
+            
+            # Use the first order's number
+            test_order_number = orders[0].get("order_number")
+            if not test_order_number:
+                self.log_result(
+                    "Get Order by Number", 
+                    False, 
+                    "First order missing order_number field",
+                    orders[0]
+                )
+                return False
+            
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders/number/{test_order_number}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Location by Code", 
+                    "Get Order by Number", 
                     False, 
-                    f"Get location by code failed. Status: {response.status_code}",
+                    f"Get order by number failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -392,46 +424,46 @@ class OrderServiceTester:
             # Verify response is an object (not array)
             if isinstance(data, list):
                 self.log_result(
-                    "Get Location by Code", 
+                    "Get Order by Number", 
                     False, 
                     f"Response should be an object, not an array",
                     data
                 )
                 return False
             
-            # Verify location_code matches
-            if data.get("location_code") != "BERN01":
+            # Verify order_number matches
+            if data.get("order_number") != test_order_number:
                 self.log_result(
-                    "Get Location by Code", 
+                    "Get Order by Number", 
                     False, 
-                    f"Expected location_code BERN01, got {data.get('location_code')}",
+                    f"Expected order_number {test_order_number}, got {data.get('order_number')}",
                     data
                 )
                 return False
             
             # Check required fields
-            required_fields = ["id", "location_code", "location_name", "address", "status"]
+            required_fields = ["id", "order_number", "customer_email", "items", "total_amount", "status"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Get Location by Code", 
+                    "Get Order by Number", 
                     False, 
-                    f"Location missing required fields: {missing_fields}",
+                    f"Order missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
             self.log_result(
-                "Get Location by Code", 
+                "Get Order by Number", 
                 True, 
-                f"Retrieved location BERN01: {data.get('location_name')}"
+                f"Retrieved order {test_order_number} for customer {data.get('customer_email')}"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Get Location by Code", 
+                "Get Order by Number", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
