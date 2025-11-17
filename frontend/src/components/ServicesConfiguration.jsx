@@ -353,9 +353,13 @@ const ServicesConfiguration = () => {
                   )}
                 </div>
                 
-                {/* MongoDB Info - Fixed Height Section */}
-                <div className="border-t pt-3 space-y-2 min-h-[10rem]">
-                  <div className="flex items-center gap-2 text-sm font-medium min-h-[1.5rem]">
+                {/* MongoDB Info - Consistent Height Section */}
+                <div className={`border-t pt-3 space-y-2 ${
+                  theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+                }`}>
+                  <div className={`flex items-center gap-2 text-sm font-medium ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
                     <Database className="w-4 h-4" />
                     MongoDB Status
                   </div>
