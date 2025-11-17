@@ -144,7 +144,7 @@ const TenantsPage = () => {
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-indigo-100 rounded-lg">
-                <BuildingOfficeIcon className="w-6 h-6 text-indigo-600" />
+                <Building className="w-6 h-6 text-indigo-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Gesamt</p>
@@ -156,7 +156,7 @@ const TenantsPage = () => {
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Aktiv</p>
@@ -168,7 +168,7 @@ const TenantsPage = () => {
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                <ClockIcon className="w-6 h-6 text-blue-600" />
+                <Clock className="w-6 h-6 text-blue-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Trial</p>
@@ -180,7 +180,7 @@ const TenantsPage = () => {
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-100 rounded-lg">
-                <XCircleIcon className="w-6 h-6 text-red-600" />
+                <XCircle className="w-6 h-6 text-red-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Gesperrt</p>
@@ -192,7 +192,7 @@ const TenantsPage = () => {
           <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-purple-100 rounded-lg">
-                <UsersIcon className="w-6 h-6 text-purple-600" />
+                <Users className="w-6 h-6 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Benutzer</p>
