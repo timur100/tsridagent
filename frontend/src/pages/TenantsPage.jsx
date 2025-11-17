@@ -637,7 +637,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   Admin Email <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -651,7 +651,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   Admin Passwort <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -665,7 +665,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Telefon</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Telefon</label>
                 <input
                   type="tel"
                   value={formData.phone}
@@ -676,7 +676,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Stadt</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Stadt</label>
                 <input
                   type="text"
                   value={formData.city}
@@ -687,7 +687,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Land</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Land</label>
                 <input
                   type="text"
                   value={formData.country}
@@ -698,7 +698,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">PLZ</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>PLZ</label>
                 <input
                   type="text"
                   value={formData.postal_code}
@@ -709,7 +709,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Adresse</label>
                 <input
                   type="text"
                   value={formData.address}
@@ -726,7 +726,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Ressourcen-Limits</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max. Benutzer</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Max. Benutzer</label>
                 <input
                   type="number"
                   min="1"
@@ -737,7 +737,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max. Geräte</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Max. Geräte</label>
                 <input
                   type="number"
                   min="1"
@@ -748,7 +748,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max. Storage (GB)</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Max. Storage (GB)</label>
                 <input
                   type="number"
                   min="1"
@@ -759,7 +759,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max. API Calls/Tag</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Max. API Calls/Tag</label>
                 <input
                   type="number"
                   min="1"
@@ -770,7 +770,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Max. Standorte</label>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Max. Standorte</label>
                 <input
                   type="number"
                   min="1"
