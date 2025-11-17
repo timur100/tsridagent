@@ -543,26 +543,359 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
 
         {activeTab === 'overview' && (
           <div className="space-y-6">
+            {/* Allgemeine Informationen */}
             <Card className={`p-6 rounded-xl ${
               theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
             }`}>
               <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Vollständige Tenant-Details
+                Allgemeine Informationen
               </h3>
-              {/* Existing overview content from modal */}
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name (ID)</p>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
-                  </div>
-                  <div>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Tenant-ID</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Firmenname</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.display_name}</p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Subscription Plan</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.subscription_plan}</p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Erstellt am</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {new Date(tenant.created_at).toLocaleDateString('de-DE', { 
+                      year: 'numeric', 
+                      month: 'long', 
+                      day: 'numeric' 
+                    })}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Kontaktinformationen */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Kontaktinformationen
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Admin E-Mail</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contact.admin_email}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Support E-Mail</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contact.support_email || 'support@' + tenant.domain || 'Nicht angegeben'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contact.phone || '+49 123 456789'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Fax</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contact.fax || '+49 123 456790'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Anschrift */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Anschrift
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße & Hausnummer</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.street || 'Musterstraße 123'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Adresszusatz</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.additional || '-'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.postal_code || '12345'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Stadt</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.city || 'Berlin'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bundesland</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.state || 'Berlin'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.address?.country || 'Deutschland'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Ansprechpartner */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Ansprechpartner
+              </h3>
+              <div className="space-y-6">
+                {/* Hauptansprechpartner */}
+                <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                    Hauptansprechpartner
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.primary?.name || 'Max Mustermann'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.primary?.position || 'Geschäftsführer'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.primary?.email || tenant.contact.admin_email}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.primary?.phone || '+49 123 456789'}
+                      </p>
+                    </div>
                   </div>
                 </div>
+
+                {/* Technischer Ansprechpartner */}
+                <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                    Technischer Ansprechpartner
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.technical?.name || 'Thomas Schmidt'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.technical?.position || 'IT-Leiter'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.technical?.email || 'tech@' + (tenant.domain || 'example.com')}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.technical?.phone || '+49 123 456791'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Buchhaltung */}
+                <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                    Buchhaltung
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.billing?.name || 'Anna Weber'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.billing?.position || 'Buchhalterin'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.billing?.email || 'billing@' + (tenant.domain || 'example.com')}
+                      </p>
+                    </div>
+                    <div>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
+                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {tenant.contact_person?.billing?.phone || '+49 123 456792'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            {/* Vertragsinformationen */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Vertragsinformationen
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsnummer</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contract?.number || 'V-2025-001'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsbeginn</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contract?.start_date ? new Date(tenant.contract.start_date).toLocaleDateString('de-DE') : '17.11.2024'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsende</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contract?.end_date ? new Date(tenant.contract.end_date).toLocaleDateString('de-DE') : '16.11.2025'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kündigungsfrist</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.contract?.notice_period || '3 Monate'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zahlungsart</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.payment?.method || 'SEPA-Lastschrift'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zahlungsintervall</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.payment?.interval || 'Monatlich'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Umsatzsteuer-ID</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.tax?.vat_id || 'DE123456789'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Steuernummer</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.tax?.tax_number || '12/345/67890'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Technische Informationen */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Technische Informationen
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>API-Key</p>
+                  <p className={`font-medium font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.api_key || '••••••••••••••••••••••••••••••••'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Webhook-URL</p>
+                  <p className={`font-medium text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.webhook_url || 'https://' + (tenant.domain || 'example.com') + '/webhook'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Letzte Synchronisation</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.last_sync ? new Date(tenant.last_sync).toLocaleString('de-DE') : 'Nie'}
+                  </p>
+                </div>
+                <div>
+                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Server-Region</p>
+                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.server_region || 'EU-Central (Frankfurt)'}
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Notizen */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Notizen
+              </h3>
+              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {tenant.notes || 'Keine Notizen vorhanden.'}
+                </p>
               </div>
             </Card>
           </div>
