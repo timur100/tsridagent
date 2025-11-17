@@ -138,16 +138,16 @@ class TenantManagementTester:
             )
             return False
     
-    def test_settings_service_health(self):
-        """Test Settings Service health endpoint"""
+    def test_tenant_stats(self):
+        """Test GET /api/tenants/stats endpoint"""
         try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/health")
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Settings Service Health Check", 
+                    "Tenant Statistics", 
                     False, 
-                    f"Health check failed. Status: {response.status_code}",
+                    f"Stats endpoint failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -155,25 +155,39 @@ class TenantManagementTester:
             data = response.json()
             
             # Verify response structure
-            if data.get("status") != "healthy" or data.get("service") != "Settings Service":
+            required_fields = ["total_tenants", "active_tenants", "trial_tenants", "suspended_tenants", "total_users", "total_devices"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
                 self.log_result(
-                    "Settings Service Health Check", 
+                    "Tenant Statistics", 
                     False, 
-                    f"Unexpected health response",
+                    f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
+            # Verify data types
+            for field in required_fields:
+                if not isinstance(data[field], int):
+                    self.log_result(
+                        "Tenant Statistics", 
+                        False, 
+                        f"Field {field} should be integer, got {type(data[field])}",
+                        data
+                    )
+                    return False
+            
             self.log_result(
-                "Settings Service Health Check", 
+                "Tenant Statistics", 
                 True, 
-                "Settings Service is healthy"
+                f"Statistics retrieved: {data['total_tenants']} total tenants, {data['active_tenants']} active, {data['trial_tenants']} trial, {data['suspended_tenants']} suspended, {data['total_users']} users"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Settings Service Health Check", 
+                "Tenant Statistics", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
