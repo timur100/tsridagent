@@ -13,7 +13,13 @@ import {
   MapPin,
   Wifi,
   WifiOff,
-  Settings
+  Settings,
+  ScanLine,
+  CheckCircle,
+  HelpCircle,
+  XCircle,
+  ShoppingCart,
+  AlertCircle
 } from 'lucide-react';
 
 const TenantDetailPage = ({ tenantId, onBack }) => {
