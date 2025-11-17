@@ -86,16 +86,7 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black flex items-center justify-center z-50 p-4">
-      {/* Background Logo - Large and Centered with Fingerprint */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-        <img 
-          src={tsridLogo} 
-          alt="TSRID Logo" 
-          className="w-[70vh] h-[70vh] object-contain"
-        />
-      </div>
-      
+    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 p-4 gap-8">
       <div className="bg-black border-4 border-red-600 rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10">
         {/* Close Button */}
         {onCancel && (
