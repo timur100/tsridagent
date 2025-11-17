@@ -23,8 +23,8 @@ class OrderServiceTester:
         })
         self.results = []
         self.admin_token = None
-        self.location_service_session = requests.Session()
-        self.location_service_session.headers.update({
+        self.order_service_session = requests.Session()
+        self.order_service_session.headers.update({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         })
