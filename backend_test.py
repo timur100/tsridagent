@@ -690,7 +690,7 @@ class OrderServiceTester:
             return False
     
     def test_service_registration(self):
-        """Test that Location Service appears in /api/portal/services"""
+        """Test that Order Service appears in /api/portal/services"""
         try:
             response = self.session.get(f"{API_BASE}/portal/services")
             
@@ -705,31 +705,31 @@ class OrderServiceTester:
             
             data = response.json()
             
-            # Look for location service
-            location_service = None
+            # Look for order service
+            order_service = None
             for service in data:
-                if service.get('service_type') == 'location':
-                    location_service = service
+                if service.get('service_type') == 'order':
+                    order_service = service
                     break
             
-            if not location_service:
+            if not order_service:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    "Location Service not found in services list",
+                    "Order Service not found in services list",
                     data
                 )
                 return False
             
-            # Check position (should be 4th after auth, id_verification, device)
+            # Check position (should be 6th after auth, id_verification, device, location, ticketing)
             service_types = [s.get('service_type') for s in data]
-            location_position = service_types.index('location') if 'location' in service_types else -1
+            order_position = service_types.index('order') if 'order' in service_types else -1
             
-            if location_position != 3:  # 0-indexed: auth=0, id_verification=1, device=2, location=3
+            if order_position != 5:  # 0-indexed: auth=0, id_verification=1, device=2, location=3, ticketing=4, order=5
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Location Service at position {location_position}, expected position 3",
+                    f"Order Service at position {order_position}, expected position 5",
                     service_types
                 )
                 return False
@@ -737,7 +737,7 @@ class OrderServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Location Service found at correct position 3 with service_type='location'"
+                f"Order Service found at correct position 5 with service_type='order'"
             )
             return True
             
