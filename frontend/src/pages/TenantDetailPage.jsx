@@ -21,7 +21,8 @@ import {
   ShoppingCart,
   AlertCircle,
   Calendar,
-  Clock
+  Clock,
+  Building2
 } from 'lucide-react';
 
 const TenantDetailPage = ({ tenantId, onBack }) => {
