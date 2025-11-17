@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for License Service Comprehensive Testing
-Tests the newly created License Service (Port 8108) to ensure all endpoints are working correctly.
+Backend API Testing for Settings Service Comprehensive Testing + Final Architecture Verification
+Tests the Settings Service (Port 8109) and verifies the complete 10-service microservices architecture.
 """
 
 import requests
@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-LICENSE_SERVICE_URL = "http://localhost:8108"
+SETTINGS_SERVICE_URL = "http://localhost:8109"
 
 class LicenseServiceTester:
     def __init__(self):
