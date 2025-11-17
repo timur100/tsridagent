@@ -193,16 +193,42 @@ class TenantManagementTester:
             )
             return False
     
-    def test_settings_service_info(self):
-        """Test Settings Service info endpoint"""
+    def test_create_tenant(self):
+        """Test POST /api/tenants/ - Create tenant with admin user"""
         try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/info")
+            tenant_data = {
+                "name": "test-tenant",
+                "display_name": "Test Tenant GmbH",
+                "domain": "test-tenant.example.com",
+                "description": "Test tenant für Backend-Tests",
+                "contact": {
+                    "admin_email": "admin@test-tenant.com",
+                    "phone": "+49 30 12345678",
+                    "address": "Teststraße 123",
+                    "city": "Berlin",
+                    "country": "Deutschland",
+                    "postal_code": "10115"
+                },
+                "admin_password": "SecurePass123!",
+                "subscription_plan": "pro",
+                "limits": {
+                    "max_users": 50,
+                    "max_devices": 500,
+                    "max_storage_gb": 100,
+                    "max_api_calls_per_day": 5000,
+                    "max_locations": 5
+                },
+                "settings": {},
+                "logo_url": None
+            }
             
-            if response.status_code != 200:
+            response = self.auth_service_session.post(f"{AUTH_SERVICE_URL}/api/tenants/", json=tenant_data)
+            
+            if response.status_code != 201:
                 self.log_result(
-                    "Settings Service Info", 
+                    "Create Tenant", 
                     False, 
-                    f"Info endpoint failed. Status: {response.status_code}",
+                    f"Tenant creation failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -210,198 +236,74 @@ class TenantManagementTester:
             data = response.json()
             
             # Verify response structure
-            required_fields = ["service_name", "version", "description", "endpoints"]
+            required_fields = ["tenant_id", "name", "display_name", "status", "enabled", "user_count", "contact", "limits"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Settings Service Info", 
+                    "Create Tenant", 
                     False, 
-                    f"Missing required fields: {missing_fields}",
-                    data
-                )
-                return False
-            
-            if data.get("service_name") != "Settings Service":
-                self.log_result(
-                    "Settings Service Info", 
-                    False, 
-                    f"Unexpected service name: {data.get('service_name')}",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "Settings Service Info", 
-                True, 
-                f"Service info correct: {data.get('service_name')} v{data.get('version')}"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "Settings Service Info", 
-                False, 
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-    
-    def setup_test_settings(self):
-        """Setup test settings for testing"""
-        try:
-            # Create test settings
-            test_settings = [
-                {
-                    "key": "app.name",
-                    "value": "TSRID System",
-                    "category": "general",
-                    "scope": "global",
-                    "description": "Application name",
-                    "is_readonly": True
-                },
-                {
-                    "key": "app.theme",
-                    "value": "dark",
-                    "category": "ui",
-                    "scope": "global",
-                    "description": "Default theme"
-                },
-                {
-                    "key": "email.smtp_host",
-                    "value": "smtp.example.com",
-                    "category": "email",
-                    "scope": "global",
-                    "description": "SMTP server host"
-                },
-                {
-                    "key": "security.max_login_attempts",
-                    "value": 5,
-                    "value_type": "int",
-                    "category": "security",
-                    "scope": "global",
-                    "description": "Maximum login attempts"
-                },
-                {
-                    "key": "api.secret_key",
-                    "value": "super-secret-key-123",
-                    "category": "security",
-                    "scope": "global",
-                    "description": "API secret key",
-                    "is_sensitive": True
-                }
-            ]
-            
-            response = self.settings_service_session.post(f"{SETTINGS_SERVICE_URL}/api/settings/bulk", json=test_settings)
-            
-            if response.status_code == 201:
-                self.log_result(
-                    "Setup Test Settings", 
-                    True, 
-                    f"Created {len(test_settings)} test settings"
-                )
-                return True
-            else:
-                self.log_result(
-                    "Setup Test Settings", 
-                    True, 
-                    "Test settings may already exist (expected)"
-                )
-                return True
-            
-        except Exception as e:
-            self.log_result(
-                "Setup Test Settings", 
-                False, 
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-    
-    def test_settings_statistics(self):
-        """Test Settings Service statistics endpoint"""
-        try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings/stats")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "Settings Statistics", 
-                    False, 
-                    f"Statistics endpoint failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            required_fields = ["total", "by_category", "by_scope", "sensitive", "readonly"]
-            missing_fields = [field for field in required_fields if field not in data]
-            
-            if missing_fields:
-                self.log_result(
-                    "Settings Statistics", 
-                    False, 
-                    f"Missing required fields: {missing_fields}",
+                    f"Missing required fields in response: {missing_fields}",
                     data
                 )
                 return False
             
             # Verify expected values
-            total = data.get("total", 0)
-            sensitive = data.get("sensitive", 0)
-            readonly = data.get("readonly", 0)
-            
-            if total < 5:
+            if data.get("status") != "trial":
                 self.log_result(
-                    "Settings Statistics", 
+                    "Create Tenant", 
                     False, 
-                    f"Expected at least 5 settings, got {total}",
+                    f"Expected status 'trial', got '{data.get('status')}'",
                     data
                 )
                 return False
             
-            if sensitive < 1:
+            if data.get("enabled") != True:
                 self.log_result(
-                    "Settings Statistics", 
+                    "Create Tenant", 
                     False, 
-                    f"Expected at least 1 sensitive setting, got {sensitive}",
+                    f"Expected enabled=true, got {data.get('enabled')}",
                     data
                 )
                 return False
             
-            if readonly < 1:
+            if data.get("user_count") != 1:
                 self.log_result(
-                    "Settings Statistics", 
+                    "Create Tenant", 
                     False, 
-                    f"Expected at least 1 readonly setting, got {readonly}",
+                    f"Expected user_count=1 (admin user created), got {data.get('user_count')}",
                     data
                 )
                 return False
+            
+            # Store tenant ID for later tests
+            self.test_tenant_id = data.get("tenant_id")
             
             self.log_result(
-                "Settings Statistics", 
+                "Create Tenant", 
                 True, 
-                f"Statistics retrieved: {total} total settings, {sensitive} sensitive, {readonly} readonly"
+                f"Tenant created successfully: {data.get('name')} (ID: {self.test_tenant_id}), status: {data.get('status')}, user_count: {data.get('user_count')}"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Settings Statistics", 
+                "Create Tenant", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_get_all_settings(self):
-        """Test GET /api/settings endpoint"""
+    def test_list_tenants(self):
+        """Test GET /api/tenants/ - List tenants with pagination"""
         try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings")
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/?skip=0&limit=10")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get All Settings", 
+                    "List Tenants", 
                     False, 
-                    f"Get settings failed. Status: {response.status_code}",
+                    f"List tenants failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -411,524 +313,443 @@ class TenantManagementTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get All Settings", 
+                    "List Tenants", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
+                    f"Response should be an array, got {type(data)}",
                     data
                 )
                 return False
             
-            # Check setting structure if settings exist
-            if len(data) > 0:
-                setting_obj = data[0]
-                required_fields = ["id", "key", "value", "category", "scope"]
-                missing_fields = [field for field in required_fields if field not in setting_obj]
-                
-                if missing_fields:
+            # Check if our test tenant is in the list
+            if self.test_tenant_id:
+                test_tenant_found = any(tenant.get("tenant_id") == self.test_tenant_id for tenant in data)
+                if not test_tenant_found:
                     self.log_result(
-                        "Get All Settings", 
+                        "List Tenants", 
                         False, 
-                        f"Setting missing required fields: {missing_fields}",
-                        setting_obj
+                        f"Test tenant {self.test_tenant_id} not found in tenant list",
+                        data
                     )
                     return False
-                
-                # Store first setting ID for later tests
-                if not self.test_setting_id:
-                    self.test_setting_id = setting_obj.get("id")
-            
-            if len(data) < 5:
-                self.log_result(
-                    "Get All Settings", 
-                    False, 
-                    f"Expected at least 5 settings, got {len(data)}",
-                    data
-                )
-                return False
             
             self.log_result(
-                "Get All Settings", 
+                "List Tenants", 
                 True, 
-                f"Retrieved {len(data)} settings successfully"
+                f"Retrieved {len(data)} tenants successfully"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get All Settings", 
+                "List Tenants", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_get_setting_by_key(self):
-        """Test GET /api/settings/key/{key}"""
+    def test_list_tenants_with_filters(self):
+        """Test GET /api/tenants/ with status and plan filters"""
         try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings/key/app.name")
+            # Test status filter
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/?status_filter=trial")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Setting by Key", 
+                    "List Tenants with Status Filter", 
                     False, 
-                    f"Get setting by key failed. Status: {response.status_code}",
+                    f"Status filter failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an object (not array)
-            if isinstance(data, list):
+            # Verify all tenants have trial status
+            for tenant in data:
+                if tenant.get("status") != "trial":
+                    self.log_result(
+                        "List Tenants with Status Filter", 
+                        False, 
+                        f"Status filter not working: found tenant with status '{tenant.get('status')}'",
+                        tenant
+                    )
+                    return False
+            
+            # Test subscription plan filter
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/?subscription_plan=pro")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Get Setting by Key", 
+                    "List Tenants with Plan Filter", 
                     False, 
-                    f"Response should be an object, not an array",
+                    f"Plan filter failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            plan_data = response.json()
+            
+            # Verify all tenants have pro plan
+            for tenant in plan_data:
+                if tenant.get("subscription_plan") != "pro":
+                    self.log_result(
+                        "List Tenants with Plan Filter", 
+                        False, 
+                        f"Plan filter not working: found tenant with plan '{tenant.get('subscription_plan')}'",
+                        tenant
+                    )
+                    return False
+            
+            self.log_result(
+                "List Tenants with Filters", 
+                True, 
+                f"Filters working: {len(data)} trial tenants, {len(plan_data)} pro tenants"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "List Tenants with Filters", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
+    def test_get_tenant_details(self):
+        """Test GET /api/tenants/{tenant_id} - Get specific tenant"""
+        try:
+            if not self.test_tenant_id:
+                self.log_result(
+                    "Get Tenant Details", 
+                    False, 
+                    "No test tenant ID available"
+                )
+                return False
+            
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/{self.test_tenant_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Get Tenant Details", 
+                    False, 
+                    f"Get tenant details failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify tenant ID matches
+            if data.get("tenant_id") != self.test_tenant_id:
+                self.log_result(
+                    "Get Tenant Details", 
+                    False, 
+                    f"Tenant ID mismatch: expected {self.test_tenant_id}, got {data.get('tenant_id')}",
                     data
                 )
                 return False
             
-            # Verify key matches
-            if data.get("key") != "app.name":
-                self.log_result(
-                    "Get Setting by Key", 
-                    False, 
-                    f"Expected key 'app.name', got {data.get('key')}",
-                    data
-                )
-                return False
-            
-            # Check required fields
-            required_fields = ["id", "key", "value", "category", "scope"]
+            # Verify required fields
+            required_fields = ["tenant_id", "name", "display_name", "contact", "limits", "user_count", "device_count"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Get Setting by Key", 
+                    "Get Tenant Details", 
                     False, 
-                    f"Setting missing required fields: {missing_fields}",
+                    f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
             self.log_result(
-                "Get Setting by Key", 
+                "Get Tenant Details", 
                 True, 
-                f"Retrieved setting by key 'app.name': {data.get('value')} ({data.get('category')})"
+                f"Tenant details retrieved: {data.get('display_name')} with {data.get('user_count')} users"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get Setting by Key", 
+                "Get Tenant Details", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_get_settings_by_category(self):
-        """Test GET /api/settings/category/{category}"""
+    def test_search_tenants(self):
+        """Test GET /api/tenants/search?query=... - Search tenants"""
         try:
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings/category/security")
+            # Search by name
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/search?query=test")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Settings by Category", 
+                    "Search Tenants by Name", 
                     False, 
-                    f"Get settings by category failed. Status: {response.status_code}",
+                    f"Search by name failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
-            data = response.json()
+            name_data = response.json()
             
-            # Verify response is an array
-            if not isinstance(data, list):
+            # Search by email
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/search?query=admin@test-tenant.com")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Get Settings by Category", 
+                    "Search Tenants by Email", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
-                    data
+                    f"Search by email failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Verify all settings have category = security
-            for setting_obj in data:
-                if setting_obj.get("category") != "security":
-                    self.log_result(
-                        "Get Settings by Category", 
-                        False, 
-                        f"Setting has wrong category: {setting_obj.get('category')}",
-                        setting_obj
-                    )
-                    return False
+            email_data = response.json()
+            
+            # Search by domain
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/search?query=test-tenant.example.com")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Search Tenants by Domain", 
+                    False, 
+                    f"Search by domain failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            domain_data = response.json()
+            
+            # Verify our test tenant is found in all searches
+            searches = [("name", name_data), ("email", email_data), ("domain", domain_data)]
+            
+            for search_type, search_results in searches:
+                if self.test_tenant_id:
+                    found = any(tenant.get("tenant_id") == self.test_tenant_id for tenant in search_results)
+                    if not found:
+                        self.log_result(
+                            "Search Tenants", 
+                            False, 
+                            f"Test tenant not found in {search_type} search",
+                            search_results
+                        )
+                        return False
             
             self.log_result(
-                "Get Settings by Category", 
+                "Search Tenants", 
                 True, 
-                f"Category filter working: {len(data)} security settings found"
+                f"Search working: name={len(name_data)}, email={len(email_data)}, domain={len(domain_data)} results"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Get Settings by Category", 
+                "Search Tenants", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_update_setting(self):
-        """Test updating a setting"""
+    def test_update_tenant(self):
+        """Test PUT /api/tenants/{tenant_id} - Update tenant"""
         try:
-            if not self.test_setting_id:
+            if not self.test_tenant_id:
                 self.log_result(
-                    "Update Setting", 
+                    "Update Tenant", 
                     False, 
-                    "No test setting ID available for update test"
+                    "No test tenant ID available"
                 )
                 return False
             
-            # Find a non-readonly setting to update
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings/key/app.theme")
-            if response.status_code != 200:
-                self.log_result(
-                    "Update Setting", 
-                    False, 
-                    "Could not find app.theme setting for update test"
-                )
-                return False
-            
-            setting = response.json()
-            setting_id = setting.get("id")
-            
-            # Update setting value
             update_data = {
-                "value": "light",
-                "description": "Updated theme setting"
+                "status": "active",
+                "subscription_plan": "enterprise",
+                "enabled": True
             }
             
-            response = self.settings_service_session.put(
-                f"{SETTINGS_SERVICE_URL}/api/settings/{setting_id}", 
-                json=update_data
-            )
+            response = self.auth_service_session.put(f"{AUTH_SERVICE_URL}/api/tenants/{self.test_tenant_id}", json=update_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "Update Setting", 
+                    "Update Tenant", 
                     False, 
-                    f"Update setting failed. Status: {response.status_code}",
+                    f"Update tenant failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify value was updated
-            if data.get("value") != "light":
+            # Verify updates were applied
+            if data.get("status") != "active":
                 self.log_result(
-                    "Update Setting", 
+                    "Update Tenant", 
                     False, 
-                    f"Value not updated. Expected 'light', got '{data.get('value')}'",
+                    f"Status not updated: expected 'active', got '{data.get('status')}'",
+                    data
+                )
+                return False
+            
+            if data.get("subscription_plan") != "enterprise":
+                self.log_result(
+                    "Update Tenant", 
+                    False, 
+                    f"Plan not updated: expected 'enterprise', got '{data.get('subscription_plan')}'",
                     data
                 )
                 return False
             
             self.log_result(
-                "Update Setting", 
+                "Update Tenant", 
                 True, 
-                f"Setting updated successfully: {data.get('key')} -> {data.get('value')}"
+                f"Tenant updated successfully: status={data.get('status')}, plan={data.get('subscription_plan')}"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Update Setting", 
+                "Update Tenant", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_readonly_protection(self):
-        """Test that readonly settings cannot be updated"""
+    def test_validation_errors(self):
+        """Test validation scenarios"""
         try:
-            # Try to update readonly setting (app.name)
-            response = self.settings_service_session.get(f"{SETTINGS_SERVICE_URL}/api/settings/key/app.name")
-            if response.status_code != 200:
-                self.log_result(
-                    "Readonly Protection", 
-                    False, 
-                    "Could not find app.name setting for readonly test"
-                )
-                return False
-            
-            setting = response.json()
-            setting_id = setting.get("id")
-            
-            # Try to update readonly setting
-            update_data = {
-                "value": "Modified Name"
+            # Test duplicate name
+            duplicate_tenant = {
+                "name": "test-tenant",  # Same as our test tenant
+                "display_name": "Duplicate Test Tenant",
+                "contact": {
+                    "admin_email": "admin2@test-tenant.com"
+                },
+                "admin_password": "SecurePass123!"
             }
             
-            response = self.settings_service_session.put(
-                f"{SETTINGS_SERVICE_URL}/api/settings/{setting_id}", 
-                json=update_data
-            )
+            response = self.auth_service_session.post(f"{AUTH_SERVICE_URL}/api/tenants/", json=duplicate_tenant)
             
-            # Should return 403 Forbidden
-            if response.status_code != 403:
+            if response.status_code != 400:
                 self.log_result(
-                    "Readonly Protection", 
+                    "Validation - Duplicate Name", 
                     False, 
-                    f"Expected 403 Forbidden, got {response.status_code}",
+                    f"Expected 400 for duplicate name, got {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            # Test duplicate email
+            duplicate_email_tenant = {
+                "name": "test-tenant-2",
+                "display_name": "Test Tenant 2",
+                "contact": {
+                    "admin_email": "admin@test-tenant.com"  # Same as our test tenant
+                },
+                "admin_password": "SecurePass123!"
+            }
+            
+            response = self.auth_service_session.post(f"{AUTH_SERVICE_URL}/api/tenants/", json=duplicate_email_tenant)
+            
+            if response.status_code != 400:
+                self.log_result(
+                    "Validation - Duplicate Email", 
+                    False, 
+                    f"Expected 400 for duplicate email, got {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            # Test invalid tenant ID
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/invalid-id")
+            
+            if response.status_code != 404:
+                self.log_result(
+                    "Validation - Invalid Tenant ID", 
+                    False, 
+                    f"Expected 404 for invalid tenant ID, got {response.status_code}",
                     response.text
                 )
                 return False
             
             self.log_result(
-                "Readonly Protection", 
+                "Validation Tests", 
                 True, 
-                "Readonly setting protection working correctly (403 Forbidden)"
+                "All validation scenarios working correctly: duplicate name (400), duplicate email (400), invalid ID (404)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Readonly Protection", 
+                "Validation Tests", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
     
-    def test_all_services_online(self):
-        """Test that all 10 services appear in /api/portal/services"""
+    def test_delete_tenant(self):
+        """Test DELETE /api/tenants/{tenant_id} - Delete tenant"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/services")
-            
-            if response.status_code != 200:
+            if not self.test_tenant_id:
                 self.log_result(
-                    "All Services Online", 
+                    "Delete Tenant", 
                     False, 
-                    f"Failed to get services. Status: {response.status_code}",
+                    "No test tenant ID available"
+                )
+                return False
+            
+            response = self.auth_service_session.delete(f"{AUTH_SERVICE_URL}/api/tenants/{self.test_tenant_id}")
+            
+            if response.status_code != 204:
+                self.log_result(
+                    "Delete Tenant", 
+                    False, 
+                    f"Delete tenant failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
-            data = response.json()
+            # Verify tenant is deleted by trying to get it
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/api/tenants/{self.test_tenant_id}")
             
-            # Expected services in order
-            expected_services = [
-                "auth", "id_verification", "device", "location", 
-                "inventory", "order", "customer", "license", "settings", "support"
-            ]
-            
-            service_types = [s.get('service_type') for s in data]
-            
-            # Check if all expected services are present
-            missing_services = [s for s in expected_services if s not in service_types]
-            if missing_services:
+            if response.status_code != 404:
                 self.log_result(
-                    "All Services Online", 
+                    "Delete Tenant Verification", 
                     False, 
-                    f"Missing services: {missing_services}",
-                    service_types
-                )
-                return False
-            
-            # Check if we have exactly 10 services
-            if len(service_types) != 10:
-                self.log_result(
-                    "All Services Online", 
-                    False, 
-                    f"Expected 10 services, got {len(service_types)}",
-                    service_types
-                )
-                return False
-            
-            # Check order
-            if service_types != expected_services:
-                self.log_result(
-                    "All Services Online", 
-                    False, 
-                    f"Services not in expected order. Got: {service_types}, Expected: {expected_services}",
-                    data
+                    f"Tenant still exists after deletion. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
             self.log_result(
-                "All Services Online", 
+                "Delete Tenant", 
                 True, 
-                f"All 10 services online in correct order: {', '.join(service_types)}"
+                f"Tenant {self.test_tenant_id} deleted successfully and verified"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "All Services Online", 
-                False, 
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-    
-    def test_settings_service_registration(self):
-        """Test that Settings Service appears at position 9 in services list"""
-        try:
-            response = self.session.get(f"{API_BASE}/portal/services")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "Settings Service Registration", 
-                    False, 
-                    f"Failed to get services. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Look for settings service
-            settings_service = None
-            for service in data:
-                if service.get('service_type') == 'settings':
-                    settings_service = service
-                    break
-            
-            if not settings_service:
-                self.log_result(
-                    "Settings Service Registration", 
-                    False, 
-                    "Settings Service not found in services list",
-                    data
-                )
-                return False
-            
-            # Check position (should be 9th - 0-indexed position 8)
-            service_types = [s.get('service_type') for s in data]
-            settings_position = service_types.index('settings') if 'settings' in service_types else -1
-            
-            expected_position = 8  # 0-indexed
-            if settings_position != expected_position:
-                self.log_result(
-                    "Settings Service Registration", 
-                    False, 
-                    f"Settings Service at position {settings_position}, expected position {expected_position}",
-                    service_types
-                )
-                return False
-            
-            # Verify service_type
-            if settings_service.get('service_type') != 'settings':
-                self.log_result(
-                    "Settings Service Registration", 
-                    False, 
-                    f"Wrong service_type: {settings_service.get('service_type')}",
-                    settings_service
-                )
-                return False
-            
-            self.log_result(
-                "Settings Service Registration", 
-                True, 
-                f"Settings Service found at correct position {expected_position} with service_type='settings'"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "Settings Service Registration", 
-                False, 
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-    
-    def test_mongodb_summary(self):
-        """Test MongoDB integration shows settings_db"""
-        try:
-            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=settings")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "MongoDB Summary", 
-                    False, 
-                    f"MongoDB summary failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # The API returns a list of services, find the settings service
-            settings_service_info = None
-            if isinstance(data, list):
-                for service in data:
-                    if service.get("service_id") == "settings_service_001":
-                        settings_service_info = service
-                        break
-            else:
-                settings_service_info = data
-            
-            if not settings_service_info:
-                self.log_result(
-                    "MongoDB Summary", 
-                    False, 
-                    "Settings service not found in MongoDB summary",
-                    data
-                )
-                return False
-            
-            mongodb_info = settings_service_info.get("mongodb_info", {})
-            
-            # Verify database name
-            if mongodb_info.get("database_name") != "settings_db":
-                self.log_result(
-                    "MongoDB Summary", 
-                    False, 
-                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'settings_db'",
-                    mongodb_info
-                )
-                return False
-            
-            # Verify collections exist
-            collections = mongodb_info.get("collections", [])
-            if not any(col.get("name") == "settings" for col in collections):
-                self.log_result(
-                    "MongoDB Summary", 
-                    False, 
-                    "Settings collection not found",
-                    mongodb_info
-                )
-                return False
-            
-            # Verify document count
-            total_documents = mongodb_info.get("total_documents", 0)
-            
-            self.log_result(
-                "MongoDB Summary", 
-                True, 
-                f"MongoDB integration working: {mongodb_info.get('database_name')} with {len(collections)} collections, {total_documents} documents"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "MongoDB Summary", 
+                "Delete Tenant", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
             return False
 
     def run_all_tests(self):
-        """Run all settings service tests"""
+        """Run all tenant management tests"""
         print("=" * 70)
-        print("SETTINGS SERVICE COMPREHENSIVE TESTING + FINAL ARCHITECTURE VERIFICATION")
+        print("TENANT MANAGEMENT BACKEND TESTING - AUTH & IDENTITY SERVICE")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Settings Service URL: {SETTINGS_SERVICE_URL}")
+        print(f"Auth Service URL: {AUTH_SERVICE_URL}")
         print("=" * 70)
         print()
         
-        # Test backend connectivity first
-        if not self.test_backend_health():
-            print("❌ Backend connectivity failed. Stopping tests.")
+        # Test Auth Service health first
+        if not self.test_auth_service_health():
+            print("❌ Auth Service health check failed. Stopping tests.")
             return False
         
         # Authenticate as admin first
@@ -936,68 +757,56 @@ class TenantManagementTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Setup test data
-        print("🔧 SETUP: Creating test settings...")
-        self.setup_test_settings()
-        
-        # Step 1: Test Settings Service Health & Info
-        print("\n🔍 STEP 1: Testing Settings Service Health & Info...")
-        if not self.test_settings_service_health():
-            print("❌ Settings service health check failed.")
-        
-        if not self.test_settings_service_info():
-            print("❌ Settings service info failed.")
-        
-        # Step 2: Test Settings Statistics
-        print("\n🔍 STEP 2: Testing Settings Statistics...")
-        stats = self.test_settings_statistics()
+        # Step 1: Test Tenant Statistics
+        print("\n🔍 STEP 1: Testing Tenant Statistics...")
+        stats = self.test_tenant_stats()
         if not stats:
-            print("❌ Settings statistics failed.")
+            print("❌ Tenant statistics failed.")
         
-        # Step 3: Test Get All Settings
-        print("\n🔍 STEP 3: Testing Get All Settings...")
-        settings = self.test_get_all_settings()
-        if settings is False:
-            print("❌ Get all settings failed.")
+        # Step 2: Test Tenant Creation
+        print("\n🔍 STEP 2: Testing Tenant Creation...")
+        created_tenant = self.test_create_tenant()
+        if not created_tenant:
+            print("❌ Tenant creation failed.")
         
-        # Step 4: Test Get Setting by Key
-        print("\n🔍 STEP 4: Testing Get Setting by Key...")
-        if not self.test_get_setting_by_key():
-            print("❌ Get setting by key failed.")
+        # Step 3: Test List Tenants
+        print("\n🔍 STEP 3: Testing List Tenants...")
+        if not self.test_list_tenants():
+            print("❌ List tenants failed.")
         
-        # Step 5: Test Get Settings by Category
-        print("\n🔍 STEP 5: Testing Get Settings by Category...")
-        if not self.test_get_settings_by_category():
-            print("❌ Get settings by category failed.")
+        # Step 4: Test List Tenants with Filters
+        print("\n🔍 STEP 4: Testing List Tenants with Filters...")
+        if not self.test_list_tenants_with_filters():
+            print("❌ List tenants with filters failed.")
         
-        # Step 6: Test Update Setting
-        print("\n🔍 STEP 6: Testing Update Setting...")
-        if not self.test_update_setting():
-            print("❌ Update setting failed.")
+        # Step 5: Test Get Tenant Details
+        print("\n🔍 STEP 5: Testing Get Tenant Details...")
+        if not self.test_get_tenant_details():
+            print("❌ Get tenant details failed.")
         
-        # Step 7: Test Readonly Protection
-        print("\n🔍 STEP 7: Testing Readonly Protection...")
-        if not self.test_readonly_protection():
-            print("❌ Readonly protection failed.")
+        # Step 6: Test Search Tenants
+        print("\n🔍 STEP 6: Testing Search Tenants...")
+        if not self.test_search_tenants():
+            print("❌ Search tenants failed.")
         
-        # Step 8: Test All 10 Services Online
-        print("\n🔍 STEP 8: Testing All 10 Services Online...")
-        if not self.test_all_services_online():
-            print("❌ All services online verification failed.")
+        # Step 7: Test Update Tenant
+        print("\n🔍 STEP 7: Testing Update Tenant...")
+        if not self.test_update_tenant():
+            print("❌ Update tenant failed.")
         
-        # Step 9: Test Settings Service Registration
-        print("\n🔍 STEP 9: Testing Settings Service Registration...")
-        if not self.test_settings_service_registration():
-            print("❌ Settings service registration verification failed.")
+        # Step 8: Test Validation Scenarios
+        print("\n🔍 STEP 8: Testing Validation Scenarios...")
+        if not self.test_validation_errors():
+            print("❌ Validation tests failed.")
         
-        # Step 10: Test MongoDB Summary
-        print("\n🔍 STEP 10: Testing MongoDB Summary...")
-        if not self.test_mongodb_summary():
-            print("❌ MongoDB summary failed.")
+        # Step 9: Test Delete Tenant
+        print("\n🔍 STEP 9: Testing Delete Tenant...")
+        if not self.test_delete_tenant():
+            print("❌ Delete tenant failed.")
         
         # Summary
         print("\n" + "=" * 70)
-        print("SETTINGS SERVICE TESTING SUMMARY")
+        print("TENANT MANAGEMENT TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
@@ -1022,24 +831,24 @@ class TenantManagementTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Settings Service Comprehensive Testing + Final Architecture Verification...")
+    print("Starting Tenant Management Backend Testing...")
     print()
     
-    # Test Settings Service
-    tester = SettingsServiceTester()
+    # Test Tenant Management
+    tester = TenantManagementTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Settings Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Tenant Management Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 SETTINGS SERVICE TESTING + ARCHITECTURE VERIFICATION COMPLETED SUCCESSFULLY!")
+        print("🎉 TENANT MANAGEMENT TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ SETTINGS SERVICE TESTING FOUND ISSUES!")
+        print("❌ TENANT MANAGEMENT TESTING FOUND ISSUES!")
         sys.exit(1)
