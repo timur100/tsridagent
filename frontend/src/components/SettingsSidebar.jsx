@@ -55,6 +55,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       items: [
         { id: 'customers-management', label: 'Kunden', emoji: '🏢' },
         { id: 'portal', label: 'Portal', emoji: '🚀' },
+        { id: 'microservices', label: 'Microservices', emoji: '⚙️' },
         { id: 'integrations', label: 'Integrationen', emoji: '🔌' }
       ]
     }
