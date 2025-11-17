@@ -560,17 +560,18 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_filter_orders(self):
-        """Test filtering orders by status"""
+    def test_search_customers(self):
+        """Test searching customers"""
         try:
-            # Test filter by status=pending
-            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders?status=pending")
+            # Test search with a common query
+            search_query = "max"
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/search?query={search_query}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Filter Orders", 
+                    "Search Customers", 
                     False, 
-                    f"Filter by status failed. Status: {response.status_code}",
+                    f"Search customers failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -580,34 +581,48 @@ class CustomerServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Filter Orders", 
+                    "Search Customers", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Verify all orders have status = pending
-            for order in data:
-                if order.get("status") != "pending":
+            # Verify search results contain the query term (case insensitive)
+            for customer in data:
+                found_match = False
+                search_fields = [
+                    customer.get("first_name", "").lower(),
+                    customer.get("last_name", "").lower(),
+                    customer.get("email", "").lower(),
+                    customer.get("company_name", "").lower() if customer.get("company_name") else "",
+                    customer.get("customer_number", "").lower()
+                ]
+                
+                for field in search_fields:
+                    if search_query.lower() in field:
+                        found_match = True
+                        break
+                
+                if not found_match:
                     self.log_result(
-                        "Filter Orders", 
+                        "Search Customers", 
                         False, 
-                        f"Order has wrong status: {order.get('status')}",
-                        order
+                        f"Customer doesn't match search query '{search_query}': {customer.get('first_name')} {customer.get('last_name')}",
+                        customer
                     )
                     return False
             
             self.log_result(
-                "Filter Orders", 
+                "Search Customers", 
                 True, 
-                f"Status filter working: {len(data)} pending orders found"
+                f"Search working: {len(data)} customers found for query '{search_query}'"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Filter Orders", 
+                "Search Customers", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
