@@ -46,6 +46,7 @@ import CustomerSwitcher from '../components/CustomerSwitcher';
 import ServicesConfiguration from '../components/ServicesConfiguration';
 import ScannerPinSettings from '../components/ScannerPinSettings';
 import TenantsPage from './TenantsPage';
+import SubscriptionPlans from './SubscriptionPlans';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
