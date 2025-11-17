@@ -335,16 +335,16 @@ class LocationServiceTester:
             )
             return False
     
-    def test_get_all_devices(self):
-        """Test GET /api/devices endpoint"""
+    def test_get_all_locations(self):
+        """Test GET /api/locations endpoint"""
         try:
-            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices")
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get All Devices", 
+                    "Get All Locations", 
                     False, 
-                    f"Get devices failed. Status: {response.status_code}",
+                    f"Get locations failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -354,38 +354,49 @@ class LocationServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get All Devices", 
+                    "Get All Locations", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Check device structure if devices exist
+            # Expected: 4 locations exist
+            expected_count = 4
+            if len(data) != expected_count:
+                self.log_result(
+                    "Get All Locations", 
+                    False, 
+                    f"Expected {expected_count} locations, got {len(data)}",
+                    data
+                )
+                return False
+            
+            # Check location structure if locations exist
             if len(data) > 0:
-                device = data[0]
-                required_fields = ["id", "device_id", "device_type", "status"]
-                missing_fields = [field for field in required_fields if field not in device]
+                location = data[0]
+                required_fields = ["id", "location_code", "location_name", "address", "status"]
+                missing_fields = [field for field in required_fields if field not in location]
                 
                 if missing_fields:
                     self.log_result(
-                        "Get All Devices", 
+                        "Get All Locations", 
                         False, 
-                        f"Device missing required fields: {missing_fields}",
-                        device
+                        f"Location missing required fields: {missing_fields}",
+                        location
                     )
                     return False
             
             self.log_result(
-                "Get All Devices", 
+                "Get All Locations", 
                 True, 
-                f"Retrieved {len(data)} devices successfully"
+                f"Retrieved {len(data)} locations successfully"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get All Devices", 
+                "Get All Locations", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
