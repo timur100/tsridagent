@@ -291,49 +291,57 @@ class DeviceServiceTester:
             )
             return False
     
-    def test_service_count_and_details(self, services):
-        """Test service count and validate service details"""
+    def test_get_all_devices(self):
+        """Test GET /api/devices endpoint"""
         try:
-            if not services:
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Service Count and Details", 
+                    "Get All Devices", 
                     False, 
-                    "No services provided for testing"
+                    f"Get devices failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            total_services = len(services)
+            data = response.json()
             
-            # Count services by type
-            service_type_counts = {}
-            for service in services:
-                service_type = service.get('service_type', 'unknown')
-                service_type_counts[service_type] = service_type_counts.get(service_type, 0) + 1
+            # Verify response is an array
+            if not isinstance(data, list):
+                self.log_result(
+                    "Get All Devices", 
+                    False, 
+                    f"Response is not an array. Type: {type(data)}",
+                    data
+                )
+                return False
             
-            # Validate required fields for each service
-            required_fields = ['service_id', 'service_name', 'service_type', 'base_url']
-            
-            for i, service in enumerate(services):
-                missing_fields = [field for field in required_fields if field not in service]
+            # Check device structure if devices exist
+            if len(data) > 0:
+                device = data[0]
+                required_fields = ["id", "device_id", "device_type", "status"]
+                missing_fields = [field for field in required_fields if field not in device]
+                
                 if missing_fields:
                     self.log_result(
-                        "Service Count and Details", 
+                        "Get All Devices", 
                         False, 
-                        f"Service at index {i} missing required fields: {missing_fields}",
-                        service
+                        f"Device missing required fields: {missing_fields}",
+                        device
                     )
                     return False
             
             self.log_result(
-                "Service Count and Details", 
+                "Get All Devices", 
                 True, 
-                f"Found {total_services} services with valid structure. Types: {service_type_counts}"
+                f"Retrieved {len(data)} devices successfully"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Service Count and Details", 
+                "Get All Devices", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
