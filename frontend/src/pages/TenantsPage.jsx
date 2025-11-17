@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  PlusIcon, 
-  MagnifyingGlassIcon,
-  BuildingOfficeIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  ClockIcon,
-  UsersIcon,
-  ServerIcon,
-  ChartBarIcon
-} from '@heroicons/react/24/outline';
+  Plus, 
+  Search,
+  Building,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Users,
+  Server,
+  BarChart
+} from 'lucide-react';
 
 const TenantsPage = () => {
   const [tenants, setTenants] = useState([]);
