@@ -198,6 +198,9 @@ app.include_router(services_config_router)
 # Scanner PIN Settings
 app.include_router(scanner_pin_router)
 
+# Service Proxy (for accessing microservices externally)
+app.include_router(service_proxy_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
