@@ -119,4 +119,38 @@ async def proxy_to_ticketing_service(path: str, request: Request):
         raise HTTPException(status_code=503, detail="Ticketing Service is not available")
     except Exception as e:
         logger.error(f"Error proxying to Ticketing Service: {e}")
+
+
+@router.api_route("/tenants/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
+async def proxy_to_tenants_service(path: str, request: Request):
+    """
+    Proxy all /api/services/tenants/* requests to Auth & Identity Service (port 8100)
+    This provides access to tenant management APIs
+    """
+    try:
+        target_url = f"http://localhost:8100/api/tenants/{path}"
+        body = await request.body()
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.request(
+                method=request.method,
+                url=target_url,
+                headers=dict(request.headers),
+                content=body,
+                params=dict(request.query_params)
+            )
+            
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers=dict(response.headers),
+                media_type=response.headers.get("content-type")
+            )
+    except httpx.ConnectError:
+        logger.error(f"Cannot connect to Auth & Identity Service on port 8100")
+        raise HTTPException(status_code=503, detail="Auth & Identity Service is not available")
+    except Exception as e:
+        logger.error(f"Error proxying to Auth & Identity Service: {e}")
+        raise HTTPException(status_code=502, detail=f"Proxy error: {str(e)}")
+
         raise HTTPException(status_code=502, detail=f"Proxy error: {str(e)}")
