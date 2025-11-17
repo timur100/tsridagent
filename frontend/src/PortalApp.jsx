@@ -52,7 +52,14 @@ const PortalRoutes = () => {
     <Routes>
       <Route
         path="/login"
-        element={<PortalLogin />}
+        element={
+          // Always allow access to login page (for logout/switching accounts)
+          isAuthenticated ? (
+            <PortalLogin />
+          ) : (
+            <PortalLogin />
+          )
+        }
       />
       
       <Route
