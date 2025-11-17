@@ -222,6 +222,117 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
                 </div>
               </Card>
 
+              {/* Standorte */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Standorte
+                    </p>
+                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      5
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      von {tenant.limits.max_locations || 10}
+                    </p>
+                  </div>
+                  <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                </div>
+              </Card>
+
+              {/* Online */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Online
+                    </p>
+                    <p className={`text-3xl font-bold text-green-500`}>
+                      3
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Geräte aktiv
+                    </p>
+                  </div>
+                  <Wifi className={`h-12 w-12 text-green-500`} />
+                </div>
+              </Card>
+
+              {/* Offline */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Offline
+                    </p>
+                    <p className={`text-3xl font-bold text-red-500`}>
+                      2
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Geräte inaktiv
+                    </p>
+                  </div>
+                  <WifiOff className={`h-12 w-12 text-red-500`} />
+                </div>
+              </Card>
+
+              {/* In Bearbeitung */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      In Bearbeitung
+                    </p>
+                    <p className={`text-3xl font-bold text-orange-500`}>
+                      1
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Tickets offen
+                    </p>
+                  </div>
+                  <Settings className={`h-12 w-12 text-orange-500`} />
+                </div>
+              </Card>
+
+              {/* Storage */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Storage
+                    </p>
+                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {tenant.storage_used_gb} GB
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      von {tenant.limits.max_storage_gb} GB
+                    </p>
+                  </div>
+                  <HardDrive className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                </div>
+              </Card>
+
+              {/* API Calls */}
               <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
                   ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
