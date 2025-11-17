@@ -14,7 +14,7 @@ BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 CUSTOMER_SERVICE_URL = "http://localhost:8107"
 
-class OrderServiceTester:
+class CustomerServiceTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
