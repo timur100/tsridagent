@@ -865,13 +865,21 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
+      <div className={`rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto ${
+        theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+      }`}>
+        <div className={`p-6 border-b sticky top-0 z-10 ${
+          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+        }`}>
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">{tenant.display_name}</h2>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {tenant.display_name}
+            </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className={`transition-colors hover:scale-110 ${
+                theme === 'dark' ? 'text-gray-400 hover:text-[#c00000]' : 'text-gray-400 hover:text-gray-600'
+              }`}
             >
               <XCircle className="w-6 h-6" />
             </button>
