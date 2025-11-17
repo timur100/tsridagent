@@ -910,24 +910,24 @@ class LicenseServiceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Customer Service Comprehensive Testing...")
+    print("Starting License Service Comprehensive Testing...")
     print()
     
-    # Test Customer Service
-    tester = CustomerServiceTester()
+    # Test License Service
+    tester = LicenseServiceTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Customer Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"License Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 CUSTOMER SERVICE TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 LICENSE SERVICE TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ CUSTOMER SERVICE TESTING FOUND ISSUES!")
+        print("❌ LICENSE SERVICE TESTING FOUND ISSUES!")
         sys.exit(1)
