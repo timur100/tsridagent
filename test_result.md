@@ -596,6 +596,18 @@ frontend:
           agent: "testing"
           comment: "❌ HARDWARE COMPONENT MANAGEMENT UI TESTING PARTIALLY COMPLETED: Successfully tested most UI elements but encountered critical issues. WORKING ELEMENTS: ✅ Admin Portal access and login (admin@tsrid.com/admin123), ✅ 'Komponenten' tab navigation with Boxes icon positioned correctly between 'Lager' and 'Bestellungen', ✅ Page title 'Hardware-Komponenten Verwaltung' and subtitle 'Verwalten Sie Komponenten, Vorlagen und Sets' displayed, ✅ Sub-navigation tabs present (Komponenten, Vorlagen, Sets, Bedarfsermittlung) with proper icons, ✅ 'Komponenten' tab active by default with red styling (#c00000), ✅ Table structure with correct headers (Typ, Name, Identifikation, Hersteller, Modell, Bestand, Aktionen) using font-mono styling, ✅ Search input field with 'Suchen...' placeholder functional, ✅ 'Nur niedriger Bestand' checkbox working, ✅ 'Neue Komponente' button with red styling and Plus icon, ✅ Red theme (#c00000) consistently applied, ✅ Placeholder tabs showing 'In Entwicklung' messages, ✅ 'Keine Komponenten gefunden' message displayed (expected - no test data). CRITICAL ISSUES: ❌ Statistics cards not loading properly (API integration issue), ❌ Components API calls returning 401 Unauthorized errors in backend logs, ❌ No test component data available for comprehensive table testing. The frontend UI is implemented correctly but backend API authentication/data issues prevent full functionality testing."
 
+  - task: "Microservices Management in Admin Portal"
+    implemented: true
+    working: "NA"
+    file: "src/components/ServicesConfiguration.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "user"
+          comment: "Test the Microservices management in Admin Portal. Test steps: 1) Navigate to https://emt-data-transfer.preview.emergentagent.com/portal/login, 2) Login with admin@tsrid.com/admin123, 3) Navigate to Settings → Microservices, 4) Check if both services are displayed (ID Verification + Inventory), 5) Test Toggle-Switch for Inventory Service (click toggle, check success message, verify status change green/red), 6) Take screenshots before and after toggle. The toggle-switch should be functional with toast notifications and visual status changes."
+
   - task: "AdminPanel - Location Selection UI"
     implemented: true
     working: true
