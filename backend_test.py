@@ -826,12 +826,12 @@ class OrderServiceTester:
             return False
 
     def run_all_tests(self):
-        """Run all location service tests"""
+        """Run all order service tests"""
         print("=" * 70)
-        print("LOCATION SERVICE COMPREHENSIVE TESTING")
+        print("ORDER SERVICE COMPREHENSIVE TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Location Service URL: {LOCATION_SERVICE_URL}")
+        print(f"Order Service URL: {ORDER_SERVICE_URL}")
         print("=" * 70)
         print()
         
@@ -845,54 +845,59 @@ class OrderServiceTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test Location Service Health & Info
-        print("🔍 STEP 1: Testing Location Service Health & Info...")
-        if not self.test_location_service_health():
-            print("❌ Location service health check failed.")
+        # Step 1: Test Order Service Health & Info
+        print("🔍 STEP 1: Testing Order Service Health & Info...")
+        if not self.test_order_service_health():
+            print("❌ Order service health check failed.")
         
-        if not self.test_location_service_info():
-            print("❌ Location service info failed.")
+        if not self.test_order_service_info():
+            print("❌ Order service info failed.")
         
-        # Step 2: Test Location Statistics
-        print("\n🔍 STEP 2: Testing Location Statistics...")
-        stats = self.test_location_statistics()
+        # Step 2: Test Order Statistics
+        print("\n🔍 STEP 2: Testing Order Statistics...")
+        stats = self.test_order_statistics()
         if not stats:
-            print("❌ Location statistics failed.")
+            print("❌ Order statistics failed.")
         
-        # Step 3: Test Get All Locations
-        print("\n🔍 STEP 3: Testing Get All Locations...")
-        locations = self.test_get_all_locations()
-        if locations is False:
-            print("❌ Get all locations failed.")
+        # Step 3: Test Get All Orders
+        print("\n🔍 STEP 3: Testing Get All Orders...")
+        orders = self.test_get_all_orders()
+        if orders is False:
+            print("❌ Get all orders failed.")
         
-        # Step 4: Test Get Location by Code
-        print("\n🔍 STEP 4: Testing Get Location by Code...")
-        if not self.test_get_location_by_code():
-            print("❌ Get location by code failed.")
+        # Step 4: Test Get Order by Number
+        print("\n🔍 STEP 4: Testing Get Order by Number...")
+        if not self.test_get_order_by_number():
+            print("❌ Get order by number failed.")
         
-        # Step 5: Test Search Locations
-        print("\n🔍 STEP 5: Testing Search Locations...")
-        if not self.test_search_locations():
-            print("❌ Search locations failed.")
+        # Step 5: Test Get Orders by Customer
+        print("\n🔍 STEP 5: Testing Get Orders by Customer...")
+        if not self.test_get_orders_by_customer():
+            print("❌ Get orders by customer failed.")
         
-        # Step 6: Test Filter by Status and Type
-        print("\n🔍 STEP 6: Testing Filter by Status and Type...")
-        if not self.test_filter_by_status_and_type():
-            print("❌ Filter by status and type failed.")
+        # Step 6: Test Update Order Status
+        print("\n🔍 STEP 6: Testing Update Order Status...")
+        if not self.test_update_order_status():
+            print("❌ Update order status failed.")
         
-        # Step 7: Test Service Registration
-        print("\n🔍 STEP 7: Testing Service Registration...")
+        # Step 7: Test Filter Orders
+        print("\n🔍 STEP 7: Testing Filter Orders...")
+        if not self.test_filter_orders():
+            print("❌ Filter orders failed.")
+        
+        # Step 8: Test Service Registration
+        print("\n🔍 STEP 8: Testing Service Registration...")
         if not self.test_service_registration():
             print("❌ Service registration verification failed.")
         
-        # Step 8: Test MongoDB Summary
-        print("\n🔍 STEP 8: Testing MongoDB Summary...")
+        # Step 9: Test MongoDB Summary
+        print("\n🔍 STEP 9: Testing MongoDB Summary...")
         if not self.test_mongodb_summary():
             print("❌ MongoDB summary failed.")
         
         # Summary
         print("\n" + "=" * 70)
-        print("LOCATION SERVICE TESTING SUMMARY")
+        print("ORDER SERVICE TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
