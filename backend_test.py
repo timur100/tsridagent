@@ -176,51 +176,54 @@ class DeviceServiceTester:
             )
             return False
     
-    def test_auth_service_first_position(self, services):
-        """Test that Auth & Identity Service is in the first position"""
+    def test_device_service_info(self):
+        """Test Device Service info endpoint"""
         try:
-            if not services or len(services) == 0:
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/info")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Auth Service First Position", 
+                    "Device Service Info", 
                     False, 
-                    "No services provided for testing"
+                    f"Info endpoint failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            first_service = services[0]
+            data = response.json()
             
-            # Check if first service has service_type = 'auth'
-            service_type = first_service.get('service_type')
-            if service_type != 'auth':
+            # Verify response structure
+            required_fields = ["service_name", "version", "description", "endpoints"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
                 self.log_result(
-                    "Auth Service First Position", 
+                    "Device Service Info", 
                     False, 
-                    f"First service has service_type='{service_type}', expected 'auth'",
-                    first_service
+                    f"Missing required fields: {missing_fields}",
+                    data
                 )
                 return False
             
-            # Check if service name is 'Auth & Identity Service'
-            service_name = first_service.get('service_name')
-            if service_name != 'Auth & Identity Service':
+            if data.get("service_name") != "Device Service":
                 self.log_result(
-                    "Auth Service First Position", 
+                    "Device Service Info", 
                     False, 
-                    f"First service has service_name='{service_name}', expected 'Auth & Identity Service'",
-                    first_service
+                    f"Unexpected service name: {data.get('service_name')}",
+                    data
                 )
                 return False
             
             self.log_result(
-                "Auth Service First Position", 
+                "Device Service Info", 
                 True, 
-                f"Auth & Identity Service is correctly positioned first (service_type='auth')"
+                f"Service info correct: {data.get('service_name')} v{data.get('version')}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Auth Service First Position", 
+                "Device Service Info", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
