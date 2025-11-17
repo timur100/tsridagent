@@ -438,6 +438,11 @@ const ServicesConfiguration = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
+                  className={`${
+                    theme === 'dark'
+                      ? 'border-gray-700 text-gray-300 hover:bg-[#1a1a1a]'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                   onClick={() => handleDelete(service.service_id)}
                   title="Löschen"
                 >
