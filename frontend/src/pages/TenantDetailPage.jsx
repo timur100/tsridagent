@@ -43,7 +43,7 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
         setTenant(data);
       } else {
         console.error('Tenant not found');
-        navigate('/portal/admin?tab=tenants');
+        if (onBack) onBack();
       }
     } catch (error) {
       console.error('Error fetching tenant:', error);
