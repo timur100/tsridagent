@@ -1174,26 +1174,26 @@ class TicketingMicroserviceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Opening Hours Data Structure Investigation...")
+    print("Starting Ticketing Microservice Migration Testing...")
     print()
     
-    # Test Opening Hours Investigation
-    opening_hours_tester = OpeningHoursTester()
-    test_success = opening_hours_tester.run_all_tests()
+    # Test Ticketing Microservice Migration
+    ticketing_tester = TicketingMicroserviceTester()
+    test_success = ticketing_tester.run_all_tests()
     
     print()
     print("=" * 70)
-    print("OVERALL INVESTIGATION SUMMARY")
+    print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Opening Hours Investigation: {'✅ COMPLETED SUCCESSFULLY' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Ticketing Microservice Migration: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 OPENING HOURS INVESTIGATION COMPLETED!")
+        print("🎉 TICKETING MICROSERVICE MIGRATION TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ OPENING HOURS INVESTIGATION FOUND ISSUES!")
+        print("❌ TICKETING MICROSERVICE MIGRATION TESTING FOUND ISSUES!")
         sys.exit(1)
         """Test POST /api/resources/init-categories endpoint"""
         try:
