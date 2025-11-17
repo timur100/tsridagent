@@ -524,7 +524,7 @@ class TicketingMicroserviceTester:
         
         # Test proxy to Inventory Service via main backend
         try:
-            response = self.session.get(f"{API_BASE}/services/inventory/items")
+            response = self.session.get(f"{API_BASE}/services/inventory/items/")
             
             if response.status_code != 200:
                 self.log_result(
