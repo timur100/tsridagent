@@ -116,6 +116,38 @@ async def service_info():
 
 
 # Device Routes
+@app.get("/api/devices/stats")
+async def get_device_stats():
+    """Get device statistics"""
+    try:
+        total = await db.devices.count_documents({})
+        active = await db.devices.count_documents({"status": "active"})
+        inactive = await db.devices.count_documents({"status": "inactive"})
+        maintenance = await db.devices.count_documents({"status": "maintenance"})
+        offline = await db.devices.count_documents({"status": "offline"})
+        
+        # Get device types breakdown
+        pipeline = [
+            {"$group": {"_id": "$device_type", "count": {"$sum": 1}}}
+        ]
+        types_result = await db.devices.aggregate(pipeline).to_list(100)
+        by_type = {item['_id']: item['count'] for item in types_result if item['_id']}
+        
+        return {
+            "total": total,
+            "by_status": {
+                "active": active,
+                "inactive": inactive,
+                "maintenance": maintenance,
+                "offline": offline
+            },
+            "by_type": by_type
+        }
+    except Exception as e:
+        logger.error(f"Error getting device stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/devices", response_model=List[Device])
 async def get_devices(
     status: Optional[str] = None,
