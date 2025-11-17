@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Order Service Comprehensive Testing
-Tests the newly created Order Service (Port 8106) to ensure all endpoints are working correctly.
+Backend API Testing for Customer Service Comprehensive Testing
+Tests the newly created Customer Service (Port 8107) to ensure all endpoints are working correctly.
 """
 
 import requests
@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-ORDER_SERVICE_URL = "http://localhost:8106"
+CUSTOMER_SERVICE_URL = "http://localhost:8107"
 
 class OrderServiceTester:
     def __init__(self):
