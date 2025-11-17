@@ -193,6 +193,28 @@ const VerificationInterface = () => {
   const [scannerStatus, setScannerStatus] = useState('checking');
   const [isScanning, setIsScanning] = useState(false);
   
+  // Check if PIN is required on mount
+  useEffect(() => {
+    const checkPinStatus = async () => {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/scanner-pin/enabled`);
+        const data = await response.json();
+        setPinRequired(data.enabled);
+        if (!data.enabled) {
+          setPinAuthenticated(true); // If PIN is disabled, allow access
+        }
+      } catch (error) {
+        console.error('Error checking PIN status:', error);
+        // On error, assume no PIN required
+        setPinAuthenticated(true);
+      } finally {
+        setCheckingPin(false);
+      }
+    };
+    
+    checkPinStatus();
+  }, []);
+  
   const [adminSettings, setAdminSettings] = useState(() => {
     // Load enableBannedCheck from localStorage
     const savedSettings = localStorage.getItem('adminSettings');
