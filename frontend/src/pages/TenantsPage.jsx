@@ -10,8 +10,11 @@ import {
   Server,
   BarChart
 } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
+import { Card } from '../components/ui/card';
 
 const TenantsPage = () => {
+  const { theme } = useTheme();
   const [tenants, setTenants] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
