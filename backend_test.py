@@ -382,68 +382,83 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_get_customer_by_number(self):
-        """Test GET /api/customers/number/{customer_number}"""
+    def test_license_validation(self):
+        """Test POST /api/licenses/validate/{license_key}"""
         try:
-            # Test with a known customer number from the review request
-            test_customer_number = "CUST-20251117-0001"
+            if not self.test_license_key:
+                self.log_result(
+                    "License Validation", 
+                    False, 
+                    "No test license key available for validation test"
+                )
+                return False
             
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/number/{test_customer_number}")
+            response = self.license_service_session.post(f"{LICENSE_SERVICE_URL}/api/licenses/validate/{self.test_license_key}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Customer by Number", 
+                    "License Validation", 
                     False, 
-                    f"Get customer by number failed. Status: {response.status_code}",
+                    f"License validation failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an object (not array)
-            if isinstance(data, list):
-                self.log_result(
-                    "Get Customer by Number", 
-                    False, 
-                    f"Response should be an object, not an array",
-                    data
-                )
-                return False
-            
-            # Verify customer_number matches
-            if data.get("customer_number") != test_customer_number:
-                self.log_result(
-                    "Get Customer by Number", 
-                    False, 
-                    f"Expected customer_number {test_customer_number}, got {data.get('customer_number')}",
-                    data
-                )
-                return False
-            
-            # Check required fields
-            required_fields = ["id", "customer_number", "email", "first_name", "last_name"]
+            # Verify response structure
+            required_fields = ["valid", "status", "message"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Get Customer by Number", 
+                    "License Validation", 
                     False, 
-                    f"Customer missing required fields: {missing_fields}",
+                    f"Validation response missing required fields: {missing_fields}",
+                    data
+                )
+                return False
+            
+            # Check if license is valid and active
+            if not data.get("valid") or data.get("status") != "active":
+                self.log_result(
+                    "License Validation", 
+                    False, 
+                    f"License validation failed: valid={data.get('valid')}, status={data.get('status')}",
+                    data
+                )
+                return False
+            
+            # Verify license_info is present for valid licenses
+            if not data.get("license_info"):
+                self.log_result(
+                    "License Validation", 
+                    False, 
+                    "Valid license should include license_info",
+                    data
+                )
+                return False
+            
+            license_info = data.get("license_info", {})
+            if not license_info.get("product_name"):
+                self.log_result(
+                    "License Validation", 
+                    False, 
+                    "License info should include product_name",
                     data
                 )
                 return False
             
             self.log_result(
-                "Get Customer by Number", 
+                "License Validation", 
                 True, 
-                f"Retrieved customer {test_customer_number}: {data.get('first_name')} {data.get('last_name')} ({data.get('email')})"
+                f"License validation successful: {data.get('message')}, product: {license_info.get('product_name')}"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get Customer by Number", 
+                "License Validation", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
