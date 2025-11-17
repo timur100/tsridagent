@@ -160,8 +160,8 @@ from routes.branding import router as branding_router
 app.include_router(branding_router)
 
 # Import and include tickets router
-from routes.tickets import router as tickets_router
-app.include_router(tickets_router)
+# from routes.tickets import router as tickets_router  # Moved to Ticketing Microservice
+# app.include_router(tickets_router)  # Moved to Ticketing Microservice - use service_proxy instead
 
 # Import and include catalog router
 from routes.catalog import router as catalog_router
