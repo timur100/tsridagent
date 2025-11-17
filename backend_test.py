@@ -14,7 +14,7 @@ from typing import Dict, Any, List
 BACKEND_URL = "https://inventory-service.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class OpeningHoursTester:
+class TicketingMicroserviceTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -23,8 +23,11 @@ class OpeningHoursTester:
         })
         self.results = []
         self.admin_token = None
-        self.target_location = "BERN03"
-        self.location_name = "BERNAU BEI BERLIN"
+        self.microservices = {
+            'id_verification': 8101,
+            'inventory': 8102,
+            'ticketing': 8103
+        }
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
