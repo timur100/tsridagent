@@ -638,7 +638,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Admin Email <span className="text-red-500">*</span>
+                  Admin Email <span className="text-[#c00000]">*</span>
                 </label>
                 <input
                   type="email"
@@ -652,7 +652,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
 
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Admin Passwort <span className="text-red-500">*</span>
+                  Admin Passwort <span className="text-[#c00000]">*</span>
                 </label>
                 <input
                   type="password"
