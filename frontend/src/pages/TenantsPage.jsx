@@ -980,7 +980,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-indigo-600 h-2 rounded-full"
+                    className="bg-[#c00000] h-2 rounded-full"
                     style={{ width: `${(tenant.user_count / tenant.limits.max_users) * 100}%` }}
                   />
                 </div>
