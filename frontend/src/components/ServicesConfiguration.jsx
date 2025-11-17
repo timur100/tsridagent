@@ -398,11 +398,11 @@ const ServicesConfiguration = () => {
               </div>
               
               {/* Buttons am Ende - immer auf gleicher Höhe */}
-              <div className="flex gap-2 pt-3 mt-auto">
+              <div className="flex gap-2 pt-3 mt-auto flex-wrap">
                 <Button 
                   variant="default"
                   size="sm" 
-                  className="flex-1 gap-1"
+                  className="flex-1 min-w-[80px] gap-1 bg-[#c00000] hover:bg-[#a00000]"
                   onClick={() => handleOpenService(service)}
                   data-testid={`open-service-${service.service_type}`}
                 >
@@ -412,6 +412,11 @@ const ServicesConfiguration = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
+                  className={`${
+                    theme === 'dark'
+                      ? 'border-gray-700 text-gray-300 hover:bg-[#1a1a1a]'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                   onClick={() => checkSingleHealth(service.service_id)}
                   title="Health Check"
                 >
@@ -420,6 +425,11 @@ const ServicesConfiguration = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
+                  className={`${
+                    theme === 'dark'
+                      ? 'border-gray-700 text-gray-300 hover:bg-[#1a1a1a]'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                   onClick={() => openEditModal(service)}
                   title="Bearbeiten"
                 >
