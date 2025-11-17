@@ -160,6 +160,27 @@ const ServicesConfiguration = () => {
     setIsModalOpen(true);
   };
 
+  const handleToggleEnabled = async (service) => {
+    try {
+      const updatedService = {
+        ...service,
+        enabled: !service.enabled
+      };
+      
+      // Remove fields that shouldn't be in the update payload
+      delete updatedService.service_id;
+      delete updatedService.created_at;
+      delete updatedService.updated_at;
+      
+      await axios.put(`${BACKEND_URL}/api/portal/services/${service.service_id}`, updatedService);
+      toast.success(updatedService.enabled ? 'Service aktiviert' : 'Service deaktiviert');
+      fetchServices();
+    } catch (error) {
+      console.error('Error toggling service:', error);
+      toast.error('Fehler beim Umschalten');
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
