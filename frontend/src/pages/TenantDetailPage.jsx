@@ -544,7 +544,7 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
 
         {activeTab === 'overview' && (
           <div className="space-y-6">
-            {/* Allgemeine Informationen */}
+            {/* Allgemeine Informationen - 3 Segmente */}
             <Card className={`p-6 rounded-xl ${
               theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
@@ -553,38 +553,68 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
               <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Allgemeine Informationen
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Tenant-ID</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Firmenname</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.display_name}</p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.status.charAt(0).toUpperCase() + tenant.status.slice(1)}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Segment 1: Logo */}
+                <div className={`flex flex-col items-center justify-center p-6 rounded-lg ${
+                  theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                }`}>
+                  <div className={`w-32 h-32 rounded-lg flex items-center justify-center mb-4 ${
+                    theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+                  } border-2 ${theme === 'dark' ? 'border-[#c00000]' : 'border-gray-200'}`}>
+                    {tenant.logo ? (
+                      <img src={tenant.logo} alt={tenant.display_name} className="w-full h-full object-contain rounded-lg" />
+                    ) : (
+                      <Building2 className={`w-16 h-16 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                    )}
+                  </div>
+                  <p className={`text-lg font-bold text-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {tenant.display_name}
+                  </p>
+                  <p className={`text-sm text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {tenant.name}
                   </p>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Subscription Plan</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.subscription_plan}</p>
+
+                {/* Segment 2: Basis-Informationen */}
+                <div className="space-y-4">
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Tenant-ID</p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
+                    <div>
+                      {getStatusBadge(tenant.status)}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Erstellt am</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {new Date(tenant.created_at).toLocaleDateString('de-DE', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
-                    })}
-                  </p>
+
+                {/* Segment 3: Weitere Informationen */}
+                <div className="space-y-4">
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Subscription Plan</p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.subscription_plan}</p>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Erstellt am</p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {new Date(tenant.created_at).toLocaleDateString('de-DE', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Branche</p>
+                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {tenant.industry || 'Autovermietung'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
