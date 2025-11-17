@@ -402,53 +402,65 @@ class LocationServiceTester:
             )
             return False
     
-    def test_devices_by_location(self):
-        """Test GET /api/devices?location_code=BERN01"""
+    def test_get_location_by_code(self):
+        """Test GET /api/locations/code/BERN01"""
         try:
-            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices?location_code=BERN01")
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations/code/BERN01")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Devices by Location", 
+                    "Get Location by Code", 
                     False, 
-                    f"Get devices by location failed. Status: {response.status_code}",
+                    f"Get location by code failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an array
-            if not isinstance(data, list):
+            # Verify response is an object (not array)
+            if isinstance(data, list):
                 self.log_result(
-                    "Get Devices by Location", 
+                    "Get Location by Code", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
+                    f"Response should be an object, not an array",
                     data
                 )
                 return False
             
-            # Verify all devices have the correct location_code
-            for device in data:
-                if device.get("location_code") != "BERN01":
-                    self.log_result(
-                        "Get Devices by Location", 
-                        False, 
-                        f"Device has wrong location_code: {device.get('location_code')}",
-                        device
-                    )
-                    return False
+            # Verify location_code matches
+            if data.get("location_code") != "BERN01":
+                self.log_result(
+                    "Get Location by Code", 
+                    False, 
+                    f"Expected location_code BERN01, got {data.get('location_code')}",
+                    data
+                )
+                return False
+            
+            # Check required fields
+            required_fields = ["id", "location_code", "location_name", "address", "status"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                self.log_result(
+                    "Get Location by Code", 
+                    False, 
+                    f"Location missing required fields: {missing_fields}",
+                    data
+                )
+                return False
             
             self.log_result(
-                "Get Devices by Location", 
+                "Get Location by Code", 
                 True, 
-                f"Retrieved {len(data)} devices for location BERN01"
+                f"Retrieved location BERN01: {data.get('location_name')}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Get Devices by Location", 
+                "Get Location by Code", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
