@@ -178,14 +178,14 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_customer_service_info(self):
-        """Test Customer Service info endpoint"""
+    def test_license_service_info(self):
+        """Test License Service info endpoint"""
         try:
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/info")
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/info")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Customer Service Info", 
+                    "License Service Info", 
                     False, 
                     f"Info endpoint failed. Status: {response.status_code}",
                     response.text
@@ -200,16 +200,16 @@ class LicenseServiceTester:
             
             if missing_fields:
                 self.log_result(
-                    "Customer Service Info", 
+                    "License Service Info", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
-            if data.get("service_name") != "Customer Service":
+            if data.get("service_name") != "License Service":
                 self.log_result(
-                    "Customer Service Info", 
+                    "License Service Info", 
                     False, 
                     f"Unexpected service name: {data.get('service_name')}",
                     data
@@ -217,7 +217,7 @@ class LicenseServiceTester:
                 return False
             
             self.log_result(
-                "Customer Service Info", 
+                "License Service Info", 
                 True, 
                 f"Service info correct: {data.get('service_name')} v{data.get('version')}"
             )
@@ -225,7 +225,7 @@ class LicenseServiceTester:
             
         except Exception as e:
             self.log_result(
-                "Customer Service Info", 
+                "License Service Info", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
