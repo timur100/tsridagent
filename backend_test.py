@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Microservices Display Order
-Tests that the /api/portal/services endpoint returns services in the correct order
-with "Auth & Identity Service" (service_type='auth') as the FIRST service in the list.
+Backend API Testing for Device Service Comprehensive Testing
+Tests the newly created Device Service (Port 8104) to ensure all endpoints are working correctly.
 """
 
 import requests
@@ -13,6 +12,7 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
+DEVICE_SERVICE_URL = "https://auth-identity-hub.preview.emergentagent.com:8104"
 
 class MicroservicesDisplayOrderTester:
     def __init__(self):
