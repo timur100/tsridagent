@@ -306,16 +306,16 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_get_all_orders(self):
-        """Test GET /api/orders endpoint"""
+    def test_get_all_customers(self):
+        """Test GET /api/customers endpoint"""
         try:
-            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get All Orders", 
+                    "Get All Customers", 
                     False, 
-                    f"Get orders failed. Status: {response.status_code}",
+                    f"Get customers failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -325,49 +325,49 @@ class CustomerServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get All Orders", 
+                    "Get All Customers", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Check order structure if orders exist
+            # Check customer structure if customers exist
             if len(data) > 0:
-                order = data[0]
-                required_fields = ["id", "order_number", "customer_email", "items", "total_amount", "status"]
-                missing_fields = [field for field in required_fields if field not in order]
+                customer = data[0]
+                required_fields = ["id", "customer_number", "email", "first_name", "last_name"]
+                missing_fields = [field for field in required_fields if field not in customer]
                 
                 if missing_fields:
                     self.log_result(
-                        "Get All Orders", 
+                        "Get All Customers", 
                         False, 
-                        f"Order missing required fields: {missing_fields}",
-                        order
+                        f"Customer missing required fields: {missing_fields}",
+                        customer
                     )
                     return False
                 
-                # Verify order_number format: ORD-YYYYMMDD-XXXX
-                order_number = order.get("order_number", "")
-                if not order_number.startswith("ORD-") or len(order_number) != 17:
+                # Verify customer_number format: CUST-YYYYMMDD-XXXX
+                customer_number = customer.get("customer_number", "")
+                if not customer_number.startswith("CUST-") or len(customer_number) != 18:
                     self.log_result(
-                        "Get All Orders", 
+                        "Get All Customers", 
                         False, 
-                        f"Invalid order number format: {order_number}, expected ORD-YYYYMMDD-XXXX",
-                        order
+                        f"Invalid customer number format: {customer_number}, expected CUST-YYYYMMDD-XXXX",
+                        customer
                     )
                     return False
             
             self.log_result(
-                "Get All Orders", 
+                "Get All Customers", 
                 True, 
-                f"Retrieved {len(data)} orders successfully"
+                f"Retrieved {len(data)} customers successfully"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get All Orders", 
+                "Get All Customers", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
