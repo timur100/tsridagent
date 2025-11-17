@@ -915,7 +915,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                     <option value="inactive">Inaktiv</option>
                   </select>
                 ) : (
-                  <span className="font-medium">{tenant.status}</span>
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.status}</span>
                 )}
               </div>
               <div>
@@ -931,7 +931,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                     <option value="enterprise">Enterprise</option>
                   </select>
                 ) : (
-                  <span className="font-medium">{tenant.subscription_plan}</span>
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.subscription_plan}</span>
                 )}
               </div>
             </div>
@@ -943,15 +943,15 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Email</p>
-                <p className="font-medium">{tenant.contact.admin_email}</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.contact.admin_email}</p>
               </div>
               <div>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                <p className="font-medium">{tenant.contact.phone || '-'}</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.contact.phone || '-'}</p>
               </div>
               <div className="col-span-2">
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Adresse</p>
-                <p className="font-medium">
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {tenant.contact.address || '-'}
                   {tenant.contact.city && `, ${tenant.contact.city}`}
                   {tenant.contact.postal_code && ` ${tenant.contact.postal_code}`}
@@ -1025,11 +1025,11 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-600">Erstellt</p>
-                <p className="font-medium">{new Date(tenant.created_at).toLocaleString('de-DE')}</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{new Date(tenant.created_at).toLocaleString('de-DE')}</p>
               </div>
               <div>
                 <p className="text-gray-600">Aktualisiert</p>
-                <p className="font-medium">{new Date(tenant.updated_at).toLocaleString('de-DE')}</p>
+                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{new Date(tenant.updated_at).toLocaleString('de-DE')}</p>
               </div>
             </div>
           </div>
