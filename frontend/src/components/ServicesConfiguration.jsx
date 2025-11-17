@@ -296,9 +296,9 @@ const ServicesConfiguration = () => {
         </div>
       </div>
 
-      {/* Services Grid - Responsive auto-fill layout with max width constraint */}
+      {/* Services Grid - Responsive auto-fill layout fitting more tiles per row */}
       <div className="grid gap-4" style={{
-        gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 320px))'
+        gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 280px))'
       }}>
         {services.map((service) => (
           <Card key={service.service_id} data-testid={`service-card-${service.service_type}`} className="flex flex-col w-full">
