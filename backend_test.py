@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Ticketing Microservice Migration
-Tests the complete microservices architecture migration with focus on Ticketing Service
+Backend API Testing for Microservices Display Order
+Tests that the /api/portal/services endpoint returns services in the correct order
 """
 
 import requests
