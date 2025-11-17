@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from '../components/ui/card';
 import { 
@@ -13,9 +12,7 @@ import {
   X
 } from 'lucide-react';
 
-const TenantDetailPage = () => {
-  const { tenantId } = useParams();
-  const navigate = useNavigate();
+const TenantDetailPage = ({ tenantId, onBack }) => {
   const { theme } = useTheme();
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
