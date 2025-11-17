@@ -778,7 +778,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
               onClick={onClose}
               className="text-gray-400 hover:text-gray-600 transition-colors"
             >
-              <XCircleIcon className="w-6 h-6" />
+              <XCircle className="w-6 h-6" />
             </button>
           </div>
         </div>
