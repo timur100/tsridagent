@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Phase 2, Part 2: Migrate the Ticketing module from the monolithic backend to a standalone Ticketing microservice on port 8103. Includes creating the microservice, registering it in the admin panel, extending MongoDB summary routes, implementing API proxy, and removing old monolithic routes."
+user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
 
 backend:
   - task: "Ticketing Microservice Creation"
