@@ -487,11 +487,11 @@ class DeviceServiceTester:
             service_types = [s.get('service_type') for s in data]
             device_position = service_types.index('device') if 'device' in service_types else -1
             
-            if device_position != 3:  # 0-indexed: auth=0, id_verification=1, inventory=2, device=3
+            if device_position != 2:  # 0-indexed: auth=0, id_verification=1, device=2
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Device Service at position {device_position}, expected position 3",
+                    f"Device Service at position {device_position}, expected position 2",
                     service_types
                 )
                 return False
