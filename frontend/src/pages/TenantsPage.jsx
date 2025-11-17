@@ -812,6 +812,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
 
 // Detail Modal Component
 const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
+  const { theme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
