@@ -296,9 +296,9 @@ const ServicesConfiguration = () => {
         </div>
       </div>
 
-      {/* Services Grid - Responsive auto-fill layout fitting 6 tiles per row at 1920px */}
+      {/* Services Grid - Responsive auto-fill layout fitting maximum tiles per row */}
       <div className="grid gap-3" style={{
-        gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
         maxWidth: '100%'
       }}>
         {services.map((service) => (
