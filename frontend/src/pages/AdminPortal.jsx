@@ -56,6 +56,7 @@ const AdminPortalContent = () => {
   const { isImpersonating } = useImpersonation();
   const { selectedCustomer, setCustomers } = useCustomerFilter();
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [selectedTenantId, setSelectedTenantId] = useState(null);
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
