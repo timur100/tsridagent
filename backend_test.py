@@ -231,14 +231,14 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_customer_statistics(self):
-        """Test Customer Service statistics endpoint"""
+    def test_license_statistics(self):
+        """Test License Service statistics endpoint"""
         try:
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/stats")
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/api/licenses/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Customer Statistics", 
+                    "License Statistics", 
                     False, 
                     f"Statistics endpoint failed. Status: {response.status_code}",
                     response.text
@@ -248,12 +248,12 @@ class LicenseServiceTester:
             data = response.json()
             
             # Verify response structure
-            required_fields = ["total", "by_status", "by_type"]
+            required_fields = ["total", "by_status", "by_type", "expiring_soon"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Customer Statistics", 
+                    "License Statistics", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
@@ -261,13 +261,13 @@ class LicenseServiceTester:
                 return False
             
             # Verify by_status structure
-            status_fields = ["active", "inactive", "suspended", "blocked"]
+            status_fields = ["active", "expired", "suspended", "revoked"]
             by_status = data.get("by_status", {})
             missing_status = [field for field in status_fields if field not in by_status]
             
             if missing_status:
                 self.log_result(
-                    "Customer Statistics", 
+                    "License Statistics", 
                     False, 
                     f"Missing status fields: {missing_status}",
                     data
@@ -275,13 +275,13 @@ class LicenseServiceTester:
                 return False
             
             # Verify by_type structure
-            type_fields = ["individual", "business"]
+            type_fields = ["subscription", "perpetual", "trial"]
             by_type = data.get("by_type", {})
             missing_type = [field for field in type_fields if field not in by_type]
             
             if missing_type:
                 self.log_result(
-                    "Customer Statistics", 
+                    "License Statistics", 
                     False, 
                     f"Missing type fields: {missing_type}",
                     data
@@ -290,19 +290,21 @@ class LicenseServiceTester:
             
             total = data.get("total", 0)
             active = by_status.get("active", 0)
-            individual = by_type.get("individual", 0)
-            business = by_type.get("business", 0)
+            subscription = by_type.get("subscription", 0)
+            perpetual = by_type.get("perpetual", 0)
+            trial = by_type.get("trial", 0)
+            expiring_soon = data.get("expiring_soon", 0)
             
             self.log_result(
-                "Customer Statistics", 
+                "License Statistics", 
                 True, 
-                f"Statistics retrieved: {total} total customers, {active} active, {individual} individual, {business} business"
+                f"Statistics retrieved: {total} total licenses, {active} active, {subscription} subscription, {perpetual} perpetual, {trial} trial, {expiring_soon} expiring soon"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Customer Statistics", 
+                "License Statistics", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
