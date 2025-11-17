@@ -469,16 +469,48 @@ class OrderServiceTester:
             )
             return False
     
-    def test_search_locations(self):
-        """Test GET /api/locations/search?query=Berlin"""
+    def test_get_orders_by_customer(self):
+        """Test GET /api/orders/customer/{customer_email}"""
         try:
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations/search?query=Berlin")
+            # First, get all orders to find a valid customer email
+            orders_response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
+            if orders_response.status_code != 200:
+                self.log_result(
+                    "Get Orders by Customer", 
+                    False, 
+                    f"Failed to get orders list for test setup. Status: {orders_response.status_code}",
+                    orders_response.text
+                )
+                return False
+            
+            orders = orders_response.json()
+            if not orders:
+                self.log_result(
+                    "Get Orders by Customer", 
+                    False, 
+                    "No orders found to test with",
+                    None
+                )
+                return False
+            
+            # Use the first order's customer email
+            test_customer_email = orders[0].get("customer_email")
+            if not test_customer_email:
+                self.log_result(
+                    "Get Orders by Customer", 
+                    False, 
+                    "First order missing customer_email field",
+                    orders[0]
+                )
+                return False
+            
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders/customer/{test_customer_email}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Search Locations", 
+                    "Get Orders by Customer", 
                     False, 
-                    f"Search locations failed. Status: {response.status_code}",
+                    f"Get orders by customer failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -488,62 +520,34 @@ class OrderServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Search Locations", 
+                    "Get Orders by Customer", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Expected: Find BERN01 (Berlin Hauptbahnhof)
-            found_bern01 = False
-            for location in data:
-                if location.get("location_code") == "BERN01":
-                    found_bern01 = True
-                    # Verify it contains "Berlin" in name or address
-                    name = location.get("location_name", "").lower()
-                    address_obj = location.get("address", {})
-                    address_text = ""
-                    if isinstance(address_obj, dict):
-                        # Combine all address fields
-                        address_text = " ".join([
-                            str(address_obj.get("street", "")),
-                            str(address_obj.get("city", "")),
-                            str(address_obj.get("postal_code", "")),
-                            str(address_obj.get("country", ""))
-                        ]).lower()
-                    else:
-                        address_text = str(address_obj).lower()
-                    
-                    if "berlin" not in name and "berlin" not in address_text:
-                        self.log_result(
-                            "Search Locations", 
-                            False, 
-                            f"BERN01 found but doesn't contain 'Berlin' in name or address",
-                            location
-                        )
-                        return False
-                    break
-            
-            if not found_bern01:
-                self.log_result(
-                    "Search Locations", 
-                    False, 
-                    f"Expected to find BERN01 (Berlin Hauptbahnhof) in search results",
-                    data
-                )
-                return False
+            # Verify all orders belong to the customer
+            for order in data:
+                if order.get("customer_email") != test_customer_email:
+                    self.log_result(
+                        "Get Orders by Customer", 
+                        False, 
+                        f"Order belongs to wrong customer: {order.get('customer_email')}",
+                        order
+                    )
+                    return False
             
             self.log_result(
-                "Search Locations", 
+                "Get Orders by Customer", 
                 True, 
-                f"Search found {len(data)} locations including BERN01 (Berlin Hauptbahnhof)"
+                f"Found {len(data)} orders for customer {test_customer_email}"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Search Locations", 
+                "Get Orders by Customer", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
