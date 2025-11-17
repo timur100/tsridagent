@@ -767,12 +767,12 @@ class CustomerServiceTester:
             return False
 
     def run_all_tests(self):
-        """Run all order service tests"""
+        """Run all customer service tests"""
         print("=" * 70)
-        print("ORDER SERVICE COMPREHENSIVE TESTING")
+        print("CUSTOMER SERVICE COMPREHENSIVE TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Order Service URL: {ORDER_SERVICE_URL}")
+        print(f"Customer Service URL: {CUSTOMER_SERVICE_URL}")
         print("=" * 70)
         print()
         
@@ -786,45 +786,45 @@ class CustomerServiceTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test Order Service Health & Info
-        print("🔍 STEP 1: Testing Order Service Health & Info...")
-        if not self.test_order_service_health():
-            print("❌ Order service health check failed.")
+        # Step 1: Test Customer Service Health & Info
+        print("🔍 STEP 1: Testing Customer Service Health & Info...")
+        if not self.test_customer_service_health():
+            print("❌ Customer service health check failed.")
         
-        if not self.test_order_service_info():
-            print("❌ Order service info failed.")
+        if not self.test_customer_service_info():
+            print("❌ Customer service info failed.")
         
-        # Step 2: Test Order Statistics
-        print("\n🔍 STEP 2: Testing Order Statistics...")
-        stats = self.test_order_statistics()
+        # Step 2: Test Customer Statistics
+        print("\n🔍 STEP 2: Testing Customer Statistics...")
+        stats = self.test_customer_statistics()
         if not stats:
-            print("❌ Order statistics failed.")
+            print("❌ Customer statistics failed.")
         
-        # Step 3: Test Get All Orders
-        print("\n🔍 STEP 3: Testing Get All Orders...")
-        orders = self.test_get_all_orders()
-        if orders is False:
-            print("❌ Get all orders failed.")
+        # Step 3: Test Get All Customers
+        print("\n🔍 STEP 3: Testing Get All Customers...")
+        customers = self.test_get_all_customers()
+        if customers is False:
+            print("❌ Get all customers failed.")
         
-        # Step 4: Test Get Order by Number
-        print("\n🔍 STEP 4: Testing Get Order by Number...")
-        if not self.test_get_order_by_number():
-            print("❌ Get order by number failed.")
+        # Step 4: Test Get Customer by Number
+        print("\n🔍 STEP 4: Testing Get Customer by Number...")
+        if not self.test_get_customer_by_number():
+            print("❌ Get customer by number failed.")
         
-        # Step 5: Test Get Orders by Customer
-        print("\n🔍 STEP 5: Testing Get Orders by Customer...")
-        if not self.test_get_orders_by_customer():
-            print("❌ Get orders by customer failed.")
+        # Step 5: Test Get Customer by Email
+        print("\n🔍 STEP 5: Testing Get Customer by Email...")
+        if not self.test_get_customer_by_email():
+            print("❌ Get customer by email failed.")
         
-        # Step 6: Test Update Order Status
-        print("\n🔍 STEP 6: Testing Update Order Status...")
-        if not self.test_update_order_status():
-            print("❌ Update order status failed.")
+        # Step 6: Test Filter Customers
+        print("\n🔍 STEP 6: Testing Filter Customers...")
+        if not self.test_filter_customers():
+            print("❌ Filter customers failed.")
         
-        # Step 7: Test Filter Orders
-        print("\n🔍 STEP 7: Testing Filter Orders...")
-        if not self.test_filter_orders():
-            print("❌ Filter orders failed.")
+        # Step 7: Test Search Customers
+        print("\n🔍 STEP 7: Testing Search Customers...")
+        if not self.test_search_customers():
+            print("❌ Search customers failed.")
         
         # Step 8: Test Service Registration
         print("\n🔍 STEP 8: Testing Service Registration...")
@@ -838,7 +838,7 @@ class CustomerServiceTester:
         
         # Summary
         print("\n" + "=" * 70)
-        print("ORDER SERVICE TESTING SUMMARY")
+        print("CUSTOMER SERVICE TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
