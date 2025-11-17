@@ -312,12 +312,16 @@ const TenantsPage = () => {
           )}
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
           {tenants.map((tenant) => (
-            <div
+            <Card
               key={tenant.tenant_id}
               onClick={() => setSelectedTenant(tenant)}
-              className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-5 border border-gray-200 cursor-pointer"
+              className={`p-5 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}
             >
               {/* Logo and Status */}
               <div className="flex items-start justify-between mb-3">
