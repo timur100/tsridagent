@@ -907,7 +907,11 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="px-3 py-1 border border-gray-300 rounded-lg"
+                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
                   >
                     <option value="active">Aktiv</option>
                     <option value="trial">Trial</option>
@@ -924,7 +928,11 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                   <select
                     value={formData.subscription_plan}
                     onChange={(e) => setFormData({ ...formData, subscription_plan: e.target.value })}
-                    className="px-3 py-1 border border-gray-300 rounded-lg"
+                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
                   >
                     <option value="basic">Basic</option>
                     <option value="pro">Pro</option>
