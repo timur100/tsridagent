@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-DEVICE_SERVICE_URL = "https://auth-identity-hub.preview.emergentagent.com:8104"
+DEVICE_SERVICE_URL = "http://localhost:8104"
 
 class DeviceServiceTester:
     def __init__(self):
