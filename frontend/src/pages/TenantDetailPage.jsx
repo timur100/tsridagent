@@ -95,64 +95,62 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
             <ArrowLeft className="w-4 h-4" />
             Zurück
           </button>
-              <div>
-                <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {tenant.display_name}
-                </h1>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {tenant.name}
-                </p>
-              </div>
-              {getStatusBadge(tenant.status)}
-            </div>
-
-            <button
-              onClick={() => setIsEditing(!isEditing)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
-                isEditing
-                  ? 'bg-[#c00000] text-white'
-                  : theme === 'dark'
-                  ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-                  : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-              }`}
-            >
-              {isEditing ? (
-                <>
-                  <Save className="w-4 h-4" />
-                  Speichern
-                </>
-              ) : (
-                <>
-                  <Edit2 className="w-4 h-4" />
-                  Bearbeiten
-                </>
-              )}
-            </button>
+          <div>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {tenant.display_name}
+            </h2>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              {tenant.name}
+            </p>
           </div>
-
-          {/* Tabs */}
-          <div className="flex gap-2 overflow-x-auto">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-[#c00000] text-white'
-                    : theme === 'dark'
-                    ? 'text-gray-300 hover:bg-[#2a2a2a]'
-                    : 'text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {getStatusBadge(tenant.status)}
         </div>
+
+        <button
+          onClick={() => setIsEditing(!isEditing)}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
+            isEditing
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+              : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+          }`}
+        >
+          {isEditing ? (
+            <>
+              <Save className="w-4 h-4" />
+              Speichern
+            </>
+          ) : (
+            <>
+              <Edit2 className="w-4 h-4" />
+              Bearbeiten
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+              activeTab === tab.id
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-300 hover:bg-[#2a2a2a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-6">
+      <div className="space-y-6">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             {/* Statistics Grid */}
