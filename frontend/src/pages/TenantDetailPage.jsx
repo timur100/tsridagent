@@ -19,7 +19,9 @@ import {
   HelpCircle,
   XCircle,
   ShoppingCart,
-  AlertCircle
+  AlertCircle,
+  Calendar,
+  Clock
 } from 'lucide-react';
 
 const TenantDetailPage = ({ tenantId, onBack }) => {
