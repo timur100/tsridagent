@@ -93,10 +93,10 @@ const TenantsPage = () => {
     };
 
     const icons = {
-      active: <CheckCircleIcon className="w-4 h-4" />,
-      trial: <ClockIcon className="w-4 h-4" />,
-      suspended: <XCircleIcon className="w-4 h-4" />,
-      inactive: <XCircleIcon className="w-4 h-4" />
+      active: <CheckCircle className="w-4 h-4" />,
+      trial: <Clock className="w-4 h-4" />,
+      suspended: <XCircle className="w-4 h-4" />,
+      inactive: <XCircle className="w-4 h-4" />
     };
 
     return (
