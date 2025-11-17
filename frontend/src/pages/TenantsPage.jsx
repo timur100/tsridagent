@@ -1117,6 +1117,52 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
               </>
             )}
           </div>
+            </div>
+          )}
+
+          {activeTab === 'subscription' && (
+            <div className="text-center py-8">
+              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Vertrag & Subscription
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                Verwalten Sie Verträge und Subscriptions für diesen Tenant.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'locations' && (
+            <div className="text-center py-8">
+              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Standorte
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                Verwalten Sie Standorte für diesen Tenant.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'branding' && (
+            <div className="text-center py-8">
+              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Branding
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                Konfigurieren Sie Logo, Farben und Corporate Identity für diesen Tenant.
+              </p>
+            </div>
+          )}
+
+          {activeTab === 'billing' && (
+            <div className="text-center py-8">
+              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Abrechnung
+              </h3>
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                Rechnungen, Zahlungshistorie und Abrechnungseinstellungen für diesen Tenant.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
