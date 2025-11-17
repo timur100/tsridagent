@@ -623,7 +623,7 @@ class LocationServiceTester:
             return False
     
     def test_service_registration(self):
-        """Test that Device Service appears in /api/portal/services"""
+        """Test that Location Service appears in /api/portal/services"""
         try:
             response = self.session.get(f"{API_BASE}/portal/services")
             
@@ -638,31 +638,31 @@ class LocationServiceTester:
             
             data = response.json()
             
-            # Look for device service
-            device_service = None
+            # Look for location service
+            location_service = None
             for service in data:
-                if service.get('service_type') == 'device':
-                    device_service = service
+                if service.get('service_type') == 'location':
+                    location_service = service
                     break
             
-            if not device_service:
+            if not location_service:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    "Device Service not found in services list",
+                    "Location Service not found in services list",
                     data
                 )
                 return False
             
-            # Check position (should be 3rd after auth, id_verification)
+            # Check position (should be 4th after auth, id_verification, device)
             service_types = [s.get('service_type') for s in data]
-            device_position = service_types.index('device') if 'device' in service_types else -1
+            location_position = service_types.index('location') if 'location' in service_types else -1
             
-            if device_position != 2:  # 0-indexed: auth=0, id_verification=1, device=2
+            if location_position != 3:  # 0-indexed: auth=0, id_verification=1, device=2, location=3
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Device Service at position {device_position}, expected position 2",
+                    f"Location Service at position {location_position}, expected position 3",
                     service_types
                 )
                 return False
@@ -670,7 +670,7 @@ class LocationServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Device Service found at correct position 2 with service_type='device'"
+                f"Location Service found at correct position 3 with service_type='location'"
             )
             return True
             
