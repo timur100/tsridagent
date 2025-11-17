@@ -14,7 +14,7 @@ BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 DEVICE_SERVICE_URL = "https://auth-identity-hub.preview.emergentagent.com:8104"
 
-class MicroservicesDisplayOrderTester:
+class DeviceServiceTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -23,7 +23,11 @@ class MicroservicesDisplayOrderTester:
         })
         self.results = []
         self.admin_token = None
-        self.expected_order = ['auth', 'id_verification', 'inventory', 'support']
+        self.device_service_session = requests.Session()
+        self.device_service_session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
