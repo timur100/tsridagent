@@ -229,14 +229,14 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_order_statistics(self):
-        """Test Order Service statistics endpoint"""
+    def test_customer_statistics(self):
+        """Test Customer Service statistics endpoint"""
         try:
-            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders/stats")
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Order Statistics", 
+                    "Customer Statistics", 
                     False, 
                     f"Statistics endpoint failed. Status: {response.status_code}",
                     response.text
@@ -246,12 +246,12 @@ class CustomerServiceTester:
             data = response.json()
             
             # Verify response structure
-            required_fields = ["total", "by_status", "by_payment_status", "total_revenue"]
+            required_fields = ["total", "by_status", "by_type"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Order Statistics", 
+                    "Customer Statistics", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
@@ -259,48 +259,48 @@ class CustomerServiceTester:
                 return False
             
             # Verify by_status structure
-            status_fields = ["pending", "confirmed", "processing", "shipped", "delivered", "cancelled"]
+            status_fields = ["active", "inactive", "suspended", "blocked"]
             by_status = data.get("by_status", {})
             missing_status = [field for field in status_fields if field not in by_status]
             
             if missing_status:
                 self.log_result(
-                    "Order Statistics", 
+                    "Customer Statistics", 
                     False, 
                     f"Missing status fields: {missing_status}",
                     data
                 )
                 return False
             
-            # Verify by_payment_status structure
-            payment_fields = ["paid", "unpaid"]
-            by_payment_status = data.get("by_payment_status", {})
-            missing_payment = [field for field in payment_fields if field not in by_payment_status]
+            # Verify by_type structure
+            type_fields = ["individual", "business"]
+            by_type = data.get("by_type", {})
+            missing_type = [field for field in type_fields if field not in by_type]
             
-            if missing_payment:
+            if missing_type:
                 self.log_result(
-                    "Order Statistics", 
+                    "Customer Statistics", 
                     False, 
-                    f"Missing payment status fields: {missing_payment}",
+                    f"Missing type fields: {missing_type}",
                     data
                 )
                 return False
             
             total = data.get("total", 0)
-            pending = by_status.get("pending", 0)
-            unpaid = by_payment_status.get("unpaid", 0)
-            total_revenue = data.get("total_revenue", 0)
+            active = by_status.get("active", 0)
+            individual = by_type.get("individual", 0)
+            business = by_type.get("business", 0)
             
             self.log_result(
-                "Order Statistics", 
+                "Customer Statistics", 
                 True, 
-                f"Statistics retrieved: {total} total orders, {pending} pending, {unpaid} unpaid, €{total_revenue} revenue"
+                f"Statistics retrieved: {total} total customers, {active} active, {individual} individual, {business} business"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Order Statistics", 
+                "Customer Statistics", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
