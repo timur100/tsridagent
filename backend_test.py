@@ -759,12 +759,12 @@ class LocationServiceTester:
             return False
 
     def run_all_tests(self):
-        """Run all device service tests"""
+        """Run all location service tests"""
         print("=" * 70)
-        print("DEVICE SERVICE COMPREHENSIVE TESTING")
+        print("LOCATION SERVICE COMPREHENSIVE TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Device Service URL: {DEVICE_SERVICE_URL}")
+        print(f"Location Service URL: {LOCATION_SERVICE_URL}")
         print("=" * 70)
         print()
         
@@ -778,49 +778,54 @@ class LocationServiceTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test Device Service Health & Info
-        print("🔍 STEP 1: Testing Device Service Health & Info...")
-        if not self.test_device_service_health():
-            print("❌ Device service health check failed.")
+        # Step 1: Test Location Service Health & Info
+        print("🔍 STEP 1: Testing Location Service Health & Info...")
+        if not self.test_location_service_health():
+            print("❌ Location service health check failed.")
         
-        if not self.test_device_service_info():
-            print("❌ Device service info failed.")
+        if not self.test_location_service_info():
+            print("❌ Location service info failed.")
         
-        # Step 2: Test Device Statistics
-        print("\n🔍 STEP 2: Testing Device Statistics...")
-        stats = self.test_device_statistics()
+        # Step 2: Test Location Statistics
+        print("\n🔍 STEP 2: Testing Location Statistics...")
+        stats = self.test_location_statistics()
         if not stats:
-            print("❌ Device statistics failed.")
+            print("❌ Location statistics failed.")
         
-        # Step 3: Test Get All Devices
-        print("\n🔍 STEP 3: Testing Get All Devices...")
-        devices = self.test_get_all_devices()
-        if devices is False:
-            print("❌ Get all devices failed.")
+        # Step 3: Test Get All Locations
+        print("\n🔍 STEP 3: Testing Get All Locations...")
+        locations = self.test_get_all_locations()
+        if locations is False:
+            print("❌ Get all locations failed.")
         
-        # Step 4: Test Get Devices by Location
-        print("\n🔍 STEP 4: Testing Get Devices by Location...")
-        if not self.test_devices_by_location():
-            print("❌ Get devices by location failed.")
+        # Step 4: Test Get Location by Code
+        print("\n🔍 STEP 4: Testing Get Location by Code...")
+        if not self.test_get_location_by_code():
+            print("❌ Get location by code failed.")
         
-        # Step 5: Test Get Devices by Status
-        print("\n🔍 STEP 5: Testing Get Devices by Status...")
-        if not self.test_devices_by_status():
-            print("❌ Get devices by status failed.")
+        # Step 5: Test Search Locations
+        print("\n🔍 STEP 5: Testing Search Locations...")
+        if not self.test_search_locations():
+            print("❌ Search locations failed.")
         
-        # Step 6: Test Service Registration
-        print("\n🔍 STEP 6: Testing Service Registration...")
+        # Step 6: Test Filter by Status and Type
+        print("\n🔍 STEP 6: Testing Filter by Status and Type...")
+        if not self.test_filter_by_status_and_type():
+            print("❌ Filter by status and type failed.")
+        
+        # Step 7: Test Service Registration
+        print("\n🔍 STEP 7: Testing Service Registration...")
         if not self.test_service_registration():
             print("❌ Service registration verification failed.")
         
-        # Step 7: Test MongoDB Summary
-        print("\n🔍 STEP 7: Testing MongoDB Summary...")
+        # Step 8: Test MongoDB Summary
+        print("\n🔍 STEP 8: Testing MongoDB Summary...")
         if not self.test_mongodb_summary():
             print("❌ MongoDB summary failed.")
         
         # Summary
         print("\n" + "=" * 70)
-        print("DEVICE SERVICE TESTING SUMMARY")
+        print("LOCATION SERVICE TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
