@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Lock, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
 const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
   const [pin, setPin] = useState(['', '', '', '']);
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(false);
   const inputRefs = [useRef(), useRef(), useRef(), useRef()];
+  
+  // TSRID Logo SVG as base64 or inline
+  const tsridLogo = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjwhLS0gRmluZ2VycHJpbnQgLS0+CjxwYXRoIGQ9Ik0xMDAgMTUwQzg2LjE5MyAxNTAgNzUgMTM4LjgwNyA3NSAxMjVDNzUgMTExLjE5MyA4Ni4xOTMgMTAwIDEwMCAxMDBDMTEzLjgwNyAxMDAgMTI1IDExMS4xOTMgMTI1IDEyNUMxMjUgMTM4LjgwNyAxMTMuODA3IDE1MCAxMDAgMTUwWk0xMDAgMTEwQzkxLjcxNTcgMTEwIDg1IDExNi43MTYgODUgMTI1Qzg1IDEzMy4yODQgOTEuNzE1NyAxNDAgMTAwIDE0MEMxMDguMjg0IDE0MCAxMTUgMTMzLjI4NCAxMTUgMTI1QzExNSAxMTYuNzE2IDEwOC4yODQgMTEwIDEwMCAxMTBaIiBmaWxsPSIjRUYwMDAwIi8+CjxwYXRoIGQ9Ik0xMDAgNjBDNjkuNjI0MyA2MCA0NSA4NC42MjQzIDQ1IDExNUM0NSAxNDUuMzc2IDY5LjYyNDMgMTcwIDEwMCAxNzBDMTMwLjM3NiAxNzAgMTU1IDE0NS4zNzYgMTU1IDExNUMxNTUgODQuNjI0MyAxMzAuMzc2IDYwIDEwMCA2ME0xMDAgODBDMTE5LjMzIDgwIDEzNSA5NS42NzAxIDEzNSAxMTVDMTM1IDEzNC4zMyAxMTkuMzMgMTUwIDEwMCAxNTBDODAuNjcwMSAxNTAgNjUgMTM0LjMzIDY1IDExNUM2NSA5NS42NzAxIDgwLjY3MDEgODAgMTAwIDgwWiIgc3Ryb2tlPSIjRUYwMDAwIiBzdHJva2Utd2lkdGg9IjUiLz4KPCEtLSBDb3JuZXIgQnJhY2tldHMgLS0+CjxyZWN0IHg9IjMwIiB5PSIzMCIgd2lkdGg9IjMwIiBoZWlnaHQ9IjUiIGZpbGw9IiNFRjAwMDAiLz4KPHJlY3QgeD0iMzAiIHk9IjMwIiB3aWR0aD0iNSIgaGVpZ2h0PSIzMCIgZmlsbD0iI0VGMDAwMCIvPgo8cmVjdCB4PSIxNDAiIHk9IjMwIiB3aWR0aD0iMzAiIGhlaWdodD0iNSIgZmlsbD0iI0VGMDAwMCIvPgo8cmVjdCB4PSIxNjUiIHk9IjMwIiB3aWR0aD0iNSIgaGVpZ2h0PSIzMCIgZmlsbD0iI0VGMDAwMCIvPgo8cmVjdCB4PSIzMCIgeT0iMTY1IiB3aWR0aD0iMzAiIGhlaWdodD0iNSIgZmlsbD0iI0VGMDAwMCIvPgo8cmVjdCB4PSIzMCIgeT0iMTQwIiB3aWR0aD0iNSIgaGVpZ2h0PSIzMCIgZmlsbD0iI0VGMDAwMCIvPgo8cmVjdCB4PSIxNDAiIHk9IjE2NSIgd2lkdGg9IjMwIiBoZWlnaHQ9IjUiIGZpbGw9IiNFRjAwMDAiLz4KPHJlY3QgeD0iMTY1IiB5PSIxNDAiIHdpZHRoPSI1IiBoZWlnaHQ9IjMwIiBmaWxsPSIjRUYwMDAwIi8+Cjwvc3ZnPg==";
 
   useEffect(() => {
     // Focus first input on mount
