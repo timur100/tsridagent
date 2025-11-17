@@ -47,6 +47,7 @@ from routes.resources import router as resources_router
 from routes.customers import router as customers_router
 from routes.services_config import router as services_config_router
 from routes.scanner_pin_settings import router as scanner_pin_router
+from routes.service_proxy import router as service_proxy_router
 
 
 ROOT_DIR = Path(__file__).parent
