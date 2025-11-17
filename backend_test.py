@@ -629,7 +629,7 @@ class CustomerServiceTester:
             return False
     
     def test_service_registration(self):
-        """Test that Order Service appears in /api/portal/services"""
+        """Test that Customer Service appears in /api/portal/services"""
         try:
             response = self.session.get(f"{API_BASE}/portal/services")
             
@@ -644,33 +644,33 @@ class CustomerServiceTester:
             
             data = response.json()
             
-            # Look for order service
-            order_service = None
+            # Look for customer service
+            customer_service = None
             for service in data:
-                if service.get('service_type') == 'order':
-                    order_service = service
+                if service.get('service_type') == 'customer':
+                    customer_service = service
                     break
             
-            if not order_service:
+            if not customer_service:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    "Order Service not found in services list",
+                    "Customer Service not found in services list",
                     data
                 )
                 return False
             
-            # Check position (should be 6th after auth, id_verification, device, location, inventory)
+            # Check position (should be 7th after auth, id_verification, device, location, inventory, order)
             service_types = [s.get('service_type') for s in data]
-            order_position = service_types.index('order') if 'order' in service_types else -1
+            customer_position = service_types.index('customer') if 'customer' in service_types else -1
             
-            # The Order Service should be at position 5 (0-indexed)
-            expected_position = 5
-            if order_position != expected_position:
+            # The Customer Service should be at position 6 (0-indexed)
+            expected_position = 6
+            if customer_position != expected_position:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Order Service at position {order_position}, expected position {expected_position}",
+                    f"Customer Service at position {customer_position}, expected position {expected_position}",
                     service_types
                 )
                 return False
@@ -678,7 +678,7 @@ class CustomerServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Order Service found at correct position {expected_position} with service_type='order'"
+                f"Customer Service found at correct position {expected_position} with service_type='customer'"
             )
             return True
             
