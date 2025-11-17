@@ -229,14 +229,14 @@ class LocationServiceTester:
             )
             return False
     
-    def test_device_statistics(self):
-        """Test Device Service statistics endpoint"""
+    def test_location_statistics(self):
+        """Test Location Service statistics endpoint"""
         try:
-            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices/stats")
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Device Statistics", 
+                    "Location Statistics", 
                     False, 
                     f"Statistics endpoint failed. Status: {response.status_code}",
                     response.text
@@ -251,7 +251,7 @@ class LocationServiceTester:
             
             if missing_fields:
                 self.log_result(
-                    "Device Statistics", 
+                    "Location Statistics", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
@@ -259,13 +259,13 @@ class LocationServiceTester:
                 return False
             
             # Verify by_status structure
-            status_fields = ["active", "inactive", "maintenance", "offline"]
+            status_fields = ["active", "inactive", "temporarily_closed"]
             by_status = data.get("by_status", {})
             missing_status = [field for field in status_fields if field not in by_status]
             
             if missing_status:
                 self.log_result(
-                    "Device Statistics", 
+                    "Location Statistics", 
                     False, 
                     f"Missing status fields: {missing_status}",
                     data
@@ -274,18 +274,62 @@ class LocationServiceTester:
             
             total = data.get("total", 0)
             active = by_status.get("active", 0)
-            maintenance = by_status.get("maintenance", 0)
+            by_type = data.get("by_type", {})
+            stations = by_type.get("station", 0)
+            warehouses = by_type.get("warehouse", 0)
+            
+            # Expected: 4 total locations, 4 active, 3 stations, 1 warehouse
+            expected_total = 4
+            expected_active = 4
+            expected_stations = 3
+            expected_warehouses = 1
+            
+            if total != expected_total:
+                self.log_result(
+                    "Location Statistics", 
+                    False, 
+                    f"Expected {expected_total} total locations, got {total}",
+                    data
+                )
+                return False
+            
+            if active != expected_active:
+                self.log_result(
+                    "Location Statistics", 
+                    False, 
+                    f"Expected {expected_active} active locations, got {active}",
+                    data
+                )
+                return False
+            
+            if stations != expected_stations:
+                self.log_result(
+                    "Location Statistics", 
+                    False, 
+                    f"Expected {expected_stations} stations, got {stations}",
+                    data
+                )
+                return False
+            
+            if warehouses != expected_warehouses:
+                self.log_result(
+                    "Location Statistics", 
+                    False, 
+                    f"Expected {expected_warehouses} warehouses, got {warehouses}",
+                    data
+                )
+                return False
             
             self.log_result(
-                "Device Statistics", 
+                "Location Statistics", 
                 True, 
-                f"Statistics retrieved: {total} total devices, {active} active, {maintenance} maintenance"
+                f"Statistics correct: {total} total locations, {active} active, {stations} stations, {warehouses} warehouses"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Device Statistics", 
+                "Location Statistics", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
