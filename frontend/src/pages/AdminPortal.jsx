@@ -1091,6 +1091,45 @@ const AdminPortalContent = () => {
           <CustomerManagement customers={filteredCustomers} onRefresh={loadData} />
         )}
 
+        {activeTab === 'users-roles' && (
+          <Card className={`p-16 text-center rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <Users className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+            <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Users & Roles Management</h3>
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Connected to Auth & Identity Service (Port 8100)</p>
+            <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>UI wird in Kürze implementiert...</p>
+          </Card>
+        )}
+
+        {activeTab === 'tenants' && (
+          <Card className={`p-16 text-center rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <Users className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+            <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Tenants Management</h3>
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Connected to Auth & Identity Service (Port 8100)</p>
+            <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>UI wird in Kürze implementiert...</p>
+          </Card>
+        )}
+
+        {activeTab === 'id-checks' && (
+          <Card className={`p-16 text-center rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <UserCheck className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+            <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>ID-Checks Management</h3>
+            <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Connected to ID Verification Service (Port 8101)</p>
+            <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>UI wird in Kürze implementiert...</p>
+          </Card>
+        )}
+
         {activeTab === 'devices' && (
           <div>
             {/* Header with Search and Add Button in one row */}
