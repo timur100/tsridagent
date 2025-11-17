@@ -466,16 +466,16 @@ class LocationServiceTester:
             )
             return False
     
-    def test_devices_by_status(self):
-        """Test GET /api/devices?status=active"""
+    def test_search_locations(self):
+        """Test GET /api/locations/search?query=Berlin"""
         try:
-            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices?status=active")
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations/search?query=Berlin")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Devices by Status", 
+                    "Search Locations", 
                     False, 
-                    f"Get devices by status failed. Status: {response.status_code}",
+                    f"Search locations failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -485,34 +485,138 @@ class LocationServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get Devices by Status", 
+                    "Search Locations", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Verify all devices have status = active
-            for device in data:
-                if device.get("status") != "active":
-                    self.log_result(
-                        "Get Devices by Status", 
-                        False, 
-                        f"Device has wrong status: {device.get('status')}",
-                        device
-                    )
-                    return False
+            # Expected: Find BERN01 (Berlin Hauptbahnhof)
+            found_bern01 = False
+            for location in data:
+                if location.get("location_code") == "BERN01":
+                    found_bern01 = True
+                    # Verify it contains "Berlin" in name or address
+                    name = location.get("location_name", "").lower()
+                    address = location.get("address", "").lower()
+                    if "berlin" not in name and "berlin" not in address:
+                        self.log_result(
+                            "Search Locations", 
+                            False, 
+                            f"BERN01 found but doesn't contain 'Berlin' in name or address",
+                            location
+                        )
+                        return False
+                    break
+            
+            if not found_bern01:
+                self.log_result(
+                    "Search Locations", 
+                    False, 
+                    f"Expected to find BERN01 (Berlin Hauptbahnhof) in search results",
+                    data
+                )
+                return False
             
             self.log_result(
-                "Get Devices by Status", 
+                "Search Locations", 
                 True, 
-                f"Retrieved {len(data)} active devices"
+                f"Search found {len(data)} locations including BERN01 (Berlin Hauptbahnhof)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Get Devices by Status", 
+                "Search Locations", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
+    def test_filter_by_status_and_type(self):
+        """Test filtering locations by status and type"""
+        try:
+            # Test filter by status=active
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations?status=active")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter by Status", 
+                    False, 
+                    f"Filter by status failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response is an array
+            if not isinstance(data, list):
+                self.log_result(
+                    "Filter by Status", 
+                    False, 
+                    f"Response is not an array. Type: {type(data)}",
+                    data
+                )
+                return False
+            
+            # Verify all locations have status = active
+            for location in data:
+                if location.get("status") != "active":
+                    self.log_result(
+                        "Filter by Status", 
+                        False, 
+                        f"Location has wrong status: {location.get('status')}",
+                        location
+                    )
+                    return False
+            
+            # Test filter by location_type=station
+            response2 = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations?location_type=station")
+            
+            if response2.status_code != 200:
+                self.log_result(
+                    "Filter by Type", 
+                    False, 
+                    f"Filter by type failed. Status: {response2.status_code}",
+                    response2.text
+                )
+                return False
+            
+            data2 = response2.json()
+            
+            # Verify response is an array
+            if not isinstance(data2, list):
+                self.log_result(
+                    "Filter by Type", 
+                    False, 
+                    f"Response is not an array. Type: {type(data2)}",
+                    data2
+                )
+                return False
+            
+            # Verify all locations have location_type = station
+            for location in data2:
+                if location.get("location_type") != "station":
+                    self.log_result(
+                        "Filter by Type", 
+                        False, 
+                        f"Location has wrong type: {location.get('location_type')}",
+                        location
+                    )
+                    return False
+            
+            self.log_result(
+                "Filter by Status and Type", 
+                True, 
+                f"Status filter: {len(data)} active locations, Type filter: {len(data2)} stations"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Filter by Status and Type", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
