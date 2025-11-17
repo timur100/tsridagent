@@ -146,6 +146,9 @@ backend:
         - working: true
           agent: "main"
           comment: "✅ Extended mongodb_summary.py to handle service_type='ticketing' and query ticketing_db. Created test ticket in ticketing_db. MongoDB details modal in Admin Portal shows: Database: ticketing_db, Collections: 1 (tickets), Documents: 1. All display elements readable and correctly styled."
+        - working: true
+          agent: "testing"
+          comment: "✅ MONGODB SUMMARY EXTENSION VERIFIED: MongoDB summary route correctly handles service_type='ticketing' parameter and returns proper database information. Response shows database_name='ticketing_db', collections array with 1 collection (tickets with 1 document), total_documents=1. Integration with Admin Portal working correctly for displaying Ticketing Service database information."
   
   - task: "API Proxy Implementation"
     implemented: true
