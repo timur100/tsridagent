@@ -626,7 +626,7 @@ class TicketingMicroserviceTester:
             
             # Test MongoDB info for Ticketing Service
             try:
-                response = self.session.get(f"{API_BASE}/mongodb-summary?service_type=ticketing")
+                response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=ticketing")
                 
                 if response.status_code != 200:
                     self.log_result(
