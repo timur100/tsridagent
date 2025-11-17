@@ -1436,6 +1436,10 @@ const AdminPortalContent = () => {
                   <CategoryManagement />
                 )}
 
+                {settingsTab === 'scanner-pin' && (
+                  <ScannerPinSettings />
+                )}
+
                 {settingsTab === 'microservices' && (
                   <ServicesConfiguration />
                 )}
