@@ -289,22 +289,28 @@ const TenantsPage = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
         </div>
       ) : tenants.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-          <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Tenants gefunden</h3>
-          <p className="text-gray-600 mb-6">
+        <Card className={`p-12 text-center rounded-xl ${
+          theme === 'dark' 
+            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+        }`}>
+          <Building className={`w-16 h-16 mx-auto mb-4 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+          <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Keine Tenants gefunden
+          </h3>
+          <p className={`mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             {searchQuery ? 'Keine Ergebnisse für Ihre Suche.' : 'Erstellen Sie Ihren ersten Tenant um zu beginnen.'}
           </p>
           {!searchQuery && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
             >
               <Plus className="w-5 h-5" />
               Neuer Tenant
             </button>
           )}
-        </div>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
           {tenants.map((tenant) => (
