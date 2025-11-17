@@ -176,14 +176,14 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_order_service_info(self):
-        """Test Order Service info endpoint"""
+    def test_customer_service_info(self):
+        """Test Customer Service info endpoint"""
         try:
-            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/info")
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/info")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Order Service Info", 
+                    "Customer Service Info", 
                     False, 
                     f"Info endpoint failed. Status: {response.status_code}",
                     response.text
@@ -198,16 +198,16 @@ class CustomerServiceTester:
             
             if missing_fields:
                 self.log_result(
-                    "Order Service Info", 
+                    "Customer Service Info", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
-            if data.get("service_name") != "Order Service":
+            if data.get("service_name") != "Customer Service":
                 self.log_result(
-                    "Order Service Info", 
+                    "Customer Service Info", 
                     False, 
                     f"Unexpected service name: {data.get('service_name')}",
                     data
@@ -215,7 +215,7 @@ class CustomerServiceTester:
                 return False
             
             self.log_result(
-                "Order Service Info", 
+                "Customer Service Info", 
                 True, 
                 f"Service info correct: {data.get('service_name')} v{data.get('version')}"
             )
@@ -223,7 +223,7 @@ class CustomerServiceTester:
             
         except Exception as e:
             self.log_result(
-                "Order Service Info", 
+                "Customer Service Info", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
