@@ -317,7 +317,7 @@ const TenantsPage = () => {
           {tenants.map((tenant) => (
             <Card
               key={tenant.tenant_id}
-              onClick={() => setSelectedTenant(tenant)}
+              onClick={() => navigate(`/portal/admin/tenants/${tenant.tenant_id}`)}
               className={`p-5 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
                   ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
