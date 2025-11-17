@@ -148,7 +148,7 @@ const TenantsPage = () => {
       {/* Statistics Cards */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
@@ -162,7 +162,7 @@ const TenantsPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
@@ -176,7 +176,7 @@ const TenantsPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
@@ -190,7 +190,7 @@ const TenantsPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
@@ -204,7 +204,7 @@ const TenantsPage = () => {
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
