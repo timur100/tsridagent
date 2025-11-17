@@ -306,16 +306,16 @@ class OrderServiceTester:
             )
             return False
     
-    def test_get_all_locations(self):
-        """Test GET /api/locations endpoint"""
+    def test_get_all_orders(self):
+        """Test GET /api/orders endpoint"""
         try:
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations")
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get All Locations", 
+                    "Get All Orders", 
                     False, 
-                    f"Get locations failed. Status: {response.status_code}",
+                    f"Get orders failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -325,49 +325,49 @@ class OrderServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get All Locations", 
+                    "Get All Orders", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Expected: 4 locations exist
-            expected_count = 4
-            if len(data) != expected_count:
-                self.log_result(
-                    "Get All Locations", 
-                    False, 
-                    f"Expected {expected_count} locations, got {len(data)}",
-                    data
-                )
-                return False
-            
-            # Check location structure if locations exist
+            # Check order structure if orders exist
             if len(data) > 0:
-                location = data[0]
-                required_fields = ["id", "location_code", "location_name", "address", "status"]
-                missing_fields = [field for field in required_fields if field not in location]
+                order = data[0]
+                required_fields = ["id", "order_number", "customer_email", "items", "total_amount", "status"]
+                missing_fields = [field for field in required_fields if field not in order]
                 
                 if missing_fields:
                     self.log_result(
-                        "Get All Locations", 
+                        "Get All Orders", 
                         False, 
-                        f"Location missing required fields: {missing_fields}",
-                        location
+                        f"Order missing required fields: {missing_fields}",
+                        order
+                    )
+                    return False
+                
+                # Verify order_number format: ORD-YYYYMMDD-XXXX
+                order_number = order.get("order_number", "")
+                if not order_number.startswith("ORD-") or len(order_number) != 17:
+                    self.log_result(
+                        "Get All Orders", 
+                        False, 
+                        f"Invalid order number format: {order_number}, expected ORD-YYYYMMDD-XXXX",
+                        order
                     )
                     return False
             
             self.log_result(
-                "Get All Locations", 
+                "Get All Orders", 
                 True, 
-                f"Retrieved {len(data)} locations successfully"
+                f"Retrieved {len(data)} orders successfully"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get All Locations", 
+                "Get All Orders", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
