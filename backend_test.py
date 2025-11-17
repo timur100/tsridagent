@@ -589,69 +589,87 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_search_customers(self):
-        """Test searching customers"""
+    def test_update_license_status(self):
+        """Test updating license status"""
         try:
-            # Test search with a common query
-            search_query = "max"
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/search?query={search_query}")
+            if not self.test_license_id:
+                self.log_result(
+                    "Update License Status", 
+                    False, 
+                    "No test license ID available for update test"
+                )
+                return False
+            
+            # Update license status to suspended
+            update_data = {
+                "status": "suspended",
+                "notes": "Test status update"
+            }
+            
+            response = self.license_service_session.put(
+                f"{LICENSE_SERVICE_URL}/api/licenses/{self.test_license_id}", 
+                json=update_data
+            )
             
             if response.status_code != 200:
                 self.log_result(
-                    "Search Customers", 
+                    "Update License Status", 
                     False, 
-                    f"Search customers failed. Status: {response.status_code}",
+                    f"Update license failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an array
-            if not isinstance(data, list):
+            # Verify response is an object (not array)
+            if isinstance(data, list):
                 self.log_result(
-                    "Search Customers", 
+                    "Update License Status", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
+                    f"Response should be an object, not an array",
                     data
                 )
                 return False
             
-            # Verify search results contain the query term (case insensitive)
-            for customer in data:
-                found_match = False
-                search_fields = [
-                    customer.get("first_name", "").lower(),
-                    customer.get("last_name", "").lower(),
-                    customer.get("email", "").lower(),
-                    customer.get("company_name", "").lower() if customer.get("company_name") else "",
-                    customer.get("customer_number", "").lower()
-                ]
-                
-                for field in search_fields:
-                    if search_query.lower() in field:
-                        found_match = True
-                        break
-                
-                if not found_match:
-                    self.log_result(
-                        "Search Customers", 
-                        False, 
-                        f"Customer doesn't match search query '{search_query}': {customer.get('first_name')} {customer.get('last_name')}",
-                        customer
-                    )
-                    return False
+            # Verify status was updated
+            if data.get("status") != "suspended":
+                self.log_result(
+                    "Update License Status", 
+                    False, 
+                    f"Status not updated. Expected 'suspended', got '{data.get('status')}'",
+                    data
+                )
+                return False
+            
+            # Verify notes were updated
+            if data.get("notes") != "Test status update":
+                self.log_result(
+                    "Update License Status", 
+                    False, 
+                    f"Notes not updated. Expected 'Test status update', got '{data.get('notes')}'",
+                    data
+                )
+                return False
             
             self.log_result(
-                "Search Customers", 
+                "Update License Status", 
                 True, 
-                f"Search working: {len(data)} customers found for query '{search_query}'"
+                f"License status updated successfully: {data.get('license_key')} -> {data.get('status')}"
             )
+            
+            # Revert status back to active for other tests
+            revert_data = {"status": "active", "notes": "Reverted after test"}
+            revert_response = self.license_service_session.put(
+                f"{LICENSE_SERVICE_URL}/api/licenses/{self.test_license_id}", 
+                json=revert_data
+            )
+            
             return True
             
         except Exception as e:
             self.log_result(
-                "Search Customers", 
+                "Update License Status", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
