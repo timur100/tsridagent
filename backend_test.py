@@ -14,7 +14,7 @@ from typing import Dict, Any, List
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class TicketingMicroserviceTester:
+class MicroservicesDisplayOrderTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
