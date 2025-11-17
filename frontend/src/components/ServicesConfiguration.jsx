@@ -66,10 +66,12 @@ const ServicesConfiguration = () => {
   useEffect(() => {
     fetchServices();
     fetchAllHealthStatus();
+    fetchAllMongoDBInfo();
     
     // Auto-refresh health status every 30 seconds
     const interval = setInterval(() => {
       fetchAllHealthStatus();
+      fetchAllMongoDBInfo();
     }, 30000);
     
     return () => clearInterval(interval);
