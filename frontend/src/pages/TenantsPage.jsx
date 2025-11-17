@@ -255,7 +255,7 @@ const TenantsPage = () => {
         </div>
       ) : tenants.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-12 text-center border border-gray-200">
-          <BuildingOfficeIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">Keine Tenants gefunden</h3>
           <p className="text-gray-600 mb-6">
             {searchQuery ? 'Keine Ergebnisse für Ihre Suche.' : 'Erstellen Sie Ihren ersten Tenant um zu beginnen.'}
@@ -265,7 +265,7 @@ const TenantsPage = () => {
               onClick={() => setShowCreateModal(true)}
               className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
             >
-              <PlusIcon className="w-5 h-5" />
+              <Plus className="w-5 h-5" />
               Neuer Tenant
             </button>
           )}
