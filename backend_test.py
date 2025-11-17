@@ -14,7 +14,7 @@ BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 LOCATION_SERVICE_URL = "http://localhost:8105"
 
-class DeviceServiceTester:
+class LocationServiceTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -23,8 +23,8 @@ class DeviceServiceTester:
         })
         self.results = []
         self.admin_token = None
-        self.device_service_session = requests.Session()
-        self.device_service_session.headers.update({
+        self.location_service_session = requests.Session()
+        self.location_service_session.headers.update({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         })
