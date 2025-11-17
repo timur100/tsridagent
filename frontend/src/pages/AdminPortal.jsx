@@ -637,17 +637,16 @@ const AdminPortalContent = () => {
             <div className="px-4 sm:px-6 lg:px-8">
               <nav className="flex space-x-8 overflow-x-auto">{[
                   { id: 'dashboard', label: 'Dashboard', icon: Monitor },
-                  { id: 'customers', label: 'Kunden', icon: Users },
-                  { id: 'devices', label: 'Geräte', icon: Monitor },
-                  { id: 'locations', label: 'Standorte', icon: MapPin },
-                  { id: 'inventory', label: 'Lager', icon: Package },
-                  { id: 'components', label: 'Komponenten', icon: Boxes },
-                  { id: 'orders', label: 'Bestellungen', icon: FileText },
+                  { id: 'users-roles', label: 'Users & Roles', icon: Users },
+                  { id: 'tenants', label: 'Tenants', icon: Users },
+                  { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
+                  { id: 'devices', label: 'Devices', icon: Monitor },
+                  { id: 'locations', label: 'Locations', icon: MapPin },
+                  { id: 'inventory', label: 'Inventory', icon: Package },
+                  { id: 'orders', label: 'Orders', icon: ShoppingCart },
                   { id: 'support', label: 'Support', icon: Headphones },
-                  { id: 'resources', label: 'Ressourcen', icon: FolderOpen },
-                  { id: 'employees', label: 'Mitarbeiter', icon: Users },
-                  { id: 'licenses', label: 'Lizenzen', icon: Key },
-                  { id: 'settings', label: 'Einstellungen', icon: Settings }
+                  { id: 'licenses', label: 'Licenses', icon: Key },
+                  { id: 'settings', label: 'Settings', icon: Settings }
                 ].map((tab) => (
                   <button
                     key={tab.id}
