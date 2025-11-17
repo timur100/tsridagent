@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Settings Service Comprehensive Testing + Final Architecture Verification
-Tests the Settings Service (Port 8109) and verifies the complete 10-service microservices architecture.
+Backend API Testing for Tenant Management APIs in Auth & Identity Service
+Tests the Auth & Identity Service (Port 8100) tenant management functionality comprehensively.
 """
 
 import requests
@@ -12,9 +12,9 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://service-transform.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-SETTINGS_SERVICE_URL = "http://localhost:8109"
+AUTH_SERVICE_URL = "http://localhost:8100"
 
-class SettingsServiceTester:
+class TenantManagementTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
