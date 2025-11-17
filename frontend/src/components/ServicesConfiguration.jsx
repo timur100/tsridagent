@@ -175,6 +175,12 @@ const ServicesConfiguration = () => {
     }
   };
 
+  const handleOpenService = (service) => {
+    // Open service in new tab
+    window.open(service.base_url, '_blank', 'noopener,noreferrer');
+    toast.success(`${service.service_name} wird geöffnet...`);
+  };
+
   const getStatusBadge = (serviceId) => {
     const health = healthStatus[serviceId];
     
