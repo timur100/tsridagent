@@ -902,7 +902,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Status</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
                 {isEditing ? (
                   <select
                     value={formData.status}
@@ -919,7 +919,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 )}
               </div>
               <div>
-                <p className="text-sm text-gray-600">Plan</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Plan</p>
                 {isEditing ? (
                   <select
                     value={formData.subscription_plan}
@@ -942,15 +942,15 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Kontakt</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-gray-600">Email</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Email</p>
                 <p className="font-medium">{tenant.contact.admin_email}</p>
               </div>
               <div>
-                <p className="text-sm text-gray-600">Telefon</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
                 <p className="font-medium">{tenant.contact.phone || '-'}</p>
               </div>
               <div className="col-span-2">
-                <p className="text-sm text-gray-600">Adresse</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Adresse</p>
                 <p className="font-medium">
                   {tenant.contact.address || '-'}
                   {tenant.contact.city && `, ${tenant.contact.city}`}
