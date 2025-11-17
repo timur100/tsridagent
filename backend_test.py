@@ -527,31 +527,55 @@ class DeviceServiceTester:
             
             data = response.json()
             
-            # Verify database name
-            if data.get("database_name") != "device_db":
+            # The API returns a list of services, find the device service
+            device_service_info = None
+            if isinstance(data, list):
+                for service in data:
+                    if service.get("service_id") == "device_service_001":
+                        device_service_info = service
+                        break
+            else:
+                device_service_info = data
+            
+            if not device_service_info:
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    f"Wrong database name: {data.get('database_name')}, expected 'device_db'",
+                    "Device service not found in MongoDB summary",
                     data
                 )
                 return False
             
+            mongodb_info = device_service_info.get("mongodb_info", {})
+            
+            # Verify database name
+            if mongodb_info.get("database_name") != "device_db":
+                self.log_result(
+                    "MongoDB Summary", 
+                    False, 
+                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'device_db'",
+                    mongodb_info
+                )
+                return False
+            
             # Verify collections exist
-            collections = data.get("collections", [])
+            collections = mongodb_info.get("collections", [])
             if not any(col.get("name") == "devices" for col in collections):
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
                     "Devices collection not found",
-                    data
+                    mongodb_info
                 )
                 return False
+            
+            # Verify document count
+            total_documents = mongodb_info.get("total_documents", 0)
             
             self.log_result(
                 "MongoDB Summary", 
                 True, 
-                f"MongoDB integration working: {data.get('database_name')} with {len(collections)} collections"
+                f"MongoDB integration working: {mongodb_info.get('database_name')} with {len(collections)} collections, {total_documents} documents"
             )
             return True
             
