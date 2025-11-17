@@ -596,6 +596,21 @@ backend:
           agent: "testing"
           comment: "✅ FULFILLMENT BUG FIX FULLY WORKING: Comprehensive testing completed with 9/9 tests passed successfully. AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123. ORDER VERIFICATION: ✅ Found target order BE.20251111.006 with ID e88c9504-62fc-442e-8487-6265cafbddb4, order_type='component_set', fulfillment_status='picking'. COMPONENT EXTRACTION FIX: ✅ Order has 0 order-level reserved_components and 3 item-level reserved_components - fulfillment endpoint successfully extracts components from new format (items[].reserved_components structure). FULFILLMENT ENDPOINTS: ✅ GET /api/fulfillment/orders/pending returns order BE.20251111.006 with 3 components_detail entries (Surface Pro 6 tablet, Desko Scanner, Desko Dock), ✅ GET /api/fulfillment/orders/pending?status=picking also returns order with 3 components_detail entries. PICKING ENDPOINT: ✅ POST /api/fulfillment/picking/start successfully starts picking with 3 components, all have required fields (id, name, component_type, identification_value). COMPONENT DETAILS STRUCTURE: ✅ All 3 components have required fields with proper data (id, name, component_type, identification_value, quantity_reserved). BACKWARD COMPATIBILITY: ✅ Fix handles both old format (reserved_components at order level) and new format (reserved_components inside items). MULTIPLE ORDERS VERIFICATION: ✅ Tested 5 total orders in fulfillment system - all show components correctly (3 components each). The fulfillment bug fix is working perfectly - components are now properly displayed in the fulfillment/picking view for order BE.20251111.006 and all other orders."
 
+  - task: "Microservices Display Order Verification"
+    implemented: true
+    working: true
+    file: "routes/services_config.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "testing"
+          comment: "Testing request: Verify that the /api/portal/services endpoint returns services in the correct order with 'Auth & Identity Service' (service_type='auth') as the FIRST service in the list. Expected order: auth, id_verification, inventory, support. Test sequence: 1) GET /api/portal/services - verify HTTP 200, array response, first service has service_type='auth' and name='Auth & Identity Service', 2) Validate service order matches expected sequence, 3) Count total services and verify response structure."
+        - working: true
+          agent: "testing"
+          comment: "✅ MICROSERVICES DISPLAY ORDER VERIFICATION COMPLETED SUCCESSFULLY: Comprehensive testing completed with 6/6 tests passed. AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123. PORTAL SERVICES ENDPOINT: ✅ GET /api/portal/services returns HTTP 200 with array of 4 services. AUTH SERVICE FIRST POSITION: ✅ First service correctly has service_type='auth' and service_name='Auth & Identity Service' as required. SERVICE ORDER VALIDATION: ✅ Services returned in correct order: 1) Auth & Identity Service (type: auth), 2) ID Verification Service (type: id_verification), 3) Inventory & Warehouse Service (type: inventory), 4) Support Service (type: support). SERVICE STRUCTURE: ✅ All services contain required fields (service_id, service_name, service_type, base_url) with valid data. SORTING LOGIC VERIFIED: The backend sorting logic in routes/services_config.py correctly implements the expected order with auth=0, id_verification=1, inventory=2, support=3 priority values. All success criteria met - Auth & Identity Service is positioned first, services are in expected order, and response structure is valid."
+
 frontend:
   - task: "Eurobox Management UI - Admin Portal Integration"
     implemented: true
