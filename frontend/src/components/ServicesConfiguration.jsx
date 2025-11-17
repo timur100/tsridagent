@@ -175,40 +175,24 @@ const ServicesConfiguration = () => {
     }
   };
 
-  const convertToExternalUrl = (internalUrl) => {
-    // If it's already an external URL, return as-is
-    if (!internalUrl.includes('localhost') && !internalUrl.includes('127.0.0.1')) {
-      return internalUrl;
-    }
-
-    // Get current domain (Preview URL)
-    const currentDomain = window.location.origin;
-    
-    // Extract port from localhost URL
-    const portMatch = internalUrl.match(/:(\d+)/);
-    const port = portMatch ? portMatch[1] : null;
-
-    // For the main backend (8001), use /api path
-    if (port === '8001') {
-      return `${currentDomain}/api`;
-    }
-
-    // For other services, we need to route through backend as proxy
-    // Or use the service's external_url if available
-    // For now, we'll use the /api/proxy/{port} pattern
-    if (port) {
-      return `${currentDomain}/api/services/${port}`;
-    }
-
-    return internalUrl;
-  };
-
   const handleOpenService = (service) => {
-    // Check if service has external_url in settings
-    const externalUrl = service.settings?.external_url;
+    const currentDomain = window.location.origin;
+    let targetUrl;
     
-    // Use external URL if available, otherwise convert localhost to external
-    const targetUrl = externalUrl || convertToExternalUrl(service.base_url);
+    // Check if service has external_url in settings
+    if (service.settings?.external_url) {
+      targetUrl = service.settings.external_url;
+    } 
+    // Special handling for ID Verification - open Scanner App
+    else if (service.service_type === 'id_verification') {
+      targetUrl = `${currentDomain}/`; // Scanner-App auf Root
+    }
+    // For other services, use API proxy
+    else {
+      const portMatch = service.base_url.match(/:(\d+)/);
+      const port = portMatch ? portMatch[1] : '8001';
+      targetUrl = `${currentDomain}/api/services/${port}`;
+    }
     
     // Open service in new tab
     window.open(targetUrl, '_blank', 'noopener,noreferrer');
