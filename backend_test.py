@@ -347,14 +347,229 @@ class DeviceServiceTester:
             )
             return False
     
+    def test_devices_by_location(self):
+        """Test GET /api/devices?location_code=BERN01"""
+        try:
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices?location_code=BERN01")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Get Devices by Location", 
+                    False, 
+                    f"Get devices by location failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response is an array
+            if not isinstance(data, list):
+                self.log_result(
+                    "Get Devices by Location", 
+                    False, 
+                    f"Response is not an array. Type: {type(data)}",
+                    data
+                )
+                return False
+            
+            # Verify all devices have the correct location_code
+            for device in data:
+                if device.get("location_code") != "BERN01":
+                    self.log_result(
+                        "Get Devices by Location", 
+                        False, 
+                        f"Device has wrong location_code: {device.get('location_code')}",
+                        device
+                    )
+                    return False
+            
+            self.log_result(
+                "Get Devices by Location", 
+                True, 
+                f"Retrieved {len(data)} devices for location BERN01"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Get Devices by Location", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
+    def test_devices_by_status(self):
+        """Test GET /api/devices?status=active"""
+        try:
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices?status=active")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Get Devices by Status", 
+                    False, 
+                    f"Get devices by status failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response is an array
+            if not isinstance(data, list):
+                self.log_result(
+                    "Get Devices by Status", 
+                    False, 
+                    f"Response is not an array. Type: {type(data)}",
+                    data
+                )
+                return False
+            
+            # Verify all devices have status = active
+            for device in data:
+                if device.get("status") != "active":
+                    self.log_result(
+                        "Get Devices by Status", 
+                        False, 
+                        f"Device has wrong status: {device.get('status')}",
+                        device
+                    )
+                    return False
+            
+            self.log_result(
+                "Get Devices by Status", 
+                True, 
+                f"Retrieved {len(data)} active devices"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Get Devices by Status", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
+    def test_service_registration(self):
+        """Test that Device Service appears in /api/portal/services"""
+        try:
+            response = self.session.get(f"{API_BASE}/portal/services")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Service Registration Verification", 
+                    False, 
+                    f"Failed to get services. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Look for device service
+            device_service = None
+            for service in data:
+                if service.get('service_type') == 'device':
+                    device_service = service
+                    break
+            
+            if not device_service:
+                self.log_result(
+                    "Service Registration Verification", 
+                    False, 
+                    "Device Service not found in services list",
+                    data
+                )
+                return False
+            
+            # Check position (should be 3rd after auth, id_verification)
+            service_types = [s.get('service_type') for s in data]
+            device_position = service_types.index('device') if 'device' in service_types else -1
+            
+            if device_position != 3:  # 0-indexed: auth=0, id_verification=1, inventory=2, device=3
+                self.log_result(
+                    "Service Registration Verification", 
+                    False, 
+                    f"Device Service at position {device_position}, expected position 3",
+                    service_types
+                )
+                return False
+            
+            self.log_result(
+                "Service Registration Verification", 
+                True, 
+                f"Device Service found at correct position 3 with service_type='device'"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Service Registration Verification", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
+    def test_mongodb_summary(self):
+        """Test MongoDB integration shows device_db"""
+        try:
+            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=device")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "MongoDB Summary", 
+                    False, 
+                    f"MongoDB summary failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify database name
+            if data.get("database_name") != "device_db":
+                self.log_result(
+                    "MongoDB Summary", 
+                    False, 
+                    f"Wrong database name: {data.get('database_name')}, expected 'device_db'",
+                    data
+                )
+                return False
+            
+            # Verify collections exist
+            collections = data.get("collections", [])
+            if not any(col.get("name") == "devices" for col in collections):
+                self.log_result(
+                    "MongoDB Summary", 
+                    False, 
+                    "Devices collection not found",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "MongoDB Summary", 
+                True, 
+                f"MongoDB integration working: {data.get('database_name')} with {len(collections)} collections"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "MongoDB Summary", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def run_all_tests(self):
-        """Run all microservices display order tests"""
+        """Run all device service tests"""
         print("=" * 70)
-        print("MICROSERVICES DISPLAY ORDER TESTING")
+        print("DEVICE SERVICE COMPREHENSIVE TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"API Base: {API_BASE}")
-        print(f"Expected Order: {' → '.join(self.expected_order)}")
+        print(f"Device Service URL: {DEVICE_SERVICE_URL}")
         print("=" * 70)
         print()
         
@@ -368,31 +583,49 @@ class DeviceServiceTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test Portal Services Endpoint
-        print("🔍 STEP 1: Testing Portal Services Endpoint...")
-        services = self.test_portal_services_endpoint()
-        if not services:
-            print("❌ Portal services endpoint failed.")
-            return False
+        # Step 1: Test Device Service Health & Info
+        print("🔍 STEP 1: Testing Device Service Health & Info...")
+        if not self.test_device_service_health():
+            print("❌ Device service health check failed.")
         
-        # Step 2: Test Auth Service First Position
-        print("\n🔍 STEP 2: Testing Auth Service First Position...")
-        if not self.test_auth_service_first_position(services):
-            print("❌ Auth service is not in first position.")
+        if not self.test_device_service_info():
+            print("❌ Device service info failed.")
         
-        # Step 3: Test Service Order Validation
-        print("\n🔍 STEP 3: Testing Service Order Validation...")
-        if not self.test_service_order_validation(services):
-            print("❌ Service order validation failed.")
+        # Step 2: Test Device Statistics
+        print("\n🔍 STEP 2: Testing Device Statistics...")
+        stats = self.test_device_statistics()
+        if not stats:
+            print("❌ Device statistics failed.")
         
-        # Step 4: Test Service Count and Details
-        print("\n🔍 STEP 4: Testing Service Count and Details...")
-        if not self.test_service_count_and_details(services):
-            print("❌ Service count and details validation failed.")
+        # Step 3: Test Get All Devices
+        print("\n🔍 STEP 3: Testing Get All Devices...")
+        devices = self.test_get_all_devices()
+        if devices is False:
+            print("❌ Get all devices failed.")
+        
+        # Step 4: Test Get Devices by Location
+        print("\n🔍 STEP 4: Testing Get Devices by Location...")
+        if not self.test_devices_by_location():
+            print("❌ Get devices by location failed.")
+        
+        # Step 5: Test Get Devices by Status
+        print("\n🔍 STEP 5: Testing Get Devices by Status...")
+        if not self.test_devices_by_status():
+            print("❌ Get devices by status failed.")
+        
+        # Step 6: Test Service Registration
+        print("\n🔍 STEP 6: Testing Service Registration...")
+        if not self.test_service_registration():
+            print("❌ Service registration verification failed.")
+        
+        # Step 7: Test MongoDB Summary
+        print("\n🔍 STEP 7: Testing MongoDB Summary...")
+        if not self.test_mongodb_summary():
+            print("❌ MongoDB summary failed.")
         
         # Summary
         print("\n" + "=" * 70)
-        print("MICROSERVICES DISPLAY ORDER SUMMARY")
+        print("DEVICE SERVICE TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
