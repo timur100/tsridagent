@@ -97,42 +97,44 @@ class TenantManagementTester:
             )
             return False
     
-    def test_backend_health(self):
-        """Test basic backend connectivity"""
+    def test_auth_service_health(self):
+        """Test Auth Service health endpoint"""
         try:
-            response = self.session.get(f"{API_BASE}/")
+            response = self.auth_service_session.get(f"{AUTH_SERVICE_URL}/health")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Backend Health Check", 
+                    "Auth Service Health Check", 
                     False, 
-                    f"Backend not responding. Status: {response.status_code}",
+                    f"Health check failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
-            if data.get("message") != "Hello World":
+            
+            # Verify response structure
+            if data.get("status") != "healthy" or data.get("service") != "Auth & Identity Service":
                 self.log_result(
-                    "Backend Health Check", 
+                    "Auth Service Health Check", 
                     False, 
-                    f"Unexpected response from backend root endpoint",
+                    f"Unexpected health response",
                     data
                 )
                 return False
             
             self.log_result(
-                "Backend Health Check", 
+                "Auth Service Health Check", 
                 True, 
-                "Backend is responding correctly"
+                "Auth & Identity Service is healthy"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Backend Health Check", 
+                "Auth Service Health Check", 
                 False, 
-                f"Cannot connect to backend: {str(e)}"
+                f"Exception occurred: {str(e)}"
             )
             return False
     
