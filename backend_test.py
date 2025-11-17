@@ -636,6 +636,59 @@ class OrderServiceTester:
             )
             return False
     
+    def test_filter_orders(self):
+        """Test filtering orders by status"""
+        try:
+            # Test filter by status=pending
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders?status=pending")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter Orders", 
+                    False, 
+                    f"Filter by status failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response is an array
+            if not isinstance(data, list):
+                self.log_result(
+                    "Filter Orders", 
+                    False, 
+                    f"Response is not an array. Type: {type(data)}",
+                    data
+                )
+                return False
+            
+            # Verify all orders have status = pending
+            for order in data:
+                if order.get("status") != "pending":
+                    self.log_result(
+                        "Filter Orders", 
+                        False, 
+                        f"Order has wrong status: {order.get('status')}",
+                        order
+                    )
+                    return False
+            
+            self.log_result(
+                "Filter Orders", 
+                True, 
+                f"Status filter working: {len(data)} pending orders found"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Filter Orders", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+    
     def test_service_registration(self):
         """Test that Location Service appears in /api/portal/services"""
         try:
