@@ -358,43 +358,43 @@ const TenantsPage = () => {
               </div>
 
               {/* Stats */}
-              <div className="space-y-2 pt-3 border-t border-gray-200">
+              <div className={`space-y-2 pt-3 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
+                  <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <Users className="w-4 h-4" />
                     Benutzer
                   </span>
-                  <span className="font-medium text-gray-900">
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {tenant.user_count} / {tenant.limits.max_users}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
+                  <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <Server className="w-4 h-4" />
                     Geräte
                   </span>
-                  <span className="font-medium text-gray-900">
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {tenant.device_count} / {tenant.limits.max_devices}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600 flex items-center gap-1">
+                  <span className={`flex items-center gap-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <BarChart className="w-4 h-4" />
                     Storage
                   </span>
-                  <span className="font-medium text-gray-900">
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {tenant.storage_used_gb} / {tenant.limits.max_storage_gb} GB
                   </span>
                 </div>
               </div>
 
               {/* Footer */}
-              <div className="mt-3 pt-3 border-t border-gray-200">
-                <p className="text-xs text-gray-500">
+              <div className={`mt-3 pt-3 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   Erstellt: {new Date(tenant.created_at).toLocaleDateString('de-DE')}
                 </p>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
