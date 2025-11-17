@@ -93,10 +93,11 @@ async def get_service_configs():
         service_type_order = {
             'auth': 0,
             'id_verification': 1,
-            'inventory': 2,
-            'support': 3,
-            'ticketing': 4,
-            'portal': 5,
+            'device': 2,
+            'inventory': 3,
+            'support': 4,
+            'ticketing': 5,
+            'portal': 6,
             'other': 99
         }
         
