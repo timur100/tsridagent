@@ -324,38 +324,6 @@ async def delete_location(location_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/api/locations/search")
-async def search_locations(
-    query: str = Query(..., min_length=2),
-    limit: int = Query(default=20, le=100)
-):
-    """Search locations by name, code, or address"""
-    try:
-        # Search in location_code, location_name, and address fields
-        search_query = {
-            "$or": [
-                {"location_code": {"$regex": query, "$options": "i"}},
-                {"location_name": {"$regex": query, "$options": "i"}},
-                {"address.city": {"$regex": query, "$options": "i"}},
-                {"address.street": {"$regex": query, "$options": "i"}}
-            ]
-        }
-        
-        locations = await db.locations.find(search_query, {"_id": 0}).limit(limit).to_list(limit)
-        
-        # Parse datetime strings
-        for location in locations:
-            if isinstance(location.get('created_at'), str):
-                location['created_at'] = datetime.fromisoformat(location['created_at'])
-            if isinstance(location.get('updated_at'), str):
-                location['updated_at'] = datetime.fromisoformat(location['updated_at'])
-        
-        return [Location(**location) for location in locations]
-    except Exception as e:
-        logger.error(f"Error searching locations: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get('SERVICE_PORT', 8105))
