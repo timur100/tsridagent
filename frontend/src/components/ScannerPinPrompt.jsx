@@ -124,7 +124,7 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
         </div>
 
         {/* PIN Input */}
-        <div className="flex justify-center gap-3 mb-6" onPaste={handlePaste}>
+        <div className="flex justify-center gap-4 mb-8" onPaste={handlePaste}>
           {pin.map((digit, index) => (
             <input
               key={index}
@@ -138,17 +138,20 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
               disabled={checking}
               className={`
                 w-16 h-16 text-center text-3xl font-mono font-bold
-                border-2 rounded-xl
+                border-2 rounded-lg
                 transition-all duration-200
-                focus:outline-none focus:ring-4
+                focus:outline-none focus:ring-2
                 ${error 
-                  ? 'border-red-500 focus:border-red-500 focus:ring-red-200 dark:focus:ring-red-900' 
-                  : 'border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-200 dark:focus:ring-blue-900'
+                  ? 'border-red-500 bg-red-900/20 focus:border-red-500 focus:ring-red-500' 
+                  : 'border-gray-700 bg-gray-900 focus:border-red-600 focus:ring-red-600'
                 }
                 ${checking ? 'opacity-50 cursor-not-allowed' : ''}
-                bg-white dark:bg-gray-800
-                text-gray-900 dark:text-white
+                text-white
+                placeholder-gray-600
               `}
+              style={{
+                boxShadow: error ? '0 0 0 1px rgba(239, 68, 68, 0.5)' : 'none'
+              }}
             />
           ))}
         </div>
