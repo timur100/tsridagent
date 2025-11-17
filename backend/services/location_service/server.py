@@ -171,6 +171,60 @@ async def get_locations(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@app.get("/api/locations/search")
+async def search_locations(
+    query: str = Query(..., min_length=2),
+    limit: int = Query(default=20, le=100)
+):
+    """Search locations by name, code, or address"""
+    try:
+        # Search in location_code, location_name, and address fields
+        search_query = {
+            "$or": [
+                {"location_code": {"$regex": query, "$options": "i"}},
+                {"location_name": {"$regex": query, "$options": "i"}},
+                {"address.city": {"$regex": query, "$options": "i"}},
+                {"address.street": {"$regex": query, "$options": "i"}}
+            ]
+        }
+        
+        locations = await db.locations.find(search_query, {"_id": 0}).limit(limit).to_list(limit)
+        
+        # Parse datetime strings
+        for location in locations:
+            if isinstance(location.get('created_at'), str):
+                location['created_at'] = datetime.fromisoformat(location['created_at'])
+            if isinstance(location.get('updated_at'), str):
+                location['updated_at'] = datetime.fromisoformat(location['updated_at'])
+        
+        return [Location(**location) for location in locations]
+    except Exception as e:
+        logger.error(f"Error searching locations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/locations/code/{location_code}", response_model=Location)
+async def get_location_by_code(location_code: str):
+    """Get a specific location by location code"""
+    try:
+        location = await db.locations.find_one({"location_code": location_code}, {"_id": 0})
+        if not location:
+            raise HTTPException(status_code=404, detail="Location not found")
+        
+        # Parse datetime strings
+        if isinstance(location.get('created_at'), str):
+            location['created_at'] = datetime.fromisoformat(location['created_at'])
+        if isinstance(location.get('updated_at'), str):
+            location['updated_at'] = datetime.fromisoformat(location['updated_at'])
+        
+        return Location(**location)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting location by code: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/api/locations", response_model=Location, status_code=201)
 async def create_location(location: LocationCreate):
     """Create a new location"""
@@ -217,28 +271,6 @@ async def get_location(location_id: str):
         raise
     except Exception as e:
         logger.error(f"Error getting location: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@app.get("/api/locations/code/{location_code}", response_model=Location)
-async def get_location_by_code(location_code: str):
-    """Get a specific location by location code"""
-    try:
-        location = await db.locations.find_one({"location_code": location_code}, {"_id": 0})
-        if not location:
-            raise HTTPException(status_code=404, detail="Location not found")
-        
-        # Parse datetime strings
-        if isinstance(location.get('created_at'), str):
-            location['created_at'] = datetime.fromisoformat(location['created_at'])
-        if isinstance(location.get('updated_at'), str):
-            location['updated_at'] = datetime.fromisoformat(location['updated_at'])
-        
-        return Location(**location)
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting location by code: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
