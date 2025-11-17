@@ -105,6 +105,19 @@ const ServicesConfiguration = () => {
     }
   };
 
+  const fetchAllMongoDBInfo = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/portal/services/mongodb-summary`);
+      const infoMap = {};
+      response.data.forEach(item => {
+        infoMap[item.service_id] = item.mongodb_info;
+      });
+      setMongodbInfo(infoMap);
+    } catch (error) {
+      console.error('Error fetching MongoDB info:', error);
+    }
+  };
+
   const checkSingleHealth = async (serviceId) => {
     try {
       const response = await axios.get(`${BACKEND_URL}/api/portal/services/${serviceId}/health`);
