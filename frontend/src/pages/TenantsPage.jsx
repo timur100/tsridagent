@@ -398,68 +398,6 @@ const TenantsPage = () => {
           ))}
         </div>
       )}
-        </div>
-      )}
-
-      {activeSubTab === 'subscription' && (
-        <Card className={`p-12 text-center rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Vertrag & Subscription
-          </h3>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Verwalten Sie Verträge und Subscriptions für Tenants.
-          </p>
-        </Card>
-      )}
-
-      {activeSubTab === 'locations' && (
-        <Card className={`p-12 text-center rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Standorte
-          </h3>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Verwalten Sie Standorte für jeden Tenant.
-          </p>
-        </Card>
-      )}
-
-      {activeSubTab === 'branding' && (
-        <Card className={`p-12 text-center rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Branding
-          </h3>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Konfigurieren Sie Logo, Farben und Corporate Identity pro Tenant.
-          </p>
-        </Card>
-      )}
-
-      {activeSubTab === 'billing' && (
-        <Card className={`p-12 text-center rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Abrechnung
-          </h3>
-          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Rechnungen, Zahlungshistorie und Abrechnungseinstellungen.
-          </p>
-        </Card>
-      )}
 
       {/* Create/Edit Modal */}
       {showCreateModal && (
