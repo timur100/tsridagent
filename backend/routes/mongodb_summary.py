@@ -243,6 +243,30 @@ async def get_all_services_mongodb_summary():
                         "error": None
                     }
                 
+                elif service_type == 'settings':
+                    # Get settings_db info
+                    settings_db = client['settings_db']
+                    collection_names = await settings_db.list_collection_names()
+                    
+                    collections = []
+                    total_docs = 0
+                    
+                    for coll_name in collection_names:
+                        count = await settings_db[coll_name].count_documents({})
+                        total_docs += count
+                        collections.append({
+                            "name": coll_name,
+                            "document_count": count
+                        })
+                    
+                    mongodb_info = {
+                        "connected": True,
+                        "database_name": "settings_db",
+                        "collections": collections,
+                        "total_documents": total_docs,
+                        "error": None
+                    }
+                
                 elif service_type == 'portal':
                     # Get portal_db info
                     collection_names = await db.list_collection_names()
