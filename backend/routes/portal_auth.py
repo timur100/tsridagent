@@ -14,7 +14,8 @@ router = APIRouter(prefix="/api/portal/auth", tags=["Portal Auth"])
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db_name = os.environ.get('DB_NAME', 'portal_db')
+db = mongo_client[db_name]
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
