@@ -939,7 +939,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
 
           {/* Contact Info */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Kontakt</h3>
+            <h3 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Kontakt</h3>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Email</p>
@@ -963,7 +963,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
 
           {/* Resource Usage */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Ressourcen-Nutzung</h3>
+            <h3 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Ressourcen-Nutzung</h3>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-sm mb-1">
@@ -1021,7 +1021,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
 
           {/* Timestamps */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">Zeitstempel</h3>
+            <h3 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Zeitstempel</h3>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <p className="text-gray-600">Erstellt</p>
