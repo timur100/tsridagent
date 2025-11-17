@@ -598,15 +598,18 @@ frontend:
 
   - task: "Microservices Management in Admin Portal"
     implemented: true
-    working: "NA"
+    working: true
     file: "src/components/ServicesConfiguration.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "user"
           comment: "Test the Microservices management in Admin Portal. Test steps: 1) Navigate to https://emt-data-transfer.preview.emergentagent.com/portal/login, 2) Login with admin@tsrid.com/admin123, 3) Navigate to Settings → Microservices, 4) Check if both services are displayed (ID Verification + Inventory), 5) Test Toggle-Switch for Inventory Service (click toggle, check success message, verify status change green/red), 6) Take screenshots before and after toggle. The toggle-switch should be functional with toast notifications and visual status changes."
+        - working: true
+          agent: "testing"
+          comment: "✅ MICROSERVICES MANAGEMENT TESTING COMPLETED SUCCESSFULLY: Comprehensive testing completed with all requirements verified. NAVIGATION: Successfully accessed admin portal via https://identity-checker-8.preview.emergentagent.com/portal/admin (note: original URL redirects to scanner interface), authenticated with admin@tsrid.com/admin123, navigated to Settings → Microservices section. SERVICES DISPLAY: ✅ Both services correctly displayed - ID Verification Service (enabled, green status badge 'Online 25ms', MongoDB connected with verification_db database, 3 collections, 4 documents) and Inventory Service (enabled, green status badge 'Online 15ms', MongoDB connected with inventory_db database, 1 collection, 13 documents). TOGGLE FUNCTIONALITY: ✅ Toggle switch fully functional for Inventory Service - tested in both directions (false→true→false), success messages detected after each toggle ('Service aktiviert'/'Service deaktiviert'), visual status changes confirmed (green enabled/gray disabled), toggle state properly persisted. ADDITIONAL FEATURES: Health check functionality working, MongoDB status display working, service cards properly formatted with all required information (service name, type, base URL, description, status badges). All test requirements met - microservices management is fully functional and ready for production use."
 
   - task: "AdminPanel - Location Selection UI"
     implemented: true
