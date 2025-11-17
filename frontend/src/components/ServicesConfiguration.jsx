@@ -417,7 +417,7 @@ const ServicesConfiguration = () => {
               </div>
               
               <div>
-                <Label htmlFor="base_url">Base URL *</Label>
+                <Label htmlFor="base_url">Base URL (Intern) *</Label>
                 <Input
                   id="base_url"
                   value={formData.base_url}
@@ -425,6 +425,25 @@ const ServicesConfiguration = () => {
                   placeholder="http://localhost:8101"
                   required
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Interne URL für Backend-Kommunikation
+                </p>
+              </div>
+              
+              <div>
+                <Label htmlFor="external_url">Externe URL (optional)</Label>
+                <Input
+                  id="external_url"
+                  value={formData.settings?.external_url || ''}
+                  onChange={(e) => setFormData({
+                    ...formData, 
+                    settings: {...formData.settings, external_url: e.target.value}
+                  })}
+                  placeholder="https://service.example.com oder leer für automatisch"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Öffentliche URL zum Öffnen im Browser. Leer = automatische Konvertierung
+                </p>
               </div>
               
               <div>
