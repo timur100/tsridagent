@@ -1,6 +1,7 @@
 from fastapi import HTTPException, Header
 from typing import Optional
 import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 import os
 
 # JWT Secret (should match main backend)
