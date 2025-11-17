@@ -669,17 +669,18 @@ class TicketingMicroserviceTester:
                 mongodb_info = ticketing_mongodb_info
                 
                 # Verify database name
-                if mongodb_info.get("database") != "ticketing_db":
+                if mongodb_info.get("database_name") != "ticketing_db":
                     self.log_result(
                         "Admin Portal - MongoDB Info", 
                         False, 
-                        f"Wrong database name: {mongodb_info.get('database')}",
+                        f"Wrong database name: {mongodb_info.get('database_name')}",
                         mongodb_info
                     )
                     return False
                 
                 # Verify collections count
-                collections_count = mongodb_info.get("collections_count", 0)
+                collections = mongodb_info.get("collections", [])
+                collections_count = len(collections)
                 if collections_count < 1:
                     self.log_result(
                         "Admin Portal - MongoDB Info", 
@@ -690,7 +691,7 @@ class TicketingMicroserviceTester:
                     return False
                 
                 # Verify documents count
-                documents_count = mongodb_info.get("documents_count", 0)
+                documents_count = mongodb_info.get("total_documents", 0)
                 if documents_count < 1:
                     self.log_result(
                         "Admin Portal - MongoDB Info", 
