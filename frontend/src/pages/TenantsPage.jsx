@@ -316,7 +316,7 @@ const TenantsPage = () => {
               <div className="space-y-2 pt-3 border-t border-gray-200">
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <UsersIcon className="w-4 h-4" />
+                    <Users className="w-4 h-4" />
                     Benutzer
                   </span>
                   <span className="font-medium text-gray-900">
@@ -325,7 +325,7 @@ const TenantsPage = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <ServerIcon className="w-4 h-4" />
+                    <Server className="w-4 h-4" />
                     Geräte
                   </span>
                   <span className="font-medium text-gray-900">
@@ -334,7 +334,7 @@ const TenantsPage = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600 flex items-center gap-1">
-                    <ChartBarIcon className="w-4 h-4" />
+                    <BarChart className="w-4 h-4" />
                     Storage
                   </span>
                   <span className="font-medium text-gray-900">
