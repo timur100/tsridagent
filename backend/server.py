@@ -147,7 +147,7 @@ app.include_router(device_file_upload_router)
 app.include_router(teamviewer_router)
 app.include_router(regula_scanner_router)
 app.include_router(scanner_settings_router)
-app.include_router(inventory_router)
+# app.include_router(inventory_router)  # Moved to Inventory Microservice - use service_proxy instead
 app.include_router(orders_router)
 app.include_router(global_search_router)
 
