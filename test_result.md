@@ -122,15 +122,18 @@ backend:
   
   - task: "Tenant Management APIs - Vollständige CRUD"
     implemented: true
-    working: "NA"
+    working: true
     file: "services/auth_service/routes/tenants.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ Vollständiger Tenant-Management-Router erstellt mit allen CRUD-Operationen: GET /api/tenants/stats (Gesamt-Statistiken), GET /api/tenants/search?query=... (Suche nach Name/Domain/Email), GET /api/tenants/ (Liste mit Pagination und Filtern: skip, limit, status_filter, subscription_plan), GET /api/tenants/{tenant_id} (Details), POST /api/tenants/ (Erstellen mit automatischer Admin-User-Creation), PUT /api/tenants/{tenant_id} (Aktualisieren), DELETE /api/tenants/{tenant_id} (Löschen inkl. aller Users). Besonderheiten: Bei Tenant-Creation wird automatisch ein tenant_admin User mit password_hash erstellt, tenant_id wird mit allen Users und Ressourcen verknüpft für Isolation, user_count wird dynamisch bei jedem Request berechnet, device_count/storage/api_calls haben Placeholder für spätere Integration."
+        - working: true
+          agent: "testing"
+          comment: "✅ TENANT MANAGEMENT APIs FULLY WORKING: Comprehensive testing completed with 11/11 tests passed successfully. STATISTICS API: GET /api/tenants/stats returns all required fields (total_tenants, active_tenants, trial_tenants, suspended_tenants, total_users, total_devices) with correct integer types. TENANT CREATION: POST /api/tenants/ successfully creates tenant with all required fields, automatically creates admin user (user_count=1), sets status='trial', enabled=true, returns proper 201 status with complete tenant data including tenant_id (UUID format). LIST & PAGINATION: GET /api/tenants/ with skip/limit parameters working correctly, returns array of tenants with all required fields. FILTERING: Status filter (?status_filter=trial) and subscription plan filter (?subscription_plan=pro) working correctly, only returns tenants matching criteria. TENANT DETAILS: GET /api/tenants/{tenant_id} returns complete tenant information with all required fields including user_count, device_count. SEARCH FUNCTIONALITY: GET /api/tenants/search?query=... working for name, email, and domain searches, finds tenants correctly using regex matching. UPDATE TENANT: PUT /api/tenants/{tenant_id} successfully updates tenant fields (status, subscription_plan, enabled), returns updated tenant data. VALIDATION: Proper error handling for duplicate name (400), duplicate email (400), invalid tenant ID (404). DELETE TENANT: DELETE /api/tenants/{tenant_id} returns 204 status, successfully removes tenant and associated users, verified with 404 on subsequent GET request. All CRUD operations working perfectly with proper error handling and data validation."
   
   - task: "Tenant Router im Auth Service registrieren"
     implemented: true
