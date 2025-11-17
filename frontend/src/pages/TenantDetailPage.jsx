@@ -39,6 +39,7 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     { id: 'subscription', label: 'Vertrag & Subscription' },
     { id: 'locations', label: 'Standorte' },
     { id: 'branding', label: 'Branding' },
+    { id: 'statistics', label: 'Statistik' },
     { id: 'billing', label: 'Abrechnung' }
   ];
 
