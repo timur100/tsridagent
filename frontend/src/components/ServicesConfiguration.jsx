@@ -331,18 +331,18 @@ const ServicesConfiguration = () => {
             <CardContent className="flex-1 flex flex-col">
               <div className="flex-1 space-y-3">
                 <div className="flex justify-between text-sm min-h-[1.5rem]">
-                  <span className="text-muted-foreground">Typ:</span>
-                  <span className="font-medium">
+                  <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Typ:</span>
+                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {serviceTypes.find(t => t.value === service.service_type)?.label || service.service_type}
                   </span>
                 </div>
                 
-                <div className="text-sm text-muted-foreground min-h-[3rem]">
+                <div className={`text-sm min-h-[3rem] ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {service.description || '\u00A0'}
                 </div>
                 
                 <div className="flex justify-between text-sm min-h-[1.5rem]">
-                  <span className="text-muted-foreground">Status:</span>
+                  <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Status:</span>
                   <Switch 
                     checked={service.enabled} 
                     onCheckedChange={() => handleToggleEnabled(service)}
