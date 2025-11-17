@@ -51,6 +51,30 @@ async def get_all_services_mongodb_summary():
                         "error": None
                     }
                 
+                elif service_type == 'auth':
+                    # Get auth_db info
+                    auth_db = client['auth_db']
+                    collection_names = await auth_db.list_collection_names()
+                    
+                    collections = []
+                    total_docs = 0
+                    
+                    for coll_name in collection_names:
+                        count = await auth_db[coll_name].count_documents({})
+                        total_docs += count
+                        collections.append({
+                            "name": coll_name,
+                            "document_count": count
+                        })
+                    
+                    mongodb_info = {
+                        "connected": True,
+                        "database_name": "auth_db",
+                        "collections": collections,
+                        "total_documents": total_docs,
+                        "error": None
+                    }
+                
                 elif service_type == 'inventory':
                     # Get inventory_db info
                     inventory_db = client['inventory_db']
