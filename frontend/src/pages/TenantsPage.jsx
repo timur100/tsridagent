@@ -1006,7 +1006,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-purple-600 h-2 rounded-full"
+                    className="bg-[#c00000] h-2 rounded-full"
                     style={{ width: `${(tenant.storage_used_gb / tenant.limits.max_storage_gb) * 100}%` }}
                   />
                 </div>
