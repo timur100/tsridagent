@@ -1108,8 +1108,15 @@ const AdminPortalContent = () => {
           </Card>
         )}
 
-        {activeTab === 'tenants' && (
-          <TenantsPage />
+        {activeTab === 'tenants' && !selectedTenantId && (
+          <TenantsPage onSelectTenant={(id) => setSelectedTenantId(id)} />
+        )}
+
+        {activeTab === 'tenants' && selectedTenantId && (
+          <TenantDetailPage 
+            tenantId={selectedTenantId} 
+            onBack={() => setSelectedTenantId(null)} 
+          />
         )}
 
         {activeTab === 'id-checks' && (
