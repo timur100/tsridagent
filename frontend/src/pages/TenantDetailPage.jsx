@@ -9,7 +9,11 @@ import {
   TrendingUp,
   Edit2,
   Save,
-  X
+  X,
+  MapPin,
+  Wifi,
+  WifiOff,
+  Settings
 } from 'lucide-react';
 
 const TenantDetailPage = ({ tenantId, onBack }) => {
