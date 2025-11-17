@@ -221,18 +221,28 @@ const TenantsPage = () => {
       )}
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
+      <Card className={`p-4 rounded-xl ${
+        theme === 'dark' 
+          ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+          : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+      }`}>
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <form onSubmit={handleSearch} className="flex-1">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
+                theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+              }`} />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Suche nach Name, Domain oder Email..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                }`}
               />
             </div>
           </form>
@@ -242,7 +252,11 @@ const TenantsPage = () => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                theme === 'dark'
+                  ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
             >
               <option value="all">Alle Status</option>
               <option value="active">Aktiv</option>
@@ -254,7 +268,11 @@ const TenantsPage = () => {
             <select
               value={filterPlan}
               onChange={(e) => setFilterPlan(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                theme === 'dark'
+                  ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              }`}
             >
               <option value="all">Alle Pläne</option>
               <option value="basic">Basic</option>
@@ -263,7 +281,7 @@ const TenantsPage = () => {
             </select>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Tenants Grid */}
       {loading ? (
