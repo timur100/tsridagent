@@ -676,7 +676,7 @@ class LicenseServiceTester:
             return False
     
     def test_service_registration(self):
-        """Test that Customer Service appears in /api/portal/services"""
+        """Test that License Service appears in /api/portal/services"""
         try:
             response = self.session.get(f"{API_BASE}/portal/services")
             
@@ -691,33 +691,33 @@ class LicenseServiceTester:
             
             data = response.json()
             
-            # Look for customer service
-            customer_service = None
+            # Look for license service
+            license_service = None
             for service in data:
-                if service.get('service_type') == 'customer':
-                    customer_service = service
+                if service.get('service_type') == 'license':
+                    license_service = service
                     break
             
-            if not customer_service:
+            if not license_service:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    "Customer Service not found in services list",
+                    "License Service not found in services list",
                     data
                 )
                 return False
             
-            # Check position (should be 7th after auth, id_verification, device, location, inventory, order)
+            # Check position (should be 8th after auth, id_verification, device, location, inventory, order, customer)
             service_types = [s.get('service_type') for s in data]
-            customer_position = service_types.index('customer') if 'customer' in service_types else -1
+            license_position = service_types.index('license') if 'license' in service_types else -1
             
-            # The Customer Service should be at position 6 (0-indexed)
-            expected_position = 6
-            if customer_position != expected_position:
+            # The License Service should be at position 7 (0-indexed)
+            expected_position = 7
+            if license_position != expected_position:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Customer Service at position {customer_position}, expected position {expected_position}",
+                    f"License Service at position {license_position}, expected position {expected_position}",
                     service_types
                 )
                 return False
@@ -725,7 +725,7 @@ class LicenseServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Customer Service found at correct position {expected_position} with service_type='customer'"
+                f"License Service found at correct position {expected_position} with service_type='license'"
             )
             return True
             
