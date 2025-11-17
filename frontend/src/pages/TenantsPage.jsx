@@ -14,9 +14,8 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from '../components/ui/card';
 
-const TenantsPage = () => {
+const TenantsPage = ({ onSelectTenant }) => {
   const { theme } = useTheme();
-  const navigate = useNavigate();
   const [tenants, setTenants] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
