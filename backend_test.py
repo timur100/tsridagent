@@ -23,11 +23,7 @@ class MicroservicesDisplayOrderTester:
         })
         self.results = []
         self.admin_token = None
-        self.microservices = {
-            'id_verification': 8101,
-            'inventory': 8102,
-            'ticketing': 8103
-        }
+        self.expected_order = ['auth', 'id_verification', 'inventory', 'support']
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
