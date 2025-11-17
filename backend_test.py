@@ -650,24 +650,24 @@ class DeviceServiceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Microservices Display Order Testing...")
+    print("Starting Device Service Comprehensive Testing...")
     print()
     
-    # Test Microservices Display Order
-    tester = MicroservicesDisplayOrderTester()
+    # Test Device Service
+    tester = DeviceServiceTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Microservices Display Order: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Device Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 MICROSERVICES DISPLAY ORDER TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 DEVICE SERVICE TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ MICROSERVICES DISPLAY ORDER TESTING FOUND ISSUES!")
+        print("❌ DEVICE SERVICE TESTING FOUND ISSUES!")
         sys.exit(1)
