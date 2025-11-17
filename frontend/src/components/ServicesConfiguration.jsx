@@ -282,18 +282,28 @@ const ServicesConfiguration = () => {
                 
                 <div className="flex gap-2 pt-2">
                   <Button 
-                    variant="outline" 
+                    variant="default"
                     size="sm" 
-                    className="flex-1"
-                    onClick={() => checkSingleHealth(service.service_id)}
+                    className="flex-1 gap-1"
+                    onClick={() => handleOpenService(service)}
+                    data-testid={`open-service-${service.service_type}`}
                   >
-                    <Activity className="w-3 h-3 mr-1" />
-                    Test
+                    <ExternalLink className="w-3 h-3" />
+                    Öffnen
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => checkSingleHealth(service.service_id)}
+                    title="Health Check"
+                  >
+                    <Activity className="w-3 h-3" />
                   </Button>
                   <Button 
                     variant="outline" 
                     size="sm"
                     onClick={() => openEditModal(service)}
+                    title="Bearbeiten"
                   >
                     <Edit2 className="w-3 h-3" />
                   </Button>
@@ -301,6 +311,7 @@ const ServicesConfiguration = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => handleDelete(service.service_id)}
+                    title="Löschen"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
