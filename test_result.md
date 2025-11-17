@@ -1617,7 +1617,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Microservices Management in Admin Portal"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1627,6 +1628,8 @@ agent_communication:
       message: "Implemented 3 out of 4 user-requested tasks: 1) Made summary tiles responsive (grid-cols-1 sm:grid-cols-2 lg:grid-cols-4), 2) Added yellow coloring to Admin Portal status badges for 'in_vorbereitung' locations, 3) Verified Customer Portal already has yellow coloring. Task 4 is backend validation logic to prevent transition from 'in_vorbereitung' to 'ready' until all required fields (stationsname, str, plz, ort, bundesl, telefon, email) are filled. Need to test this validation endpoint with curl to ensure proper error messages and field validation."
     - agent: "testing"
       message: "✅ PREPARATION STATUS VALIDATION TESTING COMPLETED: All 5 comprehensive tests passed successfully. The new validation logic is working perfectly - prevents transition to 'ready' status when required fields are missing, provides clear error messages listing missing fields, validates status values, handles non-existent stations with 404 errors, and properly restricts access to admin users only. The implementation meets all requirements from the test request. Ready for production use."
+    - agent: "user"
+      message: "User requested testing of Microservices management in Admin Portal. Test steps: 1) Navigate to https://emt-data-transfer.preview.emergentagent.com/portal/login, 2) Login with admin@tsrid.com/admin123, 3) Navigate to Settings → Microservices, 4) Check if both services are displayed (ID Verification + Inventory), 5) Test Toggle-Switch for Inventory Service (click toggle, check success message, verify status change green/red), 6) Take screenshots before and after toggle."
     - agent: "testing"
       message: "❌ DROPBOX RESOURCES INTEGRATION TESTING COMPLETED WITH CRITICAL ISSUES: Comprehensive testing of new /api/resources/ endpoints completed with 3/7 tests passed. WORKING FUNCTIONALITY: ✅ Dropbox connection verification successful - connected as 'Timur Sezgin' (info@ts-r.com), access token valid and properly configured. CRITICAL ISSUES FOUND: ❌ Dropbox app (ID: 5036931) missing required permissions - lacks 'files.content.write' scope (needed for folder creation) and 'files.metadata.read' scope (needed for listing files/folders). This prevents category initialization and file listing operations. ROOT CAUSE: Dropbox app configuration issue, not backend code issue. RESOLUTION REQUIRED: Dropbox app owner must enable required scopes in Dropbox App Console (https://www.dropbox.com/developers/apps) Permissions tab: 1) Enable 'files.content.write' scope, 2) Enable 'files.metadata.read' scope, 3) Regenerate access token after enabling scopes. Backend implementation is correct but cannot function without proper Dropbox app permissions. Once permissions are fixed, all endpoints should work correctly."
     - agent: "testing"
