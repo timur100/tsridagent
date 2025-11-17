@@ -163,7 +163,7 @@ async def get_service_mongodb_info(service_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/mongodb-summary")
+@router.get("/mongodb-summary", include_in_schema=True)
 async def get_all_services_mongodb_summary():
     """Get MongoDB summary for all services"""
     try:
