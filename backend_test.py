@@ -135,14 +135,14 @@ class LocationServiceTester:
             )
             return False
     
-    def test_device_service_health(self):
-        """Test Device Service health endpoint"""
+    def test_location_service_health(self):
+        """Test Location Service health endpoint"""
         try:
-            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/health")
+            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/health")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Device Service Health Check", 
+                    "Location Service Health Check", 
                     False, 
                     f"Health check failed. Status: {response.status_code}",
                     response.text
@@ -152,9 +152,9 @@ class LocationServiceTester:
             data = response.json()
             
             # Verify response structure
-            if data.get("status") != "healthy" or data.get("service") != "Device Service":
+            if data.get("status") != "healthy" or data.get("service") != "Location Service":
                 self.log_result(
-                    "Device Service Health Check", 
+                    "Location Service Health Check", 
                     False, 
                     f"Unexpected health response",
                     data
@@ -162,15 +162,15 @@ class LocationServiceTester:
                 return False
             
             self.log_result(
-                "Device Service Health Check", 
+                "Location Service Health Check", 
                 True, 
-                "Device Service is healthy"
+                "Location Service is healthy"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Device Service Health Check", 
+                "Location Service Health Check", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
