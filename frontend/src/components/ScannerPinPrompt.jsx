@@ -86,13 +86,31 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 max-w-md w-full relative">
+    <div className="fixed inset-0 bg-black flex items-center justify-center z-50 p-4">
+      {/* Background Logo - Large and Centered */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+        <img 
+          src={tsridLogo} 
+          alt="TSRID Logo" 
+          className="w-[80vh] h-[80vh] object-contain"
+          style={{ filter: 'brightness(0) invert(1)' }}
+        />
+      </div>
+      
+      {/* TSRID Text Watermark */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-3 pointer-events-none">
+        <div className="text-center">
+          <div className="text-[20vw] font-bold text-white leading-none">TSRID</div>
+          <div className="text-[5vw] font-light text-white tracking-[0.5em] mt-4">FORENSIC SOLUTIONS</div>
+        </div>
+      </div>
+      
+      <div className="bg-black border-4 border-red-600 rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10">
         {/* Close Button */}
         {onCancel && (
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -100,15 +118,9 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-blue-100 dark:bg-blue-900 p-4 rounded-full mb-4">
-            <Lock className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            PIN eingeben
+          <h2 className="text-2xl font-bold text-white mb-2">
+            PIN Eingabe
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 text-center">
-            Bitte geben Sie die 4-stellige PIN ein, um fortzufahren
-          </p>
         </div>
 
         {/* PIN Input */}
