@@ -464,19 +464,24 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_get_customer_by_email(self):
-        """Test GET /api/customers/email/{email}"""
+    def test_get_license_by_key(self):
+        """Test GET /api/licenses/key/{license_key}"""
         try:
-            # Test with a known customer email from the review request
-            test_customer_email = "max.mustermann@example.de"
+            if not self.test_license_key:
+                self.log_result(
+                    "Get License by Key", 
+                    False, 
+                    "No test license key available for get by key test"
+                )
+                return False
             
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/email/{test_customer_email}")
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/api/licenses/key/{self.test_license_key}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Customer by Email", 
+                    "Get License by Key", 
                     False, 
-                    f"Get customer by email failed. Status: {response.status_code}",
+                    f"Get license by key failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -486,46 +491,46 @@ class LicenseServiceTester:
             # Verify response is an object (not array)
             if isinstance(data, list):
                 self.log_result(
-                    "Get Customer by Email", 
+                    "Get License by Key", 
                     False, 
                     f"Response should be an object, not an array",
                     data
                 )
                 return False
             
-            # Verify email matches
-            if data.get("email") != test_customer_email:
+            # Verify license_key matches
+            if data.get("license_key") != self.test_license_key:
                 self.log_result(
-                    "Get Customer by Email", 
+                    "Get License by Key", 
                     False, 
-                    f"Expected email {test_customer_email}, got {data.get('email')}",
+                    f"Expected license_key {self.test_license_key}, got {data.get('license_key')}",
                     data
                 )
                 return False
             
             # Check required fields
-            required_fields = ["id", "customer_number", "email", "first_name", "last_name"]
+            required_fields = ["id", "license_key", "product_name", "license_type", "status"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Get Customer by Email", 
+                    "Get License by Key", 
                     False, 
-                    f"Customer missing required fields: {missing_fields}",
+                    f"License missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
             self.log_result(
-                "Get Customer by Email", 
+                "Get License by Key", 
                 True, 
-                f"Retrieved customer by email {test_customer_email}: {data.get('first_name')} {data.get('last_name')} ({data.get('customer_number')})"
+                f"Retrieved license by key {self.test_license_key}: {data.get('product_name')} ({data.get('license_type')})"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get Customer by Email", 
+                "Get License by Key", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
