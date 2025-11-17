@@ -1434,6 +1434,10 @@ const AdminPortalContent = () => {
                   <CategoryManagement />
                 )}
 
+                {settingsTab === 'microservices' && (
+                  <ServicesConfiguration />
+                )}
+
                 {settingsTab === 'integrations' && (
                   <div>
                     <div className="mb-4">
