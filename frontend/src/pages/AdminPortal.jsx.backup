@@ -1,0 +1,378 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package } from 'lucide-react';
+import { Button } from '../components/ui/button';
+import { Card } from '../components/ui/card';
+import ThemeToggle from '../components/ThemeToggle';
+import toast from 'react-hot-toast';
+
+const AdminPortal = () => {
+  const { user, logout, apiCall } = useAuth();
+  const { theme } = useTheme();
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [devices, setDevices] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [syncMode, setSyncMode] = useState('polling');
+
+  useEffect(() => {
+    loadData();
+    loadSyncMode();
+  }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [devicesRes, locationsRes, usersRes] = await Promise.all([
+        apiCall('/api/portal/devices/list'),
+        apiCall('/api/portal/locations/list'),
+        apiCall('/api/portal/users/list')
+      ]);
+
+      if (devicesRes.success) {
+        setDevices(devicesRes.data.devices || []);
+      }
+      if (locationsRes.success) {
+        setLocations(locationsRes.data.locations || []);
+      }
+      if (usersRes.success) {
+        setCustomers(usersRes.data.users || []);
+      }
+    } catch (error) {
+      toast.error('Fehler beim Laden der Daten');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSyncMode = async () => {
+    const result = await apiCall('/api/sync/mode');
+    if (result.success) {
+      setSyncMode(result.data.mode);
+    }
+  };
+
+  const handleSync = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/sync/trigger', { method: 'POST' });
+      if (result.success) {
+        toast.success('Synchronisation erfolgreich ausgelöst');
+      } else {
+        toast.error('Synchronisation fehlgeschlagen');
+      }
+    } catch (error) {
+      toast.error('Fehler bei der Synchronisation');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast.success('Erfolgreich abgemeldet');
+  };
+
+  const onlineDevices = devices.filter(d => d.status === 'online').length;
+  const offlineDevices = devices.filter(d => d.status === 'offline').length;
+
+  return (
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+      {/* Header */}
+      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center space-x-3">
+              <Shield className={`h-8 w-8 ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`} />
+              <div>
+                <h1 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>TSRID Admin Portal</h1>
+                <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>Vollständige Systemverwaltung</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={handleSync}
+                disabled={loading}
+                className={`flex items-center space-x-2 ${
+                  theme === 'dark'
+                    ? 'bg-white text-[#c00000] hover:bg-red-50'
+                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                }`}
+                size="sm"
+              >
+                <Zap className="h-4 w-4" />
+                <span>Sync zu allen Geräten</span>
+              </Button>
+              <div className="text-right">
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>{user?.name}</p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>Administrator</p>
+              </div>
+              <ThemeToggle />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className={`flex items-center space-x-2 ${
+                  theme === 'dark'
+                    ? 'bg-transparent border-white text-white hover:bg-white hover:text-[#c00000]'
+                    : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white'
+                }`}
+              >
+                <LogOut className="h-4 w-4" />
+                <span>Abmelden</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation Tabs */}
+      <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav className="flex space-x-8">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: Monitor },
+              { id: 'customers', label: 'Kunden', icon: Users },
+              { id: 'devices', label: 'Geräte', icon: Monitor },
+              { id: 'locations', label: 'Standorte', icon: MapPin },
+              { id: 'employees', label: 'Mitarbeiter', icon: Users },
+              { id: 'licenses', label: 'Lizenzen', icon: Package },
+              { id: 'settings', label: 'Einstellungen', icon: Settings }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === tab.id
+                    ? 'border-[#c00000] text-[#c00000]'
+                    : theme === 'dark'
+                    ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <tab.icon className="h-4 w-4" />
+                <span>{tab.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">System Übersicht</h2>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {/* Total Customers */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Kunden</p>
+                      <p className="text-3xl font-bold text-gray-900 mt-2">{customers.length}</p>
+                    </div>
+                    <Users className="h-12 w-12 text-gray-400" />
+                  </div>
+                </Card>
+
+                {/* Total Devices */}
+                <Card className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Geräte</p>
+                      <p className="text-3xl font-bold text-gray-900 mt-2">{devices.length}</p>
+                    </div>
+                    <Monitor className="h-12 w-12 text-gray-400" />
+                  </div>
+                </Card>
+
+                {/* Online Devices */}
+                <Card className="p-6 border-green-200 bg-green-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-green-800">Online</p>
+                      <p className="text-3xl font-bold text-green-600 mt-2">{onlineDevices}</p>
+                    </div>
+                    <div className="h-12 w-12 bg-green-200 rounded-full flex items-center justify-center">
+                      <div className="h-6 w-6 bg-green-600 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Offline Devices */}
+                <Card className="p-6 border-red-200 bg-red-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-red-800">Offline</p>
+                      <p className="text-3xl font-bold text-red-600 mt-2">{offlineDevices}</p>
+                    </div>
+                    <div className="h-12 w-12 bg-red-200 rounded-full flex items-center justify-center">
+                      <div className="h-6 w-6 bg-red-600 rounded-full"></div>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+
+            {/* Sync Status */}
+            <Card className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <Zap className="h-8 w-8 text-blue-600" />
+                  <div>
+                    <h3 className="font-semibold text-blue-900">Synchronisations-Modus</h3>
+                    <p className="text-sm text-blue-700 mt-1">
+                      Aktueller Modus: <span className="font-semibold">{syncMode === 'websocket' ? 'WebSocket (Echtzeit)' : syncMode === 'polling' ? 'Polling' : 'Manuell'}</span>
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleSync}
+                  disabled={loading}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Jetzt synchronisieren
+                </Button>
+              </div>
+            </Card>
+
+            {/* Recent Devices */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Alle Geräte</h3>
+              <div className="bg-white rounded-lg shadow overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gerät</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Standort</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Adresse</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Zuletzt gesehen</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aktionen</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {devices.map((device) => (
+                      <tr key={device.device_id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div>
+                            <div className="text-sm font-medium text-gray-900">{device.device_id}</div>
+                            <div className="text-sm text-gray-500">{device.station_name}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          {device.location_name}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            device.status === 'online'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {device.status === 'online' ? 'Online' : 'Offline'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {device.ip_address || 'N/A'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {device.last_seen ? new Date(device.last_seen).toLocaleString('de-DE') : 'Nie'}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                          <button className="text-red-600 hover:text-red-900">Bearbeiten</button>
+                        </td>
+                      </tr>
+                    ))}
+                    {devices.length === 0 && (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-8 text-center text-gray-500">
+                          Keine Geräte vorhanden
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'customers' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Kundenverwaltung</h2>
+            <p className="text-gray-600 mb-6">Verwalten Sie Kundenkonten und deren Berechtigungen</p>
+            {/* Customer management will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>Kundenverwaltung wird implementiert...</p>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'devices' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Geräteverwaltung</h2>
+            <p className="text-gray-600 mb-6">Vollständige Geräteverwaltung mit Sync-Rechten</p>
+            {/* Device management will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <Monitor className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>Erweiterte Geräteverwaltung wird implementiert...</p>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'locations' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Standortverwaltung</h2>
+            <p className="text-gray-600 mb-6">Verwalten Sie alle Standorte und deren Zuweisungen</p>
+            {/* Location management will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <MapPin className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>Standortverwaltung wird implementiert...</p>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'employees' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Mitarbeiterverwaltung</h2>
+            <p className="text-gray-600 mb-6">Verwalten Sie Mitarbeiter und deren Zugriffsrechte</p>
+            {/* Employee management will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <Users className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>Mitarbeiterverwaltung wird implementiert...</p>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'licenses' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Lizenzverwaltung</h2>
+            <p className="text-gray-600 mb-6">Verwalten Sie Lizenzen und Garantien</p>
+            {/* License management will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <Package className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>Lizenzverwaltung wird implementiert...</p>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'settings' && (
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">System-Einstellungen</h2>
+            {/* Settings will be implemented */}
+            <Card className="p-8 text-center text-gray-500">
+              <Settings className="h-12 w-12 mx-auto mb-4 text-gray-400" />
+              <p>System-Einstellungen werden implementiert...</p>
+            </Card>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+};
+
+export default AdminPortal;

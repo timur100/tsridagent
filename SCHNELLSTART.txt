@@ -1,0 +1,122 @@
+═══════════════════════════════════════════════════════════
+    Electron Scanner App - SCHNELLSTART (NPM Version)
+═══════════════════════════════════════════════════════════
+
+📥 DOWNLOAD (1.1 MB):
+https://job-portal-harmony.emergentagent.com/electron-scanner-package.zip
+
+═══════════════════════════════════════════════════════════
+✅ SCHRITT-FÜR-SCHRITT (5 Minuten)
+═══════════════════════════════════════════════════════════
+
+1️⃣ DOWNLOAD & ENTPACKEN
+   - Download von obigem Link
+   - ZIP entpacken nach: C:\scanner-app\
+
+2️⃣ NODE.JS INSTALLIEREN (falls noch nicht vorhanden)
+   - Download: https://nodejs.org/
+   - LTS Version (empfohlen)
+   - Installieren & PC NEU STARTEN
+
+3️⃣ APP BAUEN
+   - Command Prompt öffnen (cmd)
+   - Befehle eingeben:
+   
+   cd C:\scanner-app
+   build-on-windows-npm.bat
+   
+   ⏱️ Dauert ~5-10 Minuten beim ersten Mal
+
+4️⃣ APP STARTEN
+   
+   cd dist
+   DocumentVerificationScanner-Portable.exe
+
+═══════════════════════════════════════════════════════════
+🎯 VORAUSSETZUNGEN
+═══════════════════════════════════════════════════════════
+
+✅ Node.js (v18+) installiert
+✅ Regula SDK Service läuft auf:
+   - https://localhost/Regula.SDK.Api ODER
+   - https://localhost:88/Regula.SDK.Api
+
+═══════════════════════════════════════════════════════════
+🔍 SCANNER-STATUS PRÜFEN
+═══════════════════════════════════════════════════════════
+
+Im Browser öffnen:
+https://localhost/Regula.SDK.Api.Documentation/index
+
+✅ Seite lädt? → Scanner läuft!
+❌ Fehler? → Regula Service starten
+
+In der App:
+✅ Grüner Punkt am Scanner-Button = Online
+❌ Grauer Button = Offline
+
+═══════════════════════════════════════════════════════════
+⚡ SCHNELLTEST (ohne .exe bauen)
+═══════════════════════════════════════════════════════════
+
+Für sofortiges Testen:
+
+cd C:\scanner-app
+npm install
+npm start
+
+App startet im Entwicklungsmodus mit DevTools.
+
+═══════════════════════════════════════════════════════════
+🐛 PROBLEME?
+═══════════════════════════════════════════════════════════
+
+❌ "npm nicht gefunden"
+   → Node.js installieren & PC neu starten
+
+❌ Build schlägt fehl
+   → node_modules Ordner löschen
+   → npm install erneut ausführen
+
+❌ Scanner nicht erkannt
+   → Task-Manager öffnen
+   → Nach "Regula" suchen
+   → Service starten falls offline
+
+❌ App startet nicht
+   → Als Administrator ausführen
+   → Antivirus temporär deaktivieren
+
+═══════════════════════════════════════════════════════════
+📁 NACH DEM BUILD
+═══════════════════════════════════════════════════════════
+
+dist/
+├── DocumentVerificationScanner-Portable.exe  ← DIESE STARTEN!
+├── Document Verification Scanner Setup.exe   ← Installer
+└── win-unpacked/                            ← Entpackt
+
+═══════════════════════════════════════════════════════════
+✨ WAS DIE APP KANN
+═══════════════════════════════════════════════════════════
+
+✅ Regula Scanner Integration (lokal)
+✅ Automatischer Scan mit LED-Feedback
+✅ UV & IR Bildaufnahme
+✅ RFID-Chip-Auslesen
+✅ OCR & Dokumentenerkennung
+✅ Vollständiges VerificationInterface
+✅ Cloud-Backend Verbindung
+
+═══════════════════════════════════════════════════════════
+📞 SUPPORT
+═══════════════════════════════════════════════════════════
+
+Bei Problemen:
+- F12 drücken in App (DevTools)
+- Fehler in Console prüfen
+- Screenshots machen
+
+═══════════════════════════════════════════════════════════
+
+🎉 Viel Erfolg beim Testen!

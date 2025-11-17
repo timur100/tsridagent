@@ -1,0 +1,50 @@
+=================================================================
+📥 DATEIEN FÜR WINDOWS PC HERUNTERLADEN
+=================================================================
+
+Sie benötigen diese Dateien auf Ihrem Windows PC:
+
+1. scanner_service.py
+2. desko_integration.py  
+3. start_scanner_service.bat
+4. WINDOWS_SCANNER_SETUP.md (diese Anleitung)
+5. desko_sdk Ordner (bereits vorhanden - mit DLLs)
+
+=================================================================
+DOWNLOAD-OPTIONEN:
+=================================================================
+
+Option 1: Via Browser (EINFACHSTE METHODE)
+------------------------------------------
+Die Dateien befinden sich in diesem Container unter:
+/app/backend/
+
+Sie können sie über die Emergent Platform herunterladen:
+1. Files Tab in der Platform öffnen
+2. Navigieren zu: /app/backend/
+3. Dateien einzeln herunterladen
+
+Option 2: Via Command Line (wenn Sie SSH-Zugriff haben)
+-------------------------------------------------------
+# Von Ihrem lokalen PC aus (nicht im Container):
+scp user@server:/app/backend/scanner_service.py C:\Desko\
+scp user@server:/app/backend/desko_integration.py C:\Desko\
+scp user@server:/app/backend/start_scanner_service.bat C:\Desko\
+scp -r user@server:/app/backend/desko_sdk C:\Desko\
+
+Option 3: Ich erstelle ein ZIP-Paket für Sie
+---------------------------------------------
+Ich kann alle Dateien in ein ZIP packen, das Sie dann 
+einfach herunterladen können.
+
+=================================================================
+NACHDEM SIE DIE DATEIEN HABEN:
+=================================================================
+
+1. Erstellen Sie Ordner: C:\Desko\
+2. Kopieren Sie alle Dateien dorthin
+3. Stellen Sie sicher dass desko_sdk Unterordner existiert
+4. Doppelklick auf start_scanner_service.bat
+5. Folgen Sie der Anleitung in WINDOWS_SCANNER_SETUP.md
+
+=================================================================

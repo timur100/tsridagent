@@ -1,0 +1,398 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+@layer base {
+    :root {
+        /* Verification Red & Black Theme - Persona Finder Colors */
+        --background: 0 0% 7%;
+        --foreground: 0 0% 98%;
+        
+        --card: 0 0% 11%;
+        --card-foreground: 0 0% 98%;
+        
+        --popover: 0 0% 9%;
+        --popover-foreground: 0 0% 98%;
+        
+        /* Primary Red - Persona Finder #c00000 */
+        --primary: 0 100% 38%;
+        --primary-foreground: 0 0% 100%;
+        --primary-light: 0 90% 48%;
+        --primary-glow: 0 95% 55%;
+        
+        /* Secondary Dark */
+        --secondary: 0 0% 15%;
+        --secondary-foreground: 0 0% 98%;
+        
+        --muted: 0 0% 17%;
+        --muted-foreground: 0 0% 60%;
+        
+        --accent: 0 100% 32%;
+        --accent-foreground: 0 0% 100%;
+        
+        /* Destructive/Warning - Lighter Red */
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
+        
+        /* Warning Yellow */
+        --warning: 45 93% 47%;
+        --warning-foreground: 0 0% 10%;
+        
+        /* Success Green */
+        --success: 142 76% 36%;
+        --success-foreground: 0 0% 100%;
+        
+        --border: 0 0% 20%;
+        --input: 0 0% 17%;
+        --ring: 0 100% 38%;
+        
+        --radius: 0.75rem;
+        
+        /* Custom Verification Tokens */
+        --verification-success: 142 76% 36%;
+        --verification-pending: 45 93% 47%;
+        --verification-error: 0 100% 38%;
+        --verification-info: 217 91% 60%;
+        
+        /* Status Bar Colors - Dark Gray Default */
+        --status-default-bg: 0 0% 25%;
+        --status-success-bg: 142 76% 36%;
+        --status-warning-bg: 45 93% 47%;
+        --status-error-bg: 0 100% 38%;
+        --status-text: 0 0% 100%;
+        
+        /* Shadow System */
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5);
+        --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.3);
+        
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-fast: all 0.15s ease-out;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
+    
+    /* Smooth transitions for interactive elements */
+    button, a, input, select, textarea {
+        transition: var(--transition-fast);
+    }
+}
+
+@layer utilities {
+    .shadow-glow {
+        box-shadow: var(--shadow-glow);
+    }
+    
+    .text-shadow-sm {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Status colors */
+    .bg-status-default {
+        background-color: hsl(var(--status-default-bg));
+    }
+    
+    .bg-status-success {
+        background-color: hsl(var(--status-success-bg));
+    }
+    
+    .bg-status-warning {
+        background-color: hsl(var(--status-warning-bg));
+    }
+    
+    .bg-status-error {
+        background-color: hsl(var(--status-error-bg));
+    }
+    
+    .bg-verification-success {
+        background-color: hsl(var(--verification-success));
+    }
+    
+    .bg-verification-pending {
+        background-color: hsl(var(--verification-pending));
+    }
+    
+    .bg-verification-error {
+        background-color: hsl(var(--verification-error));
+    }
+    
+    .text-verification-success {
+        color: hsl(var(--verification-success));
+    }
+    
+    .text-success {
+        color: hsl(var(--success));
+    }
+    
+    .border-verification-success {
+        border-color: hsl(var(--verification-success));
+    }
+}
+
+/* Scan animation keyframes */
+@keyframes scanGrid {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(4px);
+    }
+}
+
+/* Hand placing document animation */
+@keyframes handPlace {
+    0% {
+        transform: translate(-50%, -100%) rotate(-5deg);
+        opacity: 0;
+    }
+    15% {
+        transform: translate(-50%, -20%) rotate(-2deg);
+        opacity: 1;
+    }
+    40% {
+        transform: translate(-50%, 20%) rotate(0deg);
+        opacity: 1;
+    }
+    60% {
+        transform: translate(-50%, 20%) rotate(0deg);
+        opacity: 1;
+    }
+    75% {
+        transform: translate(-50%, -20%) rotate(-2deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -100%) rotate(-5deg);
+        opacity: 0;
+    }
+}
+
+/* Document placement animation */
+@keyframes documentPlace {
+    0% {
+        transform: translate(-50%, -150%) rotate(-3deg) scale(0.8);
+        opacity: 0;
+    }
+    15% {
+        transform: translate(-50%, -50%) rotate(-1deg) scale(0.9);
+        opacity: 1;
+    }
+    40% {
+        transform: translate(-50%, 0%) rotate(0deg) scale(1);
+        opacity: 1;
+    }
+    60% {
+        transform: translate(-50%, 0%) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+    75% {
+        transform: translate(-50%, 0%) rotate(0deg) scale(1);
+        opacity: 0.5;
+    }
+    100% {
+        transform: translate(-50%, 0%) rotate(0deg) scale(1);
+        opacity: 0;
+    }
+}
+
+/* Shake animation for wrong PIN */
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-10px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(10px);
+    }
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: hsl(var(--background));
+}
+
+::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+}
+
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"] > * {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
+
+/* Aggressively hide "Made with Emergent" badge */
+iframe[src*="emergent"],
+iframe[title*="emergent" i],
+iframe[title*="made with" i],
+div[class*="emergent-badge"],
+div[id*="emergent-badge"],
+div[class*="emergent"],
+div[id*="emergent"],
+button[title*="made with" i],
+button[aria-label*="made with" i],
+a[href*="emergent"],
+a[href*="emergentagent"],
+[data-emergent],
+[data-powered-by],
+.__emergent-badge__,
+#emergent-badge,
+.emergent-badge,
+img[src*="emergent"],
+img[alt*="emergent" i],
+img[alt*="made with" i],
+span:has-text("Made with"),
+div:has-text("Made with"),
+p:has-text("Made with"),
+a:has-text("Made with") {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    z-index: -9999 !important;
+    overflow: hidden !important;
+}
+
+/* Additional hiding for any remaining badges */
+*[class*="badge" i][class*="emergent" i],
+*[id*="badge" i][id*="emergent" i],
+footer *[href*="emergent"],
+footer img,
+footer a[target="_blank"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide any fixed position badges in bottom corners */
+body > div[style*="position: fixed"][style*="bottom"],
+body > div[style*="position: fixed"][style*="right"],
+body > iframe[style*="position: fixed"] {
+    display: none !important;
+}
+
+/* Document placeholder animations */
+@keyframes pulse-slow {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.98);
+    }
+}
+
+@keyframes ping-slow {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    75%, 100% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+@keyframes gradient {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.animate-pulse-slow {
+    animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-ping-slow {
+    animation: ping-slow 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-gradient {
+    animation: gradient 4s ease-in-out infinite;
+}
+
+@keyframes slide-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+}

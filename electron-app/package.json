@@ -1,0 +1,56 @@
+{
+  "name": "document-verification-scanner",
+  "version": "1.0.0",
+  "description": "Europcar Document Verification with Regula Scanner Integration",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "build-portable": "electron-builder --win portable",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.europcar.verification",
+    "productName": "Document Verification Scanner",
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "DocumentVerificationScanner-Portable.exe"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ]
+  },
+  "keywords": ["electron", "scanner", "document", "verification"],
+  "author": "Europcar",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "ini": "^4.1.1",
+    "chokidar": "^3.5.3"
+  }
+}

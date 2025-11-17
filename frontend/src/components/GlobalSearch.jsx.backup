@@ -1,0 +1,329 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useCustomerFilter } from '../contexts/CustomerFilterContext';
+import { Search, X, Building2, MapPin, Monitor, Mail } from 'lucide-react';
+
+const GlobalSearch = ({ onResultClick }) => {
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
+  const { setSelectedCustomer } = useCustomerFilter();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [results, setResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const searchRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm.length >= 2) {
+      performSearch(searchTerm);
+    } else {
+      setResults([]);
+      setShowResults(false);
+    }
+  }, [searchTerm]);
+
+  const performSearch = async (query) => {
+    setLoading(true);
+    try {
+      // Search in customers
+      const customersResult = await apiCall('/api/portal/users/list');
+      
+      if (customersResult.success) {
+        const customers = customersResult.data.users.filter(u => u.role === 'customer');
+        const queryLower = query.toLowerCase();
+        
+        // Search through customer data
+        const customerMatches = customers.filter(customer => {
+          return (
+            customer.name?.toLowerCase().includes(queryLower) ||
+            customer.company?.toLowerCase().includes(queryLower) ||
+            customer.email?.toLowerCase().includes(queryLower)
+          );
+        }).map(customer => ({
+          type: 'customer',
+          id: customer.email,
+          title: customer.company || customer.name,
+          subtitle: customer.email,
+          icon: Building2,
+          data: customer
+        }));
+
+        // Search in Europcar locations if available
+        let locationMatches = [];
+        try {
+          const locationsResult = await apiCall('/api/portal/customer-data/europcar-stations');
+          if (locationsResult.success && locationsResult.data) {
+            locationMatches = locationsResult.data.stations
+              .filter(station => {
+                return (
+                  station.stationsname?.toLowerCase().includes(queryLower) ||
+                  station.ort?.toLowerCase().includes(queryLower) ||
+                  station.main_code?.toLowerCase().includes(queryLower) ||
+                  station.mgr?.toLowerCase().includes(queryLower) ||
+                  station.plz?.toLowerCase().includes(queryLower) ||
+                  station.str?.toLowerCase().includes(queryLower)
+                );
+              })
+              .slice(0, 5) // Limit to 5 location results
+              .map(station => ({
+                type: 'location',
+                id: station.main_code,
+                title: station.stationsname,
+                subtitle: `${station.ort} (${station.main_code})`,
+                icon: MapPin,
+                data: station
+              }));
+          }
+        } catch (error) {
+          console.log('Could not search locations:', error);
+        }
+
+        // Search in Europcar devices if available
+        let deviceMatches = [];
+        try {
+          const devicesResult = await apiCall('/api/portal/europcar-devices');
+          if (devicesResult.success && devicesResult.data) {
+            console.log('Devices found:', devicesResult.data.devices?.length);
+            console.log('Searching for:', query);
+            
+            deviceMatches = devicesResult.data.devices
+              .filter(device => {
+                const matches = (
+                  device.device_id?.toLowerCase().includes(queryLower) ||
+                  device.locationcode?.toLowerCase().includes(queryLower) ||
+                  device.city?.toLowerCase().includes(queryLower) ||
+                  device.sn_pc?.toLowerCase().includes(queryLower) ||
+                  device.sn_sc?.toLowerCase().includes(queryLower)
+                );
+                
+                if (matches) {
+                  console.log('Found matching device:', device.device_id, device.sn_pc);
+                }
+                
+                return matches;
+              })
+              .slice(0, 5) // Limit to 5 device results
+              .map(device => ({
+                type: 'device',
+                id: device.device_id,
+                title: device.device_id,
+                subtitle: `${device.city} (${device.locationcode}) - ${device.status}`,
+                icon: Monitor,
+                data: device
+              }));
+              
+            console.log('Device matches:', deviceMatches.length);
+          }
+        } catch (error) {
+          console.log('Could not search devices:', error);
+        }
+
+        // Combine results
+        const allResults = [...customerMatches, ...locationMatches, ...deviceMatches];
+        setResults(allResults);
+        setShowResults(allResults.length > 0);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResultClick = (result) => {
+    if (result.type === 'customer') {
+      // Set customer filter to this customer
+      setSelectedCustomer(result.id);
+      if (onResultClick) {
+        onResultClick(result);
+      }
+    } else if (result.type === 'location') {
+      // Set customer to Europcar and navigate to locations
+      const europcarCustomer = result.data;
+      setSelectedCustomer('all'); // Or set to Europcar email if you have it
+      if (onResultClick) {
+        onResultClick(result);
+      }
+    } else if (result.type === 'device') {
+      // Navigate to devices tab and open device modal
+      if (onResultClick) {
+        onResultClick(result);
+      }
+    }
+    
+    setSearchTerm('');
+    setShowResults(false);
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setResults([]);
+    setShowResults(false);
+  };
+
+  return (
+    <div ref={searchRef} className="relative w-full max-w-2xl">
+      <div className="relative">
+        <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        }`} />
+        <input
+          type="text"
+          placeholder="Suche nach Kunden, Standorten, Geräten, Seriennummern..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => results.length > 0 && setShowResults(true)}
+          className={`w-full pl-10 pr-10 py-2.5 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-[#2a2a2a] border-gray-700 text-white placeholder-gray-500'
+              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+          } focus:outline-none focus:ring-2 focus:ring-red-500 transition-all`}
+        />
+        {searchTerm && (
+          <button
+            onClick={clearSearch}
+            className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${
+              theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'
+            }`}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+
+      {/* Search Results Dropdown */}
+      {showResults && results.length > 0 && (
+        <div className={`absolute top-full mt-2 w-full rounded-lg shadow-2xl border overflow-hidden z-50 ${
+          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <div className="max-h-96 overflow-y-auto">
+            {/* Group by type */}
+            {results.filter(r => r.type === 'customer').length > 0 && (
+              <div>
+                <div className={`px-4 py-2 text-xs font-semibold ${
+                  theme === 'dark' ? 'bg-[#1a1a1a] text-gray-500' : 'bg-gray-50 text-gray-600'
+                }`}>
+                  KUNDEN
+                </div>
+                {results.filter(r => r.type === 'customer').map((result, index) => (
+                  <SearchResultItem
+                    key={`customer-${index}`}
+                    result={result}
+                    onClick={() => handleResultClick(result)}
+                    theme={theme}
+                  />
+                ))}
+              </div>
+            )}
+
+            {results.filter(r => r.type === 'location').length > 0 && (
+              <div>
+                <div className={`px-4 py-2 text-xs font-semibold ${
+                  theme === 'dark' ? 'bg-[#1a1a1a] text-gray-500' : 'bg-gray-50 text-gray-600'
+                }`}>
+                  STANDORTE (EUROPCAR)
+                </div>
+                {results.filter(r => r.type === 'location').map((result, index) => (
+                  <SearchResultItem
+                    key={`location-${index}`}
+                    result={result}
+                    onClick={() => handleResultClick(result)}
+                    theme={theme}
+                  />
+                ))}
+              </div>
+            )}
+
+            {results.filter(r => r.type === 'device').length > 0 && (
+              <div>
+                <div className={`px-4 py-2 text-xs font-semibold ${
+                  theme === 'dark' ? 'bg-[#1a1a1a] text-gray-500' : 'bg-gray-50 text-gray-600'
+                }`}>
+                  GERÄTE (EUROPCAR)
+                </div>
+                {results.filter(r => r.type === 'device').map((result, index) => (
+                  <SearchResultItem
+                    key={`device-${index}`}
+                    result={result}
+                    onClick={() => handleResultClick(result)}
+                    theme={theme}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className={`px-4 py-2 text-xs border-t ${
+            theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-gray-500' : 'bg-gray-50 border-gray-200 text-gray-600'
+          }`}>
+            {results.length} Ergebnis{results.length !== 1 ? 'se' : ''} gefunden
+          </div>
+        </div>
+      )}
+
+      {/* Loading indicator */}
+      {loading && (
+        <div className={`absolute top-full mt-2 w-full rounded-lg shadow-lg border p-4 text-center ${
+          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600 mx-auto"></div>
+        </div>
+      )}
+
+      {/* No results */}
+      {!loading && showResults && results.length === 0 && searchTerm.length >= 2 && (
+        <div className={`absolute top-full mt-2 w-full rounded-lg shadow-lg border p-4 text-center ${
+          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+            Keine Ergebnisse für "{searchTerm}"
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const SearchResultItem = ({ result, onClick, theme }) => {
+  const Icon = result.icon;
+  
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full px-4 py-3 flex items-start space-x-3 transition-colors ${
+        theme === 'dark' 
+          ? 'hover:bg-[#3a3a3a] text-white' 
+          : 'hover:bg-gray-50 text-gray-900'
+      }`}
+    >
+      <div className={`flex-shrink-0 p-2 rounded-lg ${
+        theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+      }`}>
+        <Icon className="h-5 w-5 text-[#c00000]" />
+      </div>
+      <div className="flex-1 text-left">
+        <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          {result.title}
+        </p>
+        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+          {result.subtitle}
+        </p>
+      </div>
+    </button>
+  );
+};
+
+export default GlobalSearch;
