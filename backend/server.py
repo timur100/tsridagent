@@ -194,6 +194,9 @@ api_router.include_router(customers_router, prefix="/customers", tags=["customer
 # Services Configuration (Microservices Management)
 app.include_router(services_config_router)
 
+# Scanner PIN Settings
+app.include_router(scanner_pin_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
