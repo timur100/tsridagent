@@ -329,7 +329,10 @@ const ServicesConfiguration = () => {
                 
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Status:</span>
-                  <Switch checked={service.enabled} disabled />
+                  <Switch 
+                    checked={service.enabled} 
+                    onCheckedChange={() => handleToggleEnabled(service)}
+                  />
                 </div>
                 
                 {healthStatus[service.service_id]?.error && (
