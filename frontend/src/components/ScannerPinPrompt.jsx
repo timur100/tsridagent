@@ -158,8 +158,8 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 mb-6">
-            <p className="text-sm text-red-600 dark:text-red-400 text-center font-medium">
+          <div className="bg-red-900/30 border border-red-600 rounded-lg p-3 mb-6">
+            <p className="text-sm text-red-400 text-center font-medium">
               {error}
             </p>
           </div>
@@ -167,9 +167,9 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
         {/* Status */}
         {checking && (
-          <div className="text-center mb-4">
-            <div className="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-300 border-t-blue-600"></div>
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 text-sm text-gray-400">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-600 border-t-red-600"></div>
               Überprüfe PIN...
             </div>
           </div>
