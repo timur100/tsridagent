@@ -94,10 +94,11 @@ async def get_service_configs():
             'auth': 0,
             'id_verification': 1,
             'device': 2,
-            'inventory': 3,
-            'support': 4,
-            'ticketing': 5,
-            'portal': 6,
+            'location': 3,
+            'inventory': 4,
+            'support': 5,
+            'ticketing': 6,
+            'portal': 7,
             'other': 99
         }
         
