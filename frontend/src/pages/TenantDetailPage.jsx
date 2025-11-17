@@ -201,27 +201,6 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
                 </div>
               </Card>
 
-              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Storage
-                    </p>
-                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {tenant.storage_used_gb} GB
-                    </p>
-                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      von {tenant.limits.max_storage_gb} GB
-                    </p>
-                  </div>
-                  <HardDrive className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-                </div>
-              </Card>
-
               {/* Standorte */}
               <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
