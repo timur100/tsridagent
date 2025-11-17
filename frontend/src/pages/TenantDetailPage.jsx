@@ -407,47 +407,38 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
                 </div>
               </Card>
 
-              {/* Restlaufzeit Vertragsverlängerung */}
+              {/* Vertragslaufzeit - Kombinierte Kachel */}
               <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
                   ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                   : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
               }`}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Restlaufzeit
+                  <div className="w-full">
+                    <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Vertragslaufzeit
                     </p>
-                    <p className={`text-3xl font-bold text-blue-500`}>
-                      45
-                    </p>
-                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Tage bis Verlängerung
-                    </p>
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className={`text-2xl font-bold text-blue-500`}>
+                          45
+                        </p>
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Tage bis Verlängerung
+                        </p>
+                      </div>
+                      <div className={`h-10 w-px ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+                      <div>
+                        <p className={`text-2xl font-bold text-purple-500`}>
+                          365
+                        </p>
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Tage bis Vertragsende
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <Clock className={`h-12 w-12 text-blue-500`} />
-                </div>
-              </Card>
-
-              {/* Restlaufzeit Vertragsende */}
-              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-              }`}>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Vertragsende
-                    </p>
-                    <p className={`text-3xl font-bold text-purple-500`}>
-                      365
-                    </p>
-                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Tage bis Vertragsende
-                    </p>
-                  </div>
-                  <Calendar className={`h-12 w-12 text-purple-500`} />
+                  <Calendar className={`h-12 w-12 ml-4 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                 </div>
               </Card>
             </div>
