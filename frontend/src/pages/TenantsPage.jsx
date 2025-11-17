@@ -1035,19 +1035,23 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4 border-t border-gray-200">
+          <div className={`flex gap-3 pt-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
             {isEditing ? (
               <>
                 <button
                   onClick={() => setIsEditing(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                  className={`flex-1 px-4 py-2 border rounded-lg transition-all hover:scale-105 ${
+                    theme === 'dark'
+                      ? 'border-gray-700 text-gray-300 hover:bg-[#1a1a1a]'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
                   disabled={loading}
                 >
                   Abbrechen
                 </button>
                 <button
                   onClick={handleStatusUpdate}
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all hover:scale-105"
                   disabled={loading}
                 >
                   {loading ? 'Wird gespeichert...' : 'Speichern'}
@@ -1057,14 +1061,18 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
               <>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#900000] transition-all hover:scale-105"
                   disabled={loading}
                 >
                   Löschen
                 </button>
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className={`flex-1 px-4 py-2 border rounded-lg transition-all hover:scale-105 ${
+                    theme === 'dark'
+                      ? 'border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                      : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                  }`}
                 >
                   Bearbeiten
                 </button>
