@@ -208,7 +208,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Tenant Models erweitern für vollständige Isolation"
+    - "Tenant Management APIs - Vollständige CRUD"
+    - "Tenant Router im Auth Service registrieren"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1540,7 +1543,10 @@ metadata:
   test_sequence: 4
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Tenant Models erweitern für vollständige Isolation"
+    - "Tenant Management APIs - Vollständige CRUD"
+    - "Tenant Router im Auth Service registrieren"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1882,7 +1888,10 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Tenant Models erweitern für vollständige Isolation"
+    - "Tenant Management APIs - Vollständige CRUD"
+    - "Tenant Router im Auth Service registrieren"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
