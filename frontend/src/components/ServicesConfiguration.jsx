@@ -296,10 +296,10 @@ const ServicesConfiguration = () => {
         </div>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Services Grid - Responsive auto-fit layout */}
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
         {services.map((service) => (
-          <Card key={service.service_id} data-testid={`service-card-${service.service_type}`} className="flex flex-col">
+          <Card key={service.service_id} data-testid={`service-card-${service.service_type}`} className="flex flex-col min-w-[280px]">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start min-h-[2rem]">
                 <div className="flex items-center gap-2">
