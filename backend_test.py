@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Device Service Comprehensive Testing
-Tests the newly created Device Service (Port 8104) to ensure all endpoints are working correctly.
+Backend API Testing for Location Service Comprehensive Testing
+Tests the newly created Location Service (Port 8105) to ensure all endpoints are working correctly.
 """
 
 import requests
@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-DEVICE_SERVICE_URL = "http://localhost:8104"
+LOCATION_SERVICE_URL = "http://localhost:8105"
 
 class DeviceServiceTester:
     def __init__(self):
