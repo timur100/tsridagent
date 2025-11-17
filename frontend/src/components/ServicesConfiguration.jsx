@@ -303,7 +303,15 @@ const ServicesConfiguration = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))'
       }}>
         {services.map((service) => (
-          <Card key={service.service_id} data-testid={`service-card-${service.service_type}`} className="flex flex-col w-full">
+          <Card 
+            key={service.service_id} 
+            data-testid={`service-card-${service.service_type}`} 
+            className={`flex flex-col w-full rounded-xl transition-all duration-300 ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_32px_rgba(192,0,0,0.4)] hover:-translate-y-2 hover:scale-105' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.15)] hover:-translate-y-2 hover:scale-105'
+            }`}
+          >
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start min-h-[2rem]">
                 <div className="flex items-center gap-2">
