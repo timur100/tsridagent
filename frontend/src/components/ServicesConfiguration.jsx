@@ -107,7 +107,7 @@ const ServicesConfiguration = () => {
 
   const fetchAllMongoDBInfo = async () => {
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/portal/services/mongodb-summary`);
+      const response = await axios.get(`${BACKEND_URL}/api/portal/mongodb-summary`);
       const infoMap = {};
       response.data.forEach(item => {
         infoMap[item.service_id] = item.mongodb_info;
