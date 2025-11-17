@@ -56,6 +56,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
         { id: 'customers-management', label: 'Kunden', emoji: '🏢' },
         { id: 'portal', label: 'Portal', emoji: '🚀' },
         { id: 'scanner-pin', label: 'Scanner PIN', emoji: '🔒' },
+        { id: 'subscription-plans', label: 'Subscription Plans', emoji: '💳' },
         { id: 'microservices', label: 'Microservices', emoji: '⚙️' },
         { id: 'integrations', label: 'Integrationen', emoji: '🔌' }
       ]
