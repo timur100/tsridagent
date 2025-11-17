@@ -499,7 +499,7 @@ class DeviceServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Device Service found at correct position 3 with service_type='device'"
+                f"Device Service found at correct position 2 with service_type='device'"
             )
             return True
             
