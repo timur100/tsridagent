@@ -721,15 +721,17 @@ class OrderServiceTester:
                 )
                 return False
             
-            # Check position (should be 6th after auth, id_verification, device, location, ticketing)
+            # Check position (should be 6th after auth, id_verification, device, location, inventory)
             service_types = [s.get('service_type') for s in data]
             order_position = service_types.index('order') if 'order' in service_types else -1
             
-            if order_position != 5:  # 0-indexed: auth=0, id_verification=1, device=2, location=3, ticketing=4, order=5
+            # The Order Service should be at position 5 (0-indexed)
+            expected_position = 5
+            if order_position != expected_position:
                 self.log_result(
                     "Service Registration Verification", 
                     False, 
-                    f"Order Service at position {order_position}, expected position 5",
+                    f"Order Service at position {order_position}, expected position {expected_position}",
                     service_types
                 )
                 return False
@@ -737,7 +739,7 @@ class OrderServiceTester:
             self.log_result(
                 "Service Registration Verification", 
                 True, 
-                f"Order Service found at correct position 5 with service_type='order'"
+                f"Order Service found at correct position {expected_position} with service_type='order'"
             )
             return True
             
