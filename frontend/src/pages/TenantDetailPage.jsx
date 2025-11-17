@@ -80,28 +80,21 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="space-y-6">
       {/* Header */}
-      <div className={`sticky top-0 z-50 border-b ${
-        theme === 'dark' 
-          ? 'bg-[#1a1a1a] border-gray-700' 
-          : 'bg-white border-gray-200'
-      }`}>
-        <div className="px-6 py-4">
-          {/* Back Button and Title */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate('/portal/admin?tab=tenants')}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:scale-105 ${
-                  theme === 'dark'
-                    ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#333]'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Zurück
-              </button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button
+            onClick={onBack}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:scale-105 ${
+              theme === 'dark'
+                ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#333]'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Zurück
+          </button>
               <div>
                 <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {tenant.display_name}
