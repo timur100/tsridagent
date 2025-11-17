@@ -612,19 +612,19 @@ const ServicesConfiguration = () => {
                 {/* Collections */}
                 {mongodbInfo[showMongoDetails].collections && mongodbInfo[showMongoDetails].collections.length > 0 && (
                   <div>
-                    <h3 className="font-semibold mb-3">Collections ({mongodbInfo[showMongoDetails].collections.length})</h3>
+                    <h3 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">Collections ({mongodbInfo[showMongoDetails].collections.length})</h3>
                     <div className="space-y-2">
                       {mongodbInfo[showMongoDetails].collections.map((collection, idx) => (
-                        <div key={idx} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                        <div key={idx} className="flex justify-between items-center p-3 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700">
                           <div className="flex items-center gap-2">
-                            <Database className="w-4 h-4 text-gray-500" />
-                            <code className="font-mono text-sm">{collection.name}</code>
+                            <Database className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            <code className="font-mono text-sm font-semibold text-gray-900 dark:text-gray-100">{collection.name}</code>
                           </div>
                           <div className="flex items-center gap-3">
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
                               {collection.document_count.toLocaleString()} Dokumente
                             </span>
-                            <Badge variant="outline">{collection.document_count}</Badge>
+                            <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-100 border-blue-300 dark:border-blue-700">{collection.document_count}</Badge>
                           </div>
                         </div>
                       ))}
