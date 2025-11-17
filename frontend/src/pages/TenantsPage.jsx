@@ -632,7 +632,9 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
 
           {/* Contact Information */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Kontakt-Informationen</h3>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Kontakt-Informationen
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
