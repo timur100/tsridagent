@@ -813,6 +813,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
 // Detail Modal Component
 const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
   const { theme } = useTheme();
+  const [activeTab, setActiveTab] = useState('overview');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -820,6 +821,14 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
     enabled: tenant.enabled,
     subscription_plan: tenant.subscription_plan
   });
+
+  const tabs = [
+    { id: 'overview', label: 'Übersicht' },
+    { id: 'subscription', label: 'Vertrag & Subscription' },
+    { id: 'locations', label: 'Standorte' },
+    { id: 'branding', label: 'Branding' },
+    { id: 'billing', label: 'Abrechnung' }
+  ];
 
   const handleStatusUpdate = async () => {
     setLoading(true);
