@@ -210,6 +210,9 @@ app.include_router(service_mongodb_info_router)
 # MongoDB Summary (separate router)
 app.include_router(mongodb_summary_router)
 
+# Tenants Proxy (proxy to Auth & Identity Service)
+app.include_router(tenants_proxy_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
