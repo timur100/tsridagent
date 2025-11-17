@@ -310,16 +310,16 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_get_all_customers(self):
-        """Test GET /api/customers endpoint"""
+    def test_get_all_licenses(self):
+        """Test GET /api/licenses endpoint"""
         try:
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers")
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/api/licenses")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get All Customers", 
+                    "Get All Licenses", 
                     False, 
-                    f"Get customers failed. Status: {response.status_code}",
+                    f"Get licenses failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -329,49 +329,54 @@ class LicenseServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Get All Customers", 
+                    "Get All Licenses", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Check customer structure if customers exist
+            # Check license structure if licenses exist
             if len(data) > 0:
-                customer = data[0]
-                required_fields = ["id", "customer_number", "email", "first_name", "last_name"]
-                missing_fields = [field for field in required_fields if field not in customer]
+                license_obj = data[0]
+                required_fields = ["id", "license_key", "product_name", "license_type", "status"]
+                missing_fields = [field for field in required_fields if field not in license_obj]
                 
                 if missing_fields:
                     self.log_result(
-                        "Get All Customers", 
+                        "Get All Licenses", 
                         False, 
-                        f"Customer missing required fields: {missing_fields}",
-                        customer
+                        f"License missing required fields: {missing_fields}",
+                        license_obj
                     )
                     return False
                 
-                # Verify customer_number format: CUST-YYYYMMDD-XXXX
-                customer_number = customer.get("customer_number", "")
-                if not customer_number.startswith("CUST-") or len(customer_number) != 18:
+                # Verify license_key format: LIC-XXXXXX-XXXXXX-XXXXXX
+                license_key = license_obj.get("license_key", "")
+                if not license_key.startswith("LIC-") or len(license_key) != 22:
                     self.log_result(
-                        "Get All Customers", 
+                        "Get All Licenses", 
                         False, 
-                        f"Invalid customer number format: {customer_number}, expected CUST-YYYYMMDD-XXXX",
-                        customer
+                        f"Invalid license key format: {license_key}, expected LIC-XXXXXX-XXXXXX-XXXXXX",
+                        license_obj
                     )
                     return False
+                
+                # Store first license key for later tests
+                if not self.test_license_key:
+                    self.test_license_key = license_key
+                    self.test_license_id = license_obj.get("id")
             
             self.log_result(
-                "Get All Customers", 
+                "Get All Licenses", 
                 True, 
-                f"Retrieved {len(data)} customers successfully"
+                f"Retrieved {len(data)} licenses successfully"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get All Customers", 
+                "Get All Licenses", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
