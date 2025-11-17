@@ -10,7 +10,7 @@ import sys
 import io
 
 # Backend URL from environment
-BACKEND_URL = "https://service-transform.preview.emergentagent.com"
+BACKEND_URL = "https://tenant-hub-39.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():
