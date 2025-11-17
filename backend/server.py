@@ -49,6 +49,7 @@ from routes.services_config import router as services_config_router
 from routes.scanner_pin_settings import router as scanner_pin_router
 from routes.service_proxy import router as service_proxy_router
 from routes.service_mongodb_info import router as service_mongodb_info_router
+from routes.mongodb_summary import router as mongodb_summary_router
 
 
 ROOT_DIR = Path(__file__).parent
