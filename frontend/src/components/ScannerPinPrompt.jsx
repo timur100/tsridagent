@@ -87,22 +87,13 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
   return (
     <div className="fixed inset-0 bg-black flex items-center justify-center z-50 p-4">
-      {/* Background Logo - Large and Centered */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+      {/* Background Logo - Large and Centered with Fingerprint */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
         <img 
           src={tsridLogo} 
           alt="TSRID Logo" 
-          className="w-[80vh] h-[80vh] object-contain"
-          style={{ filter: 'brightness(0) invert(1)' }}
+          className="w-[70vh] h-[70vh] object-contain"
         />
-      </div>
-      
-      {/* TSRID Text Watermark */}
-      <div className="absolute inset-0 flex items-center justify-center opacity-3 pointer-events-none">
-        <div className="text-center">
-          <div className="text-[20vw] font-bold text-white leading-none">TSRID</div>
-          <div className="text-[5vw] font-light text-white tracking-[0.5em] mt-4">FORENSIC SOLUTIONS</div>
-        </div>
       </div>
       
       <div className="bg-black border-4 border-red-600 rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10">
