@@ -566,8 +566,8 @@ class TicketingMicroserviceTester:
     def test_admin_portal_microservices_display(self):
         """Test that Ticketing Service appears in Admin Portal Microservices page"""
         try:
-            # Get services configuration
-            response = self.session.get(f"{API_BASE}/services-config/list")
+            # Get services configuration - correct endpoint
+            response = self.session.get(f"{API_BASE}/portal/services")
             
             if response.status_code != 200:
                 self.log_result(
