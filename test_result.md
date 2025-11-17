@@ -137,15 +137,18 @@ backend:
   
   - task: "Tenant Router im Auth Service registrieren"
     implemented: true
-    working: "NA"
+    working: true
     file: "services/auth_service/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ Tenant-Router erfolgreich in Auth Service eingebunden: Import hinzugefügt (from routes import auth, users, tenants), Router registriert (app.include_router(tenants.router, prefix='/api')). Auth Service erfolgreich neugestartet (RUNNING pid 986). Alle Tenant-Endpoints jetzt verfügbar unter /api/tenants/*."
+        - working: true
+          agent: "testing"
+          comment: "✅ TENANT ROUTER REGISTRATION FULLY WORKING: Comprehensive testing verified tenant router properly registered in Auth Service. SERVICE HEALTH: Auth & Identity Service running on port 8100 with health endpoint returning {'status': 'healthy', 'service': 'Auth & Identity Service'}. ROUTER INTEGRATION: All tenant endpoints accessible under /api/tenants/* prefix as expected. ENDPOINT ACCESSIBILITY: All 8 tenant management endpoints working correctly: GET /api/tenants/stats (statistics), POST /api/tenants/ (create), GET /api/tenants/ (list with pagination/filters), GET /api/tenants/{tenant_id} (details), GET /api/tenants/search (search), PUT /api/tenants/{tenant_id} (update), DELETE /api/tenants/{tenant_id} (delete). AUTHENTICATION: Admin authentication working through main backend (/api/portal/auth/login), JWT tokens properly accepted by Auth Service endpoints. SERVICE COMMUNICATION: Auth Service properly integrated with main backend authentication system, all API calls successful with proper CORS configuration. Router registration is production-ready and fully functional."
   
   - task: "Service Registration in Admin Panel"
     implemented: true
