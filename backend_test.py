@@ -814,12 +814,12 @@ class LicenseServiceTester:
             return False
 
     def run_all_tests(self):
-        """Run all customer service tests"""
+        """Run all license service tests"""
         print("=" * 70)
-        print("CUSTOMER SERVICE COMPREHENSIVE TESTING")
+        print("LICENSE SERVICE COMPREHENSIVE TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Customer Service URL: {CUSTOMER_SERVICE_URL}")
+        print(f"License Service URL: {LICENSE_SERVICE_URL}")
         print("=" * 70)
         print()
         
@@ -833,45 +833,45 @@ class LicenseServiceTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test Customer Service Health & Info
-        print("🔍 STEP 1: Testing Customer Service Health & Info...")
-        if not self.test_customer_service_health():
-            print("❌ Customer service health check failed.")
+        # Step 1: Test License Service Health & Info
+        print("🔍 STEP 1: Testing License Service Health & Info...")
+        if not self.test_license_service_health():
+            print("❌ License service health check failed.")
         
-        if not self.test_customer_service_info():
-            print("❌ Customer service info failed.")
+        if not self.test_license_service_info():
+            print("❌ License service info failed.")
         
-        # Step 2: Test Customer Statistics
-        print("\n🔍 STEP 2: Testing Customer Statistics...")
-        stats = self.test_customer_statistics()
+        # Step 2: Test License Statistics
+        print("\n🔍 STEP 2: Testing License Statistics...")
+        stats = self.test_license_statistics()
         if not stats:
-            print("❌ Customer statistics failed.")
+            print("❌ License statistics failed.")
         
-        # Step 3: Test Get All Customers
-        print("\n🔍 STEP 3: Testing Get All Customers...")
-        customers = self.test_get_all_customers()
-        if customers is False:
-            print("❌ Get all customers failed.")
+        # Step 3: Test Get All Licenses
+        print("\n🔍 STEP 3: Testing Get All Licenses...")
+        licenses = self.test_get_all_licenses()
+        if licenses is False:
+            print("❌ Get all licenses failed.")
         
-        # Step 4: Test Get Customer by Number
-        print("\n🔍 STEP 4: Testing Get Customer by Number...")
-        if not self.test_get_customer_by_number():
-            print("❌ Get customer by number failed.")
+        # Step 4: Test License Validation
+        print("\n🔍 STEP 4: Testing License Validation...")
+        if not self.test_license_validation():
+            print("❌ License validation failed.")
         
-        # Step 5: Test Get Customer by Email
-        print("\n🔍 STEP 5: Testing Get Customer by Email...")
-        if not self.test_get_customer_by_email():
-            print("❌ Get customer by email failed.")
+        # Step 5: Test Get License by Key
+        print("\n🔍 STEP 5: Testing Get License by Key...")
+        if not self.test_get_license_by_key():
+            print("❌ Get license by key failed.")
         
-        # Step 6: Test Filter Customers
-        print("\n🔍 STEP 6: Testing Filter Customers...")
-        if not self.test_filter_customers():
-            print("❌ Filter customers failed.")
+        # Step 6: Test Filter Licenses
+        print("\n🔍 STEP 6: Testing Filter Licenses...")
+        if not self.test_filter_licenses():
+            print("❌ Filter licenses failed.")
         
-        # Step 7: Test Search Customers
-        print("\n🔍 STEP 7: Testing Search Customers...")
-        if not self.test_search_customers():
-            print("❌ Search customers failed.")
+        # Step 7: Test Update License Status
+        print("\n🔍 STEP 7: Testing Update License Status...")
+        if not self.test_update_license_status():
+            print("❌ Update license status failed.")
         
         # Step 8: Test Service Registration
         print("\n🔍 STEP 8: Testing Service Registration...")
@@ -885,7 +885,7 @@ class LicenseServiceTester:
         
         # Summary
         print("\n" + "=" * 70)
-        print("CUSTOMER SERVICE TESTING SUMMARY")
+        print("LICENSE SERVICE TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
