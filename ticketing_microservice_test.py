@@ -525,13 +525,13 @@ class TicketingMicroserviceTester:
         
         # Test proxy to Inventory Service via main backend
         try:
-            response = self.session.get(f"{API_BASE}/services/inventory/stats")
+            response = self.session.get(f"{API_BASE}/services/inventory/items")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Service Proxy - Inventory Stats", 
+                    "Service Proxy - Inventory Items", 
                     False, 
-                    f"Proxy to inventory stats failed. Status: {response.status_code}",
+                    f"Proxy to inventory items failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -540,7 +540,7 @@ class TicketingMicroserviceTester:
             
             if not isinstance(data, dict):
                 self.log_result(
-                    "Service Proxy - Inventory Stats", 
+                    "Service Proxy - Inventory Items", 
                     False, 
                     "Proxy response is not a dictionary",
                     data
@@ -548,9 +548,9 @@ class TicketingMicroserviceTester:
                 return False
             
             self.log_result(
-                "Service Proxy - Inventory Stats", 
+                "Service Proxy - Inventory Items", 
                 True, 
-                "Proxy route to Inventory Service stats working"
+                "Proxy route to Inventory Service items working"
             )
             
         except Exception as e:
