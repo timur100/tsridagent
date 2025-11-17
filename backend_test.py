@@ -536,17 +536,17 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_filter_customers(self):
-        """Test filtering customers by customer_type"""
+    def test_filter_licenses(self):
+        """Test filtering licenses by license_type"""
         try:
-            # Test filter by customer_type=business
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers?customer_type=business")
+            # Test filter by license_type=subscription
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/api/licenses?license_type=subscription")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Filter Customers", 
+                    "Filter Licenses", 
                     False, 
-                    f"Filter by customer_type failed. Status: {response.status_code}",
+                    f"Filter by license_type failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -556,34 +556,34 @@ class LicenseServiceTester:
             # Verify response is an array
             if not isinstance(data, list):
                 self.log_result(
-                    "Filter Customers", 
+                    "Filter Licenses", 
                     False, 
                     f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
-            # Verify all customers have customer_type = business
-            for customer in data:
-                if customer.get("customer_type") != "business":
+            # Verify all licenses have license_type = subscription
+            for license_obj in data:
+                if license_obj.get("license_type") != "subscription":
                     self.log_result(
-                        "Filter Customers", 
+                        "Filter Licenses", 
                         False, 
-                        f"Customer has wrong type: {customer.get('customer_type')}",
-                        customer
+                        f"License has wrong type: {license_obj.get('license_type')}",
+                        license_obj
                     )
                     return False
             
             self.log_result(
-                "Filter Customers", 
+                "Filter Licenses", 
                 True, 
-                f"Customer type filter working: {len(data)} business customers found"
+                f"License type filter working: {len(data)} subscription licenses found"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Filter Customers", 
+                "Filter Licenses", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
