@@ -546,6 +546,93 @@ const ServicesConfiguration = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* MongoDB Details Modal */}
+      {showMongoDetails && (
+        <Dialog open={!!showMongoDetails} onOpenChange={() => setShowMongoDetails(null)}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Database className="w-5 h-5" />
+                MongoDB Details
+              </DialogTitle>
+              <DialogDescription>
+                {services.find(s => s.service_id === showMongoDetails)?.service_name}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {mongodbInfo[showMongoDetails] && (
+              <div className="space-y-4">
+                {/* Database Info */}
+                <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Database Name:</span>
+                    <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">
+                      {mongodbInfo[showMongoDetails].database_name}
+                    </code>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Verbindung:</span>
+                    <Badge variant={mongodbInfo[showMongoDetails].connected ? "success" : "destructive"}>
+                      {mongodbInfo[showMongoDetails].connected ? "Verbunden" : "Getrennt"}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Gesamt Dokumente:</span>
+                    <span className="text-lg font-bold">
+                      {mongodbInfo[showMongoDetails].total_documents?.toLocaleString() || 0}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Collections */}
+                {mongodbInfo[showMongoDetails].collections && mongodbInfo[showMongoDetails].collections.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Collections ({mongodbInfo[showMongoDetails].collections.length})</h3>
+                    <div className="space-y-2">
+                      {mongodbInfo[showMongoDetails].collections.map((collection, idx) => (
+                        <div key={idx} className="flex justify-between items-center p-3 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900">
+                          <div className="flex items-center gap-2">
+                            <Database className="w-4 h-4 text-gray-500" />
+                            <code className="font-mono text-sm">{collection.name}</code>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-muted-foreground">
+                              {collection.document_count.toLocaleString()} Dokumente
+                            </span>
+                            <Badge variant="outline">{collection.document_count}</Badge>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Error */}
+                {mongodbInfo[showMongoDetails].error && (
+                  <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-red-900 dark:text-red-100">Fehler</p>
+                        <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                          {mongodbInfo[showMongoDetails].error}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowMongoDetails(null)}>
+                Schließen
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 };
