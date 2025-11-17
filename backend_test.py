@@ -850,24 +850,24 @@ class LocationServiceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Device Service Comprehensive Testing...")
+    print("Starting Location Service Comprehensive Testing...")
     print()
     
-    # Test Device Service
-    tester = DeviceServiceTester()
+    # Test Location Service
+    tester = LocationServiceTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Device Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Location Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 DEVICE SERVICE TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 LOCATION SERVICE TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ DEVICE SERVICE TESTING FOUND ISSUES!")
+        print("❌ LOCATION SERVICE TESTING FOUND ISSUES!")
         sys.exit(1)
