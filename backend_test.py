@@ -23,13 +23,12 @@ class SettingsServiceTester:
         })
         self.results = []
         self.admin_token = None
-        self.license_service_session = requests.Session()
-        self.license_service_session.headers.update({
+        self.settings_service_session = requests.Session()
+        self.settings_service_session.headers.update({
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         })
-        self.test_license_key = None
-        self.test_license_id = None
+        self.test_setting_id = None
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
