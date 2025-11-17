@@ -645,7 +645,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   required
                   value={formData.admin_email}
                   onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="admin@example.com"
                 />
               </div>
@@ -659,7 +659,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   required
                   value={formData.admin_password}
                   onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Sicheres Passwort"
                 />
               </div>
@@ -670,7 +670,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="+49 123 456789"
                 />
               </div>
@@ -681,7 +681,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Berlin"
                 />
               </div>
@@ -692,7 +692,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Deutschland"
                 />
               </div>
@@ -703,7 +703,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.postal_code}
                   onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="10115"
                 />
               </div>
@@ -714,7 +714,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Straße und Hausnummer"
                 />
               </div>
@@ -732,7 +732,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_users}
                   onChange={(e) => setFormData({ ...formData, max_users: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -743,7 +743,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_devices}
                   onChange={(e) => setFormData({ ...formData, max_devices: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -754,7 +754,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_storage_gb}
                   onChange={(e) => setFormData({ ...formData, max_storage_gb: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -765,7 +765,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_api_calls_per_day}
                   onChange={(e) => setFormData({ ...formData, max_api_calls_per_day: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -776,7 +776,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_locations}
                   onChange={(e) => setFormData({ ...formData, max_locations: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
             </div>
