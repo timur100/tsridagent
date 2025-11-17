@@ -105,20 +105,41 @@
 user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
 
 backend:
-  - task: "Ticketing Microservice Creation"
+  - task: "Tenant Models erweitern für vollständige Isolation"
     implemented: true
-    working: true
-    file: "services/ticketing_service/server.py"
+    working: "NA"
+    file: "services/auth_service/models/tenant.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-        - working: true
+        - working: "NA"
           agent: "main"
-          comment: "✅ Created Ticketing microservice on port 8103 with complete structure: server.py, routes (tickets.py, comments.py, workflow.py, location_details.py), models (ticket.py), utils (db.py, auth.py). Service running successfully with supervisor configuration. Health check passing."
-        - working: true
-          agent: "testing"
-          comment: "✅ COMPREHENSIVE TESTING PASSED: Ticketing Service health check returns correct response {'status': 'healthy', 'service': 'Ticketing Service'}, service info endpoint returns proper service details with version 1.0.0. Service running successfully on port 8103 with all required endpoints functional. JWT authentication working correctly after adding missing JWT_SECRET environment variable and dotenv loading."
+          comment: "✅ Tenant-Modelle vollständig erweitert: TenantBase, TenantCreate, TenantUpdate, TenantResponse mit vollständigen Feldern. Hinzugefügte Submodelle: SubscriptionLimits (max_users, max_devices, max_storage_gb, max_api_calls_per_day, max_locations), TenantContact (admin_email, phone, address, city, country, postal_code). TenantResponse enthält jetzt alle Felder für Monitoring: user_count, device_count, storage_used_gb, api_calls_today, status (active/trial/suspended/inactive), subscription_plan (basic/pro/enterprise), limits, contact, logo_url, timestamps. Modelle nutzen EmailStr für Email-Validierung und bieten vollständige Tenant-Isolation."
+  
+  - task: "Tenant Management APIs - Vollständige CRUD"
+    implemented: true
+    working: "NA"
+    file: "services/auth_service/routes/tenants.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Vollständiger Tenant-Management-Router erstellt mit allen CRUD-Operationen: GET /api/tenants/stats (Gesamt-Statistiken), GET /api/tenants/search?query=... (Suche nach Name/Domain/Email), GET /api/tenants/ (Liste mit Pagination und Filtern: skip, limit, status_filter, subscription_plan), GET /api/tenants/{tenant_id} (Details), POST /api/tenants/ (Erstellen mit automatischer Admin-User-Creation), PUT /api/tenants/{tenant_id} (Aktualisieren), DELETE /api/tenants/{tenant_id} (Löschen inkl. aller Users). Besonderheiten: Bei Tenant-Creation wird automatisch ein tenant_admin User mit password_hash erstellt, tenant_id wird mit allen Users und Ressourcen verknüpft für Isolation, user_count wird dynamisch bei jedem Request berechnet, device_count/storage/api_calls haben Placeholder für spätere Integration."
+  
+  - task: "Tenant Router im Auth Service registrieren"
+    implemented: true
+    working: "NA"
+    file: "services/auth_service/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Tenant-Router erfolgreich in Auth Service eingebunden: Import hinzugefügt (from routes import auth, users, tenants), Router registriert (app.include_router(tenants.router, prefix='/api')). Auth Service erfolgreich neugestartet (RUNNING pid 986). Alle Tenant-Endpoints jetzt verfügbar unter /api/tenants/*."
   
   - task: "Service Registration in Admin Panel"
     implemented: true
