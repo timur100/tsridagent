@@ -880,7 +880,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
         <div className={`p-6 border-b sticky top-0 z-10 ${
           theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
         }`}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {tenant.display_name}
             </h2>
@@ -893,9 +893,30 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
               <XCircle className="w-6 h-6" />
             </button>
           </div>
+
+          {/* Tabs */}
+          <div className="flex gap-2 flex-wrap">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
+                  activeTab === tab.id
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#333]'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="p-6 space-y-6">
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
           {/* Basic Info */}
           <div>
             <h3 className={`text-lg font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
