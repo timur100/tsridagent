@@ -97,9 +97,10 @@ async def get_service_configs():
             'location': 3,
             'inventory': 4,
             'order': 5,
-            'support': 6,
-            'ticketing': 7,
-            'portal': 8,
+            'customer': 6,
+            'support': 7,
+            'ticketing': 8,
+            'portal': 9,
             'other': 99
         }
         
