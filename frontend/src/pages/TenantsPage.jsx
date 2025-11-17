@@ -430,6 +430,7 @@ const TenantsPage = () => {
 
 // Create/Edit Modal Component
 const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     name: tenant?.name || '',
     display_name: tenant?.display_name || '',
