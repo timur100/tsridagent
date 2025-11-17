@@ -176,17 +176,31 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
         )}
 
         {/* Keyboard */}
-        <div className="grid grid-cols-3 gap-2">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9, '', 0, '⌫'].map((num, idx) => {
-            if (num === '') return <div key={idx}></div>;
+        <div className="grid grid-cols-3 gap-3">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'c', 0, '⌫'].map((num, idx) => {
+            if (num === 'c') {
+              return (
+                <button
+                  key={idx}
+                  className="h-16 text-xl font-bold bg-gray-800 hover:bg-gray-700 text-white rounded-lg border-2 border-gray-700 transition-all duration-200 active:scale-95"
+                  onClick={() => {
+                    setPin(['', '', '', '']);
+                    setError('');
+                    inputRefs[0].current?.focus();
+                  }}
+                  disabled={checking}
+                >
+                  c
+                </button>
+              );
+            }
             
             const isBackspace = num === '⌫';
             
             return (
-              <Button
+              <button
                 key={idx}
-                variant="outline"
-                className="h-14 text-xl font-semibold"
+                className="h-16 text-xl font-bold bg-gray-800 hover:bg-gray-700 text-white rounded-lg border-2 border-gray-700 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
                   if (isBackspace) {
                     // Find last filled input
@@ -195,6 +209,7 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
                       const newPin = [...pin];
                       newPin[lastFilledIndex] = '';
                       setPin(newPin);
+                      setError('');
                       inputRefs[lastFilledIndex].current?.focus();
                     }
                   } else {
@@ -208,14 +223,14 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
                 disabled={checking}
               >
                 {num}
-              </Button>
+              </button>
             );
           })}
         </div>
 
-        {/* Help Text */}
-        <p className="text-xs text-gray-500 dark:text-gray-500 text-center mt-6">
-          Bei Problemen wenden Sie sich bitte an einen Administrator
+        {/* Demo PIN Text */}
+        <p className="text-xs text-gray-600 text-center mt-6">
+          Demo PIN: 1234
         </p>
       </div>
     </div>
