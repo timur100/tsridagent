@@ -215,6 +215,15 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
           Demo PIN: 1234
         </p>
       </div>
+      
+      {/* Logo unter dem PIN-Feld - klar sichtbar */}
+      <div className="flex items-center justify-center">
+        <img 
+          src={tsridLogo} 
+          alt="TSRID Logo" 
+          className="w-48 h-48 object-contain"
+        />
+      </div>
     </div>
   );
 };
