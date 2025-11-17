@@ -580,16 +580,17 @@ class TicketingMicroserviceTester:
             
             data = response.json()
             
-            if not data.get("success"):
+            # The response is directly a list of services, not wrapped in success/services
+            if not isinstance(data, list):
                 self.log_result(
                     "Admin Portal - Services List", 
                     False, 
-                    "Services config response success is not True",
+                    "Services config response is not a list",
                     data
                 )
                 return False
             
-            services = data.get("services", [])
+            services = data
             
             # Look for Ticketing Service
             ticketing_service_found = False
