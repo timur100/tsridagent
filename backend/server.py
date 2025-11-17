@@ -206,6 +206,9 @@ app.include_router(service_proxy_router)
 # Service MongoDB Info
 app.include_router(service_mongodb_info_router)
 
+# MongoDB Summary (separate router)
+app.include_router(mongodb_summary_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
