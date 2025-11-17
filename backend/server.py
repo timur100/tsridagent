@@ -190,6 +190,9 @@ api_router.include_router(resources_router, prefix="/resources", tags=["resource
 # Customers (Multi-Tenancy)
 api_router.include_router(customers_router, prefix="/customers", tags=["customers"])
 
+# Services Configuration (Microservices Management)
+app.include_router(services_config_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
