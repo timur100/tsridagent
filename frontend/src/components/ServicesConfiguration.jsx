@@ -590,20 +590,20 @@ const ServicesConfiguration = () => {
                 {/* Database Info */}
                 <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Database Name:</span>
-                    <code className="bg-gray-200 dark:bg-gray-800 px-2 py-1 rounded">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Database Name:</span>
+                    <code className="bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100 px-3 py-1 rounded font-semibold">
                       {mongodbInfo[showMongoDetails].database_name}
                     </code>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Verbindung:</span>
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Verbindung:</span>
                     <Badge variant={mongodbInfo[showMongoDetails].connected ? "success" : "destructive"}>
                       {mongodbInfo[showMongoDetails].connected ? "Verbunden" : "Getrennt"}
                     </Badge>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="font-medium">Gesamt Dokumente:</span>
-                    <span className="text-lg font-bold">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Gesamt Dokumente:</span>
+                    <span className="text-lg font-bold text-gray-900 dark:text-gray-100">
                       {mongodbInfo[showMongoDetails].total_documents?.toLocaleString() || 0}
                     </span>
                   </div>
