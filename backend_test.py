@@ -507,84 +507,54 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_update_order_status(self):
-        """Test updating order status"""
+    def test_filter_customers(self):
+        """Test filtering customers by customer_type"""
         try:
-            # First, get all orders to find one to update
-            orders_response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
-            if orders_response.status_code != 200:
-                self.log_result(
-                    "Update Order Status", 
-                    False, 
-                    f"Failed to get orders list for test setup. Status: {orders_response.status_code}",
-                    orders_response.text
-                )
-                return False
-            
-            orders = orders_response.json()
-            if not orders:
-                self.log_result(
-                    "Update Order Status", 
-                    False, 
-                    "No orders found to test with",
-                    None
-                )
-                return False
-            
-            # Use the first order
-            test_order = orders[0]
-            order_id = test_order.get("id")
-            original_status = test_order.get("status")
-            
-            if not order_id:
-                self.log_result(
-                    "Update Order Status", 
-                    False, 
-                    "First order missing id field",
-                    test_order
-                )
-                return False
-            
-            # Update status to 'confirmed'
-            new_status = "confirmed" if original_status != "confirmed" else "processing"
-            update_data = {"status": new_status}
-            
-            response = self.order_service_session.put(
-                f"{ORDER_SERVICE_URL}/api/orders/{order_id}", 
-                json=update_data
-            )
+            # Test filter by customer_type=business
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers?customer_type=business")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Update Order Status", 
+                    "Filter Customers", 
                     False, 
-                    f"Update order failed. Status: {response.status_code}",
+                    f"Filter by customer_type failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify status was updated
-            if data.get("status") != new_status:
+            # Verify response is an array
+            if not isinstance(data, list):
                 self.log_result(
-                    "Update Order Status", 
+                    "Filter Customers", 
                     False, 
-                    f"Status not updated. Expected: {new_status}, Got: {data.get('status')}",
+                    f"Response is not an array. Type: {type(data)}",
                     data
                 )
                 return False
             
+            # Verify all customers have customer_type = business
+            for customer in data:
+                if customer.get("customer_type") != "business":
+                    self.log_result(
+                        "Filter Customers", 
+                        False, 
+                        f"Customer has wrong type: {customer.get('customer_type')}",
+                        customer
+                    )
+                    return False
+            
             self.log_result(
-                "Update Order Status", 
+                "Filter Customers", 
                 True, 
-                f"Successfully updated order {order_id} status from {original_status} to {new_status}"
+                f"Customer type filter working: {len(data)} business customers found"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Update Order Status", 
+                "Filter Customers", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
