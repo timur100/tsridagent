@@ -135,51 +135,42 @@ class DeviceServiceTester:
             )
             return False
     
-    def test_portal_services_endpoint(self):
-        """Test GET /api/portal/services endpoint and verify service order"""
+    def test_device_service_health(self):
+        """Test Device Service health endpoint"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/services")
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/health")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Portal Services Endpoint", 
+                    "Device Service Health Check", 
                     False, 
-                    f"Failed to get services. Status: {response.status_code}",
+                    f"Health check failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an array
-            if not isinstance(data, list):
+            # Verify response structure
+            if data.get("status") != "healthy" or data.get("service") != "Device Service":
                 self.log_result(
-                    "Portal Services Endpoint", 
+                    "Device Service Health Check", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
-                    data
-                )
-                return False
-            
-            if len(data) == 0:
-                self.log_result(
-                    "Portal Services Endpoint", 
-                    False, 
-                    "No services returned in response",
+                    f"Unexpected health response",
                     data
                 )
                 return False
             
             self.log_result(
-                "Portal Services Endpoint", 
+                "Device Service Health Check", 
                 True, 
-                f"Successfully retrieved {len(data)} services"
+                "Device Service is healthy"
             )
-            return data
+            return True
             
         except Exception as e:
             self.log_result(
-                "Portal Services Endpoint", 
+                "Device Service Health Check", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
