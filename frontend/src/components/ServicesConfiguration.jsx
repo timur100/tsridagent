@@ -317,6 +317,47 @@ const ServicesConfiguration = () => {
                   </div>
                 )}
                 
+                {/* MongoDB Info */}
+                {mongodbInfo[service.service_id] && (
+                  <div className="border-t pt-3 space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      <Database className="w-4 h-4" />
+                      MongoDB Status
+                    </div>
+                    {mongodbInfo[service.service_id].connected ? (
+                      <div className="space-y-1 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Database:</span>
+                          <span className="font-mono">{mongodbInfo[service.service_id].database_name}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Collections:</span>
+                          <span className="font-medium">{mongodbInfo[service.service_id].collections?.length || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Dokumente:</span>
+                          <span className="font-medium">{mongodbInfo[service.service_id].total_documents || 0}</span>
+                        </div>
+                        {mongodbInfo[service.service_id].collections && mongodbInfo[service.service_id].collections.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full mt-1 h-7 text-xs"
+                            onClick={() => setShowMongoDetails(service.service_id)}
+                          >
+                            <Info className="w-3 h-3 mr-1" />
+                            Details anzeigen
+                          </Button>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
+                        {mongodbInfo[service.service_id].error || 'Nicht verbunden'}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 <div className="flex gap-2 pt-2">
                   <Button 
                     variant="default"
