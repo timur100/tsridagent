@@ -738,9 +738,9 @@ class LicenseServiceTester:
             return False
     
     def test_mongodb_summary(self):
-        """Test MongoDB integration shows customer_db"""
+        """Test MongoDB integration shows license_db"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=customer")
+            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=license")
             
             if response.status_code != 200:
                 self.log_result(
@@ -753,44 +753,44 @@ class LicenseServiceTester:
             
             data = response.json()
             
-            # The API returns a list of services, find the customer service
-            customer_service_info = None
+            # The API returns a list of services, find the license service
+            license_service_info = None
             if isinstance(data, list):
                 for service in data:
-                    if service.get("service_id") == "customer_service_001":
-                        customer_service_info = service
+                    if service.get("service_id") == "license_service_001":
+                        license_service_info = service
                         break
             else:
-                customer_service_info = data
+                license_service_info = data
             
-            if not customer_service_info:
+            if not license_service_info:
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Customer service not found in MongoDB summary",
+                    "License service not found in MongoDB summary",
                     data
                 )
                 return False
             
-            mongodb_info = customer_service_info.get("mongodb_info", {})
+            mongodb_info = license_service_info.get("mongodb_info", {})
             
             # Verify database name
-            if mongodb_info.get("database_name") != "customer_db":
+            if mongodb_info.get("database_name") != "license_db":
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'customer_db'",
+                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'license_db'",
                     mongodb_info
                 )
                 return False
             
             # Verify collections exist
             collections = mongodb_info.get("collections", [])
-            if not any(col.get("name") == "customers" for col in collections):
+            if not any(col.get("name") == "licenses" for col in collections):
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Customers collection not found",
+                    "Licenses collection not found",
                     mongodb_info
                 )
                 return False
