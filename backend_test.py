@@ -922,24 +922,24 @@ class OrderServiceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Location Service Comprehensive Testing...")
+    print("Starting Order Service Comprehensive Testing...")
     print()
     
-    # Test Location Service
-    tester = LocationServiceTester()
+    # Test Order Service
+    tester = OrderServiceTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Location Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Order Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 LOCATION SERVICE TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 ORDER SERVICE TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ LOCATION SERVICE TESTING FOUND ISSUES!")
+        print("❌ ORDER SERVICE TESTING FOUND ISSUES!")
         sys.exit(1)
