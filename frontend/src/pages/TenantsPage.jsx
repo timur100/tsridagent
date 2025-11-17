@@ -329,7 +329,7 @@ const TenantsPage = () => {
                   {tenant.logo_url ? (
                     <img src={tenant.logo_url} alt={tenant.name} className="w-12 h-12 rounded-lg object-cover" />
                   ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#c00000] to-[#900000] rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-lg">
                         {tenant.display_name.charAt(0).toUpperCase()}
                       </span>
@@ -340,14 +340,14 @@ const TenantsPage = () => {
               </div>
 
               {/* Tenant Info */}
-              <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate" title={tenant.display_name}>
+              <h3 className={`text-lg font-semibold mb-1 truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} title={tenant.display_name}>
                 {tenant.display_name}
               </h3>
-              <p className="text-sm text-gray-600 mb-1 truncate" title={tenant.name}>
+              <p className={`text-sm mb-1 truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} title={tenant.name}>
                 {tenant.name}
               </p>
               {tenant.domain && (
-                <p className="text-xs text-indigo-600 mb-3 truncate" title={tenant.domain}>
+                <p className={`text-xs mb-3 truncate ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} title={tenant.domain}>
                   {tenant.domain}
                 </p>
               )}
