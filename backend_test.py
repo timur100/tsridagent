@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Customer Service Comprehensive Testing
-Tests the newly created Customer Service (Port 8107) to ensure all endpoints are working correctly.
+Backend API Testing for License Service Comprehensive Testing
+Tests the newly created License Service (Port 8108) to ensure all endpoints are working correctly.
 """
 
 import requests
@@ -12,9 +12,9 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://auth-identity-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-CUSTOMER_SERVICE_URL = "http://localhost:8107"
+LICENSE_SERVICE_URL = "http://localhost:8108"
 
-class CustomerServiceTester:
+class LicenseServiceTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
