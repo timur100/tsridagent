@@ -135,14 +135,14 @@ class OrderServiceTester:
             )
             return False
     
-    def test_location_service_health(self):
-        """Test Location Service health endpoint"""
+    def test_order_service_health(self):
+        """Test Order Service health endpoint"""
         try:
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/health")
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/health")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Location Service Health Check", 
+                    "Order Service Health Check", 
                     False, 
                     f"Health check failed. Status: {response.status_code}",
                     response.text
@@ -152,9 +152,9 @@ class OrderServiceTester:
             data = response.json()
             
             # Verify response structure
-            if data.get("status") != "healthy" or data.get("service") != "Location Service":
+            if data.get("status") != "healthy" or data.get("service") != "Order Service":
                 self.log_result(
-                    "Location Service Health Check", 
+                    "Order Service Health Check", 
                     False, 
                     f"Unexpected health response",
                     data
@@ -162,15 +162,15 @@ class OrderServiceTester:
                 return False
             
             self.log_result(
-                "Location Service Health Check", 
+                "Order Service Health Check", 
                 True, 
-                "Location Service is healthy"
+                "Order Service is healthy"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Location Service Health Check", 
+                "Order Service Health Check", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
