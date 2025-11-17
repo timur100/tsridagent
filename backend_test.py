@@ -863,24 +863,24 @@ class CustomerServiceTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Order Service Comprehensive Testing...")
+    print("Starting Customer Service Comprehensive Testing...")
     print()
     
-    # Test Order Service
-    tester = OrderServiceTester()
+    # Test Customer Service
+    tester = CustomerServiceTester()
     test_success = tester.run_all_tests()
     
     print()
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Order Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Customer Service Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 ORDER SERVICE TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 CUSTOMER SERVICE TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ ORDER SERVICE TESTING FOUND ISSUES!")
+        print("❌ CUSTOMER SERVICE TESTING FOUND ISSUES!")
         sys.exit(1)
