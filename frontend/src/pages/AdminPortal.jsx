@@ -1475,6 +1475,10 @@ const AdminPortalContent = () => {
                   <ServicesConfiguration />
                 )}
 
+                {settingsTab === 'subscription-plans' && (
+                  <SubscriptionPlans />
+                )}
+
                 {settingsTab === 'integrations' && (
                   <div>
                     <div className="mb-4">
