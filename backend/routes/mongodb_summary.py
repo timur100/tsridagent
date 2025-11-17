@@ -147,6 +147,30 @@ async def get_all_services_mongodb_summary():
                         "error": None
                     }
                 
+                elif service_type == 'location':
+                    # Get location_db info
+                    location_db = client['location_db']
+                    collection_names = await location_db.list_collection_names()
+                    
+                    collections = []
+                    total_docs = 0
+                    
+                    for coll_name in collection_names:
+                        count = await location_db[coll_name].count_documents({})
+                        total_docs += count
+                        collections.append({
+                            "name": coll_name,
+                            "document_count": count
+                        })
+                    
+                    mongodb_info = {
+                        "connected": True,
+                        "database_name": "location_db",
+                        "collections": collections,
+                        "total_documents": total_docs,
+                        "error": None
+                    }
+                
                 elif service_type == 'portal':
                     # Get portal_db info
                     collection_names = await db.list_collection_names()
