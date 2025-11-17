@@ -553,89 +553,84 @@ class OrderServiceTester:
             )
             return False
     
-    def test_filter_by_status_and_type(self):
-        """Test filtering locations by status and type"""
+    def test_update_order_status(self):
+        """Test updating order status"""
         try:
-            # Test filter by status=active
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations?status=active")
+            # First, get all orders to find one to update
+            orders_response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
+            if orders_response.status_code != 200:
+                self.log_result(
+                    "Update Order Status", 
+                    False, 
+                    f"Failed to get orders list for test setup. Status: {orders_response.status_code}",
+                    orders_response.text
+                )
+                return False
+            
+            orders = orders_response.json()
+            if not orders:
+                self.log_result(
+                    "Update Order Status", 
+                    False, 
+                    "No orders found to test with",
+                    None
+                )
+                return False
+            
+            # Use the first order
+            test_order = orders[0]
+            order_id = test_order.get("id")
+            original_status = test_order.get("status")
+            
+            if not order_id:
+                self.log_result(
+                    "Update Order Status", 
+                    False, 
+                    "First order missing id field",
+                    test_order
+                )
+                return False
+            
+            # Update status to 'confirmed'
+            new_status = "confirmed" if original_status != "confirmed" else "processing"
+            update_data = {"status": new_status}
+            
+            response = self.order_service_session.put(
+                f"{ORDER_SERVICE_URL}/api/orders/{order_id}", 
+                json=update_data
+            )
             
             if response.status_code != 200:
                 self.log_result(
-                    "Filter by Status", 
+                    "Update Order Status", 
                     False, 
-                    f"Filter by status failed. Status: {response.status_code}",
+                    f"Update order failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            # Verify response is an array
-            if not isinstance(data, list):
+            # Verify status was updated
+            if data.get("status") != new_status:
                 self.log_result(
-                    "Filter by Status", 
+                    "Update Order Status", 
                     False, 
-                    f"Response is not an array. Type: {type(data)}",
+                    f"Status not updated. Expected: {new_status}, Got: {data.get('status')}",
                     data
                 )
                 return False
             
-            # Verify all locations have status = active
-            for location in data:
-                if location.get("status") != "active":
-                    self.log_result(
-                        "Filter by Status", 
-                        False, 
-                        f"Location has wrong status: {location.get('status')}",
-                        location
-                    )
-                    return False
-            
-            # Test filter by location_type=station
-            response2 = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/api/locations?location_type=station")
-            
-            if response2.status_code != 200:
-                self.log_result(
-                    "Filter by Type", 
-                    False, 
-                    f"Filter by type failed. Status: {response2.status_code}",
-                    response2.text
-                )
-                return False
-            
-            data2 = response2.json()
-            
-            # Verify response is an array
-            if not isinstance(data2, list):
-                self.log_result(
-                    "Filter by Type", 
-                    False, 
-                    f"Response is not an array. Type: {type(data2)}",
-                    data2
-                )
-                return False
-            
-            # Verify all locations have location_type = station
-            for location in data2:
-                if location.get("location_type") != "station":
-                    self.log_result(
-                        "Filter by Type", 
-                        False, 
-                        f"Location has wrong type: {location.get('location_type')}",
-                        location
-                    )
-                    return False
-            
             self.log_result(
-                "Filter by Status and Type", 
+                "Update Order Status", 
                 True, 
-                f"Status filter: {len(data)} active locations, Type filter: {len(data2)} stations"
+                f"Successfully updated order {order_id} status from {original_status} to {new_status}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Filter by Status and Type", 
+                "Update Order Status", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
