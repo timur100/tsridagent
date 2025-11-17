@@ -683,9 +683,9 @@ class LocationServiceTester:
             return False
     
     def test_mongodb_summary(self):
-        """Test MongoDB integration shows device_db"""
+        """Test MongoDB integration shows location_db"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=device")
+            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=location")
             
             if response.status_code != 200:
                 self.log_result(
@@ -698,44 +698,44 @@ class LocationServiceTester:
             
             data = response.json()
             
-            # The API returns a list of services, find the device service
-            device_service_info = None
+            # The API returns a list of services, find the location service
+            location_service_info = None
             if isinstance(data, list):
                 for service in data:
-                    if service.get("service_id") == "device_service_001":
-                        device_service_info = service
+                    if service.get("service_id") == "location_service_001":
+                        location_service_info = service
                         break
             else:
-                device_service_info = data
+                location_service_info = data
             
-            if not device_service_info:
+            if not location_service_info:
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Device service not found in MongoDB summary",
+                    "Location service not found in MongoDB summary",
                     data
                 )
                 return False
             
-            mongodb_info = device_service_info.get("mongodb_info", {})
+            mongodb_info = location_service_info.get("mongodb_info", {})
             
             # Verify database name
-            if mongodb_info.get("database_name") != "device_db":
+            if mongodb_info.get("database_name") != "location_db":
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'device_db'",
+                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'location_db'",
                     mongodb_info
                 )
                 return False
             
             # Verify collections exist
             collections = mongodb_info.get("collections", [])
-            if not any(col.get("name") == "devices" for col in collections):
+            if not any(col.get("name") == "locations" for col in collections):
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Devices collection not found",
+                    "Locations collection not found",
                     mongodb_info
                 )
                 return False
