@@ -111,7 +111,7 @@ async def service_info():
     }
 
 
-# Location Routes
+# Location Routes - Specific routes first
 @app.get("/api/locations/stats")
 async def get_location_stats():
     """Get location statistics"""
