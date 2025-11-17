@@ -412,19 +412,6 @@ const TenantsPage = () => {
           backendUrl={BACKEND_URL}
         />
       )}
-
-      {/* Detail Modal */}
-      {selectedTenant && (
-        <TenantDetailModal
-          tenant={selectedTenant}
-          onClose={() => setSelectedTenant(null)}
-          onUpdate={() => {
-            fetchTenants();
-            fetchStats();
-          }}
-          backendUrl={BACKEND_URL}
-        />
-      )}
     </div>
   );
 };
