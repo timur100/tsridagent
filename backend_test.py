@@ -176,14 +176,14 @@ class OrderServiceTester:
             )
             return False
     
-    def test_location_service_info(self):
-        """Test Location Service info endpoint"""
+    def test_order_service_info(self):
+        """Test Order Service info endpoint"""
         try:
-            response = self.location_service_session.get(f"{LOCATION_SERVICE_URL}/info")
+            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/info")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Location Service Info", 
+                    "Order Service Info", 
                     False, 
                     f"Info endpoint failed. Status: {response.status_code}",
                     response.text
@@ -198,16 +198,16 @@ class OrderServiceTester:
             
             if missing_fields:
                 self.log_result(
-                    "Location Service Info", 
+                    "Order Service Info", 
                     False, 
                     f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
-            if data.get("service_name") != "Location Service":
+            if data.get("service_name") != "Order Service":
                 self.log_result(
-                    "Location Service Info", 
+                    "Order Service Info", 
                     False, 
                     f"Unexpected service name: {data.get('service_name')}",
                     data
@@ -215,7 +215,7 @@ class OrderServiceTester:
                 return False
             
             self.log_result(
-                "Location Service Info", 
+                "Order Service Info", 
                 True, 
                 f"Service info correct: {data.get('service_name')} v{data.get('version')}"
             )
@@ -223,7 +223,7 @@ class OrderServiceTester:
             
         except Exception as e:
             self.log_result(
-                "Location Service Info", 
+                "Order Service Info", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
