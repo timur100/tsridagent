@@ -229,64 +229,63 @@ class DeviceServiceTester:
             )
             return False
     
-    def test_service_order_validation(self, services):
-        """Test that services are ordered correctly: auth, id_verification, inventory, support"""
+    def test_device_statistics(self):
+        """Test Device Service statistics endpoint"""
         try:
-            if not services or len(services) == 0:
+            response = self.device_service_session.get(f"{DEVICE_SERVICE_URL}/api/devices/stats")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Service Order Validation", 
+                    "Device Statistics", 
                     False, 
-                    "No services provided for testing"
+                    f"Statistics endpoint failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Extract service types in order
-            service_types = [service.get('service_type') for service in services]
-            service_names = [service.get('service_name') for service in services]
+            data = response.json()
             
-            print(f"   Found services in order:")
-            for i, (service_type, service_name) in enumerate(zip(service_types, service_names)):
-                print(f"   {i+1}. {service_name} (type: {service_type})")
+            # Verify response structure
+            required_fields = ["total", "by_status", "by_type"]
+            missing_fields = [field for field in required_fields if field not in data]
             
-            # Check if auth is first
-            if len(service_types) > 0 and service_types[0] != 'auth':
+            if missing_fields:
                 self.log_result(
-                    "Service Order Validation", 
+                    "Device Statistics", 
                     False, 
-                    f"Auth service is not first. Order: {service_types}"
+                    f"Missing required fields: {missing_fields}",
+                    data
                 )
                 return False
             
-            # Verify expected order for services that exist
-            expected_positions = {
-                'auth': 0,
-                'id_verification': 1,
-                'inventory': 2,
-                'support': 3
-            }
+            # Verify by_status structure
+            status_fields = ["active", "inactive", "maintenance", "offline"]
+            by_status = data.get("by_status", {})
+            missing_status = [field for field in status_fields if field not in by_status]
             
-            # Check positions of expected services
-            for service_type, expected_pos in expected_positions.items():
-                if service_type in service_types:
-                    actual_pos = service_types.index(service_type)
-                    if actual_pos != expected_pos:
-                        self.log_result(
-                            "Service Order Validation", 
-                            False, 
-                            f"Service '{service_type}' is at position {actual_pos}, expected position {expected_pos}"
-                        )
-                        return False
+            if missing_status:
+                self.log_result(
+                    "Device Statistics", 
+                    False, 
+                    f"Missing status fields: {missing_status}",
+                    data
+                )
+                return False
+            
+            total = data.get("total", 0)
+            active = by_status.get("active", 0)
+            maintenance = by_status.get("maintenance", 0)
             
             self.log_result(
-                "Service Order Validation", 
+                "Device Statistics", 
                 True, 
-                f"Services are correctly ordered: {service_types}"
+                f"Statistics retrieved: {total} total devices, {active} active, {maintenance} maintenance"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Service Order Validation", 
+                "Device Statistics", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
