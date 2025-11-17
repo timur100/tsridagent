@@ -15,6 +15,7 @@ import { Card } from '../components/ui/card';
 
 const TenantsPage = () => {
   const { theme } = useTheme();
+  const [activeSubTab, setActiveSubTab] = useState('overview');
   const [tenants, setTenants] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,6 +26,14 @@ const TenantsPage = () => {
   const [selectedTenant, setSelectedTenant] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  const subTabs = [
+    { id: 'overview', label: 'Übersicht' },
+    { id: 'subscription', label: 'Vertrag & Subscription' },
+    { id: 'locations', label: 'Standorte' },
+    { id: 'branding', label: 'Branding' },
+    { id: 'billing', label: 'Abrechnung' }
+  ];
 
   useEffect(() => {
     fetchStats();
