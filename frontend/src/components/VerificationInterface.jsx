@@ -1307,6 +1307,28 @@ const VerificationInterface = () => {
     }
   };
 
+  // Show loading spinner while checking PIN status
+  if (checkingPin) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="text-muted-foreground">Initialisiere...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show PIN prompt if required and not authenticated
+  if (pinRequired && !pinAuthenticated) {
+    return (
+      <ScannerPinPrompt 
+        onSuccess={() => setPinAuthenticated(true)}
+        onCancel={null} // No cancel button - must enter PIN
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen bg-background overflow-hidden">
       {/* Simulationsmodus Badge - OBEN RECHTS */}
