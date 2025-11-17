@@ -750,9 +750,9 @@ class OrderServiceTester:
             return False
     
     def test_mongodb_summary(self):
-        """Test MongoDB integration shows location_db"""
+        """Test MongoDB integration shows order_db"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=location")
+            response = self.session.get(f"{API_BASE}/portal/mongodb-summary?service_type=order")
             
             if response.status_code != 200:
                 self.log_result(
@@ -765,44 +765,44 @@ class OrderServiceTester:
             
             data = response.json()
             
-            # The API returns a list of services, find the location service
-            location_service_info = None
+            # The API returns a list of services, find the order service
+            order_service_info = None
             if isinstance(data, list):
                 for service in data:
-                    if service.get("service_id") == "location_service_001":
-                        location_service_info = service
+                    if service.get("service_id") == "order_service_001":
+                        order_service_info = service
                         break
             else:
-                location_service_info = data
+                order_service_info = data
             
-            if not location_service_info:
+            if not order_service_info:
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Location service not found in MongoDB summary",
+                    "Order service not found in MongoDB summary",
                     data
                 )
                 return False
             
-            mongodb_info = location_service_info.get("mongodb_info", {})
+            mongodb_info = order_service_info.get("mongodb_info", {})
             
             # Verify database name
-            if mongodb_info.get("database_name") != "location_db":
+            if mongodb_info.get("database_name") != "order_db":
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'location_db'",
+                    f"Wrong database name: {mongodb_info.get('database_name')}, expected 'order_db'",
                     mongodb_info
                 )
                 return False
             
             # Verify collections exist
             collections = mongodb_info.get("collections", [])
-            if not any(col.get("name") == "locations" for col in collections):
+            if not any(col.get("name") == "orders" for col in collections):
                 self.log_result(
                     "MongoDB Summary", 
                     False, 
-                    "Locations collection not found",
+                    "Orders collection not found",
                     mongodb_info
                 )
                 return False
