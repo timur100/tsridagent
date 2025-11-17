@@ -499,8 +499,20 @@ class LocationServiceTester:
                     found_bern01 = True
                     # Verify it contains "Berlin" in name or address
                     name = location.get("location_name", "").lower()
-                    address = location.get("address", "").lower()
-                    if "berlin" not in name and "berlin" not in address:
+                    address_obj = location.get("address", {})
+                    address_text = ""
+                    if isinstance(address_obj, dict):
+                        # Combine all address fields
+                        address_text = " ".join([
+                            str(address_obj.get("street", "")),
+                            str(address_obj.get("city", "")),
+                            str(address_obj.get("postal_code", "")),
+                            str(address_obj.get("country", ""))
+                        ]).lower()
+                    else:
+                        address_text = str(address_obj).lower()
+                    
+                    if "berlin" not in name and "berlin" not in address_text:
                         self.log_result(
                             "Search Locations", 
                             False, 
