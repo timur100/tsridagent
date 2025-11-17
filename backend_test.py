@@ -137,14 +137,14 @@ class LicenseServiceTester:
             )
             return False
     
-    def test_customer_service_health(self):
-        """Test Customer Service health endpoint"""
+    def test_license_service_health(self):
+        """Test License Service health endpoint"""
         try:
-            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/health")
+            response = self.license_service_session.get(f"{LICENSE_SERVICE_URL}/health")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Customer Service Health Check", 
+                    "License Service Health Check", 
                     False, 
                     f"Health check failed. Status: {response.status_code}",
                     response.text
@@ -154,9 +154,9 @@ class LicenseServiceTester:
             data = response.json()
             
             # Verify response structure
-            if data.get("status") != "healthy" or data.get("service") != "Customer Service":
+            if data.get("status") != "healthy" or data.get("service") != "License Service":
                 self.log_result(
-                    "Customer Service Health Check", 
+                    "License Service Health Check", 
                     False, 
                     f"Unexpected health response",
                     data
@@ -164,15 +164,15 @@ class LicenseServiceTester:
                 return False
             
             self.log_result(
-                "Customer Service Health Check", 
+                "License Service Health Check", 
                 True, 
-                "Customer Service is healthy"
+                "License Service is healthy"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Customer Service Health Check", 
+                "License Service Health Check", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
