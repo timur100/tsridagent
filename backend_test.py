@@ -373,48 +373,19 @@ class CustomerServiceTester:
             )
             return False
     
-    def test_get_order_by_number(self):
-        """Test GET /api/orders/number/{order_number}"""
+    def test_get_customer_by_number(self):
+        """Test GET /api/customers/number/{customer_number}"""
         try:
-            # First, get all orders to find a valid order number
-            orders_response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders")
-            if orders_response.status_code != 200:
-                self.log_result(
-                    "Get Order by Number", 
-                    False, 
-                    f"Failed to get orders list for test setup. Status: {orders_response.status_code}",
-                    orders_response.text
-                )
-                return False
+            # Test with a known customer number from the review request
+            test_customer_number = "CUST-20251117-0001"
             
-            orders = orders_response.json()
-            if not orders:
-                self.log_result(
-                    "Get Order by Number", 
-                    False, 
-                    "No orders found to test with",
-                    None
-                )
-                return False
-            
-            # Use the first order's number
-            test_order_number = orders[0].get("order_number")
-            if not test_order_number:
-                self.log_result(
-                    "Get Order by Number", 
-                    False, 
-                    "First order missing order_number field",
-                    orders[0]
-                )
-                return False
-            
-            response = self.order_service_session.get(f"{ORDER_SERVICE_URL}/api/orders/number/{test_order_number}")
+            response = self.customer_service_session.get(f"{CUSTOMER_SERVICE_URL}/api/customers/number/{test_customer_number}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Order by Number", 
+                    "Get Customer by Number", 
                     False, 
-                    f"Get order by number failed. Status: {response.status_code}",
+                    f"Get customer by number failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -424,46 +395,46 @@ class CustomerServiceTester:
             # Verify response is an object (not array)
             if isinstance(data, list):
                 self.log_result(
-                    "Get Order by Number", 
+                    "Get Customer by Number", 
                     False, 
                     f"Response should be an object, not an array",
                     data
                 )
                 return False
             
-            # Verify order_number matches
-            if data.get("order_number") != test_order_number:
+            # Verify customer_number matches
+            if data.get("customer_number") != test_customer_number:
                 self.log_result(
-                    "Get Order by Number", 
+                    "Get Customer by Number", 
                     False, 
-                    f"Expected order_number {test_order_number}, got {data.get('order_number')}",
+                    f"Expected customer_number {test_customer_number}, got {data.get('customer_number')}",
                     data
                 )
                 return False
             
             # Check required fields
-            required_fields = ["id", "order_number", "customer_email", "items", "total_amount", "status"]
+            required_fields = ["id", "customer_number", "email", "first_name", "last_name"]
             missing_fields = [field for field in required_fields if field not in data]
             
             if missing_fields:
                 self.log_result(
-                    "Get Order by Number", 
+                    "Get Customer by Number", 
                     False, 
-                    f"Order missing required fields: {missing_fields}",
+                    f"Customer missing required fields: {missing_fields}",
                     data
                 )
                 return False
             
             self.log_result(
-                "Get Order by Number", 
+                "Get Customer by Number", 
                 True, 
-                f"Retrieved order {test_order_number} for customer {data.get('customer_email')}"
+                f"Retrieved customer {test_customer_number}: {data.get('first_name')} {data.get('last_name')} ({data.get('email')})"
             )
             return data
             
         except Exception as e:
             self.log_result(
-                "Get Order by Number", 
+                "Get Customer by Number", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
