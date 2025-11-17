@@ -816,67 +816,6 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
               </div>
             </Card>
 
-            {/* Vertragsinformationen */}
-            <Card className={`p-6 rounded-xl ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-            }`}>
-              <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Vertragsinformationen
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsnummer</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contract?.number || 'V-2025-001'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsbeginn</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contract?.start_date ? new Date(tenant.contract.start_date).toLocaleDateString('de-DE') : '17.11.2024'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vertragsende</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contract?.end_date ? new Date(tenant.contract.end_date).toLocaleDateString('de-DE') : '16.11.2025'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kündigungsfrist</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contract?.notice_period || '3 Monate'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zahlungsart</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.payment?.method || 'SEPA-Lastschrift'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zahlungsintervall</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.payment?.interval || 'Monatlich'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Umsatzsteuer-ID</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.tax?.vat_id || 'DE123456789'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Steuernummer</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.tax?.tax_number || '12/345/67890'}
-                  </p>
-                </div>
-              </div>
-            </Card>
-
             {/* Technische Informationen */}
             <Card className={`p-6 rounded-xl ${
               theme === 'dark' 
