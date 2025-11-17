@@ -640,16 +640,33 @@ class TicketingMicroserviceTester:
                 
                 data = response.json()
                 
-                if not data.get("success"):
+                # The response is a list of services with mongodb_info
+                if not isinstance(data, list):
                     self.log_result(
                         "Admin Portal - MongoDB Info", 
                         False, 
-                        "MongoDB info response success is not True",
+                        "MongoDB info response is not a list",
                         data
                     )
                     return False
                 
-                mongodb_info = data.get("mongodb_info", {})
+                # Find ticketing service in the list
+                ticketing_mongodb_info = None
+                for service_info in data:
+                    if service_info.get("service_name") == "Ticketing Service":
+                        ticketing_mongodb_info = service_info.get("mongodb_info", {})
+                        break
+                
+                if not ticketing_mongodb_info:
+                    self.log_result(
+                        "Admin Portal - MongoDB Info", 
+                        False, 
+                        "Ticketing Service MongoDB info not found in response",
+                        data
+                    )
+                    return False
+                
+                mongodb_info = ticketing_mongodb_info
                 
                 # Verify database name
                 if mongodb_info.get("database") != "ticketing_db":
