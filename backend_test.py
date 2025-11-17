@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Opening Hours Data Structure Investigation
-Tests the opening hours data structure for location BERN03 (BERNAU BEI BERLIN)
+Backend API Testing for Ticketing Microservice Migration
+Tests the complete microservices architecture migration with focus on Ticketing Service
 """
 
 import requests
