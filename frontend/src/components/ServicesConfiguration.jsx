@@ -36,6 +36,7 @@ import {
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const ServicesConfiguration = () => {
+  const { theme } = useTheme();
   const [services, setServices] = useState([]);
   const [healthStatus, setHealthStatus] = useState({});
   const [mongodbInfo, setMongodbInfo] = useState({});
