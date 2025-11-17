@@ -299,35 +299,33 @@ const ServicesConfiguration = () => {
       {/* Services Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {services.map((service) => (
-          <Card key={service.service_id} data-testid={`service-card-${service.service_type}`}>
-            <CardHeader>
-              <div className="flex justify-between items-start">
+          <Card key={service.service_id} data-testid={`service-card-${service.service_type}`} className="flex flex-col">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start min-h-[2rem]">
                 <div className="flex items-center gap-2">
                   <Server className="w-5 h-5" />
                   <CardTitle className="text-lg">{service.service_name}</CardTitle>
                 </div>
                 {getStatusBadge(service.service_id)}
               </div>
-              <CardDescription className="break-all">
+              <CardDescription className="break-all min-h-[1.5rem]">
                 {service.base_url}
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex justify-between text-sm">
+            <CardContent className="flex-1 flex flex-col">
+              <div className="flex-1 space-y-3">
+                <div className="flex justify-between text-sm min-h-[1.5rem]">
                   <span className="text-muted-foreground">Typ:</span>
                   <span className="font-medium">
                     {serviceTypes.find(t => t.value === service.service_type)?.label || service.service_type}
                   </span>
                 </div>
                 
-                {service.description && (
-                  <div className="text-sm text-muted-foreground">
-                    {service.description}
-                  </div>
-                )}
+                <div className="text-sm text-muted-foreground min-h-[3rem]">
+                  {service.description || '\u00A0'}
+                </div>
                 
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-sm min-h-[1.5rem]">
                   <span className="text-muted-foreground">Status:</span>
                   <Switch 
                     checked={service.enabled} 
@@ -335,30 +333,32 @@ const ServicesConfiguration = () => {
                   />
                 </div>
                 
-                {healthStatus[service.service_id]?.error && (
-                  <div className="text-xs text-red-500 bg-red-50 p-2 rounded">
-                    {healthStatus[service.service_id].error}
-                  </div>
-                )}
-                
-                {/* MongoDB Info */}
-                {mongodbInfo[service.service_id] && (
-                  <div className="border-t pt-3 space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium">
-                      <Database className="w-4 h-4" />
-                      MongoDB Status
+                <div className="min-h-[2rem]">
+                  {healthStatus[service.service_id]?.error && (
+                    <div className="text-xs text-red-500 bg-red-50 p-2 rounded">
+                      {healthStatus[service.service_id].error}
                     </div>
-                    {mongodbInfo[service.service_id].connected ? (
+                  )}
+                </div>
+                
+                {/* MongoDB Info - Fixed Height Section */}
+                <div className="border-t pt-3 space-y-2 min-h-[10rem]">
+                  <div className="flex items-center gap-2 text-sm font-medium min-h-[1.5rem]">
+                    <Database className="w-4 h-4" />
+                    MongoDB Status
+                  </div>
+                  {mongodbInfo[service.service_id] ? (
+                    mongodbInfo[service.service_id].connected ? (
                       <div className="space-y-1 text-xs">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between min-h-[1.25rem]">
                           <span className="text-muted-foreground">Database:</span>
                           <span className="font-mono">{mongodbInfo[service.service_id].database_name}</span>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between min-h-[1.25rem]">
                           <span className="text-muted-foreground">Collections:</span>
                           <span className="font-medium">{mongodbInfo[service.service_id].collections?.length || 0}</span>
                         </div>
-                        <div className="flex justify-between">
+                        <div className="flex justify-between min-h-[1.25rem]">
                           <span className="text-muted-foreground">Dokumente:</span>
                           <span className="font-medium">{mongodbInfo[service.service_id].total_documents || 0}</span>
                         </div>
@@ -378,46 +378,49 @@ const ServicesConfiguration = () => {
                       <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded">
                         {mongodbInfo[service.service_id].error || 'Nicht verbunden'}
                       </div>
-                    )}
-                  </div>
-                )}
-                
-                <div className="flex gap-2 pt-2">
-                  <Button 
-                    variant="default"
-                    size="sm" 
-                    className="flex-1 gap-1"
-                    onClick={() => handleOpenService(service)}
-                    data-testid={`open-service-${service.service_type}`}
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Öffnen
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => checkSingleHealth(service.service_id)}
-                    title="Health Check"
-                  >
-                    <Activity className="w-3 h-3" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => openEditModal(service)}
-                    title="Bearbeiten"
-                  >
-                    <Edit2 className="w-3 h-3" />
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => handleDelete(service.service_id)}
-                    title="Löschen"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
+                    )
+                  ) : (
+                    <div className="text-xs text-muted-foreground">Wird geladen...</div>
+                  )}
                 </div>
+              </div>
+              
+              {/* Buttons am Ende - immer auf gleicher Höhe */}
+              <div className="flex gap-2 pt-3 mt-auto">
+                <Button 
+                  variant="default"
+                  size="sm" 
+                  className="flex-1 gap-1"
+                  onClick={() => handleOpenService(service)}
+                  data-testid={`open-service-${service.service_type}`}
+                >
+                  <ExternalLink className="w-3 h-3" />
+                  Öffnen
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => checkSingleHealth(service.service_id)}
+                  title="Health Check"
+                >
+                  <Activity className="w-3 h-3" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => openEditModal(service)}
+                  title="Bearbeiten"
+                >
+                  <Edit2 className="w-3 h-3" />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => handleDelete(service.service_id)}
+                  title="Löschen"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </Button>
               </div>
             </CardContent>
           </Card>
