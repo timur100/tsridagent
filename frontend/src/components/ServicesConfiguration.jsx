@@ -315,12 +315,16 @@ const ServicesConfiguration = () => {
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start min-h-[2rem]">
                 <div className="flex items-center gap-2">
-                  <Server className="w-5 h-5" />
-                  <CardTitle className="text-lg">{service.service_name}</CardTitle>
+                  <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  <CardTitle className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {service.service_name}
+                  </CardTitle>
                 </div>
                 {getStatusBadge(service.service_id)}
               </div>
-              <CardDescription className="break-all min-h-[1.5rem]">
+              <CardDescription className={`break-all min-h-[1.5rem] ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>
                 {service.base_url}
               </CardDescription>
             </CardHeader>
