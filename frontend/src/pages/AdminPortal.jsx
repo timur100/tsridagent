@@ -43,6 +43,7 @@ import ComponentsManagement from '../components/ComponentsManagement';
 import ResourcesManagement from './ResourcesManagement';
 import SettingsSidebar from '../components/SettingsSidebar';
 import CustomerSwitcher from '../components/CustomerSwitcher';
+import ServicesConfiguration from '../components/ServicesConfiguration';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
