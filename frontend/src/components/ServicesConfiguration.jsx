@@ -37,10 +37,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 const ServicesConfiguration = () => {
   const [services, setServices] = useState([]);
   const [healthStatus, setHealthStatus] = useState({});
+  const [mongodbInfo, setMongodbInfo] = useState({});
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingService, setEditingService] = useState(null);
   const [checkingHealth, setCheckingHealth] = useState(false);
+  const [showMongoDetails, setShowMongoDetails] = useState(null);
 
   const [formData, setFormData] = useState({
     service_name: '',
