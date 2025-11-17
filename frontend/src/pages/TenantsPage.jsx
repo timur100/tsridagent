@@ -147,66 +147,76 @@ const TenantsPage = () => {
 
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <Building className="w-6 h-6 text-indigo-600" />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Gesamt</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total_tenants}</p>
+                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_tenants}</p>
               </div>
+              <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
+          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Aktiv</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.active_tenants}</p>
+                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktiv</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.active_tenants}</p>
               </div>
+              <CheckCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Clock className="w-6 h-6 text-blue-600" />
-              </div>
+          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Trial</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.trial_tenants}</p>
+                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Trial</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.trial_tenants}</p>
               </div>
+              <Clock className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-red-100 rounded-lg">
-                <XCircle className="w-6 h-6 text-red-600" />
-              </div>
+          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Gesperrt</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.suspended_tenants}</p>
+                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesperrt</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.suspended_tenants}</p>
               </div>
+              <XCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-lg shadow p-4 border border-gray-200">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Users className="w-6 h-6 text-purple-600" />
-              </div>
+          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Benutzer</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.total_users}</p>
+                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Benutzer</p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_users}</p>
               </div>
+              <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
             </div>
-          </div>
+          </Card>
         </div>
       )}
 
