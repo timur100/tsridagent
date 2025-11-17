@@ -89,6 +89,20 @@ async def get_service_configs():
             if isinstance(config.get('updated_at'), str):
                 config['updated_at'] = datetime.fromisoformat(config['updated_at'])
         
+        # Define the desired display order by service_type
+        service_type_order = {
+            'auth': 0,
+            'id_verification': 1,
+            'inventory': 2,
+            'support': 3,
+            'ticketing': 4,
+            'portal': 5,
+            'other': 99
+        }
+        
+        # Sort configs by service_type priority
+        configs.sort(key=lambda x: service_type_order.get(x.get('service_type', 'other'), 99))
+        
         return [ServiceConfig(**config) for config in configs]
         
     except Exception as e:
