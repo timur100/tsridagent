@@ -73,7 +73,7 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-@router.post("/register", response_model=LoginResponse)
+@router.post("/register")
 async def register(request: RegisterRequest):
     """Register a new portal user"""
     try:
