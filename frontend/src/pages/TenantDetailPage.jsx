@@ -292,6 +292,152 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     return labels[category] || category;
   };
 
+  // Location Management Functions
+  const fetchLocations = async () => {
+    setLoadingLocations(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}/locations`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data.locations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+      toast.error('Fehler beim Laden der Standorte');
+    } finally {
+      setLoadingLocations(false);
+    }
+  };
+
+  const handleLocationSubmit = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const url = editingLocation
+        ? `${BACKEND_URL}/api/tenants/${tenantId}/locations/${editingLocation.location_id}`
+        : `${BACKEND_URL}/api/tenants/${tenantId}/locations`;
+      
+      const method = editingLocation ? 'PUT' : 'POST';
+      
+      // Clean up form data - remove empty strings
+      const cleanData = Object.fromEntries(
+        Object.entries(locationFormData).filter(([_, v]) => v !== '')
+      );
+      
+      // Convert numeric fields
+      if (cleanData.id_checker) cleanData.id_checker = parseInt(cleanData.id_checker);
+      if (cleanData.latitude) cleanData.latitude = parseFloat(cleanData.latitude);
+      if (cleanData.longitude) cleanData.longitude = parseFloat(cleanData.longitude);
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanData)
+      });
+
+      if (response.ok) {
+        toast.success(editingLocation ? 'Standort aktualisiert' : 'Standort erstellt');
+        setShowLocationModal(false);
+        setEditingLocation(null);
+        resetLocationForm();
+        fetchLocations();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Location save error:', error);
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  const handleLocationEdit = (location) => {
+    setEditingLocation(location);
+    setLocationFormData({
+      location_code: location.location_code || '',
+      station_name: location.station_name || '',
+      postal_code: location.postal_code || '',
+      city: location.city || '',
+      street: location.street || '',
+      state: location.state || '',
+      manager: location.manager || '',
+      phone: location.phone || '',
+      phone_internal: location.phone_internal || '',
+      email: location.email || '',
+      main_type: location.main_type || 'A',
+      id_checker: location.id_checker?.toString() || '',
+      switch_info: location.switch_info || '',
+      port: location.port || '',
+      it_comment: location.it_comment || '',
+      tsr_remarks: location.tsr_remarks || '',
+      sn_pc: location.sn_pc || '',
+      sn_sc: location.sn_sc || '',
+      tv_id: location.tv_id || '',
+      latitude: location.latitude?.toString() || '',
+      longitude: location.longitude?.toString() || ''
+    });
+    setShowLocationModal(true);
+  };
+
+  const handleLocationDelete = async (locationId) => {
+    if (!window.confirm('Möchten Sie diesen Standort wirklich löschen?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}/locations/${locationId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        toast.success('Standort gelöscht');
+        fetchLocations();
+      } else {
+        toast.error('Löschen fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Löschen fehlgeschlagen');
+    }
+  };
+
+  const resetLocationForm = () => {
+    setLocationFormData({
+      location_code: '',
+      station_name: '',
+      postal_code: '',
+      city: '',
+      street: '',
+      state: '',
+      manager: '',
+      phone: '',
+      phone_internal: '',
+      email: '',
+      main_type: 'A',
+      id_checker: '',
+      switch_info: '',
+      port: '',
+      it_comment: '',
+      tsr_remarks: '',
+      sn_pc: '',
+      sn_sc: '',
+      tv_id: '',
+      latitude: '',
+      longitude: ''
+    });
+  };
+
   const getStatusBadge = (status) => {
     const styles = {
       active: 'bg-green-100 text-green-800 border-green-200',
