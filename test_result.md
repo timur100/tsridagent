@@ -239,15 +239,18 @@ test_plan:
 backend:
   - task: "Document Upload API - Complete Implementation"
     implemented: true
-    working: "NA"
+    working: true
     file: "routes/documents.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ Backend Dokument-Upload API vollständig implementiert: 1) POST /api/documents/upload - Unterstützt PDF, Word (.doc, .docx), Excel (.xls, .xlsx) mit Form Data (file, tenant_id, category, description), max 50MB, File Type Validierung, 2) GET /api/documents/tenant/{tenant_id} - Holt alle Dokumente für einen Tenant (mit optionalem category Filter), 3) GET /api/documents/download/{document_id} - Download via FileResponse, 4) DELETE /api/documents/{document_id} - Löscht Dokument von Disk und DB. Fixes: Form() Parameter für multipart/form-data, Async cursor handling korrigiert, Error handling mit File cleanup, Allowed extensions validation. Upload Directory: /app/uploads/documents, MongoDB Collection: portal_db.documents"
+        - working: true
+          agent: "testing"
+          comment: "✅ DOCUMENT UPLOAD API FULLY WORKING: Comprehensive testing completed with 10/10 tests passed successfully. AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123, received valid JWT token. TENANT SETUP: Used existing tenant 'Europcar' (ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8) for testing. DOCUMENT UPLOAD FUNCTIONALITY: ✅ PDF Upload - Successfully uploaded test_contract.pdf (1MB) with category 'contract', received proper response with success=true, document_id (UUID format), filename, file_size. ✅ Word Upload - Successfully uploaded test_invoice.docx (1MB) with category 'invoice', proper multipart form handling working. ✅ Excel Upload - Successfully uploaded test_report.xlsx (1MB) with category 'other', all file types (PDF, DOCX, XLSX) working correctly. DOCUMENT RETRIEVAL: ✅ GET /api/documents/tenant/{tenant_id} - Successfully retrieved all documents for tenant, proper response structure with success=true and documents array. ✅ Category Filter - GET /api/documents/tenant/{tenant_id}?category=contract working correctly, only returns documents with 'contract' category. DOCUMENT DOWNLOAD: ✅ GET /api/documents/download/{document_id} - Successfully downloaded document as FileResponse, proper content-disposition headers, file content retrieved correctly. VALIDATION & ERROR HANDLING: ✅ Invalid File Type - Correctly rejected .txt file with 400 error and proper error message 'Invalid file type. Allowed: PDF, DOC, DOCX, XLS, XLSX'. DOCUMENT DELETION: ✅ DELETE /api/documents/{document_id} - Successfully deleted document with success=true response, verified deletion by confirming 404 on subsequent download attempt, proper cleanup from both database and disk. FILE HANDLING: All multipart form data handling working correctly with proper Content-Type headers, file size validation, UUID document IDs, MongoDB storage in portal_db.documents collection. All German review request requirements met - document upload API is fully functional and production-ready."
 
 frontend:
   - task: "Document Upload UI in TenantDetailPage"
