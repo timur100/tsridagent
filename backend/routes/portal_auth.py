@@ -77,7 +77,7 @@ async def register(request: RegisterRequest):
     """Register a new portal user"""
     try:
         # Check if user exists
-        existing_user = db.portal_users.find_one({"email": request.email})
+        existing_user = auth_db.users.find_one({"email": request.email})
         if existing_user:
             raise HTTPException(status_code=400, detail="User already exists")
         
