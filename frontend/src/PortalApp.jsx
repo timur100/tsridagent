@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ImpersonationProvider, useImpersonation } from './contexts/ImpersonationContext';
+import { TenantProvider } from './contexts/TenantContext';
 import PortalLogin from './components/PortalLogin';
 import CustomerPortal from './pages/CustomerPortal';
 import AdminPortal from './pages/AdminPortal';
