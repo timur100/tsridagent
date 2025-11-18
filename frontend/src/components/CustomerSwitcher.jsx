@@ -123,32 +123,36 @@ const CustomerSwitcher = () => {
                 Kunde wechseln
               </p>
               
-              {/* All Customers Option */}
-              <button
-                onClick={() => handleCustomerSwitch(null)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
-                  !currentCustomer
-                    ? theme === 'dark'
-                      ? 'bg-[#c00000]/20 text-[#c00000]'
-                      : 'bg-red-50 text-[#c00000]'
-                    : theme === 'dark'
-                    ? 'hover:bg-[#3a3a3a] text-white'
-                    : 'hover:bg-gray-100 text-gray-900'
-                }`}
-                disabled={loading}
-              >
-                <span>Alle Kunden</span>
-                {!currentCustomer && <Check className="h-4 w-4" />}
-              </button>
+              {/* All Customers Option - only for super admin */}
+              {isSuperAdmin && (
+                <>
+                  <button
+                    onClick={() => handleCustomerSwitch('all', 'Alle Kunden')}
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
+                      selectedTenantId === 'all'
+                        ? theme === 'dark'
+                          ? 'bg-[#c00000]/20 text-[#c00000]'
+                          : 'bg-red-50 text-[#c00000]'
+                        : theme === 'dark'
+                        ? 'hover:bg-[#3a3a3a] text-white'
+                        : 'hover:bg-gray-100 text-gray-900'
+                    }`}
+                    disabled={loading}
+                  >
+                    <span>Alle Kunden</span>
+                    {selectedTenantId === 'all' && <Check className="h-4 w-4" />}
+                  </button>
+                  <div className="my-2 border-t border-gray-700" />
+                </>
+              )}
 
               {/* Customer List */}
-              <div className="my-2 border-t border-gray-700" />
               {customers.map((customer) => (
                 <button
                   key={customer.id}
-                  onClick={() => handleCustomerSwitch(customer.id)}
+                  onClick={() => handleCustomerSwitch(customer.id, customer.name)}
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
-                    currentCustomer?.id === customer.id
+                    selectedTenantId === customer.id
                       ? theme === 'dark'
                         ? 'bg-[#c00000]/20 text-[#c00000]'
                         : 'bg-red-50 text-[#c00000]'
@@ -159,7 +163,7 @@ const CustomerSwitcher = () => {
                   disabled={loading}
                 >
                   <span>{customer.name}</span>
-                  {currentCustomer?.id === customer.id && <Check className="h-4 w-4" />}
+                  {selectedTenantId === customer.id && <Check className="h-4 w-4" />}
                 </button>
               ))}
             </div>
