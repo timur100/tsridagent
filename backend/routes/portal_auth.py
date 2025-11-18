@@ -196,7 +196,7 @@ async def get_current_user(token_data: dict = Depends(verify_token)):
     """Get current user info"""
     try:
         email = token_data.get("sub")
-        user = db.portal_users.find_one({"email": email})
+        user = auth_db.users.find_one({"email": email})
         
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
