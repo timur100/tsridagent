@@ -288,7 +288,67 @@ async def global_search(
             if not priority_match and euroboxes_results:
                 priority_match = euroboxes_results[0]
         
-        total_results = len(artikel_results) + len(bestellungen_results) + len(geraete_results) + len(standorte_results) + len(tickets_results) + len(euroboxes_results)
+        # 6. Search Tenants (Admin only)
+        tenants_results = []
+        if user_role == "admin":
+            tenant_query = {
+                "$or": [
+                    {"name": search_regex},
+                    {"display_name": search_regex},
+                    {"domain": search_regex},
+                    {"contact.admin_email": search_regex}
+                ]
+            }
+            
+            portal_db = mongo_client['portal_db']
+            tenants = list(portal_db.tenants.find(tenant_query).limit(10))
+            for tenant in tenants:
+                if '_id' in tenant:
+                    del tenant['_id']
+                
+                tenants_results.append({
+                    "type": "tenant",
+                    "id": tenant.get('tenant_id'),
+                    "title": tenant.get('display_name', tenant.get('name', 'N/A')),
+                    "subtitle": f"Domain: {tenant.get('domain', 'N/A')} | Status: {tenant.get('status', 'N/A')}",
+                    "status": tenant.get('status'),
+                    "data": tenant
+                })
+            
+            # If no other results found but tenants found, set first tenant as priority
+            if not priority_match and tenants_results:
+                priority_match = tenants_results[0]
+        
+        # 7. Search Tenant Locations (Admin only)
+        tenant_locations_results = []
+        if user_role == "admin":
+            tenant_location_query = {
+                "$or": [
+                    {"location_code": search_regex},
+                    {"station_name": search_regex},
+                    {"city": search_regex},
+                    {"postal_code": search_regex},
+                    {"manager": search_regex},
+                    {"email": search_regex}
+                ]
+            }
+            
+            portal_db = mongo_client['portal_db']
+            tenant_locations = list(portal_db.tenant_locations.find(tenant_location_query).limit(10))
+            for location in tenant_locations:
+                if '_id' in location:
+                    del location['_id']
+                
+                tenant_locations_results.append({
+                    "type": "tenant_location",
+                    "id": location.get('location_id'),
+                    "title": f"{location.get('location_code', 'N/A')} - {location.get('station_name', 'N/A')}",
+                    "subtitle": f"{location.get('city', 'N/A')}, {location.get('state', 'N/A')}",
+                    "tenant_id": location.get('tenant_id'),
+                    "data": location
+                })
+        
+        total_results = len(artikel_results) + len(bestellungen_results) + len(geraete_results) + len(standorte_results) + len(tickets_results) + len(euroboxes_results) + len(tenants_results) + len(tenant_locations_results)
         
         return {
             "success": True,
@@ -299,10 +359,12 @@ async def global_search(
                 "geraete": geraete_results,
                 "standorte": standorte_results,
                 "tickets": tickets_results,
-                "euroboxes": euroboxes_results
+                "euroboxes": euroboxes_results,
+                "tenants": tenants_results,
+                "tenant_locations": tenant_locations_results
             },
             "total": total_results,
-            "priority_match": priority_match  # First match based on priority: Artikel > Bestellungen > Geräte > Standorte > Tickets > Euroboxes
+            "priority_match": priority_match  # First match based on priority: Artikel > Bestellungen > Geräte > Standorte > Tickets > Euroboxes > Tenants > Tenant Locations
         }
     
     except Exception as e:
