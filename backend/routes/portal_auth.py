@@ -142,11 +142,14 @@ async def login(request: LoginRequest):
             raise HTTPException(status_code=401, detail="User account is deactivated")
         
         # Create token with customer_id
+        # Get role - support both formats
+        user_role = user.get('role') or (user.get('roles', ['user'])[0] if user.get('roles') else 'user')
+        
         access_token = create_access_token(
             data={
                 "sub": request.email, 
-                "role": user['role'],
-                "customer_id": user.get('customer_id')  # Add customer_id to JWT
+                "role": user_role,
+                "customer_id": user.get('customer_id') or user.get('user_id')  # Add customer_id to JWT
             }
         )
         
