@@ -12,38 +12,48 @@ const CustomerSwitcher = () => {
   const [loading, setLoading] = useState(false);
 
   const fetchCustomers = async () => {
+    console.log('[CustomerSwitcher] fetchCustomers called');
     try {
       let allCustomers = [];
       
       // Try to fetch customers from old system (may not exist)
       try {
+        console.log('[CustomerSwitcher] Fetching from /api/customers/list...');
         const customersResult = await apiCall('/api/customers/list');
+        console.log('[CustomerSwitcher] Customers result:', customersResult);
         if (customersResult && customersResult.success && customersResult.data) {
           allCustomers = [...(customersResult.data.customers || [])];
         }
       } catch (error) {
         // Customers endpoint doesn't exist, that's ok
-        console.log('Customers endpoint not available');
+        console.log('[CustomerSwitcher] Customers endpoint not available:', error);
       }
       
       // Fetch tenants from new system
       try {
+        console.log('[CustomerSwitcher] Fetching from /api/tenants/...');
         const tenantsResult = await apiCall('/api/tenants/');
+        console.log('[CustomerSwitcher] Tenants result:', tenantsResult);
         if (tenantsResult && tenantsResult.tenants) {
+          console.log('[CustomerSwitcher] Tenants found:', tenantsResult.tenants.length);
           const tenants = tenantsResult.tenants.map(tenant => ({
             id: tenant.tenant_id,
             name: tenant.display_name || tenant.name,
             type: 'tenant' // Mark as tenant for identification
           }));
+          console.log('[CustomerSwitcher] Mapped tenants:', tenants);
           allCustomers = [...allCustomers, ...tenants];
+        } else {
+          console.log('[CustomerSwitcher] No tenants in result');
         }
       } catch (error) {
-        console.error('Error fetching tenants:', error);
+        console.error('[CustomerSwitcher] Error fetching tenants:', error);
       }
       
+      console.log('[CustomerSwitcher] Setting customers:', allCustomers);
       setCustomers(allCustomers);
     } catch (error) {
-      console.error('Error fetching customers:', error);
+      console.error('[CustomerSwitcher] Error in fetchCustomers:', error);
     }
   };
 
