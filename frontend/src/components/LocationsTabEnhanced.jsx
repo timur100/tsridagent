@@ -328,6 +328,22 @@ const LocationsTabEnhanced = ({
             <option key={city} value={city}>{city}</option>
           ))}
         </select>
+
+        {/* Main Type Filter (Besondere Orte) */}
+        <select
+          value={filters.mainType}
+          onChange={(e) => handleFilterChange('mainType', e.target.value)}
+          className={`px-3 py-2 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+        >
+          <option value="">Besondere Orte</option>
+          {filterOptions.mainTypes.map(type => (
+            <option key={type} value={type}>{type}</option>
+          ))}
+        </select>
       </div>
 
       {/* Locations Table */}
