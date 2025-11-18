@@ -1123,7 +1123,8 @@ const AdminPortalContent = () => {
         {activeTab === 'tenants' && selectedTenantId && (
           <TenantDetailPage 
             tenantId={selectedTenantId} 
-            onBack={() => setSelectedTenantId(null)} 
+            onBack={() => setSelectedTenantId(null)}
+            initialTab={sessionStorage.getItem('returnToTab') || 'dashboard'}
           />
         )}
 
