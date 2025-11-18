@@ -563,8 +563,6 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
       <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
         Zeige {filteredDevices.length} von {devices.length} Geräten
       </div>
-      </div>
-      {/* End of Sticky Header */}
 
       {/* Devices Table */}
       <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700">
