@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useImpersonation } from '../contexts/ImpersonationContext';
+import { useTenant } from '../contexts/TenantContext';
 import { CustomerFilterProvider, useCustomerFilter } from '../contexts/CustomerFilterContext';
 import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
