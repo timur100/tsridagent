@@ -41,7 +41,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
     }, 30000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedTenantId]); // Reload when tenant changes
 
   useEffect(() => {
     filterOrders();
