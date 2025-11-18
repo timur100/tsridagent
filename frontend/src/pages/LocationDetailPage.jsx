@@ -410,8 +410,8 @@ const LocationDetailPage = () => {
         {/* Second Row of Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           {/* Benutzer */}
-          <Card className={`p-5 ${
-            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          <Card className={`p-5 transition-all duration-300 cursor-pointer hover:shadow-lg hover:-translate-y-1 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800 hover:bg-[#333333]' : 'bg-white border-gray-200 hover:shadow-xl'
           }`}>
             <div className="flex items-center justify-between">
               <div>
