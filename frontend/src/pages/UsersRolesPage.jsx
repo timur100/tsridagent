@@ -49,7 +49,8 @@ const UsersRolesPage = () => {
       await Promise.all([
         loadUsers(),
         loadRoles(),
-        loadTenants()
+        loadTenants(),
+        loadRegistrations()
       ]);
     } catch (error) {
       console.error('Error loading data:', error);
