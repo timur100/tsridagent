@@ -61,7 +61,7 @@ class TenantLocationUpdate(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
 
-@router.post("/{tenant_id}/locations")
+@router.post("/{tenant_id}")
 async def create_tenant_location(
     tenant_id: str,
     location: TenantLocationCreate,
