@@ -148,6 +148,8 @@ async def get_tickets(
             if customer_email:
                 query["customer_email"] = customer_email
         
+        if tenant_id:
+            query["tenant_id"] = tenant_id
         if status:
             query["status"] = status
         if priority:
