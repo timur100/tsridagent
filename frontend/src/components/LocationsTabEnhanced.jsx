@@ -57,6 +57,40 @@ const LocationsTabEnhanced = ({
     return STATE_NAMES[stateCode] || stateCode;
   };
 
+  // Hilfsfunktion um besondere Orte zu identifizieren
+  const getSpecialLocationType = (location) => {
+    const stationName = (location.station_name || '').toUpperCase();
+    const locationCode = (location.location_code || '').toUpperCase();
+    const mainType = location.main_type;
+    
+    const types = [];
+    
+    // Check for Airport
+    if (stationName.includes('AIRPORT') || stationName.includes('FLUGHAFEN') || 
+        locationCode.includes('AIR') || mainType === 'A') {
+      types.push('Airport');
+    }
+    
+    // Check for Mainstation
+    if (stationName.includes('HBF') || stationName.includes('HAUPTBAHNHOF') || 
+        stationName.includes('CENTRAL STATION') || stationName.includes('MAIN STATION')) {
+      types.push('Mainstation');
+    }
+    
+    // Check for 24h
+    if (stationName.includes('24') || stationName.includes('24H') || 
+        stationName.includes('24 H') || stationName.includes('24-H')) {
+      types.push('24h');
+    }
+    
+    // Check for Hotspot
+    if (stationName.includes('HOTSPOT') || mainType === 'CSS') {
+      types.push('Hotspot');
+    }
+    
+    return types;
+  };
+
   // Extract filter options from locations data
   useEffect(() => {
     if (!locations || locations.length === 0) {
