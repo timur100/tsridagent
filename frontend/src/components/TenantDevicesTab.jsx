@@ -64,22 +64,30 @@ const TenantDevicesTab = ({ tenantId }) => {
       });
       
       console.log('📦 API Response:', response);
+      console.log('📦 Response type:', typeof response);
+      console.log('📦 Response.success:', response?.success);
+      console.log('📦 Response.data:', response?.data);
+      console.log('📦 Response.data.devices:', response?.data?.devices);
       
-      if (response && response.success && response.data) {
+      if (response && response.success && response.data && response.data.devices) {
         console.log('✅ Devices loaded:', response.data.devices.length);
-        setDevices(response.data.devices || []);
+        setDevices(response.data.devices);
+      } else if (response && response.data && Array.isArray(response.data)) {
+        // Handle case where data is directly an array
+        console.log('✅ Devices loaded (array format):', response.data.length);
+        setDevices(response.data);
       } else {
-        console.error('❌ Error loading devices:', response);
-        toast.error('Keine Geräte gefunden oder Fehler beim Laden');
+        console.error('❌ Unexpected response format:', response);
+        toast.error('Keine Geräte gefunden oder unerwartetes Datenformat');
         setDevices([]);
       }
     } catch (error) {
       console.error('❌ Exception loading devices:', error);
-      toast.error('Fehler beim Laden der Geräte: ' + error.message);
+      toast.error('Fehler beim Laden der Geräte: ' + (error?.message || 'Unbekannter Fehler'));
       setDevices([]);
     } finally {
       setLoading(false);
-      console.log('🏁 Loading finished');
+      console.log('🏁 Loading finished, devices count:', devices.length);
     }
   };
 
