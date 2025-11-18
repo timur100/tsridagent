@@ -102,6 +102,14 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     { id: 'billing', label: 'Abrechnung' }
   ];
 
+  // Update active tab when URL query parameter changes
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     fetchTenantDetails();
   }, [tenantId]);
