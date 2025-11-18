@@ -429,8 +429,8 @@ const LocationDetailPage = () => {
           </Card>
 
           {/* Geräte */}
-          <Card className={`p-5 ${
-            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          <Card className={`p-5 transition-all duration-300 cursor-pointer hover:shadow-lg hover:-translate-y-1 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800 hover:bg-[#333333]' : 'bg-white border-gray-200 hover:shadow-xl'
           }`}>
             <div className="flex items-center justify-between">
               <div>
