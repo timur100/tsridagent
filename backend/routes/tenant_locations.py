@@ -70,6 +70,12 @@ async def create_tenant_location(
 ):
     """Create a new location for a tenant"""
     try:
+        # Validate tenant exists by calling Auth service
+        async with httpx.AsyncClient() as client:
+            tenant_response = await client.get(f"http://localhost:8100/api/tenants/{tenant_id}")
+            if tenant_response.status_code == 404:
+                raise HTTPException(status_code=404, detail="Tenant not found")
+        
         # Check if location code already exists for this tenant
         existing = db.tenant_locations.find_one({
             "tenant_id": tenant_id,
