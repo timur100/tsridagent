@@ -78,6 +78,17 @@ const CustomerSwitcher = () => {
     }
   };
 
+  useEffect(() => {
+    console.log('[CustomerSwitcher] Component mounted, fetching data...');
+    fetchCustomers();
+    fetchCurrentCustomer();
+  }, []);
+
+  // Only show for super_admin and admin
+  if (!user || (user.role !== 'super_admin' && user.role !== 'admin')) {
+    return null;
+  }
+
   return (
     <div className="relative">
       <button
