@@ -16,7 +16,7 @@ import { Card } from '../components/ui/card';
 
 const TenantsPage = ({ onSelectTenant }) => {
   const { theme } = useTheme();
-  const { setSelectedTenant } = useTenant();
+  const { selectedTenantId, setSelectedTenant } = useTenant();
   const [tenants, setTenants] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
