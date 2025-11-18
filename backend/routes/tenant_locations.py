@@ -69,11 +69,6 @@ async def create_tenant_location(
 ):
     """Create a new location for a tenant"""
     try:
-        # Check if tenant exists
-        tenant = db.tenants.find_one({"tenant_id": tenant_id})
-        if not tenant:
-            raise HTTPException(status_code=404, detail="Tenant not found")
-        
         # Check if location code already exists for this tenant
         existing = db.tenant_locations.find_one({
             "tenant_id": tenant_id,
