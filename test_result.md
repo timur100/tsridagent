@@ -278,6 +278,18 @@ frontend:
         - working: false
           agent: "testing"
           comment: "❌ DOCUMENT UPLOAD UI ACCESS ISSUE: Comprehensive testing attempted but unable to access Admin Portal properly. FINDINGS: 1) LOGIN SUCCESS: Successfully authenticated as admin@tsrid.com with admin123 credentials, 2) PORTAL ROUTING ISSUE: After login, system redirects to customer portal (TSRID Kunden Portal) instead of Admin Portal, attempts to switch to Admin Portal via dropdown unsuccessful, 3) UI IMPLEMENTATION VERIFIED: Code review confirms Document Upload UI is fully implemented in TenantDetailPage.jsx with all required components (Upload Area, File Selection, Category Dropdown, Description Input, Documents List, Download/Delete buttons), 4) NAVIGATION STRUCTURE: Admin Portal navigation structure exists with Tenants tab → Tenant Detail → 'Vertrag & Subscription' tab containing document upload feature, 5) BACKEND INTEGRATION: Document Upload API is fully working (confirmed in previous tests), 6) ACCESS BARRIER: Unable to reach Admin Portal interface to test the Document Upload UI functionality. CRITICAL ISSUE: Admin Portal access mechanism needs investigation - either authentication role-based routing or portal switcher functionality is not working correctly. The Document Upload Feature UI is implemented but not accessible for testing due to portal access restrictions."
+  
+  - task: "Tenant Locations UI in TenantDetailPage"
+    implemented: true
+    working: "NA"
+    file: "src/pages/TenantDetailPage.jsx, src/components/LocationsTab.jsx, src/components/LocationModal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Frontend Tenant Locations UI vollständig implementiert im 'Standorte' Tab: 1) LocationsTab Component: Platzhalter-Karte (Map Component mit Hinweis auf Google Maps Integration), Standorte-Liste als Card Grid (3 Columns), Location Cards mit allen wichtigen Infos (Location Code, Station Name, Adresse, Manager, Telefon, Email, Main Type Badge), Edit & Delete Buttons, Empty State, 2) LocationModal Component: Vollständiges Formular mit allen Feldern aus Europcar Standort-Tabelle (Basis: location_code, station_name, main_type, id_checker; Adresse: street, postal_code, city, state; Kontakt: manager, email, phone, phone_internal; Technisch: switch_info, port, sn_pc, sn_sc, tv_id; Kommentare: it_comment, tsr_remarks; GPS: latitude, longitude), Responsive Layout (2 Columns auf Desktop), Create & Edit Modus, 3) Integration in TenantDetailPage: Location States, fetchLocations(), handleLocationSubmit(), handleLocationEdit(), handleLocationDelete(), resetLocationForm() Functions, useEffect für Auto-Fetch bei Tab Switch. UI styled mit Tailwind + Dark Mode Support."
 
 agent_communication:
     - agent: "main"
