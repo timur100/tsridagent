@@ -73,6 +73,7 @@ class Order(BaseModel):
 
 class OrderCreate(BaseModel):
     """Create order model"""
+    tenant_id: Optional[str] = None  # Tenant association
     customer_email: str
     customer_name: Optional[str] = None
     location_code: Optional[str] = None
