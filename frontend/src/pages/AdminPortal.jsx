@@ -14,6 +14,7 @@ import CustomerImpersonationDropdown from '../components/CustomerImpersonationDr
 import ImpersonationBanner from '../components/ImpersonationBanner';
 import CustomerPortalContent from '../components/CustomerPortalContent';
 import StandorteManagement from '../components/StandorteManagement';
+import AllLocationsTab from '../components/AllLocationsTab';
 import DeviceManagement from '../components/DeviceManagement';
 import DeviceDetailsModal from '../components/DeviceDetailsModal';
 import AddDeviceModal from '../components/AddDeviceModal';
