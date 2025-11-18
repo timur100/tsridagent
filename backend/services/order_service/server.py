@@ -124,11 +124,15 @@ async def service_info():
 
 # Order Routes - Specific routes first
 @app.get("/api/orders/stats")
-async def get_order_stats():
+async def get_order_stats(tenant_id: Optional[str] = None):
     """Get order statistics"""
     try:
-        total = await db.orders.count_documents({})
-        pending = await db.orders.count_documents({"status": "pending"})
+        query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
+            
+        total = await db.orders.count_documents(query)
+        pending = await db.orders.count_documents({**query, "status": "pending"})
         confirmed = await db.orders.count_documents({"status": "confirmed"})
         processing = await db.orders.count_documents({"status": "processing"})
         shipped = await db.orders.count_documents({"status": "shipped"})
