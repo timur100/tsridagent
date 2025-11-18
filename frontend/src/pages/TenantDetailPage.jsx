@@ -137,7 +137,7 @@ const TenantDetailPage = () => {
         setTenant(data);
       } else {
         console.error('Tenant not found');
-        if (onBack) onBack();
+        navigate('/portal/admin');
       }
     } catch (error) {
       console.error('Error fetching tenant:', error);
