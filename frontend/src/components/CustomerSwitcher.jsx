@@ -77,12 +77,16 @@ const CustomerSwitcher = ({ onTenantChange }) => {
   const handleCustomerSwitch = async (customerId) => {
     setLoading(true);
     try {
-      // TODO: Implement customer switch endpoint
-      // For now, we'll need to update JWT token with new customer_id
-      console.log('Switch to customer:', customerId);
+      // Set the current customer
+      const selectedCust = customers.find(c => c.id === customerId);
+      setCurrentCustomer(selectedCust || null);
       
-      // In production: Call /api/admin/switch-customer
-      // Then update JWT token and reload
+      // Call the callback if provided
+      if (onTenantChange) {
+        onTenantChange(customerId || 'all');
+      }
+      
+      console.log('Switch to customer:', customerId);
       
       setIsOpen(false);
     } catch (error) {
