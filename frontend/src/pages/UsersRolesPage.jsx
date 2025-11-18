@@ -107,6 +107,24 @@ const UsersRolesPage = () => {
     }
   };
 
+  const loadRegistrations = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/portal/auth/registrations`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setRegistrations(data);
+      }
+    } catch (error) {
+      console.error('Error loading registrations:', error);
+      // Set empty array if endpoint doesn't exist yet
+      setRegistrations([]);
+    }
+  };
+
   const initializeStandardRoles = async () => {
     setIsInitializingRoles(true);
     try {
