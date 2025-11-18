@@ -8,7 +8,8 @@ router = APIRouter(prefix="/api/tenant-devices", tags=["tenant-devices"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-DB_NAME = os.environ.get('DB_NAME', 'multi_tenant_admin')
+# Force use of multi_tenant_admin database for tenant devices
+DB_NAME = 'multi_tenant_admin'
 client = MongoClient(MONGO_URL)
 db = client[DB_NAME]
 
