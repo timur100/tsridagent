@@ -22,8 +22,12 @@ async def get_tenant_devices(
     Get all devices for a specific tenant
     """
     try:
+        print(f"🔍 get_tenant_devices called with tenant_id: {tenant_id}")
+        print(f"🔍 token_data: {token_data}")
+        
         # Check if user is admin (only admins can access tenant devices)
         is_admin = token_data.get("role") == "admin"
+        print(f"🔍 is_admin: {is_admin}")
         
         if not is_admin:
             raise HTTPException(status_code=403, detail="Admin access required")
@@ -37,6 +41,10 @@ async def get_tenant_devices(
             ]
         }
         
+        print(f"🔍 Query: {query}")
+        print(f"🔍 Collection: europcar_devices")
+        print(f"🔍 Database: {DB_NAME}")
+        
         devices_cursor = db.europcar_devices.find(query)
         devices = []
         
@@ -46,13 +54,15 @@ async def get_tenant_devices(
                 del device['_id']
             devices.append(device)
         
+        print(f"✅ Found {len(devices)} devices")
+        
         # Calculate summary statistics
         total = len(devices)
         online_count = sum(1 for d in devices if d.get('status', '').lower() == 'online')
         offline_count = sum(1 for d in devices if d.get('status', '').lower() == 'offline')
         in_prep_count = sum(1 for d in devices if d.get('status', '').lower() == 'in_vorbereitung')
         
-        return {
+        result = {
             "success": True,
             "data": {
                 "summary": {
@@ -64,11 +74,17 @@ async def get_tenant_devices(
                 "devices": devices
             }
         }
+        
+        print(f"✅ Returning response with {total} devices")
+        
+        return result
     
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Tenant devices error: {str(e)}")
+        print(f"❌ Tenant devices error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
