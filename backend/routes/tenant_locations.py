@@ -288,6 +288,30 @@ async def delete_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/by-id/{location_id}")
+async def get_location_by_id(
+    location_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get a location by its ID (searches across all tenants)"""
+    try:
+        location = db.tenant_locations.find_one({"location_id": location_id})
+        
+        if not location:
+            raise HTTPException(status_code=404, detail="Location not found")
+        
+        location.pop('_id', None)
+        
+        return {
+            "success": True,
+            "location": location
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{tenant_id}/filters/continents")
 async def get_continents(
     tenant_id: str,
