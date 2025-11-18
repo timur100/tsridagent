@@ -786,4 +786,129 @@ const RolesTable = ({ roles, theme, onEdit, onDelete, tenants }) => {
   );
 };
 
+// Registrations Table Component
+const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
+  return (
+    <Card className={`rounded-xl overflow-hidden ${
+      theme === 'dark' 
+        ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+        : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+    }`}>
+      <div className="overflow-x-auto">
+        <table className="w-full">
+          <thead className={theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}>
+            <tr>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Name</th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>E-Mail</th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Firma</th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Rolle</th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Registriert am</th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Status</th>
+              <th className={`px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+            {registrations.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="px-6 py-8 text-center">
+                  <UserPlus className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
+                  <p className={`text-lg font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Keine ausstehenden Registrierungen
+                  </p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Neue Benutzerregistrierungen erscheinen hier zur Genehmigung
+                  </p>
+                </td>
+              </tr>
+            ) : (
+              registrations.map(reg => (
+                <tr key={reg.id} className={`${
+                  theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
+                } transition-colors`}>
+                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="font-medium">{reg.name}</div>
+                  </td>
+                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {reg.email}
+                  </td>
+                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {reg.company}
+                  </td>
+                  <td className={`px-6 py-4`}>
+                    <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                      {reg.role}
+                    </span>
+                  </td>
+                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {new Date(reg.created_at).toLocaleDateString('de-DE', { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </td>
+                  <td className={`px-6 py-4`}>
+                    <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                      reg.status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                        : reg.status === 'approved'
+                        ? 'bg-green-100 text-green-800 border border-green-200'
+                        : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      {reg.status === 'pending' ? 'Ausstehend' : reg.status === 'approved' ? 'Genehmigt' : 'Abgelehnt'}
+                    </span>
+                  </td>
+                  <td className={`px-6 py-4 text-right`}>
+                    {reg.status === 'pending' && (
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => onApprove(reg.id)}
+                          className={`p-2 rounded-lg transition-all ${
+                            theme === 'dark'
+                              ? 'hover:bg-green-900/20 text-green-400'
+                              : 'hover:bg-green-50 text-green-600'
+                          }`}
+                          title="Genehmigen"
+                        >
+                          <CheckCircle className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => onReject(reg.id)}
+                          className={`p-2 rounded-lg transition-all ${
+                            theme === 'dark'
+                              ? 'hover:bg-red-900/20 text-red-400'
+                              : 'hover:bg-red-50 text-red-600'
+                          }`}
+                          title="Ablehnen"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </Card>
+  );
+};
+
 export default UsersRolesPage;
