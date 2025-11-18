@@ -62,36 +62,17 @@ const CustomerSwitcher = () => {
     }
   };
 
-  const fetchCurrentCustomer = async () => {
-    try {
-      const result = await apiCall('/api/customers/current/info');
-      if (result && result.success && result.data) {
-        setCurrentCustomer(result.data.customer);
-      }
-    } catch (error) {
-      // Current customer endpoint doesn't exist, default to "Alle Kunden"
-      console.log('Current customer endpoint not available, showing all');
-      setCurrentCustomer(null);
-    }
-  };
-
-  const handleCustomerSwitch = async (customerId) => {
+  const handleCustomerSwitch = async (customerId, customerName) => {
     setLoading(true);
     try {
-      // Set the current customer
-      const selectedCust = customers.find(c => c.id === customerId);
-      setCurrentCustomer(selectedCust || null);
+      // Update the global tenant context
+      setSelectedTenant(customerId, customerName);
       
-      // Call the callback if provided
-      if (onTenantChange) {
-        onTenantChange(customerId || 'all');
-      }
-      
-      console.log('Switch to customer:', customerId);
+      console.log('[CustomerSwitcher] Switched to tenant:', { customerId, customerName });
       
       setIsOpen(false);
     } catch (error) {
-      console.error('Error switching customer:', error);
+      console.error('[CustomerSwitcher] Error switching customer:', error);
     } finally {
       setLoading(false);
     }
@@ -100,7 +81,6 @@ const CustomerSwitcher = () => {
   useEffect(() => {
     console.log('[CustomerSwitcher] Component mounted, fetching data...');
     fetchCustomers();
-    fetchCurrentCustomer();
   }, []);
 
   // Only show for super_admin and admin
