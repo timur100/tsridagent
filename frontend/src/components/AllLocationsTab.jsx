@@ -152,6 +152,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                 // Add tenant info to each location
                 return (locationsData.locations || []).map(loc => ({
                   ...loc,
+                  tenant_id: tenant.tenant_id,
                   tenant_name: tenant.display_name || tenant.name
                 }));
               }
