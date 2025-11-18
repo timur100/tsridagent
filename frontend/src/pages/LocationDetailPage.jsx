@@ -209,10 +209,13 @@ const LocationDetailPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => {
-                  // Navigate back to admin portal
+                  // Navigate back to tenant's Standorte tab
                   if (location && location.tenant_id) {
-                    // Try to use browser history if we came from tenant detail page
-                    window.history.back();
+                    // Store the tenant ID and tab preference in sessionStorage
+                    sessionStorage.setItem('returnToTenant', location.tenant_id);
+                    sessionStorage.setItem('returnToTab', 'locations');
+                    // Navigate to the admin portal - it will pick up the session storage
+                    navigate('/portal/admin');
                   } else {
                     navigate('/portal/admin');
                   }
