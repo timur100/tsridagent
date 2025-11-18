@@ -21,6 +21,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   const { theme } = useTheme();
   const { apiCall, user } = useAuth();
   const { selectedCustomer, customers } = useCustomerFilter();
+  const { selectedTenantId, selectedTenantName } = useTenant();
   const [devices, setDevices] = useState([]);
   const [stations, setStations] = useState([]);
   const [filteredDevices, setFilteredDevices] = useState([]);
