@@ -92,6 +92,7 @@ const AdminPortalContent = () => {
   const [companyName, setCompanyName] = useState('TSRID');
   const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
   const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
+  const [tenantInitialTab, setTenantInitialTab] = useState('dashboard');
   const [scanStats, setScanStats] = useState({
     total_scans: 0,
     correct_scans: 0,
