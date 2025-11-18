@@ -139,10 +139,12 @@ const PortalApp = () => {
   return (
     <AuthProvider>
       <ImpersonationProvider>
-        <ThemeProvider>
-          <PortalRoutes />
-          <Toaster position="top-right" />
-        </ThemeProvider>
+        <TenantProvider>
+          <ThemeProvider>
+            <PortalRoutes />
+            <Toaster position="top-right" />
+          </ThemeProvider>
+        </TenantProvider>
       </ImpersonationProvider>
     </AuthProvider>
   );
