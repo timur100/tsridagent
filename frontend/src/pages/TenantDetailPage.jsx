@@ -104,6 +104,12 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     }
   }, [activeTab, tenantId]);
 
+  useEffect(() => {
+    if (activeTab === 'locations') {
+      fetchLocations();
+    }
+  }, [activeTab, tenantId]);
+
   const fetchTenantDetails = async () => {
     setLoading(true);
     try {
