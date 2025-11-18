@@ -132,12 +132,13 @@ async def login(request: LoginRequest):
         if not user:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
-        # Verify password
-        if not verify_password(request.password, user['hashed_password']):
+        # Verify password - support both password_hash and hashed_password
+        password_field = user.get('password_hash') or user.get('hashed_password')
+        if not password_field or not verify_password(request.password, password_field):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Check if user is active
-        if not user.get('is_active', True):
+        if not user.get('enabled', True) and not user.get('is_active', True):
             raise HTTPException(status_code=401, detail="User account is deactivated")
         
         # Create token with customer_id
