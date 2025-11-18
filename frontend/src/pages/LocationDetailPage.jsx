@@ -209,9 +209,10 @@ const LocationDetailPage = () => {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => {
-                  // Navigate back to tenant's Standorte tab
+                  // Navigate back to admin portal
                   if (location && location.tenant_id) {
-                    navigate(`/portal/admin/tenants/${location.tenant_id}?tab=locations`);
+                    // Try to use browser history if we came from tenant detail page
+                    window.history.back();
                   } else {
                     navigate('/portal/admin');
                   }
