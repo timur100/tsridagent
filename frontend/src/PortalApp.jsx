@@ -7,6 +7,7 @@ import PortalLogin from './components/PortalLogin';
 import CustomerPortal from './pages/CustomerPortal';
 import AdminPortal from './pages/AdminPortal';
 import TenantDetailPage from './pages/TenantDetailPage';
+import LocationDetailPage from './pages/LocationDetailPage';
 import CatalogPortal from './pages/CatalogPortal';
 import { Toaster } from 'react-hot-toast';
 
