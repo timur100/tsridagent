@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomerFilter } from '../contexts/CustomerFilterContext';
+import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
 import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown } from 'lucide-react';
 import DeviceDetailsModal from './DeviceDetailsModal';
