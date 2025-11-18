@@ -229,26 +229,6 @@ const LocationsTab = ({
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
-                      {location.switch_info || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
-                      {location.port || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm max-w-xs truncate ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`} title={location.it_comment}>
-                      {location.it_comment || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm max-w-xs truncate ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`} title={location.tsr_remarks}>
-                      {location.tsr_remarks || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}>
                       {location.sn_pc || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
