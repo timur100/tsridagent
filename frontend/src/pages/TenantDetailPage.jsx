@@ -44,9 +44,11 @@ import toast from 'react-hot-toast';
 const TenantDetailPage = ({ tenantId, onBack }) => {
   const { theme } = useTheme();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
+  const tabFromUrl = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabFromUrl || location.state?.activeTab || 'dashboard');
   const [isEditing, setIsEditing] = useState(false);
   
   // Document upload states
