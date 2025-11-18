@@ -160,6 +160,7 @@ async def login(request: LoginRequest):
             "name": user.get("name") or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip() or user["email"],
             "company": user.get("company") or user.get("attributes", {}).get("company"),
             "role": user.get("role") or (user.get("roles", ["user"])[0] if user.get("roles") else "user"),
+            "tenant_ids": user.get("tenant_ids", []),
             "is_active": user.get("is_active") or user.get("enabled", True),
             "shop_enabled": user.get("shop_enabled", False)
         }
@@ -192,6 +193,7 @@ async def get_current_user(token_data: dict = Depends(verify_token)):
             "name": user.get("name") or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip() or user["email"],
             "company": user.get("company") or user.get("attributes", {}).get("company"),
             "role": user.get("role") or (user.get("roles", ["user"])[0] if user.get("roles") else "user"),
+            "tenant_ids": user.get("tenant_ids", []),
             "is_active": user.get("is_active") or user.get("enabled", True),
             "shop_enabled": user.get("shop_enabled", False)
         }
