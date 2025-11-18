@@ -211,11 +211,9 @@ const LocationDetailPage = () => {
                 onClick={() => {
                   // Navigate back to tenant's Standorte tab
                   if (location && location.tenant_id) {
-                    navigate(`/portal/admin/tenants/${location.tenant_id}`, { 
-                      state: { activeTab: 'locations' } 
-                    });
+                    navigate(`/portal/admin/tenants/${location.tenant_id}?tab=locations`);
                   } else {
-                    navigate(-1);
+                    navigate('/portal/admin');
                   }
                 }}
                 className={`p-2 rounded-lg transition-all ${
