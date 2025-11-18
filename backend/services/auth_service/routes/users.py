@@ -92,17 +92,21 @@ async def create_user(
 async def get_users(
     tenant_id: Optional[str] = Query(None),
     user_type: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
     current_user: dict = Depends(get_current_admin)
 ):
     """
     Get all users (Admin only)
+    Can filter by tenant_id, user_type, status
     """
     try:
         query = {}
         if tenant_id:
-            query["tenant_id"] = tenant_id
+            query["tenant_ids"] = tenant_id
         if user_type:
             query["user_type"] = user_type
+        if status:
+            query["status"] = status
         
         cursor = users_collection.find(query)
         users = []
