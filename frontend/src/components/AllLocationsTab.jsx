@@ -122,6 +122,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         
         if (response.ok) {
           const data = await response.json();
+          console.log('[AllLocationsTab] Loaded locations for tenant:', data.locations?.length);
           // Add tenant_name to all locations
           const locationsWithTenant = (data.locations || []).map(loc => ({
             ...loc,
@@ -129,8 +130,11 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             tenant_id: selectedTenantId
           }));
           setLocations(locationsWithTenant);
+        } else {
+          console.error('[AllLocationsTab] Failed to load locations:', response.status);
         }
       } else {
+        console.log('[AllLocationsTab] Loading locations for ALL tenants');
         // Load all tenants and their locations
         const tenantsResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
           headers: { 'Authorization': `Bearer ${token}` }
