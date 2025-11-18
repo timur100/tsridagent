@@ -41,9 +41,11 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const TenantDetailPage = ({ tenantId, onBack }) => {
+const TenantDetailPage = () => {
   const { theme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { tenantId } = useParams();  // Get tenantId from URL params
   const [searchParams] = useSearchParams();
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
