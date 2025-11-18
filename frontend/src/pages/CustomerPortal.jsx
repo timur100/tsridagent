@@ -26,51 +26,45 @@ const CustomerPortal = () => {
     failed_scans: 0
   });
 
-  // Load tenant information from user data
+  // Set company name from user data immediately
   useEffect(() => {
-    const fetchTenantInfo = async () => {
-      try {
-        // Get user from auth
-        const userData = await apiCall('/api/portal/auth/me');
-        console.log('User data:', userData); // Debug log
-        
-        if (userData && userData.user) {
-          const userInfo = userData.user;
-          
-          // Fetch tenant details if user has tenant_ids
-          const tenantIds = userInfo.tenant_ids || [];
-          console.log('Tenant IDs:', tenantIds); // Debug log
+    if (user) {
+      console.log('User object:', user); // Debug log
+      
+      // Priority 1: Use company from user
+      if (user.company) {
+        console.log('Setting company from user.company:', user.company);
+        setCompanyName(user.company);
+        return;
+      }
+      
+      // Priority 2: Load tenant info if tenant_ids exist
+      const fetchTenantInfo = async () => {
+        try {
+          const tenantIds = user.tenant_ids || [];
+          console.log('Tenant IDs:', tenantIds);
           
           if (tenantIds.length > 0) {
-            // Get first tenant
             const tenantId = tenantIds[0];
-            console.log('Fetching tenant:', tenantId); // Debug log
+            console.log('Fetching tenant:', tenantId);
             
             try {
               const tenantData = await apiCall(`/api/tenants/${tenantId}`);
-              console.log('Tenant data:', tenantData); // Debug log
+              console.log('Tenant data:', tenantData);
               
-              if (tenantData) {
-                setTenantInfo(tenantData);
+              if (tenantData && (tenantData.display_name || tenantData.name)) {
                 setCompanyName(tenantData.display_name || tenantData.name);
+                setTenantInfo(tenantData);
               }
             } catch (tenantError) {
               console.error('Error fetching tenant:', tenantError);
-              // Fallback to user company
-              setCompanyName(userInfo.company || '');
             }
-          } else {
-            // Fallback: use company from user attributes
-            console.log('No tenant_ids, using company:', userInfo.company);
-            setCompanyName(userInfo.company || '');
           }
+        } catch (error) {
+          console.error('Error loading tenant info:', error);
         }
-      } catch (error) {
-        console.error('Error loading tenant info:', error);
-      }
-    };
-    
-    if (user) {
+      };
+      
       fetchTenantInfo();
     }
   }, [user, apiCall]);
