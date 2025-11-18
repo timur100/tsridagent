@@ -22,8 +22,14 @@ import {
   AlertCircle,
   Calendar,
   Clock,
-  Building2
+  Building2,
+  Upload,
+  FileText,
+  Eye,
+  Trash2,
+  Download
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const TenantDetailPage = ({ tenantId, onBack }) => {
   const { theme } = useTheme();
