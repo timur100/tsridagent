@@ -122,8 +122,8 @@ const CustomerPortal = () => {
               <div className="flex items-center space-x-4 flex-shrink-0">
                 <PortalSwitcher />
                 <div className="text-right hidden lg:block">
-                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{user?.name}</p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>Kunde</p>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{user?.email || user?.name}</p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{user?.company || companyName}</p>
                 </div>
                 <ThemeToggle />
                 <Button
