@@ -53,6 +53,11 @@ const LocationDetailPage = () => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  // Hilfsfunktion um Bundesland-Namen zu bekommen
+  const getStateName = (stateCode) => {
+    return STATE_NAMES[stateCode] || stateCode;
+  };
+
   useEffect(() => {
     fetchLocationDetails();
   }, [locationId]);
