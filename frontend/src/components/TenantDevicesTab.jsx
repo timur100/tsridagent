@@ -54,14 +54,15 @@ const TenantDevicesTab = ({ tenantId }) => {
   const loadDevices = async () => {
     setLoading(true);
     try {
-      // Load devices for specific tenant
-      const response = await fetch(`${BACKEND_URL}/api/devices?tenant_id=${tenantId}`);
+      // Load devices using apiCall
+      const response = await apiCall('/api/portal/europcar-devices', {
+        method: 'GET'
+      });
       
-      if (response.ok) {
-        const data = await response.json();
-        setDevices(data || []);
+      if (response && response.success && response.data) {
+        setDevices(response.data.devices || []);
       } else {
-        console.error('Error loading devices:', response.statusText);
+        console.error('Error loading devices:', response);
         setDevices([]);
       }
     } catch (error) {
