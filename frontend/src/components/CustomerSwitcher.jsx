@@ -27,23 +27,28 @@ const CustomerSwitcher = () => {
       const customersResult = await apiCall('/api/customers/list');
       const tenantsResult = await apiCall('/api/tenants/');
       
+      console.log('Customers result:', customersResult);
+      console.log('Tenants result:', tenantsResult);
+      
       let allCustomers = [];
       
       // Add customers from old system
-      if (customersResult.success && customersResult.data) {
+      if (customersResult && customersResult.success && customersResult.data) {
         allCustomers = [...(customersResult.data.customers || [])];
       }
       
       // Add tenants from new system
-      if (tenantsResult.success && tenantsResult.tenants) {
+      if (tenantsResult && tenantsResult.tenants) {
         const tenants = tenantsResult.tenants.map(tenant => ({
           id: tenant.tenant_id,
           name: tenant.display_name || tenant.name,
           type: 'tenant' // Mark as tenant for identification
         }));
         allCustomers = [...allCustomers, ...tenants];
+        console.log('Mapped tenants:', tenants);
       }
       
+      console.log('All customers to display:', allCustomers);
       setCustomers(allCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
