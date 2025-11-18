@@ -62,6 +62,12 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     fetchTenantDetails();
   }, [tenantId]);
 
+  useEffect(() => {
+    if (activeTab === 'subscription') {
+      fetchDocuments();
+    }
+  }, [activeTab, tenantId]);
+
   const fetchTenantDetails = async () => {
     setLoading(true);
     try {
