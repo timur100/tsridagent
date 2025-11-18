@@ -495,7 +495,7 @@ const LocationsTabEnhanced = ({
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
-                      {location.state || '-'}
+                      {location.state ? getStateName(location.state) : '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
