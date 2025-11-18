@@ -54,6 +54,7 @@ from routes.tenants_proxy import router as tenants_proxy_router
 from routes.roles_proxy import router as roles_proxy_router
 from routes.users_proxy import router as users_proxy_router
 from routes.documents import router as documents_router
+from routes.tenant_locations import router as tenant_locations_router
 
 
 ROOT_DIR = Path(__file__).parent
