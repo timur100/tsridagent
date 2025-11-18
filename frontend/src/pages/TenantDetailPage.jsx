@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const TenantDetailPage = ({ tenantId: propTenantId, onBack }) => {
+const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack }) => {
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
   const tabFromUrl = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabFromUrl || location.state?.activeTab || 'dashboard');
+  const [activeTab, setActiveTab] = useState(initialTab || tabFromUrl || location.state?.activeTab || 'dashboard');
   const [isEditing, setIsEditing] = useState(false);
   
   // Document upload states
