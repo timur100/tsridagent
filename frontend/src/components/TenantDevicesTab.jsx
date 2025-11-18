@@ -54,6 +54,10 @@ const TenantDevicesTab = ({ tenantId }) => {
   const loadDevices = async () => {
     console.log('🔍 TenantDevicesTab: loadDevices called with tenantId:', tenantId);
     setLoading(true);
+    
+    // Initialize with empty array to prevent undefined errors
+    setDevices([]);
+    
     try {
       // Load devices for this tenant using apiCall
       const url = `/api/tenant-devices/${tenantId}`;
@@ -63,41 +67,61 @@ const TenantDevicesTab = ({ tenantId }) => {
         method: 'GET'
       });
       
-      console.log('📦 API Response:', response);
-      console.log('📦 Response.success:', response?.success);
-      console.log('📦 Response.data:', response?.data);
+      console.log('📦 Full API Response:', JSON.stringify(response, null, 2));
       
-      // apiCall wraps the backend response in { success, data, status }
-      // Backend returns { success: true, data: { devices: [...] } }
-      // So we need to access response.data.data.devices
-      if (response && response.success && response.data) {
-        const backendData = response.data;
-        console.log('📦 Backend data:', backendData);
-        
-        if (backendData.success && backendData.data && backendData.data.devices) {
-          console.log('✅ Devices loaded:', backendData.data.devices.length);
-          setDevices(backendData.data.devices);
-        } else if (Array.isArray(backendData)) {
-          // Handle case where backend returns array directly
-          console.log('✅ Devices loaded (array format):', backendData.length);
-          setDevices(backendData);
-        } else {
-          console.error('❌ Unexpected backend data format:', backendData);
-          toast.error('Keine Geräte gefunden');
-          setDevices([]);
-        }
-      } else {
-        console.error('❌ API call failed:', response);
-        toast.error('Fehler beim Laden der Geräte');
-        setDevices([]);
+      // Check if response exists
+      if (!response) {
+        console.error('❌ No response received');
+        toast.error('Keine Antwort vom Server');
+        return;
       }
+      
+      console.log('📦 Response.success:', response.success);
+      console.log('📦 Response.status:', response.status);
+      
+      // Check if API call was successful
+      if (!response.success) {
+        console.error('❌ API call failed:', response);
+        toast.error(`Fehler: ${response.error || 'Unbekannter Fehler'}`);
+        return;
+      }
+      
+      // Get the backend data
+      const backendData = response.data;
+      console.log('📦 Backend data type:', typeof backendData);
+      console.log('📦 Backend data:', JSON.stringify(backendData, null, 2).substring(0, 500));
+      
+      // Try to extract devices
+      let devicesArray = [];
+      
+      if (backendData && backendData.data && backendData.data.devices && Array.isArray(backendData.data.devices)) {
+        devicesArray = backendData.data.devices;
+        console.log('✅ Path 1: Found devices at backendData.data.devices');
+      } else if (backendData && backendData.devices && Array.isArray(backendData.devices)) {
+        devicesArray = backendData.devices;
+        console.log('✅ Path 2: Found devices at backendData.devices');
+      } else if (Array.isArray(backendData)) {
+        devicesArray = backendData;
+        console.log('✅ Path 3: backendData is array');
+      } else {
+        console.error('❌ Could not find devices array in response');
+        console.error('❌ Backend data structure:', Object.keys(backendData || {}));
+        toast.error('Keine Geräte gefunden - unerwartetes Datenformat');
+        return;
+      }
+      
+      console.log(`✅ Setting ${devicesArray.length} devices`);
+      setDevices(devicesArray);
+      toast.success(`${devicesArray.length} Geräte geladen`);
+      
     } catch (error) {
       console.error('❌ Exception loading devices:', error);
+      console.error('❌ Error stack:', error.stack);
       toast.error('Fehler beim Laden der Geräte: ' + (error?.message || 'Unbekannter Fehler'));
       setDevices([]);
     } finally {
       setLoading(false);
-      console.log('🏁 Loading finished');
+      console.log('🏁 Loading finished, final devices count:', devices.length);
     }
   };
 
