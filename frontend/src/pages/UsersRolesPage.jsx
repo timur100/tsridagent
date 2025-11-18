@@ -579,16 +579,8 @@ const UsersRolesPage = () => {
         <RegistrationsTable
           registrations={registrations}
           theme={theme}
-          onApprove={async (regId) => {
-            // TODO: Implement approve
-            toast.success('Registrierung genehmigt');
-            await loadRegistrations();
-          }}
-          onReject={async (regId) => {
-            // TODO: Implement reject
-            toast.success('Registrierung abgelehnt');
-            await loadRegistrations();
-          }}
+          onApprove={approveRegistration}
+          onReject={rejectRegistration}
         />
       )}
 
