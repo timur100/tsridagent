@@ -222,6 +222,9 @@ app.include_router(roles_proxy_router)
 # Users Proxy (proxy to Auth & Identity Service)
 app.include_router(users_proxy_router)
 
+# Documents (PDF uploads, contracts, etc.)
+app.include_router(documents_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
