@@ -97,6 +97,19 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       
       // If a specific tenant is selected, only load their locations
       if (selectedTenantId && selectedTenantId !== 'all') {
+        // First get tenant info
+        const tenantResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        let tenantName = '';
+        if (tenantResponse.ok) {
+          const tenantsData = await tenantResponse.json();
+          const tenantsList = tenantsData.tenants || tenantsData.data || [];
+          const tenant = tenantsList.find(t => t.tenant_id === selectedTenantId);
+          tenantName = tenant ? (tenant.display_name || tenant.name) : '';
+        }
+        
         const response = await fetch(
           `${BACKEND_URL}/api/tenant-locations/${selectedTenantId}`,
           {
@@ -106,7 +119,13 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         
         if (response.ok) {
           const data = await response.json();
-          setLocations(data.locations || []);
+          // Add tenant_name to all locations
+          const locationsWithTenant = (data.locations || []).map(loc => ({
+            ...loc,
+            tenant_name: tenantName,
+            tenant_id: selectedTenantId
+          }));
+          setLocations(locationsWithTenant);
         }
       } else {
         // Load all tenants and their locations
