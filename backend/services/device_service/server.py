@@ -44,6 +44,7 @@ class Device(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     device_id: str  # e.g., "BERN01-01"
+    tenant_id: Optional[str] = None  # Tenant association
     location_code: Optional[str] = None
     device_type: str = "scanner"  # scanner, terminal, kiosk, etc.
     manufacturer: Optional[str] = None
