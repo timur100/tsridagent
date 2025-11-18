@@ -167,6 +167,28 @@ const LocationModal = ({
                   className={inputClass}
                 />
               </div>
+              <div>
+                <label className={labelClass}>Land</label>
+                <input
+                  type="text"
+                  name="country"
+                  value={formData.country || ''}
+                  onChange={handleChange}
+                  placeholder="z.B. Deutschland"
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className={labelClass}>Kontinent</label>
+                <input
+                  type="text"
+                  name="continent"
+                  value={formData.continent || ''}
+                  onChange={handleChange}
+                  placeholder="z.B. Europa"
+                  className={inputClass}
+                />
+              </div>
             </div>
           </div>
 
