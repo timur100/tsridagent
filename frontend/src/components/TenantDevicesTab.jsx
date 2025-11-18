@@ -222,13 +222,13 @@ const TenantDevicesTab = ({ tenantId }) => {
   return (
     <div className="space-y-6">
       {/* Title and Search Bar */}
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           Geräte
         </h2>
         
         {/* Search Bar */}
-        <div className="relative flex-1 max-w-md">
+        <div className="relative w-full md:flex-1 md:max-w-md">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 ${
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           }`} />
