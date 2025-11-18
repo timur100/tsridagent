@@ -3,7 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Building2, Check, ChevronDown } from 'lucide-react';
 
-const CustomerSwitcher = () => {
+const CustomerSwitcher = ({ onTenantChange }) => {
   const { theme } = useTheme();
   const { user, apiCall } = useAuth();
   const [customers, setCustomers] = useState([]);
