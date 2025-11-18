@@ -1597,7 +1597,7 @@ class TenantLocationsTester:
     def run_all_tests(self):
         """Run all tenant locations tests"""
         print("=" * 70)
-        print("TENANT LOCATIONS BACKEND TESTING")
+        print("TENANT LOCATIONS ENHANCED FEATURES TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
         print("=" * 70)
@@ -1613,49 +1613,50 @@ class TenantLocationsTester:
             print("❌ Failed to get existing tenant. Stopping tests.")
             return False
         
-        # Step 1: Create 3 test locations
-        print("\n🔍 STEP 1: Creating Test Locations...")
-        self.test_create_location_1()
-        self.test_create_location_2()
-        self.test_create_location_3()
+        # Step 1: Setup test data with Europa/Deutschland
+        print("\n🔍 STEP 1: Setting up Test Data with Europa/Deutschland...")
+        self.setup_test_data_with_europa()
         
-        # Step 2: List all locations
-        print("\n🔍 STEP 2: Testing List All Locations...")
+        # Step 2: Test new filter endpoints
+        print("\n🔍 STEP 2: Testing Filter Endpoints...")
+        self.test_filter_continents()
+        self.test_filter_countries()
+        self.test_filter_countries_with_continent()
+        self.test_filter_states()
+        self.test_filter_cities()
+        
+        # Step 3: Test enhanced search functionality
+        print("\n🔍 STEP 3: Testing Enhanced Search...")
+        self.test_search_locations_bern()
+        self.test_combined_filters()
+        
+        # Step 4: Test global search extension
+        print("\n🔍 STEP 4: Testing Global Search Extension...")
+        self.test_global_search_tenant()
+        self.test_global_search_location()
+        
+        # Step 5: Test basic CRUD operations (existing tests)
+        print("\n🔍 STEP 5: Testing Basic CRUD Operations...")
         self.test_list_all_locations()
-        
-        # Step 3: Test filters
-        print("\n🔍 STEP 3: Testing Filters...")
         self.test_filter_by_state_be()
         self.test_filter_by_main_type_a()
-        
-        # Step 4: Get single location
-        print("\n🔍 STEP 4: Testing Get Single Location...")
         self.test_get_single_location()
-        
-        # Step 5: Update location
-        print("\n🔍 STEP 5: Testing Update Location...")
         self.test_update_location()
-        
-        # Step 6: Get statistics
-        print("\n🔍 STEP 6: Testing Statistics...")
         self.test_get_stats_summary()
         
-        # Step 7: Delete location
-        print("\n🔍 STEP 7: Testing Delete Location...")
-        self.test_delete_location()
-        
-        # Step 8: Verify remaining locations
-        print("\n🔍 STEP 8: Verifying Remaining Locations...")
-        self.test_verify_remaining_locations()
-        
-        # Step 9: Test error scenarios
-        print("\n🔍 STEP 9: Testing Error Scenarios...")
+        # Step 6: Test error scenarios
+        print("\n🔍 STEP 6: Testing Error Scenarios...")
         self.test_duplicate_location_code_error()
         self.test_invalid_tenant_id_error()
         
+        # Step 7: Cleanup - Delete one location
+        print("\n🔍 STEP 7: Testing Delete Location...")
+        self.test_delete_location()
+        self.test_verify_remaining_locations()
+        
         # Summary
         print("\n" + "=" * 70)
-        print("TENANT LOCATIONS TESTING SUMMARY")
+        print("TENANT LOCATIONS ENHANCED FEATURES TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
