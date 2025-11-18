@@ -96,7 +96,21 @@ async def register(request: RegisterRequest):
             "is_active": True
         }
         
-        db.portal_users.insert_one(user)
+        # Store registration request in portal_db for admin approval
+        registration = {
+            "registration_id": str(uuid.uuid4()),
+            "name": request.name,
+            "email": request.email,
+            "company": request.company,
+            "phone": request.phone,
+            "role": "user",  # Default role with minimal permissions
+            "status": "pending",  # pending, approved, rejected
+            "hashed_password": user["hashed_password"],  # Store for later user creation
+            "created_at": user["created_at"],
+            "approved_by": None,
+            "approved_at": None
+        }
+        portal_db.registrations.insert_one(registration)
         
         # Create token with customer_id
         access_token = create_access_token(
