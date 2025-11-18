@@ -17,7 +17,15 @@ import {
   Circle,
   Building2,
   Server,
-  Monitor
+  Monitor,
+  BarChart3,
+  CheckCircle,
+  HelpCircle,
+  XCircle,
+  Users,
+  Wifi,
+  WifiOff,
+  AlertCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
