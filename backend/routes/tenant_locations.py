@@ -48,6 +48,8 @@ class TenantLocationUpdate(BaseModel):
     city: Optional[str] = None
     street: Optional[str] = None
     state: Optional[str] = None
+    country: Optional[str] = None
+    continent: Optional[str] = None
     manager: Optional[str] = None
     phone: Optional[str] = None
     phone_internal: Optional[str] = None
