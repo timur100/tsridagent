@@ -53,6 +53,7 @@ class Order(BaseModel):
     
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     order_number: str
+    tenant_id: Optional[str] = None  # Tenant association
     customer_email: str
     customer_name: Optional[str] = None
     location_code: Optional[str] = None
