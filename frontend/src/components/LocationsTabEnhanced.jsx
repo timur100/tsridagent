@@ -215,6 +215,7 @@ const LocationsTabEnhanced = ({
       } else if (filterType === 'state') {
         newFilters.city = '';
       }
+      // mainType is independent, no dependencies
       
       return newFilters;
     });
