@@ -100,7 +100,7 @@ const CustomerSwitcher = () => {
       >
         <Building2 className="h-4 w-4 text-[#c00000]" />
         <span className="text-sm font-medium">
-          {currentCustomer ? currentCustomer.name : 'Alle Kunden'}
+          {selectedTenantName}
         </span>
         <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
