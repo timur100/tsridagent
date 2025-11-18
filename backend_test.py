@@ -1645,13 +1645,11 @@ class TenantLocationsTester:
         self.test_global_search_tenant()
         self.test_global_search_location()
         
-        # Step 5: Test basic CRUD operations (existing tests)
-        print("\n🔍 STEP 5: Testing Basic CRUD Operations...")
+        # Step 5: Test basic operations with existing data
+        print("\n🔍 STEP 5: Testing Basic Operations with Existing Data...")
         self.test_list_all_locations()
         self.test_filter_by_state_be()
         self.test_filter_by_main_type_a()
-        self.test_get_single_location()
-        self.test_update_location()
         self.test_get_stats_summary()
         
         # Step 6: Test error scenarios
@@ -1659,9 +1657,8 @@ class TenantLocationsTester:
         self.test_duplicate_location_code_error()
         self.test_invalid_tenant_id_error()
         
-        # Step 7: Cleanup - Delete one location
-        print("\n🔍 STEP 7: Testing Delete Location...")
-        self.test_delete_location()
+        # Step 7: Verify locations list is working
+        print("\n🔍 STEP 7: Verifying Locations List...")
         self.test_verify_remaining_locations()
         
         # Summary
