@@ -17,7 +17,8 @@ const CustomerPortal = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
   const [companyLogoLight, setCompanyLogoLight] = useState(null);
-  const [companyName, setCompanyName] = useState('TSRID');
+  const [companyName, setCompanyName] = useState('');
+  const [tenantInfo, setTenantInfo] = useState(null);
   const [scanStats, setScanStats] = useState({
     total_scans: 0,
     correct_scans: 0,
