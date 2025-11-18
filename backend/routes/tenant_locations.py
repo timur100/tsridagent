@@ -109,7 +109,7 @@ async def create_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{tenant_id}/locations")
+@router.get("/{tenant_id}")
 async def get_tenant_locations(
     tenant_id: str,
     state: Optional[str] = None,
