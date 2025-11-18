@@ -510,19 +510,17 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   }`}>
                     Status
                   </th>
-                  {(!selectedTenantId || selectedTenantId === 'all') && (
-                    <th 
-                      className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                        theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
-                      }`}
-                      onClick={() => handleSort('tenant_name')}
-                    >
-                      <div className="flex items-center">
-                        Tenant
-                        {getSortIcon('tenant_name')}
-                      </div>
-                    </th>
-                  )}
+                  <th 
+                    className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
+                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleSort('tenant_name')}
+                  >
+                    <div className="flex items-center">
+                      Kunde
+                      {getSortIcon('tenant_name')}
+                    </div>
+                  </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
                       theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
