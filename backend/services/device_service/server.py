@@ -153,6 +153,7 @@ async def get_device_stats():
 
 @app.get("/api/devices", response_model=List[Device])
 async def get_devices(
+    tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     location_code: Optional[str] = None,
     device_type: Optional[str] = None
@@ -160,6 +161,8 @@ async def get_devices(
     """Get all devices with optional filters"""
     try:
         query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         if status:
             query['status'] = status
         if location_code:
