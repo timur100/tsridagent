@@ -73,13 +73,16 @@ async def get_inventory_items(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/available")
-async def get_available_items(category: Optional[str] = None):
+async def get_available_items(tenant_id: Optional[str] = None, category: Optional[str] = None):
     """
     Get available inventory items (for customer shop view)
     """
     try:
         # Build query - only items with stock > 0
         query = {'quantity_in_stock': {'$gt': 0}}
+        
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         
         if category:
             query['category'] = category
