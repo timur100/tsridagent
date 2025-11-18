@@ -54,8 +54,8 @@ const TenantDevicesTab = ({ tenantId }) => {
   const loadDevices = async () => {
     setLoading(true);
     try {
-      // Load devices using apiCall
-      const response = await apiCall('/api/portal/europcar-devices', {
+      // Load devices for this tenant using apiCall
+      const response = await apiCall(`/api/tenant-devices/${tenantId}`, {
         method: 'GET'
       });
       
