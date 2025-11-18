@@ -104,7 +104,7 @@ const LocationDetailPage = () => {
 
       if (response.ok) {
         toast.success('Standort erfolgreich gelöscht');
-        navigate(`/admin/tenants/${location.tenant_id}`);
+        navigate(`/portal/admin/tenants/${location.tenant_id}`);
       } else {
         toast.error('Fehler beim Löschen');
       }
