@@ -170,7 +170,7 @@ async def get_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.put("/{tenant_id}/locations/{location_id}")
+@router.put("/{tenant_id}/{location_id}")
 async def update_tenant_location(
     tenant_id: str,
     location_id: str,
