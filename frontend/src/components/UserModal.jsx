@@ -128,7 +128,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
 
         {/* Content */}
         <form onSubmit={handleSubmit}>
-          <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          <div className="p-6 overflow-y-auto max-h-[calc(100vh-200px)]">
             <div className="space-y-6">
               {/* Basic Information */}
               <div>
