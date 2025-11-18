@@ -64,21 +64,31 @@ const TenantDevicesTab = ({ tenantId }) => {
       });
       
       console.log('📦 API Response:', response);
-      console.log('📦 Response type:', typeof response);
       console.log('📦 Response.success:', response?.success);
       console.log('📦 Response.data:', response?.data);
-      console.log('📦 Response.data.devices:', response?.data?.devices);
       
-      if (response && response.success && response.data && response.data.devices) {
-        console.log('✅ Devices loaded:', response.data.devices.length);
-        setDevices(response.data.devices);
-      } else if (response && response.data && Array.isArray(response.data)) {
-        // Handle case where data is directly an array
-        console.log('✅ Devices loaded (array format):', response.data.length);
-        setDevices(response.data);
+      // apiCall wraps the backend response in { success, data, status }
+      // Backend returns { success: true, data: { devices: [...] } }
+      // So we need to access response.data.data.devices
+      if (response && response.success && response.data) {
+        const backendData = response.data;
+        console.log('📦 Backend data:', backendData);
+        
+        if (backendData.success && backendData.data && backendData.data.devices) {
+          console.log('✅ Devices loaded:', backendData.data.devices.length);
+          setDevices(backendData.data.devices);
+        } else if (Array.isArray(backendData)) {
+          // Handle case where backend returns array directly
+          console.log('✅ Devices loaded (array format):', backendData.length);
+          setDevices(backendData);
+        } else {
+          console.error('❌ Unexpected backend data format:', backendData);
+          toast.error('Keine Geräte gefunden');
+          setDevices([]);
+        }
       } else {
-        console.error('❌ Unexpected response format:', response);
-        toast.error('Keine Geräte gefunden oder unerwartetes Datenformat');
+        console.error('❌ API call failed:', response);
+        toast.error('Fehler beim Laden der Geräte');
         setDevices([]);
       }
     } catch (error) {
@@ -87,7 +97,7 @@ const TenantDevicesTab = ({ tenantId }) => {
       setDevices([]);
     } finally {
       setLoading(false);
-      console.log('🏁 Loading finished, devices count:', devices.length);
+      console.log('🏁 Loading finished');
     }
   };
 
