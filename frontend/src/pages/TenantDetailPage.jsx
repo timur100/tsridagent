@@ -41,12 +41,16 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-const TenantDetailPage = () => {
+const TenantDetailPage = ({ tenantId: propTenantId, onBack }) => {
   const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
-  const { tenantId } = useParams();  // Get tenantId from URL params
+  const { tenantId: paramTenantId } = useParams();  // Get tenantId from URL params
   const [searchParams] = useSearchParams();
+  
+  // Use prop tenantId if available (from AdminPortal), otherwise use URL param (from direct route)
+  const tenantId = propTenantId || paramTenantId;
+  
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
   const tabFromUrl = searchParams.get('tab');
