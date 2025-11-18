@@ -218,8 +218,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Document Upload API - Complete Implementation"
-    - "Document Upload UI in TenantDetailPage"
+    - "Tenant Locations API - Complete Implementation"
+    - "Tenant Locations UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1619,8 +1619,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Document Upload API - Complete Implementation"
-    - "Document Upload UI in TenantDetailPage"
+    - "Tenant Locations API - Complete Implementation"
+    - "Tenant Locations UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1963,8 +1963,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Document Upload API - Complete Implementation"
-    - "Document Upload UI in TenantDetailPage"
+    - "Tenant Locations API - Complete Implementation"
+    - "Tenant Locations UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
