@@ -328,13 +328,12 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   return (
     <div className="space-y-6">
       {/* Title */}
-      <div className="mb-6">
-        <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          {getCustomerTitle()}
-        </h2>
+      <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        {getCustomerTitle()}
+      </h2>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
         <Card 
           onClick={() => handleFilterChange('status', 'all')}
           className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
