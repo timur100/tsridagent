@@ -40,7 +40,7 @@ const SupportManagement = () => {
       fetchDevices();
     }, 30000);
     return () => clearInterval(interval);
-  }, [filterStatus, filterPriority]);
+  }, [selectedTenantId, filterStatus, filterPriority]); // Reload when tenant changes
 
   const fetchDevices = async () => {
     try {
