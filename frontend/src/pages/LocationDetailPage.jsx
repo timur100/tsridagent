@@ -42,52 +42,28 @@ const LocationDetailPage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      // First, try to get all tenants to find which tenant this location belongs to
-      const tenantsResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (tenantsResponse.ok) {
-        const tenantsData = await tenantsResponse.json();
-        let foundLocation = null;
-        
-        // Search through each tenant's locations
-        for (const tenant of tenantsData.tenants || []) {
-          try {
-            const locationsResponse = await fetch(
-              `${BACKEND_URL}/api/tenant-locations/${tenant.tenant_id}`,
-              {
-                headers: {
-                  'Authorization': `Bearer ${token}`
-                }
-              }
-            );
-            
-            if (locationsResponse.ok) {
-              const locationsData = await locationsResponse.json();
-              const location = locationsData.locations?.find(
-                loc => loc.location_id === locationId
-              );
-              
-              if (location) {
-                foundLocation = location;
-                break;
-              }
-            }
-          } catch (err) {
-            console.error(`Error checking tenant ${tenant.tenant_id}:`, err);
+      // Use the new endpoint to get location by ID
+      const response = await fetch(
+        `${BACKEND_URL}/api/tenant-locations/by-id/${locationId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
           }
         }
-        
-        if (foundLocation) {
-          setLocation(foundLocation);
-          setLocationFormData(foundLocation);
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.location) {
+          setLocation(data.location);
+          setLocationFormData(data.location);
         } else {
           toast.error('Standort nicht gefunden');
           navigate('/portal/admin');
         }
+      } else if (response.status === 404) {
+        toast.error('Standort nicht gefunden');
+        navigate('/portal/admin');
       } else {
         toast.error('Fehler beim Laden des Standorts');
         navigate('/portal/admin');
