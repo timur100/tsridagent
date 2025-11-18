@@ -1189,69 +1189,10 @@ const AdminPortalContent = () => {
         )}
 
         {activeTab === 'locations' && (
-          <div>
-            {/* Header with Search and Add Button in one row */}
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-4 mb-6">
-              {/* Title on the left */}
-              <div className="flex-shrink-0">
-                <h2 className={`text-2xl font-bold whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Standortverwaltung
-                </h2>
-              </div>
-
-              {/* Search Bar in the middle - flexible width */}
-              <div className="flex-1 w-full lg:w-auto">
-                <SearchInput
-                  value={standorteSearchTerm}
-                  onChange={(e) => setStandorteSearchTerm(e.target.value)}
-                  placeholder="Suche nach Code, Stadt, Manager, Telefon, etc..."
-                  className="w-full"
-                />
-              </div>
-
-              {/* Add Button on the right */}
-              <div className="flex-shrink-0">
-                <Button
-                  onClick={() => setShowAddStandortModal(true)}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center space-x-2 whitespace-nowrap"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span>Standort hinzufügen</span>
-                </Button>
-              </div>
-            </div>
-
-            <StandorteManagement 
-              searchTerm={standorteSearchTerm}
-              onSearchChange={setStandorteSearchTerm}
-              addModalOpen={showAddStandortModal}
-              isSavingStandort={isSavingStandort}
-            />
-            
-            {/* Add Standort Modal */}
-            {showAddStandortModal && (
-              <AddStandortModal
-                onClose={() => {
-                  setShowAddStandortModal(false);
-                  setIsSavingStandort(false); // Reset saving state wenn Modal geschlossen wird
-                }}
-                onAdd={async () => {
-                  setIsSavingStandort(true); // Start saving - Polling bleibt pausiert
-                  setShowAddStandortModal(false);
-                  
-                  // Refresh locations list - trigger a reload by updating search term slightly
-                  setStandorteSearchTerm(prev => prev + ' ');
-                  setTimeout(() => setStandorteSearchTerm(prev => prev.trim()), 100);
-                  
-                  // Wait for data to be processed before resuming polling
-                  setTimeout(() => {
-                    setIsSavingStandort(false); // Jetzt kann Polling wieder starten
-                    toast.success('Standort erfolgreich hinzugefügt');
-                  }, 2000); // 2 Sekunden Puffer für Datenverarbeitung
-                }}
-              />
-            )}
-          </div>
+          <AllLocationsTab 
+            theme={theme}
+            selectedTenantId={selectedTenantIdForLocations}
+          />
         )}
 
         {activeTab === 'employees' && (
