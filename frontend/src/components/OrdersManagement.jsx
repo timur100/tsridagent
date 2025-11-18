@@ -63,7 +63,13 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const result = await apiCall('/api/orders/list');
+      // Build URL with tenant filter
+      let url = '/api/orders/list';
+      if (selectedTenantId && selectedTenantId !== 'all') {
+        url += `?tenant_id=${selectedTenantId}`;
+      }
+      
+      const result = await apiCall(url);
       if (result.success && result.data) {
         setOrders(result.data.orders || []);
         setSummary(result.data.summary || { total: 0, pending: 0, processing: 0, shipped: 0, delivered: 0 });
