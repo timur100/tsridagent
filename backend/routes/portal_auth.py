@@ -266,3 +266,162 @@ async def impersonate_customer(request: ImpersonateRequest, token_data: dict = D
     except Exception as e:
         print(f"Impersonation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Registration management endpoints
+@router.get("/registrations")
+async def get_registrations(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    """Get all pending registrations (Admin only)"""
+    try:
+        token = credentials.credentials
+        token_data = verify_token(token)
+        
+        # Get all registrations
+        registrations = list(portal_db.registrations.find({}, {"_id": 0}))
+        
+        return registrations
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error fetching registrations: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+class ApproveRegistrationRequest(BaseModel):
+    registration_id: str
+    tenant_id: str  # Assign user to a tenant
+
+@router.post("/registrations/approve")
+async def approve_registration(
+    request: ApproveRegistrationRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Approve a registration and create user account (Admin only)"""
+    try:
+        token = credentials.credentials
+        token_data = verify_token(token)
+        admin_email = token_data.get("sub")
+        
+        # Get registration
+        registration = portal_db.registrations.find_one(
+            {"registration_id": request.registration_id, "status": "pending"}
+        )
+        
+        if not registration:
+            raise HTTPException(status_code=404, detail="Registration not found or already processed")
+        
+        # Create user in auth_db
+        user_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        new_user = {
+            "user_id": user_id,
+            "username": registration["email"].split("@")[0],
+            "email": registration["email"],
+            "first_name": registration["name"].split()[0] if registration["name"] else "",
+            "last_name": " ".join(registration["name"].split()[1:]) if len(registration["name"].split()) > 1 else "",
+            "password_hash": registration["hashed_password"],
+            "tenant_ids": [request.tenant_id],
+            "user_type": "customer",
+            "roles": ["user"],  # Minimal permissions
+            "permissions": ["profile.read", "profile.write", "orders.read"],
+            "phone": registration.get("phone"),
+            "position": None,
+            "department": None,
+            "status": "active",
+            "enabled": True,
+            "email_verified": False,
+            "created_at": now,
+            "updated_at": now,
+            "last_login": None,
+            "attributes": {
+                "company": registration.get("company")
+            }
+        }
+        
+        auth_db.users.insert_one(new_user)
+        
+        # Update registration status
+        portal_db.registrations.update_one(
+            {"registration_id": request.registration_id},
+            {
+                "$set": {
+                    "status": "approved",
+                    "approved_by": admin_email,
+                    "approved_at": now,
+                    "user_id": user_id
+                }
+            }
+        )
+        
+        # TODO: Send email notification to user
+        # send_email(
+        #     to=registration["email"],
+        #     subject="Ihr Account wurde genehmigt",
+        #     body=f"Hallo {registration['name']},\n\nIhr Account wurde genehmigt. Sie können sich jetzt einloggen."
+        # )
+        
+        return {
+            "success": True,
+            "message": "Registrierung genehmigt und Benutzer erstellt",
+            "user_id": user_id
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error approving registration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+class RejectRegistrationRequest(BaseModel):
+    registration_id: str
+    reason: Optional[str] = None
+
+@router.post("/registrations/reject")
+async def reject_registration(
+    request: RejectRegistrationRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Reject a registration (Admin only)"""
+    try:
+        token = credentials.credentials
+        token_data = verify_token(token)
+        admin_email = token_data.get("sub")
+        
+        # Get registration
+        registration = portal_db.registrations.find_one(
+            {"registration_id": request.registration_id, "status": "pending"}
+        )
+        
+        if not registration:
+            raise HTTPException(status_code=404, detail="Registration not found or already processed")
+        
+        # Update registration status
+        now = datetime.now(timezone.utc).isoformat()
+        portal_db.registrations.update_one(
+            {"registration_id": request.registration_id},
+            {
+                "$set": {
+                    "status": "rejected",
+                    "rejected_by": admin_email,
+                    "rejected_at": now,
+                    "rejection_reason": request.reason
+                }
+            }
+        )
+        
+        # TODO: Send email notification to user
+        # send_email(
+        #     to=registration["email"],
+        #     subject="Ihre Registrierung wurde abgelehnt",
+        #     body=f"Hallo {registration['name']},\n\nLeider wurde Ihre Registrierung abgelehnt."
+        # )
+        
+        return {
+            "success": True,
+            "message": "Registrierung abgelehnt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error rejecting registration: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
