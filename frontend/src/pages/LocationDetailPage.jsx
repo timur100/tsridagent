@@ -42,28 +42,40 @@ const LocationDetailPage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      // First, we need to find which tenant this location belongs to
-      // We'll search through all locations to find it
-      const response = await fetch(`${BACKEND_URL}/api/search/global?query=${locationId}`, {
+      // Try to find the location by searching through the global search
+      const searchResponse = await fetch(`${BACKEND_URL}/api/search/global?query=${locationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.results.tenant_locations && data.results.tenant_locations.length > 0) {
-          const foundLocation = data.results.tenant_locations[0].data;
-          setLocation(foundLocation);
-          setLocationFormData(foundLocation);
+      if (searchResponse.ok) {
+        const searchData = await searchResponse.json();
+        if (searchData.results.tenant_locations && searchData.results.tenant_locations.length > 0) {
+          // Find the exact match by location_id
+          const foundLocation = searchData.results.tenant_locations.find(
+            loc => loc.data.location_id === locationId
+          );
+          
+          if (foundLocation) {
+            setLocation(foundLocation.data);
+            setLocationFormData(foundLocation.data);
+          } else {
+            toast.error('Standort nicht gefunden');
+            navigate('/portal/admin');
+          }
         } else {
           toast.error('Standort nicht gefunden');
-          navigate('/admin');
+          navigate('/portal/admin');
         }
+      } else {
+        toast.error('Fehler beim Laden des Standorts');
+        navigate('/portal/admin');
       }
     } catch (error) {
       console.error('Error fetching location:', error);
       toast.error('Fehler beim Laden des Standorts');
+      navigate('/portal/admin');
     } finally {
       setLoading(false);
     }
