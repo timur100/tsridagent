@@ -120,17 +120,22 @@ async def service_info():
 
 # Device Routes
 @app.get("/api/devices/stats")
-async def get_device_stats():
+async def get_device_stats(tenant_id: Optional[str] = None):
     """Get device statistics"""
     try:
-        total = await db.devices.count_documents({})
-        active = await db.devices.count_documents({"status": "active"})
-        inactive = await db.devices.count_documents({"status": "inactive"})
-        maintenance = await db.devices.count_documents({"status": "maintenance"})
-        offline = await db.devices.count_documents({"status": "offline"})
+        query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
+            
+        total = await db.devices.count_documents(query)
+        active = await db.devices.count_documents({**query, "status": "active"})
+        inactive = await db.devices.count_documents({**query, "status": "inactive"})
+        maintenance = await db.devices.count_documents({**query, "status": "maintenance"})
+        offline = await db.devices.count_documents({**query, "status": "offline"})
         
         # Get device types breakdown
         pipeline = [
+            {"$match": query} if query else {"$match": {}},
             {"$group": {"_id": "$device_type", "count": {"$sum": 1}}}
         ]
         types_result = await db.devices.aggregate(pipeline).to_list(100)
