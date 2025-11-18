@@ -12,7 +12,8 @@ import {
   X,
   Save,
   UserPlus,
-  Filter
+  Filter,
+  CheckCircle
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import UserModal from '../components/UserModal';
