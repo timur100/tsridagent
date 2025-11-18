@@ -206,26 +206,30 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       } border focus:outline-none focus:border-[#c00000]`}
                     />
                   </div>
-                  {!user && (
-                    <div className="md:col-span-2">
-                      <label className={`block text-sm font-medium mb-2 ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        Passwort *
-                      </label>
-                      <input
-                        type="password"
-                        required={!user}
-                        value={formData.password}
-                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                        className={`w-full px-4 py-2 rounded-lg ${
-                          theme === 'dark'
-                            ? 'bg-[#2a2a2a] text-white border-gray-700'
-                            : 'bg-white text-gray-900 border-gray-200'
-                        } border focus:outline-none focus:border-[#c00000]`}
-                      />
-                    </div>
-                  )}
+                  <div className="md:col-span-2">
+                    <label className={`block text-sm font-medium mb-2 ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Passwort {!user && '*'}
+                    </label>
+                    <input
+                      type="password"
+                      required={!user}
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder={user ? 'Leer lassen, um nicht zu ändern' : 'Mindestens 6 Zeichen'}
+                      className={`w-full px-4 py-2 rounded-lg ${
+                        theme === 'dark'
+                          ? 'bg-[#2a2a2a] text-white border-gray-700'
+                          : 'bg-white text-gray-900 border-gray-200'
+                      } border focus:outline-none focus:border-[#c00000]`}
+                    />
+                    {user && (
+                      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Geben Sie nur ein neues Passwort ein, wenn Sie es ändern möchten
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
