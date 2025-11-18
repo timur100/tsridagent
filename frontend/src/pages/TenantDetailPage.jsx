@@ -27,7 +27,14 @@ import {
   FileText,
   Eye,
   Trash2,
-  Download
+  Download,
+  Plus,
+  Map,
+  Phone,
+  Mail,
+  User,
+  Edit,
+  Navigation
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
