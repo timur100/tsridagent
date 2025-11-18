@@ -163,7 +163,7 @@ const CustomerPortal = () => {
                 <PortalSwitcher />
                 <div className="text-right hidden lg:block">
                   <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{user?.email || user?.name}</p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{user?.company || companyName}</p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>{companyName || user?.company || 'Kunde'}</p>
                 </div>
                 <ThemeToggle />
                 <Button
