@@ -559,7 +559,7 @@ class TenantLocationsTester:
             
             location_id = self.test_locations[0]  # Use first created location
             
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations/{location_id}")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/{location_id}")
             
             if response.status_code != 200:
                 self.log_result(
@@ -639,7 +639,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.put(
-                f"{API_BASE}/tenants/{self.test_tenant_id}/locations/{location_id}", 
+                f"{API_BASE}/tenant-locations/{self.test_tenant_id}/{location_id}", 
                 json=update_data
             )
             
@@ -804,7 +804,7 @@ class TenantLocationsTester:
             
             location_id = self.test_locations[-1]  # Use last created location
             
-            response = self.session.delete(f"{API_BASE}/tenants/{self.test_tenant_id}/locations/{location_id}")
+            response = self.session.delete(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/{location_id}")
             
             if response.status_code != 200:
                 self.log_result(
@@ -827,7 +827,7 @@ class TenantLocationsTester:
                 return False
             
             # Verify location is deleted by trying to get it
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations/{location_id}")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/{location_id}")
             
             if response.status_code != 404:
                 self.log_result(
