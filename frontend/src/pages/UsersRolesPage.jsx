@@ -475,7 +475,30 @@ const UsersRolesPage = () => {
         />
       )}
 
-      {/* Modals will be added here */}
+      {/* User Modal */}
+      <UserModal
+        show={showUserModal}
+        onClose={() => {
+          setShowUserModal(false);
+          setSelectedUser(null);
+        }}
+        user={selectedUser}
+        roles={roles}
+        tenants={tenants}
+        onSave={saveUser}
+      />
+
+      {/* Role Modal */}
+      <RoleModal
+        show={showRoleModal}
+        onClose={() => {
+          setShowRoleModal(false);
+          setSelectedRole(null);
+        }}
+        role={selectedRole}
+        tenants={tenants}
+        onSave={saveRole}
+      />
     </div>
   );
 };
