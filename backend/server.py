@@ -51,6 +51,8 @@ from routes.service_proxy import router as service_proxy_router
 from routes.service_mongodb_info import router as service_mongodb_info_router
 from routes.mongodb_summary import router as mongodb_summary_router
 from routes.tenants_proxy import router as tenants_proxy_router
+from routes.roles_proxy import router as roles_proxy_router
+from routes.users_proxy import router as users_proxy_router
 
 
 ROOT_DIR = Path(__file__).parent
