@@ -48,6 +48,7 @@ import ScannerPinSettings from '../components/ScannerPinSettings';
 import TenantsPage from './TenantsPage';
 import TenantDetailPage from './TenantDetailPage';
 import SubscriptionPlans from './SubscriptionPlans';
+import UsersRolesPage from './UsersRolesPage';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
