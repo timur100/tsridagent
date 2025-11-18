@@ -28,6 +28,7 @@ from routes.electron import router as electron_router
 from routes.customer_data import router as customer_data_router
 from routes.devices import router as devices_router
 from routes.device_file_upload import router as device_file_upload_router
+from routes.tenant_devices import router as tenant_devices_router
 from routes.teamviewer_integration import router as teamviewer_router
 from routes.regula_scanner import router as regula_scanner_router
 from routes.scanner_settings import router as scanner_settings_router
