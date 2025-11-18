@@ -299,7 +299,7 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     setLoadingLocations(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}/locations`, {
+      const response = await fetch(`${BACKEND_URL}/api/tenant-locations/${tenantId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
