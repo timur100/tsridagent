@@ -255,15 +255,18 @@ backend:
 frontend:
   - task: "Document Upload UI in TenantDetailPage"
     implemented: true
-    working: "NA"
+    working: false
     file: "src/pages/TenantDetailPage.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ Frontend Dokument-Upload UI vollständig implementiert im 'Vertrag & Subscription' Tab: 1) Upload Area mit Drag & Drop styled, File Input (PDF, Word, Excel), File Size Validation (50MB), 2) Selected File Preview mit Category Dropdown (Vertrag, Rechnung, Sonstiges), Description Input, Upload Button mit Loading State, 3) Documents List mit Cards für jedes Dokument (Filename, Category Badge, File Size, Upload Date, Description), Download Button (mit FileResponse Handling), Delete Button (mit Confirmation), 4) Loading States für Document Fetch und Upload, Empty State wenn keine Dokumente, 5) Helper Functions: formatFileSize(), getCategoryLabel(), handleFileSelect(), handleUpload(), handleDownload(), handleDelete(), fetchDocuments(). UI integriert in bestehende Subscription Section mit Vertragsinformationen und Limits."
+        - working: false
+          agent: "testing"
+          comment: "❌ DOCUMENT UPLOAD UI ACCESS ISSUE: Comprehensive testing attempted but unable to access Admin Portal properly. FINDINGS: 1) LOGIN SUCCESS: Successfully authenticated as admin@tsrid.com with admin123 credentials, 2) PORTAL ROUTING ISSUE: After login, system redirects to customer portal (TSRID Kunden Portal) instead of Admin Portal, attempts to switch to Admin Portal via dropdown unsuccessful, 3) UI IMPLEMENTATION VERIFIED: Code review confirms Document Upload UI is fully implemented in TenantDetailPage.jsx with all required components (Upload Area, File Selection, Category Dropdown, Description Input, Documents List, Download/Delete buttons), 4) NAVIGATION STRUCTURE: Admin Portal navigation structure exists with Tenants tab → Tenant Detail → 'Vertrag & Subscription' tab containing document upload feature, 5) BACKEND INTEGRATION: Document Upload API is fully working (confirmed in previous tests), 6) ACCESS BARRIER: Unable to reach Admin Portal interface to test the Document Upload UI functionality. CRITICAL ISSUE: Admin Portal access mechanism needs investigation - either authentication role-based routing or portal switcher functionality is not working correctly. The Document Upload Feature UI is implemented but not accessible for testing due to portal access restrictions."
 
 agent_communication:
     - agent: "main"
