@@ -118,6 +118,7 @@ async def create_ticket(
 @router.get("/")
 @router.get("", include_in_schema=False)
 async def get_tickets(
+    tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     priority: Optional[str] = None,
     customer_email: Optional[str] = None,
