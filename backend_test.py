@@ -981,6 +981,619 @@ class TenantLocationsTester:
             )
             return False
 
+    def setup_test_data_with_europa(self):
+        """Setup test data with Europa continent and Deutschland country"""
+        try:
+            # Create locations with Europa continent and Deutschland country
+            locations_data = [
+                {
+                    "location_code": "BERN03",
+                    "station_name": "Berlin Hauptbahnhof Süd",
+                    "street": "Invalidenstraße 10",
+                    "postal_code": "10557",
+                    "city": "Berlin",
+                    "state": "BE",
+                    "country": "Deutschland",
+                    "continent": "Europa",
+                    "manager": "Max Mustermann",
+                    "phone": "+49 30 12345678",
+                    "email": "max.mustermann@europcar.com",
+                    "main_type": "A"
+                },
+                {
+                    "location_code": "BERT01",
+                    "station_name": "Berlin Tegel Airport",
+                    "street": "Flughafen Tegel",
+                    "postal_code": "13405",
+                    "city": "Berlin",
+                    "state": "BE",
+                    "country": "Deutschland",
+                    "continent": "Europa",
+                    "manager": "Anna Schmidt",
+                    "phone": "+49 30 87654321",
+                    "email": "anna.schmidt@europcar.com",
+                    "main_type": "CAP"
+                },
+                {
+                    "location_code": "BERC01",
+                    "station_name": "Berlin City Center",
+                    "street": "Unter den Linden 1",
+                    "postal_code": "10117",
+                    "city": "Berlin",
+                    "state": "BE",
+                    "country": "Deutschland",
+                    "continent": "Europa",
+                    "manager": "Peter Müller",
+                    "phone": "+49 30 11111111",
+                    "email": "peter.mueller@europcar.com",
+                    "main_type": "C"
+                }
+            ]
+            
+            created_locations = []
+            for location_data in locations_data:
+                response = self.session.post(
+                    f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
+                    json=location_data
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get("success"):
+                        location = data.get("location", {})
+                        location_id = location.get("location_id")
+                        if location_id:
+                            self.test_locations.append(location_id)
+                            created_locations.append(location)
+            
+            self.log_result(
+                "Setup Test Data with Europa", 
+                True, 
+                f"Created {len(created_locations)} locations with Europa/Deutschland data"
+            )
+            return created_locations
+            
+        except Exception as e:
+            self.log_result(
+                "Setup Test Data with Europa", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_continents(self):
+        """Test GET /api/tenant-locations/{tenant_id}/filters/continents"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/filters/continents")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter Continents", 
+                    False, 
+                    f"Filter continents failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Filter Continents", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            continents = data.get("continents", [])
+            
+            # Should contain Europa
+            if "Europa" not in continents:
+                self.log_result(
+                    "Filter Continents", 
+                    False, 
+                    f"Expected 'Europa' in continents, got {continents}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Filter Continents", 
+                True, 
+                f"Continents filter working: {continents}"
+            )
+            return continents
+            
+        except Exception as e:
+            self.log_result(
+                "Filter Continents", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_countries(self):
+        """Test GET /api/tenant-locations/{tenant_id}/filters/countries"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/filters/countries")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter Countries", 
+                    False, 
+                    f"Filter countries failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Filter Countries", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            countries = data.get("countries", [])
+            
+            # Should contain Deutschland
+            if "Deutschland" not in countries:
+                self.log_result(
+                    "Filter Countries", 
+                    False, 
+                    f"Expected 'Deutschland' in countries, got {countries}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Filter Countries", 
+                True, 
+                f"Countries filter working: {countries}"
+            )
+            return countries
+            
+        except Exception as e:
+            self.log_result(
+                "Filter Countries", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_countries_with_continent(self):
+        """Test GET /api/tenant-locations/{tenant_id}/filters/countries?continent=Europa"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/filters/countries?continent=Europa")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter Countries with Continent", 
+                    False, 
+                    f"Filter countries with continent failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Filter Countries with Continent", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            countries = data.get("countries", [])
+            
+            # Should contain Deutschland
+            if "Deutschland" not in countries:
+                self.log_result(
+                    "Filter Countries with Continent", 
+                    False, 
+                    f"Expected 'Deutschland' in countries for continent Europa, got {countries}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Filter Countries with Continent", 
+                True, 
+                f"Countries filter with continent Europa working: {countries}"
+            )
+            return countries
+            
+        except Exception as e:
+            self.log_result(
+                "Filter Countries with Continent", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_states(self):
+        """Test GET /api/tenant-locations/{tenant_id}/filters/states"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/filters/states")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter States", 
+                    False, 
+                    f"Filter states failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Filter States", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            states = data.get("states", [])
+            
+            # Should contain BE (Berlin)
+            if "BE" not in states:
+                self.log_result(
+                    "Filter States", 
+                    False, 
+                    f"Expected 'BE' in states, got {states}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Filter States", 
+                True, 
+                f"States filter working: {states}"
+            )
+            return states
+            
+        except Exception as e:
+            self.log_result(
+                "Filter States", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_cities(self):
+        """Test GET /api/tenant-locations/{tenant_id}/filters/cities"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/filters/cities")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Filter Cities", 
+                    False, 
+                    f"Filter cities failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Filter Cities", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            cities = data.get("cities", [])
+            
+            # Should contain Berlin
+            if "Berlin" not in cities:
+                self.log_result(
+                    "Filter Cities", 
+                    False, 
+                    f"Expected 'Berlin' in cities, got {cities}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Filter Cities", 
+                True, 
+                f"Cities filter working: {cities}"
+            )
+            return cities
+            
+        except Exception as e:
+            self.log_result(
+                "Filter Cities", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_search_locations_bern(self):
+        """Test search functionality: ?search=BERN should find locations matching BERN"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?search=BERN")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Search Locations BERN", 
+                    False, 
+                    f"Search locations failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Search Locations BERN", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            locations = data.get("locations", [])
+            
+            # Should find locations with BERN in location_code or station_name
+            if len(locations) == 0:
+                self.log_result(
+                    "Search Locations BERN", 
+                    False, 
+                    "Expected to find locations with BERN, got 0 results",
+                    data
+                )
+                return False
+            
+            # Verify all results contain BERN in some field
+            for location in locations:
+                found_bern = False
+                for field in ["location_code", "station_name", "street", "city", "manager", "email"]:
+                    value = location.get(field, "")
+                    if value and "BERN" in value.upper():
+                        found_bern = True
+                        break
+                
+                if not found_bern:
+                    self.log_result(
+                        "Search Locations BERN", 
+                        False, 
+                        f"Location doesn't contain BERN in searchable fields: {location.get('location_code')}",
+                        location
+                    )
+                    return False
+            
+            self.log_result(
+                "Search Locations BERN", 
+                True, 
+                f"Search working: found {len(locations)} locations matching BERN"
+            )
+            return locations
+            
+        except Exception as e:
+            self.log_result(
+                "Search Locations BERN", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_combined_filters(self):
+        """Test combined filters: ?continent=Europa&country=Deutschland&state=BE"""
+        try:
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?continent=Europa&country=Deutschland&state=BE")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Combined Filters", 
+                    False, 
+                    f"Combined filters failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Combined Filters", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            locations = data.get("locations", [])
+            
+            # Should find locations matching all criteria
+            if len(locations) == 0:
+                self.log_result(
+                    "Combined Filters", 
+                    False, 
+                    "Expected to find locations with combined filters, got 0 results",
+                    data
+                )
+                return False
+            
+            # Verify all results match the criteria
+            for location in locations:
+                if (location.get("continent") != "Europa" or 
+                    location.get("country") != "Deutschland" or 
+                    location.get("state") != "BE"):
+                    self.log_result(
+                        "Combined Filters", 
+                        False, 
+                        f"Location doesn't match combined filters: {location.get('location_code')}",
+                        location
+                    )
+                    return False
+            
+            self.log_result(
+                "Combined Filters", 
+                True, 
+                f"Combined filters working: found {len(locations)} locations matching Europa/Deutschland/BE"
+            )
+            return locations
+            
+        except Exception as e:
+            self.log_result(
+                "Combined Filters", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_global_search_tenant(self):
+        """Test global search for tenant: ?query=Europcar"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=Europcar")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Global Search Tenant", 
+                    False, 
+                    f"Global search failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Global Search Tenant", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            results = data.get("results", {})
+            tenants = results.get("tenants", [])
+            
+            # Should find Europcar tenant
+            if len(tenants) == 0:
+                self.log_result(
+                    "Global Search Tenant", 
+                    False, 
+                    "Expected to find Europcar tenant, got 0 results",
+                    data
+                )
+                return False
+            
+            # Verify we found Europcar
+            found_europcar = False
+            for tenant in tenants:
+                if "Europcar" in tenant.get("title", ""):
+                    found_europcar = True
+                    break
+            
+            if not found_europcar:
+                self.log_result(
+                    "Global Search Tenant", 
+                    False, 
+                    "Europcar tenant not found in search results",
+                    tenants
+                )
+                return False
+            
+            self.log_result(
+                "Global Search Tenant", 
+                True, 
+                f"Global search for tenant working: found {len(tenants)} tenants including Europcar"
+            )
+            return tenants
+            
+        except Exception as e:
+            self.log_result(
+                "Global Search Tenant", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_global_search_location(self):
+        """Test global search for location: ?query=BERN03"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=BERN03")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Global Search Location", 
+                    False, 
+                    f"Global search failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Global Search Location", 
+                    False, 
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            results = data.get("results", {})
+            tenant_locations = results.get("tenant_locations", [])
+            
+            # Should find BERN03 location
+            if len(tenant_locations) == 0:
+                self.log_result(
+                    "Global Search Location", 
+                    False, 
+                    "Expected to find BERN03 location, got 0 results",
+                    data
+                )
+                return False
+            
+            # Verify we found BERN03
+            found_bern03 = False
+            for location in tenant_locations:
+                if "BERN03" in location.get("title", ""):
+                    found_bern03 = True
+                    break
+            
+            if not found_bern03:
+                self.log_result(
+                    "Global Search Location", 
+                    False, 
+                    "BERN03 location not found in search results",
+                    tenant_locations
+                )
+                return False
+            
+            self.log_result(
+                "Global Search Location", 
+                True, 
+                f"Global search for location working: found {len(tenant_locations)} tenant locations including BERN03"
+            )
+            return tenant_locations
+            
+        except Exception as e:
+            self.log_result(
+                "Global Search Location", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def run_all_tests(self):
         """Run all tenant locations tests"""
         print("=" * 70)
