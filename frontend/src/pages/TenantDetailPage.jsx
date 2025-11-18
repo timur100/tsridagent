@@ -1682,6 +1682,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           </>
         )}
 
+        {activeTab === 'devices' && (
+          <TenantDevicesTab tenantId={tenantId} />
+        )}
+
         {activeTab === 'branding' && (
           <Card className={`p-12 text-center rounded-xl ${
             theme === 'dark' 
