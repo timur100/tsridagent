@@ -11,7 +11,12 @@ async def proxy_to_tenants(path: str, request: Request):
     """
     Proxy all /api/tenants/* requests to Auth & Identity Service (port 8100)
     Provides access to tenant management APIs
+    Excludes locations endpoints which are handled by tenant_locations router
     """
+    # Skip locations endpoints - they are handled by tenant_locations router
+    if "/locations" in path:
+        raise HTTPException(status_code=404, detail="Not Found")
+    
     try:
         target_url = f"http://localhost:8100/api/tenants/{path}"
         body = await request.body()
