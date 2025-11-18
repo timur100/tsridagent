@@ -56,7 +56,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
     }, 30000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedTenantId]); // Reload when tenant changes
 
   useEffect(() => {
     filterItems();
