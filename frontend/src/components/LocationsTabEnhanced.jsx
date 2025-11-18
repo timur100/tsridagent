@@ -67,10 +67,16 @@ const LocationsTabEnhanced = ({
         }
 
         // Fetch cities
-        const citiesRes = await fetch(
-          `${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/cities${filters.state ? `?state=${filters.state}` : ''}`,
-          { headers: { 'Authorization': `Bearer ${token}` } }
-        );
+        let citiesUrl = `${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/cities?`;
+        const cityParams = [];
+        if (filters.continent) cityParams.push(`continent=${filters.continent}`);
+        if (filters.country) cityParams.push(`country=${filters.country}`);
+        if (filters.state) cityParams.push(`state=${filters.state}`);
+        citiesUrl += cityParams.join('&');
+        
+        const citiesRes = await fetch(citiesUrl, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
         if (citiesRes.ok) {
           const data = await citiesRes.json();
           setFilterOptions(prev => ({ ...prev, cities: data.cities || [] }));
