@@ -90,6 +90,15 @@ const PortalRoutes = () => {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/admin/locations/:locationId"
+        element={
+          <ProtectedRoute adminOnly>
+            <LocationDetailPage />
+          </ProtectedRoute>
+        }
+      />
       
       <Route
         path="/catalog"
