@@ -187,13 +187,19 @@ const UsersRolesPage = () => {
       
       const method = selectedUser ? 'PUT' : 'POST';
 
+      // Remove password if empty during edit
+      const dataToSend = { ...userData };
+      if (selectedUser && !dataToSend.password) {
+        delete dataToSend.password;
+      }
+
       const response = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(userData)
+        body: JSON.stringify(dataToSend)
       });
 
       if (response.ok) {
