@@ -1148,6 +1148,8 @@ const AdminPortalContent = () => {
             onBack={() => {
               setSelectedTenantIdForDetail(null);
               setTenantInitialTab('dashboard');
+              // Reset tenant context to "Alle Kunden"
+              setSelectedTenant('all', 'Alle Kunden');
             }}
             initialTab={tenantInitialTab}
           />
