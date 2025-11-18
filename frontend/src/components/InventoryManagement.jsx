@@ -78,7 +78,13 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
   const fetchItems = async () => {
     setLoading(true);
     try {
-      const result = await apiCall('/api/inventory/items');
+      // Build URL with tenant filter
+      let url = '/api/inventory/items';
+      if (selectedTenantId && selectedTenantId !== 'all') {
+        url += `?tenant_id=${selectedTenantId}`;
+      }
+      
+      const result = await apiCall(url);
       if (result.success && result.data) {
         setItems(result.data.items || []);
         setSummary(result.data.summary || { total: 0, low_stock: 0, out_of_stock: 0 });
