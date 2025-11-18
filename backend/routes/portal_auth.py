@@ -238,14 +238,14 @@ async def impersonate_customer(request: ImpersonateRequest, token_data: dict = D
             }
         )
         
-        # Prepare customer response
+        # Prepare customer response - support both auth_db and portal_db formats
         customer_response = {
-            "id": customer.get("id"),
+            "id": customer.get("id") or customer.get("user_id"),
             "email": customer["email"],
-            "name": customer["name"],
-            "company": customer["company"],
-            "role": customer["role"],
-            "is_active": customer.get("is_active", True),
+            "name": customer.get("name") or f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip() or customer["email"],
+            "company": customer.get("company") or customer.get("attributes", {}).get("company"),
+            "role": customer.get("role") or (customer.get("roles", ["user"])[0] if customer.get("roles") else "user"),
+            "is_active": customer.get("is_active") or customer.get("enabled", True),
             "shop_enabled": customer.get("shop_enabled", False)
         }
         
