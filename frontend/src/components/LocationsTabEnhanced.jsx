@@ -3,6 +3,26 @@ import { Plus, Edit, Trash2, MapPin, Circle, Search, ArrowUpDown, ArrowUp, Arrow
 import { Card } from './ui/card';
 import { useNavigate } from 'react-router-dom';
 
+// Mapping für Bundesländer-Abkürzungen zu vollen Namen
+const STATE_NAMES = {
+  'BB': 'Brandenburg',
+  'BE': 'Berlin',
+  'BW': 'Baden-Württemberg',
+  'BY': 'Bayern',
+  'HB': 'Bremen',
+  'HE': 'Hessen',
+  'HH': 'Hamburg',
+  'MV': 'Mecklenburg-Vorpommern',
+  'NI': 'Niedersachsen',
+  'NW': 'Nordrhein-Westfalen',
+  'RP': 'Rheinland-Pfalz',
+  'SH': 'Schleswig-Holstein',
+  'SL': 'Saarland',
+  'SN': 'Sachsen',
+  'ST': 'Sachsen-Anhalt',
+  'TH': 'Thüringen'
+};
+
 const LocationsTabEnhanced = ({
   theme,
   locations,
@@ -29,6 +49,11 @@ const LocationsTabEnhanced = ({
   });
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  // Hilfsfunktion um Bundesland-Namen zu bekommen
+  const getStateName = (stateCode) => {
+    return STATE_NAMES[stateCode] || stateCode;
+  };
 
   // Fetch filter options
   useEffect(() => {
