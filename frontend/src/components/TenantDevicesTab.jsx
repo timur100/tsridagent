@@ -221,7 +221,7 @@ const TenantDevicesTab = ({ tenantId }) => {
 
   return (
     <div className="space-y-6">
-      {/* Title and Search Bar */}
+      {/* Title, Search Bar and Add Button */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
         <h2 className={`text-2xl font-bold whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           Geräte
@@ -244,6 +244,19 @@ const TenantDevicesTab = ({ tenantId }) => {
             }`}
           />
         </div>
+
+        {/* Add Device Button */}
+        <button
+          onClick={() => toast.info('Gerät hinzufügen Funktion wird bald verfügbar sein')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+            theme === 'dark'
+              ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
+              : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+          }`}
+        >
+          <Plus className="w-5 h-5" />
+          Gerät hinzufügen
+        </button>
       </div>
 
       {/* Summary Cards */}
