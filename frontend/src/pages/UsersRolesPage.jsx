@@ -15,6 +15,8 @@ import {
   Filter
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import UserModal from '../components/UserModal';
+import RoleModal from '../components/RoleModal';
 
 const UsersRolesPage = () => {
   const { theme } = useTheme();
