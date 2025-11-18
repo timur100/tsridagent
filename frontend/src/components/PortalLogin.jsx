@@ -48,13 +48,23 @@ const PortalLogin = () => {
       }
 
       if (result.success) {
-        toast.success(isLoginMode ? 'Login erfolgreich!' : 'Registrierung erfolgreich!');
-        
-        // Redirect to the page they tried to access, or default
-        const from = location.state?.from?.pathname || (result.user?.role === 'admin' ? '/portal/admin' : '/portal/customer');
-        navigate(from, { replace: true });
+        if (!isLoginMode && result.status === 'pending') {
+          // Registration pending approval
+          toast.success('Registrierung erfolgreich eingereicht! Bitte warten Sie auf die Genehmigung durch einen Administrator.', {
+            duration: 6000
+          });
+          setIsLoginMode(true); // Switch back to login mode
+          setFormData({ email: formData.email, password: '', name: '', company: '' }); // Clear form but keep email
+        } else {
+          // Successful login or approved registration
+          toast.success(isLoginMode ? 'Login erfolgreich!' : 'Registrierung erfolgreich!');
+          
+          // Redirect to the page they tried to access, or default
+          const from = location.state?.from?.pathname || (result.user?.role === 'admin' ? '/portal/admin' : '/portal/customer');
+          navigate(from, { replace: true });
+        }
       } else {
-        toast.error(result.error);
+        toast.error(result.error || 'Ein Fehler ist aufgetreten');
       }
     } catch (error) {
       toast.error('Ein Fehler ist aufgetreten');
