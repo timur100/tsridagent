@@ -636,13 +636,11 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                     <td className="px-4 py-3">
                       {getStatusBadge(location)}
                     </td>
-                    {(!selectedTenantId || selectedTenantId === 'all') && (
-                      <td className={`px-4 py-3 text-sm ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                      }`}>
-                        {location.tenant_name || '-'}
-                      </td>
-                    )}
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {location.tenant_name || '-'}
+                    </td>
                     <td className={`px-4 py-3 text-sm font-medium ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
