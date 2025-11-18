@@ -77,13 +77,13 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
 
   useEffect(() => {
     if (hasAccess) {
-      // Load devices for any selected customer (including 'all')
+      // Load devices when tenant selection changes
       loadDevices();
       loadStations();
     } else {
       setLoading(false);
     }
-  }, [selectedCustomer]);
+  }, [selectedCustomer, selectedTenantId]);
 
   // Load devices on mount (for when component re-mounts via key change)
   useEffect(() => {
