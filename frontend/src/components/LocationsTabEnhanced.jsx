@@ -159,7 +159,7 @@ const LocationsTabEnhanced = ({
   };
 
   const handleRowClick = (location) => {
-    navigate(`/admin/locations/${location.location_id}`);
+    navigate(`/portal/admin/locations/${location.location_id}`);
   };
 
   const handleFilterChange = (filterType, value) => {
