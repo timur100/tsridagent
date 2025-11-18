@@ -1618,10 +1618,11 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
 
         {activeTab === 'locations' && (
           <>
-            <LocationsTab
+            <LocationsTabEnhanced
               theme={theme}
               locations={locations}
               loadingLocations={loadingLocations}
+              tenantId={tenantId}
               onAddLocation={() => {
                 resetLocationForm();
                 setEditingLocation(null);
