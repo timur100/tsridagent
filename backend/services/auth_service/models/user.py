@@ -10,9 +10,13 @@ class UserBase(BaseModel):
     
 class UserCreate(UserBase):
     password: str
-    tenant_id: Optional[str] = None
+    tenant_ids: Optional[List[str]] = []  # Support multiple tenants
     user_type: str = "employee"  # employee, customer, admin
     roles: Optional[List[str]] = []
+    phone: Optional[str] = None
+    position: Optional[str] = None
+    department: Optional[str] = None
+    status: str = "active"  # active, inactive
     
 class UserUpdate(BaseModel):
     username: Optional[str] = None
