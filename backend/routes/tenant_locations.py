@@ -254,7 +254,7 @@ async def delete_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{tenant_id}/locations/stats/summary")
+@router.get("/{tenant_id}/stats/summary")
 async def get_locations_stats(
     tenant_id: str,
     credentials: HTTPAuthorizationCredentials = Depends(security)
