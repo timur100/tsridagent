@@ -251,6 +251,17 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ DOCUMENT UPLOAD API FULLY WORKING: Comprehensive testing completed with 10/10 tests passed successfully. AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123, received valid JWT token. TENANT SETUP: Used existing tenant 'Europcar' (ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8) for testing. DOCUMENT UPLOAD FUNCTIONALITY: ✅ PDF Upload - Successfully uploaded test_contract.pdf (1MB) with category 'contract', received proper response with success=true, document_id (UUID format), filename, file_size. ✅ Word Upload - Successfully uploaded test_invoice.docx (1MB) with category 'invoice', proper multipart form handling working. ✅ Excel Upload - Successfully uploaded test_report.xlsx (1MB) with category 'other', all file types (PDF, DOCX, XLSX) working correctly. DOCUMENT RETRIEVAL: ✅ GET /api/documents/tenant/{tenant_id} - Successfully retrieved all documents for tenant, proper response structure with success=true and documents array. ✅ Category Filter - GET /api/documents/tenant/{tenant_id}?category=contract working correctly, only returns documents with 'contract' category. DOCUMENT DOWNLOAD: ✅ GET /api/documents/download/{document_id} - Successfully downloaded document as FileResponse, proper content-disposition headers, file content retrieved correctly. VALIDATION & ERROR HANDLING: ✅ Invalid File Type - Correctly rejected .txt file with 400 error and proper error message 'Invalid file type. Allowed: PDF, DOC, DOCX, XLS, XLSX'. DOCUMENT DELETION: ✅ DELETE /api/documents/{document_id} - Successfully deleted document with success=true response, verified deletion by confirming 404 on subsequent download attempt, proper cleanup from both database and disk. FILE HANDLING: All multipart form data handling working correctly with proper Content-Type headers, file size validation, UUID document IDs, MongoDB storage in portal_db.documents collection. All German review request requirements met - document upload API is fully functional and production-ready."
+  - task: "Tenant Locations API - Complete Implementation"
+    implemented: true
+    working: "NA"
+    file: "routes/tenant_locations.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Backend Tenant Locations API vollständig implementiert: 1) POST /api/tenants/{tenant_id}/locations - Erstellt Standort mit allen Feldern (location_code, station_name, address, contact, technical info), 2) GET /api/tenants/{tenant_id}/locations - Holt alle Standorte mit optionalen Filtern (state, main_type), 3) GET /api/tenants/{tenant_id}/locations/{location_id} - Holt einzelnen Standort, 4) PUT /api/tenants/{tenant_id}/locations/{location_id} - Aktualisiert Standort, 5) DELETE /api/tenants/{tenant_id}/locations/{location_id} - Löscht Standort, 6) GET /api/tenants/{tenant_id}/locations/stats/summary - Statistiken (total, by_state, by_type). Datenmodell basiert auf Europcar Standort-Tabelle mit 20+ Feldern. MongoDB Collection: portal_db.tenant_locations"
 
 frontend:
   - task: "Document Upload UI in TenantDetailPage"
