@@ -11,8 +11,8 @@ const CustomerSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Only show for super_admin
-  if (!user || user.role !== 'super_admin') {
+  // Only show for super_admin and admin
+  if (!user || (user.role !== 'super_admin' && user.role !== 'admin')) {
     return null;
   }
 
