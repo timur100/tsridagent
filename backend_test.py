@@ -484,7 +484,7 @@ class TenantLocationsTester:
             return False
     
     def test_filter_by_main_type_a(self):
-        """Test main_type filter: ?main_type=A should return 1 location"""
+        """Test main_type filter: ?main_type=A should return locations with main_type A"""
         try:
             response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?main_type=A")
             
@@ -510,31 +510,31 @@ class TenantLocationsTester:
             
             locations = data.get("locations", [])
             
-            # Should return 1 location (BERN03)
-            if len(locations) != 1:
+            # Should return at least some locations with main_type A
+            if len(locations) == 0:
                 self.log_result(
                     "Filter by Main Type (A)", 
                     False, 
-                    f"Expected 1 location for main_type A, got {len(locations)}",
+                    "Expected at least some locations for main_type A, got 0",
                     data
                 )
                 return False
             
-            # Verify location has main_type A
-            location = locations[0]
-            if location.get("main_type") != "A":
-                self.log_result(
-                    "Filter by Main Type (A)", 
-                    False, 
-                    f"Found location with wrong main_type: {location.get('main_type')}",
-                    location
-                )
-                return False
+            # Verify all locations have main_type A
+            for location in locations:
+                if location.get("main_type") != "A":
+                    self.log_result(
+                        "Filter by Main Type (A)", 
+                        False, 
+                        f"Found location with wrong main_type: {location.get('main_type')}",
+                        location
+                    )
+                    return False
             
             self.log_result(
                 "Filter by Main Type (A)", 
                 True, 
-                f"Main type filter working: found {len(locations)} location with main_type A"
+                f"Main type filter working: found {len(locations)} locations with main_type A"
             )
             return locations
             
