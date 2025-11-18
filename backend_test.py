@@ -22,12 +22,8 @@ class TenantLocationsTester:
         })
         self.results = []
         self.admin_token = None
-        self.auth_service_session = requests.Session()
-        self.auth_service_session.headers.update({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        })
         self.test_tenant_id = None
+        self.test_locations = []  # Store created location IDs for cleanup
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
