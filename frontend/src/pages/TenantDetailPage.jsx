@@ -1615,18 +1615,33 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
         )}
 
         {activeTab === 'locations' && (
-          <Card className={`p-12 text-center rounded-xl ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-          }`}>
-            <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Standorte
-            </h3>
-            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-              Verwalten Sie Standorte für diesen Tenant.
-            </p>
-          </Card>
+          <>
+            <LocationsTab
+              theme={theme}
+              locations={locations}
+              loadingLocations={loadingLocations}
+              onAddLocation={() => {
+                resetLocationForm();
+                setEditingLocation(null);
+                setShowLocationModal(true);
+              }}
+              onEditLocation={handleLocationEdit}
+              onDeleteLocation={handleLocationDelete}
+            />
+            <LocationModal
+              theme={theme}
+              show={showLocationModal}
+              onClose={() => {
+                setShowLocationModal(false);
+                setEditingLocation(null);
+                resetLocationForm();
+              }}
+              editing={editingLocation}
+              formData={locationFormData}
+              onChange={setLocationFormData}
+              onSubmit={handleLocationSubmit}
+            />
+          </>
         )}
 
         {activeTab === 'branding' && (
