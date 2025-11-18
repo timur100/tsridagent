@@ -37,6 +37,14 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isEditing, setIsEditing] = useState(false);
+  
+  // Document upload states
+  const [documents, setDocuments] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadCategory, setUploadCategory] = useState('contract');
+  const [uploadDescription, setUploadDescription] = useState('');
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
