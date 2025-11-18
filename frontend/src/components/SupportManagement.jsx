@@ -15,6 +15,7 @@ import TicketDetailModal from './TicketDetailModal';
 const SupportManagement = () => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
+  const { selectedTenantId } = useTenant();
   
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
