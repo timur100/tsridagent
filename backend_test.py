@@ -1681,10 +1681,10 @@ class TenantLocationsTester:
         return len(failed_tests) == 0
 
 if __name__ == "__main__":
-    print("Starting Tenant Locations Backend Testing...")
+    print("Starting Tenant Locations Enhanced Features Backend Testing...")
     print()
     
-    # Test Tenant Locations
+    # Test Tenant Locations Enhanced Features
     tester = TenantLocationsTester()
     test_success = tester.run_all_tests()
     
@@ -1692,13 +1692,13 @@ if __name__ == "__main__":
     print("=" * 70)
     print("OVERALL TESTING SUMMARY")
     print("=" * 70)
-    print(f"Tenant Locations Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Tenant Locations Enhanced Features Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 70)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 TENANT LOCATIONS TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 TENANT LOCATIONS ENHANCED FEATURES TESTING COMPLETED SUCCESSFULLY!")
         sys.exit(0)
     else:
-        print("❌ TENANT LOCATIONS TESTING FOUND ISSUES!")
+        print("❌ TENANT LOCATIONS ENHANCED FEATURES TESTING FOUND ISSUES!")
         sys.exit(1)
