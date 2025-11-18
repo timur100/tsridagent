@@ -324,9 +324,14 @@ const TenantsPage = ({ onSelectTenant }) => {
                 onSelectTenant && onSelectTenant(tenant.tenant_id);
               }}
               className={`p-5 rounded-xl transition-all duration-300 cursor-pointer ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                // Highlight selected tenant
+                selectedTenantId === tenant.tenant_id
+                  ? theme === 'dark'
+                    ? 'bg-[#c00000]/20 border-2 border-[#c00000] shadow-[0_8px_24px_rgba(192,0,0,0.5)]'
+                    : 'bg-red-50 border-2 border-[#c00000] shadow-[0_8px_24px_rgba(192,0,0,0.3)]'
+                  : theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
               }`}
             >
               {/* Logo and Status */}
