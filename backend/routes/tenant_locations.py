@@ -23,6 +23,8 @@ class TenantLocationCreate(BaseModel):
     city: str  # ORT
     street: str  # STR
     state: str  # Bundesland (BB, BE, etc.)
+    country: Optional[str] = None  # Land
+    continent: Optional[str] = None  # Kontinent
     manager: Optional[str] = None  # Manager
     phone: Optional[str] = None  # Telefon
     phone_internal: Optional[str] = None  # Telefon Intern
