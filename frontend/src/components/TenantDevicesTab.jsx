@@ -247,11 +247,7 @@ const TenantDevicesTab = ({ tenantId }) => {
       </div>
 
       {/* Summary Cards */}
-      <div className="mb-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-6">
         <Card 
           onClick={() => handleFilterChange('status', 'all')}
           className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
