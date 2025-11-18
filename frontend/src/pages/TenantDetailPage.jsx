@@ -86,6 +86,170 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     }
   };
 
+  const fetchDocuments = async () => {
+    setLoadingDocuments(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/documents/tenant/${tenantId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDocuments(data.documents || []);
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      toast.error('Fehler beim Laden der Dokumente');
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Check file type
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      ];
+      
+      if (!allowedTypes.includes(file.type) && 
+          !file.name.match(/\.(pdf|doc|docx|xls|xlsx)$/i)) {
+        toast.error('Ungültiger Dateityp. Erlaubt: PDF, DOC, DOCX, XLS, XLSX');
+        return;
+      }
+
+      // Check file size (50MB)
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error('Datei ist zu groß. Maximum: 50MB');
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      toast.error('Bitte wählen Sie eine Datei aus');
+      return;
+    }
+
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('tenant_id', tenantId);
+    formData.append('category', uploadCategory);
+    if (uploadDescription) {
+      formData.append('description', uploadDescription);
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/documents/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        toast.success('Dokument erfolgreich hochgeladen');
+        setSelectedFile(null);
+        setUploadDescription('');
+        document.getElementById('file-input').value = '';
+        fetchDocuments();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Upload fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Upload fehlgeschlagen');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDownload = async (documentId, filename) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/documents/download/${documentId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        toast.success('Download gestartet');
+      } else {
+        toast.error('Download fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      toast.error('Download fehlgeschlagen');
+    }
+  };
+
+  const handleDelete = async (documentId) => {
+    if (!window.confirm('Möchten Sie dieses Dokument wirklich löschen?')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/documents/${documentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        toast.success('Dokument gelöscht');
+        fetchDocuments();
+      } else {
+        toast.error('Löschen fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      toast.error('Löschen fehlgeschlagen');
+    }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  const getCategoryLabel = (category) => {
+    const labels = {
+      contract: 'Vertrag',
+      invoice: 'Rechnung',
+      other: 'Sonstiges'
+    };
+    return labels[category] || category;
+  };
+
   const getStatusBadge = (status) => {
     const styles = {
       active: 'bg-green-100 text-green-800 border-green-200',
