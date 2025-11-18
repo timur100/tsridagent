@@ -347,7 +347,7 @@ const LocationDetailPage = () => {
                         Bundesland
                       </label>
                       <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {location.state || '-'}
+                        {location.state ? getStateName(location.state) : '-'}
                       </p>
                     </div>
                     <div>
