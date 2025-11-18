@@ -423,7 +423,7 @@ class TenantLocationsTester:
     def test_filter_by_state_be(self):
         """Test state filter: ?state=BE should return 2 locations"""
         try:
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations?state=BE")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?state=BE")
             
             if response.status_code != 200:
                 self.log_result(
