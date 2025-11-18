@@ -31,7 +31,7 @@ const CustomerPortal = () => {
     const fetchTenantInfo = async () => {
       try {
         // Get user from auth
-        const userData = await apiCall('/api/portal/auth/verify');
+        const userData = await apiCall('/api/portal/auth/me');
         if (userData && userData.user) {
           // Fetch tenant details if user has tenant_ids
           const tenantIds = userData.user.tenant_ids || [];
@@ -47,6 +47,9 @@ const CustomerPortal = () => {
               setTenantInfo(tenantData);
               setCompanyName(tenantData.display_name || tenantData.name);
             }
+          } else {
+            // Fallback: use company from user attributes
+            setCompanyName(userData.user.company || '');
           }
         }
       } catch (error) {
@@ -57,7 +60,7 @@ const CustomerPortal = () => {
     if (user) {
       fetchTenantInfo();
     }
-  }, [user]);
+  }, [user, apiCall]);
 
   // Load company branding
   useEffect(() => {
