@@ -387,6 +387,19 @@ const UsersRolesPage = () => {
           <Shield className="w-4 h-4" />
           Rollen ({roles.length})
         </button>
+        <button
+          onClick={() => setActiveSubTab('registrations')}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            activeSubTab === 'registrations'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'text-gray-300 hover:bg-[#2a2a2a]'
+              : 'text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          <UserPlus className="w-4 h-4" />
+          Registrierungen ({registrations.length})
+        </button>
       </div>
 
       {/* Search and Filters */}
