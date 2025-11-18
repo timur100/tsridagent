@@ -58,9 +58,9 @@ const AdminPortalContent = () => {
   const { theme } = useTheme();
   const { isImpersonating } = useImpersonation();
   const { selectedCustomer, setCustomers } = useCustomerFilter();
+  const { selectedTenantId, selectedTenantName, setSelectedTenant } = useTenant();
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [selectedTenantId, setSelectedTenantId] = useState(null);
-  const [selectedTenantIdForLocations, setSelectedTenantIdForLocations] = useState('all'); // For CustomerSwitcher
+  const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
