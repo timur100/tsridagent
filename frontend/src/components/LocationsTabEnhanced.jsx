@@ -57,68 +57,63 @@ const LocationsTabEnhanced = ({
     return STATE_NAMES[stateCode] || stateCode;
   };
 
-  // Fetch filter options
+  // Extract filter options from locations data
   useEffect(() => {
-    const fetchFilterOptions = async () => {
-      const token = localStorage.getItem('token');
-      if (!token || !tenantId) return;
+    if (!locations || locations.length === 0) {
+      setFilterOptions({
+        continents: [],
+        countries: [],
+        states: [],
+        cities: [],
+        mainTypes: []
+      });
+      return;
+    }
 
-      try {
-        // Fetch continents
-        const continentsRes = await fetch(`${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/continents`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (continentsRes.ok) {
-          const data = await continentsRes.json();
-          setFilterOptions(prev => ({ ...prev, continents: data.continents || [] }));
-        }
-
-        // Fetch countries
-        const countriesRes = await fetch(
-          `${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/countries${filters.continent ? `?continent=${filters.continent}` : ''}`,
-          { headers: { 'Authorization': `Bearer ${token}` } }
-        );
-        if (countriesRes.ok) {
-          const data = await countriesRes.json();
-          setFilterOptions(prev => ({ ...prev, countries: data.countries || [] }));
-        }
-
-        // Fetch states
-        const statesRes = await fetch(
-          `${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/states${filters.country ? `?country=${filters.country}` : ''}`,
-          { headers: { 'Authorization': `Bearer ${token}` } }
-        );
-        if (statesRes.ok) {
-          const data = await statesRes.json();
-          setFilterOptions(prev => ({ ...prev, states: data.states || [] }));
-        }
-
-        // Fetch cities
-        let citiesUrl = `${BACKEND_URL}/api/tenant-locations/${tenantId}/filters/cities?`;
-        const cityParams = [];
-        if (filters.continent) cityParams.push(`continent=${filters.continent}`);
-        if (filters.country) cityParams.push(`country=${filters.country}`);
-        if (filters.state) cityParams.push(`state=${filters.state}`);
-        citiesUrl += cityParams.join('&');
-        
-        const citiesRes = await fetch(citiesUrl, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (citiesRes.ok) {
-          const data = await citiesRes.json();
-          setFilterOptions(prev => ({ ...prev, cities: data.cities || [] }));
-        }
-
-        // Get unique main types from locations
-        const uniqueMainTypes = [...new Set(locations.map(loc => loc.main_type).filter(Boolean))].sort();
-        setFilterOptions(prev => ({ ...prev, mainTypes: uniqueMainTypes }));
-      } catch (error) {
-        console.error('Error fetching filter options:', error);
-      }
-    };
-
-    fetchFilterOptions();
-  }, [tenantId, filters.continent, filters.country, filters.state, locations, BACKEND_URL]);
+    // Get unique continents
+    const uniqueContinents = [...new Set(locations.map(loc => loc.continent).filter(Boolean))].sort();
+    
+    // Get unique countries (filtered by selected continent if applicable)
+    let filteredForCountries = locations;
+    if (filters.continent) {
+      filteredForCountries = locations.filter(loc => loc.continent === filters.continent);
+    }
+    const uniqueCountries = [...new Set(filteredForCountries.map(loc => loc.country).filter(Boolean))].sort();
+    
+    // Get unique states (filtered by selected continent and country if applicable)
+    let filteredForStates = locations;
+    if (filters.continent) {
+      filteredForStates = filteredForStates.filter(loc => loc.continent === filters.continent);
+    }
+    if (filters.country) {
+      filteredForStates = filteredForStates.filter(loc => loc.country === filters.country);
+    }
+    const uniqueStates = [...new Set(filteredForStates.map(loc => loc.state).filter(Boolean))].sort();
+    
+    // Get unique cities (filtered by selected continent, country, and state if applicable)
+    let filteredForCities = locations;
+    if (filters.continent) {
+      filteredForCities = filteredForCities.filter(loc => loc.continent === filters.continent);
+    }
+    if (filters.country) {
+      filteredForCities = filteredForCities.filter(loc => loc.country === filters.country);
+    }
+    if (filters.state) {
+      filteredForCities = filteredForCities.filter(loc => loc.state === filters.state);
+    }
+    const uniqueCities = [...new Set(filteredForCities.map(loc => loc.city).filter(Boolean))].sort();
+    
+    // Get unique main types
+    const uniqueMainTypes = [...new Set(locations.map(loc => loc.main_type).filter(Boolean))].sort();
+    
+    setFilterOptions({
+      continents: uniqueContinents,
+      countries: uniqueCountries,
+      states: uniqueStates,
+      cities: uniqueCities,
+      mainTypes: uniqueMainTypes
+    });
+  }, [locations, filters.continent, filters.country, filters.state]);
 
   const getStatusBadge = (location) => {
     const isOnline = location.id_checker !== null;
