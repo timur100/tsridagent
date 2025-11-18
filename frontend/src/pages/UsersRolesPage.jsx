@@ -21,9 +21,10 @@ import RoleModal from '../components/RoleModal';
 const UsersRolesPage = () => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
-  const [activeSubTab, setActiveSubTab] = useState('users'); // users or roles
+  const [activeSubTab, setActiveSubTab] = useState('users'); // users, roles, or registrations
   const [users, setUsers] = useState([]);
   const [roles, setRoles] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
