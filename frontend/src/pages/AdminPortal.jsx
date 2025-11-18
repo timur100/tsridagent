@@ -1120,15 +1120,15 @@ const AdminPortalContent = () => {
           <UsersRolesPage />
         )}
 
-        {activeTab === 'tenants' && !selectedTenantId && (
-          <TenantsPage onSelectTenant={(id) => setSelectedTenantId(id)} />
+        {activeTab === 'tenants' && !selectedTenantIdForDetail && (
+          <TenantsPage onSelectTenant={(id) => setSelectedTenantIdForDetail(id)} />
         )}
 
-        {activeTab === 'tenants' && selectedTenantId && (
+        {activeTab === 'tenants' && selectedTenantIdForDetail && (
           <TenantDetailPage 
-            tenantId={selectedTenantId} 
+            tenantId={selectedTenantIdForDetail} 
             onBack={() => {
-              setSelectedTenantId(null);
+              setSelectedTenantIdForDetail(null);
               setTenantInitialTab('dashboard');
             }}
             initialTab={tenantInitialTab}
