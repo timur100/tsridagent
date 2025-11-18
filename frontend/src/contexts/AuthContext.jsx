@@ -139,14 +139,25 @@ export const AuthProvider = ({ children }) => {
             return;
           }
 
+          // Handle pending registration (waiting for admin approval)
+          if (data?.status === 'pending') {
+            resolve({ 
+              success: true, 
+              status: 'pending',
+              message: data.message 
+            });
+            return;
+          }
+
+          // Handle successful registration with immediate login
           if (data?.access_token) {
             setToken(data.access_token);
             setUser(data.user);
             localStorage.setItem('portal_token', data.access_token);
             localStorage.setItem('portal_user', JSON.stringify(data.user));
-            resolve({ success: true });
+            resolve({ success: true, user: data.user });
           } else {
-            resolve({ success: false, error: 'No access token received' });
+            resolve({ success: false, error: 'Unexpected response format' });
           }
         };
         
