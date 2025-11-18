@@ -53,6 +53,35 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
   const [uploadDescription, setUploadDescription] = useState('');
   const [loadingDocuments, setLoadingDocuments] = useState(false);
 
+  // Location states
+  const [locations, setLocations] = useState([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [locationFormData, setLocationFormData] = useState({
+    location_code: '',
+    station_name: '',
+    postal_code: '',
+    city: '',
+    street: '',
+    state: '',
+    manager: '',
+    phone: '',
+    phone_internal: '',
+    email: '',
+    main_type: 'A',
+    id_checker: '',
+    switch_info: '',
+    port: '',
+    it_comment: '',
+    tsr_remarks: '',
+    sn_pc: '',
+    sn_sc: '',
+    tv_id: '',
+    latitude: '',
+    longitude: ''
+  });
+
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   const tabs = [
