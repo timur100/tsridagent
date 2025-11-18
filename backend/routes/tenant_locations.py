@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 import os
 import uuid
 
-router = APIRouter(prefix="/api/tenants", tags=["Tenant Locations"])
+router = APIRouter(prefix="/api/tenant-locations", tags=["Tenant Locations"])
 security = HTTPBearer()
 
 # MongoDB connection
