@@ -112,30 +112,10 @@ async def register(request: RegisterRequest):
         }
         portal_db.registrations.insert_one(registration)
         
-        # Create token with customer_id
-        access_token = create_access_token(
-            data={
-                "sub": request.email, 
-                "role": request.role,
-                "customer_id": user.get("customer_id")
-            }
-        )
-        
-        # Remove password from response
-        user_response = {
-            "id": user["id"],
-            "email": user["email"],
-            "name": user["name"],
-            "company": user["company"],
-            "role": user["role"],
-            "is_active": user["is_active"],
-            "shop_enabled": user.get("shop_enabled", False)
-        }
-        
         return {
-            "access_token": access_token,
-            "token_type": "bearer",
-            "user": user_response
+            "success": True,
+            "message": "Registrierung erfolgreich eingereicht. Bitte warten Sie auf die Genehmigung durch einen Administrator.",
+            "status": "pending"
         }
     except HTTPException:
         raise
