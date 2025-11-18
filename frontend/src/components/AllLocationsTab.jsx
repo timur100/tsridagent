@@ -92,11 +92,13 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   const fetchAllLocations = async () => {
     setLoading(true);
+    console.log('[AllLocationsTab] fetchAllLocations called, selectedTenantId:', selectedTenantId);
     try {
       const token = localStorage.getItem('token');
       
       // If a specific tenant is selected, only load their locations
       if (selectedTenantId && selectedTenantId !== 'all') {
+        console.log('[AllLocationsTab] Loading locations for specific tenant:', selectedTenantId);
         // First get tenant info
         const tenantResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
           headers: { 'Authorization': `Bearer ${token}` }
