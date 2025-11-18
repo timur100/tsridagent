@@ -34,13 +34,18 @@ class UserUpdate(BaseModel):
 
 class UserResponse(UserBase):
     user_id: str
-    tenant_id: Optional[str] = None
+    tenant_ids: List[str] = []
     user_type: str
     enabled: bool
     email_verified: bool
     roles: List[str]
     permissions: List[str]
+    phone: Optional[str] = None
+    position: Optional[str] = None
+    department: Optional[str] = None
+    status: str = "active"
     created_at: str
+    updated_at: Optional[str] = None
     last_login: Optional[str] = None
     
 class UserLogin(BaseModel):
