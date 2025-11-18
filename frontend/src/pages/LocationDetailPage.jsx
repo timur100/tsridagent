@@ -208,7 +208,16 @@ const LocationDetailPage = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <button
-                onClick={() => navigate(-1)}
+                onClick={() => {
+                  // Navigate back to tenant's Standorte tab
+                  if (location && location.tenant_id) {
+                    navigate(`/portal/admin/tenants/${location.tenant_id}`, { 
+                      state: { activeTab: 'locations' } 
+                    });
+                  } else {
+                    navigate(-1);
+                  }
+                }}
                 className={`p-2 rounded-lg transition-all ${
                   theme === 'dark'
                     ? 'hover:bg-[#333] text-gray-400 hover:text-white'
