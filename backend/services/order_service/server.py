@@ -224,6 +224,8 @@ async def get_orders(
     """Get all orders with optional filters"""
     try:
         query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         if status:
             query['status'] = status
         if payment_status:
