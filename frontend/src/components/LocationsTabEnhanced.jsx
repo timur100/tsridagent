@@ -137,15 +137,20 @@ const LocationsTabEnhanced = ({
     }
     const uniqueCities = [...new Set(filteredForCities.map(loc => loc.city).filter(Boolean))].sort();
     
-    // Get unique main types
-    const uniqueMainTypes = [...new Set(locations.map(loc => loc.main_type).filter(Boolean))].sort();
+    // Get special location types (Besondere Orte)
+    const allSpecialTypes = new Set();
+    locations.forEach(loc => {
+      const types = getSpecialLocationType(loc);
+      types.forEach(type => allSpecialTypes.add(type));
+    });
+    const specialTypes = Array.from(allSpecialTypes).sort();
     
     setFilterOptions({
       continents: uniqueContinents,
       countries: uniqueCountries,
       states: uniqueStates,
       cities: uniqueCities,
-      mainTypes: uniqueMainTypes
+      mainTypes: specialTypes
     });
   }, [locations, filters.continent, filters.country, filters.state]);
 
