@@ -702,7 +702,7 @@ class TenantLocationsTester:
     def test_get_stats_summary(self):
         """Test GET /api/tenants/{tenant_id}/locations/stats/summary"""
         try:
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations/stats/summary")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}/stats/summary")
             
             if response.status_code != 200:
                 self.log_result(
