@@ -136,7 +136,10 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         
         if (tenantsResponse.ok) {
           const tenantsData = await tenantsResponse.json();
-          const tenantsList = tenantsData.tenants || tenantsData.data || [];
+          // API returns array directly
+          const tenantsList = Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || tenantsData.data || []);
+          
+          console.log('[AllLocationsTab] Loading locations for tenants:', tenantsList.map(t => t.name));
           
           // Fetch locations for each tenant
           const allLocationsPromises = tenantsList.map(async (tenant) => {
