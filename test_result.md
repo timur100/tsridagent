@@ -2078,3 +2078,102 @@ test_plan:
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
+
+# NEW IMPLEMENTATION - Global Tenant Filtering System
+
+user_problem_statement: "Globale Tenant-Filterung: 1) Wenn im Tenant-Menü Europcar gewählt wird, dann muss oben im Tenant Switcher auch Europcar aktiv sein, 2) Wenn im Tenant Switcher Europcar gewählt wird, dann werden im Header Menü nur Daten von Europcar angezeigt, 3) Ändert man den Tenant Switcher auf Puma, dann sollen alle Europcar-Daten verschwinden und nur Puma-Daten angezeigt werden, 4) Wählt man 'Alle Kunden', dann werden überall alle Daten von allen Tenants angezeigt (nur für Superadmin admin@tsrid.com)"
+
+frontend:
+  - task: "TenantContext - Globales State-Management"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/contexts/TenantContext.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ TenantContext erstellt mit selectedTenantId, selectedTenantName, setSelectedTenant(), resetTenant() und isSuperAdmin Check. Context wird in PortalApp.jsx als TenantProvider um die gesamte App gewickelt."
+  
+  - task: "CustomerSwitcher - Context Integration"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/CustomerSwitcher.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ CustomerSwitcher angepasst um TenantContext zu nutzen. Entfernt: lokaler State und onTenantChange prop. Hinzugefügt: useTenant() Hook, direktes Update des globalen Contexts. 'Alle Kunden' Option nur sichtbar für isSuperAdmin (admin@tsrid.com)."
+  
+  - task: "AdminPortal - Context Integration"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ AdminPortal refactored: Entfernt lokale States (selectedTenantId, selectedTenantIdForLocations), nutzt jetzt useTenant() Hook. selectedTenantId wird an AllLocationsTab weitergegeben. CustomerSwitcher benötigt keine Props mehr."
+  
+  - task: "TenantsPage - Bidirektionale Synchronisation"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/TenantsPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ TenantsPage angepasst: Bei Klick auf Tenant-Card wird setSelectedTenant() aufgerufen, um den globalen Context zu aktualisieren. Damit ist Synchronisation Tenant-Menü → CustomerSwitcher implementiert."
+
+  - task: "AllLocationsTab - Tenant-Filterung"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/AllLocationsTab.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ AllLocationsTab nutzt bereits selectedTenantId prop. Wenn 'all' → lädt alle Tenants und deren Locations. Wenn spezifischer Tenant → lädt nur dessen Locations. Tenant-Filter in Dropdown nur sichtbar bei 'all'."
+
+backend:
+  - task: "Device Service - Tenant-Aware"
+    implemented: true
+    working: "NA"
+    file: "backend/services/device_service/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Device Service Models erweitert: Device, DeviceCreate, DeviceUpdate haben jetzt tenant_id: Optional[str] = None Feld. GET /api/devices Endpoint hat tenant_id Query Parameter. Stats-Endpoint /api/devices/stats filtert nach tenant_id. Query-Filter in allen Endpoints implementiert."
+
+metadata:
+  created_by: "main_agent"
+  version: "2.0"
+  test_sequence: 1
+  run_ui: true
+
+test_plan:
+  current_focus:
+    - "TenantContext Integration Testing"
+    - "CustomerSwitcher Synchronisation"
+    - "Bidirektionale Tenant-Filterung"
+    - "Superadmin Check (admin@tsrid.com)"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+      message: "✅ PHASE 1 & 2 ABGESCHLOSSEN: Globales Tenant-State-Management implementiert. TenantContext erstellt und in gesamte App integriert. CustomerSwitcher, AdminPortal, TenantsPage und AllLocationsTab angepasst. Device Service als erster Microservice tenant-aware gemacht. Frontend kompiliert erfolgreich. Bereit für Frontend-Testing um bidirektionale Synchronisation zu verifizieren."
+
