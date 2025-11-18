@@ -99,6 +99,22 @@ const AdminPortalContent = () => {
     failed_scans: 0
   });
 
+  // Check for return navigation from location detail page
+  useEffect(() => {
+    const returnToTenant = sessionStorage.getItem('returnToTenant');
+    const returnToTab = sessionStorage.getItem('returnToTab');
+    
+    if (returnToTenant && returnToTab) {
+      // Clear the session storage
+      sessionStorage.removeItem('returnToTenant');
+      sessionStorage.removeItem('returnToTab');
+      
+      // Set the tenant and tab
+      setSelectedTenantId(returnToTenant);
+      setActiveTab('tenants');
+    }
+  }, []);
+
   // Load company branding
   useEffect(() => {
     const fetchBranding = async () => {
