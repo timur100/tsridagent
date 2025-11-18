@@ -116,6 +116,13 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     }
   }, [searchParams]);
 
+  // Update active tab when initialTab prop changes
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
+
   useEffect(() => {
     fetchTenantDetails();
   }, [tenantId]);
