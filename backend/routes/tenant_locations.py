@@ -120,9 +120,13 @@ async def get_tenant_locations(
     tenant_id: str,
     state: Optional[str] = None,
     main_type: Optional[str] = None,
+    continent: Optional[str] = None,
+    country: Optional[str] = None,
+    city: Optional[str] = None,
+    search: Optional[str] = None,
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
-    """Get all locations for a tenant with optional filters"""
+    """Get all locations for a tenant with optional filters and search"""
     try:
         # Build query
         query = {"tenant_id": tenant_id}
@@ -130,6 +134,30 @@ async def get_tenant_locations(
             query["state"] = state
         if main_type:
             query["main_type"] = main_type
+        if continent:
+            query["continent"] = continent
+        if country:
+            query["country"] = country
+        if city:
+            query["city"] = city
+        
+        # Add search functionality
+        if search:
+            search_regex = {"$regex": search, "$options": "i"}
+            query["$or"] = [
+                {"location_code": search_regex},
+                {"station_name": search_regex},
+                {"street": search_regex},
+                {"city": search_regex},
+                {"state": search_regex},
+                {"postal_code": search_regex},
+                {"manager": search_regex},
+                {"email": search_regex},
+                {"phone": search_regex},
+                {"sn_pc": search_regex},
+                {"sn_sc": search_regex},
+                {"tv_id": search_regex}
+            ]
         
         # Get locations
         locations = []
