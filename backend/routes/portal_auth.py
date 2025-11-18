@@ -155,11 +155,22 @@ async def login(request: LoginRequest):
         )
         
         # Prepare user response - support both auth_db and portal_db formats
+        company_name = user.get("company") or user.get("attributes", {}).get("company")
+        
+        # If no company, try to get from first tenant
+        if not company_name and user.get("tenant_ids"):
+            try:
+                tenant = auth_db.tenants.find_one({"tenant_id": user.get("tenant_ids")[0]})
+                if tenant:
+                    company_name = tenant.get("display_name") or tenant.get("name")
+            except:
+                pass
+        
         user_response = {
             "id": user.get("id") or user.get("user_id"),
             "email": user["email"],
             "name": user.get("name") or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip() or user["email"],
-            "company": user.get("company") or user.get("attributes", {}).get("company"),
+            "company": company_name,
             "role": user.get("role") or (user.get("roles", ["user"])[0] if user.get("roles") else "user"),
             "tenant_ids": user.get("tenant_ids", []),
             "is_active": user.get("is_active") or user.get("enabled", True),
