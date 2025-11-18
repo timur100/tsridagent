@@ -299,7 +299,7 @@ const LocationsTabEnhanced = ({
         >
           <option value="">Alle Bundesländer</option>
           {filterOptions.states.map(state => (
-            <option key={state} value={state}>{state}</option>
+            <option key={state} value={state}>{getStateName(state)}</option>
           ))}
         </select>
 
