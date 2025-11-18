@@ -18,4 +18,6 @@ class RoleResponse(RoleBase):
     role_id: str
     permissions: List[str]
     tenant_id: Optional[str] = None
+    is_system_role: bool = False
     created_at: str
+    updated_at: Optional[str] = None
