@@ -320,8 +320,8 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
     try {
       const token = localStorage.getItem('token');
       const url = editingLocation
-        ? `${BACKEND_URL}/api/tenants/${tenantId}/locations/${editingLocation.location_id}`
-        : `${BACKEND_URL}/api/tenants/${tenantId}/locations`;
+        ? `${BACKEND_URL}/api/tenant-locations/${tenantId}/${editingLocation.location_id}`
+        : `${BACKEND_URL}/api/tenant-locations/${tenantId}`;
       
       const method = editingLocation ? 'PUT' : 'POST';
       
