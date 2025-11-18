@@ -270,6 +270,68 @@ const UsersRolesPage = () => {
     }
   };
 
+  const approveRegistration = async (registrationId) => {
+    // Ask for tenant selection
+    const tenantId = prompt('Bitte wählen Sie einen Tenant (ID):');
+    if (!tenantId) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/portal/auth/registrations/approve`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          registration_id: registrationId,
+          tenant_id: tenantId
+        })
+      });
+
+      if (response.ok) {
+        toast.success('Registrierung genehmigt und Benutzer erstellt');
+        await loadRegistrations();
+        await loadUsers();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Genehmigen');
+      }
+    } catch (error) {
+      console.error('Error approving registration:', error);
+      toast.error('Fehler beim Genehmigen');
+    }
+  };
+
+  const rejectRegistration = async (registrationId) => {
+    const reason = prompt('Grund für Ablehnung (optional):');
+    if (reason === null) return; // User cancelled
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/portal/auth/registrations/reject`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          registration_id: registrationId,
+          reason: reason || undefined
+        })
+      });
+
+      if (response.ok) {
+        toast.success('Registrierung abgelehnt');
+        await loadRegistrations();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Ablehnen');
+      }
+    } catch (error) {
+      console.error('Error rejecting registration:', error);
+      toast.error('Fehler beim Ablehnen');
+    }
+  };
+
   // Filter users
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
