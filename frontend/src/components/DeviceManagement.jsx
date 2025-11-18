@@ -61,8 +61,18 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
     return selected?.company && selected.company.toLowerCase().includes('europcar');
   };
 
-  // Get customer name for title
+  // Get customer/tenant name for title
   const getCustomerTitle = () => {
+    // Use tenant name if available
+    if (selectedTenantId && selectedTenantId !== 'all') {
+      return `${selectedTenantName} - Geräte`;
+    }
+    
+    if (selectedTenantId === 'all') {
+      return 'Alle Kunden - Geräte';
+    }
+    
+    // Fallback to customer filter
     if (selectedCustomer === 'all') {
       return 'Geräte'; // Alle Kunden
     }
