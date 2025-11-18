@@ -195,7 +195,12 @@ const LocationsTabEnhanced = ({
     if (filters.country && location.country !== filters.country) return false;
     if (filters.state && location.state !== filters.state) return false;
     if (filters.city && location.city !== filters.city) return false;
-    if (filters.mainType && location.main_type !== filters.mainType) return false;
+    
+    // Special location type filter (Besondere Orte)
+    if (filters.mainType) {
+      const specialTypes = getSpecialLocationType(location);
+      if (!specialTypes.includes(filters.mainType)) return false;
+    }
 
     return true;
   });
