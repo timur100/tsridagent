@@ -221,7 +221,7 @@ async def update_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.delete("/{tenant_id}/locations/{location_id}")
+@router.delete("/{tenant_id}/{location_id}")
 async def delete_tenant_location(
     tenant_id: str,
     location_id: str,
