@@ -26,6 +26,39 @@ const CustomerPortal = () => {
     failed_scans: 0
   });
 
+  // Load tenant information from user data
+  useEffect(() => {
+    const fetchTenantInfo = async () => {
+      try {
+        // Get user from auth
+        const userData = await apiCall('/api/portal/auth/verify');
+        if (userData && userData.user) {
+          // Fetch tenant details if user has tenant_ids
+          const tenantIds = userData.user.tenant_ids || [];
+          if (tenantIds.length > 0) {
+            // Get first tenant
+            const tenantResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenantIds[0]}`, {
+              headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+              }
+            });
+            if (tenantResponse.ok) {
+              const tenantData = await tenantResponse.json();
+              setTenantInfo(tenantData);
+              setCompanyName(tenantData.display_name || tenantData.name);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading tenant info:', error);
+      }
+    };
+    
+    if (user) {
+      fetchTenantInfo();
+    }
+  }, [user]);
+
   // Load company branding
   useEffect(() => {
     const fetchBranding = async () => {
@@ -34,7 +67,10 @@ const CustomerPortal = () => {
         if (result.success && result.data) {
           setCompanyLogoDark(result.data.logo_url_dark);
           setCompanyLogoLight(result.data.logo_url_light);
-          setCompanyName(result.data.company_name || 'TSRID');
+          // Only set company name from branding if not already set from tenant
+          if (!companyName) {
+            setCompanyName(result.data.company_name || '');
+          }
         }
       } catch (error) {
 
