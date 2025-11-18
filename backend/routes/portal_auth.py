@@ -150,14 +150,14 @@ async def login(request: LoginRequest):
             }
         )
         
-        # Prepare user response
+        # Prepare user response - support both auth_db and portal_db formats
         user_response = {
-            "id": user.get("id"),
+            "id": user.get("id") or user.get("user_id"),
             "email": user["email"],
-            "name": user["name"],
-            "company": user["company"],
-            "role": user["role"],
-            "is_active": user.get("is_active", True),
+            "name": user.get("name") or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip() or user["email"],
+            "company": user.get("company") or user.get("attributes", {}).get("company"),
+            "role": user.get("role") or (user.get("roles", ["user"])[0] if user.get("roles") else "user"),
+            "is_active": user.get("is_active") or user.get("enabled", True),
             "shop_enabled": user.get("shop_enabled", False)
         }
         
