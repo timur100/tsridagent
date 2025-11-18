@@ -110,7 +110,8 @@ const AdminPortalContent = () => {
       sessionStorage.removeItem('returnToTenant');
       sessionStorage.removeItem('returnToTab');
       
-      // Set the tenant and tab
+      // Set the tenant, tab, and initial tab for TenantDetailPage
+      setTenantInitialTab(returnToTab);
       setSelectedTenantId(returnToTenant);
       setActiveTab('tenants');
     }
