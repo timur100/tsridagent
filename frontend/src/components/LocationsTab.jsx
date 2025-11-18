@@ -109,7 +109,17 @@ const LocationsTab = ({
                   <th className={`px-4 py-3 text-left text-xs font-semibold ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                   }`}>
+                    Telefon Intern
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
                     E-Mail
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Main Typ
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -120,6 +130,41 @@ const LocationsTab = ({
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                   }`}>
                     Anzahl ID
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Switch
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Port
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    IT Kommentar
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    TSR REMARKS
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    SN-PC
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    SN-SC
+                  </th>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    TV-ID
                   </th>
                   <th className={`px-4 py-3 text-right text-xs font-semibold ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
