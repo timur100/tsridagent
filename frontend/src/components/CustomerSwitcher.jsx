@@ -11,16 +11,16 @@ const CustomerSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Only show for super_admin and admin
-  if (!user || (user.role !== 'super_admin' && user.role !== 'admin')) {
-    return null;
-  }
-
   useEffect(() => {
     console.log('[CustomerSwitcher] Component mounted, fetching data...');
     fetchCustomers();
     fetchCurrentCustomer();
   }, []);
+
+  // Only show for super_admin and admin
+  if (!user || (user.role !== 'super_admin' && user.role !== 'admin')) {
+    return null;
+  }
 
   const fetchCustomers = async () => {
     try {
