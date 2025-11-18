@@ -218,9 +218,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tenant Models erweitern für vollständige Isolation"
-    - "Tenant Management APIs - Vollständige CRUD"
-    - "Tenant Router im Auth Service registrieren"
+    - "Document Upload API - Complete Implementation"
+    - "Document Upload UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1587,9 +1586,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tenant Models erweitern für vollständige Isolation"
-    - "Tenant Management APIs - Vollständige CRUD"
-    - "Tenant Router im Auth Service registrieren"
+    - "Document Upload API - Complete Implementation"
+    - "Document Upload UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
@@ -1932,9 +1930,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Tenant Models erweitern für vollständige Isolation"
-    - "Tenant Management APIs - Vollständige CRUD"
-    - "Tenant Router im Auth Service registrieren"
+    - "Document Upload API - Complete Implementation"
+    - "Document Upload UI in TenantDetailPage"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
