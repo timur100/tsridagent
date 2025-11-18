@@ -501,7 +501,7 @@ const UsersRolesPage = () => {
           getStatusBadge={getStatusBadge}
           tenants={tenants}
         />
-      ) : (
+      ) : activeSubTab === 'roles' ? (
         <RolesTable
           roles={filteredRoles}
           theme={theme}
@@ -511,6 +511,21 @@ const UsersRolesPage = () => {
           }}
           onDelete={deleteRole}
           tenants={tenants}
+        />
+      ) : (
+        <RegistrationsTable
+          registrations={registrations}
+          theme={theme}
+          onApprove={async (regId) => {
+            // TODO: Implement approve
+            toast.success('Registrierung genehmigt');
+            await loadRegistrations();
+          }}
+          onReject={async (regId) => {
+            // TODO: Implement reject
+            toast.success('Registrierung abgelehnt');
+            await loadRegistrations();
+          }}
         />
       )}
 
