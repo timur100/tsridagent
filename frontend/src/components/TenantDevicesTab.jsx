@@ -52,25 +52,34 @@ const TenantDevicesTab = ({ tenantId }) => {
   }, [searchTerm, filters, devices, stations, sortConfig]);
 
   const loadDevices = async () => {
+    console.log('🔍 TenantDevicesTab: loadDevices called with tenantId:', tenantId);
     setLoading(true);
     try {
       // Load devices for this tenant using apiCall
-      const response = await apiCall(`/api/tenant-devices/${tenantId}`, {
+      const url = `/api/tenant-devices/${tenantId}`;
+      console.log('📡 Calling API:', url);
+      
+      const response = await apiCall(url, {
         method: 'GET'
       });
       
+      console.log('📦 API Response:', response);
+      
       if (response && response.success && response.data) {
+        console.log('✅ Devices loaded:', response.data.devices.length);
         setDevices(response.data.devices || []);
       } else {
-        console.error('Error loading devices:', response);
+        console.error('❌ Error loading devices:', response);
+        toast.error('Keine Geräte gefunden oder Fehler beim Laden');
         setDevices([]);
       }
     } catch (error) {
-      console.error('Error loading devices:', error);
-      toast.error('Fehler beim Laden der Geräte');
+      console.error('❌ Exception loading devices:', error);
+      toast.error('Fehler beim Laden der Geräte: ' + error.message);
       setDevices([]);
     } finally {
       setLoading(false);
+      console.log('🏁 Loading finished');
     }
   };
 
