@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from '../components/ui/card';
-import LocationsTab from '../components/LocationsTab';
+import LocationsTabEnhanced from '../components/LocationsTabEnhanced';
 import LocationModal from '../components/LocationModal';
 import { 
   ArrowLeft, 
