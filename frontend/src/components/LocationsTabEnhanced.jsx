@@ -108,13 +108,17 @@ const LocationsTabEnhanced = ({
           const data = await citiesRes.json();
           setFilterOptions(prev => ({ ...prev, cities: data.cities || [] }));
         }
+
+        // Get unique main types from locations
+        const uniqueMainTypes = [...new Set(locations.map(loc => loc.main_type).filter(Boolean))].sort();
+        setFilterOptions(prev => ({ ...prev, mainTypes: uniqueMainTypes }));
       } catch (error) {
         console.error('Error fetching filter options:', error);
       }
     };
 
     fetchFilterOptions();
-  }, [tenantId, filters.continent, filters.country, filters.state, BACKEND_URL]);
+  }, [tenantId, filters.continent, filters.country, filters.state, locations, BACKEND_URL]);
 
   const getStatusBadge = (location) => {
     const isOnline = location.id_checker !== null;
