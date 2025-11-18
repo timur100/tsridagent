@@ -215,9 +215,9 @@ const LocationsTabEnhanced = ({
 
   return (
     <div className="space-y-6">
-      {/* Header with Add Button */}
-      <div className="flex items-center justify-between">
-        <div>
+      {/* Header with Search and Add Button */}
+      <div className="flex items-center justify-between gap-4">
+        <div className="flex-shrink-0">
           <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Standorte
           </h3>
@@ -225,19 +225,9 @@ const LocationsTabEnhanced = ({
             {sortedLocations.length} von {locations.length} {locations.length === 1 ? 'Standort' : 'Standorte'}
           </p>
         </div>
-        <button
-          onClick={onAddLocation}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          Standort hinzufügen
-        </button>
-      </div>
-
-      {/* Search and Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {/* Search */}
-        <div className="relative md:col-span-2">
+        
+        {/* Search Bar */}
+        <div className="relative flex-1 max-w-md">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           }`} />
@@ -253,6 +243,18 @@ const LocationsTabEnhanced = ({
             } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
           />
         </div>
+        
+        <button
+          onClick={onAddLocation}
+          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all flex-shrink-0"
+        >
+          <Plus className="w-4 h-4" />
+          Standort hinzufügen
+        </button>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
         {/* Continent Filter */}
         <select
