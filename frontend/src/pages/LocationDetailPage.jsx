@@ -50,6 +50,23 @@ const LocationDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [locationFormData, setLocationFormData] = useState(null);
+  const [stats, setStats] = useState({
+    scans: {
+      total: 0,
+      correct: 0,
+      unknown: 0,
+      failed: 0
+    },
+    users: 0,
+    devices: {
+      total: 0,
+      online: 0,
+      offline: 0
+    },
+    tickets: {
+      open: 0
+    }
+  });
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
