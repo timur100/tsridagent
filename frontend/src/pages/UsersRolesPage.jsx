@@ -891,7 +891,7 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
               </tr>
             ) : (
               registrations.map(reg => (
-                <tr key={reg.id} className={`${
+                <tr key={reg.registration_id} className={`${
                   theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
                 } transition-colors`}>
                   <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -901,7 +901,7 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
                     {reg.email}
                   </td>
                   <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    {reg.company}
+                    {reg.company || '-'}
                   </td>
                   <td className={`px-6 py-4`}>
                     <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
@@ -932,7 +932,7 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
                     {reg.status === 'pending' && (
                       <div className="flex justify-end gap-2">
                         <button
-                          onClick={() => onApprove(reg.id)}
+                          onClick={() => onApprove(reg.registration_id)}
                           className={`p-2 rounded-lg transition-all ${
                             theme === 'dark'
                               ? 'hover:bg-green-900/20 text-green-400'
@@ -943,7 +943,7 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
                           <CheckCircle className="w-4 h-4" />
                         </button>
                         <button
-                          onClick={() => onReject(reg.id)}
+                          onClick={() => onReject(reg.registration_id)}
                           className={`p-2 rounded-lg transition-all ${
                             theme === 'dark'
                               ? 'hover:bg-red-900/20 text-red-400'
