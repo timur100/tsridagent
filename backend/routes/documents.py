@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Form
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from typing import List, Optional
@@ -35,39 +35,57 @@ class DocumentResponse(BaseModel):
     uploaded_at: str
     file_url: str
 
+# Allowed file extensions
+ALLOWED_EXTENSIONS = {
+    # PDF
+    '.pdf',
+    # Word
+    '.doc', '.docx',
+    # Excel
+    '.xls', '.xlsx',
+}
+
 @router.post("/upload")
 async def upload_document(
     file: UploadFile = File(...),
-    tenant_id: str = None,
-    category: str = "contract",
-    description: str = None,
+    tenant_id: str = Form(...),
+    category: str = Form("contract"),
+    description: Optional[str] = Form(None),
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """
-    Upload a document (PDF, images, etc.)
-    Max size: 20MB
+    Upload a document (PDF, Word, Excel)
+    Max size: 50MB
+    Allowed formats: PDF, DOC, DOCX, XLS, XLSX
     """
     try:
-        # Validate file size (20MB)
+        # Validate file extension
+        file_extension = os.path.splitext(file.filename)[1].lower()
+        if file_extension not in ALLOWED_EXTENSIONS:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid file type. Allowed: PDF, DOC, DOCX, XLS, XLSX"
+            )
+        
+        # Validate file size (50MB)
         file_size = 0
         chunk_size = 1024 * 1024  # 1MB chunks
+        max_size = 50 * 1024 * 1024  # 50MB
         
         # Save file
         document_id = str(uuid.uuid4())
-        file_extension = os.path.splitext(file.filename)[1]
         new_filename = f"{document_id}{file_extension}"
         file_path = UPLOAD_DIR / new_filename
         
         with open(file_path, "wb") as buffer:
             while chunk := await file.read(chunk_size):
                 file_size += len(chunk)
-                if file_size > 20 * 1024 * 1024:  # 20MB limit
+                if file_size > max_size:
                     os.remove(file_path)
-                    raise HTTPException(status_code=400, detail="File size exceeds 20MB limit")
+                    raise HTTPException(status_code=400, detail="File size exceeds 50MB limit")
                 buffer.write(chunk)
         
-        # Get user from token
-        # For now, use a placeholder
+        # Get user from token (for now, use placeholder)
         uploaded_by = "admin@example.com"
         
         # Store metadata in database
@@ -76,7 +94,7 @@ async def upload_document(
             "tenant_id": tenant_id,
             "filename": new_filename,
             "original_filename": file.filename,
-            "file_type": file.content_type,
+            "file_type": file.content_type or "application/octet-stream",
             "file_size": file_size,
             "category": category,
             "description": description,
@@ -90,7 +108,7 @@ async def upload_document(
         return {
             "success": True,
             "document_id": document_id,
-            "filename": new_filename,
+            "filename": file.filename,
             "file_size": file_size,
             "message": "Document uploaded successfully"
         }
@@ -98,9 +116,12 @@ async def upload_document(
     except HTTPException:
         raise
     except Exception as e:
+        # Clean up file if error occurs
+        if 'file_path' in locals() and file_path.exists():
+            os.remove(file_path)
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/tenant/{tenant_id}", response_model=List[DocumentResponse])
+@router.get("/tenant/{tenant_id}")
 async def get_tenant_documents(
     tenant_id: str,
     category: Optional[str] = None,
@@ -115,13 +136,13 @@ async def get_tenant_documents(
         documents = []
         cursor = db.documents.find(query).sort("uploaded_at", -1)
         
-        async for doc in cursor:
+        for doc in cursor:
             if '_id' in doc:
                 del doc['_id']
             doc['file_url'] = f"/api/documents/download/{doc['document_id']}"
-            documents.append(DocumentResponse(**doc))
+            documents.append(doc)
         
-        return documents
+        return {"success": True, "documents": documents}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -169,7 +190,7 @@ async def delete_document(
         # Delete from database
         db.documents.delete_one({"document_id": document_id})
         
-        return {"success": True, "message": "Document deleted"}
+        return {"success": True, "message": "Document deleted successfully"}
     except HTTPException:
         raise
     except Exception as e:
