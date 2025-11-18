@@ -395,7 +395,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                 : 'bg-white border-gray-200 text-gray-900'
             } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
           >
-            <option value="">Alle Tenants</option>
+            <option value="">Alle Kunden</option>
             {filterOptions.tenants.map(tenant => (
               <option key={tenant} value={tenant}>{tenant}</option>
             ))}
