@@ -79,6 +79,7 @@ class DeviceCreate(BaseModel):
 class DeviceUpdate(BaseModel):
     """Update device model"""
     device_id: Optional[str] = None
+    tenant_id: Optional[str] = None  # Tenant association
     location_code: Optional[str] = None
     device_type: Optional[str] = None
     manufacturer: Optional[str] = None
