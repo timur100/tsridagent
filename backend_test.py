@@ -486,7 +486,7 @@ class TenantLocationsTester:
     def test_filter_by_main_type_a(self):
         """Test main_type filter: ?main_type=A should return 1 location"""
         try:
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations?main_type=A")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?main_type=A")
             
             if response.status_code != 200:
                 self.log_result(
