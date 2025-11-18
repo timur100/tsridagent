@@ -327,10 +327,9 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
 
   return (
     <div className="space-y-6">
-      {/* Sticky Header Section */}
-      <div className={`sticky top-0 z-30 pb-4 ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
-        {/* Title */}
-        <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+      {/* Title */}
+      <div className="mb-6">
+        <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           {getCustomerTitle()}
         </h2>
 
