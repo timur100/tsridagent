@@ -175,11 +175,14 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           
           const allLocationsArrays = await Promise.all(allLocationsPromises);
           const allLocations = allLocationsArrays.flat();
+          console.log('[AllLocationsTab] Total locations loaded from all tenants:', allLocations.length);
           setLocations(allLocations);
+        } else {
+          console.error('[AllLocationsTab] Failed to fetch tenants');
         }
       }
     } catch (error) {
-      console.error('Error fetching locations:', error);
+      console.error('[AllLocationsTab] Error fetching locations:', error);
     } finally {
       setLoading(false);
     }
