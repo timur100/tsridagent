@@ -23,32 +23,34 @@ const CustomerSwitcher = () => {
 
   const fetchCustomers = async () => {
     try {
-      // Fetch both customers and tenants
-      const customersResult = await apiCall('/api/customers/list');
-      const tenantsResult = await apiCall('/api/tenants/');
-      
-      console.log('Customers result:', customersResult);
-      console.log('Tenants result:', tenantsResult);
-      
       let allCustomers = [];
       
-      // Add customers from old system
-      if (customersResult && customersResult.success && customersResult.data) {
-        allCustomers = [...(customersResult.data.customers || [])];
+      // Try to fetch customers from old system (may not exist)
+      try {
+        const customersResult = await apiCall('/api/customers/list');
+        if (customersResult && customersResult.success && customersResult.data) {
+          allCustomers = [...(customersResult.data.customers || [])];
+        }
+      } catch (error) {
+        // Customers endpoint doesn't exist, that's ok
+        console.log('Customers endpoint not available');
       }
       
-      // Add tenants from new system
-      if (tenantsResult && tenantsResult.tenants) {
-        const tenants = tenantsResult.tenants.map(tenant => ({
-          id: tenant.tenant_id,
-          name: tenant.display_name || tenant.name,
-          type: 'tenant' // Mark as tenant for identification
-        }));
-        allCustomers = [...allCustomers, ...tenants];
-        console.log('Mapped tenants:', tenants);
+      // Fetch tenants from new system
+      try {
+        const tenantsResult = await apiCall('/api/tenants/');
+        if (tenantsResult && tenantsResult.tenants) {
+          const tenants = tenantsResult.tenants.map(tenant => ({
+            id: tenant.tenant_id,
+            name: tenant.display_name || tenant.name,
+            type: 'tenant' // Mark as tenant for identification
+          }));
+          allCustomers = [...allCustomers, ...tenants];
+        }
+      } catch (error) {
+        console.error('Error fetching tenants:', error);
       }
       
-      console.log('All customers to display:', allCustomers);
       setCustomers(allCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
