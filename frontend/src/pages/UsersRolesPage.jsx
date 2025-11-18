@@ -179,6 +179,70 @@ const UsersRolesPage = () => {
     }
   };
 
+  const saveUser = async (userData) => {
+    try {
+      const url = selectedUser 
+        ? `${BACKEND_URL}/api/users/${selectedUser.user_id}`
+        : `${BACKEND_URL}/api/users/`;
+      
+      const method = selectedUser ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+
+      if (response.ok) {
+        toast.success(selectedUser ? 'Benutzer aktualisiert' : 'Benutzer erstellt');
+        await loadUsers();
+        setShowUserModal(false);
+        setSelectedUser(null);
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern des Benutzers');
+      }
+    } catch (error) {
+      console.error('Error saving user:', error);
+      toast.error('Fehler beim Speichern des Benutzers');
+    }
+  };
+
+  const saveRole = async (roleData) => {
+    try {
+      const url = selectedRole 
+        ? `${BACKEND_URL}/api/roles/${selectedRole.role_id}`
+        : `${BACKEND_URL}/api/roles/`;
+      
+      const method = selectedRole ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(roleData)
+      });
+
+      if (response.ok) {
+        toast.success(selectedRole ? 'Rolle aktualisiert' : 'Rolle erstellt');
+        await loadRoles();
+        setShowRoleModal(false);
+        setSelectedRole(null);
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern der Rolle');
+      }
+    } catch (error) {
+      console.error('Error saving role:', error);
+      toast.error('Fehler beim Speichern der Rolle');
+    }
+  };
+
   // Filter users
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
