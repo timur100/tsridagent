@@ -11,11 +11,11 @@ import uuid
 
 router = APIRouter(prefix="/api/portal/auth", tags=["Portal Auth"])
 
-# MongoDB connection
+# MongoDB connection - Use auth_db from auth service
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 mongo_client = MongoClient(mongo_url)
-db_name = os.environ.get('DB_NAME', 'portal_db')
-db = mongo_client[db_name]
+auth_db = mongo_client['auth_db']  # Use auth_db for users
+portal_db = mongo_client['portal_db']  # Keep for portal-specific data
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
