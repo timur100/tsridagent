@@ -105,7 +105,8 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         let tenantName = '';
         if (tenantResponse.ok) {
           const tenantsData = await tenantResponse.json();
-          const tenantsList = tenantsData.tenants || tenantsData.data || [];
+          // API returns array directly
+          const tenantsList = Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || tenantsData.data || []);
           const tenant = tenantsList.find(t => t.tenant_id === selectedTenantId);
           tenantName = tenant ? (tenant.display_name || tenant.name) : '';
         }
