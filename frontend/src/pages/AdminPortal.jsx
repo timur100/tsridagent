@@ -1192,7 +1192,7 @@ const AdminPortalContent = () => {
         {activeTab === 'locations' && (
           <AllLocationsTab 
             theme={theme}
-            selectedTenantId={selectedTenantIdForLocations}
+            selectedTenantId={selectedTenantId}
           />
         )}
 
