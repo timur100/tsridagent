@@ -215,6 +215,7 @@ async def get_orders_by_customer(customer_email: str):
 
 @app.get("/api/orders", response_model=List[Order])
 async def get_orders(
+    tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     payment_status: Optional[str] = None,
     customer_email: Optional[str] = None,
