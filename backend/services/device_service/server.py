@@ -63,6 +63,7 @@ class Device(BaseModel):
 class DeviceCreate(BaseModel):
     """Create device model"""
     device_id: str
+    tenant_id: Optional[str] = None  # Tenant association
     location_code: Optional[str] = None
     device_type: str = "scanner"
     manufacturer: Optional[str] = None
