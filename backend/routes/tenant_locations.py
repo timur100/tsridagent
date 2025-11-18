@@ -5,6 +5,7 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import os
 import uuid
+import httpx
 
 router = APIRouter(prefix="/api/tenant-locations", tags=["Tenant Locations"])
 security = HTTPBearer()
