@@ -25,6 +25,11 @@ class UserUpdate(BaseModel):
     last_name: Optional[str] = None
     enabled: Optional[bool] = None
     roles: Optional[List[str]] = None
+    tenant_ids: Optional[List[str]] = None
+    phone: Optional[str] = None
+    position: Optional[str] = None
+    department: Optional[str] = None
+    status: Optional[str] = None
     attributes: Optional[Dict[str, Any]] = None
 
 class UserResponse(UserBase):
