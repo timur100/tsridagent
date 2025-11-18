@@ -395,7 +395,7 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}/locations/${locationId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/tenant-locations/${tenantId}/${locationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
