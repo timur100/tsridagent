@@ -162,7 +162,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/tenants/{self.test_tenant_id}/locations", 
+                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
                 json=location_data
             )
             
@@ -233,7 +233,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/tenants/{self.test_tenant_id}/locations", 
+                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
                 json=location_data
             )
             
@@ -304,7 +304,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/tenants/{self.test_tenant_id}/locations", 
+                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
                 json=location_data
             )
             
@@ -361,7 +361,7 @@ class TenantLocationsTester:
     def test_list_all_locations(self):
         """Test GET /api/tenants/{tenant_id}/locations - List all locations"""
         try:
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}")
             
             if response.status_code != 200:
                 self.log_result(
@@ -859,7 +859,7 @@ class TenantLocationsTester:
     def test_verify_remaining_locations(self):
         """Verify that we have 2 remaining locations after deletion"""
         try:
-            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}/locations")
+            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}")
             
             if response.status_code != 200:
                 self.log_result(
@@ -912,7 +912,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/tenants/{self.test_tenant_id}/locations", 
+                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
                 json=location_data
             )
             
