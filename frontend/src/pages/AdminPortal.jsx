@@ -584,7 +584,7 @@ const AdminPortalContent = () => {
                 <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>{user?.name}</p>
                 <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>Administrator</p>
               </div>
-              <CustomerSwitcher onTenantChange={setSelectedTenantIdForLocations} />
+              <CustomerSwitcher />
               <ThemeToggle />
               <Button
                 variant="outline"
