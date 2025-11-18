@@ -115,7 +115,7 @@ const AdminPortalContent = () => {
       
       // Set the tenant, tab, and initial tab for TenantDetailPage
       setTenantInitialTab(returnToTab);
-      setSelectedTenantId(returnToTenant);
+      setSelectedTenantIdForDetail(returnToTenant);
       setActiveTab('tenants');
     }
   }, []);
