@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
-import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown } from 'lucide-react';
+import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Plus } from 'lucide-react';
 import DeviceDetailsModal from './DeviceDetailsModal';
 import toast from 'react-hot-toast';
 import { getFullBundeslandName } from '../utils/bundesland';
