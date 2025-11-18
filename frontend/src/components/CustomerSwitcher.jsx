@@ -23,10 +23,28 @@ const CustomerSwitcher = () => {
 
   const fetchCustomers = async () => {
     try {
-      const result = await apiCall('/api/customers/list');
-      if (result.success && result.data) {
-        setCustomers(result.data.customers || []);
+      // Fetch both customers and tenants
+      const customersResult = await apiCall('/api/customers/list');
+      const tenantsResult = await apiCall('/api/tenants/');
+      
+      let allCustomers = [];
+      
+      // Add customers from old system
+      if (customersResult.success && customersResult.data) {
+        allCustomers = [...(customersResult.data.customers || [])];
       }
+      
+      // Add tenants from new system
+      if (tenantsResult.success && tenantsResult.tenants) {
+        const tenants = tenantsResult.tenants.map(tenant => ({
+          id: tenant.tenant_id,
+          name: tenant.display_name || tenant.name,
+          type: 'tenant' // Mark as tenant for identification
+        }));
+        allCustomers = [...allCustomers, ...tenants];
+      }
+      
+      setCustomers(allCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
     }
