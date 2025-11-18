@@ -99,22 +99,37 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   const loadDevices = async () => {
     setLoading(true);
     try {
-      // Build API URL with customer filter
-      let apiUrl = '/api/portal/europcar-devices';
-      if (selectedCustomer && selectedCustomer !== 'all') {
-        apiUrl += `?customer_email=${encodeURIComponent(selectedCustomer)}`;
+      console.log('🔍 DeviceManagement: Loading devices for tenant:', selectedTenantId);
+      
+      let allDevices = [];
+      
+      // If a specific tenant is selected, load only that tenant's devices
+      if (selectedTenantId && selectedTenantId !== 'all') {
+        const result = await apiCall(`/api/tenant-devices/${selectedTenantId}`);
+        
+        if (result.success && result.data) {
+          const responseData = result.data.data || result.data;
+          allDevices = responseData.devices || [];
+          console.log(`✅ Loaded ${allDevices.length} devices for tenant ${selectedTenantName}`);
+        }
+      } else {
+        // Load all devices from all tenants
+        // For now, we'll load Europcar devices (since that's what we have)
+        // In the future, this could load from multiple tenants
+        const result = await apiCall('/api/portal/europcar-devices');
+        
+        if (result.success && result.data) {
+          const responseData = result.data.data || result.data;
+          allDevices = responseData.devices || [];
+          console.log(`✅ Loaded ${allDevices.length} devices (all tenants)`);
+        }
       }
       
-      const result = await apiCall(apiUrl);
-      
-      if (result.success && result.data) {
-        // Handle double-wrapped response from apiCall
-        const responseData = result.data.data || result.data;
-        setDevices(responseData.devices || []);
-      }
+      setDevices(allDevices);
     } catch (error) {
-      console.error('Error loading devices:', error);
+      console.error('❌ Error loading devices:', error);
       toast.error('Fehler beim Laden der Geräte');
+      setDevices([]);
     } finally {
       setLoading(false);
     }
