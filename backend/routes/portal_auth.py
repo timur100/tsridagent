@@ -147,7 +147,7 @@ async def login(request: LoginRequest):
     """Login to portal"""
     try:
         # Find user in MongoDB
-        user = db.portal_users.find_one({"email": request.email})
+        user = auth_db.users.find_one({"email": request.email})
         
         if not user:
             raise HTTPException(status_code=401, detail="Invalid credentials")
