@@ -17,6 +17,7 @@ const CustomerSwitcher = () => {
   }
 
   useEffect(() => {
+    console.log('[CustomerSwitcher] Component mounted, fetching data...');
     fetchCustomers();
     fetchCurrentCustomer();
   }, []);
