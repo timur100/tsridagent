@@ -21,6 +21,26 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// Mapping für Bundesländer-Abkürzungen zu vollen Namen
+const STATE_NAMES = {
+  'BB': 'Brandenburg',
+  'BE': 'Berlin',
+  'BW': 'Baden-Württemberg',
+  'BY': 'Bayern',
+  'HB': 'Bremen',
+  'HE': 'Hessen',
+  'HH': 'Hamburg',
+  'MV': 'Mecklenburg-Vorpommern',
+  'NI': 'Niedersachsen',
+  'NW': 'Nordrhein-Westfalen',
+  'RP': 'Rheinland-Pfalz',
+  'SH': 'Schleswig-Holstein',
+  'SL': 'Saarland',
+  'SN': 'Sachsen',
+  'ST': 'Sachsen-Anhalt',
+  'TH': 'Thüringen'
+};
+
 const LocationDetailPage = () => {
   const { locationId } = useParams();
   const navigate = useNavigate();
