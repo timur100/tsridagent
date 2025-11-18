@@ -9,6 +9,7 @@ router = APIRouter(prefix="/items", tags=["Items"])
 
 @router.get("/")
 async def get_inventory_items(
+    tenant_id: Optional[str] = None,
     category: Optional[str] = None,
     search: Optional[str] = None,
     low_stock_only: bool = False
@@ -19,6 +20,9 @@ async def get_inventory_items(
     try:
         # Build query
         query = {}
+        
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         
         if category:
             query['category'] = category
