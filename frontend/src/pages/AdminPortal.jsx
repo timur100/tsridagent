@@ -120,6 +120,24 @@ const AdminPortalContent = () => {
     }
   }, []);
 
+  // Auto-navigate to TenantDetailPage when specific tenant is selected from CustomerSwitcher
+  useEffect(() => {
+    console.log('[AdminPortal] selectedTenantId changed:', selectedTenantId);
+    
+    // If a specific tenant is selected (not 'all') and we're not already viewing tenant details
+    if (selectedTenantId && selectedTenantId !== 'all' && selectedTenantId !== selectedTenantIdForDetail) {
+      console.log('[AdminPortal] Auto-navigating to TenantDetailPage for tenant:', selectedTenantId);
+      // Switch to tenants tab and show the detail page
+      setActiveTab('tenants');
+      setSelectedTenantIdForDetail(selectedTenantId);
+      setTenantInitialTab('dashboard'); // Show dashboard by default
+    } else if (selectedTenantId === 'all') {
+      // When "Alle Kunden" is selected, go back to tenants overview
+      console.log('[AdminPortal] Switching to tenants overview (Alle Kunden)');
+      setSelectedTenantIdForDetail(null);
+    }
+  }, [selectedTenantId]);
+
   // Load company branding
   useEffect(() => {
     const fetchBranding = async () => {
