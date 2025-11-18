@@ -60,11 +60,13 @@ const CustomerSwitcher = () => {
   const fetchCurrentCustomer = async () => {
     try {
       const result = await apiCall('/api/customers/current/info');
-      if (result.success && result.data) {
+      if (result && result.success && result.data) {
         setCurrentCustomer(result.data.customer);
       }
     } catch (error) {
-      console.error('Error fetching current customer:', error);
+      // Current customer endpoint doesn't exist, default to "Alle Kunden"
+      console.log('Current customer endpoint not available, showing all');
+      setCurrentCustomer(null);
     }
   };
 
