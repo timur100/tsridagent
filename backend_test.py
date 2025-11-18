@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Tenant Management APIs in Auth & Identity Service
-Tests the Auth & Identity Service (Port 8100) tenant management functionality comprehensively.
+Backend API Testing for Tenant Locations APIs
+Tests the Tenant Locations API endpoints comprehensively.
 """
 
 import requests
@@ -12,9 +12,8 @@ from typing import Dict, Any, List
 # Backend URL from environment
 BACKEND_URL = "https://admin-portal-167.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-AUTH_SERVICE_URL = "http://localhost:8100"
 
-class TenantManagementTester:
+class TenantLocationsTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
