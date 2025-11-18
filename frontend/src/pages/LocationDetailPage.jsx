@@ -42,28 +42,48 @@ const LocationDetailPage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      // Try to find the location by searching through the global search
-      const searchResponse = await fetch(`${BACKEND_URL}/api/search/global?query=${locationId}`, {
+      // First, try to get all tenants to find which tenant this location belongs to
+      const tenantsResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
-      if (searchResponse.ok) {
-        const searchData = await searchResponse.json();
-        if (searchData.results.tenant_locations && searchData.results.tenant_locations.length > 0) {
-          // Find the exact match by location_id
-          const foundLocation = searchData.results.tenant_locations.find(
-            loc => loc.data.location_id === locationId
-          );
-          
-          if (foundLocation) {
-            setLocation(foundLocation.data);
-            setLocationFormData(foundLocation.data);
-          } else {
-            toast.error('Standort nicht gefunden');
-            navigate('/portal/admin');
+      if (tenantsResponse.ok) {
+        const tenantsData = await tenantsResponse.json();
+        let foundLocation = null;
+        
+        // Search through each tenant's locations
+        for (const tenant of tenantsData.tenants || []) {
+          try {
+            const locationsResponse = await fetch(
+              `${BACKEND_URL}/api/tenant-locations/${tenant.tenant_id}`,
+              {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              }
+            );
+            
+            if (locationsResponse.ok) {
+              const locationsData = await locationsResponse.json();
+              const location = locationsData.locations?.find(
+                loc => loc.location_id === locationId
+              );
+              
+              if (location) {
+                foundLocation = location;
+                break;
+              }
+            }
+          } catch (err) {
+            console.error(`Error checking tenant ${tenant.tenant_id}:`, err);
           }
+        }
+        
+        if (foundLocation) {
+          setLocation(foundLocation);
+          setLocationFormData(foundLocation);
         } else {
           toast.error('Standort nicht gefunden');
           navigate('/portal/admin');
