@@ -1,100 +1,76 @@
 <analysis>
 The user's primary language is German. The next agent must respond in German.
 
-This trajectory documents an intensely iterative development cycle focused on enhancing the Standorte (Locations) feature of an admin portal. The work began with user requests to add searching, sorting, and filtering capabilities to the tenant-specific locations table, and to make table rows clickable to open a new location detail page.
+The development trajectory chronicles a major refactoring of the admin portal to introduce multi-tenancy. The core requirement was to make all data views (locations, inventory, orders, etc.) filterable based on a globally selected tenant.
 
-A significant portion of the effort was dedicated to debugging and refinement based on continuous user feedback. Key challenges included:
-1.  **Navigation:** A persistent black screen issue when navigating back from the location detail page. This was a complex problem rooted in the application's architecture (components rendered conditionally within a parent vs. distinct routes). The final solution involved using  to persist state across navigation events.
-2.  **Data Discrepancy:** The Europcar tenant was missing from a global customer switcher. Debugging revealed a distinction between old customers and new tenants, requiring the component to fetch data from two different API endpoints.
-3.  **React Best Practices:** A critical bug in the customer switcher was traced to violating React's Rules of Hooks, where a conditional  was placed before  calls.
-
-The work concluded by implementing a major new requirement: transforming the main admin locations tab to display locations for *all* tenants by default, and dynamically filtering the list when a specific tenant is selected in the now-functional customer switcher. This involved significant state management refactoring in the main  component.
+The work was executed in distinct phases:
+1.  **Global State Management:** A  was created in React to provide a single source of truth for the . This was a critical architectural decision to avoid prop drilling and inconsistent state.
+2.  **Frontend Integration:** Key components like , , and  were refactored to consume and update this new global context, ensuring a synchronized state across the application. An automatic navigation feature was added to jump to a tenant's detail page when selected in the global switcher.
+3.  **Backend Microservice Adaptation:** Several backend microservices (device, inventory, order, ticketing) were modified. Their API endpoints (primarily GET routes) and data models were updated to accept and filter by an optional .
+4.  **Component Refactoring:** Frontend components like , , and  were updated to pass the  from the context to their respective API calls.
+5.  **Bug Fixing & Feature Enhancement:** A significant effort was spent debugging the  to correctly display data for All Customers. This involved fixing incorrect assumptions about API response structures and identifying that location data was spread across different database collections, requiring a new data fetching strategy. Finally, per user request, new UI elements (statistic tiles with hover effects) were added to the .
 </analysis>
 
 <product_requirements>
-The primary goal is to build out a full-featured Standorte (Locations) management system within the existing admin portal.
+The primary goal is to transform the admin portal into a fully multi-tenant application. A super-admin user must be able to view data in two modes:
+1.  **All Customers View:** When All Customers is selected in a global tenant switcher, all data across different parts of the application (Locations, Inventory, Orders, etc.) should be displayed in an aggregated view. For instance, the locations table should list locations from all tenants and include a column specifying which tenant each location belongs to.
+2.  **Single Tenant View:** When a specific tenant (e.g., Europcar) is selected, the entire admin portal interface must filter to show *only* the data associated with that tenant. Selecting a tenant in the switcher should also automatically navigate the user to that tenant's main dashboard page.
 
-**Initial Implementation (Completed):**
-*   A basic locations tab was built, and data for the Europcar tenant was imported via custom scripts.
-
-**Feature Enhancements (Implemented based on user requests):**
-1.  **Enhanced Locations Table:** For a specific tenant's locations tab ():
-    *   Add a search bar to filter the table.
-    *   Make all table columns sortable (ascending/descending).
-    *   Implement cascading filters for: Continent, Country, State, City, and Special Places (e.g., Airport, 24h). Filter options are dynamically generated from the loaded data.
-    *   Display full state names instead of abbreviations (e.g., Brandenburg instead of BB).
-2.  **Location Detail Page:**
-    *   Make each row in the locations table clickable, navigating to a new detail page () for that specific location.
-    *   This page must display all information for the selected location.
-    *   A Back button on this page must correctly return the user to the locations table for the original tenant.
-3.  **Global Locations View:**
-    *   The main Locations tab in the admin portal must now display locations for **all tenants** when the global customer switcher is set to All Customers.
-    *   When a specific tenant (e.g., Europcar) is selected in the switcher, the table must filter to show only that tenant's locations.
-4.  **Customer/Tenant Switcher:**
-    *   Fix the header component to correctly display all entities, including new Tenants like Europcar, not just old Customers.
+Additionally, the UI for the location detail page should be enhanced with several key performance indicator (KPI) tiles to display statistics like total scans, user counts, device status, and open support tickets for that specific location.
 </product_requirements>
 
 <key_technical_concepts>
-- **Backend:** FastAPI, Pydantic, Motor (async MongoDB). Key logic involved creating new endpoints for filter options and a specific endpoint to fetch a location by its ID, paying close attention to route ordering to avoid conflicts.
-- **Frontend:** React (with Hooks), Tailwind CSS.
-- **State Management & Navigation:** Complex state handling involving passing callbacks (), lifting state up to parent components (), and using  as a workaround to persist state (active tab, tenant ID) across hard navigations between different components.
-- **Data Handling:** Dynamic, client-side generation of cascading filter options from a fetched list of locations.
+- **React Global State Management:** Implemented using React's Context API () to manage and distribute the currently selected tenant's ID across all components.
+- **Microservices Architecture:** The backend consists of multiple FastAPI services. The core change involved making these services tenant-aware.
+- **Tenant-Aware APIs:** Backend GET endpoints were refactored to accept an optional  query parameter. This parameter is used to filter database queries (e.g., ).
+- **Conditional UI Rendering:** UI elements and API call logic change based on the selected tenant context (e.g., showing a Customer column only when viewing all tenants).
 </key_technical_concepts>
 
 <code_architecture>
-The application is a React SPA frontend with a FastAPI backend. The work centered on evolving the tenant and location management features.
+The application uses a React frontend and a Python FastAPI backend structured as a set of microservices.
 
 
 
 - ****
-  - **Importance:** Core API for all location-related data.
-  - **Changes:** Heavily modified. New endpoints were added to provide unique values for filters (continents, countries, etc.). A crucial new endpoint  was added to fetch a single location. The route order was corrected to ensure this specific endpoint was matched before more generic ones like . The main GET endpoint was updated to accept multiple filter parameters.
+  - **Importance:** New file. Provides the global state for  and  to the entire application. This is the cornerstone of the multi-tenancy implementation.
+  - **Changes:** Created from scratch to hold the tenant state and updater functions.
 
 - ****
-  - **Importance:** The main container component for the entire admin section. It manages which primary tab is shown.
-  - **Changes:** Significantly refactored to manage shared state. A  state was added to track the choice from the . A callback prop () was passed to  to update this state. It now conditionally renders  and passes the  to it. Logic was added to read from  on mount to handle the back button navigation from .
+  - **Importance:** The root component of the authenticated application.
+  - **Changes:** Wrapped the application's routes with the new  to make the global tenant context available to all child components.
 
 - ****
-  - **Importance:** The global header dropdown for selecting a tenant/customer.
-  - **Changes:** Completely overhauled. It was fixed to fetch data from both the legacy  and the new  endpoints. A critical React bug (hooks called after a conditional return) was fixed. It was modified to accept and call an  prop to communicate the selected tenant to its parent ().
+  - **Importance:** The main layout for the admin section, controlling which tab/page is visible.
+  - **Changes:** Refactored to use the  hook instead of local state. It now passes the  down to child components and contains a  to handle automatic navigation when the tenant is changed in the global switcher.
 
 - ****
-  - **Importance:** The reusable, advanced table view for locations, used within .
-  - **Changes:** Created from scratch and iteratively improved. It includes a search bar, sortable headers, and six cascading filters. The UI layout was adjusted multiple times based on user feedback. The filter options are now generated dynamically on the client-side from the full list of locations.
+  - **Importance:** The main view for displaying all locations.
+  - **Changes:** Heavily modified to fix a bug where no locations appeared for All Customers. The data fetching logic was corrected to handle the direct array response from the tenants API. A Kunde (Customer) column was added to the table, and the corresponding filter was implemented.
 
 - ****
-  - **Importance:** The detail view for a single location.
-  - **Changes:** Created from scratch. Its data fetching logic was updated to use the new  endpoint. The Back button logic was changed to use  to save the  before navigating back to the main admin portal, enabling a stateful return.
+  - **Importance:** Displays the details for a single location.
+  - **Changes:** Significantly updated to include a new section for statistics. Eight new stat tiles (Scans, Users, Devices, Tickets, etc.) were added with placeholder data and CSS hover effects. A placeholder function  was created to eventually load the data for these tiles.
 
 - ****
-  - **Importance:** The new primary locations view for the entire admin portal.
-  - **Changes:** Created at the end of the trajectory. It is designed to be similar to  but will fetch locations based on the  prop (either all locations or just for one tenant).
-
-- ****
-  - **Importance:** The detail view for a single tenant, containing multiple tabs.
-  - **Changes:** Updated to use the new . State management for  was modified to accept an  prop and use a  with a URL query parameter () to handle the back button navigation correctly.
+  - **Importance:** These microservices provide the data for their respective domains.
+  - **Changes:** The Pydantic models in each service were updated to include an optional  field. The main GET endpoints were modified to accept a  query parameter and use it to filter the MongoDB query, thus enabling data isolation per tenant.
 </code_architecture>
 
 <pending_tasks>
-The following originally planned features have not been started:
-- Implement the Branding tab for logo uploads.
-- Implement the Statistik (Analytics) tab.
-- Implement the Abrechnung (Billing) tab.
-- Fix the known admin login routing bug that incorrectly redirects admins to the customer portal.
+- **Implement Stats Fetching:** The data for the new statistics tiles on the  is currently hardcoded. The  function needs to be implemented to make live API calls to the relevant microservices to retrieve and display real data.
+- **Data for other tabs:** Not all tabs and microservices have been made fully tenant-aware yet. Work needs to continue on the remaining services and frontend components.
+- **Original Pending Tasks:** The Branding, Statistik, and Abrechnung tabs remain unimplemented.
 </pending_tasks>
 
 <current_work>
-The most recent work focused on fulfilling the user's request to create a unified, filterable view of all tenant locations in the main admin portal.
+The most recent task was a UI enhancement on the **** page. Following a user request, eight new statistics tiles were added to display key metrics for a location. After adding the static JSX for these tiles, the final action was to add Tailwind CSS classes to create a hover effect on each tile (e.g., changing background color and shadow).
 
-**Actions Taken:**
-1.  **State Management Refactor:** The  component was modified to hold a new state variable, , to track the current selection from the .
-2.  **Component Communication:** The  component was updated to accept an  callback function. It now calls this function whenever the user selects a different tenant, passing the new  (or  for All Customers) up to the .
-3.  **New Global Locations View:** A new component, , was created. This component is intended to display the locations table.
-4.  **Integration:** In , the old  component was replaced with the new . The  state is passed down to  as a prop.
+The state of this feature is that the UI elements are fully in place but are not functional. They display hardcoded, placeholder data. A placeholder function  has been added to the component, but it is empty. The backend APIs needed to supply data for these tiles have not yet been created or confirmed to exist.
 
-The development stopped precisely at this point of integration. The  component is newly created and likely contains placeholder or copied code from . It has not yet been fully implemented to fetch and display data based on the  prop it receives. The next logical step is to build out the logic within  and test the entire workflow.
+Example of a newly added stat tile with hover effects in :
+
 </current_work>
 
 <optional_next_step>
-Test the new implementation by running the application and verifying if the  correctly displays all tenant locations and filters them based on the  selection.
+Implement the  function in  to fetch and display real data for the newly added statistics tiles. This involves identifying or creating the necessary backend endpoints.
 </optional_next_step>
