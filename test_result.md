@@ -237,9 +237,37 @@ test_plan:
           agent: "testing"
           comment: "✅ DEVICE SERVICE COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY: All 10/10 tests passed. SERVICE HEALTH & INFO: Device Service running on port 8104 with health endpoint returning {'status': 'healthy', 'service': 'Device Service'} and info endpoint providing complete service details including version 1.0.0 and available endpoints. DEVICE STATISTICS: Statistics endpoint working correctly showing 3 total devices, 2 active, 1 maintenance, 0 inactive/offline, with breakdown by type (2 scanners, 1 terminal). GET ALL DEVICES: Successfully retrieved 3 devices with complete device information including id, device_id, location_code, device_type, status, manufacturer, model, serial_number, IP address, and metadata. FILTERING FUNCTIONALITY: ✅ Location filtering (BERN01) returns 1 device correctly, ✅ Status filtering (active) returns 2 devices correctly, both filters working as expected. SERVICE REGISTRATION: Device Service properly registered in Admin Portal services list at correct position 2 (after auth=0, id_verification=1, device=2) with service_type='device' and service_name='Device & Equipment Service'. MONGODB INTEGRATION: MongoDB summary correctly shows device_db database with 1 collection (devices) containing 3 documents, confirming proper database integration. All success criteria met - Device Service is fully functional and production-ready with complete CRUD operations, filtering, statistics, and admin portal integration."
 
+backend:
+  - task: "Document Upload API - Complete Implementation"
+    implemented: true
+    working: "NA"
+    file: "routes/documents.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Backend Dokument-Upload API vollständig implementiert: 1) POST /api/documents/upload - Unterstützt PDF, Word (.doc, .docx), Excel (.xls, .xlsx) mit Form Data (file, tenant_id, category, description), max 50MB, File Type Validierung, 2) GET /api/documents/tenant/{tenant_id} - Holt alle Dokumente für einen Tenant (mit optionalem category Filter), 3) GET /api/documents/download/{document_id} - Download via FileResponse, 4) DELETE /api/documents/{document_id} - Löscht Dokument von Disk und DB. Fixes: Form() Parameter für multipart/form-data, Async cursor handling korrigiert, Error handling mit File cleanup, Allowed extensions validation. Upload Directory: /app/uploads/documents, MongoDB Collection: portal_db.documents"
+
+frontend:
+  - task: "Document Upload UI in TenantDetailPage"
+    implemented: true
+    working: "NA"
+    file: "src/pages/TenantDetailPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Frontend Dokument-Upload UI vollständig implementiert im 'Vertrag & Subscription' Tab: 1) Upload Area mit Drag & Drop styled, File Input (PDF, Word, Excel), File Size Validation (50MB), 2) Selected File Preview mit Category Dropdown (Vertrag, Rechnung, Sonstiges), Description Input, Upload Button mit Loading State, 3) Documents List mit Cards für jedes Dokument (Filename, Category Badge, File Size, Upload Date, Description), Download Button (mit FileResponse Handling), Delete Button (mit Confirmation), 4) Loading States für Document Fetch und Upload, Empty State wenn keine Dokumente, 5) Helper Functions: formatFileSize(), getCategoryLabel(), handleFileSelect(), handleUpload(), handleDownload(), handleDelete(), fetchDocuments(). UI integriert in bestehende Subscription Section mit Vertragsinformationen und Limits."
+
 agent_communication:
     - agent: "main"
       message: "✅ Phase 2, Part 2 COMPLETE: Ticketing microservice successfully created and deployed on port 8103 with full functionality. All 5 tasks completed: 1) Microservice creation with FastAPI server, routes, models, utils, 2) Service registration in verification_db, 3) MongoDB summary extended for ticketing_db, 4) API proxy routes implemented in service_proxy.py, 5) Monolithic routes commented out in main backend. Service visible in Admin Portal with green status, MongoDB info showing ticketing_db with 1 collection and 1 document. Ready for backend testing."
+    - agent: "main"
+      message: "✅ DOKUMENT-UPLOAD FEATURE VOLLSTÄNDIG IMPLEMENTIERT: Backend und Frontend für Dokument-Upload im Vertrag & Subscription Tab fertiggestellt. Backend: POST /upload (PDF, DOC, DOCX, XLS, XLSX, max 50MB), GET /tenant/{id}, GET /download/{id}, DELETE /{id}. Frontend: Upload Area im subscription Tab, File Selection, Category + Description Inputs, Documents List mit Download/Delete Actions. Bereit für Backend Testing."
     - agent: "testing"
       message: "✅ TICKETING MICROSERVICE MIGRATION TESTING COMPLETED SUCCESSFULLY: Comprehensive testing completed with 15/15 tests passed. MICROSERVICE HEALTH: All 3 microservices (ID Verification: 8101, Inventory: 8102, Ticketing: 8103) are healthy and responding correctly. TICKETING SERVICE CONNECTIVITY: Health check and service info endpoints working perfectly, returning expected responses. ADMIN PORTAL INTEGRATION: Ticketing Service properly registered in Admin Portal services list, MongoDB info correctly displays ticketing_db with 1 collection and 1 document. TICKETING SERVICE APIs: All core APIs working with proper JWT authentication - stats endpoint returns ticket statistics, list endpoint returns tickets (found 1 existing ticket), create endpoint validates properly (customer validation working as expected). SERVICE PROXY ROUTES: Proxy routes through main backend working correctly - both ticketing stats and inventory items endpoints accessible via main backend proxy. MONOLITHIC ROUTES CLEANUP: Old monolithic ticket routes properly disabled (returning 404 as expected). CRITICAL FIXES APPLIED: 1) Added missing JWT_SECRET environment variable to ticketing service .env file, 2) Added dotenv loading to ticketing service server.py, 3) Restarted ticketing service to pick up new configuration. All success criteria met - Ticketing microservice migration is fully functional and production-ready."
     - agent: "testing"
