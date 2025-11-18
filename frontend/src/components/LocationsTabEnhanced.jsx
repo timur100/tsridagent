@@ -39,13 +39,15 @@ const LocationsTabEnhanced = ({
     continent: '',
     country: '',
     state: '',
-    city: ''
+    city: '',
+    mainType: ''
   });
   const [filterOptions, setFilterOptions] = useState({
     continents: [],
     countries: [],
     states: [],
-    cities: []
+    cities: [],
+    mainTypes: []
   });
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
