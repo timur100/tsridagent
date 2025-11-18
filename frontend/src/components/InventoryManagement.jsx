@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Package, Plus, Search, AlertTriangle, Edit, Trash2, Barcode, ChevronDown, ChevronRight, Image as ImageIcon, X, Copy, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
