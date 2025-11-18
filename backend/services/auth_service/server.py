@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Import routes
-from routes import auth, users, tenants
+from routes import auth, users, tenants, roles
 
 # Get configuration from environment
 SERVICE_PORT = int(os.environ.get('SERVICE_PORT', 8100))
