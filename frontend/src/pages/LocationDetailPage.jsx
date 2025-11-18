@@ -85,7 +85,36 @@ const LocationDetailPage = () => {
 
   useEffect(() => {
     fetchLocationDetails();
+    fetchLocationStats();
   }, [locationId]);
+
+  const fetchLocationStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Mock data for now - in production, these would be real API calls
+      // You can replace these with actual API endpoints when available
+      setStats({
+        scans: {
+          total: 1234,
+          correct: 1180,
+          unknown: 38,
+          failed: 16
+        },
+        users: 12,
+        devices: {
+          total: 8,
+          online: 6,
+          offline: 2
+        },
+        tickets: {
+          open: 3
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching location stats:', error);
+    }
+  };
 
   const fetchLocationDetails = async () => {
     try {
