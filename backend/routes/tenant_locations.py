@@ -256,6 +256,90 @@ async def delete_tenant_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.get("/{tenant_id}/filters/continents")
+async def get_continents(
+    tenant_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get unique continents for a tenant's locations"""
+    try:
+        continents = db.tenant_locations.distinct("continent", {"tenant_id": tenant_id})
+        return {
+            "success": True,
+            "continents": [c for c in continents if c]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/filters/countries")
+async def get_countries(
+    tenant_id: str,
+    continent: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get unique countries for a tenant's locations"""
+    try:
+        query = {"tenant_id": tenant_id}
+        if continent:
+            query["continent"] = continent
+        
+        countries = db.tenant_locations.distinct("country", query)
+        return {
+            "success": True,
+            "countries": [c for c in countries if c]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/filters/states")
+async def get_states(
+    tenant_id: str,
+    continent: Optional[str] = None,
+    country: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get unique states for a tenant's locations"""
+    try:
+        query = {"tenant_id": tenant_id}
+        if continent:
+            query["continent"] = continent
+        if country:
+            query["country"] = country
+        
+        states = db.tenant_locations.distinct("state", query)
+        return {
+            "success": True,
+            "states": [s for s in states if s]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/filters/cities")
+async def get_cities(
+    tenant_id: str,
+    continent: Optional[str] = None,
+    country: Optional[str] = None,
+    state: Optional[str] = None,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get unique cities for a tenant's locations"""
+    try:
+        query = {"tenant_id": tenant_id}
+        if continent:
+            query["continent"] = continent
+        if country:
+            query["country"] = country
+        if state:
+            query["state"] = state
+        
+        cities = db.tenant_locations.distinct("city", query)
+        return {
+            "success": True,
+            "cities": [c for c in cities if c]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/{tenant_id}/stats/summary")
 async def get_locations_stats(
     tenant_id: str,
