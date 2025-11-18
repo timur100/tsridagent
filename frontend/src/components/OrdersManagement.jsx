@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle, Eye, Box, Package2 } from 'lucide-react';
@@ -12,6 +13,7 @@ import EuroboxManagement from './EuroboxManagement';
 const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
+  const { selectedTenantId } = useTenant();
   
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
