@@ -953,7 +953,7 @@ class TenantLocationsTester:
             }
             
             response = self.session.post(
-                f"{API_BASE}/tenants/invalid-tenant-id/locations", 
+                f"{API_BASE}/tenant-locations/invalid-tenant-id", 
                 json=location_data
             )
             
