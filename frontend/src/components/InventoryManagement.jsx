@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
+  const { selectedTenantId } = useTenant();
   
   const [items, setItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
