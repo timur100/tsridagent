@@ -32,24 +32,37 @@ const CustomerPortal = () => {
       try {
         // Get user from auth
         const userData = await apiCall('/api/portal/auth/me');
+        console.log('User data:', userData); // Debug log
+        
         if (userData && userData.user) {
+          const userInfo = userData.user;
+          
           // Fetch tenant details if user has tenant_ids
-          const tenantIds = userData.user.tenant_ids || [];
+          const tenantIds = userInfo.tenant_ids || [];
+          console.log('Tenant IDs:', tenantIds); // Debug log
+          
           if (tenantIds.length > 0) {
             // Get first tenant
-            const tenantResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/tenants/${tenantIds[0]}`, {
-              headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            const tenantId = tenantIds[0];
+            console.log('Fetching tenant:', tenantId); // Debug log
+            
+            try {
+              const tenantData = await apiCall(`/api/tenants/${tenantId}`);
+              console.log('Tenant data:', tenantData); // Debug log
+              
+              if (tenantData) {
+                setTenantInfo(tenantData);
+                setCompanyName(tenantData.display_name || tenantData.name);
               }
-            });
-            if (tenantResponse.ok) {
-              const tenantData = await tenantResponse.json();
-              setTenantInfo(tenantData);
-              setCompanyName(tenantData.display_name || tenantData.name);
+            } catch (tenantError) {
+              console.error('Error fetching tenant:', tenantError);
+              // Fallback to user company
+              setCompanyName(userInfo.company || '');
             }
           } else {
             // Fallback: use company from user attributes
-            setCompanyName(userData.user.company || '');
+            console.log('No tenant_ids, using company:', userInfo.company);
+            setCompanyName(userInfo.company || '');
           }
         }
       } catch (error) {
