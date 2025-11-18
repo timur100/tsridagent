@@ -424,6 +424,8 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
       city: '',
       street: '',
       state: '',
+      country: '',
+      continent: '',
       manager: '',
       phone: '',
       phone_internal: '',
