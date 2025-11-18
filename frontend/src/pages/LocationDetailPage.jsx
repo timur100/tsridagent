@@ -315,8 +315,205 @@ const LocationDetailPage = () => {
         </div>
       </div>
 
+      {/* Statistics Cards */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Scans Insgesamt */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Scans Insgesamt
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.scans.total.toLocaleString('de-DE')}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
+                  diesen Monat
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
+                <BarChart3 className={`w-6 h-6 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Korrekte Scans */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Korrekte Scans
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.scans.correct.toLocaleString('de-DE')}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-green-400' : 'text-green-600'} mt-1`}>
+                  {((stats.scans.correct / stats.scans.total) * 100).toFixed(1)}% Erfolgsrate
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900/20' : 'bg-green-50'}`}>
+                <CheckCircle className={`w-6 h-6 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Unbekannte Scans */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Unbekannte Scans
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.scans.unknown.toLocaleString('de-DE')}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} mt-1`}>
+                  {((stats.scans.unknown / stats.scans.total) * 100).toFixed(1)}% der Scans
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
+                <HelpCircle className={`w-6 h-6 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Fehlgeschlagene Scans */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Fehlgeschlagene Scans
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.scans.failed.toLocaleString('de-DE')}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-red-400' : 'text-red-600'} mt-1`}>
+                  {((stats.scans.failed / stats.scans.total) * 100).toFixed(1)}% der Scans
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-red-900/20' : 'bg-red-50'}`}>
+                <XCircle className={`w-6 h-6 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Second Row of Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          {/* Benutzer */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Benutzer
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.users}
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-purple-900/20' : 'bg-purple-50'}`}>
+                <Users className={`w-6 h-6 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Geräte */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Geräte
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.devices.total}
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-indigo-900/20' : 'bg-indigo-50'}`}>
+                <Monitor className={`w-6 h-6 ${theme === 'dark' ? 'text-indigo-400' : 'text-indigo-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Online (Aktive Geräte) */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Online
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.devices.online}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
+                  Aktive Geräte
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900/20' : 'bg-green-50'}`}>
+                <Wifi className={`w-6 h-6 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Offline (Inaktive Geräte) */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Offline
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.devices.offline}
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'} mt-1`}>
+                  Inaktive Geräte
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                <WifiOff className={`w-6 h-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+              </div>
+            </div>
+          </Card>
+
+          {/* Tickets offen */}
+          <Card className={`p-5 ${
+            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-800' : 'bg-white border-gray-200'
+          }`}>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Tickets offen
+                </p>
+                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'} mt-1`}>
+                  {stats.tickets.open}
+                </p>
+              </div>
+              <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-orange-900/20' : 'bg-orange-50'}`}>
+                <AlertCircle className={`w-6 h-6 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'}`} />
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column - Main Info */}
           <div className="lg:col-span-2 space-y-6">
