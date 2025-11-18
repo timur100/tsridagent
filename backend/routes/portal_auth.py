@@ -41,6 +41,7 @@ class RegisterRequest(BaseModel):
     password: str
     name: str
     company: str
+    phone: Optional[str] = None
     role: str = "customer"  # customer or admin
 
 class ImpersonateRequest(BaseModel):
