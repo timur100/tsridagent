@@ -236,7 +236,7 @@ async def impersonate_customer(request: ImpersonateRequest, token_data: dict = D
             raise HTTPException(status_code=403, detail="Only admins can impersonate customers")
         
         # Find customer
-        customer = db.portal_users.find_one({"email": request.customer_email})
+        customer = auth_db.users.find_one({"email": request.customer_email})
         
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
