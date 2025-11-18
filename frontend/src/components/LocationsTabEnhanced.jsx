@@ -204,7 +204,7 @@ const LocationsTabEnhanced = ({
       </div>
 
       {/* Search and Filters */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Search */}
         <div className="relative md:col-span-2">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
@@ -269,6 +269,22 @@ const LocationsTabEnhanced = ({
           <option value="">Alle Bundesländer</option>
           {filterOptions.states.map(state => (
             <option key={state} value={state}>{state}</option>
+          ))}
+        </select>
+
+        {/* City Filter */}
+        <select
+          value={filters.city}
+          onChange={(e) => handleFilterChange('city', e.target.value)}
+          className={`px-3 py-2 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+        >
+          <option value="">Alle Städte</option>
+          {filterOptions.cities.map(city => (
+            <option key={city} value={city}>{city}</option>
           ))}
         </select>
       </div>
