@@ -97,6 +97,7 @@ const SupportManagement = () => {
     try {
       let url = '/api/tickets';
       const params = [];
+      if (selectedTenantId && selectedTenantId !== 'all') params.push(`tenant_id=${selectedTenantId}`);
       if (filterStatus) params.push(`status=${filterStatus}`);
       if (filterPriority) params.push(`priority=${filterPriority}`);
       if (params.length > 0) url += '?' + params.join('&');
