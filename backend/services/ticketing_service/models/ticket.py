@@ -5,6 +5,7 @@ from datetime import datetime
 class TicketCreate(BaseModel):
     title: str
     description: str
+    tenant_id: Optional[str] = None  # Tenant association
     priority: str = "medium"  # low, medium, high, critical
     category: str  # technical, billing, general, hardware, software
     customer_email: Optional[str] = None  # If admin creates for customer
