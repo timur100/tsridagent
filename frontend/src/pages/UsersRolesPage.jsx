@@ -667,13 +667,25 @@ const UsersTable = ({ users, theme, onEdit, onDelete, getStatusBadge, tenants })
                   theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
                 } transition-colors`}>
                   <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <div>
-                      <div className="font-medium">{user.username}</div>
-                      {user.first_name && user.last_name && (
-                        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                          {user.first_name} {user.last_name}
-                        </div>
-                      )}
+                    <div className="flex items-center gap-3">
+                      {/* Status LED */}
+                      <div className="flex-shrink-0">
+                        <div className={`w-3 h-3 rounded-full ${
+                          user.status === 'active' 
+                            ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' 
+                            : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]'
+                        }`} 
+                        title={user.status === 'active' ? 'Aktiv' : 'Inaktiv'}
+                        />
+                      </div>
+                      <div>
+                        <div className="font-medium">{user.username}</div>
+                        {user.first_name && user.last_name && (
+                          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {user.first_name} {user.last_name}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
