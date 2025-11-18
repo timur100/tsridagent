@@ -1155,6 +1155,238 @@ const TenantDetailPage = ({ tenantId, onBack }) => {
               </div>
             </Card>
 
+            {/* Document Management Section */}
+            <Card className={`p-6 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Dokumente
+                </h3>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {documents.length} {documents.length === 1 ? 'Dokument' : 'Dokumente'}
+                </span>
+              </div>
+
+              {/* Upload Area */}
+              <div className={`mb-6 p-6 border-2 border-dashed rounded-lg ${
+                theme === 'dark' 
+                  ? 'border-gray-600 bg-[#1f1f1f]' 
+                  : 'border-gray-300 bg-gray-50'
+              }`}>
+                <div className="flex flex-col items-center gap-4">
+                  <Upload className={`w-12 h-12 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-400'}`} />
+                  
+                  <div className="text-center">
+                    <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      Dokument hochladen
+                    </p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      PDF, Word, Excel (max. 50MB)
+                    </p>
+                  </div>
+
+                  <input
+                    id="file-input"
+                    type="file"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+
+                  <button
+                    onClick={() => document.getElementById('file-input').click()}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      theme === 'dark'
+                        ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                        : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                    }`}
+                  >
+                    Datei auswählen
+                  </button>
+
+                  {selectedFile && (
+                    <div className="w-full mt-4">
+                      <div className={`p-4 rounded-lg ${
+                        theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'
+                      }`}>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <FileText className="w-5 h-5 text-[#c00000]" />
+                            <div>
+                              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                {selectedFile.name}
+                              </p>
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {formatFileSize(selectedFile.size)}
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => {
+                              setSelectedFile(null);
+                              document.getElementById('file-input').value = '';
+                            }}
+                            className={`p-1 rounded hover:bg-red-100 ${
+                              theme === 'dark' ? 'hover:bg-red-900/20' : ''
+                            }`}
+                          >
+                            <X className="w-4 h-4 text-red-500" />
+                          </button>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div>
+                            <label className={`block text-sm font-medium mb-1 ${
+                              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Kategorie
+                            </label>
+                            <select
+                              value={uploadCategory}
+                              onChange={(e) => setUploadCategory(e.target.value)}
+                              className={`w-full px-3 py-2 rounded-lg text-sm ${
+                                theme === 'dark'
+                                  ? 'bg-[#1f1f1f] text-white border border-gray-600'
+                                  : 'bg-white text-gray-900 border border-gray-300'
+                              }`}
+                            >
+                              <option value="contract">Vertrag</option>
+                              <option value="invoice">Rechnung</option>
+                              <option value="other">Sonstiges</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className={`block text-sm font-medium mb-1 ${
+                              theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                            }`}>
+                              Beschreibung (optional)
+                            </label>
+                            <input
+                              type="text"
+                              value={uploadDescription}
+                              onChange={(e) => setUploadDescription(e.target.value)}
+                              placeholder="z.B. Jahresvertrag 2025"
+                              className={`w-full px-3 py-2 rounded-lg text-sm ${
+                                theme === 'dark'
+                                  ? 'bg-[#1f1f1f] text-white border border-gray-600 placeholder-gray-500'
+                                  : 'bg-white text-gray-900 border border-gray-300 placeholder-gray-400'
+                              }`}
+                            />
+                          </div>
+
+                          <button
+                            onClick={handleUpload}
+                            disabled={uploading}
+                            className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                              uploading
+                                ? 'bg-gray-400 cursor-not-allowed'
+                                : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                            }`}
+                          >
+                            {uploading ? 'Wird hochgeladen...' : 'Hochladen'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Documents List */}
+              {loadingDocuments ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                </div>
+              ) : documents.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className={`w-12 h-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Keine Dokumente vorhanden
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {documents.map((doc) => (
+                    <div
+                      key={doc.document_id}
+                      className={`p-4 rounded-lg transition-all ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] hover:bg-[#252525]'
+                          : 'bg-gray-50 hover:bg-gray-100'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 flex-1">
+                          <FileText className="w-5 h-5 text-[#c00000]" />
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                {doc.original_filename}
+                              </p>
+                              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
+                                doc.category === 'contract'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : doc.category === 'invoice'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}>
+                                {getCategoryLabel(doc.category)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 mt-1">
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {formatFileSize(doc.file_size)}
+                              </p>
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                {new Date(doc.uploaded_at).toLocaleDateString('de-DE', {
+                                  day: '2-digit',
+                                  month: '2-digit',
+                                  year: 'numeric'
+                                })}
+                              </p>
+                              {doc.description && (
+                                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                                  {doc.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleDownload(doc.document_id, doc.original_filename)}
+                            className={`p-2 rounded-lg transition-all ${
+                              theme === 'dark'
+                                ? 'hover:bg-[#2a2a2a] text-gray-400 hover:text-white'
+                                : 'hover:bg-white text-gray-600 hover:text-gray-900'
+                            }`}
+                            title="Herunterladen"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(doc.document_id)}
+                            className={`p-2 rounded-lg transition-all ${
+                              theme === 'dark'
+                                ? 'hover:bg-red-900/20 text-gray-400 hover:text-red-500'
+                                : 'hover:bg-red-50 text-gray-600 hover:text-red-600'
+                            }`}
+                            title="Löschen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
             {/* Limits & Kontingente */}
             <Card className={`p-6 rounded-xl ${
               theme === 'dark' 
