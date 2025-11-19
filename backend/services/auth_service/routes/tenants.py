@@ -469,6 +469,28 @@ async def update_tenant(tenant_id: str, tenant_update: TenantUpdate):
             update_doc["settings"] = tenant_update.settings
         if tenant_update.logo_url is not None:
             update_doc["logo_url"] = tenant_update.logo_url
+        if tenant_update.industry is not None:
+            update_doc["industry"] = tenant_update.industry
+        if tenant_update.address is not None:
+            update_doc["address"] = tenant_update.address.dict()
+        if tenant_update.contact_person is not None:
+            update_doc["contact_person"] = tenant_update.contact_person.dict()
+        if tenant_update.tax is not None:
+            update_doc["tax"] = tenant_update.tax.dict()
+        if tenant_update.contract is not None:
+            update_doc["contract"] = tenant_update.contract.dict()
+        if tenant_update.payment is not None:
+            update_doc["payment"] = tenant_update.payment.dict()
+        if tenant_update.subscription is not None:
+            update_doc["subscription"] = tenant_update.subscription.dict()
+        if tenant_update.notes is not None:
+            update_doc["notes"] = tenant_update.notes
+        if tenant_update.api_key is not None:
+            update_doc["api_key"] = tenant_update.api_key
+        if tenant_update.webhook_url is not None:
+            update_doc["webhook_url"] = tenant_update.webhook_url
+        if tenant_update.server_region is not None:
+            update_doc["server_region"] = tenant_update.server_region
         
         update_doc["updated_at"] = datetime.now(timezone.utc).isoformat()
         
