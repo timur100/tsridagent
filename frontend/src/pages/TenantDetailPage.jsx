@@ -589,6 +589,60 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     );
   };
 
+  const renderEditableField = (label, path, value, type = 'text') => {
+    const currentValue = isEditing ? (path.split('.').reduce((obj, key) => obj?.[key], editedTenant) || value) : value;
+    
+    return (
+      <div>
+        <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+        {isEditing ? (
+          type === 'select-status' ? (
+            <select
+              value={currentValue || 'active'}
+              onChange={(e) => updateEditedField(path, e.target.value)}
+              className={`w-full px-3 py-2 rounded-lg border ${
+                theme === 'dark'
+                  ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            >
+              <option value="active">Active</option>
+              <option value="trial">Trial</option>
+              <option value="suspended">Suspended</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          ) : type === 'textarea' ? (
+            <textarea
+              value={currentValue || ''}
+              onChange={(e) => updateEditedField(path, e.target.value)}
+              rows={4}
+              className={`w-full px-3 py-2 rounded-lg border ${
+                theme === 'dark'
+                  ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            />
+          ) : (
+            <input
+              type={type}
+              value={currentValue || ''}
+              onChange={(e) => updateEditedField(path, e.target.value)}
+              className={`w-full px-3 py-2 rounded-lg border ${
+                theme === 'dark'
+                  ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            />
+          )
+        ) : (
+          <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            {currentValue || '-'}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
