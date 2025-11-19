@@ -180,6 +180,23 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       setLoading(false);
     }
   };
+  const fetchDashboardStats = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}/dashboard-stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[TenantDetailPage] Dashboard stats loaded:', data);
+        setDashboardStats(data);
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+    }
+  };
 
   const fetchDocuments = async () => {
     setLoadingDocuments(true);
