@@ -185,7 +185,7 @@ async def get_europcar_stations(
         # Check if this customer has any devices (to determine if we should show stations)
         # For customers without devices, return empty data
         if device_query:
-            device_count = db.europcar_devices.count_documents(device_query)
+            device_count = multi_tenant_db.europcar_devices.count_documents(device_query)
             if device_count == 0:
                 # No devices for this customer, return empty stations
                 return {
@@ -201,7 +201,7 @@ async def get_europcar_stations(
         
         # First, get devices for this customer to know which locations they have
         devices_by_location = {}
-        devices_cursor = db.europcar_devices.find(device_query)
+        devices_cursor = multi_tenant_db.europcar_devices.find(device_query)
         for device in devices_cursor:
             locationcode = device.get('locationcode')
             if locationcode:
