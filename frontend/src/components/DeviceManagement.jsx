@@ -109,13 +109,16 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   const loadDevices = async () => {
     setLoading(true);
     try {
-      console.log('🔍 DeviceManagement: Loading devices for tenant:', selectedTenantId);
+      console.log('🔍 DeviceManagement: Loading devices for tenant:', selectedTenantId, selectedTenantName);
       
       let allDevices = [];
       
       // If a specific tenant is selected, load only that tenant's devices
       if (selectedTenantId && selectedTenantId !== 'all') {
+        console.log(`📡 Calling: /api/tenant-devices/${selectedTenantId}`);
         const result = await apiCall(`/api/tenant-devices/${selectedTenantId}`);
+        
+        console.log('📦 API Result:', result);
         
         if (result.success && result.data) {
           const responseData = result.data.data || result.data;
@@ -124,9 +127,10 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
         }
       } else {
         // Load all devices from all tenants
-        // For now, we'll load Europcar devices (since that's what we have)
-        // In the future, this could load from multiple tenants
-        const result = await apiCall('/api/portal/europcar-devices');
+        console.log('📡 Calling: /api/tenant-devices/all/devices');
+        const result = await apiCall('/api/tenant-devices/all/devices');
+        
+        console.log('📦 API Result:', result);
         
         if (result.success && result.data) {
           const responseData = result.data.data || result.data;
@@ -136,6 +140,10 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
       }
       
       setDevices(allDevices);
+      
+      if (allDevices.length > 0) {
+        toast.success(`${allDevices.length} Geräte geladen`);
+      }
     } catch (error) {
       console.error('❌ Error loading devices:', error);
       toast.error('Fehler beim Laden der Geräte');
