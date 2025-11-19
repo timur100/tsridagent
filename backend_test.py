@@ -462,64 +462,54 @@ class TenantEditTester:
             )
             return False
     
-    def test_filter_by_state_be(self):
-        """Test state filter: ?state=BE should return locations with state BE"""
+    def test_invalid_email_format_error(self):
+        """Test PUT /api/tenants/{tenant_id} - Invalid email format should return validation error"""
         try:
-            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}?state=BE")
+            update_data = {
+                "contact": {
+                    "admin_email": "invalid-email-format"  # Invalid email format
+                }
+            }
             
-            if response.status_code != 200:
+            response = self.session.put(f"{API_BASE}/tenants/{self.test_tenant_id}", json=update_data)
+            
+            # Should return 400 or 422 for validation error
+            if response.status_code not in [400, 422]:
                 self.log_result(
-                    "Filter by State (BE)", 
+                    "Invalid Email Format Error", 
                     False, 
-                    f"State filter failed. Status: {response.status_code}",
+                    f"Expected 400 or 422 for invalid email format, got {response.status_code}",
                     response.text
                 )
                 return False
             
-            data = response.json()
-            
-            if not data.get("success"):
-                self.log_result(
-                    "Filter by State (BE)", 
-                    False, 
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            locations = data.get("locations", [])
-            
-            # Should return at least some locations with state BE
-            if len(locations) == 0:
-                self.log_result(
-                    "Filter by State (BE)", 
-                    False, 
-                    "Expected at least some locations for state BE, got 0",
-                    data
-                )
-                return False
-            
-            # Verify all locations have state BE
-            for location in locations:
-                if location.get("state") != "BE":
+            # Try to parse response to check for validation error message
+            try:
+                error_data = response.json()
+                # Check if error message mentions email validation
+                error_message = str(error_data).lower()
+                if "email" not in error_message and "validation" not in error_message:
                     self.log_result(
-                        "Filter by State (BE)", 
+                        "Invalid Email Format Error", 
                         False, 
-                        f"Found location with wrong state: {location.get('state')}",
-                        location
+                        f"Error message should mention email validation: {error_data}",
+                        error_data
                     )
                     return False
+            except:
+                # If response is not JSON, that's also acceptable for validation errors
+                pass
             
             self.log_result(
-                "Filter by State (BE)", 
+                "Invalid Email Format Error", 
                 True, 
-                f"State filter working: found {len(locations)} locations with state BE"
+                f"Invalid email format correctly rejected with {response.status_code} error"
             )
-            return locations
+            return True
             
         except Exception as e:
             self.log_result(
-                "Filter by State (BE)", 
+                "Invalid Email Format Error", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
