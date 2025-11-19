@@ -803,7 +803,7 @@ const AdminPortalContent = () => {
                 {/* Row 1: Kunden, Geräte, Standorte, Mitarbeiter */}
                 
                 {/* Total Customers - nur anzeigen wenn "Alle Kunden" */}
-                {selectedCustomer === 'all' && (
+                {(selectedCustomer === 'all' && !isTenantAdmin) && (
                   <Card 
                     onClick={() => setActiveTab('tenants')}
                     className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
