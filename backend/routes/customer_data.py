@@ -212,41 +212,19 @@ async def get_europcar_stations(
         # Get list of location codes that have devices from this customer
         customer_location_codes = list(devices_by_location.keys())
         
-        # Build station query: show stations with devices OR stations belonging to this customer OR stations in preparation
-        if target_customer_company:
-            # Show stations that either:
-            # 1. Have devices from this customer (main_code in customer_location_codes)
-            # 2. OR belong to this customer (customer field matches)
-            # 3. OR are in preparation status (preparation_status = 'in_vorbereitung')
-            station_query_conditions = []
-            
-            if customer_location_codes:
-                station_query_conditions.append({'main_code': {'$in': customer_location_codes}})
-            
-            # Also include stations where customer field matches
-            station_query_conditions.append({
-                '$or': [
-                    {'customer': target_customer_company},
-                    {'customer': {'$regex': target_customer_company.split()[0], '$options': 'i'}}
-                ]
-            })
-            
-            # Also include stations in preparation
-            station_query_conditions.append({'preparation_status': 'in_vorbereitung'})
-            
-            station_query['$or'] = station_query_conditions
+        # Build station query for tenant_locations collection
+        if not is_admin and tenant_ids:
+            # Filter by tenant_id for tenant admin users
+            station_query['tenant_id'] = {'$in': tenant_ids}
         elif customer_location_codes:
-            # Admin viewing all: show stations with devices OR in preparation
-            station_query['$or'] = [
-                {'main_code': {'$in': customer_location_codes}},
-                {'preparation_status': 'in_vorbereitung'}
-            ]
+            # Show stations that have devices from this customer
+            station_query['location_code'] = {'$in': customer_location_codes}
         else:
-            # No locations with devices, but still show locations in preparation
-            station_query = {'preparation_status': 'in_vorbereitung'}
+            # For admin or when no specific filtering, show all locations
+            pass
         
-        # Fetch stations from MongoDB (only those with customer's devices)
-        stations_cursor = db.europcar_stations.find(station_query)
+        # Fetch stations from portal_db.tenant_locations
+        stations_cursor = portal_db.tenant_locations.find(station_query)
         stations = []
         
         for station in stations_cursor:
