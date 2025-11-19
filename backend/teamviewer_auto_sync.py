@@ -32,7 +32,7 @@ class TeamViewerAutoSync:
         if not self.mongo_url:
             raise Exception("MONGO_URL not configured")
         client = AsyncIOMotorClient(self.mongo_url)
-        return client['test_database']
+        return client['multi_tenant_admin']
     
     async def perform_sync(self):
         """Perform a single sync operation"""
