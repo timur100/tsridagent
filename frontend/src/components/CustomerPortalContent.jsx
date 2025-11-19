@@ -160,6 +160,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         ]);
         
         console.log('[CustomerPortal] Tenant data loaded - Devices:', devicesRes, 'Locations:', locationsRes);
+        
+        // Process devices response
         if (devicesRes?.success && devicesRes?.data) {
           // Handle double-wrapped response from apiCall
           const responseData = devicesRes.data.data || devicesRes.data;
