@@ -140,6 +140,13 @@ async def get_devices(
                 del device['_id']
             devices.append(device)
         
+        # Enrich devices with location data (street, zip) from tenant_locations
+        # Get tenant_id from token for enrichment
+        tenant_ids = token_data.get('tenant_ids', [])
+        if tenant_ids:
+            tenant_id = tenant_ids[0]
+            devices = enrich_devices_with_location_data(devices, tenant_id)
+        
         # Calculate summary statistics
         total = len(devices)
         online_count = sum(1 for d in devices if d.get('status', '').lower() == 'online')
