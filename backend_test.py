@@ -216,99 +216,78 @@ class DataSynchronizationTester:
             )
             return None
     
-    def test_europcar_stations_endpoint(self):
-        """Test GET /api/portal/customer-data/europcar-stations - should return locations/stations filtered by tenant_id"""
+    def get_customer_portal_devices(self):
+        """Get devices via Customer Portal endpoint using tenant admin token"""
         try:
-            response = self.session.get(f"{API_BASE}/portal/customer-data/europcar-stations")
+            # Set tenant admin token in headers
+            headers = {
+                'Authorization': f'Bearer {self.tenant_admin_token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+            
+            response = requests.get(f"{API_BASE}/portal/europcar-devices", headers=headers)
             
             if response.status_code != 200:
                 self.log_result(
-                    "Europcar Stations Endpoint", 
+                    "Customer Portal Devices", 
                     False, 
                     f"Request failed. Status: {response.status_code}",
                     response.text
                 )
-                return False
+                return None
             
             data = response.json()
             
             # Verify response structure
             if not isinstance(data, dict):
                 self.log_result(
-                    "Europcar Stations Endpoint", 
+                    "Customer Portal Devices", 
                     False, 
                     "Response is not a dictionary",
                     data
                 )
-                return False
+                return None
             
             if not data.get("success"):
                 self.log_result(
-                    "Europcar Stations Endpoint", 
+                    "Customer Portal Devices", 
                     False, 
                     "Response indicates failure",
                     data
                 )
-                return False
+                return None
             
-            # Check if we have stations
-            stations = data.get("stations", [])
-            summary = data.get("summary", {})
+            # Check if we have data structure
+            response_data = data.get("data", {})
+            devices = response_data.get("devices", [])
+            summary = response_data.get("summary", {})
             
-            # Check if stations count > 0
-            if len(stations) == 0:
-                self.log_result(
-                    "Europcar Stations Endpoint", 
-                    False, 
-                    "Expected stations count > 0, got empty array",
-                    data
-                )
-                return False
-            
-            # Check if response has summary with required fields
-            required_summary_fields = ["total", "online", "offline"]
-            missing_fields = [field for field in required_summary_fields if field not in summary]
-            
-            if missing_fields:
-                self.log_result(
-                    "Europcar Stations Endpoint", 
-                    False, 
-                    f"Missing required summary fields: {missing_fields}",
-                    summary
-                )
-                return False
-            
-            # Verify summary counts make sense
-            total_count = summary.get("total", 0)
-            online_count = summary.get("online", 0)
-            offline_count = summary.get("offline", 0)
-            
-            if total_count != len(stations):
-                self.log_result(
-                    "Europcar Stations Endpoint", 
-                    False, 
-                    f"Summary total ({total_count}) doesn't match stations count ({len(stations)})",
-                    {"summary": summary, "stations_count": len(stations)}
-                )
-                return False
-            
-            # Check if stations have devices (device_count field)
-            stations_with_devices = [s for s in stations if s.get("device_count", 0) > 0]
+            # Extract counts from summary or calculate from devices
+            total_count = summary.get("total", len(devices))
+            online_count = summary.get("online", sum(1 for d in devices if d.get("status") == "online"))
+            offline_count = summary.get("offline", sum(1 for d in devices if d.get("status") == "offline"))
             
             self.log_result(
-                "Europcar Stations Endpoint", 
+                "Customer Portal Devices", 
                 True, 
-                f"Retrieved {len(stations)} stations with summary (total: {total_count}, online: {online_count}, offline: {offline_count}). Stations with devices: {len(stations_with_devices)}"
+                f"Retrieved {total_count} devices (online: {online_count}, offline: {offline_count})"
             )
-            return stations
+            
+            return {
+                "total": total_count,
+                "online": online_count,
+                "offline": offline_count,
+                "devices": devices
+            }
             
         except Exception as e:
             self.log_result(
-                "Europcar Stations Endpoint", 
+                "Customer Portal Devices", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
-            return False
+            return None
     
     def test_database_context_verification(self):
         """Verify database context - check if we can access the multi_tenant_admin.europcar_devices collection"""
