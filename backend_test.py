@@ -91,54 +91,74 @@ class TenantDevicesTester:
             )
             return False
     
-    def get_existing_tenant(self):
-        """Get an existing tenant from the database"""
+    def test_tenant_specific_devices(self):
+        """Test GET /api/tenant-devices/{tenant_id} - Tenant-specific devices with location data"""
         try:
-            # Get list of tenants
-            response = self.session.get(f"{API_BASE}/tenants/")
+            response = self.session.get(f"{API_BASE}/tenant-devices/{self.europcar_tenant_id}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Get Existing Tenant", 
+                    "Tenant-Specific Devices", 
                     False, 
-                    f"Failed to get tenants. Status: {response.status_code}",
+                    f"Request failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
             data = response.json()
             
-            if not data or len(data) == 0:
+            if not data.get("success"):
                 self.log_result(
-                    "Get Existing Tenant", 
+                    "Tenant-Specific Devices", 
                     False, 
-                    "No tenants found in database"
+                    "Response indicates failure",
+                    data
                 )
                 return False
             
-            # Use the first tenant
-            tenant = data[0]
-            self.test_tenant_id = tenant.get("tenant_id")
+            # Check response structure
+            response_data = data.get("data", {})
+            devices = response_data.get("devices", [])
+            summary = response_data.get("summary", {})
             
-            if not self.test_tenant_id:
+            if not devices:
                 self.log_result(
-                    "Get Existing Tenant", 
+                    "Tenant-Specific Devices", 
                     False, 
-                    "Tenant missing tenant_id field",
-                    tenant
+                    "No devices found in response",
+                    data
                 )
                 return False
+            
+            # Verify each device has required fields including street and zip
+            required_fields = ["device_id", "locationcode", "city", "street", "zip"]
+            devices_with_location_data = 0
+            
+            for device in devices:
+                missing_fields = [field for field in required_fields if field not in device]
+                if missing_fields:
+                    self.log_result(
+                        "Tenant-Specific Devices", 
+                        False, 
+                        f"Device missing required fields: {missing_fields}",
+                        device
+                    )
+                    return False
+                
+                # Check if device has location data (street and zip are not empty)
+                if device.get("street") and device.get("zip"):
+                    devices_with_location_data += 1
             
             self.log_result(
-                "Get Existing Tenant", 
+                "Tenant-Specific Devices", 
                 True, 
-                f"Using tenant: {tenant.get('name', 'Unknown')} (ID: {self.test_tenant_id})"
+                f"Retrieved {len(devices)} devices, {devices_with_location_data} with location data. Summary: {summary}"
             )
-            return True
+            return devices
             
         except Exception as e:
             self.log_result(
-                "Get Existing Tenant", 
+                "Tenant-Specific Devices", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
