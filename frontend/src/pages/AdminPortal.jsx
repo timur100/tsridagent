@@ -182,7 +182,7 @@ const AdminPortalContent = () => {
         
         let result;
         
-        if (isTenantAdmin && user.tenant_ids.length === 1) {
+        if (isTenantAdmin && user.tenant_ids.length >= 1) {
           // Tenant admin - load their specific tenant stats
           const tenantId = user.tenant_ids[0];
           console.log('[Dashboard] Loading tenant-specific stats for:', tenantId);
