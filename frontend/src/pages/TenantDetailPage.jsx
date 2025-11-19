@@ -1165,24 +1165,22 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Tenant-ID</p>
                     <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.name}</p>
                   </div>
-                  <div>
-                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Domain</p>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.domain || '-'}</p>
-                  </div>
+                  {renderEditableField('Domain', 'domain', tenant.domain)}
                   <div>
                     <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</p>
-                    <div>
-                      {getStatusBadge(tenant.status)}
-                    </div>
+                    {isEditing ? (
+                      renderEditableField('', 'status', tenant.status, 'select-status')
+                    ) : (
+                      <div>
+                        {getStatusBadge(tenant.status)}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {/* Segment 3: Weitere Informationen */}
                 <div className="space-y-4">
-                  <div>
-                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Subscription Plan</p>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{tenant.subscription_plan}</p>
-                  </div>
+                  {renderEditableField('Subscription Plan', 'subscription_plan', tenant.subscription_plan)}
                   <div>
                     <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Erstellt am</p>
                     <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -1193,12 +1191,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       })}
                     </p>
                   </div>
-                  <div>
-                    <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Branche</p>
-                    <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {tenant.industry || 'Autovermietung'}
-                    </p>
-                  </div>
+                  {renderEditableField('Branche', 'industry', tenant.industry || 'Autovermietung')}
                 </div>
               </div>
             </Card>
