@@ -183,6 +183,67 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     }
   };
 
+  const handleEditClick = () => {
+    if (isEditing) {
+      // Cancel editing
+      setIsEditing(false);
+      setEditedTenant(null);
+    } else {
+      // Start editing - create a copy of tenant data
+      setIsEditing(true);
+      setEditedTenant({...tenant});
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(editedTenant)
+      });
+
+      if (response.ok) {
+        const updatedData = await response.json();
+        setTenant(updatedData);
+        setIsEditing(false);
+        setEditedTenant(null);
+        toast.success('Änderungen erfolgreich gespeichert');
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Fehler beim Speichern der Änderungen');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateEditedField = (path, value) => {
+    setEditedTenant(prev => {
+      const newData = {...prev};
+      const keys = path.split('.');
+      let current = newData;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        if (!current[keys[i]]) {
+          current[keys[i]] = {};
+        }
+        current = current[keys[i]];
+      }
+      
+      current[keys[keys.length - 1]] = value;
+      return newData;
+    });
+  };
+
   const fetchDashboardStats = async () => {
     try {
       const token = localStorage.getItem('token');
