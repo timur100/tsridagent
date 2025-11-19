@@ -57,6 +57,9 @@ class TenantResponse(TenantBase):
     logo_url: Optional[str]
     user_count: int
     device_count: int
+    online_devices: Optional[int] = 0
+    offline_devices: Optional[int] = 0
+    location_count: Optional[int] = 0
     storage_used_gb: float
     api_calls_today: int
     created_at: str
