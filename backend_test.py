@@ -22,8 +22,7 @@ class TenantDevicesTester:
         })
         self.results = []
         self.admin_token = None
-        self.test_tenant_id = None
-        self.test_locations = []  # Store created location IDs for cleanup
+        self.europcar_tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Specific Europcar tenant ID
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
