@@ -932,7 +932,7 @@ const AdminPortalContent = () => {
                     <div>
                       <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>In Vorbereitung</p>
                       <p className="text-3xl font-bold text-yellow-600 mt-2">
-                        {(isTenantAdmin || selectedCustomer === 'all') ? dashboardStats.in_preparation : filteredInPreparationDevices}
+                        {dashboardStats.in_preparation}
                       </p>
                     </div>
                     <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-yellow-500/20' : 'bg-yellow-200'}`}>
