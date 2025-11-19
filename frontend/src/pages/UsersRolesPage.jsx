@@ -86,13 +86,26 @@ const UsersRolesPage = () => {
 
   const loadUsers = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/users/`, {
+      const effectiveTenantId = getEffectiveTenantId();
+      let url = `${BACKEND_URL}/api/users/`;
+      
+      // Add tenant filter if specific tenant is selected
+      if (effectiveTenantId) {
+        url += `?tenant_id=${effectiveTenantId}`;
+      }
+      
+      console.log('[UsersRoles] Loading users with URL:', url);
+      console.log('[UsersRoles] Selected tenant:', selectedTenantId);
+      console.log('[UsersRoles] Effective tenant:', effectiveTenantId);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('[UsersRoles] Loaded users:', data.length);
         setUsers(data);
       }
     } catch (error) {
