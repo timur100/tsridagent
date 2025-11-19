@@ -148,77 +148,160 @@ const TenantsPage = ({ onSelectTenant }) => {
 
       {/* Statistics Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt</p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_tenants}</p>
+        <>
+          {/* Row 1: Tenants Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunden</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_tenants}</p>
+                </div>
+                <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
-              <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-            </div>
-          </Card>
+            </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktiv</p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.active_tenants}</p>
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Geräte</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_devices}</p>
+                </div>
+                <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
-              <CheckCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-            </div>
-          </Card>
+            </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Trial</p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.trial_tenants}</p>
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standorte</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_locations}</p>
+                </div>
+                <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
-              <Clock className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-            </div>
-          </Card>
+            </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesperrt</p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.suspended_tenants}</p>
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Mitarbeiter</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_users}</p>
+                </div>
+                <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
-              <XCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-            </div>
-          </Card>
+            </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-          }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Benutzer</p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_users}</p>
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
+                </div>
+                <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
-              <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-            </div>
-          </Card>
-        </div>
+            </Card>
+          </div>
+
+          {/* Row 2: Device Status */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Online Geräte</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.online_devices}</p>
+                </div>
+                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-500/20' : 'bg-green-200'}`}>
+                  <div className="h-6 w-6 bg-green-600 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Offline Geräte</p>
+                  <p className="text-3xl font-bold text-red-600">{stats.offline_devices}</p>
+                </div>
+                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-red-500/20' : 'bg-red-200'}`}>
+                  <div className="h-6 w-6 bg-red-600 rounded-full"></div>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Row 3: Scan Statistics */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Korrekte Scans</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.correct_scans}</p>
+                </div>
+                <CheckCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
+              </div>
+            </Card>
+
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border border-yellow-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-yellow-50 border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>Unbekannte Scans</p>
+                  <p className="text-3xl font-bold text-yellow-600">{stats.unknown_scans}</p>
+                </div>
+                <HelpCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
+              </div>
+            </Card>
+
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Fehlgeschlagene Scans</p>
+                  <p className="text-3xl font-bold text-red-600">{stats.failed_scans}</p>
+                </div>
+                <XCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+              </div>
+            </Card>
+          </div>
+        </>
       )}
 
       {/* Search and Filters */}
