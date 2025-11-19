@@ -712,7 +712,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       Offline
                     </p>
                     <p className={`text-3xl font-bold text-red-500`}>
-                      2
+                      {dashboardStats.offline_devices || 0}
                     </p>
                     <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                       Geräte inaktiv
