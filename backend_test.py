@@ -280,68 +280,93 @@ class TenantEditTester:
             )
             return False
     
-    def test_bern03_device_location_data(self, devices):
-        """Test specific BERN03 device location data mapping"""
+    def test_tenant_partial_update(self):
+        """Test PUT /api/tenants/{tenant_id} - Partial tenant update (only domain field)"""
         try:
-            if not devices:
+            # First get current tenant data to compare
+            get_response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}")
+            if get_response.status_code != 200:
                 self.log_result(
-                    "BERN03 Device Location Data", 
+                    "Tenant Partial Update - Get Before", 
                     False, 
-                    "No devices provided for testing"
+                    f"Failed to get tenant before partial update. Status: {get_response.status_code}",
+                    get_response.text
                 )
                 return False
             
-            # Find device with locationcode BERN03
-            bern03_device = None
-            for device in devices:
-                if device.get("locationcode") == "BERN03":
-                    bern03_device = device
-                    break
+            original_data = get_response.json()
+            original_name = original_data.get("name")
+            original_status = original_data.get("status")
+            original_contact = original_data.get("contact", {})
             
-            if not bern03_device:
+            # Update only domain field
+            update_data = {
+                "domain": "www.europcar-partial-test.de"
+            }
+            
+            response = self.session.put(f"{API_BASE}/tenants/{self.test_tenant_id}", json=update_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "BERN03 Device Location Data", 
+                    "Tenant Partial Update", 
                     False, 
-                    "No device found with locationcode BERN03",
-                    {"available_locationcodes": [d.get("locationcode") for d in devices[:10]]}  # Show first 10
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Verify expected location data for BERN03
-            expected_street = "SCHWANEBECKER CHAUSSEE 12"
-            expected_zip = "16321"
+            data = response.json()
             
-            actual_street = bern03_device.get("street", "")
-            actual_zip = bern03_device.get("zip", "")
-            
-            if actual_street != expected_street:
+            # Verify domain was updated
+            if data.get("domain") != "www.europcar-partial-test.de":
                 self.log_result(
-                    "BERN03 Device Location Data", 
+                    "Tenant Partial Update", 
                     False, 
-                    f"Street mismatch for BERN03. Expected: '{expected_street}', Got: '{actual_street}'",
-                    bern03_device
+                    f"Domain not updated. Expected: 'www.europcar-partial-test.de', Got: '{data.get('domain')}'",
+                    data
                 )
                 return False
             
-            if actual_zip != expected_zip:
+            # Verify other fields remained unchanged
+            if data.get("name") != original_name:
                 self.log_result(
-                    "BERN03 Device Location Data", 
+                    "Tenant Partial Update", 
                     False, 
-                    f"ZIP mismatch for BERN03. Expected: '{expected_zip}', Got: '{actual_zip}'",
-                    bern03_device
+                    f"Name should remain unchanged. Expected: '{original_name}', Got: '{data.get('name')}'",
+                    data
+                )
+                return False
+            
+            if data.get("status") != original_status:
+                self.log_result(
+                    "Tenant Partial Update", 
+                    False, 
+                    f"Status should remain unchanged. Expected: '{original_status}', Got: '{data.get('status')}'",
+                    data
+                )
+                return False
+            
+            # Verify contact information remained unchanged
+            updated_contact = data.get("contact", {})
+            if updated_contact.get("admin_email") != original_contact.get("admin_email"):
+                self.log_result(
+                    "Tenant Partial Update", 
+                    False, 
+                    f"Contact admin_email should remain unchanged. Expected: '{original_contact.get('admin_email')}', Got: '{updated_contact.get('admin_email')}'",
+                    data
                 )
                 return False
             
             self.log_result(
-                "BERN03 Device Location Data", 
+                "Tenant Partial Update", 
                 True, 
-                f"BERN03 device correctly mapped: street='{actual_street}', zip='{actual_zip}'"
+                f"Partial update successful: domain updated to '{data.get('domain')}', other fields unchanged"
             )
-            return bern03_device
+            return data
             
         except Exception as e:
             self.log_result(
-                "BERN03 Device Location Data", 
+                "Tenant Partial Update", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
