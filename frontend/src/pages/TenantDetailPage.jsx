@@ -1206,30 +1206,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 Kontaktinformationen
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Admin E-Mail</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contact.admin_email}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Support E-Mail</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contact.support_email || 'support@' + tenant.domain || 'Nicht angegeben'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contact.phone || '+49 123 456789'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Fax</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.contact.fax || '+49 123 456790'}
-                  </p>
-                </div>
+                {renderEditableField('Admin E-Mail', 'contact.admin_email', tenant.contact?.admin_email, 'email')}
+                {renderEditableField('Support E-Mail', 'contact.support_email', tenant.contact?.support_email || 'support@' + tenant.domain || 'Nicht angegeben', 'email')}
+                {renderEditableField('Telefon', 'contact.phone', tenant.contact?.phone || '+49 123 456789', 'tel')}
+                {renderEditableField('Fax', 'contact.fax', tenant.contact?.fax || '+49 123 456790', 'tel')}
               </div>
             </Card>
 
