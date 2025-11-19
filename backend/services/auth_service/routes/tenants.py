@@ -230,6 +230,16 @@ async def get_tenant(tenant_id: str):
         device_count = await count_tenant_devices(tenant_id)
         tenant["device_count"] = device_count
         
+        # Count online and offline devices
+        online_devices = await count_tenant_online_devices(tenant_id)
+        offline_devices = await count_tenant_offline_devices(tenant_id)
+        tenant["online_devices"] = online_devices
+        tenant["offline_devices"] = offline_devices
+        
+        # Count locations for this tenant
+        location_count = await count_tenant_locations(tenant_id)
+        tenant["location_count"] = location_count
+        
         # Add default values for resource usage
         tenant.setdefault("storage_used_gb", 0.0)
         tenant.setdefault("api_calls_today", 0)
