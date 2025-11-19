@@ -13,6 +13,9 @@ DB_NAME = 'multi_tenant_admin'
 client = MongoClient(MONGO_URL)
 db = client[DB_NAME]
 
+# Also connect to portal_db for locations
+portal_db = client['portal_db']
+
 
 @router.get("/{tenant_id}")
 async def get_tenant_devices(
