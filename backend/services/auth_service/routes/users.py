@@ -105,7 +105,12 @@ async def get_users(
         query = {}
         if tenant_id:
             # Filter users that have this tenant_id in their tenant_ids array
-            query["tenant_ids"] = {"$in": [tenant_id]}
+            # BUT exclude superadmins when filtering by tenant
+            query["$and"] = [
+                {"tenant_ids": {"$in": [tenant_id]}},
+                {"email": {"$ne": "admin@tsrid.com"}},  # Exclude superadmin
+                {"user_type": {"$ne": "super_admin"}}   # Exclude any super_admin user_type
+            ]
         if user_type:
             query["user_type"] = user_type
         if status:
