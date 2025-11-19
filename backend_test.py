@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Tenant Edit Functionality
-Tests the Tenant Edit API endpoints with comprehensive validation.
+Backend API Testing for Customer Portal Data Endpoints
+Tests the customer portal data endpoints with tenant admin credentials.
 """
 
 import requests
@@ -13,7 +13,7 @@ from typing import Dict, Any, List
 BACKEND_URL = "https://tenant-portal-30.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class TenantEditTester:
+class CustomerPortalTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
