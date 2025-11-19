@@ -95,6 +95,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   }, [showAddDeviceModal, showAddStandortModal, showDeviceModal, showStandortModal]);
 
   useEffect(() => {
+    console.log('[CustomerPortal] useEffect triggered - user:', user);
     setLoading(true);
     loadData();
     loadPortalSettings();
