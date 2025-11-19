@@ -145,14 +145,37 @@ class TenantEditTester:
             )
             return False
     
-    def test_all_devices(self):
-        """Test GET /api/tenant-devices/all/devices - All devices with location data"""
+    def test_tenant_full_update(self):
+        """Test PUT /api/tenants/{tenant_id} - Full tenant update with multiple fields"""
         try:
-            response = self.session.get(f"{API_BASE}/tenant-devices/all/devices")
+            update_data = {
+                "domain": "www.europcar-test.de",
+                "industry": "Rental Services",
+                "address": {
+                    "street": "Test Street 123",
+                    "city": "Munich",
+                    "country": "Germany",
+                    "postal_code": "80331"
+                },
+                "contact": {
+                    "phone": "+49 89 12345",
+                    "admin_email": "admin@europcar-test.de"
+                },
+                "contact_person": {
+                    "primary": {
+                        "name": "John Test",
+                        "email": "john.test@europcar-test.de",
+                        "phone": "+49 89 12345"
+                    }
+                },
+                "notes": "This is a test note"
+            }
+            
+            response = self.session.put(f"{API_BASE}/tenants/{self.test_tenant_id}", json=update_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "All Devices", 
+                    "Tenant Full Update", 
                     False, 
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -161,69 +184,97 @@ class TenantEditTester:
             
             data = response.json()
             
-            if not data.get("success"):
+            # Verify response structure
+            if not isinstance(data, dict):
                 self.log_result(
-                    "All Devices", 
+                    "Tenant Full Update", 
                     False, 
-                    "Response indicates failure",
+                    "Response is not a dictionary",
                     data
                 )
                 return False
             
-            # Check response structure
-            response_data = data.get("data", {})
-            devices = response_data.get("devices", [])
-            summary = response_data.get("summary", {})
-            
-            if not devices:
+            # Verify updated fields
+            if data.get("domain") != "www.europcar-test.de":
                 self.log_result(
-                    "All Devices", 
+                    "Tenant Full Update", 
                     False, 
-                    "No devices found in response",
+                    f"Domain not updated. Expected: 'www.europcar-test.de', Got: '{data.get('domain')}'",
                     data
                 )
                 return False
             
-            # Verify each device has required fields including street and zip
-            required_fields = ["device_id", "locationcode", "city", "street", "zip"]
-            devices_with_location_data = 0
-            
-            for device in devices:
-                missing_fields = [field for field in required_fields if field not in device]
-                if missing_fields:
-                    self.log_result(
-                        "All Devices", 
-                        False, 
-                        f"Device missing required fields: {missing_fields}",
-                        device
-                    )
-                    return False
-                
-                # Check if device has location data (street and zip are not empty)
-                if device.get("street") and device.get("zip"):
-                    devices_with_location_data += 1
-            
-            # Should have around 215 devices as mentioned in the review request
-            total_devices = len(devices)
-            if total_devices < 200:
+            if data.get("industry") != "Rental Services":
                 self.log_result(
-                    "All Devices", 
+                    "Tenant Full Update", 
                     False, 
-                    f"Expected around 215 devices, got {total_devices}",
-                    {"total": total_devices, "summary": summary}
+                    f"Industry not updated. Expected: 'Rental Services', Got: '{data.get('industry')}'",
+                    data
+                )
+                return False
+            
+            # Check nested address fields
+            address = data.get("address", {})
+            if address.get("street") != "Test Street 123":
+                self.log_result(
+                    "Tenant Full Update", 
+                    False, 
+                    f"Address street not updated. Expected: 'Test Street 123', Got: '{address.get('street')}'",
+                    data
+                )
+                return False
+            
+            if address.get("city") != "Munich":
+                self.log_result(
+                    "Tenant Full Update", 
+                    False, 
+                    f"Address city not updated. Expected: 'Munich', Got: '{address.get('city')}'",
+                    data
+                )
+                return False
+            
+            # Check nested contact fields
+            contact = data.get("contact", {})
+            if contact.get("phone") != "+49 89 12345":
+                self.log_result(
+                    "Tenant Full Update", 
+                    False, 
+                    f"Contact phone not updated. Expected: '+49 89 12345', Got: '{contact.get('phone')}'",
+                    data
+                )
+                return False
+            
+            # Check nested contact_person fields
+            contact_person = data.get("contact_person", {})
+            primary = contact_person.get("primary", {})
+            if primary.get("name") != "John Test":
+                self.log_result(
+                    "Tenant Full Update", 
+                    False, 
+                    f"Contact person name not updated. Expected: 'John Test', Got: '{primary.get('name')}'",
+                    data
+                )
+                return False
+            
+            if data.get("notes") != "This is a test note":
+                self.log_result(
+                    "Tenant Full Update", 
+                    False, 
+                    f"Notes not updated. Expected: 'This is a test note', Got: '{data.get('notes')}'",
+                    data
                 )
                 return False
             
             self.log_result(
-                "All Devices", 
+                "Tenant Full Update", 
                 True, 
-                f"Retrieved {total_devices} devices, {devices_with_location_data} with location data. Summary: {summary}"
+                f"Tenant updated successfully with all fields: domain={data.get('domain')}, industry={data.get('industry')}, notes={data.get('notes')}"
             )
-            return devices
+            return data
             
         except Exception as e:
             self.log_result(
-                "All Devices", 
+                "Tenant Full Update", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
