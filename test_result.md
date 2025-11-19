@@ -105,6 +105,30 @@
 user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
 
 backend:
+  - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
+    implemented: true
+    working: true
+    file: "frontend/src/components/TenantDevicesTab.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Toast-Success-Benachrichtigung in TenantDevicesTab.jsx entfernt (Zeile 115). Toast wird jetzt nur noch bei Fehlern angezeigt, nicht mehr bei erfolgreichem Laden der Geräte."
+
+  - task: "Straße und PLZ aus Location-Daten in Gerätetabelle anzeigen"
+    implemented: true
+    working: true
+    file: "backend/routes/tenant_devices.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Backend erweitert um Location-Daten-Anreicherung: 1) Neue Funktion enrich_devices_with_location_data() erstellt, die Geräte mit street und zip aus portal_db.tenant_locations anreichert, 2) portal_db Connection hinzugefügt für Zugriff auf tenant_locations Collection, 3) Enrichment in beiden Endpoints integriert: GET /api/tenant-devices/{tenant_id} und GET /api/tenant-devices/all/devices, 4) Location-Lookup erfolgt über locationcode (Device) ↔ location_code (Location), 5) Leere Strings werden gesetzt wenn kein Location-Match gefunden wird. Frontend-Spalten 'Straße' und 'PLZ' waren bereits vorhanden (Zeilen 563-573 in TenantDevicesTab.jsx)."
+
   - task: "Tenant Models erweitern für vollständige Isolation"
     implemented: true
     working: true
