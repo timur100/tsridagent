@@ -27,7 +27,7 @@ async def import_customer_data(customer_email: str, token_data: dict = Depends(v
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if customer exists
-        customer = db.portal_users.find_one({"email": customer_email})
+        customer = portal_db.portal_users.find_one({"email": customer_email})
         if not customer:
             raise HTTPException(status_code=404, detail="Customer not found")
         
