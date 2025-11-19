@@ -377,7 +377,7 @@ async def update_preparation_status(
             raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
         
         # Get the station first
-        station = db.europcar_stations.find_one({"main_code": station_code})
+        station = portal_db.tenant_locations.find_one({"location_code": station_code})
         if not station:
             raise HTTPException(status_code=404, detail="Station not found")
         
