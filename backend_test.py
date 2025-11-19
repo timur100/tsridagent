@@ -652,24 +652,26 @@ class DataSynchronizationTester:
         return len(failed_tests) == 0 and device_sync_ok and location_sync_ok
 
 if __name__ == "__main__":
-    print("Starting Customer Portal Data Endpoints Backend Testing...")
+    print("Starting Data Synchronization Testing Between Admin Portal and Customer Portal...")
     print()
     
-    # Test Customer Portal Data Endpoints
-    tester = CustomerPortalTester()
+    # Test Data Synchronization
+    tester = DataSynchronizationTester()
     test_success = tester.run_all_tests()
     
     print()
-    print("=" * 70)
+    print("=" * 80)
     print("OVERALL TESTING SUMMARY")
-    print("=" * 70)
-    print(f"Customer Portal Data Endpoints Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
-    print("=" * 70)
+    print("=" * 80)
+    print(f"Data Synchronization Testing: {'✅ DATA IS SYNCHRONIZED' if test_success else '❌ DATA SYNCHRONIZATION ISSUES FOUND'}")
+    print("=" * 80)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 CUSTOMER PORTAL DATA ENDPOINTS TESTING COMPLETED SUCCESSFULLY!")
+        print("🎉 DATA SYNCHRONIZATION TESTING COMPLETED SUCCESSFULLY!")
+        print("Both Admin Portal and Customer Portal show EXACTLY the same data for Europcar tenant.")
         sys.exit(0)
     else:
-        print("❌ CUSTOMER PORTAL DATA ENDPOINTS TESTING FOUND ISSUES!")
+        print("❌ DATA SYNCHRONIZATION ISSUES FOUND!")
+        print("Admin Portal and Customer Portal do NOT show the same data for Europcar tenant.")
         sys.exit(1)
