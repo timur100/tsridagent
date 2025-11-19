@@ -483,22 +483,34 @@ def update_teamviewer_ids():
         tvid = None
         match_key = None
         
-        # Check exact device_id match
+        # Strategy 1: Exact match on device_id
         if device_id in mapping:
             tvid = mapping[device_id]
-            match_key = device_id
-        # Check if device_id without suffix matches any key
-        elif device_id:
-            # Try matching locationcode part (e.g., "AAHC01-01" -> "AAHC01")
-            base_id = device_id.rsplit('-', 1)[0] if '-' in device_id else device_id
-            if base_id in mapping:
-                tvid = mapping[base_id]
-                match_key = base_id
+            match_key = f"exact:{device_id}"
         
-        # If not found by device_id, try locationcode
+        # Strategy 2: Match with any key that starts with device_id
+        # (e.g., "AGBC02-01" matches "AGBC02-01-AUGSBURG")
+        if not tvid:
+            for key in mapping.keys():
+                if key.startswith(device_id + '-') or key.startswith(device_id):
+                    tvid = mapping[key]
+                    match_key = f"prefix:{key}"
+                    break
+        
+        # Strategy 3: Match locationcode-XX pattern
+        # (e.g., "BERL01-01" matches keys starting with "BERL01-01")
+        if not tvid and device_id:
+            for key in mapping.keys():
+                # Remove any suffix after device_id and try matching
+                if device_id in key:
+                    tvid = mapping[key]
+                    match_key = f"contains:{key}"
+                    break
+        
+        # Strategy 4: Try locationcode exact match
         if not tvid and locationcode in mapping:
             tvid = mapping[locationcode]
-            match_key = locationcode
+            match_key = f"locationcode:{locationcode}"
         
         if tvid:
             # Handle multiple TVIDs (take first one)
