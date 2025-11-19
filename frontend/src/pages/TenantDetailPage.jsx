@@ -57,6 +57,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const tabFromUrl = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(initialTab || tabFromUrl || location.state?.activeTab || 'dashboard');
   const [isEditing, setIsEditing] = useState(false);
+  const [editedTenant, setEditedTenant] = useState(null);
+  const [saving, setSaving] = useState(false);
   const [dashboardStats, setDashboardStats] = useState({
     total_locations: 0,
     online_devices: 0,
