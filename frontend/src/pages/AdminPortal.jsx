@@ -782,7 +782,7 @@ const AdminPortalContent = () => {
                 {/* Total Customers - nur anzeigen wenn "Alle Kunden" */}
                 {selectedCustomer === 'all' && (
                   <Card 
-                    onClick={() => setActiveTab('customers')}
+                    onClick={() => setActiveTab('tenants')}
                     className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                     theme === 'dark' 
                       ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
@@ -791,7 +791,7 @@ const AdminPortalContent = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunden</p>
-                        <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{filteredCustomers.length}</p>
+                        <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{dashboardStats.total_tenants}</p>
                       </div>
                       <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                     </div>
