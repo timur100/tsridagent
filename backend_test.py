@@ -91,14 +91,14 @@ class TenantEditTester:
             )
             return False
     
-    def test_tenant_specific_devices(self):
-        """Test GET /api/tenant-devices/{tenant_id} - Tenant-specific devices with location data"""
+    def test_get_tenant_before_edit(self):
+        """Test GET /api/tenants/{tenant_id} - Get tenant details before editing"""
         try:
-            response = self.session.get(f"{API_BASE}/tenant-devices/{self.europcar_tenant_id}")
+            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Tenant-Specific Devices", 
+                    "Get Tenant Before Edit", 
                     False, 
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -107,58 +107,39 @@ class TenantEditTester:
             
             data = response.json()
             
-            if not data.get("success"):
+            # Verify response structure
+            if not isinstance(data, dict):
                 self.log_result(
-                    "Tenant-Specific Devices", 
+                    "Get Tenant Before Edit", 
                     False, 
-                    "Response indicates failure",
+                    "Response is not a dictionary",
                     data
                 )
                 return False
             
-            # Check response structure
-            response_data = data.get("data", {})
-            devices = response_data.get("devices", [])
-            summary = response_data.get("summary", {})
+            # Check required fields
+            required_fields = ["tenant_id", "name", "domain", "status", "contact"]
+            missing_fields = [field for field in required_fields if field not in data]
             
-            if not devices:
+            if missing_fields:
                 self.log_result(
-                    "Tenant-Specific Devices", 
+                    "Get Tenant Before Edit", 
                     False, 
-                    "No devices found in response",
+                    f"Missing required fields: {missing_fields}",
                     data
                 )
                 return False
-            
-            # Verify each device has required fields including street and zip
-            required_fields = ["device_id", "locationcode", "city", "street", "zip"]
-            devices_with_location_data = 0
-            
-            for device in devices:
-                missing_fields = [field for field in required_fields if field not in device]
-                if missing_fields:
-                    self.log_result(
-                        "Tenant-Specific Devices", 
-                        False, 
-                        f"Device missing required fields: {missing_fields}",
-                        device
-                    )
-                    return False
-                
-                # Check if device has location data (street and zip are not empty)
-                if device.get("street") and device.get("zip"):
-                    devices_with_location_data += 1
             
             self.log_result(
-                "Tenant-Specific Devices", 
+                "Get Tenant Before Edit", 
                 True, 
-                f"Retrieved {len(devices)} devices, {devices_with_location_data} with location data. Summary: {summary}"
+                f"Retrieved tenant: {data.get('name')} - {data.get('domain')}"
             )
-            return devices
+            return data
             
         except Exception as e:
             self.log_result(
-                "Tenant-Specific Devices", 
+                "Get Tenant Before Edit", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
