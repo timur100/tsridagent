@@ -668,7 +668,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       Standorte
                     </p>
                     <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      5
+                      {dashboardStats.total_locations || 0}
                     </p>
                     <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                       von {tenant.limits.max_locations || 10}
