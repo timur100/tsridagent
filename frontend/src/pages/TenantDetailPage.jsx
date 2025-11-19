@@ -628,28 +628,50 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           {getStatusBadge(tenant.status)}
         </div>
 
-        <button
-          onClick={() => setIsEditing(!isEditing)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
-            isEditing
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-              : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-          }`}
-        >
-          {isEditing ? (
-            <>
-              <Save className="w-4 h-4" />
-              Speichern
-            </>
-          ) : (
-            <>
-              <Edit2 className="w-4 h-4" />
-              Bearbeiten
-            </>
+        <div className="flex items-center gap-2">
+          {isEditing && (
+            <button
+              onClick={handleEditClick}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
+                theme === 'dark'
+                  ? 'border border-gray-600 text-gray-400 hover:bg-gray-800'
+                  : 'border border-gray-300 text-gray-600 hover:bg-gray-100'
+              }`}
+              disabled={saving}
+            >
+              <X className="w-4 h-4" />
+              Abbrechen
+            </button>
           )}
-        </button>
+          <button
+            onClick={isEditing ? handleSave : handleEditClick}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
+              isEditing
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+            }`}
+            disabled={saving}
+          >
+            {saving ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Speichern...
+              </>
+            ) : isEditing ? (
+              <>
+                <Save className="w-4 h-4" />
+                Speichern
+              </>
+            ) : (
+              <>
+                <Edit2 className="w-4 h-4" />
+                Bearbeiten
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Tabs */}
