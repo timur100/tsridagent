@@ -894,7 +894,7 @@ const AdminPortalContent = () => {
                     <div>
                       <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Online</p>
                       <p className="text-3xl font-bold text-green-600 mt-2">
-                        {(isTenantAdmin || selectedCustomer === 'all') ? dashboardStats.online_devices : filteredOnlineDevices}
+                        {dashboardStats.online_devices}
                       </p>
                     </div>
                     <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-500/20' : 'bg-green-200'}`}>
