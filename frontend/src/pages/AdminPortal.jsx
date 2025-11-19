@@ -169,6 +169,24 @@ const AdminPortalContent = () => {
   }, [apiCall]);
 
 
+  // Fetch dashboard statistics (tenants, devices, locations, etc.)
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const result = await apiCall('/api/tenants/stats');
+        if (result) {
+          setDashboardStats(result);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+
+    if (activeTab === 'dashboard') {
+      fetchDashboardStats();
+    }
+  }, [activeTab, apiCall]);
+
   // Fetch scan statistics
   useEffect(() => {
     const fetchScanStats = async () => {
