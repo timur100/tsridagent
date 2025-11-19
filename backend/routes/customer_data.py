@@ -232,14 +232,14 @@ async def get_europcar_stations(
             if '_id' in station:
                 del station['_id']
             
-            # Füge Land und Kontinent hinzu wenn nicht vorhanden
-            if 'land' not in station:
-                station['land'] = 'Deutschland'
-            if 'kontinent' not in station:
-                station['kontinent'] = 'Europa'
+            # Add country and continent if not present (using tenant_locations structure)
+            if 'country' not in station:
+                station['country'] = 'Deutschland'
+            if 'continent' not in station:
+                station['continent'] = 'Europa'
             
             # Calculate online status based on devices at this location
-            station_code = station.get('main_code')
+            station_code = station.get('location_code')  # Use location_code instead of main_code
             devices_at_location = devices_by_location.get(station_code, [])
             
             # A station is online if at least one device is online (teamviewer_online=True)
