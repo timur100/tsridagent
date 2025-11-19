@@ -140,10 +140,6 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
       }
       
       setDevices(allDevices);
-      
-      if (allDevices.length > 0) {
-        toast.success(`${allDevices.length} Geräte geladen`);
-      }
     } catch (error) {
       console.error('❌ Error loading devices:', error);
       toast.error('Fehler beim Laden der Geräte');
