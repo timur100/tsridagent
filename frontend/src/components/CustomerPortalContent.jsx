@@ -158,16 +158,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
           apiCall(`/api/tenant-devices/${tenantId}`),
           apiCall(`/api/tenant-locations/${tenantId}`)
         ]);
-      } else if (isEuropcar) {
-        // Fallback for old Europcar-specific endpoints
-        console.log('[CustomerPortal] Loading data using legacy Europcar endpoints');
         
-        const [devicesRes, locationsRes] = await Promise.all([
-          apiCall('/api/portal/europcar-devices'),
-          apiCall('/api/portal/customer-data/europcar-stations')
-        ]);
-
-        console.log('[CustomerPortal] Devices API response:', devicesRes);
+        console.log('[CustomerPortal] Tenant data loaded - Devices:', devicesRes, 'Locations:', locationsRes);
         if (devicesRes?.success && devicesRes?.data) {
           // Handle double-wrapped response from apiCall
           const responseData = devicesRes.data.data || devicesRes.data;
