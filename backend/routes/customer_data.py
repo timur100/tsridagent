@@ -544,13 +544,13 @@ async def update_europcar_station(
         station_update['updated_by'] = token_data.get("sub")
         
         # Update station in MongoDB
-        db.europcar_stations.update_one(
-            {"main_code": station_code},
+        portal_db.tenant_locations.update_one(
+            {"location_code": station_code},
             {"$set": station_update}
         )
         
         # Fetch updated station (exclude _id)
-        updated_station = db.europcar_stations.find_one({"main_code": station_code}, {'_id': 0})
+        updated_station = portal_db.tenant_locations.find_one({"location_code": station_code}, {'_id': 0})
         
         return {
             "success": True,
