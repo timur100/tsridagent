@@ -32,13 +32,22 @@ const TenantsPage = ({ onSelectTenant }) => {
   useEffect(() => {
     fetchStats();
     fetchTenants();
-  }, [filterStatus, filterPlan]);
+  }, [filterStatus, filterPlan, selectedTenantId]);
 
   const fetchStats = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/tenants/stats`);
+      let url = `${BACKEND_URL}/api/tenants/stats`;
+      
+      // If a specific tenant is selected, load tenant-specific stats
+      if (selectedTenantId && selectedTenantId !== 'all') {
+        url = `${BACKEND_URL}/api/tenants/${selectedTenantId}/dashboard-stats`;
+      }
+      
+      console.log('[TenantsPage] Fetching stats from:', url);
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
+        console.log('[TenantsPage] Stats loaded:', data);
         setStats(data);
       }
     } catch (error) {
