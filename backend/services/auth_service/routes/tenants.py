@@ -14,6 +14,8 @@ from models.tenant import (
 from models.user import UserCreate
 from utils.db import tenants_collection, users_collection
 from utils.security import get_password_hash
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
 
 router = APIRouter(prefix="/tenants", tags=["Tenant Management"])
 
