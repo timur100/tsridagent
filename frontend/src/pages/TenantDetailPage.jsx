@@ -152,7 +152,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   }, [activeTab, tenantId]);
   useEffect(() => {
     if (tenantId) {
-      fetchTenant();
+      fetchTenantDetails();
       fetchDocuments();
       fetchLocations();
       fetchDashboardStats();
