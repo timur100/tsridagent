@@ -19,6 +19,25 @@ import os
 
 router = APIRouter(prefix="/tenants", tags=["Tenant Management"])
 
+# MongoDB connection for device counting
+def get_devices_db():
+    """Get connection to multi_tenant_admin database for device counting"""
+    mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+    client = AsyncIOMotorClient(mongo_url)
+    return client['multi_tenant_admin']
+
+async def count_tenant_devices(tenant_id: str) -> int:
+    """Count total devices (online + offline) for a tenant"""
+    try:
+        devices_db = get_devices_db()
+        count = await devices_db.europcar_devices.count_documents({
+            "tenant_id": tenant_id
+        })
+        return count
+    except Exception as e:
+        print(f"Error counting devices for tenant {tenant_id}: {e}")
+        return 0
+
 @router.get("/stats", response_model=TenantStats)
 async def get_tenant_stats():
     """Get overall tenant statistics"""
