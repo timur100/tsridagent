@@ -74,3 +74,10 @@ class TenantStats(BaseModel):
     suspended_tenants: int
     total_users: int
     total_devices: int
+    total_locations: int = 0
+    online_devices: int = 0
+    offline_devices: int = 0
+    total_scans: int = 0
+    correct_scans: int = 0
+    unknown_scans: int = 0
+    failed_scans: int = 0
