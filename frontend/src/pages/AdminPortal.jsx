@@ -182,14 +182,18 @@ const AdminPortalContent = () => {
       try {
         let result;
         
-        if (isTenantAdmin && user?.tenant_ids?.length >= 1) {
-          // Tenant admin - load their specific tenant stats
+        if (isTenantAdmin) {
+          // Tenant admin - ALWAYS load their specific tenant stats (ignore switcher)
           const tenantId = user.tenant_ids[0];
-          console.log('[Dashboard] Loading tenant-specific stats for:', tenantId);
+          console.log('[Dashboard] Tenant Admin - Loading stats for:', tenantId);
           result = await apiCall(`/api/tenants/${tenantId}/dashboard-stats`);
+        } else if (!isTenantAdmin && selectedTenantId && selectedTenantId !== 'all') {
+          // Superadmin with specific tenant selected - load that tenant's stats
+          console.log('[Dashboard] Superadmin - Loading stats for selected tenant:', selectedTenantId);
+          result = await apiCall(`/api/tenants/${selectedTenantId}/dashboard-stats`);
         } else {
-          // Superadmin - load global stats
-          console.log('[Dashboard] Loading global stats (superadmin)');
+          // Superadmin with "Alle Kunden" - load global stats
+          console.log('[Dashboard] Superadmin - Loading global stats (all tenants)');
           result = await apiCall('/api/tenants/stats');
         }
         
@@ -208,7 +212,7 @@ const AdminPortalContent = () => {
     if (activeTab === 'dashboard') {
       fetchDashboardStats();
     }
-  }, [activeTab, apiCall, user]);
+  }, [activeTab, apiCall, user, selectedTenantId, isTenantAdmin]);
 
   // Fetch scan statistics
   useEffect(() => {
