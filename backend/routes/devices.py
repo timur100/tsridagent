@@ -45,38 +45,57 @@ async def get_devices(
                         {'customer': {'$regex': company_name.split()[0], '$options': 'i'}}  # First word match (case-insensitive)
                     ]
         else:
-            # Customer can only see their own company's devices
-            customer = db.portal_users.find_one({"email": user_email})
+            # Customer can only see their own tenant's devices
+            # Check if user has tenant_ids in token
+            tenant_ids = token_data.get("tenant_ids", [])
             
-            if not customer:
-                raise HTTPException(status_code=403, detail="Customer not found")
-            
-            if customer.get("status") != "Aktiv":
-                raise HTTPException(status_code=403, detail="Customer account is not active")
-            
-            # Filter by customer's company
-            if customer.get("company"):
-                company_name = customer.get("company")
-                # Try exact match first, then partial match
-                # e.g., "Europcar Autovermietung GmbH" should match devices with customer="Europcar"
-                query['$or'] = [
-                    {'customer': company_name},  # Exact match
-                    {'customer': {'$regex': company_name.split()[0], '$options': 'i'}}  # First word match (case-insensitive)
-                ]
+            if tenant_ids:
+                # User has tenant_ids - filter by tenant_id
+                query['tenant_id'] = {'$in': tenant_ids}
             else:
-                # If no company, return empty list
-                return {
-                    "success": True,
-                    "data": {
-                        "summary": {
-                            "total": 0,
-                            "online": 0,
-                            "offline": 0,
-                            "in_vorbereitung": 0
-                        },
-                        "devices": []
+                # Fallback: Try to find user in portal_users
+                customer = db.portal_users.find_one({"email": user_email})
+                
+                if not customer:
+                    # If not found in portal_users, return empty (for security)
+                    return {
+                        "success": True,
+                        "data": {
+                            "summary": {
+                                "total": 0,
+                                "online": 0,
+                                "offline": 0,
+                                "in_vorbereitung": 0
+                            },
+                            "devices": []
+                        }
                     }
-                }
+                
+                if customer.get("status") != "Aktiv":
+                    raise HTTPException(status_code=403, detail="Customer account is not active")
+                
+                # Filter by customer's company
+                if customer.get("company"):
+                    company_name = customer.get("company")
+                    # Try exact match first, then partial match
+                    query['$or'] = [
+                        {'customer': company_name},  # Exact match
+                        {'customer': {'$regex': company_name.split()[0], '$options': 'i'}}  # First word match (case-insensitive)
+                    ]
+                else:
+                    # If no company, return empty list
+                    return {
+                        "success": True,
+                        "data": {
+                            "summary": {
+                                "total": 0,
+                                "online": 0,
+                                "offline": 0,
+                                "in_vorbereitung": 0
+                            },
+                            "devices": []
+                        }
+                    }
         
         # Fetch devices from MongoDB
         devices_cursor = db.europcar_devices.find(query)
