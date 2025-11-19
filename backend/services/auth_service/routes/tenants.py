@@ -80,6 +80,65 @@ async def count_tenant_locations(tenant_id: str) -> int:
         print(f"Error counting locations for tenant {tenant_id}: {e}")
         return 0
 
+@router.get("/{tenant_id}/dashboard-stats")
+async def get_tenant_dashboard_stats(tenant_id: str):
+    """
+    Get dashboard statistics for a specific tenant
+    Returns devices, locations, users, scans, online/offline counts
+    """
+    try:
+        # Get databases
+        devices_db = get_devices_db()
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        client = AsyncIOMotorClient(mongo_url)
+        portal_db = client['portal_db']
+        verification_db = client['verification_db']
+        
+        # Count devices
+        total_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id})
+        online_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "online"})
+        offline_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "offline"})
+        in_preparation = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "in_preparation"})
+        
+        # Count locations
+        total_locations = await portal_db.tenant_locations.count_documents({"tenant_id": tenant_id})
+        
+        # Count users/employees
+        total_users = await users_collection.count_documents({
+            "tenant_ids": {"$in": [tenant_id]},
+            "email": {"$ne": "admin@tsrid.com"},
+            "user_type": {"$ne": "super_admin"}
+        })
+        
+        # Count scans
+        total_scans = await verification_db.verifications.count_documents({"tenant_id": tenant_id})
+        correct_scans = await verification_db.verifications.count_documents({"tenant_id": tenant_id, "status": "success"})
+        unknown_scans = await verification_db.verifications.count_documents({"tenant_id": tenant_id, "status": "unknown"})
+        failed_scans = await verification_db.verifications.count_documents({"tenant_id": tenant_id, "status": "failed"})
+        
+        # Count licenses (assuming there's a licenses collection)
+        total_licenses = 0  # Placeholder - will be implemented when licenses are added
+        
+        return {
+            "tenant_id": tenant_id,
+            "total_devices": total_devices,
+            "online_devices": online_devices,
+            "offline_devices": offline_devices,
+            "in_preparation": in_preparation,
+            "total_locations": total_locations,
+            "total_users": total_users,
+            "total_licenses": total_licenses,
+            "total_scans": total_scans,
+            "correct_scans": correct_scans,
+            "unknown_scans": unknown_scans,
+            "failed_scans": failed_scans
+        }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching tenant dashboard statistics: {str(e)}"
+        )
+
 @router.get("/stats", response_model=TenantStats)
 async def get_tenant_stats():
     """Get overall tenant statistics across all tenants"""
