@@ -36,10 +36,10 @@ async def import_customer_data(customer_email: str, token_data: dict = Depends(v
             data = EUROPCAR_DATA
             
             # Clear existing data
-            db.customer_locations.delete_many({"customer_email": customer_email})
-            db.customer_devices.delete_many({"customer_email": customer_email})
-            db.customer_employees.delete_many({"customer_email": customer_email})
-            db.customer_licenses.delete_many({"customer_email": customer_email})
+            portal_db.customer_locations.delete_many({"customer_email": customer_email})
+            portal_db.customer_devices.delete_many({"customer_email": customer_email})
+            portal_db.customer_employees.delete_many({"customer_email": customer_email})
+            portal_db.customer_licenses.delete_many({"customer_email": customer_email})
             
             # Import locations
             for location in data["locations"]:
