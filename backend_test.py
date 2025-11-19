@@ -289,67 +289,174 @@ class DataSynchronizationTester:
             )
             return None
     
-    def test_database_context_verification(self):
-        """Verify database context - check if we can access the multi_tenant_admin.europcar_devices collection"""
+    def get_customer_portal_locations(self):
+        """Get locations via Customer Portal endpoint using tenant admin token"""
         try:
-            # This test verifies that the endpoints are accessing the correct database
-            # We'll check if the devices returned have the expected tenant_id
+            # Set tenant admin token in headers
+            headers = {
+                'Authorization': f'Bearer {self.tenant_admin_token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
             
-            # First get devices
-            devices_response = self.session.get(f"{API_BASE}/portal/europcar-devices")
+            response = requests.get(f"{API_BASE}/portal/customer-data/europcar-stations", headers=headers)
             
-            if devices_response.status_code != 200:
+            if response.status_code != 200:
                 self.log_result(
-                    "Database Context Verification", 
+                    "Customer Portal Locations", 
                     False, 
-                    f"Could not retrieve devices for verification. Status: {devices_response.status_code}",
-                    devices_response.text
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
                 )
-                return False
+                return None
             
-            devices_data = devices_response.json()
-            devices = devices_data.get("data", {}).get("devices", [])
+            data = response.json()
             
-            # Check if we have devices with the expected tenant_id
-            tenant_devices = [d for d in devices if d.get("tenant_id") == self.test_tenant_id]
-            
-            if len(tenant_devices) == 0:
+            # Verify response structure
+            if not isinstance(data, dict):
                 self.log_result(
-                    "Database Context Verification", 
+                    "Customer Portal Locations", 
                     False, 
-                    f"No devices found with tenant_id {self.test_tenant_id}. This suggests the tenant filtering is not working correctly.",
-                    {"total_devices": len(devices), "tenant_devices": len(tenant_devices)}
+                    "Response is not a dictionary",
+                    data
                 )
-                return False
+                return None
             
-            # Check if devices have expected fields
-            sample_device = tenant_devices[0]
-            expected_fields = ["device_id", "locationcode", "tenant_id"]
-            missing_fields = [field for field in expected_fields if field not in sample_device]
-            
-            if missing_fields:
+            if not data.get("success"):
                 self.log_result(
-                    "Database Context Verification", 
+                    "Customer Portal Locations", 
                     False, 
-                    f"Sample device missing expected fields: {missing_fields}",
-                    sample_device
+                    "Response indicates failure",
+                    data
                 )
-                return False
+                return None
+            
+            stations = data.get("stations", [])
+            total_count = len(stations)
             
             self.log_result(
-                "Database Context Verification", 
+                "Customer Portal Locations", 
                 True, 
-                f"Database context verified: Found {len(tenant_devices)} devices with tenant_id {self.test_tenant_id} out of {len(devices)} total devices"
+                f"Retrieved {total_count} locations/stations"
+            )
+            
+            return {
+                "total": total_count,
+                "locations": stations
+            }
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Portal Locations", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return None
+
+    def connect_to_database(self):
+        """Connect to MongoDB for direct database verification"""
+        try:
+            # Connect to MongoDB using the same URL as backend
+            mongo_url = "mongodb://localhost:27017"
+            self.mongo_client = pymongo.MongoClient(mongo_url)
+            
+            # Test connection
+            self.mongo_client.admin.command('ping')
+            
+            self.log_result(
+                "Database Connection", 
+                True, 
+                "Successfully connected to MongoDB"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Database Context Verification", 
+                "Database Connection", 
+                False, 
+                f"Failed to connect to MongoDB: {str(e)}"
+            )
+            return False
+
+    def verify_database_devices(self):
+        """Query database directly to verify device data"""
+        try:
+            if not self.mongo_client:
+                self.log_result(
+                    "Database Device Verification", 
+                    False, 
+                    "No database connection available"
+                )
+                return None
+            
+            # Query multi_tenant_admin.europcar_devices
+            db = self.mongo_client["multi_tenant_admin"]
+            collection = db["europcar_devices"]
+            
+            # Count devices with the specific tenant_id
+            device_count = collection.count_documents({"tenant_id": self.test_tenant_id})
+            
+            # Get sample devices to verify structure
+            sample_devices = list(collection.find({"tenant_id": self.test_tenant_id}).limit(5))
+            
+            self.log_result(
+                "Database Device Verification", 
+                True, 
+                f"Found {device_count} devices in multi_tenant_admin.europcar_devices with tenant_id {self.test_tenant_id}"
+            )
+            
+            return {
+                "total": device_count,
+                "sample_devices": sample_devices
+            }
+            
+        except Exception as e:
+            self.log_result(
+                "Database Device Verification", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
-            return False
+            return None
+
+    def verify_database_locations(self):
+        """Query database directly to verify location data"""
+        try:
+            if not self.mongo_client:
+                self.log_result(
+                    "Database Location Verification", 
+                    False, 
+                    "No database connection available"
+                )
+                return None
+            
+            # Query portal_db.tenant_locations
+            db = self.mongo_client["portal_db"]
+            collection = db["tenant_locations"]
+            
+            # Count locations with the specific tenant_id
+            location_count = collection.count_documents({"tenant_id": self.test_tenant_id})
+            
+            # Get sample locations to verify structure
+            sample_locations = list(collection.find({"tenant_id": self.test_tenant_id}).limit(5))
+            
+            self.log_result(
+                "Database Location Verification", 
+                True, 
+                f"Found {location_count} locations in portal_db.tenant_locations with tenant_id {self.test_tenant_id}"
+            )
+            
+            return {
+                "total": location_count,
+                "sample_locations": sample_locations
+            }
+            
+        except Exception as e:
+            self.log_result(
+                "Database Location Verification", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return None
     
     def test_tenant_admin_token_verification(self):
         """Verify that the admin token contains tenant_ids as expected"""
