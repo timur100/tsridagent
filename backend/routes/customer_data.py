@@ -156,7 +156,7 @@ async def get_europcar_stations(
                 target_customer_company = None  # Will use tenant_id instead
             else:
                 # Fallback to portal_users lookup
-                customer = db.portal_users.find_one({"email": user_email})
+                customer = portal_db.portal_users.find_one({"email": user_email})
                 
                 if not customer:
                     raise HTTPException(status_code=403, detail="Access denied")
