@@ -1248,30 +1248,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     Hauptansprechpartner
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.primary?.name || 'Max Mustermann'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.primary?.position || 'Geschäftsführer'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.primary?.email || tenant.contact.admin_email}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.primary?.phone || '+49 123 456789'}
-                      </p>
-                    </div>
+                    {renderEditableField('Name', 'contact_person.primary.name', tenant.contact_person?.primary?.name || 'Max Mustermann')}
+                    {renderEditableField('Position', 'contact_person.primary.position', tenant.contact_person?.primary?.position || 'Geschäftsführer')}
+                    {renderEditableField('E-Mail', 'contact_person.primary.email', tenant.contact_person?.primary?.email || tenant.contact.admin_email, 'email')}
+                    {renderEditableField('Telefon', 'contact_person.primary.phone', tenant.contact_person?.primary?.phone || '+49 123 456789', 'tel')}
                   </div>
                 </div>
 
@@ -1281,30 +1261,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     Technischer Ansprechpartner
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.technical?.name || 'Thomas Schmidt'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.technical?.position || 'IT-Leiter'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.technical?.email || 'tech@' + (tenant.domain || 'example.com')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.technical?.phone || '+49 123 456791'}
-                      </p>
-                    </div>
+                    {renderEditableField('Name', 'contact_person.technical.name', tenant.contact_person?.technical?.name || 'Thomas Schmidt')}
+                    {renderEditableField('Position', 'contact_person.technical.position', tenant.contact_person?.technical?.position || 'IT-Leiter')}
+                    {renderEditableField('E-Mail', 'contact_person.technical.email', tenant.contact_person?.technical?.email || 'tech@' + (tenant.domain || 'example.com'), 'email')}
+                    {renderEditableField('Telefon', 'contact_person.technical.phone', tenant.contact_person?.technical?.phone || '+49 123 456791', 'tel')}
                   </div>
                 </div>
 
@@ -1314,30 +1274,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     Buchhaltung
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.billing?.name || 'Anna Weber'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Position</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.billing?.position || 'Buchhalterin'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.billing?.email || 'billing@' + (tenant.domain || 'example.com')}
-                      </p>
-                    </div>
-                    <div>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {tenant.contact_person?.billing?.phone || '+49 123 456792'}
-                      </p>
-                    </div>
+                    {renderEditableField('Name', 'contact_person.billing.name', tenant.contact_person?.billing?.name || 'Anna Weber')}
+                    {renderEditableField('Position', 'contact_person.billing.position', tenant.contact_person?.billing?.position || 'Buchhalterin')}
+                    {renderEditableField('E-Mail', 'contact_person.billing.email', tenant.contact_person?.billing?.email || 'billing@' + (tenant.domain || 'example.com'), 'email')}
+                    {renderEditableField('Telefon', 'contact_person.billing.phone', tenant.contact_person?.billing?.phone || '+49 123 456792', 'tel')}
                   </div>
                 </div>
               </div>
