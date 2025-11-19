@@ -112,7 +112,7 @@ const TenantDevicesTab = ({ tenantId }) => {
       
       console.log(`✅ Setting ${devicesArray.length} devices`);
       setDevices(devicesArray);
-      toast.success(`${devicesArray.length} Geräte geladen`);
+      // Toast removed - only show on errors
       
     } catch (error) {
       console.error('❌ Exception loading devices:', error);
