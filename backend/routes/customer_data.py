@@ -301,7 +301,7 @@ async def create_europcar_station(
         user_email = token_data.get("sub")
         
         # Check if station main_code already exists
-        existing = db.europcar_stations.find_one({"main_code": station_data.get("main_code")})
+        existing = portal_db.tenant_locations.find_one({"location_code": station_data.get("location_code")})
         if existing:
             raise HTTPException(status_code=400, detail="Station code already exists")
         
