@@ -1637,12 +1637,12 @@ class TenantEditTester:
             return False
 
     def run_all_tests(self):
-        """Run all tenant devices tests"""
+        """Run all tenant edit functionality tests"""
         print("=" * 70)
-        print("TENANT DEVICES WITH LOCATION DATA ENRICHMENT TESTING")
+        print("TENANT EDIT FUNCTIONALITY TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Europcar Tenant ID: {self.europcar_tenant_id}")
+        print(f"Test Tenant ID: {self.test_tenant_id}")
         print("=" * 70)
         print()
         
@@ -1651,38 +1651,32 @@ class TenantEditTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Step 1: Test tenant-specific devices
-        print("\n🔍 STEP 1: Testing Tenant-Specific Devices...")
-        tenant_devices = self.test_tenant_specific_devices()
+        # Step 1: Get tenant before editing
+        print("\n🔍 STEP 1: Getting Tenant Before Edit...")
+        original_tenant = self.test_get_tenant_before_edit()
         
-        # Step 2: Test all devices
-        print("\n🔍 STEP 2: Testing All Devices...")
-        all_devices = self.test_all_devices()
+        # Step 2: Test full tenant update
+        print("\n🔍 STEP 2: Testing Full Tenant Update...")
+        self.test_tenant_full_update()
         
-        # Step 3: Test specific BERN03 device location data
-        print("\n🔍 STEP 3: Testing BERN03 Device Location Data...")
-        if tenant_devices:
-            self.test_bern03_device_location_data(tenant_devices)
-        elif all_devices:
-            self.test_bern03_device_location_data(all_devices)
+        # Step 3: Test partial tenant update
+        print("\n🔍 STEP 3: Testing Partial Tenant Update...")
+        self.test_tenant_partial_update()
         
-        # Step 4: Test device location data validation
-        print("\n🔍 STEP 4: Testing Device Location Data Validation...")
-        if tenant_devices:
-            self.test_device_location_data_validation(tenant_devices)
-        elif all_devices:
-            self.test_device_location_data_validation(all_devices)
+        # Step 4: Verify persistence
+        print("\n🔍 STEP 4: Verifying Tenant Data Persistence...")
+        self.test_verify_tenant_persistence()
         
-        # Step 5: Test edge cases
-        print("\n🔍 STEP 5: Testing Edge Cases...")
-        if all_devices:
-            self.test_edge_cases_devices_without_location_match(all_devices)
-        elif tenant_devices:
-            self.test_edge_cases_devices_without_location_match(tenant_devices)
+        # Step 5: Test error cases
+        print("\n🔍 STEP 5: Testing Error Cases...")
+        print("   Testing invalid tenant ID...")
+        self.test_invalid_tenant_id_error()
+        print("   Testing invalid email format...")
+        self.test_invalid_email_format_error()
         
         # Summary
         print("\n" + "=" * 70)
-        print("TENANT DEVICES WITH LOCATION DATA ENRICHMENT TESTING SUMMARY")
+        print("TENANT EDIT FUNCTIONALITY TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
