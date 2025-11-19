@@ -260,10 +260,10 @@ async def get_europcar_stations(
         
         # Calculate summary statistics
         total = len(stations)
-        ready_count = sum(1 for s in stations if 'READY' in s.get('status', '').upper())
+        ready_count = sum(1 for s in stations if s.get('device_count', 0) > 0)  # Stations with devices are "ready"
         online_count = sum(1 for s in stations if s.get('online', False))
         offline_count = total - online_count
-        in_vorbereitung_count = sum(1 for s in stations if s.get('preparation_status') == 'in_vorbereitung')
+        in_vorbereitung_count = sum(1 for s in stations if s.get('device_count', 0) == 0)  # Stations without devices are "in preparation"
         
         return {
             "success": True,
