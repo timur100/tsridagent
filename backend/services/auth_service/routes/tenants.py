@@ -38,6 +38,48 @@ async def count_tenant_devices(tenant_id: str) -> int:
         print(f"Error counting devices for tenant {tenant_id}: {e}")
         return 0
 
+async def count_tenant_online_devices(tenant_id: str) -> int:
+    """Count online devices for a tenant"""
+    try:
+        devices_db = get_devices_db()
+        count = await devices_db.europcar_devices.count_documents({
+            "tenant_id": tenant_id,
+            "status": "online"
+        })
+        return count
+    except Exception as e:
+        print(f"Error counting online devices for tenant {tenant_id}: {e}")
+        return 0
+
+async def count_tenant_offline_devices(tenant_id: str) -> int:
+    """Count offline devices for a tenant"""
+    try:
+        devices_db = get_devices_db()
+        count = await devices_db.europcar_devices.count_documents({
+            "tenant_id": tenant_id,
+            "status": "offline"
+        })
+        return count
+    except Exception as e:
+        print(f"Error counting offline devices for tenant {tenant_id}: {e}")
+        return 0
+
+async def count_tenant_locations(tenant_id: str) -> int:
+    """Count locations for a tenant"""
+    try:
+        # Locations are in portal_db
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        client = AsyncIOMotorClient(mongo_url)
+        portal_db = client['portal_db']
+        
+        count = await portal_db.tenant_locations.count_documents({
+            "tenant_id": tenant_id
+        })
+        return count
+    except Exception as e:
+        print(f"Error counting locations for tenant {tenant_id}: {e}")
+        return 0
+
 @router.get("/stats", response_model=TenantStats)
 async def get_tenant_stats():
     """Get overall tenant statistics"""
