@@ -62,11 +62,6 @@ class TeamViewerAutoSync:
                 
                 logger.info(f"[Auto-Sync] Fetched {len(tv_devices_map)} devices from TeamViewer")
                 
-                # Log first 3 TeamViewer IDs for debugging
-                if tv_devices_map:
-                    sample_tv_ids = list(tv_devices_map.keys())[:3]
-                    logger.info(f"[Auto-Sync] Sample TV IDs: {sample_tv_ids}")
-                
                 # Update devices in database
                 devices_collection = db.europcar_devices
                 updated_count = 0
