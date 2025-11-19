@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Customer Portal Data Endpoints
-Tests the customer portal data endpoints with tenant admin credentials.
+Backend API Testing for Data Synchronization Between Admin Portal and Customer Portal
+Tests data synchronization between Admin Portal and Customer Portal for Europcar tenant.
+Verifies that both portals show EXACTLY the same data for tenant_id: 1d3653db-86cb-4dd1-9ef5-0236b116def8
 """
 
 import requests
 import json
 import sys
 from typing import Dict, Any, List
+import pymongo
+import os
 
 # Backend URL from environment
 BACKEND_URL = "https://tenant-portal-30.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class CustomerPortalTester:
+class DataSynchronizationTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
