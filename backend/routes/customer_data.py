@@ -140,7 +140,7 @@ async def get_europcar_stations(
         if is_admin:
             # Admin can filter by customer_email parameter
             if customer_email and customer_email != 'all':
-                customer = db.portal_users.find_one({"email": customer_email})
+                customer = portal_db.portal_users.find_one({"email": customer_email})
                 if customer and customer.get("company"):
                     target_customer_company = customer.get("company")
         else:
