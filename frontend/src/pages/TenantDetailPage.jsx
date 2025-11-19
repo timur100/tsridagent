@@ -180,6 +180,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       setLoading(false);
     }
   };
+
   const fetchDashboardStats = async () => {
     try {
       const token = localStorage.getItem('token');
