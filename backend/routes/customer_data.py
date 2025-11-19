@@ -170,16 +170,20 @@ async def get_europcar_stations(
         station_query = {}
         device_query = {}
         
-        if target_customer_company:
+        # If user has tenant_ids, filter by tenant_id
+        if not is_admin and tenant_ids:
+            device_query['tenant_id'] = {'$in': tenant_ids}
+        elif target_customer_company:
             # Flexible company name matching for data isolation
             # Try exact match first, then partial match (e.g., "Europcar" matches "Europcar Autovermietung GmbH")
             device_query['$or'] = [
                 {'customer': target_customer_company},
                 {'customer': {'$regex': target_customer_company.split()[0], '$options': 'i'}}
             ]
-            
-            # Check if this customer has any devices (to determine if we should show stations)
-            # For customers without devices, return empty data
+        
+        # Check if this customer has any devices (to determine if we should show stations)
+        # For customers without devices, return empty data
+        if device_query:
             device_count = db.europcar_devices.count_documents(device_query)
             if device_count == 0:
                 # No devices for this customer, return empty stations
