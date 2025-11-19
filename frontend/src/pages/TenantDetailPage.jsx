@@ -690,7 +690,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       Online
                     </p>
                     <p className={`text-3xl font-bold text-green-500`}>
-                      3
+                      {dashboardStats.online_devices || 0}
                     </p>
                     <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                       Geräte aktiv
