@@ -21,6 +21,8 @@ def enrich_devices_with_location_data(devices, tenant_id):
     """
     Enrich device data with street and zip from tenant_locations
     """
+    print(f"🔍 enrich_devices_with_location_data called with {len(devices)} devices, tenant_id: {tenant_id}")
+    
     # Get all locations for this tenant
     locations = {}
     for loc in portal_db.tenant_locations.find({"tenant_id": tenant_id}):
@@ -31,13 +33,17 @@ def enrich_devices_with_location_data(devices, tenant_id):
                 'zip': loc.get('postal_code', '')
             }
     
+    print(f"🔍 Found {len(locations)} locations in database")
+    
     # Enrich each device with location data
     enriched_devices = []
+    matched_count = 0
     for device in devices:
         locationcode = device.get('locationcode', '')
         if locationcode and locationcode in locations:
             device['street'] = locations[locationcode]['street']
             device['zip'] = locations[locationcode]['zip']
+            matched_count += 1
         else:
             # Set empty values if no location match
             if 'street' not in device:
@@ -45,6 +51,11 @@ def enrich_devices_with_location_data(devices, tenant_id):
             if 'zip' not in device:
                 device['zip'] = ''
         enriched_devices.append(device)
+    
+    print(f"🔍 Enriched {matched_count} devices with location data")
+    if len(enriched_devices) > 0:
+        first_device = enriched_devices[0]
+        print(f"🔍 Sample device: {first_device.get('device_id')} - street: {first_device.get('street', 'NOT SET')}, zip: {first_device.get('zip', 'NOT SET')}")
     
     return enriched_devices
 
