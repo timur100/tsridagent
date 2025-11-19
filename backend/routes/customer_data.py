@@ -408,8 +408,8 @@ async def update_preparation_status(
                 )
         
         # Update station
-        result = db.europcar_stations.update_one(
-            {"main_code": station_code},
+        result = portal_db.tenant_locations.update_one(
+            {"location_code": station_code},
             {"$set": {
                 "preparation_status": status,
                 "updated_at": datetime.now(timezone.utc).isoformat(),
