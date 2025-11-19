@@ -164,8 +164,11 @@ async def get_tenant(tenant_id: str):
         user_count = await users_collection.count_documents({"tenant_id": tenant_id})
         tenant["user_count"] = user_count
         
+        # Count devices for this tenant (online + offline)
+        device_count = await count_tenant_devices(tenant_id)
+        tenant["device_count"] = device_count
+        
         # Add default values for resource usage
-        tenant.setdefault("device_count", 0)
         tenant.setdefault("storage_used_gb", 0.0)
         tenant.setdefault("api_calls_today", 0)
         tenant.setdefault("last_activity", None)
