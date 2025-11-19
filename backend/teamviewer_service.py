@@ -101,13 +101,6 @@ class TeamViewerAPIClient:
         teamviewer_id = device.get("remotecontrol_id", "") or device.get("teamviewer_id", "")
         online_state = device.get("online_state", "Offline")
         
-        # Log first device for debugging
-        if not hasattr(self, '_logged_first_device'):
-            logger.info(f"[DEBUG] Sample device fields: {list(device.keys())[:10]}")
-            logger.info(f"[DEBUG] remotecontrol_id: {device.get('remotecontrol_id')}")
-            logger.info(f"[DEBUG] online_state: {device.get('online_state')}")
-            self._logged_first_device = True
-        
         return {
             "teamviewer_id": str(teamviewer_id) if teamviewer_id else "",
             "online_state": online_state,
