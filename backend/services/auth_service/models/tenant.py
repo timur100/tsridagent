@@ -92,6 +92,17 @@ class TenantUpdate(BaseModel):
     limits: Optional[SubscriptionLimits] = None
     settings: Optional[Dict[str, Any]] = None
     logo_url: Optional[str] = None
+    industry: Optional[str] = None
+    address: Optional[TenantAddress] = None
+    contact_person: Optional[TenantContactPersons] = None
+    tax: Optional[TenantTax] = None
+    contract: Optional[TenantContract] = None
+    payment: Optional[TenantPayment] = None
+    subscription: Optional[TenantSubscription] = None
+    notes: Optional[str] = None
+    api_key: Optional[str] = None
+    webhook_url: Optional[str] = None
+    server_region: Optional[str] = None
     
 class TenantResponse(TenantBase):
     tenant_id: str
