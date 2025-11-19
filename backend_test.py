@@ -1625,11 +1625,12 @@ class TenantDevicesTester:
             return False
 
     def run_all_tests(self):
-        """Run all tenant locations tests"""
+        """Run all tenant devices tests"""
         print("=" * 70)
-        print("TENANT LOCATIONS ENHANCED FEATURES TESTING")
+        print("TENANT DEVICES WITH LOCATION DATA ENRICHMENT TESTING")
         print("=" * 70)
         print(f"Backend URL: {BACKEND_URL}")
+        print(f"Europcar Tenant ID: {self.europcar_tenant_id}")
         print("=" * 70)
         print()
         
@@ -1638,52 +1639,38 @@ class TenantDevicesTester:
             print("❌ Admin authentication failed. Stopping tests.")
             return False
         
-        # Get existing tenant
-        if not self.get_existing_tenant():
-            print("❌ Failed to get existing tenant. Stopping tests.")
-            return False
+        # Step 1: Test tenant-specific devices
+        print("\n🔍 STEP 1: Testing Tenant-Specific Devices...")
+        tenant_devices = self.test_tenant_specific_devices()
         
-        # Step 1: Setup test data with Europa/Deutschland
-        print("\n🔍 STEP 1: Setting up Test Data with Europa/Deutschland...")
-        self.setup_test_data_with_europa()
+        # Step 2: Test all devices
+        print("\n🔍 STEP 2: Testing All Devices...")
+        all_devices = self.test_all_devices()
         
-        # Step 2: Test new filter endpoints
-        print("\n🔍 STEP 2: Testing Filter Endpoints...")
-        self.test_filter_continents()
-        self.test_filter_countries()
-        self.test_filter_countries_with_continent()
-        self.test_filter_states()
-        self.test_filter_cities()
+        # Step 3: Test specific BERN03 device location data
+        print("\n🔍 STEP 3: Testing BERN03 Device Location Data...")
+        if tenant_devices:
+            self.test_bern03_device_location_data(tenant_devices)
+        elif all_devices:
+            self.test_bern03_device_location_data(all_devices)
         
-        # Step 3: Test enhanced search functionality
-        print("\n🔍 STEP 3: Testing Enhanced Search...")
-        self.test_search_locations_bern()
-        self.test_combined_filters()
+        # Step 4: Test device location data validation
+        print("\n🔍 STEP 4: Testing Device Location Data Validation...")
+        if tenant_devices:
+            self.test_device_location_data_validation(tenant_devices)
+        elif all_devices:
+            self.test_device_location_data_validation(all_devices)
         
-        # Step 4: Test global search extension
-        print("\n🔍 STEP 4: Testing Global Search Extension...")
-        self.test_global_search_tenant()
-        self.test_global_search_location()
-        
-        # Step 5: Test basic operations with existing data
-        print("\n🔍 STEP 5: Testing Basic Operations with Existing Data...")
-        self.test_list_all_locations()
-        self.test_filter_by_state_be()
-        self.test_filter_by_main_type_a()
-        self.test_get_stats_summary()
-        
-        # Step 6: Test error scenarios
-        print("\n🔍 STEP 6: Testing Error Scenarios...")
-        self.test_duplicate_location_code_error()
-        self.test_invalid_tenant_id_error()
-        
-        # Step 7: Verify locations list is working
-        print("\n🔍 STEP 7: Verifying Locations List...")
-        self.test_verify_remaining_locations()
+        # Step 5: Test edge cases
+        print("\n🔍 STEP 5: Testing Edge Cases...")
+        if all_devices:
+            self.test_edge_cases_devices_without_location_match(all_devices)
+        elif tenant_devices:
+            self.test_edge_cases_devices_without_location_match(tenant_devices)
         
         # Summary
         print("\n" + "=" * 70)
-        print("TENANT LOCATIONS ENHANCED FEATURES TESTING SUMMARY")
+        print("TENANT DEVICES WITH LOCATION DATA ENRICHMENT TESTING SUMMARY")
         print("=" * 70)
         
         passed = sum(1 for r in self.results if r['success'])
