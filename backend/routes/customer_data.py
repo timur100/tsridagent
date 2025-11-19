@@ -339,7 +339,7 @@ async def create_europcar_station(
         station_data.setdefault('id_checker', 0)
         
         # Insert into MongoDB
-        db.europcar_stations.insert_one(station_data)
+        portal_db.tenant_locations.insert_one(station_data)
         
         # Return station without _id
         station_data.pop('_id', None)
