@@ -45,25 +45,25 @@ async def import_customer_data(customer_email: str, token_data: dict = Depends(v
             for location in data["locations"]:
                 location["customer_email"] = customer_email
                 location["created_at"] = datetime.now(timezone.utc).isoformat()
-                db.customer_locations.insert_one(location)
+                portal_db.customer_locations.insert_one(location)
             
             # Import devices
             for device in data["devices"]:
                 device["customer_email"] = customer_email
                 device["created_at"] = datetime.now(timezone.utc).isoformat()
-                db.customer_devices.insert_one(device)
+                portal_db.customer_devices.insert_one(device)
             
             # Import employees
             for employee in data["employees"]:
                 employee["customer_email"] = customer_email
                 employee["created_at"] = datetime.now(timezone.utc).isoformat()
-                db.customer_employees.insert_one(employee)
+                portal_db.customer_employees.insert_one(employee)
             
             # Import licenses
             for license_item in data["licenses"]:
                 license_item["customer_email"] = customer_email
                 license_item["created_at"] = datetime.now(timezone.utc).isoformat()
-                db.customer_licenses.insert_one(license_item)
+                portal_db.customer_licenses.insert_one(license_item)
             
             return {
                 "success": True,
