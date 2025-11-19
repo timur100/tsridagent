@@ -115,13 +115,24 @@ const UsersRolesPage = () => {
 
   const loadRoles = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/roles/`, {
+      const effectiveTenantId = getEffectiveTenantId();
+      let url = `${BACKEND_URL}/api/roles/`;
+      
+      // Add tenant filter if specific tenant is selected
+      if (effectiveTenantId) {
+        url += `?tenant_id=${effectiveTenantId}`;
+      }
+      
+      console.log('[UsersRoles] Loading roles with URL:', url);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('[UsersRoles] Loaded roles:', data.length);
         setRoles(data);
       }
     } catch (error) {
