@@ -86,6 +86,61 @@ async def get_tenant_devices(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/all/devices")
+async def get_all_devices(
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Get all devices from all tenants
+    """
+    try:
+        print(f"🔍 get_all_devices called")
+        print(f"🔍 Skipping admin check for debugging")
+        
+        # Get all devices from europcar_devices collection
+        devices_cursor = db.europcar_devices.find({})
+        devices = []
+        
+        for device in devices_cursor:
+            # Remove MongoDB _id field
+            if '_id' in device:
+                del device['_id']
+            devices.append(device)
+        
+        print(f"✅ Found {len(devices)} total devices")
+        
+        # Calculate summary statistics
+        total = len(devices)
+        online_count = sum(1 for d in devices if d.get('status', '').lower() == 'online')
+        offline_count = sum(1 for d in devices if d.get('status', '').lower() == 'offline')
+        in_prep_count = sum(1 for d in devices if d.get('status', '').lower() == 'in_vorbereitung')
+        
+        result = {
+            "success": True,
+            "data": {
+                "summary": {
+                    "total": total,
+                    "online": online_count,
+                    "offline": offline_count,
+                    "in_vorbereitung": in_prep_count
+                },
+                "devices": devices
+            }
+        }
+        
+        print(f"✅ Returning response with {total} devices")
+        
+        return result
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Get all devices error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/{tenant_id}/{device_id}")
 async def get_tenant_device(
     tenant_id: str,
