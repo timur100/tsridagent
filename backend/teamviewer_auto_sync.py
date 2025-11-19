@@ -62,6 +62,11 @@ class TeamViewerAutoSync:
                 
                 logger.info(f"[Auto-Sync] Fetched {len(tv_devices_map)} devices from TeamViewer")
                 
+                # Log first 3 TeamViewer IDs for debugging
+                if tv_devices_map:
+                    sample_tv_ids = list(tv_devices_map.keys())[:3]
+                    logger.info(f"[Auto-Sync] Sample TV IDs: {sample_tv_ids}")
+                
                 # Update devices in database
                 devices_collection = db.europcar_devices
                 updated_count = 0
@@ -72,6 +77,12 @@ class TeamViewerAutoSync:
                 cursor = devices_collection.find({
                     "tvid": {"$exists": True, "$ne": None, "$ne": ""}
                 })
+                
+                # Get device count for debugging
+                db_device_count = await devices_collection.count_documents({
+                    "tvid": {"$exists": True, "$ne": None, "$ne": ""}
+                })
+                logger.info(f"[Auto-Sync] DB devices with TVID: {db_device_count}")
                 
                 async for db_device in cursor:
                     tvid = db_device.get("tvid", "").strip()
