@@ -29,7 +29,7 @@ def get_db():
     if not mongo_url:
         raise HTTPException(status_code=500, detail="Database configuration error")
     client = AsyncIOMotorClient(mongo_url)
-    return client['test_database']
+    return client['multi_tenant_admin']
 
 
 @router.post("/sync-status")
