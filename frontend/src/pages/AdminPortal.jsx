@@ -175,14 +175,9 @@ const AdminPortalContent = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        // Check if user is a tenant admin (has tenant_ids but is not superadmin)
-        const isTenantAdmin = user?.tenant_ids?.length > 0 && 
-                             user?.email !== 'admin@tsrid.com' && 
-                             user?.user_type !== 'super_admin';
-        
         let result;
         
-        if (isTenantAdmin && user.tenant_ids.length >= 1) {
+        if (isTenantAdmin && user?.tenant_ids?.length >= 1) {
           // Tenant admin - load their specific tenant stats
           const tenantId = user.tenant_ids[0];
           console.log('[Dashboard] Loading tenant-specific stats for:', tenantId);
