@@ -1315,9 +1315,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 Notizen
               </h3>
               <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {tenant.notes || 'Keine Notizen vorhanden.'}
-                </p>
+                {renderEditableField('', 'notes', tenant.notes || 'Keine Notizen vorhanden.', 'textarea')}
               </div>
             </Card>
           </div>
