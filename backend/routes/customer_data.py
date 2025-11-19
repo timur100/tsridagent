@@ -105,10 +105,10 @@ async def clear_customer_data(customer_email: str, token_data: dict = Depends(ve
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Clear all customer data
-        db.customer_locations.delete_many({"customer_email": customer_email})
-        db.customer_devices.delete_many({"customer_email": customer_email})
-        db.customer_employees.delete_many({"customer_email": customer_email})
-        db.customer_licenses.delete_many({"customer_email": customer_email})
+        portal_db.customer_locations.delete_many({"customer_email": customer_email})
+        portal_db.customer_devices.delete_many({"customer_email": customer_email})
+        portal_db.customer_employees.delete_many({"customer_email": customer_email})
+        portal_db.customer_licenses.delete_many({"customer_email": customer_email})
         
         return {
             "success": True,
