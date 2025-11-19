@@ -486,12 +486,12 @@ async def delete_europcar_station(
             raise HTTPException(status_code=403, detail="Only admins can delete stations")
         
         # Find station
-        station = db.europcar_stations.find_one({"main_code": station_code})
+        station = portal_db.tenant_locations.find_one({"location_code": station_code})
         if not station:
             raise HTTPException(status_code=404, detail="Station not found")
         
         # Delete station from database
-        result = db.europcar_stations.delete_one({"main_code": station_code})
+        result = portal_db.tenant_locations.delete_one({"location_code": station_code})
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Station not found or already deleted")
