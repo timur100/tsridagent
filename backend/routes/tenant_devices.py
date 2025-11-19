@@ -36,13 +36,8 @@ async def get_tenant_devices(
         #     raise HTTPException(status_code=403, detail="Admin access required")
         
         # Fetch devices from MongoDB for this tenant
-        # Try both customer field and tenant_id field for backwards compatibility
-        query = {
-            "$or": [
-                {"tenant_id": tenant_id},
-                {"customer": "Europcar"}  # Fallback for europcar_devices collection
-            ]
-        }
+        # Query only by tenant_id
+        query = {"tenant_id": tenant_id}
         
         print(f"🔍 Query: {query}")
         print(f"🔍 Collection: europcar_devices")
