@@ -117,6 +117,11 @@ const AdminPortalContent = () => {
     failed_scans: 0
   });
 
+  // Check if user is a tenant admin (has tenant_ids but is not superadmin)
+  const isTenantAdmin = user?.tenant_ids?.length > 0 && 
+                       user?.email !== 'admin@tsrid.com' && 
+                       user?.user_type !== 'super_admin';
+
   // Check for return navigation from location detail page
   useEffect(() => {
     const returnToTenant = sessionStorage.getItem('returnToTenant');
