@@ -1223,42 +1223,12 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 Anschrift
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße & Hausnummer</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.street || 'Musterstraße 123'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Adresszusatz</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.additional || '-'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.postal_code || '12345'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Stadt</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.city || 'Berlin'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bundesland</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.state || 'Berlin'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.address?.country || 'Deutschland'}
-                  </p>
-                </div>
+                {renderEditableField('Straße & Hausnummer', 'address.street', tenant.address?.street || 'Musterstraße 123')}
+                {renderEditableField('Adresszusatz', 'address.additional', tenant.address?.additional || '-')}
+                {renderEditableField('PLZ', 'address.postal_code', tenant.address?.postal_code || '12345')}
+                {renderEditableField('Stadt', 'address.city', tenant.address?.city || 'Berlin')}
+                {renderEditableField('Bundesland', 'address.state', tenant.address?.state || 'Berlin')}
+                {renderEditableField('Land', 'address.country', tenant.address?.country || 'Deutschland')}
               </div>
             </Card>
 
