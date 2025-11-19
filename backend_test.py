@@ -164,32 +164,16 @@ class TenantDevicesTester:
             )
             return False
     
-    def test_create_location_1(self):
-        """Test creating Location 1: BERN03, BB, Type A"""
+    def test_all_devices(self):
+        """Test GET /api/tenant-devices/all/devices - All devices with location data"""
         try:
-            location_data = {
-                "location_code": "BERN03",
-                "station_name": "Berlin Hauptbahnhof Süd",
-                "street": "Invalidenstraße 10",
-                "postal_code": "10557",
-                "city": "Berlin",
-                "state": "BB",
-                "manager": "Max Mustermann",
-                "phone": "+49 30 12345678",
-                "email": "max.mustermann@europcar.com",
-                "main_type": "A"
-            }
-            
-            response = self.session.post(
-                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
-                json=location_data
-            )
+            response = self.session.get(f"{API_BASE}/tenant-devices/all/devices")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Create Location 1 (BERN03)", 
+                    "All Devices", 
                     False, 
-                    f"Location creation failed. Status: {response.status_code}",
+                    f"Request failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
@@ -198,38 +182,67 @@ class TenantDevicesTester:
             
             if not data.get("success"):
                 self.log_result(
-                    "Create Location 1 (BERN03)", 
+                    "All Devices", 
                     False, 
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            location = data.get("location", {})
-            location_id = location.get("location_id")
+            # Check response structure
+            response_data = data.get("data", {})
+            devices = response_data.get("devices", [])
+            summary = response_data.get("summary", {})
             
-            if not location_id:
+            if not devices:
                 self.log_result(
-                    "Create Location 1 (BERN03)", 
+                    "All Devices", 
                     False, 
-                    "Response missing location_id",
+                    "No devices found in response",
                     data
                 )
                 return False
             
-            # Store for cleanup
-            self.test_locations.append(location_id)
+            # Verify each device has required fields including street and zip
+            required_fields = ["device_id", "locationcode", "city", "street", "zip"]
+            devices_with_location_data = 0
+            
+            for device in devices:
+                missing_fields = [field for field in required_fields if field not in device]
+                if missing_fields:
+                    self.log_result(
+                        "All Devices", 
+                        False, 
+                        f"Device missing required fields: {missing_fields}",
+                        device
+                    )
+                    return False
+                
+                # Check if device has location data (street and zip are not empty)
+                if device.get("street") and device.get("zip"):
+                    devices_with_location_data += 1
+            
+            # Should have around 215 devices as mentioned in the review request
+            total_devices = len(devices)
+            if total_devices < 200:
+                self.log_result(
+                    "All Devices", 
+                    False, 
+                    f"Expected around 215 devices, got {total_devices}",
+                    {"total": total_devices, "summary": summary}
+                )
+                return False
             
             self.log_result(
-                "Create Location 1 (BERN03)", 
+                "All Devices", 
                 True, 
-                f"Location created: {location.get('location_code')} - {location.get('station_name')} (ID: {location_id})"
+                f"Retrieved {total_devices} devices, {devices_with_location_data} with location data. Summary: {summary}"
             )
-            return location
+            return devices
             
         except Exception as e:
             self.log_result(
-                "Create Location 1 (BERN03)", 
+                "All Devices", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
