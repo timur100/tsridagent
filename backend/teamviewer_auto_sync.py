@@ -76,8 +76,20 @@ class TeamViewerAutoSync:
                 async for db_device in cursor:
                     tvid = db_device.get("tvid", "").strip()
                     
-                    if tvid in tv_devices_map:
+                    # Try both formats: with and without 'r' prefix
+                    tvid_with_r = f"r{tvid}" if tvid and not tvid.startswith('r') else tvid
+                    tvid_without_r = tvid.lstrip('r') if tvid and tvid.startswith('r') else tvid
+                    
+                    # Try to find device in map
+                    tv_status = None
+                    if tvid_with_r in tv_devices_map:
+                        tv_status = tv_devices_map[tvid_with_r]
+                    elif tvid_without_r in tv_devices_map:
+                        tv_status = tv_devices_map[tvid_without_r]
+                    elif tvid in tv_devices_map:
                         tv_status = tv_devices_map[tvid]
+                    
+                    if tv_status:
                         is_online = tv_status["is_online"]
                         
                         # Update device status
