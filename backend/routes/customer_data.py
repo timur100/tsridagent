@@ -308,7 +308,7 @@ async def create_europcar_station(
         # For customers, ensure they can only create stations for their own company
         if user_role == "customer":
             # Get user's company from portal_users
-            user_doc = db.portal_users.find_one({"email": user_email})
+            user_doc = portal_db.portal_users.find_one({"email": user_email})
             if user_doc:
                 station_data['customer'] = user_doc.get('company', 'Europcar Autovermietung GmbH')
                 
