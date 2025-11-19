@@ -852,7 +852,7 @@ const AdminPortalContent = () => {
                     <div>
                       <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standorte</p>
                       <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {selectedCustomer === 'all' ? dashboardStats.total_locations : displayedLocationsCount}
+                        {(isTenantAdmin || selectedCustomer === 'all') ? dashboardStats.total_locations : displayedLocationsCount}
                       </p>
                     </div>
                     <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
