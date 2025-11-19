@@ -145,16 +145,26 @@ async def get_europcar_stations(
         else:
             # Non-admin can only see their own data
             user_email = token_data.get("sub")
-            customer = db.portal_users.find_one({"email": user_email})
+            tenant_ids = token_data.get("tenant_ids", [])
             
-            if not customer:
-                raise HTTPException(status_code=403, detail="Access denied")
-            
-            # Check if customer is active
-            if customer.get("status") != "Aktiv":
-                raise HTTPException(status_code=403, detail="Access denied: Customer account is not active")
-            
-            target_customer_company = customer.get("company")
+            # If user has tenant_ids, use that for filtering
+            if tenant_ids:
+                # User is a tenant admin - use tenant_id for filtering
+                # For now, just use the first tenant_id
+                # We'll filter devices by tenant_id instead of company
+                target_customer_company = None  # Will use tenant_id instead
+            else:
+                # Fallback to portal_users lookup
+                customer = db.portal_users.find_one({"email": user_email})
+                
+                if not customer:
+                    raise HTTPException(status_code=403, detail="Access denied")
+                
+                # Check if customer is active
+                if customer.get("status") != "Aktiv":
+                    raise HTTPException(status_code=403, detail="Access denied: Customer account is not active")
+                
+                target_customer_company = customer.get("company")
         
         # Build query filters
         station_query = {}
