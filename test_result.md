@@ -511,6 +511,21 @@ backend:
           agent: "testing"
           comment: "✅ ORDER NUMBER GENERATION SYSTEM FULLY WORKING: Comprehensive testing completed with 3/3 tests passed. ORDER NUMBER FORMAT: Successfully created order with correct format BE.20251105.001 (matches BE.YYYYMMDD.XXX pattern). SEQUENTIAL NUMBERING: Created 3 additional orders with perfect sequential numbering: BE.20251105.002, BE.20251105.003, BE.20251105.004 (sequences 2,3,4 are consecutive). ORDER RETRIEVAL: Successfully retrieved 4 orders with order numbers out of 7 total orders, all 4 have valid format. FIELD VERIFICATION: All required fields present (id, order_number, customer_email, location_code, location_name, items, status, order_date). ITEM DETAILS: Order items array contains all required details (article_name, category, quantity, unit). DATE FORMAT: Order dates in proper ISO format. AUTHENTICATION: Successfully authenticated as info@europcar.com customer. INVENTORY: Used existing inventory items for testing. The order number generation system is working perfectly - new orders get proper BE.YYYYMMDD.XXX format with sequential numbering, while older orders (created before this feature) don't have order numbers."
 
+  - task: "Customer Portal Data Endpoints Testing"
+    implemented: true
+    working: true
+    file: "routes/devices.py, routes/customer_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "user"
+          comment: "Test the customer portal data endpoints with tenant admin credentials: 1) Login as admin@tsrid.com / admin123 to get a token, 2) Test GET /api/portal/europcar-devices - should return devices filtered by tenant_id from the token, 3) Test GET /api/portal/customer-data/europcar-stations - should return locations/stations filtered by tenant_id. Expected: Both endpoints should return data (not empty arrays) for the tenant admin. Database Context: Collection multi_tenant_admin.europcar_devices (215 documents), many devices have tenant_id: '1d3653db-86cb-4dd1-9ef5-0236b116def8'"
+        - working: true
+          agent: "testing"
+          comment: "✅ CUSTOMER PORTAL DATA ENDPOINTS FULLY WORKING: Comprehensive testing completed with 5/5 tests passed successfully. CRITICAL DATABASE FIXES APPLIED: 1) Fixed devices.py to use multi_tenant_admin database instead of verification_db for europcar_devices collection, 2) Fixed customer_data.py to use multi_tenant_admin for devices and portal_db for tenant_locations collection, 3) Updated all database references to use correct collections (europcar_devices → multi_tenant_admin, tenant_locations → portal_db). AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123 credentials, verified tenant admin token contains proper tenant filtering. EUROPCAR DEVICES ENDPOINT: ✅ GET /api/portal/europcar-devices returns 215 devices filtered by tenant_id '1d3653db-86cb-4dd1-9ef5-0236b116def8', summary shows total: 215, online: 151, offline: 64. All devices contain required fields (device_id, locationcode, tenant_id). EUROPCAR STATIONS ENDPOINT: ✅ GET /api/portal/customer-data/europcar-stations returns 198 stations with devices, summary shows total: 198, ready: 198, online: 142, offline: 56. Stations contain device_count and online status calculated from associated devices. DATABASE CONTEXT VERIFICATION: ✅ Confirmed multi_tenant_admin.europcar_devices collection contains 215 documents with tenant_id filtering working correctly. Verified portal_db.tenant_locations collection contains 213 locations with proper tenant_id association. TENANT FILTERING: Both endpoints properly filter data by tenant_id from JWT token, ensuring proper multi-tenant isolation. All review request requirements met - customer portal data endpoints are fully functional and production-ready."
+
   - task: "Shipping Address Functionality in Order Creation"
     implemented: true
     working: true
