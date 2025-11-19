@@ -10,6 +10,40 @@ router = APIRouter(prefix="/api/portal/europcar-devices", tags=["europcar-device
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 client = MongoClient(MONGO_URL)
 db = client['multi_tenant_admin']  # Use multi_tenant_admin database for europcar_devices
+portal_db = client['portal_db']  # For tenant_locations
+
+
+def enrich_devices_with_location_data(devices, tenant_id):
+    """
+    Enrich device data with street and zip from tenant_locations
+    Same function as in tenant_devices.py to ensure data consistency
+    """
+    # Get all locations for this tenant
+    locations = {}
+    for loc in portal_db.tenant_locations.find({"tenant_id": tenant_id}):
+        location_code = loc.get('location_code')
+        if location_code:
+            locations[location_code] = {
+                'street': loc.get('street', ''),
+                'zip': loc.get('postal_code', '')
+            }
+    
+    # Enrich each device with location data
+    enriched_devices = []
+    for device in devices:
+        locationcode = device.get('locationcode', '')
+        if locationcode and locationcode in locations:
+            device['street'] = locations[locationcode]['street']
+            device['zip'] = locations[locationcode]['zip']
+        else:
+            # Set empty values if no location match
+            if 'street' not in device:
+                device['street'] = ''
+            if 'zip' not in device:
+                device['zip'] = ''
+        enriched_devices.append(device)
+    
+    return enriched_devices
 
 
 @router.get("")
