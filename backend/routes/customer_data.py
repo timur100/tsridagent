@@ -446,13 +446,13 @@ async def deactivate_europcar_station(
             raise HTTPException(status_code=403, detail="Only admins can deactivate stations")
         
         # Find station
-        station = db.europcar_stations.find_one({"main_code": station_code})
+        station = portal_db.tenant_locations.find_one({"location_code": station_code})
         if not station:
             raise HTTPException(status_code=404, detail="Station not found")
         
         # Update status to inactive
-        db.europcar_stations.update_one(
-            {"main_code": station_code},
+        portal_db.tenant_locations.update_one(
+            {"location_code": station_code},
             {"$set": {
                 "status": "inactive",
                 "deactivated_at": datetime.now(timezone.utc).isoformat(),
