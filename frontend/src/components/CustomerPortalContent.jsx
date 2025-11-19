@@ -143,13 +143,25 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
       const deviceScrollPos = deviceTableScroll ? deviceTableScroll.scrollTop : 0;
       const standorteScrollPos = standorteTableScroll ? standorteTableScroll.scrollTop : 0;
       
-      // Check if customer is Europcar (case-insensitive)
-      const isEuropcar = user?.company && user.company.toLowerCase().includes('europcar');
+      // Check if customer has tenant_ids (is a tenant admin/user)
+      const hasTenantId = user?.tenant_ids && user.tenant_ids.length > 0;
+      const tenantId = hasTenantId ? user.tenant_ids[0] : null;
       
-      if (isEuropcar) {
-        console.log('[CustomerPortal] Checking for data updates...');
+      // Also check for Europcar company name (backward compatibility)
+      const isEuropcar = (user?.company && user.company.toLowerCase().includes('europcar')) || hasTenantId;
+      
+      if (isEuropcar && tenantId) {
+        console.log('[CustomerPortal] Loading data for tenant:', tenantId);
         
-        // Load Europcar-specific data
+        // Load tenant-specific data using unified endpoints
+        const [devicesRes, locationsRes] = await Promise.all([
+          apiCall(`/api/tenant-devices/${tenantId}`),
+          apiCall(`/api/tenant-locations/${tenantId}`)
+        ]);
+      } else if (isEuropcar) {
+        // Fallback for old Europcar-specific endpoints
+        console.log('[CustomerPortal] Loading data using legacy Europcar endpoints');
+        
         const [devicesRes, locationsRes] = await Promise.all([
           apiCall('/api/portal/europcar-devices'),
           apiCall('/api/portal/customer-data/europcar-stations')
