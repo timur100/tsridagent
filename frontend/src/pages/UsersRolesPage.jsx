@@ -42,9 +42,30 @@ const UsersRolesPage = () => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  // Check if current user is superadmin
+  const isSuperAdmin = user?.email === 'admin@tsrid.com' || user?.role === 'super_admin';
+
+  // Determine which tenant_id to use for filtering
+  const getEffectiveTenantId = () => {
+    // Superadmin or "Alle Kunden" -> no filter
+    if (isSuperAdmin && (selectedTenantId === 'all' || !selectedTenantId)) {
+      return null;
+    }
+    // Specific tenant selected
+    if (selectedTenantId && selectedTenantId !== 'all') {
+      return selectedTenantId;
+    }
+    // Default: no filter for superadmin
+    if (isSuperAdmin) {
+      return null;
+    }
+    // For regular users, use their tenant_id
+    return user?.tenant_id || null;
+  };
+
   useEffect(() => {
     loadData();
-  }, []);
+  }, [selectedTenantId]); // Reload when tenant changes
 
   const loadData = async () => {
     setLoading(true);
