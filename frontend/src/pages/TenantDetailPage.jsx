@@ -57,6 +57,16 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const tabFromUrl = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(initialTab || tabFromUrl || location.state?.activeTab || 'dashboard');
   const [isEditing, setIsEditing] = useState(false);
+  const [dashboardStats, setDashboardStats] = useState({
+    total_locations: 0,
+    online_devices: 0,
+    offline_devices: 0,
+    in_preparation: 0,
+    total_scans: 0,
+    correct_scans: 0,
+    unknown_scans: 0,
+    failed_scans: 0
+  });
   
   // Document upload states
   const [documents, setDocuments] = useState([]);
