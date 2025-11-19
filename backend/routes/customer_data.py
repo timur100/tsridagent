@@ -570,17 +570,17 @@ async def get_customer_data_stats(customer_email: str, token_data: dict = Depend
     Get customer data statistics
     """
     try:
-        locations_count = db.customer_locations.count_documents({"customer_email": customer_email})
-        devices_count = db.customer_devices.count_documents({"customer_email": customer_email})
-        employees_count = db.customer_employees.count_documents({"customer_email": customer_email})
-        licenses_count = db.customer_licenses.count_documents({"customer_email": customer_email})
+        locations_count = portal_db.customer_locations.count_documents({"customer_email": customer_email})
+        devices_count = portal_db.customer_devices.count_documents({"customer_email": customer_email})
+        employees_count = portal_db.customer_employees.count_documents({"customer_email": customer_email})
+        licenses_count = portal_db.customer_licenses.count_documents({"customer_email": customer_email})
         
         # Get devices online/offline
-        devices_online = db.customer_devices.count_documents({
+        devices_online = portal_db.customer_devices.count_documents({
             "customer_email": customer_email,
             "status": "online"
         })
-        devices_offline = db.customer_devices.count_documents({
+        devices_offline = portal_db.customer_devices.count_documents({
             "customer_email": customer_email,
             "status": "offline"
         })
