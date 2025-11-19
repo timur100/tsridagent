@@ -1293,30 +1293,15 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 Technische Informationen
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>API-Key</p>
-                  <p className={`font-medium font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.api_key || '••••••••••••••••••••••••••••••••'}
-                  </p>
-                </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Webhook-URL</p>
-                  <p className={`font-medium text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.webhook_url || 'https://' + (tenant.domain || 'example.com') + '/webhook'}
-                  </p>
-                </div>
+                {renderEditableField('API-Key', 'api_key', tenant.api_key || '••••••••••••••••••••••••••••••••')}
+                {renderEditableField('Webhook-URL', 'webhook_url', tenant.webhook_url || 'https://' + (tenant.domain || 'example.com') + '/webhook')}
                 <div>
                   <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Letzte Synchronisation</p>
                   <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {tenant.last_sync ? new Date(tenant.last_sync).toLocaleString('de-DE') : 'Nie'}
                   </p>
                 </div>
-                <div>
-                  <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Server-Region</p>
-                  <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.server_region || 'EU-Central (Frankfurt)'}
-                  </p>
-                </div>
+                {renderEditableField('Server-Region', 'server_region', tenant.server_region || 'EU-Central (Frankfurt)')}
               </div>
             </Card>
 
