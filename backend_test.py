@@ -188,12 +188,15 @@ class DataSynchronizationTester:
                 )
                 return None
             
-            devices = data.get("devices", [])
+            # Check if we have data structure
+            response_data = data.get("data", {})
+            devices = response_data.get("devices", [])
+            summary = response_data.get("summary", {})
             
-            # Count online/offline devices
-            online_count = sum(1 for d in devices if d.get("status") == "online")
-            offline_count = sum(1 for d in devices if d.get("status") == "offline")
-            total_count = len(devices)
+            # Extract counts from summary or calculate from devices
+            total_count = summary.get("total", len(devices))
+            online_count = summary.get("online", sum(1 for d in devices if d.get("status") == "online"))
+            offline_count = summary.get("offline", sum(1 for d in devices if d.get("status") == "offline"))
             
             self.log_result(
                 "Admin Portal Devices", 
