@@ -148,6 +148,31 @@ async def get_all_devices(
         
         print(f"✅ Found {len(devices)} total devices")
         
+        # Get all locations from all tenants
+        all_locations = {}
+        for loc in portal_db.tenant_locations.find({}):
+            location_code = loc.get('location_code')
+            if location_code:
+                all_locations[location_code] = {
+                    'street': loc.get('street', ''),
+                    'zip': loc.get('postal_code', '')
+                }
+        
+        # Enrich each device with location data
+        for device in devices:
+            locationcode = device.get('locationcode', '')
+            if locationcode and locationcode in all_locations:
+                device['street'] = all_locations[locationcode]['street']
+                device['zip'] = all_locations[locationcode]['zip']
+            else:
+                # Set empty values if no location match
+                if 'street' not in device:
+                    device['street'] = ''
+                if 'zip' not in device:
+                    device['zip'] = ''
+        
+        print(f"✅ Enriched devices with location data")
+        
         # Calculate summary statistics
         total = len(devices)
         online_count = sum(1 for d in devices if d.get('status', '').lower() == 'online')
