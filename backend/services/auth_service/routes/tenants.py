@@ -87,8 +87,11 @@ async def search_tenants(
             user_count = await users_collection.count_documents({"tenant_id": tenant["tenant_id"]})
             tenant["user_count"] = user_count
             
+            # Count devices for this tenant (online + offline)
+            device_count = await count_tenant_devices(tenant["tenant_id"])
+            tenant["device_count"] = device_count
+            
             # Add default values for resource usage (will be updated with real data later)
-            tenant.setdefault("device_count", 0)
             tenant.setdefault("storage_used_gb", 0.0)
             tenant.setdefault("api_calls_today", 0)
             tenant.setdefault("last_activity", None)
@@ -127,8 +130,11 @@ async def list_tenants(
             user_count = await users_collection.count_documents({"tenant_id": tenant["tenant_id"]})
             tenant["user_count"] = user_count
             
+            # Count devices for this tenant (online + offline)
+            device_count = await count_tenant_devices(tenant["tenant_id"])
+            tenant["device_count"] = device_count
+            
             # Add default values for resource usage (will be updated with real data later)
-            tenant.setdefault("device_count", 0)
             tenant.setdefault("storage_used_gb", 0.0)
             tenant.setdefault("api_calls_today", 0)
             tenant.setdefault("last_activity", None)
