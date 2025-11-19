@@ -14,10 +14,57 @@ class TenantContact(BaseModel):
     """Contact information for tenant"""
     admin_email: EmailStr
     phone: Optional[str] = None
+    support_email: Optional[str] = None
+    fax: Optional[str] = None
     address: Optional[str] = None
     city: Optional[str] = None
     country: Optional[str] = None
     postal_code: Optional[str] = None
+
+class TenantAddress(BaseModel):
+    """Detailed address information for tenant"""
+    street: Optional[str] = None
+    additional: Optional[str] = None
+    postal_code: Optional[str] = None
+    city: Optional[str] = None
+    state: Optional[str] = None
+    country: Optional[str] = None
+
+class ContactPerson(BaseModel):
+    """Contact person details"""
+    name: Optional[str] = None
+    position: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+
+class TenantContactPersons(BaseModel):
+    """All contact persons for tenant"""
+    primary: Optional[ContactPerson] = None
+    technical: Optional[ContactPerson] = None
+    billing: Optional[ContactPerson] = None
+
+class TenantTax(BaseModel):
+    """Tax information for tenant"""
+    vat_id: Optional[str] = None
+    tax_number: Optional[str] = None
+
+class TenantContract(BaseModel):
+    """Contract information for tenant"""
+    number: Optional[str] = None
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    notice_period: Optional[str] = None
+
+class TenantPayment(BaseModel):
+    """Payment information for tenant"""
+    method: Optional[str] = None
+    interval: Optional[str] = None
+
+class TenantSubscription(BaseModel):
+    """Subscription details for tenant"""
+    monthly_cost: Optional[str] = None
+    next_billing: Optional[str] = None
+    auto_renewal: Optional[bool] = True
 
 class TenantBase(BaseModel):
     name: str
