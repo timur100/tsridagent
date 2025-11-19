@@ -73,20 +73,8 @@ class TeamViewerAutoSync:
                     "tvid": {"$exists": True, "$ne": None, "$ne": ""}
                 })
                 
-                # Get device count for debugging
-                db_device_count = await devices_collection.count_documents({
-                    "tvid": {"$exists": True, "$ne": None, "$ne": ""}
-                })
-                logger.info(f"[Auto-Sync] DB devices with TVID: {db_device_count}")
-                
-                checked_count = 0
                 async for db_device in cursor:
                     tvid = db_device.get("tvid", "").strip()
-                    checked_count += 1
-                    
-                    # Log first device for debugging
-                    if checked_count == 1:
-                        logger.info(f"[Auto-Sync] First DB device TVID: {tvid}")
                     
                     # Try both formats: with and without 'r' prefix
                     tvid_with_r = f"r{tvid}" if tvid and not tvid.startswith('r') else tvid
@@ -96,16 +84,10 @@ class TeamViewerAutoSync:
                     tv_status = None
                     if tvid_with_r in tv_devices_map:
                         tv_status = tv_devices_map[tvid_with_r]
-                        if checked_count <= 3:
-                            logger.info(f"[Auto-Sync] Match found with r-prefix: {tvid} -> {tvid_with_r}")
                     elif tvid_without_r in tv_devices_map:
                         tv_status = tv_devices_map[tvid_without_r]
-                        if checked_count <= 3:
-                            logger.info(f"[Auto-Sync] Match found without r-prefix: {tvid} -> {tvid_without_r}")
                     elif tvid in tv_devices_map:
                         tv_status = tv_devices_map[tvid]
-                        if checked_count <= 3:
-                            logger.info(f"[Auto-Sync] Match found exact: {tvid}")
                     
                     if tv_status:
                         is_online = tv_status["is_online"]
