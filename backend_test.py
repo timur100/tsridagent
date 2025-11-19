@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Tenant Locations APIs
-Tests the Tenant Locations API endpoints comprehensively.
+Backend API Testing for Tenant Devices with Location Data Enrichment
+Tests the Tenant Devices API endpoints with location data enrichment functionality.
 """
 
 import requests
@@ -13,7 +13,7 @@ from typing import Dict, Any, List
 BACKEND_URL = "https://tenant-devices.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class TenantLocationsTester:
+class TenantDevicesTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
