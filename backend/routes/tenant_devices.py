@@ -17,6 +17,38 @@ db = client[DB_NAME]
 portal_db = client['portal_db']
 
 
+def enrich_devices_with_location_data(devices, tenant_id):
+    """
+    Enrich device data with street and zip from tenant_locations
+    """
+    # Get all locations for this tenant
+    locations = {}
+    for loc in portal_db.tenant_locations.find({"tenant_id": tenant_id}):
+        location_code = loc.get('location_code')
+        if location_code:
+            locations[location_code] = {
+                'street': loc.get('street', ''),
+                'zip': loc.get('postal_code', '')
+            }
+    
+    # Enrich each device with location data
+    enriched_devices = []
+    for device in devices:
+        locationcode = device.get('locationcode', '')
+        if locationcode and locationcode in locations:
+            device['street'] = locations[locationcode]['street']
+            device['zip'] = locations[locationcode]['zip']
+        else:
+            # Set empty values if no location match
+            if 'street' not in device:
+                device['street'] = ''
+            if 'zip' not in device:
+                device['zip'] = ''
+        enriched_devices.append(device)
+    
+    return enriched_devices
+
+
 @router.get("/{tenant_id}")
 async def get_tenant_devices(
     tenant_id: str,
