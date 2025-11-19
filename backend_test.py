@@ -315,72 +315,59 @@ class TenantDevicesTester:
             )
             return False
     
-    def test_create_location_3(self):
-        """Test creating Location 3: BERC01, BE, Type C"""
+    def test_device_location_data_validation(self, devices):
+        """Test validation of device location data mapping"""
         try:
-            location_data = {
-                "location_code": "BERC01",
-                "station_name": "Berlin City Center",
-                "street": "Unter den Linden 1",
-                "postal_code": "10117",
-                "city": "Berlin",
-                "state": "BE",
-                "manager": "Peter Müller",
-                "phone": "+49 30 11111111",
-                "email": "peter.mueller@europcar.com",
-                "main_type": "C"
-            }
-            
-            response = self.session.post(
-                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
-                json=location_data
-            )
-            
-            if response.status_code != 200:
+            if not devices:
                 self.log_result(
-                    "Create Location 3 (BERC01)", 
+                    "Device Location Data Validation", 
                     False, 
-                    f"Location creation failed. Status: {response.status_code}",
-                    response.text
+                    "No devices provided for testing"
                 )
                 return False
             
-            data = response.json()
+            # Test 3-5 different devices as requested
+            test_devices = devices[:5]  # Take first 5 devices
+            validated_devices = 0
+            devices_with_location = 0
+            devices_without_location = 0
             
-            if not data.get("success"):
-                self.log_result(
-                    "Create Location 3 (BERC01)", 
-                    False, 
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            location = data.get("location", {})
-            location_id = location.get("location_id")
-            
-            if not location_id:
-                self.log_result(
-                    "Create Location 3 (BERC01)", 
-                    False, 
-                    "Response missing location_id",
-                    data
-                )
-                return False
-            
-            # Store for cleanup
-            self.test_locations.append(location_id)
+            for device in test_devices:
+                device_id = device.get("device_id", "unknown")
+                locationcode = device.get("locationcode", "")
+                street = device.get("street", "")
+                zip_code = device.get("zip", "")
+                
+                # Verify that street and zip fields exist (even if empty)
+                if "street" not in device or "zip" not in device:
+                    self.log_result(
+                        "Device Location Data Validation", 
+                        False, 
+                        f"Device {device_id} missing street or zip fields",
+                        device
+                    )
+                    return False
+                
+                # Count devices with and without location data
+                if street and zip_code:
+                    devices_with_location += 1
+                    print(f"   Device {device_id} (locationcode: {locationcode}) has location: street='{street}', zip='{zip_code}'")
+                else:
+                    devices_without_location += 1
+                    print(f"   Device {device_id} (locationcode: {locationcode}) has empty location data")
+                
+                validated_devices += 1
             
             self.log_result(
-                "Create Location 3 (BERC01)", 
+                "Device Location Data Validation", 
                 True, 
-                f"Location created: {location.get('location_code')} - {location.get('station_name')} (ID: {location_id})"
+                f"Validated {validated_devices} devices: {devices_with_location} with location data, {devices_without_location} without"
             )
-            return location
+            return True
             
         except Exception as e:
             self.log_result(
-                "Create Location 3 (BERC01)", 
+                "Device Location Data Validation", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
