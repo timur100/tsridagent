@@ -174,8 +174,10 @@ const AdminPortalContent = () => {
     const fetchDashboardStats = async () => {
       try {
         const result = await apiCall('/api/tenants/stats');
-        if (result) {
-          setDashboardStats(result);
+        console.log('[Dashboard] Stats API result:', result);
+        if (result && result.success && result.data) {
+          console.log('[Dashboard] Setting stats:', result.data);
+          setDashboardStats(result.data);
         }
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
