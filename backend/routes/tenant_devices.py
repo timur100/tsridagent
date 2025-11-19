@@ -89,6 +89,10 @@ async def get_tenant_devices(
         
         print(f"✅ Found {len(devices)} devices")
         
+        # Enrich devices with street and zip from tenant_locations
+        devices = enrich_devices_with_location_data(devices, tenant_id)
+        print(f"✅ Enriched devices with location data")
+        
         # Calculate summary statistics
         total = len(devices)
         online_count = sum(1 for d in devices if d.get('status', '').lower() == 'online')
