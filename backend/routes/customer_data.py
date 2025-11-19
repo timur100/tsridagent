@@ -524,7 +524,7 @@ async def update_europcar_station(
         # If not admin, check if user is the Europcar customer and if they're active
         if not is_admin:
             user_email = token_data.get("sub")
-            customer = db.portal_users.find_one({"email": user_email})
+            customer = portal_db.portal_users.find_one({"email": user_email})
             
             # Check if customer's company contains "Europcar" (case-insensitive)
             if not customer or not (customer.get("company") and "europcar" in customer.get("company", "").lower()):
@@ -534,8 +534,8 @@ async def update_europcar_station(
             if customer.get("status") != "Aktiv":
                 raise HTTPException(status_code=403, detail="Access denied: Customer account is not active")
         
-        # Find station by main_code
-        station = db.europcar_stations.find_one({"main_code": station_code})
+        # Find station by location_code
+        station = portal_db.tenant_locations.find_one({"location_code": station_code})
         if not station:
             raise HTTPException(status_code=404, detail="Station not found")
         
