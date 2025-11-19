@@ -248,72 +248,68 @@ class TenantDevicesTester:
             )
             return False
     
-    def test_create_location_2(self):
-        """Test creating Location 2: BERT01, BE, Type CAP"""
+    def test_bern03_device_location_data(self, devices):
+        """Test specific BERN03 device location data mapping"""
         try:
-            location_data = {
-                "location_code": "BERT01",
-                "station_name": "Berlin Tegel Airport",
-                "street": "Flughafen Tegel",
-                "postal_code": "13405",
-                "city": "Berlin",
-                "state": "BE",
-                "manager": "Anna Schmidt",
-                "phone": "+49 30 87654321",
-                "email": "anna.schmidt@europcar.com",
-                "main_type": "CAP"
-            }
-            
-            response = self.session.post(
-                f"{API_BASE}/tenant-locations/{self.test_tenant_id}", 
-                json=location_data
-            )
-            
-            if response.status_code != 200:
+            if not devices:
                 self.log_result(
-                    "Create Location 2 (BERT01)", 
+                    "BERN03 Device Location Data", 
                     False, 
-                    f"Location creation failed. Status: {response.status_code}",
-                    response.text
+                    "No devices provided for testing"
                 )
                 return False
             
-            data = response.json()
+            # Find device with locationcode BERN03
+            bern03_device = None
+            for device in devices:
+                if device.get("locationcode") == "BERN03":
+                    bern03_device = device
+                    break
             
-            if not data.get("success"):
+            if not bern03_device:
                 self.log_result(
-                    "Create Location 2 (BERT01)", 
+                    "BERN03 Device Location Data", 
                     False, 
-                    "Response indicates failure",
-                    data
+                    "No device found with locationcode BERN03",
+                    {"available_locationcodes": [d.get("locationcode") for d in devices[:10]]}  # Show first 10
                 )
                 return False
             
-            location = data.get("location", {})
-            location_id = location.get("location_id")
+            # Verify expected location data for BERN03
+            expected_street = "SCHWANEBECKER CHAUSSEE 12"
+            expected_zip = "16321"
             
-            if not location_id:
+            actual_street = bern03_device.get("street", "")
+            actual_zip = bern03_device.get("zip", "")
+            
+            if actual_street != expected_street:
                 self.log_result(
-                    "Create Location 2 (BERT01)", 
+                    "BERN03 Device Location Data", 
                     False, 
-                    "Response missing location_id",
-                    data
+                    f"Street mismatch for BERN03. Expected: '{expected_street}', Got: '{actual_street}'",
+                    bern03_device
                 )
                 return False
             
-            # Store for cleanup
-            self.test_locations.append(location_id)
+            if actual_zip != expected_zip:
+                self.log_result(
+                    "BERN03 Device Location Data", 
+                    False, 
+                    f"ZIP mismatch for BERN03. Expected: '{expected_zip}', Got: '{actual_zip}'",
+                    bern03_device
+                )
+                return False
             
             self.log_result(
-                "Create Location 2 (BERT01)", 
+                "BERN03 Device Location Data", 
                 True, 
-                f"Location created: {location.get('location_code')} - {location.get('station_name')} (ID: {location_id})"
+                f"BERN03 device correctly mapped: street='{actual_street}', zip='{actual_zip}'"
             )
-            return location
+            return bern03_device
             
         except Exception as e:
             self.log_result(
-                "Create Location 2 (BERT01)", 
+                "BERN03 Device Location Data", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
