@@ -173,11 +173,30 @@ const AdminPortalContent = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        const result = await apiCall('/api/tenants/stats');
+        // Check if user is a tenant admin (has tenant_ids but is not superadmin)
+        const isTenantAdmin = user?.tenant_ids?.length > 0 && 
+                             user?.email !== 'admin@tsrid.com' && 
+                             user?.user_type !== 'super_admin';
+        
+        let result;
+        
+        if (isTenantAdmin && user.tenant_ids.length === 1) {
+          // Tenant admin - load their specific tenant stats
+          const tenantId = user.tenant_ids[0];
+          console.log('[Dashboard] Loading tenant-specific stats for:', tenantId);
+          result = await apiCall(`/api/tenants/${tenantId}/dashboard-stats`);
+        } else {
+          // Superadmin - load global stats
+          console.log('[Dashboard] Loading global stats (superadmin)');
+          result = await apiCall('/api/tenants/stats');
+        }
+        
         console.log('[Dashboard] Stats API result:', result);
         if (result && result.success && result.data) {
           console.log('[Dashboard] Setting stats:', result.data);
           setDashboardStats(result.data);
+        } else if (result && !result.success) {
+          console.error('[Dashboard] API error:', result);
         }
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
@@ -187,7 +206,7 @@ const AdminPortalContent = () => {
     if (activeTab === 'dashboard') {
       fetchDashboardStats();
     }
-  }, [activeTab, apiCall]);
+  }, [activeTab, apiCall, user]);
 
   // Fetch scan statistics
   useEffect(() => {
