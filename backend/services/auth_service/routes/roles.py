@@ -165,7 +165,7 @@ async def create_role(
 
 @router.get("/", response_model=List[RoleResponse])
 async def get_roles(
-    tenant_id: Optional[str] = None,
+    tenant_id: Optional[str] = Query(None),
     current_user: dict = Depends(get_current_admin)
 ):
     """
