@@ -158,13 +158,24 @@ const UsersRolesPage = () => {
 
   const loadRegistrations = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/portal/auth/registrations`, {
+      const effectiveTenantId = getEffectiveTenantId();
+      let url = `${BACKEND_URL}/api/portal/auth/registrations`;
+      
+      // Add tenant filter if specific tenant is selected
+      if (effectiveTenantId) {
+        url += `?tenant_id=${effectiveTenantId}`;
+      }
+      
+      console.log('[UsersRoles] Loading registrations with URL:', url);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('[UsersRoles] Loaded registrations:', data.length);
         setRegistrations(data);
       }
     } catch (error) {
