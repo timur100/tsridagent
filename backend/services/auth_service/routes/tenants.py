@@ -82,8 +82,9 @@ async def count_tenant_locations(tenant_id: str) -> int:
 
 @router.get("/stats", response_model=TenantStats)
 async def get_tenant_stats():
-    """Get overall tenant statistics"""
+    """Get overall tenant statistics across all tenants"""
     try:
+        # Basic tenant counts
         total_tenants = await tenants_collection.count_documents({})
         active_tenants = await tenants_collection.count_documents({"status": "active"})
         trial_tenants = await tenants_collection.count_documents({"status": "trial"})
@@ -92,13 +93,43 @@ async def get_tenant_stats():
         # Count users across all tenants
         total_users = await users_collection.count_documents({"tenant_id": {"$ne": None}})
         
+        # Get database connections
+        devices_db = get_devices_db()
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        client = AsyncIOMotorClient(mongo_url)
+        portal_db = client['portal_db']
+        
+        # Count devices (all tenants)
+        total_devices = await devices_db.europcar_devices.count_documents({})
+        online_devices = await devices_db.europcar_devices.count_documents({"status": "online"})
+        offline_devices = await devices_db.europcar_devices.count_documents({"status": "offline"})
+        
+        # Count locations (all tenants)
+        total_locations = await portal_db.tenant_locations.count_documents({})
+        
+        # Count scans (all tenants) - assuming scans are in verification_db
+        verification_db = client['verification_db']
+        
+        # Get scan statistics
+        total_scans = await verification_db.verifications.count_documents({})
+        correct_scans = await verification_db.verifications.count_documents({"status": "success"})
+        unknown_scans = await verification_db.verifications.count_documents({"status": "unknown"})
+        failed_scans = await verification_db.verifications.count_documents({"status": "failed"})
+        
         return TenantStats(
             total_tenants=total_tenants,
             active_tenants=active_tenants,
             trial_tenants=trial_tenants,
             suspended_tenants=suspended_tenants,
             total_users=total_users,
-            total_devices=0  # Will be populated when device service integration is ready
+            total_devices=total_devices,
+            total_locations=total_locations,
+            online_devices=online_devices,
+            offline_devices=offline_devices,
+            total_scans=total_scans,
+            correct_scans=correct_scans,
+            unknown_scans=unknown_scans,
+            failed_scans=failed_scans
         )
     except Exception as e:
         raise HTTPException(
