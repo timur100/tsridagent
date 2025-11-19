@@ -46,8 +46,8 @@ class DataSynchronizationTester:
             'response': response_data
         })
     
-    def authenticate_admin(self):
-        """Authenticate as admin user for testing"""
+    def authenticate_superadmin(self):
+        """Authenticate as superadmin user (admin@tsrid.com)"""
         try:
             auth_data = {
                 "email": "admin@tsrid.com",
@@ -58,7 +58,7 @@ class DataSynchronizationTester:
             
             if response.status_code != 200:
                 self.log_result(
-                    "Admin Authentication", 
+                    "Superadmin Authentication", 
                     False, 
                     f"Authentication failed. Status: {response.status_code}",
                     response.text
@@ -69,31 +69,78 @@ class DataSynchronizationTester:
             
             if not data.get("access_token"):
                 self.log_result(
-                    "Admin Authentication", 
+                    "Superadmin Authentication", 
                     False, 
                     "Authentication response missing access_token",
                     data
                 )
                 return False
             
-            self.admin_token = data["access_token"]
-            self.session.headers.update({
-                'Authorization': f'Bearer {self.admin_token}'
-            })
+            self.superadmin_token = data["access_token"]
             
             # Check if token contains tenant_ids
             tenant_ids = data.get("tenant_ids", [])
             
             self.log_result(
-                "Admin Authentication", 
+                "Superadmin Authentication", 
                 True, 
-                f"Successfully authenticated as admin@tsrid.com with tenant_ids: {tenant_ids}"
+                f"Successfully authenticated as admin@tsrid.com (Superadmin) with tenant_ids: {tenant_ids}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Admin Authentication", 
+                "Superadmin Authentication", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def authenticate_tenant_admin(self):
+        """Authenticate as tenant admin user (info@europcar.com)"""
+        try:
+            auth_data = {
+                "email": "info@europcar.com",
+                "password": "Berlin#2018"
+            }
+            
+            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Tenant Admin Authentication", 
+                    False, 
+                    f"Authentication failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("access_token"):
+                self.log_result(
+                    "Tenant Admin Authentication", 
+                    False, 
+                    "Authentication response missing access_token",
+                    data
+                )
+                return False
+            
+            self.tenant_admin_token = data["access_token"]
+            
+            # Check if token contains tenant_ids
+            tenant_ids = data.get("tenant_ids", [])
+            
+            self.log_result(
+                "Tenant Admin Authentication", 
+                True, 
+                f"Successfully authenticated as info@europcar.com (Tenant Admin) with tenant_ids: {tenant_ids}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Tenant Admin Authentication", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
