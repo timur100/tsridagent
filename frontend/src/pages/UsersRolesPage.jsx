@@ -44,6 +44,11 @@ const UsersRolesPage = () => {
 
   // Check if current user is superadmin
   const isSuperAdmin = user?.email === 'admin@tsrid.com' || user?.role === 'super_admin';
+  
+  // Check if user is a tenant admin (not superadmin, has exactly one tenant)
+  const isTenantAdmin = user?.tenant_ids?.length === 1 && 
+                       user?.email !== 'admin@tsrid.com' && 
+                       user?.user_type !== 'super_admin';
 
   // Determine which tenant_id to use for filtering
   const getEffectiveTenantId = () => {
