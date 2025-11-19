@@ -428,68 +428,35 @@ class TenantEditTester:
             )
             return False
     
-    def test_edge_cases_devices_without_location_match(self, devices):
-        """Test edge cases: devices without location match should have empty strings"""
+    def test_invalid_tenant_id_error(self):
+        """Test PUT /api/tenants/{invalid_id} - Non-existent tenant ID should return 404"""
         try:
-            if not devices:
+            invalid_tenant_id = "00000000-0000-0000-0000-000000000000"
+            update_data = {
+                "domain": "www.invalid-test.com"
+            }
+            
+            response = self.session.put(f"{API_BASE}/tenants/{invalid_tenant_id}", json=update_data)
+            
+            if response.status_code != 404:
                 self.log_result(
-                    "Edge Cases - Devices Without Location Match", 
+                    "Invalid Tenant ID Error", 
                     False, 
-                    "No devices provided for testing"
+                    f"Expected 404 for invalid tenant ID, got {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Find devices that should have empty location data
-            devices_without_match = []
-            devices_with_empty_location = []
-            
-            for device in devices:
-                locationcode = device.get("locationcode", "")
-                street = device.get("street", "")
-                zip_code = device.get("zip", "")
-                
-                # If device has no locationcode or empty locationcode
-                if not locationcode:
-                    devices_without_match.append(device)
-                    if street == "" and zip_code == "":
-                        devices_with_empty_location.append(device)
-                # If device has locationcode but no location data (empty strings)
-                elif street == "" and zip_code == "":
-                    devices_with_empty_location.append(device)
-            
-            # Verify that devices without location match have empty strings
-            edge_case_count = len(devices_with_empty_location)
-            
-            if edge_case_count == 0:
-                # This might be okay if all devices have location matches
-                self.log_result(
-                    "Edge Cases - Devices Without Location Match", 
-                    True, 
-                    "All devices have location data - no edge cases found (this is acceptable)"
-                )
-                return True
-            
-            # Verify that devices with empty location data have empty strings (not None or missing)
-            for device in devices_with_empty_location[:3]:  # Check first 3
-                if device.get("street") != "" or device.get("zip") != "":
-                    self.log_result(
-                        "Edge Cases - Devices Without Location Match", 
-                        False, 
-                        f"Device should have empty strings but has: street='{device.get('street')}', zip='{device.get('zip')}'",
-                        device
-                    )
-                    return False
-            
             self.log_result(
-                "Edge Cases - Devices Without Location Match", 
+                "Invalid Tenant ID Error", 
                 True, 
-                f"Found {edge_case_count} devices with empty location data (correctly set to empty strings)"
+                "Invalid tenant ID correctly rejected with 404 error"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Edge Cases - Devices Without Location Match", 
+                "Invalid Tenant ID Error", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
