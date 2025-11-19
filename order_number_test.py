@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-multi-tenant.preview.emergentagent.com"
+BACKEND_URL = "https://tenant-devices.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OrderNumberTester:
