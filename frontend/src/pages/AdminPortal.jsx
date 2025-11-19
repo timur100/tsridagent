@@ -102,6 +102,18 @@ const AdminPortalContent = () => {
     unknown_scans: 0,
     failed_scans: 0
   });
+  const [dashboardStats, setDashboardStats] = useState({
+    total_tenants: 0,
+    total_users: 0,
+    total_devices: 0,
+    online_devices: 0,
+    offline_devices: 0,
+    total_locations: 0,
+    total_scans: 0,
+    correct_scans: 0,
+    unknown_scans: 0,
+    failed_scans: 0
+  });
 
   // Check for return navigation from location detail page
   useEffect(() => {
