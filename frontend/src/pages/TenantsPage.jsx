@@ -8,7 +8,9 @@ import {
   Clock,
   Users,
   Server,
-  BarChart
+  BarChart,
+  MapPin,
+  HelpCircle
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTenant } from '../contexts/TenantContext';
