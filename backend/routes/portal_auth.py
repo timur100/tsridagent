@@ -150,7 +150,8 @@ async def login(request: LoginRequest):
             data={
                 "sub": request.email, 
                 "role": user_role,
-                "customer_id": user.get('customer_id') or user.get('user_id')  # Add customer_id to JWT
+                "customer_id": user.get('customer_id') or user.get('user_id'),
+                "tenant_ids": user.get('tenant_ids', [])  # Add tenant_ids to JWT
             }
         )
         
