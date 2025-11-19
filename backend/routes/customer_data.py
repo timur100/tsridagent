@@ -12,7 +12,7 @@ router = APIRouter(prefix="/api/portal/customer-data", tags=["Customer Data"])
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = mongo_client['multi_tenant_admin']  # Use multi_tenant_admin database for europcar data
 
 @router.post("/import/{customer_email}")
 async def import_customer_data(customer_email: str, token_data: dict = Depends(verify_token)):
