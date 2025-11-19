@@ -104,7 +104,8 @@ async def get_users(
     try:
         query = {}
         if tenant_id:
-            query["tenant_ids"] = tenant_id
+            # Filter users that have this tenant_id in their tenant_ids array
+            query["tenant_ids"] = {"$in": [tenant_id]}
         if user_type:
             query["user_type"] = user_type
         if status:
