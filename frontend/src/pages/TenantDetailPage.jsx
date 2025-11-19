@@ -150,6 +150,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       fetchLocations();
     }
   }, [activeTab, tenantId]);
+  useEffect(() => {
+    if (tenantId) {
+      fetchTenant();
+      fetchDocuments();
+      fetchLocations();
+      fetchDashboardStats();
+    }
+  }, [tenantId]);
 
   const fetchTenantDetails = async () => {
     setLoading(true);
