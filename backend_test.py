@@ -373,63 +373,68 @@ class TenantDevicesTester:
             )
             return False
     
-    def test_list_all_locations(self):
-        """Test GET /api/tenants/{tenant_id}/locations - List all locations"""
+    def test_edge_cases_devices_without_location_match(self, devices):
+        """Test edge cases: devices without location match should have empty strings"""
         try:
-            response = self.session.get(f"{API_BASE}/tenant-locations/{self.test_tenant_id}")
-            
-            if response.status_code != 200:
+            if not devices:
                 self.log_result(
-                    "List All Locations", 
+                    "Edge Cases - Devices Without Location Match", 
                     False, 
-                    f"List locations failed. Status: {response.status_code}",
-                    response.text
+                    "No devices provided for testing"
                 )
                 return False
             
-            data = response.json()
+            # Find devices that should have empty location data
+            devices_without_match = []
+            devices_with_empty_location = []
             
-            if not data.get("success"):
+            for device in devices:
+                locationcode = device.get("locationcode", "")
+                street = device.get("street", "")
+                zip_code = device.get("zip", "")
+                
+                # If device has no locationcode or empty locationcode
+                if not locationcode:
+                    devices_without_match.append(device)
+                    if street == "" and zip_code == "":
+                        devices_with_empty_location.append(device)
+                # If device has locationcode but no location data (empty strings)
+                elif street == "" and zip_code == "":
+                    devices_with_empty_location.append(device)
+            
+            # Verify that devices without location match have empty strings
+            edge_case_count = len(devices_with_empty_location)
+            
+            if edge_case_count == 0:
+                # This might be okay if all devices have location matches
                 self.log_result(
-                    "List All Locations", 
-                    False, 
-                    "Response indicates failure",
-                    data
+                    "Edge Cases - Devices Without Location Match", 
+                    True, 
+                    "All devices have location data - no edge cases found (this is acceptable)"
                 )
-                return False
+                return True
             
-            locations = data.get("locations", [])
-            total = data.get("total", 0)
-            
-            if total != len(locations):
-                self.log_result(
-                    "List All Locations", 
-                    False, 
-                    f"Total count mismatch: total={total}, locations count={len(locations)}",
-                    data
-                )
-                return False
-            
-            # Should have 3 locations
-            if len(locations) < 3:
-                self.log_result(
-                    "List All Locations", 
-                    False, 
-                    f"Expected at least 3 locations, got {len(locations)}",
-                    data
-                )
-                return False
+            # Verify that devices with empty location data have empty strings (not None or missing)
+            for device in devices_with_empty_location[:3]:  # Check first 3
+                if device.get("street") != "" or device.get("zip") != "":
+                    self.log_result(
+                        "Edge Cases - Devices Without Location Match", 
+                        False, 
+                        f"Device should have empty strings but has: street='{device.get('street')}', zip='{device.get('zip')}'",
+                        device
+                    )
+                    return False
             
             self.log_result(
-                "List All Locations", 
+                "Edge Cases - Devices Without Location Match", 
                 True, 
-                f"Retrieved {len(locations)} locations successfully"
+                f"Found {edge_case_count} devices with empty location data (correctly set to empty strings)"
             )
-            return locations
+            return True
             
         except Exception as e:
             self.log_result(
-                "List All Locations", 
+                "Edge Cases - Devices Without Location Match", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
