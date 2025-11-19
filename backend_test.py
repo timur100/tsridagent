@@ -372,59 +372,57 @@ class TenantEditTester:
             )
             return False
     
-    def test_device_location_data_validation(self, devices):
-        """Test validation of device location data mapping"""
+    def test_verify_tenant_persistence(self):
+        """Test that tenant changes are persisted in database"""
         try:
-            if not devices:
+            # Get tenant data after updates to verify persistence
+            response = self.session.get(f"{API_BASE}/tenants/{self.test_tenant_id}")
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "Device Location Data Validation", 
+                    "Verify Tenant Persistence", 
                     False, 
-                    "No devices provided for testing"
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Test 3-5 different devices as requested
-            test_devices = devices[:5]  # Take first 5 devices
-            validated_devices = 0
-            devices_with_location = 0
-            devices_without_location = 0
+            data = response.json()
             
-            for device in test_devices:
-                device_id = device.get("device_id", "unknown")
-                locationcode = device.get("locationcode", "")
-                street = device.get("street", "")
-                zip_code = device.get("zip", "")
-                
-                # Verify that street and zip fields exist (even if empty)
-                if "street" not in device or "zip" not in device:
-                    self.log_result(
-                        "Device Location Data Validation", 
-                        False, 
-                        f"Device {device_id} missing street or zip fields",
-                        device
-                    )
-                    return False
-                
-                # Count devices with and without location data
-                if street and zip_code:
-                    devices_with_location += 1
-                    print(f"   Device {device_id} (locationcode: {locationcode}) has location: street='{street}', zip='{zip_code}'")
-                else:
-                    devices_without_location += 1
-                    print(f"   Device {device_id} (locationcode: {locationcode}) has empty location data")
-                
-                validated_devices += 1
+            # Verify the latest partial update is persisted (domain should be the partial update value)
+            expected_domain = "www.europcar-partial-test.de"
+            if data.get("domain") != expected_domain:
+                self.log_result(
+                    "Verify Tenant Persistence", 
+                    False, 
+                    f"Domain not persisted correctly. Expected: '{expected_domain}', Got: '{data.get('domain')}'",
+                    data
+                )
+                return False
+            
+            # Verify tenant still exists and has required fields
+            required_fields = ["tenant_id", "name", "domain", "status", "contact"]
+            missing_fields = [field for field in required_fields if field not in data]
+            
+            if missing_fields:
+                self.log_result(
+                    "Verify Tenant Persistence", 
+                    False, 
+                    f"Missing required fields after updates: {missing_fields}",
+                    data
+                )
+                return False
             
             self.log_result(
-                "Device Location Data Validation", 
+                "Verify Tenant Persistence", 
                 True, 
-                f"Validated {validated_devices} devices: {devices_with_location} with location data, {devices_without_location} without"
+                f"Tenant data persisted correctly: domain='{data.get('domain')}', status='{data.get('status')}'"
             )
-            return True
+            return data
             
         except Exception as e:
             self.log_result(
-                "Device Location Data Validation", 
+                "Verify Tenant Persistence", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
