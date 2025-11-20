@@ -205,8 +205,8 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
 
               <SelectField
                 label="Kunde"
-                name="customer_email"
-                value={formData.customer_email}
+                name="tenant_id"
+                value={formData.tenant_id}
                 onChange={handleChange}
                 required
                 disabled={isSpecificCustomer}
@@ -214,8 +214,8 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
                 options={[
                   { value: '', label: 'Bitte wählen...' },
                   ...customers.map(c => ({
-                    value: c.email,
-                    label: `${c.company} (${c.name})`
+                    value: c.tenant_id || c.email,
+                    label: c.name || c.display_name || c.company || c.email
                   }))
                 ]}
               />
