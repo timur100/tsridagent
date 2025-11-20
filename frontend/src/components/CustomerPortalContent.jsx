@@ -110,6 +110,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     setLoading(true);
     loadData();
     loadPortalSettings();
+    loadDashboardStats();
     setLoading(false);
     
     // Auto-refresh data every 30 seconds
@@ -118,6 +119,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
       if (!modalOpenRef.current) {
         console.log('[CustomerPortal] Polling - checking for updates...');
         loadData();
+        loadDashboardStats();
       } else {
         console.log('[CustomerPortal] Polling skipped - modal is open');
       }
