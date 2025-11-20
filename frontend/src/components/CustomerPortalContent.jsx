@@ -1442,6 +1442,112 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
       {currentActiveTab === 'locations' && (
         <div className="space-y-6">
+          {/* Statistics Tiles */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Total Locations */}
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:scale-105 ${
+                theme === 'dark' ? 'bg-[#2a2a2a] border-none hover:bg-[#333]' : 'bg-white border border-gray-100 hover:shadow-lg'
+              }`}
+              onClick={() => {
+                // Reset all filters to show all locations
+                setStandortStatusFilter('all');
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Total Locations
+                  </p>
+                  <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {stations.length}
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
+                  <MapPin className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Total Devices */}
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:scale-105 ${
+                theme === 'dark' ? 'bg-[#2a2a2a] border-none hover:bg-[#333]' : 'bg-white border border-gray-100 hover:shadow-lg'
+              }`}
+              onClick={() => {
+                // Reset filter to show all devices
+                setStandortStatusFilter('all');
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Total Devices
+                  </p>
+                  <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {stations.reduce((sum, station) => sum + (station.device_count || 0), 0)}
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
+                  <Monitor className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Online Devices */}
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:scale-105 ${
+                theme === 'dark' ? 'bg-[#2a2a2a] border-none hover:bg-[#333]' : 'bg-white border border-gray-100 hover:shadow-lg'
+              }`}
+              onClick={() => {
+                // Filter to show only locations with online devices
+                setStandortStatusFilter('online');
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Online Devices
+                  </p>
+                  <p className={`text-3xl font-bold mt-2 text-green-500`}>
+                    {stations.reduce((sum, station) => sum + (station.online_device_count || 0), 0)}
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-green-500">
+                  <Monitor className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </Card>
+
+            {/* Offline Devices */}
+            <Card 
+              className={`p-6 cursor-pointer transition-all hover:scale-105 ${
+                theme === 'dark' ? 'bg-[#2a2a2a] border-none hover:bg-[#333]' : 'bg-white border border-gray-100 hover:shadow-lg'
+              }`}
+              onClick={() => {
+                // Filter to show only locations with offline devices
+                setStandortStatusFilter('offline');
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Offline Devices
+                  </p>
+                  <p className={`text-3xl font-bold mt-2 text-red-500`}>
+                    {stations.reduce((sum, station) => {
+                      const offline = (station.device_count || 0) - (station.online_device_count || 0);
+                      return sum + offline;
+                    }, 0)}
+                  </p>
+                </div>
+                <div className="p-3 rounded-lg bg-red-500">
+                  <Monitor className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </Card>
+          </div>
+
           <LocationsTabEnhanced
             theme={theme}
             locations={stations.map(station => ({
@@ -1451,7 +1557,15 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
               station_name: station.station_name || station.stationsname,
               online_device_count: station.online_device_count || 0,
               device_count: station.device_count || 0
-            }))}
+            })).filter(location => {
+              // Apply status filter based on clicked tile
+              if (standortStatusFilter === 'online') {
+                return location.online_device_count > 0;
+              } else if (standortStatusFilter === 'offline') {
+                return location.device_count > 0 && location.online_device_count === 0;
+              }
+              return true; // 'all' - show everything
+            })}
             loadingLocations={loading}
             onAddLocation={() => setShowAddStandortModal(true)}
             onEditLocation={() => {}}
