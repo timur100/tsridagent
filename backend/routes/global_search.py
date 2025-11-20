@@ -176,7 +176,7 @@ async def global_search(
                 seen_device_ids.add(device_id)
                 unique_devices.append(device)
         
-        for device in unique_devices[:10]:  # Limit to 10 results
+        for device in unique_devices[:50]:  # Limit to 50 results
             if '_id' in device:
                 del device['_id']
             geraete_results.append({
@@ -185,6 +185,7 @@ async def global_search(
                 "title": device.get('device_id'),
                 "subtitle": f"Standort: {device.get('locationcode', 'N/A')} | Status: {device.get('status', 'Unbekannt')}",
                 "status": device.get('status'),
+                "tenant_id": device.get('tenant_id'),
                 "data": device
             })
         
