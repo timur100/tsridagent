@@ -307,6 +307,10 @@ test_plan:
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
+  
+agent_communication:
+    - agent: "main"
+      message: "✅ WEBSOCKET TOKEN AUTHENTICATION BUG FIXED: Identified and resolved the root cause of WebSocket connection failures. The issue was that both TenantDetailPage.jsx and CustomerPortalContent.jsx were attempting to retrieve the token using user?.token, but the AuthContext exposes token as a separate top-level variable, not as a property of the user object. Applied fix to both components to destructure token directly from useAuth(). Manual backend test with Python websockets client confirmed successful connection establishment with JWT authentication, receiving proper connection_established message with tenant_id and timestamp. WebSocket infrastructure fully operational. Ready for comprehensive backend and frontend testing to verify complete end-to-end functionality. Note: Frontend testing may be affected by existing routing issue (app redirects to Scanner page instead of Admin/Customer Portal), which is a separate issue from WebSocket functionality."
 
 backend:
   - task: "Document Upload API - Complete Implementation"
