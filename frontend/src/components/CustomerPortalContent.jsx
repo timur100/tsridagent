@@ -26,7 +26,7 @@ import {
 import { useWebSocket } from '../hooks/useWebSocket';
 
 const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTab, scanStats = { total_scans: 0, correct_scans: 0, unknown_scans: 0, failed_scans: 0 } }) => {
-  const { user, apiCall } = useAuth();
+  const { user, token, apiCall } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
   
