@@ -301,7 +301,7 @@ const TenantDevicesTab = ({ tenantId }) => {
 
         {/* Add Device Button */}
         <button
-          onClick={() => toast.info('Gerät hinzufügen Funktion wird bald verfügbar sein')}
+          onClick={() => setShowAddModal(true)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
             theme === 'dark'
               ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
