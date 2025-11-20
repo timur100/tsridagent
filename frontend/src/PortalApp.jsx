@@ -88,9 +88,7 @@ const PortalRoutes = () => {
         path="/admin/tenants/:tenantId"
         element={
           <ProtectedRoute adminOnly>
-            <AdminPortalLayout>
-              <TenantDetailPage />
-            </AdminPortalLayout>
+            <TenantDetailPage />
           </ProtectedRoute>
         }
       />
@@ -99,9 +97,7 @@ const PortalRoutes = () => {
         path="/admin/locations/:locationId"
         element={
           <ProtectedRoute adminOnly>
-            <AdminPortalLayout>
-              <LocationDetailPage />
-            </AdminPortalLayout>
+            <LocationDetailPage />
           </ProtectedRoute>
         }
       />
@@ -110,9 +106,7 @@ const PortalRoutes = () => {
         path="/admin/tenants/:tenantId/locations/:locationId"
         element={
           <ProtectedRoute adminOnly>
-            <AdminPortalLayout>
-              <LocationDetailPage />
-            </AdminPortalLayout>
+            <LocationDetailPage />
           </ProtectedRoute>
         }
       />
