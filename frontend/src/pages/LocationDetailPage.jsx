@@ -30,8 +30,16 @@ const LocationDetailPage = () => {
   const [devices, setDevices] = useState([]);
   const [stats, setStats] = useState({
     total_devices: 0,
+    employees: 0,
     online_devices: 0,
-    offline_devices: 0
+    offline_devices: 0,
+    in_preparation: 0,
+    open_tickets: 0,
+    total_scans: 0,
+    correct_scans: 0,
+    unknown_scans: 0,
+    failed_scans: 0,
+    needs_error_analysis: 0
   });
   const [openingHours, setOpeningHours] = useState(null);
   const [isEditingHours, setIsEditingHours] = useState(false);
