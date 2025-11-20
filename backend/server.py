@@ -232,6 +232,9 @@ app.include_router(documents_router)
 # Tenant Locations
 app.include_router(tenant_locations_router)
 
+# WebSocket (Real-Time Updates)
+app.include_router(websocket_router)
+
 # Include electron routes
 app.include_router(electron_router)
 
