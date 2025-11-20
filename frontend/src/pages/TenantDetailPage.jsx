@@ -1706,11 +1706,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             {/* Statistics Grid for Locations */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Total Locations */}
-              <Card className={`p-6 rounded-xl transition-all duration-300 ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-              }`}>
+              <Card 
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
+                }`}
+                onClick={() => setLocationStatusFilter('all')}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1725,11 +1728,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               </Card>
 
               {/* Online Devices */}
-              <Card className={`p-6 rounded-xl transition-all duration-300 ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-              }`}>
+              <Card 
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
+                }`}
+                onClick={() => setLocationStatusFilter('online')}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1744,11 +1750,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               </Card>
 
               {/* Offline Devices */}
-              <Card className={`p-6 rounded-xl transition-all duration-300 ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-              }`}>
+              <Card 
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
+                }`}
+                onClick={() => setLocationStatusFilter('offline')}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1763,11 +1772,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               </Card>
 
               {/* Total Devices */}
-              <Card className={`p-6 rounded-xl transition-all duration-300 ${
-                theme === 'dark' 
-                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-              }`}>
+              <Card 
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
+                }`}
+                onClick={() => setLocationStatusFilter('all')}
+              >
                 <div className="flex items-center justify-between">
                   <div>
                     <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -1785,7 +1797,15 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             {/* Locations Table */}
             <LocationsTabEnhanced
               theme={theme}
-              locations={locations}
+              locations={locations.filter(location => {
+                // Apply status filter based on clicked tile
+                if (locationStatusFilter === 'online') {
+                  return location.online_device_count > 0;
+                } else if (locationStatusFilter === 'offline') {
+                  return location.device_count > 0 && location.online_device_count === 0;
+                }
+                return true; // 'all' - show everything
+              })}
               loadingLocations={loadingLocations}
               tenantId={tenantId}
               onAddLocation={() => {
