@@ -276,7 +276,7 @@ async def global_search(
                 ]
             }
             
-            euroboxes = list(db.euroboxes.find(eurobox_query).limit(10))
+            euroboxes = list(portal_db.euroboxes.find(eurobox_query).limit(10))
             for eurobox in euroboxes:
                 if '_id' in eurobox:
                     del eurobox['_id']
