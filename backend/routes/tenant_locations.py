@@ -223,6 +223,8 @@ async def update_opening_hours(
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
         
+        tenant_id = location.get('tenant_id')
+        
         # Update opening hours
         update_data = {
             "opening_hours": opening_hours.dict(),
@@ -233,6 +235,13 @@ async def update_opening_hours(
             {"location_id": location_id},
             {"$set": update_data}
         )
+        
+        # Broadcast update to all connected clients in real-time
+        from broadcast_service import schedule_broadcast
+        schedule_broadcast(tenant_id, "opening_hours_update", {
+            "location_id": location_id,
+            "opening_hours": opening_hours.dict()
+        })
         
         return {
             "success": True,
