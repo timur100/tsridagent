@@ -221,6 +221,11 @@ class WebSocketService {
         this.notifyHandlers('refresh_all', data);
         break;
       
+      case 'opening_hours_update':
+        console.log('[WebSocket] Opening hours update received:', message);
+        this.notifyHandlers('opening_hours_update', message);
+        break;
+      
       case 'error':
         console.error('[WebSocket] Server error:', message.message);
         break;
