@@ -19,10 +19,8 @@ export const AuthProvider = ({ children }) => {
     
     if (savedToken && savedUser) {
       const parsedUser = JSON.parse(savedUser);
-      setToken(savedToken);
-      setUser(parsedUser);
       
-      // Automatically refresh user data from backend to get latest company info
+      // CRITICAL FIX: Force refresh from backend ALWAYS to get correct company
       const refreshUserData = async () => {
         try {
           const xhr = new XMLHttpRequest();
@@ -33,28 +31,59 @@ export const AuthProvider = ({ children }) => {
             if (xhr.status === 200) {
               try {
                 const data = JSON.parse(xhr.responseText);
-                if (data && data.company !== parsedUser.company) {
-                  // Update user with fresh company data
-                  const updatedUser = { ...parsedUser, company: data.company, name: data.name };
-                  setUser(updatedUser);
-                  localStorage.setItem('portal_user', JSON.stringify(updatedUser));
-                  console.log('[AuthContext] Updated user company from:', parsedUser.company, 'to:', data.company);
+                console.log('[AuthContext] Fresh user data from backend:', data);
+                
+                // Always use backend data as source of truth
+                const updatedUser = { 
+                  ...parsedUser, 
+                  company: data.company || parsedUser.company,
+                  name: data.name || parsedUser.name 
+                };
+                
+                setUser(updatedUser);
+                setToken(savedToken);
+                localStorage.setItem('portal_user', JSON.stringify(updatedUser));
+                
+                if (parsedUser.company !== data.company) {
+                  console.log('[AuthContext] Company updated from:', parsedUser.company, 'to:', data.company);
                 }
               } catch (e) {
                 console.error('[AuthContext] Error parsing user refresh:', e);
+                // Fallback to saved user
+                setUser(parsedUser);
+                setToken(savedToken);
               }
+            } else {
+              // Fallback to saved user if API fails
+              setUser(parsedUser);
+              setToken(savedToken);
             }
+            setLoading(false);
+          };
+          
+          xhr.onerror = function() {
+            console.error('[AuthContext] Error refreshing user data');
+            // Fallback to saved user
+            setUser(parsedUser);
+            setToken(savedToken);
+            setLoading(false);
           };
           
           xhr.send();
         } catch (error) {
           console.error('[AuthContext] Error refreshing user data:', error);
+          // Fallback to saved user
+          setUser(parsedUser);
+          setToken(savedToken);
+          setLoading(false);
         }
       };
       
+      // Call refresh immediately
       refreshUserData();
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   const login = async (email, password) => {
