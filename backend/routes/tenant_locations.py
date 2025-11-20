@@ -137,11 +137,16 @@ async def get_location_details(
         device_list = []
         online_count = 0
         offline_count = 0
+        in_preparation_count = 0
         
         for device in devices:
             is_online = device.get('status', '').lower() == 'online' or device.get('teamviewer_online', False)
+            device_status = device.get('status', '').lower()
+            
             if is_online:
                 online_count += 1
+            elif device_status == 'in_preparation' or device_status == 'preparation':
+                in_preparation_count += 1
             else:
                 offline_count += 1
             
@@ -156,6 +161,22 @@ async def get_location_details(
                 "teamviewer_id": device.get('teamviewer_id', '-')
             })
         
+        # Get employees for this location (placeholder - to be implemented)
+        # TODO: Implement employee count from employee database
+        employees_count = 0
+        
+        # Get tickets for this location (placeholder - to be implemented)
+        # TODO: Implement tickets from tickets database
+        open_tickets_count = 0
+        
+        # Get scan statistics (placeholder - to be implemented)
+        # TODO: Implement scan statistics from scans database
+        total_scans = 0
+        correct_scans = 0
+        unknown_scans = 0
+        failed_scans = 0
+        needs_error_analysis = 0
+        
         # Get opening hours from database (if manually set)
         opening_hours = location.get('opening_hours', None)
         
@@ -165,8 +186,16 @@ async def get_location_details(
             "devices": device_list,
             "stats": {
                 "total_devices": len(device_list),
+                "employees": employees_count,
                 "online_devices": online_count,
-                "offline_devices": offline_count
+                "offline_devices": offline_count,
+                "in_preparation": in_preparation_count,
+                "open_tickets": open_tickets_count,
+                "total_scans": total_scans,
+                "correct_scans": correct_scans,
+                "unknown_scans": unknown_scans,
+                "failed_scans": failed_scans,
+                "needs_error_analysis": needs_error_analysis
             },
             "opening_hours": opening_hours
         }
