@@ -36,6 +36,7 @@ const LocationsTabEnhanced = ({
   const navigate = useNavigate();
   
   // Debug logging
+  console.log('[LocationsTabEnhanced] VERSION 2.0 - WITH ONLINE COLUMN FIRST');
   console.log('[LocationsTabEnhanced] Received locations:', locations?.length, 'items');
   console.log('[LocationsTabEnhanced] isCustomerPortal:', isCustomerPortal);
   const [searchTerm, setSearchTerm] = useState('');
