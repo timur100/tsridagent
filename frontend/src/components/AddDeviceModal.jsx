@@ -119,8 +119,8 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
       return;
     }
 
-    if (!formData.customer_email) {
-      toast.error('Bitte wählen Sie einen Kunden aus');
+    if (!formData.tenant_id) {
+      toast.error('Bitte wählen Sie einen Kunden/Tenant aus');
       return;
     }
 
