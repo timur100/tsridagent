@@ -1727,6 +1727,28 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 </div>
               </Card>
 
+              {/* Total Devices */}
+              <Card 
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
+                }`}
+                onClick={() => setLocationStatusFilter('all')}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Total Devices
+                    </p>
+                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {tenant.device_count || 0}
+                    </p>
+                  </div>
+                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                </div>
+              </Card>
+
               {/* Online Devices */}
               <Card 
                 className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
@@ -1768,28 +1790,6 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     </p>
                   </div>
                   <WifiOff className="h-12 w-12 text-red-500" />
-                </div>
-              </Card>
-
-              {/* Total Devices */}
-              <Card 
-                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer hover:scale-105 ${
-                  theme === 'dark' 
-                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:bg-[#333]' 
-                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-lg'
-                }`}
-                onClick={() => setLocationStatusFilter('all')}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Total Devices
-                    </p>
-                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {tenant.device_count || 0}
-                    </p>
-                  </div>
-                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                 </div>
               </Card>
             </div>
