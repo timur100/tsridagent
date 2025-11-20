@@ -203,7 +203,15 @@ async def global_search(
             ]
         }
         
-        locations = list(db.europcar_stations.find(location_query).limit(10))
+        # Search tenant_locations (main locations collection)
+        if user_role == "customer" and user_tenant_ids:
+            # Customer: only show locations from their tenant(s)
+            location_query_with_tenant = location_query.copy()
+            location_query_with_tenant["tenant_id"] = {"$in": user_tenant_ids}
+            locations = list(portal_db.tenant_locations.find(location_query_with_tenant).limit(50))
+        elif user_role == "admin":
+            # Admin: show all locations from all tenants
+            locations = list(portal_db.tenant_locations.find(location_query).limit(50))
         for location in locations:
             if '_id' in location:
                 del location['_id']
