@@ -106,6 +106,7 @@ const AdminPortalContent = () => {
       setActiveTab(location.state.activeTab || 'tenants');
       setSelectedTenantIdForDetail(location.state.selectedTenantId);
       setTenantInitialTab(location.state.tenantInitialTab || 'dashboard');
+      // Don't update TenantContext - it will interfere with the navigation
     }
   }, [location.state]);
 
