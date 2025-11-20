@@ -93,13 +93,14 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
   const handleChange = (e) => {
     const { name, value } = e.target;
     
-    // If customer selection changes, update both customer name and email
-    if (name === 'customer_email') {
-      const selectedCust = customers.find(c => c.email === value);
+    // If changing tenant, also update related fields
+    if (name === 'tenant_id') {
+      const selectedTenant = customers?.find(c => c.tenant_id === value || c.email === value);
       setFormData(prev => ({
         ...prev,
-        customer_email: value,
-        customer: selectedCust?.company || ''
+        tenant_id: value,
+        customer: selectedTenant?.name || selectedTenant?.display_name || selectedTenant?.company || '',
+        customer_email: selectedTenant?.email || ''
       }));
     } else {
       setFormData(prev => ({
