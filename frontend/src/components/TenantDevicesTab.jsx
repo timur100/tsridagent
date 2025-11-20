@@ -29,6 +29,7 @@ const TenantDevicesTab = ({ tenantId }) => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [availableTenants, setAvailableTenants] = useState([]);
   const [filters, setFilters] = useState({
     status: 'all',
     kontinent: 'all',
