@@ -232,8 +232,8 @@ app.include_router(documents_router)
 # Tenant Locations
 app.include_router(tenant_locations_router)
 
-# WebSocket (Real-Time Updates)
-app.include_router(websocket_router)
+# WebSocket (Real-Time Updates) - Include in api_router for /api prefix
+api_router.include_router(websocket_router)
 
 # Include electron routes
 app.include_router(electron_router)
