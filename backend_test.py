@@ -13,7 +13,7 @@ import pymongo
 import os
 
 # Backend URL from environment
-BACKEND_URL = "https://location-portal-1.preview.emergentagent.com"
+BACKEND_URL = "https://location-sync-2.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class DataSynchronizationTester:
