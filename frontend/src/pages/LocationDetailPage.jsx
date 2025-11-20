@@ -28,6 +28,7 @@ const LocationDetailPage = () => {
   const { theme } = useTheme();
   const { locationId, tenantId } = useParams();
   const navigate = useNavigate();
+  const { token } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [locationData, setLocationData] = useState(null);
@@ -50,6 +51,31 @@ const LocationDetailPage = () => {
   const [saving, setSaving] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  
+  // WebSocket integration for real-time updates
+  // Handle opening hours updates from WebSocket (from other admin users)
+  const handleOpeningHoursUpdate = useCallback((data) => {
+    console.log('[AdminLocationDetail] WebSocket opening hours update:', data);
+    if (data.location_id === locationId && !isEditingHours) {
+      // Only update if not currently editing (avoid conflicts)
+      setOpeningHours(data.opening_hours);
+      setEditedHours(data.opening_hours);
+      toast.success('Öffnungszeiten wurden von einem anderen Admin aktualisiert', {
+        duration: 3000,
+        icon: '🔄'
+      });
+    }
+  }, [locationId, isEditingHours]);
+  
+  // Connect to WebSocket for real-time updates
+  useWebSocket(tenantId, token, {
+    autoConnect: true,
+    onMessage: (message) => {
+      if (message.type === 'opening_hours_update') {
+        handleOpeningHoursUpdate(message);
+      }
+    }
+  });
 
   const days = [
     { key: 'monday', label: 'Montag' },
