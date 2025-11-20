@@ -68,13 +68,14 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
   // Determine if a specific customer is pre-selected
   const isSpecificCustomer = selectedCustomer && selectedCustomer !== 'all';
   const preSelectedCustomer = isSpecificCustomer 
-    ? customers?.find(c => c.email === selectedCustomer) 
+    ? customers?.find(c => c.tenant_id === selectedCustomer || c.email === selectedCustomer) 
     : null;
 
   const [formData, setFormData] = useState({
     device_id: '',
-    customer: preSelectedCustomer?.company || user?.company || '',
+    customer: preSelectedCustomer?.name || preSelectedCustomer?.display_name || preSelectedCustomer?.company || user?.company || '',
     customer_email: preSelectedCustomer?.email || user?.email || '',
+    tenant_id: preSelectedCustomer?.tenant_id || selectedCustomer || '',
     locationcode: prefilledLocationCode || '',
     city: '',
     street: '',
