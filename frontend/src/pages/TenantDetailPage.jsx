@@ -1802,7 +1802,9 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 if (locationStatusFilter === 'online') {
                   return location.online_device_count > 0;
                 } else if (locationStatusFilter === 'offline') {
-                  return location.device_count > 0 && location.online_device_count === 0;
+                  // Show locations with at least one offline device
+                  const offlineCount = (location.device_count || 0) - (location.online_device_count || 0);
+                  return offlineCount > 0;
                 }
                 return true; // 'all' - show everything
               })}
