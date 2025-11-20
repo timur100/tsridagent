@@ -55,6 +55,26 @@ async def broadcast_dashboard_update(tenant_id: str, stats_data: Dict[str, Any])
         logger.error(f"Error broadcasting dashboard update: {str(e)}")
 
 
+async def broadcast_opening_hours_update(tenant_id: str, location_id: str, opening_hours: Dict[str, Any]):
+    """
+    Broadcast opening hours update to all clients subscribed to the tenant
+    
+    Args:
+        tenant_id: The tenant ID
+        location_id: The location ID that was updated
+        opening_hours: The updated opening hours data
+    """
+    try:
+        await manager.broadcast_to_tenant(tenant_id, {
+            "type": "opening_hours_update",
+            "location_id": location_id,
+            "opening_hours": opening_hours
+        })
+        logger.info(f"Broadcasted opening hours update for location {location_id} in tenant {tenant_id}")
+    except Exception as e:
+        logger.error(f"Error broadcasting opening hours update: {str(e)}")
+
+
 async def trigger_full_refresh(tenant_id: str):
     """
     Trigger a full data refresh for all clients in a tenant room
