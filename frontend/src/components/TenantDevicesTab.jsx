@@ -49,8 +49,20 @@ const TenantDevicesTab = ({ tenantId }) => {
     if (tenantId) {
       loadDevices();
       loadStations();
+      loadAvailableTenants();
     }
   }, [tenantId]);
+
+  const loadAvailableTenants = async () => {
+    try {
+      const result = await apiCall('/api/tenants');
+      const tenantsArray = result?.data || result || [];
+      console.log('[TenantDevicesTab] Loaded tenants:', tenantsArray);
+      setAvailableTenants(tenantsArray);
+    } catch (error) {
+      console.error('[TenantDevicesTab] Error loading tenants:', error);
+    }
+  };
 
   useEffect(() => {
     filterDevices();
