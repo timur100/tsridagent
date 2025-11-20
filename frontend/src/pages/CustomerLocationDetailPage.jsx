@@ -43,8 +43,9 @@ const LocationDetailPage = () => {
     failed_scans: 0
   });
   const [openingHours, setOpeningHours] = useState(null);
-  // Read-only mode - no editing
+  const [isEditingHours, setIsEditingHours] = useState(false);
   const [editedHours, setEditedHours] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -122,7 +123,48 @@ const LocationDetailPage = () => {
     }
   };
 
-  // Read-only - no save functionality
+  const handleSaveOpeningHours = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(
+        `${BACKEND_URL}/api/tenant-locations/details/${locationId}/opening-hours`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(editedHours)
+        }
+      );
+
+      if (response.ok) {
+        toast.success('Öffnungszeiten erfolgreich gespeichert');
+        setOpeningHours(editedHours);
+        setIsEditingHours(false);
+        fetchLocationDetails();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Fehler beim Speichern der Öffnungszeiten');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDayChange = (dayKey, field, value) => {
+    setEditedHours(prev => ({
+      ...prev,
+      [dayKey]: {
+        ...prev[dayKey],
+        [field]: value
+      }
+    }));
+  };
 
   const handleTeamViewerConnect = (teamviewerId) => {
     if (teamviewerId && teamviewerId !== '-') {
@@ -357,16 +399,70 @@ const LocationDetailPage = () => {
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
-            <div className="flex items-center gap-2 mb-4">
-              <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Öffnungszeiten
-              </h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Öffnungszeiten
+                </h3>
+              </div>
+              <div className="flex items-center gap-2">
+                {isEditingHours && (
+                  <button
+                    onClick={() => {
+                      setIsEditingHours(false);
+                      setEditedHours(openingHours);
+                    }}
+                    className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-all ${
+                      theme === 'dark'
+                        ? 'border border-gray-600 text-gray-400 hover:bg-gray-800'
+                        : 'border border-gray-300 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    <X className="w-3 h-3" />
+                    Abbrechen
+                  </button>
+                )}
+                <button
+                  onClick={isEditingHours ? handleSaveOpeningHours : () => setIsEditingHours(true)}
+                  className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-all ${
+                    isEditingHours
+                      ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                      : theme === 'dark'
+                      ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                      : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                  }`}
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                      Speichern...
+                    </>
+                  ) : isEditingHours ? (
+                    <>
+                      <Save className="w-3 h-3" />
+                      Speichern
+                    </>
+                  ) : (
+                    <>
+                      <Edit2 className="w-3 h-3" />
+                      Bearbeiten
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className={`mb-3 p-3 rounded-lg text-xs ${
+              theme === 'dark' ? 'bg-blue-900/20 border border-blue-800 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-700'
+            }`}>
+              <strong>Hinweis:</strong> Google Places API Integration vorbereitet. API-Schlüssel wird später hinzugefügt.
             </div>
 
             <div className="space-y-2">
               {days.map(day => {
-                const dayData = editedHours?.[day.key] || openingHours?.[day.key] || {
+                const dayData = editedHours?.[day.key] || {
                   day: day.label,
                   is_open: true,
                   open_time: '08:00',
@@ -387,19 +483,74 @@ const LocationDetailPage = () => {
                       </p>
                     </div>
 
-                    <div className={`flex-1 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {dayData.is_open ? (
-                        dayData.is_24h ? (
-                          <span className="font-medium text-green-500">24 Stunden geöffnet</span>
-                        ) : (
-                          <span>
-                            {dayData.open_time} - {dayData.close_time} Uhr
+                    {isEditingHours ? (
+                      <>
+                        <label className="flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={dayData.is_open}
+                            onChange={(e) => handleDayChange(day.key, 'is_open', e.target.checked)}
+                            className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                          />
+                          <span className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            Geöffnet
                           </span>
-                        )
-                      ) : (
-                        <span className="text-red-500">Geschlossen</span>
-                      )}
-                    </div>
+                        </label>
+
+                        <label className="flex items-center gap-1.5">
+                          <input
+                            type="checkbox"
+                            checked={dayData.is_24h}
+                            onChange={(e) => handleDayChange(day.key, 'is_24h', e.target.checked)}
+                            disabled={!dayData.is_open}
+                            className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                          />
+                          <span className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            24h
+                          </span>
+                        </label>
+
+                        {dayData.is_open && !dayData.is_24h && (
+                          <>
+                            <input
+                              type="time"
+                              value={dayData.open_time || ''}
+                              onChange={(e) => handleDayChange(day.key, 'open_time', e.target.value)}
+                              className={`px-2 py-1 text-sm rounded-lg border ${
+                                theme === 'dark'
+                                  ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                            />
+                            <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>bis</span>
+                            <input
+                              type="time"
+                              value={dayData.close_time || ''}
+                              onChange={(e) => handleDayChange(day.key, 'close_time', e.target.value)}
+                              className={`px-2 py-1 text-sm rounded-lg border ${
+                                theme === 'dark'
+                                  ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                                  : 'bg-white border-gray-300 text-gray-900'
+                              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                            />
+                          </>
+                        )}
+                      </>
+                    ) : (
+                      <div className={`flex-1 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {dayData.is_open ? (
+                          dayData.is_24h ? (
+                            <span className="font-medium text-green-500">24 Stunden geöffnet</span>
+                          ) : (
+                            <span>
+                              {dayData.open_time} - {dayData.close_time} Uhr
+                            </span>
+                          )
+                        ) : (
+                          <span className="text-red-500">Geschlossen</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -443,141 +594,147 @@ const LocationDetailPage = () => {
           </Card>
         </div>
 
-        {/* Adressinformationen */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Adressinformationen
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.street || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.postal_code || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ort</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.city || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bundesland</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.state || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.country || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.continent || '-'}</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Kontaktinformationen */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+        {/* Adressinformationen & Kontaktinformationen auf einer Zeile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Adressinformationen */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Kontaktinformationen
-            </h3>
-          </div>
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Adressinformationen
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Manager</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.manager || '-'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.street || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.postal_code || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ort</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.city || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bundesland</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.state || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.country || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.continent || '-'}</p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon Intern</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone_internal || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.email || '-'}</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Technische Details */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Technische Details
-            </h3>
-          </div>
+          {/* Kontaktinformationen */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Kontaktinformationen
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Main Typ</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Manager</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.manager || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon Intern</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone_internal || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.email || '-'}</p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>ID Checker</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Switch</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Port</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
-        {/* Hardware Details */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Hardware Details
-            </h3>
-          </div>
+        {/* Technische Details & Hardware Details auf einer Zeile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Technische Details */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Technische Details
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-PC</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Main Typ</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>ID Checker</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Switch</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Port</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-SC</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
+          </Card>
+
+          {/* Hardware Details */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Hardware Details
+              </h3>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>TV-ID</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-PC</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-SC</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>TV-ID</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* Kommentare & Bemerkungen */}
         <Card className={`p-6 rounded-xl ${
