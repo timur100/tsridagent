@@ -30,7 +30,8 @@ const LocationsTabEnhanced = ({
   onAddLocation,
   onEditLocation,
   onDeleteLocation,
-  tenantId
+  tenantId,
+  isCustomerPortal = false  // New prop to identify customer portal usage
 }) => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
