@@ -224,8 +224,8 @@ const TenantDevicesTab = ({ tenantId }) => {
   };
 
   const handleDeviceClick = (device) => {
-    setSelectedDevice(device);
-    setShowModal(true);
+    // Navigate to device detail page instead of modal
+    navigate(`/admin/tenants/${tenantId}/devices/${device.device_id}`);
   };
 
   const handleDeviceUpdate = (updatedDevice) => {
