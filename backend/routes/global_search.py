@@ -193,13 +193,14 @@ async def global_search(
             priority_match = geraete_results[0]
         
         # 3. Search Locations (LOWEST PRIORITY)
-        # Search by: main_code, stationsname, ort, plz
+        # Search by: location_code, station_name, city, zip
         location_query = {
             "$or": [
-                {"main_code": search_regex},
-                {"stationsname": search_regex},
-                {"ort": search_regex},
-                {"plz": search_term}
+                {"location_code": search_regex},
+                {"station_name": search_regex},
+                {"city": search_regex},
+                {"zip": search_term},
+                {"location_id": search_regex}
             ]
         }
         
