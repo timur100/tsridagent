@@ -28,45 +28,36 @@ const CustomerPortal = () => {
     failed_scans: 0
   });
 
-  // Set company name from user data immediately
+  // Load company name and tenant info
   useEffect(() => {
-    if (user) {
+    if (user && user.email) {
       console.log('[CustomerPortal] User object:', user);
+      console.log('[CustomerPortal] User company:', user.company);
       
-      // Priority 1: Load tenant info if tenant_ids exist
       const fetchTenantInfo = async () => {
         try {
-          const tenantIds = user.tenant_ids || [];
-          console.log('[CustomerPortal] Tenant IDs:', tenantIds);
+          const tenantIds = user.tenant_ids;
           
-          if (tenantIds.length > 0) {
-            const tenantId = tenantIds[0];
-            console.log('[CustomerPortal] Fetching tenant:', tenantId);
-            
+          // ALWAYS set user.company first as immediate fallback
+          if (user.company) {
+            console.log('[CustomerPortal] Setting company from user.company (immediate):', user.company);
+            setCompanyName(user.company);
+          }
+          
+          // Priority 1: Try to get company from tenant (may override)
+          if (tenantIds && tenantIds.length > 0) {
             try {
-              const tenantData = await apiCall(`/api/tenants/${tenantId}`);
-              console.log('[CustomerPortal] Tenant data response:', tenantData);
-              
-              // Handle the apiCall wrapper response
-              const tenant = tenantData?.data || tenantData;
-              
+              const result = await apiCall(`/api/tenants/${tenantIds[0]}`);
+              const tenant = result?.data || result;
               if (tenant && (tenant.display_name || tenant.name)) {
-                console.log('[CustomerPortal] Setting company name from tenant:', tenant.display_name || tenant.name);
+                console.log('[CustomerPortal] Setting company from tenant:', tenant.display_name || tenant.name);
                 setCompanyName(tenant.display_name || tenant.name);
                 setTenantInfo(tenant);
               } else {
-                console.warn('[CustomerPortal] Tenant data missing display_name/name');
+                console.warn('[CustomerPortal] Tenant data missing display_name/name, keeping user.company');
               }
             } catch (tenantError) {
-              console.error('[CustomerPortal] Error fetching tenant:', tenantError);
-            }
-          }
-          
-          // Priority 2: Fallback to user.company if no tenant_ids
-          if (!tenantIds || tenantIds.length === 0) {
-            if (user.company) {
-              console.log('[CustomerPortal] Setting company from user.company:', user.company);
-              setCompanyName(user.company);
+              console.error('[CustomerPortal] Error fetching tenant, keeping user.company:', tenantError);
             }
           }
         } catch (error) {
