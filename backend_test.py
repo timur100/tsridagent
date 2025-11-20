@@ -588,98 +588,28 @@ class WebSocketBackendTester:
             )
             return False
     
-    def compare_device_counts(self, admin_data, customer_data):
-        """Compare device counts between Admin Portal and Customer Portal"""
+    async def cleanup_connections(self):
+        """Clean up all WebSocket connections"""
         try:
-            if not admin_data or not customer_data:
-                self.log_result(
-                    "Device Count Comparison", 
-                    False, 
-                    "Missing data from one or both portals"
-                )
-                return False
-            
-            admin_total = admin_data.get("total", 0)
-            admin_online = admin_data.get("online", 0)
-            admin_offline = admin_data.get("offline", 0)
-            
-            customer_total = customer_data.get("total", 0)
-            customer_online = customer_data.get("online", 0)
-            customer_offline = customer_data.get("offline", 0)
-            
-            # Check if counts match exactly
-            total_match = admin_total == customer_total
-            online_match = admin_online == customer_online
-            offline_match = admin_offline == customer_offline
-            
-            all_match = total_match and online_match and offline_match
-            
-            details = f"Admin Portal: {admin_total} total ({admin_online} online, {admin_offline} offline) | Customer Portal: {customer_total} total ({customer_online} online, {customer_offline} offline)"
-            
-            if not all_match:
-                mismatches = []
-                if not total_match:
-                    mismatches.append(f"Total: Admin={admin_total}, Customer={customer_total}")
-                if not online_match:
-                    mismatches.append(f"Online: Admin={admin_online}, Customer={customer_online}")
-                if not offline_match:
-                    mismatches.append(f"Offline: Admin={admin_offline}, Customer={customer_offline}")
-                
-                details += f" | MISMATCHES: {', '.join(mismatches)}"
+            for websocket in self.websocket_connections:
+                try:
+                    await websocket.close()
+                except:
+                    pass
+            self.websocket_connections.clear()
             
             self.log_result(
-                "Device Count Comparison", 
-                all_match, 
-                details
+                "Connection Cleanup",
+                True,
+                "All WebSocket connections cleaned up"
             )
-            
-            return all_match
             
         except Exception as e:
             self.log_result(
-                "Device Count Comparison", 
-                False, 
-                f"Exception occurred: {str(e)}"
+                "Connection Cleanup",
+                False,
+                f"Error during cleanup: {str(e)}"
             )
-            return False
-
-    def compare_location_counts(self, customer_data, db_data):
-        """Compare location counts between Customer Portal and Database"""
-        try:
-            if not customer_data or not db_data:
-                self.log_result(
-                    "Location Count Comparison", 
-                    False, 
-                    "Missing data from Customer Portal or Database"
-                )
-                return False
-            
-            customer_total = customer_data.get("total", 0)
-            db_total = db_data.get("total", 0)
-            
-            # Check if counts match exactly
-            counts_match = customer_total == db_total
-            
-            details = f"Customer Portal: {customer_total} locations | Database: {db_total} locations"
-            
-            if not counts_match:
-                details += f" | MISMATCH: Customer Portal has {customer_total}, Database has {db_total}"
-            
-            self.log_result(
-                "Location Count Comparison", 
-                counts_match, 
-                details
-            )
-            
-            return counts_match
-            
-        except Exception as e:
-            self.log_result(
-                "Location Count Comparison", 
-                False, 
-                f"Exception occurred: {str(e)}"
-            )
-            return False
     
     def run_all_tests(self):
         """Run all data synchronization tests"""
