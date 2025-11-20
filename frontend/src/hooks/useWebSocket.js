@@ -108,6 +108,78 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     }
   }, [onLocationDeleted]);
 
+  // Handle device created
+  const handleDeviceCreated = useCallback((data) => {
+    console.log('[useWebSocket] Device created:', data);
+    setLastUpdate({ type: 'device_created', data, timestamp: new Date() });
+    if (onDeviceCreated) {
+      onDeviceCreated(data);
+    }
+  }, [onDeviceCreated]);
+
+  // Handle device deleted
+  const handleDeviceDeleted = useCallback((data) => {
+    console.log('[useWebSocket] Device deleted:', data);
+    setLastUpdate({ type: 'device_deleted', data, timestamp: new Date() });
+    if (onDeviceDeleted) {
+      onDeviceDeleted(data);
+    }
+  }, [onDeviceDeleted]);
+
+  // Handle device status update
+  const handleDeviceStatusUpdate = useCallback((data) => {
+    console.log('[useWebSocket] Device status update:', data);
+    setLastUpdate({ type: 'device_status_update', data, timestamp: new Date() });
+    if (onDeviceStatusUpdate) {
+      onDeviceStatusUpdate(data);
+    }
+  }, [onDeviceStatusUpdate]);
+
+  // Handle tenant updated
+  const handleTenantUpdated = useCallback((data) => {
+    console.log('[useWebSocket] Tenant updated:', data);
+    setLastUpdate({ type: 'tenant_updated', data, timestamp: new Date() });
+    if (onTenantUpdated) {
+      onTenantUpdated(data);
+    }
+  }, [onTenantUpdated]);
+
+  // Handle user created
+  const handleUserCreated = useCallback((data) => {
+    console.log('[useWebSocket] User created:', data);
+    setLastUpdate({ type: 'user_created', data, timestamp: new Date() });
+    if (onUserCreated) {
+      onUserCreated(data);
+    }
+  }, [onUserCreated]);
+
+  // Handle user updated
+  const handleUserUpdated = useCallback((data) => {
+    console.log('[useWebSocket] User updated:', data);
+    setLastUpdate({ type: 'user_updated', data, timestamp: new Date() });
+    if (onUserUpdated) {
+      onUserUpdated(data);
+    }
+  }, [onUserUpdated]);
+
+  // Handle user deleted
+  const handleUserDeleted = useCallback((data) => {
+    console.log('[useWebSocket] User deleted:', data);
+    setLastUpdate({ type: 'user_deleted', data, timestamp: new Date() });
+    if (onUserDeleted) {
+      onUserDeleted(data);
+    }
+  }, [onUserDeleted]);
+
+  // Handle scan update
+  const handleScanUpdate = useCallback((data) => {
+    console.log('[useWebSocket] Scan update:', data);
+    setLastUpdate({ type: 'scan_update', data, timestamp: new Date() });
+    if (onScanUpdate) {
+      onScanUpdate(data);
+    }
+  }, [onScanUpdate]);
+
   // Start fallback polling
   const startFallbackPolling = useCallback(() => {
     if (!enableFallback || fallbackPollingRef.current) {
