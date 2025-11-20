@@ -11,7 +11,6 @@ import TenantDetailPage from './pages/TenantDetailPage';
 import LocationDetailPage from './pages/LocationDetailPage';
 import CustomerLocationDetailPage from './pages/CustomerLocationDetailPage';
 import CatalogPortal from './pages/CatalogPortal';
-import AdminPortalLayout from './components/AdminPortalLayout';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
