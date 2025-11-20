@@ -309,6 +309,26 @@ async def create_device(
         # Return device without _id
         device_data.pop('_id', None)
         
+        # Broadcast device creation via WebSocket
+        tenant_id = device_data.get('tenant_id')
+        if tenant_id:
+            print(f"📡 [Device Create] Broadcasting new device {device_data.get('device_id')} to tenant {tenant_id}")
+            try:
+                from websocket_manager import manager
+                import asyncio
+                
+                message = {
+                    "type": "device_created",
+                    "device": device_data
+                }
+                
+                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+                print(f"✅ [Device Create] Broadcast sent to tenant {tenant_id}")
+            except Exception as e:
+                print(f"⚠️ [Device Create] Broadcast error: {str(e)}")
+        else:
+            print(f"⚠️ [Device Create] No tenant_id for device {device_data.get('device_id')}, skipping broadcast")
+        
         return {
             "success": True,
             "message": "Device created successfully",
