@@ -493,23 +493,63 @@ const LocationsTabEnhanced = ({
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
                       theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
                     }`}
-                    onClick={() => handleSort('sn_pc')}
+                    onClick={() => handleSort('country')}
                   >
                     <div className="flex items-center">
-                      SN-PC
-                      {getSortIcon('sn_pc')}
+                      Land
+                      {getSortIcon('country')}
                     </div>
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
                       theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
                     }`}
-                    onClick={() => handleSort('sn_sc')}
+                    onClick={() => handleSort('continent')}
                   >
                     <div className="flex items-center">
-                      SN-SC
-                      {getSortIcon('sn_sc')}
+                      Kontinent
+                      {getSortIcon('continent')}
                     </div>
+                  </th>
+                  <th 
+                    className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
+                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleSort('phone')}
+                  >
+                    <div className="flex items-center">
+                      Telefon
+                      {getSortIcon('phone')}
+                    </div>
+                  </th>
+                  <th 
+                    className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
+                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleSort('email')}
+                  >
+                    <div className="flex items-center">
+                      E-Mail
+                      {getSortIcon('email')}
+                    </div>
+                  </th>
+                  <th 
+                    className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
+                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleSort('id_checker')}
+                  >
+                    <div className="flex items-center">
+                      Anzahl IDS
+                      {getSortIcon('id_checker')}
+                    </div>
+                  </th>
+                  <th 
+                    className={`px-4 py-3 text-center text-xs font-semibold ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Online
                   </th>
                   <th className={`px-4 py-3 text-right text-xs font-semibold ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
