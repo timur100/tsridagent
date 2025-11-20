@@ -113,6 +113,10 @@ def schedule_broadcast(tenant_id: str, message_type: str, data: Dict[str, Any]):
             loop.create_task(broadcast_device_change(tenant_id, data))
         elif message_type == "dashboard_stats":
             loop.create_task(broadcast_dashboard_update(tenant_id, data))
+        elif message_type == "opening_hours_update":
+            location_id = data.get('location_id')
+            opening_hours = data.get('opening_hours')
+            loop.create_task(broadcast_opening_hours_update(tenant_id, location_id, opening_hours))
         elif message_type == "refresh_all":
             loop.create_task(trigger_full_refresh(tenant_id))
         else:
