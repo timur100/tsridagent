@@ -103,7 +103,7 @@ async def global_search(
         if user_role == "customer" and user_email:
             order_query["customer_email"] = user_email
         
-        orders = list(db.orders.find(order_query).limit(10))
+        orders = list(portal_db.orders.find(order_query).limit(10))
         for order in orders:
             if '_id' in order:
                 del order['_id']
