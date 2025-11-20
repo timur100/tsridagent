@@ -202,18 +202,31 @@ async def get_current_user(token_data: dict = Depends(verify_token)):
             raise HTTPException(status_code=404, detail="User not found")
         
         # Prepare user response - support both auth_db and portal_db formats
+        company_name = user.get("company") or user.get("attributes", {}).get("company")
+        
+        # If no company, ALWAYS try to get from first tenant
+        if user.get("tenant_ids") and len(user.get("tenant_ids")) > 0:
+            try:
+                tenant = auth_db.tenants.find_one({"tenant_id": user.get("tenant_ids")[0]})
+                if tenant:
+                    tenant_name = tenant.get("display_name") or tenant.get("name")
+                    if tenant_name:
+                        company_name = tenant_name
+            except Exception as e:
+                print(f"Error getting tenant company: {e}")
+        
         user_response = {
             "id": user.get("id") or user.get("user_id"),
             "email": user["email"],
             "name": user.get("name") or f"{user.get('first_name', '')} {user.get('last_name', '')}".strip() or user["email"],
-            "company": user.get("company") or user.get("attributes", {}).get("company"),
+            "company": company_name,
             "role": user.get("role") or (user.get("roles", ["user"])[0] if user.get("roles") else "user"),
             "tenant_ids": user.get("tenant_ids", []),
             "is_active": user.get("is_active") or user.get("enabled", True),
             "shop_enabled": user.get("shop_enabled", False)
         }
         
-        return {"success": True, "user": user_response}
+        return user_response
     except HTTPException:
         raise
     except Exception as e:
