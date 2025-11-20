@@ -66,6 +66,24 @@ class TenantLocationUpdate(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
 
+# Opening Hours Models
+class DayOpeningHours(BaseModel):
+    day: str  # Monday, Tuesday, etc.
+    is_open: bool = True
+    open_time: Optional[str] = None  # e.g., "08:00"
+    close_time: Optional[str] = None  # e.g., "18:00"
+    is_24h: bool = False
+
+class LocationOpeningHours(BaseModel):
+    monday: Optional[DayOpeningHours] = None
+    tuesday: Optional[DayOpeningHours] = None
+    wednesday: Optional[DayOpeningHours] = None
+    thursday: Optional[DayOpeningHours] = None
+    friday: Optional[DayOpeningHours] = None
+    saturday: Optional[DayOpeningHours] = None
+    sunday: Optional[DayOpeningHours] = None
+    manual_override: bool = False  # If true, ignore Google API data
+
 # Special routes that don't use tenant_id pattern - must come BEFORE /{tenant_id} routes
 @router.get("/by-id/{location_id}")
 async def get_location_by_id(
