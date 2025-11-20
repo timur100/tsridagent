@@ -218,10 +218,11 @@ async def global_search(
                 del location['_id']
             standorte_results.append({
                 "type": "standort",
-                "id": location.get('main_code'),
-                "title": location.get('stationsname', 'N/A'),
-                "subtitle": f"{location.get('ort', 'N/A')} | {location.get('main_code', 'N/A')}",
+                "id": location.get('location_id'),
+                "title": location.get('station_name', 'N/A'),
+                "subtitle": f"{location.get('city', 'N/A')} | {location.get('location_code', 'N/A')}",
                 "status": location.get('status'),
+                "tenant_id": location.get('tenant_id'),
                 "data": location
             })
         
