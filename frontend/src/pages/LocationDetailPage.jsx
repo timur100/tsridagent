@@ -70,11 +70,7 @@ const LocationDetailPage = () => {
   // Connect to WebSocket for real-time updates
   useWebSocket(tenantId, token, {
     autoConnect: true,
-    onMessage: (message) => {
-      if (message.type === 'opening_hours_update') {
-        handleOpeningHoursUpdate(message);
-      }
-    }
+    onOpeningHoursUpdate: handleOpeningHoursUpdate
   });
 
   const days = [
