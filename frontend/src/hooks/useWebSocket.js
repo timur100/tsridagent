@@ -138,17 +138,25 @@ export const useWebSocket = (tenantId, token, options = {}) => {
 
   // Auto-connect on mount
   useEffect(() => {
+    console.log('[useWebSocket] Auto-connect effect - tenantId:', tenantId, 'token:', token ? 'present' : 'missing', 'autoConnect:', autoConnect);
+    
     if (autoConnect && tenantId && token) {
+      console.log('[useWebSocket] Calling connect()...');
       connect();
+    } else {
+      console.log('[useWebSocket] Skipping connect - conditions not met');
     }
 
     // Cleanup on unmount
     return () => {
+      console.log('[useWebSocket] Auto-connect cleanup - calling disconnect');
       if (autoConnect) {
         disconnect();
       }
     };
-  }, [tenantId, token, autoConnect, connect, disconnect]); // Re-run when tenant or token changes
+    // Only re-run when tenant or token changes, NOT when connect/disconnect functions change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId, token, autoConnect]);
 
   // Handle connection status changes for fallback
   useEffect(() => {
