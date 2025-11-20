@@ -477,7 +477,7 @@ class OpeningHoursTester:
         try:
             # Get data from MongoDB
             db_opening_hours = None
-            if self.portal_db:
+            if self.portal_db is not None:
                 location = self.portal_db.tenant_locations.find_one({
                     "location_id": self.location_id
                 })
