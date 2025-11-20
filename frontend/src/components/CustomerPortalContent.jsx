@@ -1498,7 +1498,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     Total Locations
                   </p>
                   <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {stations.length}
+                    {dashboardStats.total_locations || stations.length}
                   </p>
                 </div>
                 <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
@@ -1523,7 +1523,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     Total Devices
                   </p>
                   <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {stations.reduce((sum, station) => sum + (station.device_count || 0), 0)}
+                    {dashboardStats.total_devices || dashboardStats.online_devices + dashboardStats.offline_devices || 0}
                   </p>
                 </div>
                 <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
@@ -1548,7 +1548,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     Online Devices
                   </p>
                   <p className={`text-3xl font-bold mt-2 text-green-500`}>
-                    {stations.reduce((sum, station) => sum + (station.online_device_count || 0), 0)}
+                    {dashboardStats.online_devices || 0}
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-green-500">
@@ -1573,10 +1573,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     Offline Devices
                   </p>
                   <p className={`text-3xl font-bold mt-2 text-red-500`}>
-                    {stations.reduce((sum, station) => {
-                      const offline = (station.device_count || 0) - (station.online_device_count || 0);
-                      return sum + offline;
-                    }, 0)}
+                    {dashboardStats.offline_devices || 0}
                   </p>
                 </div>
                 <div className="p-3 rounded-lg bg-red-500">
