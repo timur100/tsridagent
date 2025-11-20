@@ -578,7 +578,7 @@ async def update_opening_hours(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/location-details/{location_id}/google-hours")
+@router.get("/details/{location_id}/google-hours")
 async def get_google_opening_hours(
     location_id: str,
     credentials: HTTPAuthorizationCredentials = Depends(security)
