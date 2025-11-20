@@ -158,14 +158,16 @@ async def login(request: LoginRequest):
         # Prepare user response - support both auth_db and portal_db formats
         company_name = user.get("company") or user.get("attributes", {}).get("company")
         
-        # If no company, try to get from first tenant
-        if not company_name and user.get("tenant_ids"):
+        # If no company, ALWAYS try to get from first tenant
+        if user.get("tenant_ids") and len(user.get("tenant_ids")) > 0:
             try:
                 tenant = auth_db.tenants.find_one({"tenant_id": user.get("tenant_ids")[0]})
                 if tenant:
-                    company_name = tenant.get("display_name") or tenant.get("name")
-            except:
-                pass
+                    tenant_name = tenant.get("display_name") or tenant.get("name")
+                    if tenant_name:
+                        company_name = tenant_name
+            except Exception as e:
+                print(f"Error getting tenant company: {e}")
         
         user_response = {
             "id": user.get("id") or user.get("user_id"),
