@@ -261,7 +261,6 @@ backend:
           agent: "testing"
           comment: "✅ MONOLITHIC ROUTES PROPERLY DISABLED: Verified that old monolithic ticket routes are no longer accessible. GET /api/tickets/list returns 404 Not Found as expected, confirming that old routes are properly commented out and disabled. All ticketing functionality now correctly routed through the Ticketing microservice on port 8103."
 
-backend:
   - task: "WebSocket Infrastructure - Connection Manager & Endpoint"
     implemented: true
     working: "NA"
@@ -273,18 +272,6 @@ backend:
         - working: "NA"
           agent: "main"
           comment: "✅ WebSocket Backend Infrastructure implementiert: 1) ConnectionManager erstellt in websocket_manager.py mit room-basiertem Broadcasting pro Tenant, Connection-Management, Heartbeat/Ping-Pong, 2) WebSocket Endpunkt /api/ws/{tenant_id} in routes/websocket.py mit JWT-Authentifizierung über Query-Parameter, Auto-Reconnect Support, Message-Handling für location_update/device_update/dashboard_stats/ping/pong, 3) Broadcast Service in broadcast_service.py für einfaches Broadcasting von Änderungen, Helper-Funktionen für Location/Device/Dashboard Updates, 4) WebSocket Router in server.py registriert. Backend läuft ohne Fehler."
-
-  - task: "Device Service Comprehensive Testing"
-    implemented: true
-    working: true
-    file: "services/device_service/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: false
-    status_history:
-        - working: true
-          agent: "testing"
-          comment: "✅ DEVICE SERVICE COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY: All 10/10 tests passed. SERVICE HEALTH & INFO: Device Service running on port 8104 with health endpoint returning {'status': 'healthy', 'service': 'Device Service'} and info endpoint providing complete service details including version 1.0.0 and available endpoints. DEVICE STATISTICS: Statistics endpoint working correctly showing 3 total devices, 2 active, 1 maintenance, 0 inactive/offline, with breakdown by type (2 scanners, 1 terminal). GET ALL DEVICES: Successfully retrieved 3 devices with complete device information including id, device_id, location_code, device_type, status, manufacturer, model, serial_number, IP address, and metadata. FILTERING FUNCTIONALITY: ✅ Location filtering (BERN01) returns 1 device correctly, ✅ Status filtering (active) returns 2 devices correctly, both filters working as expected. SERVICE REGISTRATION: Device Service properly registered in Admin Portal services list at correct position 2 (after auth=0, id_verification=1, device=2) with service_type='device' and service_name='Device & Equipment Service'. MONGODB INTEGRATION: MongoDB summary correctly shows device_db database with 1 collection (devices) containing 3 documents, confirming proper database integration. All success criteria met - Device Service is fully functional and production-ready with complete CRUD operations, filtering, statistics, and admin portal integration."
 
 metadata:
   created_by: "main_agent"
