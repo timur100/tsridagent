@@ -20,6 +20,7 @@ import {
 const TenantDevicesTab = ({ tenantId }) => {
   const { theme } = useTheme();
   const { apiCall, user } = useAuth();
+  const navigate = useNavigate();
   const [devices, setDevices] = useState([]);
   const [stations, setStations] = useState([]);
   const [filteredDevices, setFilteredDevices] = useState([]);
