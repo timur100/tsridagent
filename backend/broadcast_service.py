@@ -65,14 +65,18 @@ async def broadcast_opening_hours_update(tenant_id: str, location_id: str, openi
         opening_hours: The updated opening hours data
     """
     try:
-        await manager.broadcast_to_tenant(tenant_id, {
+        message = {
             "type": "opening_hours_update",
             "location_id": location_id,
             "opening_hours": opening_hours
-        })
+        }
+        print(f"[Broadcast] Sending opening hours update: {message}")
+        await manager.broadcast_to_tenant(tenant_id, message)
         logger.info(f"Broadcasted opening hours update for location {location_id} in tenant {tenant_id}")
+        print(f"[Broadcast] Successfully sent to tenant {tenant_id}")
     except Exception as e:
         logger.error(f"Error broadcasting opening hours update: {str(e)}")
+        print(f"[Broadcast] ERROR: {str(e)}")
 
 
 async def trigger_full_refresh(tenant_id: str):
