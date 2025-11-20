@@ -540,7 +540,7 @@ const LocationsTabEnhanced = ({
                     onClick={() => handleSort('id_checker')}
                   >
                     <div className="flex items-center">
-                      Anzahl IDS
+                      IDS
                       {getSortIcon('id_checker')}
                     </div>
                   </th>
