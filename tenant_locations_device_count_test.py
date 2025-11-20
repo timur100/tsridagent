@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://tenant-portal-30.preview.emergentagent.com"
+BACKEND_URL = "https://tenant-manager-25.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class TenantLocationsDeviceCountTester:
