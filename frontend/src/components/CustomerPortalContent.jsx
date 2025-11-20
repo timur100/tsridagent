@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { MapPin, Monitor, RefreshCw, ChevronUp, ChevronDown, Users, FileText, Plus, ShoppingBag, Clock } from 'lucide-react';
+import { MapPin, Monitor, RefreshCw, ChevronUp, ChevronDown, Users, FileText, Plus, ShoppingBag, Clock, Wifi, WifiOff } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import toast from 'react-hot-toast';
@@ -23,6 +23,7 @@ import {
   getAvailableCities,
   SPECIAL_PLACE_TAGS 
 } from '../utils/geoFilters';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTab, scanStats = { total_scans: 0, correct_scans: 0, unknown_scans: 0, failed_scans: 0 } }) => {
   const { user, apiCall } = useAuth();
