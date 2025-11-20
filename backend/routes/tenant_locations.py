@@ -238,12 +238,21 @@ async def update_opening_hours(
         
         # Broadcast update to all connected clients in real-time
         print(f"[Opening Hours] Broadcasting update for location {location_id} to tenant {tenant_id}")
-        from broadcast_service import schedule_broadcast
-        schedule_broadcast(tenant_id, "opening_hours_update", {
-            "location_id": location_id,
-            "opening_hours": opening_hours.dict()
-        })
-        print(f"[Opening Hours] Broadcast scheduled successfully")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "opening_hours_update",
+                "location_id": location_id,
+                "opening_hours": opening_hours.dict()
+            }
+            
+            # Create task to broadcast (async)
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+            print(f"[Opening Hours] Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"[Opening Hours] Broadcast error: {str(e)}")
         
         return {
             "success": True,
