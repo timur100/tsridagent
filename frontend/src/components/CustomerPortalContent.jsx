@@ -234,14 +234,17 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         }
         
         if (locationsRes?.success && locationsRes?.data) {
-          const loadedLocations = locationsRes.data.stations || [];
+          // Handle both API formats: tenant-locations API returns {locations: [...]} and europcar-stations returns {stations: [...]}
+          const loadedLocations = locationsRes.data.locations || locationsRes.data.stations || [];
+          
+          console.log('[CustomerPortal] Loaded locations count:', loadedLocations.length);
           
           // Check for length change OR online status changes OR preparation status changes
           const lengthChanged = locations.length !== loadedLocations.length;
           
           // Check if any location status changed (online, preparation_status, or general status)
           const statusChanged = loadedLocations.some((newLocation) => {
-            const oldLocation = locations.find(l => l.main_code === newLocation.main_code);
+            const oldLocation = locations.find(l => (l.main_code || l.location_code) === (newLocation.main_code || newLocation.location_code));
             if (!oldLocation) return true;
             return oldLocation.online !== newLocation.online || 
                    oldLocation.online_device_count !== newLocation.online_device_count ||
