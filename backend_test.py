@@ -698,27 +698,30 @@ class WebSocketBackendTester:
             # Always cleanup connections
             await self.cleanup_connections()
 
-if __name__ == "__main__":
-    print("Starting Data Synchronization Testing Between Admin Portal and Customer Portal...")
+async def main():
+    print("Starting WebSocket Backend Authentication Fix Verification...")
     print()
     
-    # Test Data Synchronization
-    tester = DataSynchronizationTester()
-    test_success = tester.run_all_tests()
+    # Test WebSocket Backend
+    tester = WebSocketBackendTester()
+    test_success = await tester.run_all_tests()
     
     print()
     print("=" * 80)
     print("OVERALL TESTING SUMMARY")
     print("=" * 80)
-    print(f"Data Synchronization Testing: {'✅ DATA IS SYNCHRONIZED' if test_success else '❌ DATA SYNCHRONIZATION ISSUES FOUND'}")
+    print(f"WebSocket Backend Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 80)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 DATA SYNCHRONIZATION TESTING COMPLETED SUCCESSFULLY!")
-        print("Both Admin Portal and Customer Portal show EXACTLY the same data for Europcar tenant.")
+        print("🎉 WEBSOCKET BACKEND AUTHENTICATION FIX VERIFICATION COMPLETED SUCCESSFULLY!")
+        print("WebSocket infrastructure is fully functional after the token authentication fix.")
         sys.exit(0)
     else:
-        print("❌ DATA SYNCHRONIZATION ISSUES FOUND!")
-        print("Admin Portal and Customer Portal do NOT show the same data for Europcar tenant.")
+        print("❌ WEBSOCKET BACKEND ISSUES FOUND!")
+        print("WebSocket infrastructure has issues that need to be addressed.")
         sys.exit(1)
+
+if __name__ == "__main__":
+    asyncio.run(main())
