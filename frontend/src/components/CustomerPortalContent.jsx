@@ -640,13 +640,44 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
       {currentActiveTab === 'dashboard' && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Übersicht
-            </h2>
+            <div className="flex items-center gap-4">
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Übersicht
+              </h2>
+              {/* WebSocket Connection Status Indicator */}
+              <div className="flex items-center gap-2">
+                {isConnected ? (
+                  <>
+                    <div className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </div>
+                    <span className={`text-xs font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                      Echtzeit
+                    </span>
+                  </>
+                ) : connectionStatus === 'reconnecting' ? (
+                  <>
+                    <div className="h-3 w-3 rounded-full bg-yellow-500 animate-pulse"></div>
+                    <span className={`text-xs font-medium ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                      Verbinde...
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-3 w-3 rounded-full bg-gray-400"></div>
+                    <span className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Offline
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
             <Button
               onClick={() => {
                 console.log('Customer Portal: Manual refresh triggered');
                 loadData();
+                loadDashboardStats();
               }}
               className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
             >
