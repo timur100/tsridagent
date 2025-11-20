@@ -175,7 +175,6 @@ async def get_location_details(
         correct_scans = 0
         unknown_scans = 0
         failed_scans = 0
-        needs_error_analysis = 0
         
         # Get opening hours from database (if manually set)
         opening_hours = location.get('opening_hours', None)
@@ -194,8 +193,7 @@ async def get_location_details(
                 "total_scans": total_scans,
                 "correct_scans": correct_scans,
                 "unknown_scans": unknown_scans,
-                "failed_scans": failed_scans,
-                "needs_error_analysis": needs_error_analysis
+                "failed_scans": failed_scans
             },
             "opening_hours": opening_hours
         }
