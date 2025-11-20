@@ -113,12 +113,8 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     stopFallbackPolling();
   }, [stopFallbackPolling]);
 
-  // Register message handlers
+  // Register message handlers - Run only once on mount
   useEffect(() => {
-    if (handlersRegistered.current) {
-      return;
-    }
-
     console.log('[useWebSocket] Registering message handlers');
 
     // Register connection status callback
@@ -130,8 +126,6 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     websocketService.on('dashboard_stats', handleDashboardStats);
     websocketService.on('refresh_all', handleRefreshAll);
 
-    handlersRegistered.current = true;
-
     // Cleanup function
     return () => {
       console.log('[useWebSocket] Unregistering message handlers');
@@ -139,15 +133,9 @@ export const useWebSocket = (tenantId, token, options = {}) => {
       websocketService.off('device_update', handleDeviceUpdate);
       websocketService.off('dashboard_stats', handleDashboardStats);
       websocketService.off('refresh_all', handleRefreshAll);
-      handlersRegistered.current = false;
     };
-  }, [
-    updateConnectionStatus,
-    handleLocationUpdate,
-    handleDeviceUpdate,
-    handleDashboardStats,
-    handleRefreshAll
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - only run on mount/unmount
 
   // Auto-connect on mount
   useEffect(() => {
@@ -161,7 +149,8 @@ export const useWebSocket = (tenantId, token, options = {}) => {
         disconnect();
       }
     };
-  }, [autoConnect, tenantId, token, connect, disconnect]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId, token]); // Only re-run when tenant or token changes
 
   // Handle connection status changes for fallback
   useEffect(() => {
