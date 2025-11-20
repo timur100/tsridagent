@@ -1444,7 +1444,14 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         <div className="space-y-6">
           <LocationsTabEnhanced
             theme={theme}
-            locations={stations}
+            locations={stations.map(station => ({
+              ...station,
+              location_id: station.location_id || station.main_code,
+              location_code: station.main_code || station.location_code,
+              station_name: station.station_name || station.stationsname,
+              online_device_count: station.online_device_count || 0,
+              device_count: station.device_count || 0
+            }))}
             loadingLocations={loading}
             onAddLocation={() => setShowAddStandortModal(true)}
             onEditLocation={() => {}}
