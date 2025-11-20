@@ -52,26 +52,33 @@ const DeviceDetailPage = () => {
   const fetchDeviceDetails = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
+      const authToken = token || localStorage.getItem('token') || localStorage.getItem('portal_token');
+      console.log('[DeviceDetail] Fetching device:', deviceId, 'Token present:', !!authToken);
+      
       const response = await fetch(`${BACKEND_URL}/api/tenant-devices/device/${deviceId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         },
         cache: 'no-store'
       });
 
+      console.log('[DeviceDetail] Response status:', response.status);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch device details');
+        const errorText = await response.text();
+        console.error('[DeviceDetail] Error response:', errorText);
+        throw new Error(`Failed to fetch device details: ${response.status}`);
       }
 
       const data = await response.json();
+      console.log('[DeviceDetail] Device data loaded:', data);
       setDeviceData(data.device);
       setEditedData(data.device);
     } catch (error) {
-      console.error('Error fetching device details:', error);
-      toast.error('Fehler beim Laden der Gerätedetails');
+      console.error('[DeviceDetail] Error fetching device details:', error);
+      toast.error('Fehler beim Laden der Gerätedetails: ' + error.message);
     } finally {
       setLoading(false);
     }
