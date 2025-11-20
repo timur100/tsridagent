@@ -182,78 +182,72 @@ class WebSocketBackendTester:
             )
             return False
     
-    def get_admin_portal_devices(self):
-        """Get devices via Admin Portal endpoint using superadmin token"""
+    async def test_heartbeat_ping_pong(self):
+        """Test heartbeat/ping-pong mechanism"""
         try:
-            # Set superadmin token in headers
-            headers = {
-                'Authorization': f'Bearer {self.superadmin_token}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-            
-            response = requests.get(f"{API_BASE}/tenant-devices/{self.test_tenant_id}", headers=headers)
-            
-            if response.status_code != 200:
+            if not self.websocket_connections:
                 self.log_result(
-                    "Admin Portal Devices", 
-                    False, 
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    "Heartbeat/Ping-Pong Mechanism",
+                    False,
+                    "No active WebSocket connection"
                 )
-                return None
+                return False
             
-            data = response.json()
+            websocket = self.websocket_connections[0]
             
-            # Verify response structure
-            if not isinstance(data, dict):
+            # Wait for ping message (server sends ping every 30 seconds, but we'll wait up to 35 seconds)
+            ping_received = False
+            start_time = time.time()
+            
+            while time.time() - start_time < 35:
+                try:
+                    message = await asyncio.wait_for(websocket.recv(), timeout=5)
+                    data = json.loads(message)
+                    
+                    if data.get("type") == "ping":
+                        ping_received = True
+                        timestamp = data.get("timestamp")
+                        
+                        # Send pong response
+                        pong_message = {
+                            "type": "pong",
+                            "timestamp": datetime.now(timezone.utc).isoformat()
+                        }
+                        await websocket.send(json.dumps(pong_message))
+                        
+                        self.log_result(
+                            "Heartbeat/Ping-Pong Mechanism",
+                            True,
+                            f"Successfully received ping message with timestamp={timestamp} and sent pong response"
+                        )
+                        return True
+                        
+                except asyncio.TimeoutError:
+                    # Continue waiting
+                    continue
+                except Exception as e:
+                    self.log_result(
+                        "Heartbeat/Ping-Pong Mechanism",
+                        False,
+                        f"Error during ping-pong test: {str(e)}"
+                    )
+                    return False
+            
+            if not ping_received:
                 self.log_result(
-                    "Admin Portal Devices", 
-                    False, 
-                    "Response is not a dictionary",
-                    data
+                    "Heartbeat/Ping-Pong Mechanism",
+                    False,
+                    "No ping message received within 35 seconds"
                 )
-                return None
-            
-            if not data.get("success"):
-                self.log_result(
-                    "Admin Portal Devices", 
-                    False, 
-                    "Response indicates failure",
-                    data
-                )
-                return None
-            
-            # Check if we have data structure
-            response_data = data.get("data", {})
-            devices = response_data.get("devices", [])
-            summary = response_data.get("summary", {})
-            
-            # Extract counts from summary or calculate from devices
-            total_count = summary.get("total", len(devices))
-            online_count = summary.get("online", sum(1 for d in devices if d.get("status") == "online"))
-            offline_count = summary.get("offline", sum(1 for d in devices if d.get("status") == "offline"))
-            
-            self.log_result(
-                "Admin Portal Devices", 
-                True, 
-                f"Retrieved {total_count} devices (online: {online_count}, offline: {offline_count})"
-            )
-            
-            return {
-                "total": total_count,
-                "online": online_count,
-                "offline": offline_count,
-                "devices": devices
-            }
+                return False
             
         except Exception as e:
             self.log_result(
-                "Admin Portal Devices", 
-                False, 
+                "Heartbeat/Ping-Pong Mechanism",
+                False,
                 f"Exception occurred: {str(e)}"
             )
-            return None
+            return False
     
     def get_customer_portal_devices(self):
         """Get devices via Customer Portal endpoint using tenant admin token"""
