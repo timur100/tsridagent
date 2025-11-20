@@ -91,6 +91,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const [loadingLocations, setLoadingLocations] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
+  const [locationStatusFilter, setLocationStatusFilter] = useState('all'); // Filter for locations
   const [locationFormData, setLocationFormData] = useState({
     location_code: '',
     station_name: '',
