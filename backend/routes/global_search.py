@@ -69,7 +69,7 @@ async def global_search(
             ]
         }
         
-        inventory_items = list(db.inventory.find(inventory_query).limit(10))
+        inventory_items = list(portal_db.inventory.find(inventory_query).limit(10))
         for item in inventory_items:
             if '_id' in item:
                 del item['_id']
