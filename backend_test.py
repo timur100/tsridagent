@@ -441,45 +441,82 @@ class WebSocketBackendTester:
             )
             return False
 
-    def verify_database_devices(self):
-        """Query database directly to verify device data"""
+    async def test_authentication_edge_cases(self):
+        """Test authentication edge cases"""
         try:
-            if not self.mongo_client:
+            # Test 1: Missing token
+            try:
+                ws_url = f"{WS_BASE}/ws/{self.test_tenant_id}"
+                websocket = await websockets.connect(ws_url)
                 self.log_result(
-                    "Database Device Verification", 
-                    False, 
-                    "No database connection available"
+                    "Authentication Edge Cases - Missing Token",
+                    False,
+                    "Connection should have been rejected for missing token"
                 )
-                return None
+                await websocket.close()
+                return False
+            except Exception:
+                self.log_result(
+                    "Authentication Edge Cases - Missing Token",
+                    True,
+                    "Connection correctly rejected for missing token"
+                )
             
-            # Query multi_tenant_admin.europcar_devices
-            db = self.mongo_client["multi_tenant_admin"]
-            collection = db["europcar_devices"]
+            # Test 2: Invalid token format
+            try:
+                ws_url = f"{WS_BASE}/ws/{self.test_tenant_id}?token=invalid_token_format"
+                websocket = await websockets.connect(ws_url)
+                self.log_result(
+                    "Authentication Edge Cases - Invalid Token",
+                    False,
+                    "Connection should have been rejected for invalid token"
+                )
+                await websocket.close()
+                return False
+            except Exception:
+                self.log_result(
+                    "Authentication Edge Cases - Invalid Token",
+                    True,
+                    "Connection correctly rejected for invalid token"
+                )
             
-            # Count devices with the specific tenant_id
-            device_count = collection.count_documents({"tenant_id": self.test_tenant_id})
+            # Test 3: Expired token (we'll create a token with past expiration)
+            try:
+                # Create an expired token
+                expired_payload = {
+                    "sub": "admin@tsrid.com",
+                    "role": "admin",
+                    "customer_id": "tsrid",
+                    "tenant_ids": [self.test_tenant_id],
+                    "exp": int(time.time()) - 3600  # Expired 1 hour ago
+                }
+                expired_token = jwt.encode(expired_payload, "your-secret-key-keep-it-secret", algorithm="HS256")
+                
+                ws_url = f"{WS_BASE}/ws/{self.test_tenant_id}?token={expired_token}"
+                websocket = await websockets.connect(ws_url)
+                self.log_result(
+                    "Authentication Edge Cases - Expired Token",
+                    False,
+                    "Connection should have been rejected for expired token"
+                )
+                await websocket.close()
+                return False
+            except Exception:
+                self.log_result(
+                    "Authentication Edge Cases - Expired Token",
+                    True,
+                    "Connection correctly rejected for expired token"
+                )
             
-            # Get sample devices to verify structure
-            sample_devices = list(collection.find({"tenant_id": self.test_tenant_id}).limit(5))
-            
-            self.log_result(
-                "Database Device Verification", 
-                True, 
-                f"Found {device_count} devices in multi_tenant_admin.europcar_devices with tenant_id {self.test_tenant_id}"
-            )
-            
-            return {
-                "total": device_count,
-                "sample_devices": sample_devices
-            }
+            return True
             
         except Exception as e:
             self.log_result(
-                "Database Device Verification", 
-                False, 
+                "Authentication Edge Cases",
+                False,
                 f"Exception occurred: {str(e)}"
             )
-            return None
+            return False
 
     def verify_database_locations(self):
         """Query database directly to verify location data"""
