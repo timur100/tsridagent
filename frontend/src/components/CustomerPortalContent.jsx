@@ -131,8 +131,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const handleWSDeviceCreated = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket device created:', data);
     if (!modalOpenRef.current) {
-      fetchDashboardData();
-      fetchDevices();
+      loadDashboardStats();
+      loadData();
       toast.success('Neues Gerät wurde hinzugefügt', {
         duration: 3000,
         icon: '📱'
@@ -143,8 +143,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const handleWSDeviceDeleted = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket device deleted:', data);
     if (!modalOpenRef.current) {
-      fetchDashboardData();
-      fetchDevices();
+      loadDashboardStats();
+      loadData();
       toast.info('Gerät wurde entfernt', {
         duration: 3000,
         icon: '🗑️'
