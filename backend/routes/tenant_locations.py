@@ -582,6 +582,22 @@ async def delete_tenant_location(
             "location_id": location_id
         })
         
+        # Broadcast location deletion in real-time
+        print(f"[Location Delete] Broadcasting deletion for location {location_id} to tenant {tenant_id}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "location_deleted",
+                "location_id": location_id
+            }
+            
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+            print(f"[Location Delete] Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"[Location Delete] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "Location deleted successfully"
