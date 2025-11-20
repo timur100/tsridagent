@@ -456,3 +456,151 @@ async def get_locations_stats(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+# Opening Hours Models
+class DayOpeningHours(BaseModel):
+    day: str  # Monday, Tuesday, etc.
+    is_open: bool = True
+    open_time: Optional[str] = None  # e.g., "08:00"
+    close_time: Optional[str] = None  # e.g., "18:00"
+    is_24h: bool = False
+
+class LocationOpeningHours(BaseModel):
+    monday: Optional[DayOpeningHours] = None
+    tuesday: Optional[DayOpeningHours] = None
+    wednesday: Optional[DayOpeningHours] = None
+    thursday: Optional[DayOpeningHours] = None
+    friday: Optional[DayOpeningHours] = None
+    saturday: Optional[DayOpeningHours] = None
+    sunday: Optional[DayOpeningHours] = None
+    manual_override: bool = False  # If true, ignore Google API data
+
+@router.get("/location-details/{location_id}")
+async def get_location_details(
+    location_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get detailed information for a single location including devices and opening hours"""
+    try:
+        # Get location by ID
+        location = db.tenant_locations.find_one({"location_id": location_id})
+        
+        if not location:
+            raise HTTPException(status_code=404, detail="Location not found")
+        
+        location.pop('_id', None)
+        tenant_id = location.get('tenant_id')
+        location_code = location.get('location_code')
+        
+        # Get devices for this location
+        devices_db = mongo_client['multi_tenant_admin']
+        devices = list(devices_db.europcar_devices.find({
+            "tenant_id": tenant_id,
+            "locationcode": location_code
+        }))
+        
+        # Format devices data
+        device_list = []
+        online_count = 0
+        offline_count = 0
+        
+        for device in devices:
+            is_online = device.get('status', '').lower() == 'online' or device.get('teamviewer_online', False)
+            if is_online:
+                online_count += 1
+            else:
+                offline_count += 1
+            
+            device_list.append({
+                "device_id": device.get('device_id'),
+                "device_name": device.get('device_name') or device.get('device_id'),
+                "locationcode": device.get('locationcode'),
+                "sn_pc": device.get('sn_pc', '-'),
+                "sn_sc": device.get('sn_sc', '-'),
+                "status": 'Online' if is_online else 'Offline',
+                "is_online": is_online,
+                "teamviewer_id": device.get('teamviewer_id', '-')
+            })
+        
+        # Get opening hours from database (if manually set)
+        opening_hours = location.get('opening_hours', None)
+        
+        return {
+            "success": True,
+            "location": location,
+            "devices": device_list,
+            "stats": {
+                "total_devices": len(device_list),
+                "online_devices": online_count,
+                "offline_devices": offline_count
+            },
+            "opening_hours": opening_hours
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/location-details/{location_id}/opening-hours")
+async def update_opening_hours(
+    location_id: str,
+    opening_hours: LocationOpeningHours,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Update opening hours for a location (manual override)"""
+    try:
+        # Check if location exists
+        location = db.tenant_locations.find_one({"location_id": location_id})
+        
+        if not location:
+            raise HTTPException(status_code=404, detail="Location not found")
+        
+        # Update opening hours
+        update_data = {
+            "opening_hours": opening_hours.dict(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        db.tenant_locations.update_one(
+            {"location_id": location_id},
+            {"$set": update_data}
+        )
+        
+        return {
+            "success": True,
+            "message": "Opening hours updated successfully",
+            "opening_hours": opening_hours.dict()
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/location-details/{location_id}/google-hours")
+async def get_google_opening_hours(
+    location_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Get opening hours from Google Places API (Placeholder for now)"""
+    try:
+        # Check if location exists
+        location = db.tenant_locations.find_one({"location_id": location_id})
+        
+        if not location:
+            raise HTTPException(status_code=404, detail="Location not found")
+        
+        # TODO: Implement Google Places API call here
+        # For now, return a placeholder message
+        return {
+            "success": True,
+            "message": "Google Places API integration pending - API key required",
+            "google_hours": None,
+            "requires_api_key": True
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
