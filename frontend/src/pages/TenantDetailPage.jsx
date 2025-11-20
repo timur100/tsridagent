@@ -81,8 +81,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   });
 
   // WebSocket integration
-  const { user } = useAuth();
-  const token = user?.token || localStorage.getItem('token');
+  const { user, token } = useAuth();
   
   // Stable WebSocket callback functions with useCallback to prevent re-registration
   const handleWSLocationUpdate = useCallback((data) => {
