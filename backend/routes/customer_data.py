@@ -233,18 +233,40 @@ async def get_europcar_stations(
                 del station['_id']
             
             # Map tenant_locations fields to frontend expected fields
-            # Frontend expects: main_code, station_name, street
-            if 'location_code' in station and 'main_code' not in station:
+            # Frontend expects specific German field names from the old system
+            if 'location_code' in station:
                 station['main_code'] = station['location_code']
             
-            # Ensure station_name exists (already in DB)
-            # Ensure street exists (already in DB)
+            if 'station_name' in station:
+                station['stationsname'] = station['station_name']
             
-            # Add country and continent if not present (using tenant_locations structure)
-            if 'country' not in station:
-                station['country'] = 'Deutschland'
-            if 'continent' not in station:
-                station['continent'] = 'Europa'
+            if 'street' in station:
+                station['str'] = station['street']
+            
+            if 'postal_code' in station:
+                station['plz'] = station['postal_code']
+            
+            if 'city' in station:
+                station['ort'] = station['city']
+            
+            if 'state' in station:
+                station['bundesl'] = station['state']
+            
+            if 'country' in station:
+                station['land'] = station['country']
+            elif not station.get('land'):
+                station['land'] = 'Deutschland'
+            
+            if 'continent' in station:
+                station['kontinent'] = station['continent']
+            elif not station.get('kontinent'):
+                station['kontinent'] = 'Europa'
+            
+            if 'phone' in station:
+                station['telefon'] = station['phone']
+            
+            if 'manager' in station:
+                station['mgr'] = station['manager']
             
             # Calculate online status based on devices at this location
             station_code = station.get('location_code')  # Use location_code instead of main_code
