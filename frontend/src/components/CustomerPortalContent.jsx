@@ -13,6 +13,7 @@ import AddStandortModal from './AddStandortModal';
 import SearchInput from './SearchInput';
 import ShopView from './ShopView';
 import CustomerTickets from './CustomerTickets';
+import LocationsTabEnhanced from './LocationsTabEnhanced';
 import { getFullBundeslandName } from '../utils/bundesland';
 import { 
   extractGeoFilterOptions, 
