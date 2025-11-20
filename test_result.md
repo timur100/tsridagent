@@ -279,15 +279,18 @@ backend:
 frontend:
   - task: "WebSocket Frontend Integration - Customer & Admin Portal"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/services/websocket.service.js, frontend/src/hooks/useWebSocket.js, frontend/src/components/CustomerPortalContent.jsx, frontend/src/pages/TenantDetailPage.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ WebSocket Frontend Integration vollständig implementiert: 1) WebSocket Service (websocket.service.js) erstellt mit Connection Management, Auto-Reconnect mit Exponential Backoff (1s bis 30s), Heartbeat/Ping-Pong Handling, Message Queue für offline Messages, 2) Custom React Hook (useWebSocket.js) erstellt mit Connection Status Management, Callback-System für verschiedene Event-Typen (location_update, device_update, dashboard_stats, refresh_all), Automatic Connection/Disconnection, Fallback auf Polling bei Verbindungsverlust, 3) Customer Portal Integration (CustomerPortalContent.jsx): WebSocket als Primary Connection, Polling nur wenn WebSocket disconnected, Connection Status Indicator im UI (Echtzeit/Verbinde/Offline mit grünem Ping-Animation), Auto-Update bei WebSocket-Messages, 4) Admin Portal Integration (TenantDetailPage.jsx): WebSocket Connection für Live-Updates, Connection Status Indicator (Live/Verbinde/Offline), Kein Fallback-Polling (Admin nutzt nur WebSocket), Auto-Refresh von Dashboard Stats bei Updates. Beide Portale zeigen jetzt Echtzeit-Status-Anzeige und reagieren sofort auf Backend-Änderungen."
+        - working: false
+          agent: "testing"
+          comment: "❌ WEBSOCKET FRONTEND INTEGRATION CRITICAL ISSUES FOUND: Comprehensive testing revealed multiple critical problems with WebSocket integration. AUTHENTICATION ISSUES: ✅ Admin login (admin@tsrid.com/admin123) successful, but ❌ Customer login (info@europcar.com/europcar123) failed with 401 error - unable to access Customer Portal for WebSocket testing. WEBSOCKET CONNECTION STATUS: ❌ No 'Echtzeit' status indicator found in Customer Portal (login failed), ❌ No 'Live' status indicator found in Admin Portal, ❌ No animated green ping dots detected in either portal. CONSOLE LOG ANALYSIS: ⚠️ WebSocket service logs found but limited - detected '[useWebSocket] Connection status: disconnected' indicating WebSocket not connecting properly, ❌ No '[WebSocket] Connecting to...' or '[WebSocket] Connected to tenant...' logs found as expected from implementation. NAVIGATION ISSUES: ❌ Could not navigate to Admin Portal Tenant Details or Standorte tab (timeout errors), preventing proper Admin Portal WebSocket testing. JAVASCRIPT ERRORS: ❌ Multiple fetch errors detected (Scanner status, PIN status, PDF mappings) indicating potential network/API issues. FALLBACK POLLING: ✅ Fallback polling logs detected in Customer Portal code, but unable to verify functionality due to login issues. SUCCESS RATE: Only 20% of tests passed (1/5). CRITICAL BLOCKERS: 1) Customer Portal authentication failing, 2) WebSocket connections not establishing, 3) Status indicators not displaying, 4) Admin Portal navigation issues. WebSocket Frontend Integration is NOT WORKING and requires immediate attention to fix authentication, WebSocket connection establishment, and UI status indicators."
 
 metadata:
   created_by: "main_agent"
