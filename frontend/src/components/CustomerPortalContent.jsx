@@ -26,6 +26,7 @@ import {
 const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTab, scanStats = { total_scans: 0, correct_scans: 0, unknown_scans: 0, failed_scans: 0 } }) => {
   const { user, apiCall } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   
   // Use passed activeTab from parent, or manage locally if not provided
   const [localActiveTab, setLocalActiveTab] = useState('dashboard');
