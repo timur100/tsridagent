@@ -237,7 +237,11 @@ const LocationsTabEnhanced = ({
   };
 
   const handleRowClick = (location) => {
-    navigate(`/portal/admin/locations/${location.location_id}`);
+    if (isCustomerPortal) {
+      navigate(`/portal/customer/locations/${location.location_id}`);
+    } else {
+      navigate(`/portal/admin/tenants/${tenantId}/locations/${location.location_id}`);
+    }
   };
 
   const handleFilterChange = (filterType, value) => {
