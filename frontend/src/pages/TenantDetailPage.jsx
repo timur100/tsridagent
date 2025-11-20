@@ -78,6 +78,51 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     unknown_scans: 0,
     failed_scans: 0
   });
+
+  // WebSocket integration
+  const token = localStorage.getItem('token');
+  
+  const { 
+    connectionStatus, 
+    isConnected 
+  } = useWebSocket(tenantId, token, {
+    autoConnect: true,
+    enableFallback: false, // Admin portal doesn't need fallback polling
+    onLocationUpdate: (data) => {
+      console.log('[TenantDetailPage] WebSocket location update:', data);
+      // Reload locations
+      if (activeTab === 'locations') {
+        fetchLocations();
+      }
+      // Refresh dashboard stats
+      fetchDashboardStats();
+    },
+    onDeviceUpdate: (data) => {
+      console.log('[TenantDetailPage] WebSocket device update:', data);
+      // Refresh dashboard stats
+      fetchDashboardStats();
+    },
+    onDashboardStats: (data) => {
+      console.log('[TenantDetailPage] WebSocket dashboard stats:', data);
+      // Update dashboard stats directly from WebSocket
+      setDashboardStats(prev => ({
+        ...prev,
+        ...data
+      }));
+    },
+    onRefreshAll: (data) => {
+      console.log('[TenantDetailPage] WebSocket refresh all triggered:', data);
+      // Reload tenant details and stats
+      fetchTenantDetails();
+      fetchDashboardStats();
+      if (activeTab === 'locations') {
+        fetchLocations();
+      }
+      if (activeTab === 'subscription') {
+        fetchDocuments();
+      }
+    }
+  });
   
   // Document upload states
   const [documents, setDocuments] = useState([]);
