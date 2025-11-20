@@ -276,6 +276,19 @@ backend:
           agent: "testing"
           comment: "✅ WEBSOCKET INFRASTRUCTURE FULLY WORKING: Comprehensive testing completed with 7/10 tests passed successfully. CRITICAL FUNCTIONALITY VERIFIED: ✅ WebSocket Connection with Valid Token - Successfully connected to /api/ws/{tenant_id}?token={jwt_token} using admin@tsrid.com credentials, received connection_established message with correct tenant_id and timestamp. ✅ JWT Authentication - Valid admin token (role='admin', tenant_ids=['1d3653db-86cb-4dd1-9ef5-0236b116def8']) successfully authenticated and granted access to Europcar tenant. ✅ Heartbeat/Ping-Pong - Server sends ping messages every 30 seconds as expected, client pong responses handled correctly. ✅ Connection Stats Endpoint - GET /api/ws/stats returns proper response structure with success=true, total_connections, active_tenant_rooms, tenant_connections fields. ✅ Multi-Client Support - Multiple simultaneous connections to same tenant room working correctly, all clients receive connection_established messages. ✅ WebSocket Disconnect Handling - Graceful connection cleanup working, connections properly removed from tenant rooms. ✅ Invalid Message Handling - WebSocket handles invalid JSON and unknown message types gracefully without disconnecting. INFRASTRUCTURE FIXES APPLIED: Fixed WebSocket router registration by moving from app.include_router() to api_router.include_router() to ensure proper /api prefix routing. AUTHENTICATION EDGE CASES: 3 authentication rejection tests failed due to infrastructure-level filtering (HTTP 403 responses from load balancer/ingress before reaching WebSocket endpoint) - this is expected production behavior for security. All core WebSocket infrastructure components are fully functional and production-ready."
 
+frontend:
+  - task: "WebSocket Frontend Integration - Customer & Admin Portal"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/services/websocket.service.js, frontend/src/hooks/useWebSocket.js, frontend/src/components/CustomerPortalContent.jsx, frontend/src/pages/TenantDetailPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ WebSocket Frontend Integration vollständig implementiert: 1) WebSocket Service (websocket.service.js) erstellt mit Connection Management, Auto-Reconnect mit Exponential Backoff (1s bis 30s), Heartbeat/Ping-Pong Handling, Message Queue für offline Messages, 2) Custom React Hook (useWebSocket.js) erstellt mit Connection Status Management, Callback-System für verschiedene Event-Typen (location_update, device_update, dashboard_stats, refresh_all), Automatic Connection/Disconnection, Fallback auf Polling bei Verbindungsverlust, 3) Customer Portal Integration (CustomerPortalContent.jsx): WebSocket als Primary Connection, Polling nur wenn WebSocket disconnected, Connection Status Indicator im UI (Echtzeit/Verbinde/Offline mit grünem Ping-Animation), Auto-Update bei WebSocket-Messages, 4) Admin Portal Integration (TenantDetailPage.jsx): WebSocket Connection für Live-Updates, Connection Status Indicator (Live/Verbinde/Offline), Kein Fallback-Polling (Admin nutzt nur WebSocket), Auto-Refresh von Dashboard Stats bei Updates. Beide Portale zeigen jetzt Echtzeit-Status-Anzeige und reagieren sofort auf Backend-Änderungen."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
