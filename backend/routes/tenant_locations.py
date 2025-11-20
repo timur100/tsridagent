@@ -531,6 +531,23 @@ async def update_tenant_location(
         })
         updated_location.pop('_id', None)
         
+        # Broadcast location update in real-time
+        print(f"[Location Update] Broadcasting update for location {location_id} to tenant {tenant_id}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "location_update",
+                "location_id": location_id,
+                "location": updated_location
+            }
+            
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+            print(f"[Location Update] Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"[Location Update] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "Location updated successfully",
