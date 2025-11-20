@@ -82,20 +82,20 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // WebSocket integration
   const token = localStorage.getItem('token');
   
-  // Stable callback functions with useCallback to prevent re-registration
-  const handleLocationUpdate = useCallback((data) => {
+  // Stable WebSocket callback functions with useCallback to prevent re-registration
+  const handleWSLocationUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket location update:', data);
     // Trigger refresh via state update
     setDashboardStats(prev => ({ ...prev }));
   }, []);
 
-  const handleDeviceUpdate = useCallback((data) => {
+  const handleWSDeviceUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket device update:', data);
     // Trigger refresh via state update
     setDashboardStats(prev => ({ ...prev }));
   }, []);
 
-  const handleDashboardStats = useCallback((data) => {
+  const handleWSDashboardStats = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket dashboard stats:', data);
     // Update dashboard stats directly from WebSocket
     setDashboardStats(prev => ({
@@ -104,7 +104,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     }));
   }, []);
 
-  const handleRefreshAll = useCallback((data) => {
+  const handleWSRefreshAll = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket refresh all triggered:', data);
     // Trigger refresh via state update
     setTenant(prev => ({ ...prev }));
@@ -117,10 +117,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   } = useWebSocket(tenantId, token, {
     autoConnect: true,
     enableFallback: false, // Admin portal doesn't need fallback polling
-    onLocationUpdate: handleLocationUpdate,
-    onDeviceUpdate: handleDeviceUpdate,
-    onDashboardStats: handleDashboardStats,
-    onRefreshAll: handleRefreshAll
+    onLocationUpdate: handleWSLocationUpdate,
+    onDeviceUpdate: handleWSDeviceUpdate,
+    onDashboardStats: handleWSDashboardStats,
+    onRefreshAll: handleWSRefreshAll
   });
   
   // Document upload states
