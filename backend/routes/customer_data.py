@@ -232,6 +232,14 @@ async def get_europcar_stations(
             if '_id' in station:
                 del station['_id']
             
+            # Map tenant_locations fields to frontend expected fields
+            # Frontend expects: main_code, station_name, street
+            if 'location_code' in station and 'main_code' not in station:
+                station['main_code'] = station['location_code']
+            
+            # Ensure station_name exists (already in DB)
+            # Ensure street exists (already in DB)
+            
             # Add country and continent if not present (using tenant_locations structure)
             if 'country' not in station:
                 station['country'] = 'Deutschland'
