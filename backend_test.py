@@ -611,105 +611,92 @@ class WebSocketBackendTester:
                 f"Error during cleanup: {str(e)}"
             )
     
-    def run_all_tests(self):
-        """Run all data synchronization tests"""
+    async def run_all_tests(self):
+        """Run all WebSocket backend tests"""
         print("=" * 80)
-        print("DATA SYNCHRONIZATION TESTING - ADMIN PORTAL vs CUSTOMER PORTAL")
+        print("WEBSOCKET BACKEND AUTHENTICATION FIX VERIFICATION")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
+        print(f"WebSocket URL: {WS_BASE}")
         print(f"Test Tenant ID: {self.test_tenant_id} (Europcar)")
         print("=" * 80)
         print()
         
-        # Step 1: Authenticate as Superadmin (admin@tsrid.com)
-        print("🔍 STEP 1: Authenticating as Superadmin (admin@tsrid.com)...")
-        if not self.authenticate_superadmin():
-            print("❌ Superadmin authentication failed. Stopping tests.")
-            return False
-        
-        # Step 2: Get devices via Admin Portal endpoint
-        print("\n🔍 STEP 2: Getting devices via Admin Portal endpoint...")
-        admin_devices = self.get_admin_portal_devices()
-        
-        # Step 3: Authenticate as Tenant Admin (info@europcar.com)
-        print("\n🔍 STEP 3: Authenticating as Tenant Admin (info@europcar.com)...")
-        if not self.authenticate_tenant_admin():
-            print("❌ Tenant Admin authentication failed. Stopping tests.")
-            return False
-        
-        # Step 4: Get devices via Customer Portal endpoint
-        print("\n🔍 STEP 4: Getting devices via Customer Portal endpoint...")
-        customer_devices = self.get_customer_portal_devices()
-        
-        # Step 5: Compare device counts
-        print("\n🔍 STEP 5: Comparing device counts between portals...")
-        device_sync_ok = self.compare_device_counts(admin_devices, customer_devices)
-        
-        # Step 6: Get locations via Customer Portal
-        print("\n🔍 STEP 6: Getting locations via Customer Portal endpoint...")
-        customer_locations = self.get_customer_portal_locations()
-        
-        # Step 7: Connect to database for direct verification
-        print("\n🔍 STEP 7: Connecting to database for direct verification...")
-        db_connected = self.connect_to_database()
-        
-        # Step 8: Verify device data in database
-        print("\n🔍 STEP 8: Verifying device data in database...")
-        db_devices = None
-        if db_connected:
-            db_devices = self.verify_database_devices()
-        
-        # Step 9: Verify location data in database
-        print("\n🔍 STEP 9: Verifying location data in database...")
-        db_locations = None
-        if db_connected:
-            db_locations = self.verify_database_locations()
-        
-        # Step 10: Compare location counts
-        print("\n🔍 STEP 10: Comparing location counts...")
-        location_sync_ok = self.compare_location_counts(customer_locations, db_locations)
-        
-        # Summary
-        print("\n" + "=" * 80)
-        print("DATA SYNCHRONIZATION TESTING SUMMARY")
-        print("=" * 80)
-        
-        passed = sum(1 for r in self.results if r['success'])
-        total = len(self.results)
-        
-        print(f"Tests completed: {passed}/{total} passed")
-        
-        # Print critical synchronization results
-        print("\n🔍 CRITICAL SYNCHRONIZATION RESULTS:")
-        if admin_devices and customer_devices:
-            print(f"   • Device Count Sync: {'✅ SYNCHRONIZED' if device_sync_ok else '❌ NOT SYNCHRONIZED'}")
-        else:
-            print(f"   • Device Count Sync: ❌ UNABLE TO VERIFY (missing data)")
-        
-        if customer_locations and db_locations:
-            print(f"   • Location Count Sync: {'✅ SYNCHRONIZED' if location_sync_ok else '❌ NOT SYNCHRONIZED'}")
-        else:
-            print(f"   • Location Count Sync: ❌ UNABLE TO VERIFY (missing data)")
-        
-        # Print failed tests
-        failed_tests = [r for r in self.results if not r['success']]
-        if failed_tests:
-            print("\n❌ ISSUES FOUND:")
-            for test in failed_tests:
-                print(f"   • {test['test']}: {test['details']}")
-        
-        # Print successful tests
-        successful_tests = [r for r in self.results if r['success']]
-        if successful_tests:
-            print("\n✅ SUCCESSFUL CHECKS:")
-            for test in successful_tests:
-                print(f"   • {test['test']}")
-        
-        # Close database connection
-        if self.mongo_client:
-            self.mongo_client.close()
-        
-        return len(failed_tests) == 0 and device_sync_ok and location_sync_ok
+        try:
+            # Step 1: Authenticate as Admin (admin@tsrid.com)
+            print("🔍 STEP 1: Authenticating as Admin (admin@tsrid.com)...")
+            if not self.authenticate_admin():
+                print("❌ Admin authentication failed. Stopping tests.")
+                return False
+            
+            # Step 2: Test WebSocket connection with valid token
+            print("\n🔍 STEP 2: Testing WebSocket connection with valid token...")
+            websocket_connection_ok = await self.test_websocket_connection_with_valid_token()
+            
+            # Step 3: Test WebSocket stats endpoint
+            print("\n🔍 STEP 3: Testing WebSocket stats endpoint...")
+            stats_endpoint_ok = self.test_websocket_stats_endpoint()
+            
+            # Step 4: Test multi-tenant room management
+            print("\n🔍 STEP 4: Testing multi-tenant room management...")
+            multi_tenant_ok = await self.test_multi_tenant_room_management()
+            
+            # Step 5: Test heartbeat/ping-pong mechanism
+            print("\n🔍 STEP 5: Testing heartbeat/ping-pong mechanism...")
+            heartbeat_ok = await self.test_heartbeat_ping_pong()
+            
+            # Step 6: Test message broadcasting
+            print("\n🔍 STEP 6: Testing message broadcasting...")
+            broadcasting_ok = await self.test_message_broadcasting()
+            
+            # Step 7: Test authentication edge cases
+            print("\n🔍 STEP 7: Testing authentication edge cases...")
+            auth_edge_cases_ok = await self.test_authentication_edge_cases()
+            
+            # Step 8: Test connection cleanup
+            print("\n🔍 STEP 8: Testing connection cleanup...")
+            cleanup_ok = await self.test_connection_cleanup()
+            
+            # Summary
+            print("\n" + "=" * 80)
+            print("WEBSOCKET BACKEND TESTING SUMMARY")
+            print("=" * 80)
+            
+            passed = sum(1 for r in self.results if r['success'])
+            total = len(self.results)
+            
+            print(f"Tests completed: {passed}/{total} passed")
+            
+            # Print critical WebSocket results
+            print("\n🔍 CRITICAL WEBSOCKET FUNCTIONALITY:")
+            print(f"   • WebSocket Connection with Valid Token: {'✅ WORKING' if websocket_connection_ok else '❌ FAILED'}")
+            print(f"   • JWT Token Authentication Flow: {'✅ WORKING' if websocket_connection_ok else '❌ FAILED'}")
+            print(f"   • Multi-Tenant Room Management: {'✅ WORKING' if multi_tenant_ok else '❌ FAILED'}")
+            print(f"   • Heartbeat/Ping-Pong Mechanism: {'✅ WORKING' if heartbeat_ok else '❌ FAILED'}")
+            print(f"   • Message Broadcasting: {'✅ WORKING' if broadcasting_ok else '❌ FAILED'}")
+            print(f"   • Authentication Edge Cases: {'✅ WORKING' if auth_edge_cases_ok else '❌ FAILED'}")
+            print(f"   • Connection Cleanup: {'✅ WORKING' if cleanup_ok else '❌ FAILED'}")
+            print(f"   • WebSocket Stats Endpoint: {'✅ WORKING' if stats_endpoint_ok else '❌ FAILED'}")
+            
+            # Print failed tests
+            failed_tests = [r for r in self.results if not r['success']]
+            if failed_tests:
+                print("\n❌ ISSUES FOUND:")
+                for test in failed_tests:
+                    print(f"   • {test['test']}: {test['details']}")
+            
+            # Print successful tests
+            successful_tests = [r for r in self.results if r['success']]
+            if successful_tests:
+                print("\n✅ SUCCESSFUL CHECKS:")
+                for test in successful_tests:
+                    print(f"   • {test['test']}")
+            
+            return len(failed_tests) == 0
+            
+        finally:
+            # Always cleanup connections
+            await self.cleanup_connections()
 
 if __name__ == "__main__":
     print("Starting Data Synchronization Testing Between Admin Portal and Customer Portal...")
