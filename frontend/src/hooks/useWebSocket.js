@@ -23,7 +23,15 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     onRefreshAll = null,
     onOpeningHoursUpdate = null,
     onLocationCreated = null,
-    onLocationDeleted = null
+    onLocationDeleted = null,
+    onDeviceCreated = null,
+    onDeviceDeleted = null,
+    onDeviceStatusUpdate = null,
+    onTenantUpdated = null,
+    onUserCreated = null,
+    onUserUpdated = null,
+    onUserDeleted = null,
+    onScanUpdate = null
   } = options;
 
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
