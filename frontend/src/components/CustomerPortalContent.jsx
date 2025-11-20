@@ -86,6 +86,14 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const [showAddStandortModal, setShowAddStandortModal] = useState(false);
   const [deviceSortConfig, setDeviceSortConfig] = useState({ key: 'device_id', direction: 'asc' });
   const modalOpenRef = useRef(false); // Track if modal is currently open
+  
+  // Dashboard stats from API (same as Admin Portal)
+  const [dashboardStats, setDashboardStats] = useState({
+    total_locations: 0,
+    online_devices: 0,
+    offline_devices: 0,
+    total_devices: 0
+  });
 
   // Update ref when modals change
   useEffect(() => {
