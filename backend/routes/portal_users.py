@@ -168,6 +168,23 @@ async def update_user(email: str, user_update: dict, token_data: dict = Depends(
         # Fetch updated user (exclude sensitive fields)
         updated_user = db.portal_users.find_one({"email": email}, {'_id': 0, 'hashed_password': 0})
         
+        # Broadcast user update in real-time
+        print(f"[User Update] Broadcasting update for user {email}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "user_updated",
+                "email": email,
+                "user": updated_user
+            }
+            
+            asyncio.create_task(manager.broadcast_to_tenant("admin", message))
+            print(f"[User Update] Broadcast sent")
+        except Exception as e:
+            print(f"[User Update] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "User updated successfully",
