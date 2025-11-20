@@ -67,10 +67,24 @@ const LocationDetailPage = () => {
     }
   }, [locationId, isEditingHours]);
   
+  // Handle location updates from WebSocket
+  const handleLocationUpdate = useCallback((data) => {
+    console.log('[AdminLocationDetail] WebSocket location update:', data);
+    if (data.location_id === locationId) {
+      // Refresh location data
+      fetchLocationDetails();
+      toast.success('Standort wurde aktualisiert', {
+        duration: 3000,
+        icon: '🔄'
+      });
+    }
+  }, [locationId]);
+  
   // Connect to WebSocket for real-time updates
   useWebSocket(tenantId, token, {
     autoConnect: true,
-    onOpeningHoursUpdate: handleOpeningHoursUpdate
+    onOpeningHoursUpdate: handleOpeningHoursUpdate,
+    onLocationUpdate: handleLocationUpdate
   });
 
   const days = [
