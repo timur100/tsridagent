@@ -82,6 +82,24 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     }
   }, [onOpeningHoursUpdate]);
 
+  // Handle location created
+  const handleLocationCreated = useCallback((data) => {
+    console.log('[useWebSocket] Location created:', data);
+    setLastUpdate({ type: 'location_created', data, timestamp: new Date() });
+    if (onLocationCreated) {
+      onLocationCreated(data);
+    }
+  }, [onLocationCreated]);
+
+  // Handle location deleted
+  const handleLocationDeleted = useCallback((data) => {
+    console.log('[useWebSocket] Location deleted:', data);
+    setLastUpdate({ type: 'location_deleted', data, timestamp: new Date() });
+    if (onLocationDeleted) {
+      onLocationDeleted(data);
+    }
+  }, [onLocationDeleted]);
+
   // Start fallback polling
   const startFallbackPolling = useCallback(() => {
     if (!enableFallback || fallbackPollingRef.current) {
