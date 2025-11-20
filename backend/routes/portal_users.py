@@ -109,6 +109,26 @@ async def create_user(user_request: CreateUserRequest, token_data: dict = Depend
         # Return user without sensitive data
         user_response = {k: v for k, v in user_doc.items() if k not in ['_id', 'hashed_password']}
         
+        # Broadcast user creation in real-time
+        print(f"[User Create] Broadcasting new user {user_request.email}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            # Broadcast to all admins (we'll use a global admin tenant for now)
+            message = {
+                "type": "user_created",
+                "user": user_response
+            }
+            
+            # Broadcast to user's company/tenant if they have one
+            if user_request.company:
+                asyncio.create_task(manager.broadcast_to_tenant("admin", message))
+            
+            print(f"[User Create] Broadcast sent")
+        except Exception as e:
+            print(f"[User Create] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "User created successfully",
