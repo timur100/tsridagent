@@ -1597,7 +1597,9 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
               if (standortStatusFilter === 'online') {
                 return location.online_device_count > 0;
               } else if (standortStatusFilter === 'offline') {
-                return location.device_count > 0 && location.online_device_count === 0;
+                // Show locations with at least one offline device
+                const offlineCount = (location.device_count || 0) - (location.online_device_count || 0);
+                return offlineCount > 0;
               }
               return true; // 'all' - show everything
             })}
