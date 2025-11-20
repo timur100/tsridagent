@@ -26,6 +26,7 @@ const TenantDevicesTab = ({ tenantId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [filters, setFilters] = useState({
     status: 'all',
     kontinent: 'all',
