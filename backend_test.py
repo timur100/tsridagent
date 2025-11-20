@@ -51,8 +51,8 @@ class WebSocketBackendTester:
             'response': response_data
         })
     
-    def authenticate_superadmin(self):
-        """Authenticate as superadmin user (admin@tsrid.com)"""
+    def authenticate_admin(self):
+        """Authenticate as admin user (admin@tsrid.com)"""
         try:
             auth_data = {
                 "email": "admin@tsrid.com",
@@ -63,7 +63,7 @@ class WebSocketBackendTester:
             
             if response.status_code != 200:
                 self.log_result(
-                    "Superadmin Authentication", 
+                    "Admin Authentication", 
                     False, 
                     f"Authentication failed. Status: {response.status_code}",
                     response.text
@@ -74,28 +74,39 @@ class WebSocketBackendTester:
             
             if not data.get("access_token"):
                 self.log_result(
-                    "Superadmin Authentication", 
+                    "Admin Authentication", 
                     False, 
                     "Authentication response missing access_token",
                     data
                 )
                 return False
             
-            self.superadmin_token = data["access_token"]
+            self.admin_token = data["access_token"]
             
-            # Check if token contains tenant_ids
-            tenant_ids = data.get("tenant_ids", [])
-            
-            self.log_result(
-                "Superadmin Authentication", 
-                True, 
-                f"Successfully authenticated as admin@tsrid.com (Superadmin) with tenant_ids: {tenant_ids}"
-            )
-            return True
+            # Decode token to verify claims
+            try:
+                decoded = jwt.decode(self.admin_token, options={"verify_signature": False})
+                tenant_ids = decoded.get("tenant_ids", [])
+                role = decoded.get("role", "")
+                customer_id = decoded.get("customer_id", "")
+                
+                self.log_result(
+                    "Admin Authentication", 
+                    True, 
+                    f"Successfully authenticated as admin@tsrid.com with role='{role}', customer_id='{customer_id}', tenant_ids={tenant_ids}"
+                )
+                return True
+            except Exception as decode_error:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Failed to decode JWT token: {str(decode_error)}"
+                )
+                return False
             
         except Exception as e:
             self.log_result(
-                "Superadmin Authentication", 
+                "Admin Authentication", 
                 False, 
                 f"Exception occurred: {str(e)}"
             )
