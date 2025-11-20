@@ -249,78 +249,62 @@ class WebSocketBackendTester:
             )
             return False
     
-    def get_customer_portal_devices(self):
-        """Get devices via Customer Portal endpoint using tenant admin token"""
+    def test_websocket_stats_endpoint(self):
+        """Test WebSocket stats endpoint"""
         try:
-            # Set tenant admin token in headers
-            headers = {
-                'Authorization': f'Bearer {self.tenant_admin_token}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-            
-            response = requests.get(f"{API_BASE}/portal/europcar-devices", headers=headers)
+            response = self.session.get(f"{API_BASE}/ws/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Customer Portal Devices", 
-                    False, 
+                    "WebSocket Stats Endpoint",
+                    False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
                 )
-                return None
+                return False
             
             data = response.json()
             
             # Verify response structure
-            if not isinstance(data, dict):
-                self.log_result(
-                    "Customer Portal Devices", 
-                    False, 
-                    "Response is not a dictionary",
-                    data
-                )
-                return None
-            
             if not data.get("success"):
                 self.log_result(
-                    "Customer Portal Devices", 
-                    False, 
+                    "WebSocket Stats Endpoint",
+                    False,
                     "Response indicates failure",
                     data
                 )
-                return None
+                return False
             
-            # Check if we have data structure
-            response_data = data.get("data", {})
-            devices = response_data.get("devices", [])
-            summary = response_data.get("summary", {})
+            # Check required fields
+            required_fields = ["total_connections", "active_tenant_rooms", "tenant_connections"]
+            for field in required_fields:
+                if field not in data:
+                    self.log_result(
+                        "WebSocket Stats Endpoint",
+                        False,
+                        f"Missing required field: {field}",
+                        data
+                    )
+                    return False
             
-            # Extract counts from summary or calculate from devices
-            total_count = summary.get("total", len(devices))
-            online_count = summary.get("online", sum(1 for d in devices if d.get("status") == "online"))
-            offline_count = summary.get("offline", sum(1 for d in devices if d.get("status") == "offline"))
+            total_connections = data.get("total_connections", 0)
+            active_rooms = data.get("active_tenant_rooms", 0)
+            tenant_connections = data.get("tenant_connections", {})
             
             self.log_result(
-                "Customer Portal Devices", 
-                True, 
-                f"Retrieved {total_count} devices (online: {online_count}, offline: {offline_count})"
+                "WebSocket Stats Endpoint",
+                True,
+                f"Stats endpoint working: {total_connections} total connections, {active_rooms} active tenant rooms, tenant connections: {tenant_connections}"
             )
-            
-            return {
-                "total": total_count,
-                "online": online_count,
-                "offline": offline_count,
-                "devices": devices
-            }
+            return True
             
         except Exception as e:
             self.log_result(
-                "Customer Portal Devices", 
-                False, 
+                "WebSocket Stats Endpoint",
+                False,
                 f"Exception occurred: {str(e)}"
             )
-            return None
+            return False
     
     def get_customer_portal_locations(self):
         """Get locations via Customer Portal endpoint using tenant admin token"""
