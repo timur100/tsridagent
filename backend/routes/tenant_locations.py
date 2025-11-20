@@ -275,18 +275,23 @@ async def test_opening_hours_broadcast(
     try:
         print(f"[TEST] Manual broadcast test for location {location_id} in tenant {tenant_id}")
         
-        from broadcast_service import schedule_broadcast
+        from websocket_manager import manager
+        import asyncio
         
         test_hours = {
             "monday": {"day": "Montag", "is_open": True, "open_time": "09:00", "close_time": "17:00", "is_24h": False}
         }
         
-        schedule_broadcast(tenant_id, "opening_hours_update", {
+        message = {
+            "type": "opening_hours_update",
             "location_id": location_id,
             "opening_hours": test_hours
-        })
+        }
         
-        print(f"[TEST] Broadcast scheduled")
+        # Broadcast directly
+        asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+        
+        print(f"[TEST] Broadcast sent")
         
         return {
             "success": True,
