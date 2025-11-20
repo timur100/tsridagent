@@ -175,14 +175,14 @@ const LocationDetailPage = () => {
   };
 
   const handleBack = () => {
-    // Navigate back to tenant detail page with Standorte tab active
-    if (tenantId) {
-      navigate(`/portal/admin/tenants/${tenantId}?tab=locations`);
-    } else if (locationData?.tenant_id) {
-      navigate(`/portal/admin/tenants/${locationData.tenant_id}?tab=locations`);
-    } else {
-      navigate(-1);
-    }
+    // Navigate back to AdminPortal with TenantDetailPage embedded, Standorte tab active
+    navigate('/portal/admin', { 
+      state: { 
+        activeTab: 'tenants',
+        selectedTenantId: tenantId || locationData?.tenant_id,
+        tenantInitialTab: 'locations'
+      } 
+    });
   };
 
   if (loading) {
