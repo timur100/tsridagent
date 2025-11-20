@@ -98,6 +98,17 @@ const AdminPortalContent = () => {
   const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
   const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
   const [tenantInitialTab, setTenantInitialTab] = useState('dashboard');
+
+  // Handle navigation from LocationDetailPage
+  useEffect(() => {
+    if (location.state?.selectedTenantId) {
+      console.log('[AdminPortal] Navigated from LocationDetailPage with state:', location.state);
+      setActiveTab(location.state.activeTab || 'tenants');
+      setSelectedTenantIdForDetail(location.state.selectedTenantId);
+      setTenantInitialTab(location.state.tenantInitialTab || 'dashboard');
+    }
+  }, [location.state]);
+
   const [scanStats, setScanStats] = useState({
     total_scans: 0,
     correct_scans: 0,
