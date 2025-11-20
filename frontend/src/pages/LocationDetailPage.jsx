@@ -213,58 +213,191 @@ const LocationDetailPage = () => {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          {/* Geräte */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Geräte Gesamt
-                </p>
-                <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {stats.total_devices}
-                </p>
-              </div>
-              <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+            <div className="flex flex-col items-center text-center">
+              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Geräte
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {stats.total_devices}
+              </p>
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          {/* Mitarbeiter */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Online
-                </p>
-                <p className="text-3xl font-bold text-green-500">
-                  {stats.online_devices}
-                </p>
-              </div>
-              <Wifi className="h-12 w-12 text-green-500" />
+            <div className="flex flex-col items-center text-center">
+              <User className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Mitarbeiter
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {stats.employees}
+              </p>
             </div>
           </Card>
 
-          <Card className={`p-6 rounded-xl transition-all duration-300 ${
+          {/* Online */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
             theme === 'dark' 
               ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Offline
-                </p>
-                <p className="text-3xl font-bold text-red-500">
-                  {stats.offline_devices}
-                </p>
-              </div>
-              <WifiOff className="h-12 w-12 text-red-500" />
+            <div className="flex flex-col items-center text-center">
+              <Wifi className="h-8 w-8 mb-2 text-green-500" />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Online
+              </p>
+              <p className="text-2xl font-bold text-green-500">
+                {stats.online_devices}
+              </p>
+            </div>
+          </Card>
+
+          {/* Offline */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <WifiOff className="h-8 w-8 mb-2 text-red-500" />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Offline
+              </p>
+              <p className="text-2xl font-bold text-red-500">
+                {stats.offline_devices}
+              </p>
+            </div>
+          </Card>
+
+          {/* In Vorbereitung */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <Clock className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                In Vorbereitung
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-orange-400' : 'text-orange-500'}`}>
+                {stats.in_preparation}
+              </p>
+            </div>
+          </Card>
+
+          {/* Tickets Offen */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <Calendar className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-500'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Tickets Offen
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-purple-400' : 'text-purple-500'}`}>
+                {stats.open_tickets}
+              </p>
+            </div>
+          </Card>
+
+          {/* Scans Insgesamt */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-cyan-400' : 'text-cyan-500'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Scans Insgesamt
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {stats.total_scans}
+              </p>
+            </div>
+          </Card>
+
+          {/* Korrekte Scans */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <Wifi className="h-8 w-8 mb-2 text-green-500" />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Korrekte Scans
+              </p>
+              <p className="text-2xl font-bold text-green-500">
+                {stats.correct_scans}
+              </p>
+            </div>
+          </Card>
+
+          {/* Unbekannte Scans */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <MapPin className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Unbekannte Scans
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-500'}`}>
+                {stats.unknown_scans}
+              </p>
+            </div>
+          </Card>
+
+          {/* Fehlgeschlagene Scans */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <X className="h-8 w-8 mb-2 text-red-500" />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Fehlgeschlagene Scans
+              </p>
+              <p className="text-2xl font-bold text-red-500">
+                {stats.failed_scans}
+              </p>
+            </div>
+          </Card>
+
+          {/* Fehleranalyse nötig */}
+          <Card className={`p-4 rounded-xl transition-all duration-300 hover:scale-105 ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex flex-col items-center text-center">
+              <WifiOff className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
+              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Fehleranalyse nötig
+              </p>
+              <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                {stats.needs_error_analysis}
+              </p>
             </div>
           </Card>
         </div>
