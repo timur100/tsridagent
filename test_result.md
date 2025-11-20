@@ -144,6 +144,18 @@ backend:
           agent: "testing"
           comment: "✅ CUSTOMER PORTAL LOCATION ENRICHMENT FULLY VERIFIED: All 5/5 review request requirements successfully tested and passed. AUTHENTICATION: ✅ Successfully authenticated as info@europcar.com with password Berlin#2018 to get tenant admin token. ENDPOINT ACCESS: ✅ GET /api/portal/europcar-devices successfully retrieved 215 devices from Customer Portal. FIELD VERIFICATION: ✅ All 215 devices have street and zip fields populated (99.1% success rate - 213/215 devices have complete location data). RANDOM SAMPLING: ✅ Verified 5+ random devices have populated street and zip data with examples like STRN01-01 (STRN01): LUDWIGSBURGER STR. 13, 70435. DATA SYNCHRONIZATION: ✅ Compared sample devices with Admin Portal endpoint /api/tenant-devices/1d3653db-86cb-4dd1-9ef5-0236b116def8 - all tested devices show IDENTICAL street and zip values between Customer Portal and Admin Portal. LOCATION ENRICHMENT: ✅ enrich_devices_with_location_data() function working correctly in routes/devices.py, enriching Customer Portal devices with street/zip from portal_db.tenant_locations via locationcode mapping. EDGE CASES: Only 2 devices (BREW03-01, HAMS01-01) have empty location data due to missing location matches, which is expected behavior. Customer Portal location data enrichment is fully functional and production-ready with perfect data synchronization."
 
+  - task: "Customer Portal Stations Field Mapping Verification"
+    implemented: true
+    working: true
+    file: "backend/routes/customer_data.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ CUSTOMER PORTAL STATIONS FIELD MAPPING FULLY VERIFIED: All 5/5 review request requirements successfully tested and passed. AUTHENTICATION: ✅ Successfully authenticated as info@europcar.com with password Berlin#2018 to get tenant admin token. ENDPOINT ACCESS: ✅ GET /api/portal/customer-data/europcar-stations successfully retrieved stations from Customer Portal. FIELD MAPPING VERIFICATION: ✅ All stations have the correct field names that the frontend expects - main_code (mapped from location_code), station_name, street, city, and postal_code/zip fields are all present and properly populated. RANDOM SAMPLING: ✅ Verified 5 random stations have all critical fields (main_code, station_name, street) populated with valid values (not null, not empty string, not '-'). BERN03 STATION VERIFICATION: ✅ Specific station BERN03 correctly verified with main_code='BERN03', station_name='BERNAU BEI BERLIN', street='SCHWANEBECKER CHAUSSEE 12' exactly as expected. FIELD POPULATION: ✅ All stations have properly populated main_code, station_name, street, city, and postal_code/zip fields with no empty or invalid values. DATA MAPPING: ✅ Field mapping from portal_db.tenant_locations to frontend-expected field names working correctly - location_code properly mapped to main_code as required. Customer Portal stations endpoint field mapping is fully functional and production-ready with all required fields correctly mapped and populated."
+
   - task: "Tenant Models erweitern für vollständige Isolation"
     implemented: true
     working: true
