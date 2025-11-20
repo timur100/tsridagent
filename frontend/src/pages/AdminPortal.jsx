@@ -103,10 +103,12 @@ const AdminPortalContent = () => {
   useEffect(() => {
     if (location.state?.selectedTenantId) {
       console.log('[AdminPortal] Navigated from LocationDetailPage with state:', location.state);
-      setActiveTab(location.state.activeTab || 'tenants');
-      setSelectedTenantIdForDetail(location.state.selectedTenantId);
-      setTenantInitialTab(location.state.tenantInitialTab || 'dashboard');
-      // Don't update TenantContext - it will interfere with the navigation
+      // Use setTimeout to ensure this runs after other useEffects
+      setTimeout(() => {
+        setActiveTab(location.state.activeTab || 'tenants');
+        setSelectedTenantIdForDetail(location.state.selectedTenantId);
+        setTenantInitialTab(location.state.tenantInitialTab || 'dashboard');
+      }, 100);
     }
   }, [location.state]);
 
