@@ -282,7 +282,7 @@ backend:
 frontend:
   - task: "WebSocket Frontend Integration - Customer & Admin Portal"
     implemented: true
-    working: true
+    working: "NA"
     file: "frontend/src/services/websocket.service.js, frontend/src/hooks/useWebSocket.js, frontend/src/components/CustomerPortalContent.jsx, frontend/src/pages/TenantDetailPage.jsx"
     stuck_count: 0
     priority: "high"
