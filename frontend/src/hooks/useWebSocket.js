@@ -71,6 +71,15 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     }
   }, [onRefreshAll]);
 
+  // Handle opening hours update
+  const handleOpeningHoursUpdate = useCallback((data) => {
+    console.log('[useWebSocket] Opening hours update received:', data);
+    setLastUpdate({ type: 'opening_hours_update', data, timestamp: new Date() });
+    if (onOpeningHoursUpdate) {
+      onOpeningHoursUpdate(data);
+    }
+  }, [onOpeningHoursUpdate]);
+
   // Start fallback polling
   const startFallbackPolling = useCallback(() => {
     if (!enableFallback || fallbackPollingRef.current) {
