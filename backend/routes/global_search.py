@@ -248,7 +248,7 @@ async def global_search(
         if user_role == "customer":
             ticket_query["customer_company"] = user_company
         
-        tickets = list(db.tickets.find(ticket_query).limit(10))
+        tickets = list(portal_db.tickets.find(ticket_query).limit(10))
         for ticket in tickets:
             if '_id' in ticket:
                 del ticket['_id']
