@@ -9,7 +9,9 @@ router = APIRouter(prefix="/api/search", tags=["Global Search"])
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+# Use the correct databases
+admin_db = mongo_client['multi_tenant_admin']
+portal_db = mongo_client['portal_db']
 
 @router.get("/global")
 async def global_search(
