@@ -60,6 +60,7 @@ const AdminPortalContent = () => {
   const { isImpersonating } = useImpersonation();
   const { selectedCustomer, setCustomers } = useCustomerFilter();
   const { selectedTenantId, selectedTenantName, setSelectedTenant } = useTenant();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
