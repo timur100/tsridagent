@@ -110,6 +110,16 @@ const PortalRoutes = () => {
           </ProtectedRoute>
         }
       />
+
+      {/* Customer Portal Location Details */}
+      <Route
+        path="/customer/locations/:locationId"
+        element={
+          <ProtectedRoute>
+            <CustomerLocationDetailPage />
+          </ProtectedRoute>
+        }
+      />
       
       <Route
         path="/catalog"
