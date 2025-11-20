@@ -24,7 +24,7 @@ import toast from 'react-hot-toast';
 
 const LocationDetailPage = () => {
   const { theme } = useTheme();
-  const { locationId } = useParams();
+  const { locationId, tenantId } = useParams();
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(true);
