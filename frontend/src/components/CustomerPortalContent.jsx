@@ -147,6 +147,34 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     }
   };
 
+  const loadDashboardStats = async () => {
+    try {
+      // Get tenant ID from user
+      const tenantId = user?.tenant_ids?.[0];
+      if (!tenantId) {
+        console.log('[CustomerPortal] No tenant ID available for dashboard stats');
+        return;
+      }
+
+      const result = await apiCall(`/api/tenants/${tenantId}/dashboard-stats`);
+      console.log('[CustomerPortal] Dashboard stats API response:', result);
+      
+      if (result && !result.error) {
+        // Handle potential double nesting
+        const stats = result.data || result;
+        console.log('[CustomerPortal] Setting dashboardStats to:', stats);
+        setDashboardStats({
+          total_locations: stats.total_locations || 0,
+          online_devices: stats.online_devices || 0,
+          offline_devices: stats.offline_devices || 0,
+          total_devices: stats.total_devices || (stats.online_devices || 0) + (stats.offline_devices || 0)
+        });
+      }
+    } catch (error) {
+      console.error('Error loading dashboard stats:', error);
+    }
+  };
+
   const loadData = async () => {
     try {
       // Save scroll positions before loading
