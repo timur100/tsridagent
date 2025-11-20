@@ -238,6 +238,14 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     websocketService.on('opening_hours_update', handleOpeningHoursUpdate);
     websocketService.on('location_created', handleLocationCreated);
     websocketService.on('location_deleted', handleLocationDeleted);
+    websocketService.on('device_created', handleDeviceCreated);
+    websocketService.on('device_deleted', handleDeviceDeleted);
+    websocketService.on('device_status_update', handleDeviceStatusUpdate);
+    websocketService.on('tenant_updated', handleTenantUpdated);
+    websocketService.on('user_created', handleUserCreated);
+    websocketService.on('user_updated', handleUserUpdated);
+    websocketService.on('user_deleted', handleUserDeleted);
+    websocketService.on('scan_update', handleScanUpdate);
 
     // Cleanup function
     return () => {
@@ -249,6 +257,14 @@ export const useWebSocket = (tenantId, token, options = {}) => {
       websocketService.off('opening_hours_update', handleOpeningHoursUpdate);
       websocketService.off('location_created', handleLocationCreated);
       websocketService.off('location_deleted', handleLocationDeleted);
+      websocketService.off('device_created', handleDeviceCreated);
+      websocketService.off('device_deleted', handleDeviceDeleted);
+      websocketService.off('device_status_update', handleDeviceStatusUpdate);
+      websocketService.off('tenant_updated', handleTenantUpdated);
+      websocketService.off('user_created', handleUserCreated);
+      websocketService.off('user_updated', handleUserUpdated);
+      websocketService.off('user_deleted', handleUserDeleted);
+      websocketService.off('scan_update', handleScanUpdate);
     };
   }, []); // Empty deps - only run on mount/unmount
 
