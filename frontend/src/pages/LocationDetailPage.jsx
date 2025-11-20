@@ -60,7 +60,7 @@ const LocationDetailPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${BACKEND_URL}/api/tenant-locations/location-details/${locationId}`, {
+      const response = await fetch(`${BACKEND_URL}/api/tenant-locations/details/${locationId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
