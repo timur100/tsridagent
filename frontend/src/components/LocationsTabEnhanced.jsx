@@ -693,11 +693,14 @@ const LocationsTabEnhanced = ({
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center">
                         <span 
-                          className={`inline-flex items-center justify-center gap-1 px-3 py-1.5 rounded-full text-sm font-semibold min-w-[70px] ${
+                          className={`inline-flex items-center justify-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold min-w-[55px] ${
                             location.online_device_count > 0
-                              ? 'bg-green-500 text-white animate-pulse'
-                              : 'bg-red-500 text-white'
+                              ? 'text-white animate-pulse'
+                              : 'text-white'
                           }`}
+                          style={{
+                            backgroundColor: location.online_device_count > 0 ? '#00D150' : '#a13b3b'
+                          }}
                         >
                           <span className="font-bold">{location.online_device_count || 0}</span>
                           <span>|</span>
