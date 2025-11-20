@@ -586,11 +586,13 @@ const LocationsTabEnhanced = ({
                   >
                     Online
                   </th>
-                  <th className={`px-4 py-3 text-right text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                  }`}>
-                    Aktionen
-                  </th>
+                  {!isCustomerPortal && (
+                    <th className={`px-4 py-3 text-right text-xs font-semibold ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      Aktionen
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody>
