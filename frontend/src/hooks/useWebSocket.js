@@ -156,6 +156,8 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     websocketService.on('dashboard_stats', handleDashboardStats);
     websocketService.on('refresh_all', handleRefreshAll);
     websocketService.on('opening_hours_update', handleOpeningHoursUpdate);
+    websocketService.on('location_created', handleLocationCreated);
+    websocketService.on('location_deleted', handleLocationDeleted);
 
     // Cleanup function
     return () => {
@@ -165,6 +167,8 @@ export const useWebSocket = (tenantId, token, options = {}) => {
       websocketService.off('dashboard_stats', handleDashboardStats);
       websocketService.off('refresh_all', handleRefreshAll);
       websocketService.off('opening_hours_update', handleOpeningHoursUpdate);
+      websocketService.off('location_created', handleLocationCreated);
+      websocketService.off('location_deleted', handleLocationDeleted);
     };
   }, []); // Empty deps - only run on mount/unmount
 
