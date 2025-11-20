@@ -241,6 +241,46 @@ class WebSocketService {
         this.notifyHandlers('location_deleted', message);
         break;
       
+      case 'device_created':
+        console.log('[WebSocket] Device created received:', message);
+        this.notifyHandlers('device_created', message);
+        break;
+      
+      case 'device_deleted':
+        console.log('[WebSocket] Device deleted received:', message);
+        this.notifyHandlers('device_deleted', message);
+        break;
+      
+      case 'device_status_update':
+        console.log('[WebSocket] Device status update received:', message);
+        this.notifyHandlers('device_status_update', message);
+        break;
+      
+      case 'tenant_updated':
+        console.log('[WebSocket] Tenant updated received:', message);
+        this.notifyHandlers('tenant_updated', message);
+        break;
+      
+      case 'user_created':
+        console.log('[WebSocket] User created received:', message);
+        this.notifyHandlers('user_created', message);
+        break;
+      
+      case 'user_updated':
+        console.log('[WebSocket] User updated received:', message);
+        this.notifyHandlers('user_updated', message);
+        break;
+      
+      case 'user_deleted':
+        console.log('[WebSocket] User deleted received:', message);
+        this.notifyHandlers('user_deleted', message);
+        break;
+      
+      case 'scan_update':
+        console.log('[WebSocket] Scan update received:', message);
+        this.notifyHandlers('scan_update', message);
+        break;
+      
       case 'error':
         console.error('[WebSocket] Server error:', message.message);
         break;
