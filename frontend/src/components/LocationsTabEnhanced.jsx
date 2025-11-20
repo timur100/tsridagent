@@ -616,19 +616,19 @@ const LocationsTabEnhanced = ({
                           // Check for Airport
                           if (stationName.includes('AIRPORT') || stationName.includes('FLUGHAFEN') || 
                               locationCode.includes('AIR') || mainType === 'A') {
-                            types.push(<Plane key="airport" className="w-4 h-4 text-blue-500" title="Airport" />);
+                            types.push(<Plane key="airport" className="w-5 h-5" style={{color: '#c00000'}} title="Airport" />);
                           }
                           
                           // Check for Mainstation
                           if (stationName.includes('HBF') || stationName.includes('HAUPTBAHNHOF') || 
                               stationName.includes('CENTRAL STATION') || stationName.includes('MAIN STATION')) {
-                            types.push(<Train key="mainstation" className="w-4 h-4 text-green-600" title="Mainstation" />);
+                            types.push(<Train key="mainstation" className="w-5 h-5" style={{color: '#c00000'}} title="Mainstation" />);
                           }
                           
                           // Check for 24h
                           if (stationName.includes('24') || stationName.includes('24H') || 
                               stationName.includes('24 H') || stationName.includes('24-H')) {
-                            types.push(<Clock key="24h" className="w-4 h-4 text-orange-500" title="24h" />);
+                            types.push(<Clock key="24h" className="w-5 h-5" style={{color: '#c00000'}} title="24h" />);
                           }
                           
                           return types.length > 0 ? types : <span className="text-gray-400">-</span>;
