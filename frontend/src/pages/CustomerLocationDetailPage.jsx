@@ -43,9 +43,8 @@ const LocationDetailPage = () => {
     failed_scans: 0
   });
   const [openingHours, setOpeningHours] = useState(null);
-  const [isEditingHours, setIsEditingHours] = useState(false);
+  // Read-only mode - no editing
   const [editedHours, setEditedHours] = useState(null);
-  const [saving, setSaving] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
