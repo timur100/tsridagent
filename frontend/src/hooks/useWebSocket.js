@@ -154,9 +154,7 @@ export const useWebSocket = (tenantId, token, options = {}) => {
         disconnect();
       }
     };
-    // Only re-run when tenant or token changes, NOT when connect/disconnect functions change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantId, token, autoConnect]);
+  }, [tenantId, token, autoConnect, connect, disconnect]);
 
   // Handle connection status changes for fallback
   useEffect(() => {
