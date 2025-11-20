@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation, useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Card } from '../components/ui/card';
 import LocationsTabEnhanced from '../components/LocationsTabEnhanced';
 import LocationModal from '../components/LocationModal';
