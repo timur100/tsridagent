@@ -34,6 +34,10 @@ const LocationsTabEnhanced = ({
   isCustomerPortal = false  // New prop to identify customer portal usage
 }) => {
   const navigate = useNavigate();
+  
+  // Debug logging
+  console.log('[LocationsTabEnhanced] Received locations:', locations?.length, 'items');
+  console.log('[LocationsTabEnhanced] isCustomerPortal:', isCustomerPortal);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'location_code', direction: 'asc' });
   const [filters, setFilters] = useState({
