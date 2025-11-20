@@ -579,24 +579,6 @@ const LocationsTabEnhanced = ({
                       {getSortIcon('email')}
                     </div>
                   </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('id_checker')}
-                  >
-                    <div className="flex items-center">
-                      IDS
-                      {getSortIcon('id_checker')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-center text-xs font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                    }`}
-                  >
-                    Online
-                  </th>
                   {!isCustomerPortal && (
                     <th className={`px-4 py-3 text-right text-xs font-semibold ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
