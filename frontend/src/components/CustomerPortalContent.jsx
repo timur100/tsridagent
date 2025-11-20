@@ -96,6 +96,45 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     total_devices: 0
   });
 
+  // WebSocket integration
+  const tenantId = user?.tenant_ids?.[0];
+  const token = localStorage.getItem('token');
+  
+  // WebSocket connection with fallback to polling
+  const { 
+    connectionStatus, 
+    isConnected, 
+    lastUpdate 
+  } = useWebSocket(tenantId, token, {
+    autoConnect: true,
+    enableFallback: true,
+    pollingInterval: 30000,
+    onLocationUpdate: (data) => {
+      console.log('[CustomerPortal] WebSocket location update:', data);
+      // Reload location data
+      loadData();
+    },
+    onDeviceUpdate: (data) => {
+      console.log('[CustomerPortal] WebSocket device update:', data);
+      // Reload device data
+      loadData();
+    },
+    onDashboardStats: (data) => {
+      console.log('[CustomerPortal] WebSocket dashboard stats:', data);
+      // Update dashboard stats directly from WebSocket
+      setDashboardStats(prev => ({
+        ...prev,
+        ...data
+      }));
+    },
+    onRefreshAll: (data) => {
+      console.log('[CustomerPortal] WebSocket refresh all triggered:', data);
+      // Reload all data
+      loadData();
+      loadDashboardStats();
+    }
+  });
+
   // Update ref when modals change
   useEffect(() => {
     modalOpenRef.current = showAddDeviceModal || showAddStandortModal || showDeviceModal || showStandortModal;
