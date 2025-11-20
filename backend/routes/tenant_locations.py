@@ -256,6 +256,39 @@ async def update_opening_hours(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/test-broadcast/{tenant_id}/{location_id}")
+async def test_opening_hours_broadcast(
+    tenant_id: str,
+    location_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Test endpoint to manually trigger opening hours broadcast"""
+    try:
+        print(f"[TEST] Manual broadcast test for location {location_id} in tenant {tenant_id}")
+        
+        from broadcast_service import schedule_broadcast
+        
+        test_hours = {
+            "monday": {"day": "Montag", "is_open": True, "open_time": "09:00", "close_time": "17:00", "is_24h": False}
+        }
+        
+        schedule_broadcast(tenant_id, "opening_hours_update", {
+            "location_id": location_id,
+            "opening_hours": test_hours
+        })
+        
+        print(f"[TEST] Broadcast scheduled")
+        
+        return {
+            "success": True,
+            "message": "Test broadcast sent",
+            "tenant_id": tenant_id,
+            "location_id": location_id
+        }
+    except Exception as e:
+        print(f"[TEST] ERROR: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/details/{location_id}/google-hours")
 async def get_google_opening_hours(
     location_id: str,
