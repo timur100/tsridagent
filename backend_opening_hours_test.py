@@ -153,7 +153,7 @@ class OpeningHoursTester:
     def verify_opening_hours_in_database(self):
         """Verify Opening Hours in Database - Check MongoDB portal_db.tenant_locations collection for AAHC01"""
         try:
-            if not self.portal_db:
+            if self.portal_db is None:
                 self.log_result(
                     "Database Opening Hours Verification",
                     False,
