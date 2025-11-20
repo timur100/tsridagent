@@ -481,8 +481,12 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   };
 
   const handleStandortClick = (standort) => {
-    setSelectedStandortForModal(standort);
-    setShowStandortModal(true);
+    // Navigate to new CustomerLocationDetailPage
+    if (standort.location_id) {
+      navigate(`/portal/customer/locations/${standort.location_id}`);
+    } else {
+      toast.error('Standort-ID nicht verfügbar');
+    }
   };
 
   const handleStandortUpdate = () => {
