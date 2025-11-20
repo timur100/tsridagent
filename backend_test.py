@@ -30,10 +30,9 @@ class WebSocketBackendTester:
             'Accept': 'application/json'
         })
         self.results = []
-        self.superadmin_token = None
-        self.tenant_admin_token = None
-        self.test_tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Specific Europcar tenant ID for testing
-        self.mongo_client = None
+        self.admin_token = None
+        self.test_tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Europcar tenant ID for testing
+        self.websocket_connections = []
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
