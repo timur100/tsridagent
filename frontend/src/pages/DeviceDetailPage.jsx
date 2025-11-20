@@ -163,11 +163,11 @@ const DeviceDetailPage = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
+      const authToken = token || localStorage.getItem('token') || localStorage.getItem('portal_token');
       const response = await fetch(`${BACKEND_URL}/api/tenant-devices/device/${deviceId}/transfer`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ tenant_id: selectedTenant })
