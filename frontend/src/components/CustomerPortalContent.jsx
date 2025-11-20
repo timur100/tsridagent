@@ -153,20 +153,22 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     loadDashboardStats();
     setLoading(false);
     
-    // Auto-refresh data every 30 seconds
+    // Fallback polling - only when WebSocket is not connected
     const interval = setInterval(() => {
-      // Only refresh if no modal is open (check via ref!)
-      if (!modalOpenRef.current) {
-        console.log('[CustomerPortal] Polling - checking for updates...');
+      // Only poll if WebSocket is not connected and no modal is open
+      if (!isConnected && !modalOpenRef.current) {
+        console.log('[CustomerPortal] Fallback Polling - WebSocket disconnected, checking for updates...');
         loadData();
         loadDashboardStats();
+      } else if (isConnected) {
+        console.log('[CustomerPortal] Polling skipped - WebSocket connected');
       } else {
         console.log('[CustomerPortal] Polling skipped - modal is open');
       }
     }, 30000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [isConnected]);
 
 
   const loadPortalSettings = async () => {
