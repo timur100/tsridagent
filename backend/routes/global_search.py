@@ -147,21 +147,25 @@ async def global_search(
         # Search both portal_devices and europcar_devices collections
         devices = []
         
-        # Search portal_devices (uses 'company' field)
-        if user_role == "customer" and user_company:
-            portal_device_query = device_query.copy()
-            portal_device_query["company"] = user_company
-            devices.extend(list(db.portal_devices.find(portal_device_query).limit(10)))
-        else:
-            devices.extend(list(db.portal_devices.find(device_query).limit(10)))
+        # Get user's tenant_ids to filter devices
+        user_tenant_ids = token_data.get("tenant_ids", [])
         
-        # Search europcar_devices collection (uses 'customer' field)
-        if user_role == "customer" and user_company:
+        # Search europcar_devices collection (main devices collection)
+        if user_role == "customer" and user_tenant_ids:
+            # Customer: only show devices from their tenant(s)
             europcar_device_query = device_query.copy()
-            europcar_device_query["customer"] = user_company
-            devices.extend(list(db.europcar_devices.find(europcar_device_query).limit(10)))
-        else:
-            devices.extend(list(db.europcar_devices.find(device_query).limit(10)))
+            europcar_device_query["tenant_id"] = {"$in": user_tenant_ids}
+            devices.extend(list(admin_db.europcar_devices.find(europcar_device_query).limit(50)))
+        elif user_role == "admin":
+            # Admin: show all devices from all tenants
+            devices.extend(list(admin_db.europcar_devices.find(device_query).limit(50)))
+        
+        # Also search portal_devices if it exists
+        try:
+            portal_devices = list(portal_db.tenant_devices.find(device_query).limit(50))
+            devices.extend(portal_devices)
+        except:
+            pass
         
         # Remove duplicates based on device_id
         seen_device_ids = set()
