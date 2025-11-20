@@ -177,9 +177,9 @@ const LocationDetailPage = () => {
   const handleBack = () => {
     // Navigate back to tenant detail page with Standorte tab active
     if (tenantId) {
-      navigate(`/portal/admin/tenants/${tenantId}`, { state: { activeTab: 'standorte' } });
+      navigate(`/portal/admin/tenants/${tenantId}?tab=standorte`);
     } else if (locationData?.tenant_id) {
-      navigate(`/portal/admin/tenants/${locationData.tenant_id}`, { state: { activeTab: 'standorte' } });
+      navigate(`/portal/admin/tenants/${locationData.tenant_id}?tab=standorte`);
     } else {
       navigate(-1);
     }
