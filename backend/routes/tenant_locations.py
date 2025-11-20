@@ -475,7 +475,7 @@ class LocationOpeningHours(BaseModel):
     sunday: Optional[DayOpeningHours] = None
     manual_override: bool = False  # If true, ignore Google API data
 
-@router.get("/location-details/{location_id}")
+@router.get("/details/{location_id}")
 async def get_location_details(
     location_id: str,
     credentials: HTTPAuthorizationCredentials = Depends(security)
