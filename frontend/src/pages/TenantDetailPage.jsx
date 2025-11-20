@@ -96,6 +96,64 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     setDashboardStats(prev => ({ ...prev }));
   }, []);
 
+  const handleWSDeviceCreated = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket device created:', data);
+    toast.success('Neues Gerät hinzugefügt', { duration: 3000, icon: '📱' });
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
+  const handleWSDeviceDeleted = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket device deleted:', data);
+    toast.info('Gerät wurde gelöscht', { duration: 3000, icon: '🗑️' });
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
+  const handleWSDeviceStatusUpdate = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket device status:', data);
+    const statusIcon = data.status === 'online' ? '🟢' : '🔴';
+    toast.info(`Gerät ${data.status}`, { duration: 2000, icon: statusIcon });
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
+  const handleWSTenantUpdated = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket tenant updated:', data);
+    toast.success('Mandant wurde aktualisiert', { duration: 3000, icon: '🔄' });
+    // Refresh tenant data
+    fetchTenantDetails();
+  }, []);
+
+  const handleWSUserCreated = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket user created:', data);
+    toast.success('Neuer Benutzer hinzugefügt', { duration: 3000, icon: '👤' });
+  }, []);
+
+  const handleWSUserUpdated = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket user updated:', data);
+    toast.info('Benutzer wurde aktualisiert', { duration: 3000, icon: '🔄' });
+  }, []);
+
+  const handleWSUserDeleted = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket user deleted:', data);
+    toast.info('Benutzer wurde gelöscht', { duration: 3000, icon: '🗑️' });
+  }, []);
+
+  const handleWSScanUpdate = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket scan update:', data);
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
+  const handleWSLocationCreated = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket location created:', data);
+    toast.success('Neuer Standort hinzugefügt', { duration: 3000, icon: '📍' });
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
+  const handleWSLocationDeleted = useCallback((data) => {
+    console.log('[TenantDetailPage] WebSocket location deleted:', data);
+    toast.info('Standort wurde gelöscht', { duration: 3000, icon: '🗑️' });
+    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+  }, []);
+
   const handleWSDashboardStats = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket dashboard stats:', data);
     // Update dashboard stats directly from WebSocket
