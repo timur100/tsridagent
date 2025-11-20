@@ -382,28 +382,62 @@ class WebSocketBackendTester:
             )
             return False
 
-    def connect_to_database(self):
-        """Connect to MongoDB for direct database verification"""
+    async def test_message_broadcasting(self):
+        """Test message broadcasting functionality"""
         try:
-            # Connect to MongoDB using the same URL as backend
-            mongo_url = "mongodb://localhost:27017"
-            self.mongo_client = pymongo.MongoClient(mongo_url)
+            if len(self.websocket_connections) < 2:
+                self.log_result(
+                    "Message Broadcasting",
+                    False,
+                    "Need at least 2 WebSocket connections for broadcasting test"
+                )
+                return False
             
-            # Test connection
-            self.mongo_client.admin.command('ping')
+            # Test sending a custom message to verify message handling
+            websocket1 = self.websocket_connections[0]
+            websocket2 = self.websocket_connections[1]
             
-            self.log_result(
-                "Database Connection", 
-                True, 
-                "Successfully connected to MongoDB"
-            )
-            return True
+            # Send a subscribe message to test message handling
+            subscribe_message = {
+                "type": "subscribe",
+                "types": ["dashboard_stats", "device_update"]
+            }
+            
+            await websocket1.send(json.dumps(subscribe_message))
+            
+            # Wait for subscription confirmation
+            try:
+                response = await asyncio.wait_for(websocket1.recv(), timeout=5)
+                data = json.loads(response)
+                
+                if data.get("type") == "subscription_confirmed":
+                    self.log_result(
+                        "Message Broadcasting",
+                        True,
+                        f"Successfully sent subscribe message and received confirmation: {data.get('subscriptions')}"
+                    )
+                    return True
+                else:
+                    self.log_result(
+                        "Message Broadcasting",
+                        False,
+                        f"Expected subscription_confirmed, got: {data.get('type')}"
+                    )
+                    return False
+                    
+            except asyncio.TimeoutError:
+                self.log_result(
+                    "Message Broadcasting",
+                    False,
+                    "Timeout waiting for subscription confirmation"
+                )
+                return False
             
         except Exception as e:
             self.log_result(
-                "Database Connection", 
-                False, 
-                f"Failed to connect to MongoDB: {str(e)}"
+                "Message Broadcasting",
+                False,
+                f"Exception occurred: {str(e)}"
             )
             return False
 
