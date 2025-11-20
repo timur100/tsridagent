@@ -441,6 +441,13 @@ const LocationsTabEnhanced = ({
             <table className="w-full">
               <thead>
                 <tr className={theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}>
+                  <th 
+                    className={`px-4 py-3 text-center text-xs font-semibold ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}
+                  >
+                    Online
+                  </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold ${
                     theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                   }`}>
