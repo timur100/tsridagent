@@ -41,6 +41,7 @@ import {
   Navigation
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useWebSocket } from '../hooks/useWebSocket';
 
 const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const { theme } = useTheme();
