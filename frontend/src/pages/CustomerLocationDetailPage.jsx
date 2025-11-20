@@ -133,7 +133,8 @@ const LocationDetailPage = () => {
   };
 
   const handleBack = () => {
-    navigate(-1);
+    // Navigate back to customer portal with locations tab active
+    navigate('/portal/customer', { state: { activeTab: 'locations' } });
   };
 
   if (loading) {
