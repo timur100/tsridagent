@@ -134,7 +134,6 @@ export const useWebSocket = (tenantId, token, options = {}) => {
       websocketService.off('dashboard_stats', handleDashboardStats);
       websocketService.off('refresh_all', handleRefreshAll);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Empty deps - only run on mount/unmount
 
   // Auto-connect on mount
@@ -149,8 +148,7 @@ export const useWebSocket = (tenantId, token, options = {}) => {
         disconnect();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantId, token]); // Only re-run when tenant or token changes
+  }, [tenantId, token, autoConnect, connect, disconnect]); // Re-run when tenant or token changes
 
   // Handle connection status changes for fallback
   useEffect(() => {
