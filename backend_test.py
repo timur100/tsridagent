@@ -112,52 +112,72 @@ class WebSocketBackendTester:
             )
             return False
 
-    def authenticate_tenant_admin(self):
-        """Authenticate as tenant admin user (info@europcar.com)"""
+    async def test_websocket_connection_with_valid_token(self):
+        """Test WebSocket connection with valid JWT token"""
         try:
-            auth_data = {
-                "email": "info@europcar.com",
-                "password": "Berlin#2018"
-            }
-            
-            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
-            
-            if response.status_code != 200:
+            if not self.admin_token:
                 self.log_result(
-                    "Tenant Admin Authentication", 
-                    False, 
-                    f"Authentication failed. Status: {response.status_code}",
-                    response.text
+                    "WebSocket Connection with Valid Token",
+                    False,
+                    "No admin token available"
                 )
                 return False
             
-            data = response.json()
+            ws_url = f"{WS_BASE}/ws/{self.test_tenant_id}?token={self.admin_token}"
             
-            if not data.get("access_token"):
+            # Connect to WebSocket
+            websocket = await websockets.connect(ws_url)
+            self.websocket_connections.append(websocket)
+            
+            # Wait for connection_established message
+            message = await asyncio.wait_for(websocket.recv(), timeout=10)
+            data = json.loads(message)
+            
+            # Verify connection_established message
+            if data.get("type") != "connection_established":
                 self.log_result(
-                    "Tenant Admin Authentication", 
-                    False, 
-                    "Authentication response missing access_token",
-                    data
+                    "WebSocket Connection with Valid Token",
+                    False,
+                    f"Expected connection_established message, got: {data.get('type')}"
                 )
                 return False
             
-            self.tenant_admin_token = data["access_token"]
+            if data.get("tenant_id") != self.test_tenant_id:
+                self.log_result(
+                    "WebSocket Connection with Valid Token",
+                    False,
+                    f"Expected tenant_id {self.test_tenant_id}, got: {data.get('tenant_id')}"
+                )
+                return False
             
-            # Check if token contains tenant_ids
-            tenant_ids = data.get("tenant_ids", [])
+            # Verify timestamp is present and valid
+            timestamp = data.get("timestamp")
+            if not timestamp:
+                self.log_result(
+                    "WebSocket Connection with Valid Token",
+                    False,
+                    "Missing timestamp in connection_established message"
+                )
+                return False
             
             self.log_result(
-                "Tenant Admin Authentication", 
-                True, 
-                f"Successfully authenticated as info@europcar.com (Tenant Admin) with tenant_ids: {tenant_ids}"
+                "WebSocket Connection with Valid Token",
+                True,
+                f"Successfully connected to WebSocket, received connection_established message with tenant_id={data.get('tenant_id')} and timestamp={timestamp}"
             )
             return True
             
+        except asyncio.TimeoutError:
+            self.log_result(
+                "WebSocket Connection with Valid Token",
+                False,
+                "Timeout waiting for connection_established message"
+            )
+            return False
         except Exception as e:
             self.log_result(
-                "Tenant Admin Authentication", 
-                False, 
+                "WebSocket Connection with Valid Token",
+                False,
                 f"Exception occurred: {str(e)}"
             )
             return False
