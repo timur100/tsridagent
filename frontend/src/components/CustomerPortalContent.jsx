@@ -100,20 +100,20 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const tenantId = user?.tenant_ids?.[0];
   const token = localStorage.getItem('token');
   
-  // Stable callback functions with useCallback to prevent re-registration
-  const handleLocationUpdate = useCallback((data) => {
+  // Stable WebSocket callback functions with useCallback to prevent re-registration
+  const handleWSLocationUpdate = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket location update:', data);
     // Trigger data reload via state change
     setStations(prev => [...prev]); // Force re-fetch
   }, []);
 
-  const handleDeviceUpdate = useCallback((data) => {
+  const handleWSDeviceUpdate = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket device update:', data);
     // Trigger data reload via state change
     setDevices(prev => [...prev]); // Force re-fetch
   }, []);
 
-  const handleDashboardStats = useCallback((data) => {
+  const handleWSDashboardStats = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket dashboard stats:', data);
     // Update dashboard stats directly from WebSocket
     setDashboardStats(prev => ({
@@ -122,7 +122,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     }));
   }, []);
 
-  const handleRefreshAll = useCallback((data) => {
+  const handleWSRefreshAll = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket refresh all triggered:', data);
     // Set a refresh trigger
     setStations(prev => [...prev]);
@@ -138,10 +138,10 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     autoConnect: true,
     enableFallback: true,
     pollingInterval: 30000,
-    onLocationUpdate: handleLocationUpdate,
-    onDeviceUpdate: handleDeviceUpdate,
-    onDashboardStats: handleDashboardStats,
-    onRefreshAll: handleRefreshAll
+    onLocationUpdate: handleWSLocationUpdate,
+    onDeviceUpdate: handleWSDeviceUpdate,
+    onDashboardStats: handleWSDashboardStats,
+    onRefreshAll: handleWSRefreshAll
   });
 
   // Update ref when modals change
