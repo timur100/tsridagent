@@ -68,10 +68,15 @@ const LocationDetailPage = () => {
   }, [locationId]);
   
   // Connect to WebSocket for real-time updates
-  useWebSocket(tenantId, token, {
+  const { connectionStatus, isConnected } = useWebSocket(tenantId, token, {
     autoConnect: true,
     onOpeningHoursUpdate: handleOpeningHoursUpdate
   });
+  
+  // Log WebSocket status for debugging
+  useEffect(() => {
+    console.log('[CustomerLocationDetail] WebSocket status:', connectionStatus, 'Connected:', isConnected, 'TenantId:', tenantId, 'LocationId:', locationId);
+  }, [connectionStatus, isConnected, tenantId, locationId]);
 
   const days = [
     { key: 'monday', label: 'Montag' },
