@@ -735,6 +735,34 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             </p>
           </div>
           {getStatusBadge(tenant.status)}
+          {/* WebSocket Connection Status Indicator */}
+          <div className="flex items-center gap-2 ml-4">
+            {isConnected ? (
+              <>
+                <div className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                </div>
+                <span className={`text-xs font-medium ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                  Live
+                </span>
+              </>
+            ) : connectionStatus === 'reconnecting' ? (
+              <>
+                <div className="h-2.5 w-2.5 rounded-full bg-yellow-500 animate-pulse"></div>
+                <span className={`text-xs font-medium ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                  Verbinde...
+                </span>
+              </>
+            ) : (
+              <>
+                <div className="h-2.5 w-2.5 rounded-full bg-gray-400"></div>
+                <span className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Offline
+                </span>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
