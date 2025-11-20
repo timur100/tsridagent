@@ -18,8 +18,41 @@ export const AuthProvider = ({ children }) => {
     const savedUser = localStorage.getItem('portal_user');
     
     if (savedToken && savedUser) {
+      const parsedUser = JSON.parse(savedUser);
       setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      setUser(parsedUser);
+      
+      // Automatically refresh user data from backend to get latest company info
+      const refreshUserData = async () => {
+        try {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', `${BACKEND_URL}/api/portal/auth/me`);
+          xhr.setRequestHeader('Authorization', `Bearer ${savedToken}`);
+          
+          xhr.onload = function() {
+            if (xhr.status === 200) {
+              try {
+                const data = JSON.parse(xhr.responseText);
+                if (data && data.company !== parsedUser.company) {
+                  // Update user with fresh company data
+                  const updatedUser = { ...parsedUser, company: data.company, name: data.name };
+                  setUser(updatedUser);
+                  localStorage.setItem('portal_user', JSON.stringify(updatedUser));
+                  console.log('[AuthContext] Updated user company from:', parsedUser.company, 'to:', data.company);
+                }
+              } catch (e) {
+                console.error('[AuthContext] Error parsing user refresh:', e);
+              }
+            }
+          };
+          
+          xhr.send();
+        } catch (error) {
+          console.error('[AuthContext] Error refreshing user data:', error);
+        }
+      };
+      
+      refreshUserData();
     }
     setLoading(false);
   }, []);
