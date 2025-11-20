@@ -112,9 +112,15 @@ async def get_location_by_id(
 @router.get("/details/{location_id}")
 async def get_location_details(
     location_id: str,
+    response: Response,
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """Get detailed information for a single location including devices and opening hours"""
+    # Prevent browser caching to ensure fresh data
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    
     try:
         # Get location by ID
         location = db.tenant_locations.find_one({"location_id": location_id})
