@@ -383,6 +383,29 @@ const LocationsTabEnhanced = ({
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
+
+        {/* Clear Filters Button */}
+        {(searchTerm || Object.values(filters).some(f => f)) && (
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setFilters({
+                continent: '',
+                country: '',
+                state: '',
+                city: '',
+                mainType: ''
+              });
+            }}
+            className={`px-4 py-2 rounded-lg border transition-all ${
+              theme === 'dark'
+                ? 'bg-[#2a2a2a] border-gray-700 text-gray-300 hover:bg-[#333] hover:border-[#c00000]'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-[#c00000]'
+            }`}
+          >
+            Filter löschen
+          </button>
+        )}
       </div>
 
       {/* Locations Table */}
