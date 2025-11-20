@@ -188,8 +188,32 @@ async def get_tenant_locations(
         locations = []
         cursor = db.tenant_locations.find(query).sort("location_code", 1)
         
+        # Get devices for this tenant to calculate online status
+        devices_db = mongo_client['multi_tenant_admin']
+        devices = list(devices_db.europcar_devices.find({"tenant_id": tenant_id}))
+        
+        # Group devices by location code
+        devices_by_location = {}
+        for device in devices:
+            locationcode = device.get('locationcode')
+            if locationcode:
+                if locationcode not in devices_by_location:
+                    devices_by_location[locationcode] = []
+                devices_by_location[locationcode].append(device)
+        
         for loc in cursor:
             loc.pop('_id', None)
+            
+            # Add device count and online count for this location
+            location_code = loc.get('location_code')
+            location_devices = devices_by_location.get(location_code, [])
+            
+            loc['device_count'] = len(location_devices)
+            loc['online_device_count'] = sum(
+                1 for device in location_devices 
+                if device.get('status', '').lower() == 'online' or device.get('teamviewer_online', False)
+            )
+            
             locations.append(loc)
         
         return {
