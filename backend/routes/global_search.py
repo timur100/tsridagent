@@ -47,7 +47,7 @@ async def global_search(
         
         if user_role == "customer":
             # Get user company from database
-            user_record = db.portal_users.find_one({"email": user_email})
+            user_record = portal_db.portal_users.find_one({"email": user_email})
             if user_record:
                 user_company = user_record.get("company")
         
