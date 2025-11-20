@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { LogOut, Shield, Monitor, MapPin, ShoppingBag, Headphones } from 'lucide-react';
@@ -13,8 +14,9 @@ import toast from 'react-hot-toast';
 const CustomerPortal = () => {
   const { user, logout, apiCall } = useAuth();
   const { theme } = useTheme();
+  const location = useLocation();
 
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
   const [companyLogoLight, setCompanyLogoLight] = useState(null);
   const [companyName, setCompanyName] = useState('');
