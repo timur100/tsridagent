@@ -22,7 +22,7 @@ BACKEND_URL = "https://live-device-sync.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://") + "/api"
 
-class DataSynchronizationTester:
+class WebSocketBackendTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
