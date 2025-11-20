@@ -731,6 +731,20 @@ const TenantDevicesTab = ({ tenantId }) => {
           onUpdate={handleDeviceUpdate}
         />
       )}
+
+      {/* Add Device Modal */}
+      {showAddModal && (
+        <AddDeviceModal
+          tenantId={tenantId}
+          stations={stations}
+          onClose={() => setShowAddModal(false)}
+          onDeviceAdded={() => {
+            setShowAddModal(false);
+            loadDevices(); // Refresh device list
+            toast.success('Gerät erfolgreich hinzugefügt');
+          }}
+        />
+      )}
     </div>
   );
 };
