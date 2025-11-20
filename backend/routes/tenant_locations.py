@@ -542,7 +542,7 @@ async def get_location_details(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.put("/location-details/{location_id}/opening-hours")
+@router.put("/details/{location_id}/opening-hours")
 async def update_opening_hours(
     location_id: str,
     opening_hours: LocationOpeningHours,
