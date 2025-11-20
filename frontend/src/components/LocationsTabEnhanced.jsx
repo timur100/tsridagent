@@ -296,13 +296,15 @@ const LocationsTabEnhanced = ({
           />
         </div>
         
-        <button
-          onClick={onAddLocation}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all flex-shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Standort hinzufügen
-        </button>
+        {!isCustomerPortal && (
+          <button
+            onClick={onAddLocation}
+            className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all flex-shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            Standort hinzufügen
+          </button>
+        )}
       </div>
 
       {/* Filters */}
