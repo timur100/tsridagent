@@ -756,7 +756,7 @@ const TenantDevicesTab = ({ tenantId }) => {
             loadDevices(); // Refresh device list
             toast.success('Gerät erfolgreich hinzugefügt');
           }}
-          customers={[{ tenant_id: tenantId, name: 'Current Tenant' }]}
+          customers={availableTenants}
           selectedCustomer={tenantId}
         />
       )}
