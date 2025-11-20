@@ -21,7 +21,9 @@ export const useWebSocket = (tenantId, token, options = {}) => {
     onDeviceUpdate = null,
     onDashboardStats = null,
     onRefreshAll = null,
-    onOpeningHoursUpdate = null
+    onOpeningHoursUpdate = null,
+    onLocationCreated = null,
+    onLocationDeleted = null
   } = options;
 
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
