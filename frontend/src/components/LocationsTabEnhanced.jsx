@@ -610,12 +610,43 @@ const LocationsTabEnhanced = ({
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
-                      {location.sn_pc || '-'}
+                      {location.country || 'Deutschland'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
-                      {location.sn_sc || '-'}
+                      {location.continent || 'Europa'}
+                    </td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {location.phone || '-'}
+                    </td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {location.email || '-'}
+                    </td>
+                    <td className={`px-4 py-3 text-sm ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    }`}>
+                      {location.id_checker || 0}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex items-center justify-center gap-1">
+                        <Circle 
+                          className={`w-2 h-2 ${
+                            location.online_device_count > 0 
+                              ? 'fill-green-500 text-green-500' 
+                              : 'fill-gray-400 text-gray-400'
+                          }`} 
+                        />
+                        <span className={`text-sm font-medium ${
+                          theme === 'dark' ? 'text-white' : 'text-gray-900'
+                        }`}>
+                          {location.online_device_count || 0} | {location.device_count || 0}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                       <div className="flex items-center justify-end gap-2">
