@@ -582,6 +582,36 @@ const LocationsTabEnhanced = ({
                     }`}>
                       {location.location_code}
                     </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-center gap-1">
+                        {(() => {
+                          const stationName = (location.station_name || '').toUpperCase();
+                          const locationCode = (location.location_code || '').toUpperCase();
+                          const mainType = location.main_type;
+                          const types = [];
+                          
+                          // Check for Airport
+                          if (stationName.includes('AIRPORT') || stationName.includes('FLUGHAFEN') || 
+                              locationCode.includes('AIR') || mainType === 'A') {
+                            types.push(<Plane key="airport" className="w-4 h-4 text-blue-500" title="Airport" />);
+                          }
+                          
+                          // Check for Mainstation
+                          if (stationName.includes('HBF') || stationName.includes('HAUPTBAHNHOF') || 
+                              stationName.includes('CENTRAL STATION') || stationName.includes('MAIN STATION')) {
+                            types.push(<Train key="mainstation" className="w-4 h-4 text-green-600" title="Mainstation" />);
+                          }
+                          
+                          // Check for 24h
+                          if (stationName.includes('24') || stationName.includes('24H') || 
+                              stationName.includes('24 H') || stationName.includes('24-H')) {
+                            types.push(<Clock key="24h" className="w-4 h-4 text-orange-500" title="24h" />);
+                          }
+                          
+                          return types.length > 0 ? types : <span className="text-gray-400">-</span>;
+                        })()}
+                      </div>
+                    </td>
                     <td className={`px-4 py-3 text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                     }`}>
