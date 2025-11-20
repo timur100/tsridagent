@@ -715,38 +715,40 @@ const LocationsTabEnhanced = ({
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onEditLocation(location);
-                          }}
-                          className={`p-2 rounded-lg transition-all ${
-                            theme === 'dark'
-                              ? 'hover:bg-[#1f1f1f] text-gray-400 hover:text-white'
-                              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                          }`}
-                          title="Bearbeiten"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            onDeleteLocation(location.location_id);
-                          }}
-                          className={`p-2 rounded-lg transition-all ${
-                            theme === 'dark'
-                              ? 'hover:bg-red-900/20 text-gray-400 hover:text-red-400'
-                              : 'hover:bg-red-50 text-gray-600 hover:text-red-600'
-                          }`}
-                          title="Löschen"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
+                    {!isCustomerPortal && (
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEditLocation(location);
+                            }}
+                            className={`p-2 rounded-lg transition-all ${
+                              theme === 'dark'
+                                ? 'hover:bg-[#1f1f1f] text-gray-400 hover:text-white'
+                                : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                            }`}
+                            title="Bearbeiten"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteLocation(location.location_id);
+                            }}
+                            className={`p-2 rounded-lg transition-all ${
+                              theme === 'dark'
+                                ? 'hover:bg-red-900/20 text-gray-400 hover:text-red-400'
+                                : 'hover:bg-red-50 text-gray-600 hover:text-red-600'
+                            }`}
+                            title="Löschen"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
