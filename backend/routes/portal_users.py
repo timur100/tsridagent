@@ -215,6 +215,22 @@ async def delete_user(email: str, token_data: dict = Depends(verify_token)):
         # Delete from MongoDB
         db.portal_users.delete_one({"email": email})
         
+        # Broadcast user deletion in real-time
+        print(f"[User Delete] Broadcasting deletion for user {email}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "user_deleted",
+                "email": email
+            }
+            
+            asyncio.create_task(manager.broadcast_to_tenant("admin", message))
+            print(f"[User Delete] Broadcast sent")
+        except Exception as e:
+            print(f"[User Delete] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "User deleted successfully"
