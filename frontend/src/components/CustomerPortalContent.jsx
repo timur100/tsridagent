@@ -127,6 +127,30 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     setStations(prev => [...prev]);
     setDevices(prev => [...prev]);
   }, []);
+
+  const handleWSDeviceCreated = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket device created:', data);
+    if (!modalOpenRef.current) {
+      fetchDashboardData();
+      fetchDevices();
+      toast.success('Neues Gerät wurde hinzugefügt', {
+        duration: 3000,
+        icon: '📱'
+      });
+    }
+  }, []);
+
+  const handleWSDeviceDeleted = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket device deleted:', data);
+    if (!modalOpenRef.current) {
+      fetchDashboardData();
+      fetchDevices();
+      toast.info('Gerät wurde entfernt', {
+        duration: 3000,
+        icon: '🗑️'
+      });
+    }
+  }, []);
   
   // WebSocket connection with fallback to polling
   const { 
@@ -139,6 +163,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     pollingInterval: 30000,
     onLocationUpdate: handleWSLocationUpdate,
     onDeviceUpdate: handleWSDeviceUpdate,
+    onDeviceCreated: handleWSDeviceCreated,
+    onDeviceDeleted: handleWSDeviceDeleted,
     onDashboardStats: handleWSDashboardStats,
     onRefreshAll: handleWSRefreshAll
   });
