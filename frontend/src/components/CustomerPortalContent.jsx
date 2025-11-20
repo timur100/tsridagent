@@ -192,10 +192,13 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
       if (hasTenantId || isEuropcar) {
         console.log('[CustomerPortal] Loading data - hasTenantId:', hasTenantId, 'isEuropcar:', isEuropcar);
         
-        // Load data using portal endpoints (works for all customers)
+        // Get tenant ID for API calls
+        const tenantId = user?.tenant_ids?.[0];
+        
+        // Load data using same APIs as Admin Portal
         const [devicesRes, locationsRes] = await Promise.all([
           apiCall('/api/portal/europcar-devices'),
-          apiCall('/api/portal/customer-data/europcar-stations')
+          tenantId ? apiCall(`/api/tenant-locations/${tenantId}`) : apiCall('/api/portal/customer-data/europcar-stations')
         ]);
         
         console.log('[CustomerPortal] Data loaded - Devices:', devicesRes, 'Locations:', locationsRes);
