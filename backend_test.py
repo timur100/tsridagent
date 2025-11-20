@@ -306,69 +306,81 @@ class WebSocketBackendTester:
             )
             return False
     
-    def get_customer_portal_locations(self):
-        """Get locations via Customer Portal endpoint using tenant admin token"""
+    async def test_multi_tenant_room_management(self):
+        """Test multi-tenant room management"""
         try:
-            # Set tenant admin token in headers
-            headers = {
-                'Authorization': f'Bearer {self.tenant_admin_token}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-            
-            response = requests.get(f"{API_BASE}/portal/customer-data/europcar-stations", headers=headers)
-            
-            if response.status_code != 200:
+            if not self.admin_token:
                 self.log_result(
-                    "Customer Portal Locations", 
-                    False, 
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    "Multi-Tenant Room Management",
+                    False,
+                    "No admin token available"
                 )
-                return None
+                return False
             
-            data = response.json()
+            # Connect multiple clients to the same tenant room
+            ws_url = f"{WS_BASE}/ws/{self.test_tenant_id}?token={self.admin_token}"
             
-            # Verify response structure
-            if not isinstance(data, dict):
+            # Connect first client
+            websocket1 = await websockets.connect(ws_url)
+            self.websocket_connections.append(websocket1)
+            
+            # Wait for connection_established message
+            message1 = await asyncio.wait_for(websocket1.recv(), timeout=10)
+            data1 = json.loads(message1)
+            
+            # Connect second client
+            websocket2 = await websockets.connect(ws_url)
+            self.websocket_connections.append(websocket2)
+            
+            # Wait for connection_established message
+            message2 = await asyncio.wait_for(websocket2.recv(), timeout=10)
+            data2 = json.loads(message2)
+            
+            # Verify both connections received connection_established
+            if data1.get("type") != "connection_established" or data2.get("type") != "connection_established":
                 self.log_result(
-                    "Customer Portal Locations", 
-                    False, 
-                    "Response is not a dictionary",
-                    data
+                    "Multi-Tenant Room Management",
+                    False,
+                    "One or both connections did not receive connection_established message"
                 )
-                return None
+                return False
             
-            if not data.get("success"):
+            # Check WebSocket stats to verify multiple connections
+            stats_response = self.session.get(f"{API_BASE}/ws/stats")
+            if stats_response.status_code == 200:
+                stats_data = stats_response.json()
+                total_connections = stats_data.get("total_connections", 0)
+                tenant_connections = stats_data.get("tenant_connections", {}).get(self.test_tenant_id, 0)
+                
+                if total_connections >= 2 and tenant_connections >= 2:
+                    self.log_result(
+                        "Multi-Tenant Room Management",
+                        True,
+                        f"Successfully connected multiple clients to tenant room. Total connections: {total_connections}, Tenant {self.test_tenant_id} connections: {tenant_connections}"
+                    )
+                    return True
+                else:
+                    self.log_result(
+                        "Multi-Tenant Room Management",
+                        False,
+                        f"Expected at least 2 connections, got total: {total_connections}, tenant: {tenant_connections}"
+                    )
+                    return False
+            else:
                 self.log_result(
-                    "Customer Portal Locations", 
-                    False, 
-                    "Response indicates failure",
-                    data
+                    "Multi-Tenant Room Management",
+                    False,
+                    "Could not verify connection count via stats endpoint"
                 )
-                return None
-            
-            stations = data.get("stations", [])
-            total_count = len(stations)
-            
-            self.log_result(
-                "Customer Portal Locations", 
-                True, 
-                f"Retrieved {total_count} locations/stations"
-            )
-            
-            return {
-                "total": total_count,
-                "locations": stations
-            }
+                return False
             
         except Exception as e:
             self.log_result(
-                "Customer Portal Locations", 
-                False, 
+                "Multi-Tenant Room Management",
+                False,
                 f"Exception occurred: {str(e)}"
             )
-            return None
+            return False
 
     def connect_to_database(self):
         """Connect to MongoDB for direct database verification"""
