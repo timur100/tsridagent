@@ -100,6 +100,35 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const tenantId = user?.tenant_ids?.[0];
   const token = localStorage.getItem('token');
   
+  // Stable callback functions with useCallback to prevent re-registration
+  const handleLocationUpdate = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket location update:', data);
+    // Trigger data reload via state change
+    setStations(prev => [...prev]); // Force re-fetch
+  }, []);
+
+  const handleDeviceUpdate = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket device update:', data);
+    // Trigger data reload via state change
+    setDevices(prev => [...prev]); // Force re-fetch
+  }, []);
+
+  const handleDashboardStats = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket dashboard stats:', data);
+    // Update dashboard stats directly from WebSocket
+    setDashboardStats(prev => ({
+      ...prev,
+      ...data
+    }));
+  }, []);
+
+  const handleRefreshAll = useCallback((data) => {
+    console.log('[CustomerPortal] WebSocket refresh all triggered:', data);
+    // Set a refresh trigger
+    setStations(prev => [...prev]);
+    setDevices(prev => [...prev]);
+  }, []);
+  
   // WebSocket connection with fallback to polling
   const { 
     connectionStatus, 
@@ -109,30 +138,10 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     autoConnect: true,
     enableFallback: true,
     pollingInterval: 30000,
-    onLocationUpdate: (data) => {
-      console.log('[CustomerPortal] WebSocket location update:', data);
-      // Reload location data
-      loadData();
-    },
-    onDeviceUpdate: (data) => {
-      console.log('[CustomerPortal] WebSocket device update:', data);
-      // Reload device data
-      loadData();
-    },
-    onDashboardStats: (data) => {
-      console.log('[CustomerPortal] WebSocket dashboard stats:', data);
-      // Update dashboard stats directly from WebSocket
-      setDashboardStats(prev => ({
-        ...prev,
-        ...data
-      }));
-    },
-    onRefreshAll: (data) => {
-      console.log('[CustomerPortal] WebSocket refresh all triggered:', data);
-      // Reload all data
-      loadData();
-      loadDashboardStats();
-    }
+    onLocationUpdate: handleLocationUpdate,
+    onDeviceUpdate: handleDeviceUpdate,
+    onDashboardStats: handleDashboardStats,
+    onRefreshAll: handleRefreshAll
   });
 
   // Update ref when modals change
