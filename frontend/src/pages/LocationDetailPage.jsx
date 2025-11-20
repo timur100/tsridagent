@@ -110,7 +110,7 @@ const LocationDetailPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${BACKEND_URL}/api/tenant-locations/location-details/${locationId}/opening-hours`,
+        `${BACKEND_URL}/api/tenant-locations/details/${locationId}/opening-hours`,
         {
           method: 'PUT',
           headers: {
