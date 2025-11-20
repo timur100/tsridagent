@@ -28,6 +28,7 @@ const LocationDetailPage = () => {
   const { theme } = useTheme();
   const { locationId } = useParams();
   const navigate = useNavigate();
+  const { user, token } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [locationData, setLocationData] = useState(null);
@@ -49,6 +50,32 @@ const LocationDetailPage = () => {
   const [editedHours, setEditedHours] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+  
+  // WebSocket integration for real-time updates
+  const tenantId = user?.tenant_ids?.[0];
+  
+  // Handle opening hours updates from WebSocket
+  const handleOpeningHoursUpdate = useCallback((data) => {
+    console.log('[CustomerLocationDetail] WebSocket opening hours update:', data);
+    if (data.location_id === locationId) {
+      setOpeningHours(data.opening_hours);
+      setEditedHours(data.opening_hours);
+      toast.success('Öffnungszeiten wurden aktualisiert', {
+        duration: 3000,
+        icon: '🔄'
+      });
+    }
+  }, [locationId]);
+  
+  // Connect to WebSocket for real-time updates
+  useWebSocket(tenantId, token, {
+    autoConnect: true,
+    onMessage: (message) => {
+      if (message.type === 'opening_hours_update') {
+        handleOpeningHoursUpdate(message);
+      }
+    }
+  });
 
   const days = [
     { key: 'monday', label: 'Montag' },
