@@ -136,6 +136,228 @@ async def get_tenant_devices(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/device/{device_id}")
+async def get_device_details(
+    device_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Get detailed information for a single device
+    """
+    try:
+        print(f"🔍 get_device_details called with device_id: {device_id}")
+        
+        # Find device in europcar_devices
+        device = db.europcar_devices.find_one({"device_id": device_id})
+        
+        if not device:
+            raise HTTPException(status_code=404, detail="Device not found")
+        
+        # Remove MongoDB _id field
+        if '_id' in device:
+            del device['_id']
+        
+        return {
+            "success": True,
+            "device": device
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Get device error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/device/{device_id}")
+async def update_device(
+    device_id: str,
+    device_data: dict,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Update device information
+    """
+    try:
+        print(f"🔍 update_device called with device_id: {device_id}")
+        print(f"🔍 device_data: {device_data}")
+        
+        # Check if device exists
+        existing_device = db.europcar_devices.find_one({"device_id": device_id})
+        if not existing_device:
+            raise HTTPException(status_code=404, detail="Device not found")
+        
+        tenant_id = existing_device.get('tenant_id')
+        
+        # Update device
+        from datetime import datetime, timezone
+        device_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        db.europcar_devices.update_one(
+            {"device_id": device_id},
+            {"$set": device_data}
+        )
+        
+        # Get updated device
+        updated_device = db.europcar_devices.find_one({"device_id": device_id})
+        if '_id' in updated_device:
+            del updated_device['_id']
+        
+        # Broadcast update via WebSocket
+        print(f"📡 Broadcasting device update for {device_id}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "device_update",
+                "device_id": device_id,
+                "device": updated_device
+            }
+            
+            if tenant_id:
+                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+                print(f"✅ Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"⚠️ Broadcast error: {str(e)}")
+        
+        return {
+            "success": True,
+            "message": "Device updated successfully",
+            "device": updated_device
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Update device error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/device/{device_id}")
+async def delete_device(
+    device_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Delete a device
+    """
+    try:
+        print(f"🔍 delete_device called with device_id: {device_id}")
+        
+        # Check if device exists
+        device = db.europcar_devices.find_one({"device_id": device_id})
+        if not device:
+            raise HTTPException(status_code=404, detail="Device not found")
+        
+        tenant_id = device.get('tenant_id')
+        
+        # Delete device
+        db.europcar_devices.delete_one({"device_id": device_id})
+        
+        # Broadcast deletion via WebSocket
+        print(f"📡 Broadcasting device deletion for {device_id}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "device_deleted",
+                "device_id": device_id
+            }
+            
+            if tenant_id:
+                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+                print(f"✅ Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"⚠️ Broadcast error: {str(e)}")
+        
+        return {
+            "success": True,
+            "message": "Device deleted successfully"
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Delete device error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/device/{device_id}/transfer")
+async def transfer_device_to_tenant(
+    device_id: str,
+    transfer_data: dict,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Transfer device to another tenant
+    """
+    try:
+        new_tenant_id = transfer_data.get('tenant_id')
+        if not new_tenant_id:
+            raise HTTPException(status_code=400, detail="tenant_id required")
+        
+        print(f"🔍 transfer_device called: {device_id} -> {new_tenant_id}")
+        
+        # Check if device exists
+        device = db.europcar_devices.find_one({"device_id": device_id})
+        if not device:
+            raise HTTPException(status_code=404, detail="Device not found")
+        
+        old_tenant_id = device.get('tenant_id')
+        
+        # Update tenant_id
+        from datetime import datetime, timezone
+        db.europcar_devices.update_one(
+            {"device_id": device_id},
+            {"$set": {
+                "tenant_id": new_tenant_id,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Get updated device
+        updated_device = db.europcar_devices.find_one({"device_id": device_id})
+        if '_id' in updated_device:
+            del updated_device['_id']
+        
+        # Broadcast to both tenants
+        print(f"📡 Broadcasting device transfer")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            # Notify old tenant (device removed)
+            if old_tenant_id:
+                asyncio.create_task(manager.broadcast_to_tenant(old_tenant_id, {
+                    "type": "device_deleted",
+                    "device_id": device_id
+                }))
+            
+            # Notify new tenant (device added)
+            asyncio.create_task(manager.broadcast_to_tenant(new_tenant_id, {
+                "type": "device_created",
+                "device": updated_device
+            }))
+            
+            print(f"✅ Broadcasts sent")
+        except Exception as e:
+            print(f"⚠️ Broadcast error: {str(e)}")
+        
+        return {
+            "success": True,
+            "message": f"Device transferred from {old_tenant_id} to {new_tenant_id}",
+            "device": updated_device
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Transfer device error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/all/devices")
 async def get_all_devices(
     token_data: dict = Depends(verify_token)
