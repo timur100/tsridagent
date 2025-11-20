@@ -367,6 +367,22 @@ async def create_tenant_location(
         # Remove MongoDB _id from response
         location_doc.pop('_id', None)
         
+        # Broadcast new location in real-time
+        print(f"[Location Create] Broadcasting new location {location_id} to tenant {tenant_id}")
+        try:
+            from websocket_manager import manager
+            import asyncio
+            
+            message = {
+                "type": "location_created",
+                "location": location_doc
+            }
+            
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+            print(f"[Location Create] Broadcast sent to tenant {tenant_id}")
+        except Exception as e:
+            print(f"[Location Create] Broadcast error: {str(e)}")
+        
         return {
             "success": True,
             "message": "Location created successfully",
