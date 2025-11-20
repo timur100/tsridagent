@@ -423,6 +423,11 @@ const LocationsTabEnhanced = ({
                       {getSortIcon('location_code')}
                     </div>
                   </th>
+                  <th className={`px-4 py-3 text-center text-xs font-semibold ${
+                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  }`}>
+                    Typ
+                  </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
                       theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
