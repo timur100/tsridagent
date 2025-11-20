@@ -177,9 +177,19 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     autoConnect: true,
     enableFallback: false, // Admin portal doesn't need fallback polling
     onLocationUpdate: handleWSLocationUpdate,
+    onLocationCreated: handleWSLocationCreated,
+    onLocationDeleted: handleWSLocationDeleted,
     onDeviceUpdate: handleWSDeviceUpdate,
+    onDeviceCreated: handleWSDeviceCreated,
+    onDeviceDeleted: handleWSDeviceDeleted,
+    onDeviceStatusUpdate: handleWSDeviceStatusUpdate,
     onDashboardStats: handleWSDashboardStats,
-    onRefreshAll: handleWSRefreshAll
+    onRefreshAll: handleWSRefreshAll,
+    onTenantUpdated: handleWSTenantUpdated,
+    onUserCreated: handleWSUserCreated,
+    onUserUpdated: handleWSUserUpdated,
+    onUserDeleted: handleWSUserDeleted,
+    onScanUpdate: handleWSScanUpdate
   });
   
   // Document upload states
