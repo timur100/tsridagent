@@ -282,11 +282,11 @@ backend:
 frontend:
   - task: "WebSocket Frontend Integration - Customer & Admin Portal"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/services/websocket.service.js, frontend/src/hooks/useWebSocket.js, frontend/src/components/CustomerPortalContent.jsx, frontend/src/pages/TenantDetailPage.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
@@ -297,6 +297,9 @@ frontend:
         - working: true
           agent: "main"
           comment: "✅ WEBSOCKET AUTHENTICATION FIX APPLIED: Root cause identified and fixed. PROBLEM: Components were trying to access token via user?.token, but AuthContext exposes token as a separate variable. FIX APPLIED: 1) TenantDetailPage.jsx - Changed from 'const { user } = useAuth(); const token = user?.token || localStorage.getItem('token');' to 'const { user, token } = useAuth();', 2) CustomerPortalContent.jsx - Changed from 'const { user, apiCall } = useAuth(); const token = user?.token || localStorage.getItem('token');' to 'const { user, token, apiCall } = useAuth();'. VERIFICATION: Manual WebSocket test with valid JWT token successfully established connection to ws://localhost:8001/api/ws/{tenant_id}?token={token}, received connection_established message with correct tenant_id and timestamp. WebSocket backend infrastructure fully functional. Ready for comprehensive testing to verify frontend integration."
+        - working: true
+          agent: "testing"
+          comment: "✅ WEBSOCKET FRONTEND INTEGRATION FULLY WORKING: Comprehensive end-to-end testing completed successfully with all major requirements verified. ADMIN PORTAL TESTING: ✅ Successfully authenticated as admin@tsrid.com with admin123 credentials, ✅ Successfully navigated to Europcar tenant detail page (tenant ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8), ✅ 'Live' status indicator visible and working correctly, ✅ Animated green ping dots present (6 elements detected), ✅ Dashboard statistics displaying correctly (9 elements), ✅ WebSocket connection established successfully. CUSTOMER PORTAL TESTING: ✅ Successfully authenticated as info@europcar.com with Berlin#2018 credentials, ✅ Successfully accessed Customer Portal dashboard, ✅ 'Echtzeit' status indicator visible and working correctly, ✅ Animated green ping dots present (18 elements detected), ✅ Dashboard statistics displaying correctly (12 elements), ✅ No fallback polling active (confirming WebSocket is working), ✅ WebSocket connection established successfully. AUTHENTICATION FIX VERIFICATION: ✅ Token authentication fix working correctly - both portals now properly access token from useAuth() hook instead of user?.token, ✅ JWT tokens correctly passed to WebSocket connections, ✅ Tenant ID mapping working correctly (1d3653db-86cb-4dd1-9ef5-0236b116def8). UI VERIFICATION: ✅ Both portals display real-time connection status indicators as expected, ✅ Green animated ping dots confirm active WebSocket connections, ✅ Dashboard stats are being updated via WebSocket (no polling fallback needed). WEBSOCKET INFRASTRUCTURE: ✅ WebSocket service correctly connecting to wss://live-device-sync.preview.emergentagent.com/api/ws/{tenant_id}?token={jwt_token}, ✅ Connection status management working correctly, ✅ Auto-reconnect and heartbeat mechanisms functional. All review request requirements met - WebSocket frontend integration is fully functional and production-ready."
 
 metadata:
   created_by: "main_agent"
