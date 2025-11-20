@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Backend API Testing for Data Synchronization Between Admin Portal and Customer Portal
-Tests data synchronization between Admin Portal and Customer Portal for Europcar tenant.
-Verifies that both portals show EXACTLY the same data for tenant_id: 1d3653db-86cb-4dd1-9ef5-0236b116def8
+WebSocket Backend Authentication Fix Verification
+Tests WebSocket backend infrastructure after authentication bug fix.
+Verifies WebSocket connections, JWT authentication, multi-tenant rooms, heartbeat mechanism, and message broadcasting.
 """
 
 import requests
@@ -11,10 +11,16 @@ import sys
 from typing import Dict, Any, List
 import pymongo
 import os
+import asyncio
+import websockets
+import jwt
+from datetime import datetime, timezone
+import time
 
 # Backend URL from environment
 BACKEND_URL = "https://live-device-sync.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
+WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://") + "/api"
 
 class DataSynchronizationTester:
     def __init__(self):
