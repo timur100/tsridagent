@@ -122,48 +122,7 @@ const LocationDetailPage = () => {
     }
   };
 
-  const handleSaveOpeningHours = async () => {
-    setSaving(true);
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(
-        `${BACKEND_URL}/api/tenant-locations/details/${locationId}/opening-hours`,
-        {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(editedHours)
-        }
-      );
-
-      if (response.ok) {
-        toast.success('Öffnungszeiten erfolgreich gespeichert');
-        setOpeningHours(editedHours);
-        setIsEditingHours(false);
-        fetchLocationDetails();
-      } else {
-        const error = await response.json();
-        toast.error(error.detail || 'Fehler beim Speichern');
-      }
-    } catch (error) {
-      console.error('Save error:', error);
-      toast.error('Fehler beim Speichern der Öffnungszeiten');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDayChange = (dayKey, field, value) => {
-    setEditedHours(prev => ({
-      ...prev,
-      [dayKey]: {
-        ...prev[dayKey],
-        [field]: value
-      }
-    }));
-  };
+  // Read-only - no editing functions for customer portal
 
   const handleTeamViewerConnect = (teamviewerId) => {
     if (teamviewerId && teamviewerId !== '-') {
