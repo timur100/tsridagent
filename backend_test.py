@@ -518,45 +518,75 @@ class WebSocketBackendTester:
             )
             return False
 
-    def verify_database_locations(self):
-        """Query database directly to verify location data"""
+    async def test_connection_cleanup(self):
+        """Test WebSocket connection cleanup"""
         try:
-            if not self.mongo_client:
+            if not self.websocket_connections:
                 self.log_result(
-                    "Database Location Verification", 
-                    False, 
-                    "No database connection available"
+                    "Connection Cleanup",
+                    False,
+                    "No WebSocket connections to test cleanup"
                 )
-                return None
+                return False
             
-            # Query portal_db.tenant_locations
-            db = self.mongo_client["portal_db"]
-            collection = db["tenant_locations"]
+            # Get initial connection count
+            stats_response = self.session.get(f"{API_BASE}/ws/stats")
+            if stats_response.status_code != 200:
+                self.log_result(
+                    "Connection Cleanup",
+                    False,
+                    "Could not get initial stats"
+                )
+                return False
             
-            # Count locations with the specific tenant_id
-            location_count = collection.count_documents({"tenant_id": self.test_tenant_id})
+            initial_stats = stats_response.json()
+            initial_total = initial_stats.get("total_connections", 0)
+            initial_tenant = initial_stats.get("tenant_connections", {}).get(self.test_tenant_id, 0)
             
-            # Get sample locations to verify structure
-            sample_locations = list(collection.find({"tenant_id": self.test_tenant_id}).limit(5))
+            # Close one connection
+            websocket_to_close = self.websocket_connections.pop()
+            await websocket_to_close.close()
             
-            self.log_result(
-                "Database Location Verification", 
-                True, 
-                f"Found {location_count} locations in portal_db.tenant_locations with tenant_id {self.test_tenant_id}"
-            )
+            # Wait a moment for cleanup
+            await asyncio.sleep(2)
             
-            return {
-                "total": location_count,
-                "sample_locations": sample_locations
-            }
+            # Get updated connection count
+            stats_response = self.session.get(f"{API_BASE}/ws/stats")
+            if stats_response.status_code != 200:
+                self.log_result(
+                    "Connection Cleanup",
+                    False,
+                    "Could not get updated stats"
+                )
+                return False
+            
+            updated_stats = stats_response.json()
+            updated_total = updated_stats.get("total_connections", 0)
+            updated_tenant = updated_stats.get("tenant_connections", {}).get(self.test_tenant_id, 0)
+            
+            # Verify connection count decreased
+            if updated_total < initial_total and updated_tenant < initial_tenant:
+                self.log_result(
+                    "Connection Cleanup",
+                    True,
+                    f"Connection cleanup working: Total connections decreased from {initial_total} to {updated_total}, tenant connections from {initial_tenant} to {updated_tenant}"
+                )
+                return True
+            else:
+                self.log_result(
+                    "Connection Cleanup",
+                    False,
+                    f"Connection cleanup failed: Total {initial_total}->{updated_total}, tenant {initial_tenant}->{updated_tenant}"
+                )
+                return False
             
         except Exception as e:
             self.log_result(
-                "Database Location Verification", 
-                False, 
+                "Connection Cleanup",
+                False,
                 f"Exception occurred: {str(e)}"
             )
-            return None
+            return False
     
     def compare_device_counts(self, admin_data, customer_data):
         """Compare device counts between Admin Portal and Customer Portal"""
