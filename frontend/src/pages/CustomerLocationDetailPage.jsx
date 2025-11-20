@@ -70,8 +70,11 @@ const LocationDetailPage = () => {
       const token = localStorage.getItem('token');
       const response = await fetch(`${BACKEND_URL}/api/tenant-locations/details/${locationId}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Authorization': `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        cache: 'no-store'
       });
 
       if (response.ok) {
