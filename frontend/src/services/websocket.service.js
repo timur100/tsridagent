@@ -226,6 +226,21 @@ class WebSocketService {
         this.notifyHandlers('opening_hours_update', message);
         break;
       
+      case 'location_update':
+        console.log('[WebSocket] Location update received:', message);
+        this.notifyHandlers('location_update', message);
+        break;
+      
+      case 'location_created':
+        console.log('[WebSocket] Location created received:', message);
+        this.notifyHandlers('location_created', message);
+        break;
+      
+      case 'location_deleted':
+        console.log('[WebSocket] Location deleted received:', message);
+        this.notifyHandlers('location_deleted', message);
+        break;
+      
       case 'error':
         console.error('[WebSocket] Server error:', message.message);
         break;
