@@ -671,67 +671,70 @@ const LocationDetailPage = () => {
           </Card>
         </div>
 
-        {/* Technische Details */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Technische Details
-            </h3>
-          </div>
+        {/* Technische Details & Hardware Details auf einer Zeile */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Technische Details */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Technische Details
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Main Typ</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Main Typ</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>ID Checker</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Switch</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Port</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>ID Checker</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Switch</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Port</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
 
-        {/* Hardware Details */}
-        <Card className={`p-6 rounded-xl ${
-          theme === 'dark' 
-            ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-            : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-        }`}>
-          <div className="flex items-center gap-2 mb-4">
-            <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-            <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Hardware Details
-            </h3>
-          </div>
+          {/* Hardware Details */}
+          <Card className={`p-6 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="flex items-center gap-2 mb-4">
+              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Hardware Details
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-PC</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-PC</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-SC</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
+              </div>
+              <div>
+                <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>TV-ID</p>
+                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
+              </div>
             </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-SC</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
-            </div>
-            <div>
-              <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>TV-ID</p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
 
         {/* Kommentare & Bemerkungen */}
         <Card className={`p-6 rounded-xl ${
