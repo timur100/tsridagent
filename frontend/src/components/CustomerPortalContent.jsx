@@ -98,7 +98,6 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
   // WebSocket integration
   const tenantId = user?.tenant_ids?.[0];
-  const token = user?.token || localStorage.getItem('token');
   
   // Stable WebSocket callback functions with useCallback to prevent re-registration
   const handleWSLocationUpdate = useCallback((data) => {
