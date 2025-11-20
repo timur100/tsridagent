@@ -68,7 +68,19 @@ const CustomerLocationDetailPage = () => {
         const data = await response.json();
         setLocationData(data.location);
         setDevices(data.devices || []);
-        setStats(data.stats || { total_devices: 0, online_devices: 0, offline_devices: 0 });
+        setStats(data.stats || { 
+          total_devices: 0, 
+          employees: 0,
+          online_devices: 0, 
+          offline_devices: 0,
+          in_preparation: 0,
+          open_tickets: 0,
+          total_scans: 0,
+          correct_scans: 0,
+          unknown_scans: 0,
+          failed_scans: 0,
+          needs_error_analysis: 0
+        });
         setOpeningHours(data.opening_hours);
       } else {
         toast.error('Fehler beim Laden der Standortdetails');
