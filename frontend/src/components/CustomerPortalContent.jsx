@@ -609,8 +609,10 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   };
 
   const handleDeviceClick = (device) => {
-    setSelectedDeviceForModal(device);
-    setShowDeviceModal(true);
+    // Navigate to device detail page (same as Admin Portal)
+    navigate(`/portal/customer/devices/${device.device_id}`, {
+      state: { fromTab: 'devices' }
+    });
   };
 
   const handleDeviceUpdate = () => {
