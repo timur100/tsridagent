@@ -61,7 +61,6 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     if (selectedTenantId && selectedTenantId !== 'all' && selectedTenantId !== tenantId) {
       console.log('[TenantDetailPage] Tenant switched to:', selectedTenantId);
       navigate(`/portal/admin/tenants/${selectedTenantId}`, { 
-        state: { activeTab: activeTab },
         replace: true 
       });
     } else if (selectedTenantId === 'all') {
@@ -72,7 +71,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         replace: true 
       });
     }
-  }, [selectedTenantId, tenantId, navigate, activeTab]);
+  }, [selectedTenantId, tenantId, navigate]);
   
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
