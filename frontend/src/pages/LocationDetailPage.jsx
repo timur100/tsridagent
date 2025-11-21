@@ -1054,15 +1054,54 @@ const LocationDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-PC</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.sn_pc || ''}
+                    onChange={(e) => handleFieldChange('sn_pc', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_pc || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>SN-SC</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.sn_sc || ''}
+                    onChange={(e) => handleFieldChange('sn_sc', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.sn_sc || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>TV-ID</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.tv_id || ''}
+                    onChange={(e) => handleFieldChange('tv_id', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.tv_id || '-'}</p>
+                )}
               </div>
             </div>
           </Card>
