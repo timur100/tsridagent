@@ -866,9 +866,9 @@ const TenantDevicesTab = ({ tenantId }) => {
                 <td className={`px-2 py-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   {device.hardware_model || '-'}
                 </td>
-                <td className="px-2 py-2 text-center edit-actions">
+                <td className="px-2 py-2 text-center">
                   {isEditing ? (
-                    <div className="flex items-center justify-center gap-1">
+                    <div className="flex items-center justify-center gap-1 edit-actions">
                       <button
                         onClick={(e) => handleSaveEdit(device, e)}
                         disabled={isSaving}
