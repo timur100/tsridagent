@@ -291,6 +291,7 @@ async def update_device(
 
 
 @router.post("")
+@broadcast_changes(entity_type="device", event_type="created", data_field="device")
 async def create_device(
     device_data: dict,
     token_data: dict = Depends(verify_token)
@@ -299,6 +300,7 @@ async def create_device(
     Create a new device
     Admin: Can create any device
     Customer: Can only create devices for their company
+    Now uses centralized event system for broadcasting
     """
     try:
         user_role = token_data.get("role")
@@ -332,32 +334,15 @@ async def create_device(
         # Return device without _id
         device_data.pop('_id', None)
         
-        # Broadcast device creation via WebSocket
-        tenant_id = device_data.get('tenant_id')
-        if tenant_id:
-            print(f"📡 [Device Create] Broadcasting new device {device_data.get('device_id')} to tenant {tenant_id}")
-            try:
-                from websocket_manager import manager
-                import asyncio
-                
-                message = {
-                    "type": "device_created",
-                    "device": device_data
-                }
-                
-                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
-                print(f"✅ [Device Create] Broadcast sent to tenant {tenant_id}")
-            except Exception as e:
-                print(f"⚠️ [Device Create] Broadcast error: {str(e)}")
-        else:
-            print(f"⚠️ [Device Create] No tenant_id for device {device_data.get('device_id')}, skipping broadcast")
+        # Decorator will automatically broadcast and log this event
+        print(f"✨ [Device Create] Device created - decorator will handle broadcasting")
         
         return {
             "success": True,
             "message": "Device created successfully",
-            "data": {
-                "device": device_data
-            }
+            "device": device_data,
+            "tenant_id": device_data.get('tenant_id'),
+            "device_id": device_data.get('device_id')
         }
     
     except HTTPException:
