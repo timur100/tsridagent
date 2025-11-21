@@ -100,7 +100,7 @@ def get_all_staff(
         cursor = staff_collection.find(query)
         staff_list = []
         
-        for staff in cursor:
+        async for staff in cursor:
             # Remove MongoDB _id
             if '_id' in staff:
                 del staff['_id']
