@@ -132,7 +132,11 @@ const DeviceDetailPage = () => {
       const newDeviceId = data.device.device_id;
       if (newDeviceId && newDeviceId !== deviceId) {
         console.log(`[DeviceDetail] Device ID changed from ${deviceId} to ${newDeviceId}, navigating...`);
-        navigate(`/admin/tenants/${tenantId}/devices/${newDeviceId}`, { replace: true });
+        // Navigate with /portal prefix and preserve navigation state
+        navigate(`/portal/admin/tenants/${tenantId}/devices/${newDeviceId}`, { 
+          replace: true,
+          state: location.state // Preserve the navigation state (fromTab, etc.)
+        });
       }
     } catch (error) {
       console.error('Error updating device:', error);
