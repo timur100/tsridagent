@@ -762,7 +762,6 @@ const DeviceDetailPage = () => {
           </div>
         </div>
       )}
-      </div>
     </div>
   );
 };
