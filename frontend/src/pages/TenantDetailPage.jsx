@@ -1048,7 +1048,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               <Card 
                 onClick={() => {
                   setActiveTab('devices');
-                  // TODO: Set filter to show only in_preparation devices
+                  setDeviceStatusFilter('in_preparation');
                 }}
                 className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
