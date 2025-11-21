@@ -23,6 +23,10 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
   const [resources, setResources] = useState({});
   const [loadingResources, setLoadingResources] = useState(false);
   const [resourcesExpanded, setResourcesExpanded] = useState(false);
+  const [staff, setStaff] = useState([]);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignNotes, setAssignNotes] = useState('');
+  const [selectedStaffEmail, setSelectedStaffEmail] = useState('');
 
   useEffect(() => {
     if (ticket?.location_id) {
