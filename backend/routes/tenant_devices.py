@@ -442,8 +442,8 @@ async def get_all_in_preparation(
     try:
         print(f"🔍 get_all_in_preparation called")
         
-        # Get all devices with in_preparation status from portal_db
-        devices_cursor = portal_db.tenant_devices.find({
+        # Get all devices with in_preparation status from europcar_devices collection
+        devices_cursor = db.europcar_devices.find({
             "$or": [
                 {"status": "in_preparation"},
                 {"status": "preparation"}
