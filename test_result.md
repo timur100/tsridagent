@@ -105,6 +105,18 @@
 user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
 
 backend:
+  - task: "Centralized Event System - Phase 1 Implementation"
+    implemented: true
+    working: "NA"
+    file: "backend/services/event_service.py, backend/decorators/broadcast_decorator.py, backend/routes/devices.py, backend/routes/tenant_devices.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ PHASE 1 CENTRALIZED EVENT SYSTEM IMPLEMENTED: 1) EventService erstellt (backend/services/event_service.py) mit MongoDB Event-Log (portal_db.event_log Collection), WebSocket-Broadcasting-Abstraktion, Asynchroner Event-Verarbeitung, Event-Typen (CREATED, UPDATED, DELETED, STATUS_CHANGED), Entity-Typen (DEVICE, LOCATION, TENANT, USER, DOCUMENT, OPENING_HOURS), Convenience-Funktionen (log_device_event, log_location_event, log_tenant_event), Event-History-Abruf-API. 2) Broadcast-Decorator erstellt (backend/decorators/broadcast_decorator.py) mit @broadcast_changes Decorator für fire-and-forget Broadcasting, Automatisches Extrahieren von tenant_id und entity_id aus Response, Fehlertoleranz (Broadcasting-Fehler brechen Request nicht ab), Unterstützung für verschiedene Response-Strukturen. 3) Integration in bestehende Endpoints: routes/tenant_devices.py - update_device() und delete_device() refactored mit Decorator, routes/devices.py - update_device() und create_device() refactored mit Decorator, Manuelle Broadcasting-Calls entfernt und durch Decorator ersetzt. 4) Vorteile: Entwickler müssen nicht mehr manuell manager.broadcast_to_tenant() aufrufen, Automatisches Event-Logging für Audit-Trail, Konsistentes Broadcasting über alle Endpoints, Fehlertolerantes System. Backend neu gestartet (RUNNING). Bereit für Backend-Testing zur Verifikation von Event-Log-Erstellung und WebSocket-Broadcasting."
+
   - task: "WebSocket Device Update Fix - Backend Implementation"
     implemented: true
     working: true
