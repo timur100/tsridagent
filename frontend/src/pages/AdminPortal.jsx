@@ -956,7 +956,9 @@ const AdminPortalContent = () => {
                 </Card>
 
                 {/* In Vorbereitung (Pending) */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                <Card 
+                  onClick={() => navigate('/portal/admin/in-preparation')}
+                  className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
                     ? 'bg-[#2a2a2a] border border-yellow-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                     : 'bg-yellow-50 border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
