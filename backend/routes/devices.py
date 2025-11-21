@@ -260,14 +260,14 @@ async def update_device(
         # Broadcast device update via WebSocket
         tenant_id = updated_device.get('tenant_id')
         if tenant_id:
-            print(f"📡 [Device Update] Broadcasting update for {device_id} to tenant {tenant_id}")
+            print(f"📡 [Device Update] Broadcasting update for {new_device_id} to tenant {tenant_id}")
             try:
                 from websocket_manager import manager
                 import asyncio
                 
                 message = {
                     "type": "device_update",
-                    "device_id": device_id,
+                    "device_id": new_device_id,
                     "device": updated_device
                 }
                 
