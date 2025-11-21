@@ -245,7 +245,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
                 <input
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
                   placeholder="0.00"
                   step="0.01"
                   className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
