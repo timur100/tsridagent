@@ -19,6 +19,7 @@ import {
 } from '../utils/geoFilters';
 
 const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) => {
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const { apiCall, user } = useAuth();
   const { selectedCustomer, customers } = useCustomerFilter();
