@@ -146,7 +146,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       type="text"
                       required
                       value={formData.username}
-                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
