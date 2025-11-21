@@ -265,6 +265,16 @@ async def update_device(
                 from websocket_manager import manager
                 import asyncio
                 
+                # If device_id was changed, broadcast delete for old ID
+                if new_device_id != device_id:
+                    print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
+                    delete_message = {
+                        "type": "device_deleted",
+                        "device_id": device_id
+                    }
+                    asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
+                
+                # Broadcast update/create for new device_id
                 message = {
                     "type": "device_update",
                     "device_id": new_device_id,
@@ -276,7 +286,7 @@ async def update_device(
             except Exception as e:
                 print(f"⚠️ [Device Update] Broadcast error: {str(e)}")
         else:
-            print(f"⚠️ [Device Update] No tenant_id for device {device_id}, skipping broadcast")
+            print(f"⚠️ [Device Update] No tenant_id for device {new_device_id}, skipping broadcast")
         
         return {
             "success": True,
