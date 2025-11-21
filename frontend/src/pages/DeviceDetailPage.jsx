@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket } from '../hooks/useWebSocket';
@@ -11,6 +11,7 @@ const DeviceDetailPage = () => {
   const { theme } = useTheme();
   const { deviceId, tenantId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { token, apiCall } = useAuth();
   
   const [loading, setLoading] = useState(true);
