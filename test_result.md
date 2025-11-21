@@ -105,6 +105,18 @@
 user_problem_statement: "In Vorbereitung Status Tracking: 1) TenantDetailPage - Clickable stat card zeigt Anzahl der Items 'In Vorbereitung', beim Klick wird Liste gefiltert. 2) Admin Dashboard ('Alle Kunden') - Summary stat card zeigt alle 'In Vorbereitung' Items über alle Tenants, beim Klick zu neuer Übersichtsseite. Status-Feld: 'in_preparation' oder 'preparation' in portal_db.tenant_devices und portal_db.tenant_locations Collections."
 
 backend:
+  - task: "Phase 1 Ticketing System - Staff Management, SLA, and Assignment APIs"
+    implemented: true
+    working: false
+    file: "Ticketing Microservice (Port 8103), backend/routes/ticketing_proxy.py"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "testing"
+          comment: "❌ PHASE 1 TICKETING SYSTEM CRITICAL ISSUES FOUND: Comprehensive testing revealed multiple critical problems requiring immediate attention. AUTHENTICATION & PROXY: ✅ Admin authentication working (admin@tsrid.com/admin123), ✅ Ticketing Microservice running on port 8103 and responding to health checks, ✅ Proxy forwarding configured correctly in ticketing_proxy.py. CRITICAL MONGODB CURSOR BUG: ❌ All Staff Management and SLA APIs failing with 500 Internal Server Error: 'AsyncIOMotorCursor' object is not iterable. This affects: GET /api/staff/ (403 -> 500 after auth), POST /api/staff/ (307 redirects -> 500), GET /api/staff/tickets/by-staff (500), GET /api/sla/warnings (500). ROOT CAUSE: Ticketing Service trying to iterate AsyncIOMotorCursor directly instead of using .to_list() or async iteration. WORKING ENDPOINTS: ✅ GET /api/tickets working correctly (returns test ticket TK.20251109.001), ✅ POST /api/tickets working (404 expected - no portal users configured), ✅ Microservice health endpoint functional. REDIRECT LOOPS: ❌ Staff endpoints experiencing 307 Temporary Redirect loops due to trailing slash issues in FastAPI routing. INTEGRATION IMPACT: Cannot test ticket assignment or staff capacity tracking due to staff management API failures. URGENT FIXES NEEDED: 1) Fix AsyncIOMotorCursor iteration in staff and SLA endpoints, 2) Resolve 307 redirect loops in staff API routing, 3) Implement proper async cursor handling with .to_list() method. TESTING STATUS: 3/10 tests passed. All core Phase 1 functionality blocked by MongoDB cursor bug."
+
   - task: "Centralized Event System - Phase 1 Implementation"
     implemented: true
     working: true
