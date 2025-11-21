@@ -108,8 +108,15 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
   const handleWSDeviceUpdate = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket device update:', data);
-    // Trigger data reload via state change
-    setDevices(prev => [...prev]); // Force re-fetch
+    // Reload data to reflect the update
+    if (!modalOpenRef.current) {
+      loadDashboardStats();
+      loadData();
+      toast.info('Gerät wurde aktualisiert', {
+        duration: 2000,
+        icon: '🔄'
+      });
+    }
   }, []);
 
   const handleWSDashboardStats = useCallback((data) => {
