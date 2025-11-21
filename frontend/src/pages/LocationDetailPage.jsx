@@ -219,6 +219,55 @@ const LocationDetailPage = () => {
     }
   };
 
+  // General editing handlers
+  const handleEdit = () => {
+    setIsEditing(true);
+    setEditedData({ ...locationData });
+  };
+
+  const handleSave = async () => {
+    try {
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      const response = await fetch(
+        `${BACKEND_URL}/api/tenant-locations/${locationId}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(editedData)
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setLocationData(data.location || editedData);
+        setIsEditing(false);
+        toast.success('Standort erfolgreich aktualisiert');
+        fetchLocationDetails();
+      } else {
+        const error = await response.json();
+        toast.error(error.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      toast.error('Fehler beim Speichern des Standorts');
+    }
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setEditedData(null);
+  };
+
+  const handleFieldChange = (field, value) => {
+    setEditedData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleBack = () => {
     // Navigate back to AdminPortal with TenantDetailPage embedded, Standorte tab active
     navigate('/portal/admin', { 
