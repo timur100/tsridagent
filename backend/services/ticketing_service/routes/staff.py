@@ -224,7 +224,7 @@ async def assign_ticket(
             raise HTTPException(status_code=403, detail="Admin/Manager access required")
         
         # Check if ticket exists
-        ticket = tickets_collection.find_one({"id": ticket_id})
+        ticket = await tickets_collection.find_one({"id": ticket_id})
         if not ticket:
             raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
         
