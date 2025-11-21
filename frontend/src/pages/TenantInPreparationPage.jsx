@@ -80,14 +80,26 @@ const TenantInPreparationPage = () => {
       
       // Load locations for this tenant
       const locationsResponse = await apiCall(`/api/tenant-locations/${tenantId}`);
-      const allLocations = locationsResponse?.locations || locationsResponse || [];
+      console.log('[TenantInPreparation] Locations response:', locationsResponse);
+      
+      // Extract locations array from response
+      let allLocations = [];
+      if (Array.isArray(locationsResponse)) {
+        allLocations = locationsResponse;
+      } else if (locationsResponse?.locations && Array.isArray(locationsResponse.locations)) {
+        allLocations = locationsResponse.locations;
+      } else if (locationsResponse?.data?.locations && Array.isArray(locationsResponse.data.locations)) {
+        allLocations = locationsResponse.data.locations;
+      }
+      
+      console.log('[TenantInPreparation] All locations count:', allLocations.length);
       
       // Filter only in_preparation locations
       const inPrepLocations = allLocations.filter(l => 
         l.status === 'in_preparation' || l.status === 'preparation'
       );
       
-      console.log('[TenantInPreparation] Locations:', inPrepLocations.length);
+      console.log('[TenantInPreparation] In preparation locations:', inPrepLocations.length);
       setLocations(inPrepLocations);
       
       toast.success(`${inPrepDevices.length + inPrepLocations.length} In Vorbereitung-Artikel geladen`);
