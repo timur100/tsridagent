@@ -17,7 +17,7 @@ import {
   SPECIAL_PLACE_TAGS 
 } from '../utils/geoFilters';
 
-const TenantDevicesTab = ({ tenantId }) => {
+const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) => {
   const { theme } = useTheme();
   const { apiCall, user } = useAuth();
   const navigate = useNavigate();
