@@ -61,6 +61,13 @@ const AdminPortalContent = () => {
   const { selectedCustomer, setCustomers } = useCustomerFilter();
   const { selectedTenantId, selectedTenantName, setSelectedTenant } = useTenant();
   const location = useLocation();
+  
+  // Check if we're on a nested route (detail page)
+  const isOnDetailPage = location.pathname !== '/portal/admin' && 
+                         (location.pathname.includes('/tenants/') || 
+                          location.pathname.includes('/devices/') || 
+                          location.pathname.includes('/locations/'));
+  
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
