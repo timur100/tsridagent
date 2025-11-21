@@ -98,7 +98,29 @@ async def get_tenant_dashboard_stats(tenant_id: str):
         total_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id})
         online_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "online"})
         offline_devices = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "offline"})
-        in_preparation = await devices_db.europcar_devices.count_documents({"tenant_id": tenant_id, "status": "in_preparation"})
+        
+        # Count devices in preparation - support multiple status variants
+        in_preparation_devices = await devices_db.europcar_devices.count_documents({
+            "tenant_id": tenant_id, 
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"},
+                {"status": "in_vorbereitung"}
+            ]
+        })
+        
+        # Count locations in preparation
+        in_preparation_locations = await portal_db.tenant_locations.count_documents({
+            "tenant_id": tenant_id,
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"},
+                {"preparation_status": "in_vorbereitung"}
+            ]
+        })
+        
+        # Total in_preparation count (devices + locations)
+        in_preparation = in_preparation_devices + in_preparation_locations
         
         # Count locations
         total_locations = await portal_db.tenant_locations.count_documents({"tenant_id": tenant_id})
