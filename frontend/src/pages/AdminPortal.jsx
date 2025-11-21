@@ -85,12 +85,8 @@ const AdminPortalContent = () => {
   const [showAddStandortModal, setShowAddStandortModal] = useState(false);
   const [isSavingStandort, setIsSavingStandort] = useState(false);
   
-  // Modal states for global search results
-  const [showCustomerModal, setShowCustomerModal] = useState(false);
-  const [selectedCustomerForModal, setSelectedCustomerForModal] = useState(null);
-  const [showStandortModal, setShowStandortModal] = useState(false);
-  const [selectedStandortForModal, setSelectedStandortForModal] = useState(null);
-  const [showDeviceModal, setShowDeviceModal] = useState(false);
+  // Modal states for global search results - now using navigation instead
+  // Removed: showCustomerModal, showStandortModal, showDeviceModal
   const [selectedArtikelId, setSelectedArtikelId] = useState(null);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
