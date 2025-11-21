@@ -346,7 +346,7 @@ async def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
             })
         
         # Get unassigned tickets
-        unassigned_count = tickets_collection.count_documents({
+        unassigned_count = await tickets_collection.count_documents({
             "$or": [
                 {"assigned_to": {"$exists": False}},
                 {"assigned_to": None},
