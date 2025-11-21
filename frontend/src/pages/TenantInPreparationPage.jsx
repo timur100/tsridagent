@@ -59,13 +59,14 @@ const TenantInPreparationPage = () => {
       console.log('[TenantInPreparation] Devices response:', devicesResponse);
       
       // Extract devices array from response
+      // Response structure: {success: true, data: {summary: {...}, devices: [...]}}
       let allDevices = [];
       if (Array.isArray(devicesResponse)) {
         allDevices = devicesResponse;
-      } else if (devicesResponse?.data && Array.isArray(devicesResponse.data)) {
-        allDevices = devicesResponse.data;
-      } else if (devicesResponse?.success && Array.isArray(devicesResponse.data?.devices)) {
+      } else if (devicesResponse?.data?.devices && Array.isArray(devicesResponse.data.devices)) {
         allDevices = devicesResponse.data.devices;
+      } else if (Array.isArray(devicesResponse?.data)) {
+        allDevices = devicesResponse.data;
       }
       
       console.log('[TenantInPreparation] All devices count:', allDevices.length);
