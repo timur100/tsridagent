@@ -210,7 +210,7 @@ async def delete_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/tickets/{ticket_id}/assign")
-def assign_ticket(
+async def assign_ticket(
     ticket_id: str,
     assignment: TicketAssignment,
     token_data: dict = Depends(verify_token)
