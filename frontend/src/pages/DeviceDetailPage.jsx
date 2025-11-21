@@ -246,24 +246,8 @@ const DeviceDetailPage = () => {
   const currentData = isEditing ? editedData : deviceData;
 
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
-      {/* Simple Portal Header */}
-      <div className={`${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-800' : 'bg-white border-gray-200'} border-b`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <h1 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Gerätedetails
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-          </div>
-        </div>
-      </div>
-      
-      {/* Content */}
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto mb-6">
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'} p-6`}>
+      <div className="max-w-7xl mx-auto mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
             <button
