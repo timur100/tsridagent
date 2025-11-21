@@ -137,9 +137,12 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
   const handleWSRefreshAll = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket refresh all triggered:', data);
-    // Set a refresh trigger
-    setStations(prev => [...prev]);
-    setDevices(prev => [...prev]);
+    // Reload all data
+    if (!modalOpenRef.current) {
+      loadDashboardStats();
+      loadData();
+      toast.info('Daten aktualisiert', { duration: 2000, icon: '🔄' });
+    }
   }, []);
 
   const handleWSDeviceCreated = useCallback((data) => {
