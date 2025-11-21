@@ -677,7 +677,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   // Calculate device statistics from ALL devices (not filtered)
   const onlineDevices = devices.filter(d => d.status === 'online' || d.teamviewer_online).length;
   const offlineDevices = devices.filter(d => d.status === 'offline' && !d.teamviewer_online).length;
-  const inPreparationDevices = devices.filter(d => d.status === 'in_vorbereitung').length;
+  // Use dashboardStats.in_preparation instead of client-side calculation for consistency
+  const inPreparationDevices = dashboardStats.in_preparation || 0;
 
   // Calculate standorte statistics from ALL stations (not filtered)
   // Use the online status calculated by backend (based on devices with TeamViewer sync)
