@@ -547,6 +547,11 @@ const TenantInPreparationPage = () => {
                     <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-900'
                     }`}>
+                      {tenantName}
+                    </td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                      theme === 'dark' ? 'text-gray-300' : 'text-gray-900'
+                    }`}>
                       {location.city || '-'}
                     </td>
                     <td className={`px-6 py-4 whitespace-nowrap text-sm ${
