@@ -174,7 +174,7 @@ async def update_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{staff_id}")
-def delete_staff(
+async def delete_staff(
     staff_id: str,
     token_data: dict = Depends(verify_token)
 ):
