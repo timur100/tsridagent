@@ -137,7 +137,9 @@ const PortalRoutes = () => {
         path="/admin/tenants/:tenantId/devices/:deviceId"
         element={
           <ProtectedRoute adminOnly>
-            <DeviceDetailPage />
+            <AdminLayout>
+              <DeviceDetailPage />
+            </AdminLayout>
           </ProtectedRoute>
         }
       />
