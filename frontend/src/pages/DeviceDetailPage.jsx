@@ -262,19 +262,15 @@ const DeviceDetailPage = () => {
                     replace: true 
                   });
                 }
-                // If we came from devices tab in tenant detail, navigate back with devices tab active
-                else if (location.state?.fromTab === 'devices' && location.state?.tenantId) {
-                  navigate(`/portal/admin/tenants/${location.state.tenantId}`, {
+                // If we have tenantId in URL params (from tenant devices view), navigate back to tenant detail page
+                else if (tenantId) {
+                  navigate(`/portal/admin/tenants/${tenantId}`, {
                     state: { activeTab: 'devices' }
                   });
                 }
-                // If we came from "Alle Kunden" devices view, navigate back to admin portal devices tab
-                else if (location.state?.fromAllDevices) {
-                  navigate('/portal/admin', { state: { activeTab: 'devices' } });
-                }
-                // Default: use browser back
+                // If we came from "Alle Kunden" devices view (no tenantId in URL), navigate back to admin portal devices tab
                 else {
-                  navigate(-1);
+                  navigate('/portal/admin', { state: { activeTab: 'devices' } });
                 }
               }}
               className={`p-2 rounded-lg ${
