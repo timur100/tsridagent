@@ -102,8 +102,15 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   // Stable WebSocket callback functions with useCallback to prevent re-registration
   const handleWSLocationUpdate = useCallback((data) => {
     console.log('[CustomerPortal] WebSocket location update:', data);
-    // Trigger data reload via state change
-    setStations(prev => [...prev]); // Force re-fetch
+    // Reload data to reflect the update
+    if (!modalOpenRef.current) {
+      loadDashboardStats();
+      loadData();
+      toast.info('Standort wurde aktualisiert', {
+        duration: 2000,
+        icon: '📍'
+      });
+    }
   }, []);
 
   const handleWSDeviceUpdate = useCallback((data) => {
