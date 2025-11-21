@@ -2,17 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
-from pymongo import MongoClient
-import os
-from routes.portal_auth import verify_token
+from utils.db import tickets_collection
+from utils.auth import verify_token
 
-router = APIRouter(prefix="/api/sla", tags=["SLA"])
-
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
-tickets_collection = db.tickets
+router = APIRouter(prefix="/sla", tags=["SLA"])
 
 # SLA Configurations
 DEFAULT_SLA_CONFIGS = {
