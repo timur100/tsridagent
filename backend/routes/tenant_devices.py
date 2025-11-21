@@ -3,6 +3,8 @@ from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
 from pymongo import MongoClient
+from decorators.broadcast_decorator import broadcast_changes
+from services.event_service import EventType
 
 router = APIRouter(prefix="/api/tenant-devices", tags=["tenant-devices"])
 
