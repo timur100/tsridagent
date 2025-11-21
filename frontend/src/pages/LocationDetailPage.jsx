@@ -874,19 +874,71 @@ const LocationDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Manager</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.manager || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.manager || ''}
+                    onChange={(e) => handleFieldChange('manager', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.manager || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.phone || ''}
+                    onChange={(e) => handleFieldChange('phone', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Telefon Intern</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone_internal || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.phone_internal || ''}
+                    onChange={(e) => handleFieldChange('phone_internal', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.phone_internal || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>E-Mail</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.email || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="email"
+                    value={editedData?.email || ''}
+                    onChange={(e) => handleFieldChange('email', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.email || '-'}</p>
+                )}
               </div>
             </div>
           </Card>
