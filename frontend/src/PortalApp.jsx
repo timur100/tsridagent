@@ -12,6 +12,7 @@ import LocationDetailPage from './pages/LocationDetailPage';
 import CustomerLocationDetailPage from './pages/CustomerLocationDetailPage';
 import DeviceDetailPage from './pages/DeviceDetailPage';
 import InPreparationOverviewPage from './pages/InPreparationOverviewPage';
+import TenantInPreparationPage from './pages/TenantInPreparationPage';
 import CatalogPortal from './pages/CatalogPortal';
 import AdminLayout from './components/AdminLayout';
 import { Toaster } from 'react-hot-toast';
