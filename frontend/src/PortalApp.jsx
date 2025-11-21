@@ -77,6 +77,7 @@ const PortalRoutes = () => {
         }
       />
       
+      {/* Admin Portal with nested routes */}
       <Route
         path="/admin"
         element={
@@ -84,36 +85,16 @@ const PortalRoutes = () => {
             <AdminPortal />
           </ProtectedRoute>
         }
-      />
+      >
+        {/* Nested routes - rendered inside AdminPortal's Outlet */}
+        <Route path="tenants/:tenantId" element={<TenantDetailPage />} />
+        <Route path="locations/:locationId" element={<LocationDetailPage />} />
+        <Route path="tenants/:tenantId/locations/:locationId" element={<LocationDetailPage />} />
+        <Route path="tenants/:tenantId/devices/:deviceId" element={<DeviceDetailPage />} />
+        <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
+      </Route>
 
-      <Route
-        path="/admin/tenants/:tenantId"
-        element={
-          <ProtectedRoute adminOnly>
-            <TenantDetailPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/locations/:locationId"
-        element={
-          <ProtectedRoute adminOnly>
-            <LocationDetailPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/admin/tenants/:tenantId/locations/:locationId"
-        element={
-          <ProtectedRoute adminOnly>
-            <LocationDetailPage />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Customer Portal Location Details */}
+      {/* Customer Portal Routes */}
       <Route
         path="/customer/locations/:locationId"
         element={
@@ -123,36 +104,11 @@ const PortalRoutes = () => {
         }
       />
 
-      {/* Customer Portal Device Details */}
       <Route
         path="/customer/devices/:deviceId"
         element={
           <ProtectedRoute>
             <DeviceDetailPage />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Device Detail Page */}
-      <Route
-        path="/admin/tenants/:tenantId/devices/:deviceId"
-        element={
-          <ProtectedRoute adminOnly>
-            <AdminLayout>
-              <DeviceDetailPage />
-            </AdminLayout>
-          </ProtectedRoute>
-        }
-      />
-      
-      {/* Global Device Detail Page (for "Alle Kunden" view) */}
-      <Route
-        path="/admin/devices/:deviceId"
-        element={
-          <ProtectedRoute adminOnly>
-            <AdminLayout>
-              <DeviceDetailPage />
-            </AdminLayout>
           </ProtectedRoute>
         }
       />
