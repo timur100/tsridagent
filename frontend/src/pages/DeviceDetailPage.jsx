@@ -12,7 +12,7 @@ const DeviceDetailPage = () => {
   const { deviceId, tenantId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { token, apiCall } = useAuth();
+  const { token, apiCall, user } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [deviceData, setDeviceData] = useState(null);
