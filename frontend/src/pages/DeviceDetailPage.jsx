@@ -263,9 +263,9 @@ const DeviceDetailPage = () => {
       
       {/* Content */}
       <div className="p-6">
-      <div className="max-w-7xl mx-auto mb-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
             <button
               onClick={() => {
                 // Check if we're in customer portal context (URL starts with /portal/customer/)
