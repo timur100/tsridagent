@@ -497,7 +497,7 @@ const ServicesConfiguration = () => {
                 <Input
                   id="service_name"
                   value={formData.service_name}
-                  onChange={(e) => setFormData({...formData, service_name: e.target.value})}
+                  onChange={(e) => setFormData(prev => ({...prev, service_name: e.target.value}))}
                   placeholder="z.B. ID Verification Service"
                   required
                 />
