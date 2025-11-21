@@ -167,7 +167,7 @@ async def get_tenant_stats():
         total_locations = await portal_db.tenant_locations.count_documents({})
         
         # Count in_preparation items (devices + locations)
-        in_prep_devices = await portal_db.tenant_devices.count_documents({
+        in_prep_devices = await devices_db.europcar_devices.count_documents({
             "$or": [
                 {"status": "in_preparation"},
                 {"status": "preparation"}
