@@ -30,10 +30,33 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
       const result = await apiCall('/api/sla/warnings');
       if (result.success && result.data) {
         setWarnings(result.data);
+      } else {
+        // Set empty warnings structure if no data
+        setWarnings({
+          critical_count: 0,
+          breached_count: 0,
+          at_risk_count: 0,
+          warnings: {
+            critical: [],
+            breached: [],
+            at_risk: []
+          }
+        });
       }
     } catch (error) {
       console.error('Error loading SLA warnings:', error);
       toast.error('Fehler beim Laden der SLA-Warnungen');
+      // Set empty warnings structure on error
+      setWarnings({
+        critical_count: 0,
+        breached_count: 0,
+        at_risk_count: 0,
+        warnings: {
+          critical: [],
+          breached: [],
+          at_risk: []
+        }
+      });
     } finally {
       setLoading(false);
     }
