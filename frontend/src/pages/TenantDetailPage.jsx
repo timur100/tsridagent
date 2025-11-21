@@ -1047,8 +1047,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               {/* In Vorbereitung */}
               <Card 
                 onClick={() => {
-                  setActiveTab('devices');
-                  setDeviceStatusFilter('in_preparation');
+                  navigate(`/portal/admin/tenants/${tenantId}/in-preparation`);
                 }}
                 className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
