@@ -199,7 +199,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))
                 placeholder="z.B. Standard, Premium, Enterprise"
                 className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
               />
@@ -212,7 +212,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))
                 placeholder="Kurze Beschreibung des Pakets"
                 rows={3}
                 className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
