@@ -31,7 +31,7 @@ class TicketAssignment(BaseModel):
     notes: Optional[str] = None
 
 @router.post("/")
-def create_staff(
+async def create_staff(
     staff: SupportStaff,
     token_data: dict = Depends(verify_token)
 ):
