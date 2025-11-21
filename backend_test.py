@@ -1127,28 +1127,28 @@ class WebSocketDeviceUpdateTester:
             await self.cleanup_connections()
 
 async def main():
-    print("Starting WebSocket Backend Authentication Fix Verification...")
+    print("Starting WebSocket Device Update Fix Testing...")
     print()
     
-    # Test WebSocket Backend
-    tester = WebSocketBackendTester()
+    # Test WebSocket Device Update
+    tester = WebSocketDeviceUpdateTester()
     test_success = await tester.run_all_tests()
     
     print()
     print("=" * 80)
     print("OVERALL TESTING SUMMARY")
     print("=" * 80)
-    print(f"WebSocket Backend Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"WebSocket Device Update Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 80)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 WEBSOCKET BACKEND AUTHENTICATION FIX VERIFICATION COMPLETED SUCCESSFULLY!")
-        print("WebSocket infrastructure is fully functional after the token authentication fix.")
+        print("🎉 WEBSOCKET DEVICE UPDATE FIX TESTING COMPLETED SUCCESSFULLY!")
+        print("WebSocket device update broadcasts are working correctly with proper message structure.")
         sys.exit(0)
     else:
-        print("❌ WEBSOCKET BACKEND ISSUES FOUND!")
-        print("WebSocket infrastructure has issues that need to be addressed.")
+        print("❌ WEBSOCKET DEVICE UPDATE ISSUES FOUND!")
+        print("WebSocket device update functionality has issues that need to be addressed.")
         sys.exit(1)
 
 if __name__ == "__main__":
