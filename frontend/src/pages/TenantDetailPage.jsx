@@ -50,7 +50,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { tenantId: paramTenantId } = useParams();  // Get tenantId from URL params
-  const { selectedTenantId } = useTenant(); // Get selected tenant from context
+  const { selectedTenantId, resetTenant } = useTenant(); // Get selected tenant from context
   const [searchParams] = useSearchParams();
   
   // Use prop tenantId if available (from AdminPortal), otherwise use URL param (from direct route)
