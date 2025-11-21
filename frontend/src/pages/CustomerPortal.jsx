@@ -20,7 +20,8 @@ const CustomerPortal = () => {
   // Check if we're on a nested route (detail page)
   const isOnDetailPage = location.pathname !== '/portal/customer' && 
                          (location.pathname.includes('/devices/') || 
-                          location.pathname.includes('/locations/'));
+                          location.pathname.includes('/locations/') ||
+                          location.pathname.includes('/in-preparation'));
 
   const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'dashboard');
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
