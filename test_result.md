@@ -324,7 +324,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WebSocket Frontend Integration - Customer & Admin Portal"
+    - "WebSocket Device Update Fix - Backend Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
