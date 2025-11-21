@@ -811,6 +811,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 onBack();
               } else {
                 // Navigate back to admin portal when used as route
+                // Reset tenant context to "Alle Kunden"
+                resetTenant();
                 navigate('/portal/admin', { state: { activeTab: 'tenants' } });
               }
             }}
