@@ -755,27 +755,105 @@ const LocationDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.street || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.street || ''}
+                    onChange={(e) => handleFieldChange('street', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.street || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.postal_code || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.postal_code || ''}
+                    onChange={(e) => handleFieldChange('postal_code', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.postal_code || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ort</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.city || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.city || ''}
+                    onChange={(e) => handleFieldChange('city', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.city || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bundesland</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.state || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.state || ''}
+                    onChange={(e) => handleFieldChange('state', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.state || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.country || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.country || ''}
+                    onChange={(e) => handleFieldChange('country', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.country || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.continent || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.continent || ''}
+                    onChange={(e) => handleFieldChange('continent', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.continent || '-'}</p>
+                )}
               </div>
             </div>
           </Card>
