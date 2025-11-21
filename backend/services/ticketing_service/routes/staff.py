@@ -306,7 +306,7 @@ def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
         cursor = staff_collection.find({"is_active": True})
         staff_stats = []
         
-        for staff in cursor:
+        async for staff in cursor:
             email = staff.get("email")
             
             # Count tickets by status
