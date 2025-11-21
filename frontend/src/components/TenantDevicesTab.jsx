@@ -741,7 +741,7 @@ const TenantDevicesTab = ({ tenantId }) => {
               <tr 
                 key={device.device_id}
                 onClick={(e) => handleDeviceClick(device, e)}
-                className={`border-t cursor-pointer transition-colors ${
+                className={`group border-t cursor-pointer transition-colors ${
                   isEditing
                     ? (theme === 'dark' ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-300')
                     : (theme === 'dark' 
