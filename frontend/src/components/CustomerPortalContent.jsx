@@ -90,7 +90,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
     total_locations: 0,
     online_devices: 0,
     offline_devices: 0,
-    total_devices: 0
+    total_devices: 0,
+    in_preparation: 0
   });
 
   // WebSocket integration
