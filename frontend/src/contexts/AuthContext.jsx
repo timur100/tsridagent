@@ -12,6 +12,10 @@ export const AuthProvider = ({ children }) => {
 
   // Always use HTTPS - hardcoded for production
   const BACKEND_URL = 'https://tenant-prep-dash.preview.emergentagent.com';
+  
+  // Debug logging
+  console.log('[AuthContext] BACKEND_URL:', BACKEND_URL);
+  console.log('[AuthContext] window.location.origin:', window.location.origin);
 
   useEffect(() => {
     // Check if token exists in localStorage
