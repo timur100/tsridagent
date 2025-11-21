@@ -44,7 +44,7 @@ async def create_staff(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if email already exists
-        existing = staff_collection.find_one({"email": staff.email})
+        existing = await staff_collection.find_one({"email": staff.email})
         if existing:
             raise HTTPException(status_code=400, detail="Staff member with this email already exists")
         
