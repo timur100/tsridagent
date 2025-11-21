@@ -6,7 +6,6 @@ import { MapPin, Monitor, RefreshCw, ChevronUp, ChevronDown, Users, FileText, Pl
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import toast from 'react-hot-toast';
-import DeviceDetailsModal from './DeviceDetailsModal';
 import StandortDetailsModal from './StandortDetailsModal';
 import AddDeviceModal from './AddDeviceModal';
 import AddStandortModal from './AddStandortModal';
