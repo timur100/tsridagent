@@ -557,7 +557,7 @@ const ServicesConfiguration = () => {
                 <Input
                   id="health_check_url"
                   value={formData.health_check_url}
-                  onChange={(e) => setFormData({...formData, health_check_url: e.target.value})}
+                  onChange={(e) => setFormData(prev => ({...prev, health_check_url: e.target.value}))}
                   placeholder="http://localhost:8101/health"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
@@ -571,7 +571,7 @@ const ServicesConfiguration = () => {
                   id="api_key"
                   type="password"
                   value={formData.api_key}
-                  onChange={(e) => setFormData({...formData, api_key: e.target.value})}
+                  onChange={(e) => setFormData(prev => ({...prev, api_key: e.target.value}))}
                   placeholder="Service API Key"
                 />
               </div>
@@ -581,7 +581,7 @@ const ServicesConfiguration = () => {
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData(prev => ({...prev, description: e.target.value}))}
                   placeholder="Kurze Beschreibung des Services"
                   rows={3}
                 />
@@ -591,7 +591,7 @@ const ServicesConfiguration = () => {
                 <Switch
                   id="enabled"
                   checked={formData.enabled}
-                  onCheckedChange={(checked) => setFormData({...formData, enabled: checked})}
+                  onCheckedChange={(checked) => setFormData(prev => ({...prev, enabled: checked}))}
                 />
                 <Label htmlFor="enabled">Service aktiviert</Label>
               </div>
