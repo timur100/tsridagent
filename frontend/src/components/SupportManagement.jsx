@@ -37,6 +37,7 @@ const SupportManagement = () => {
     fetchStats();
     fetchTickets();
     fetchDevices();
+    fetchStaff();
     
     // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
@@ -45,6 +46,17 @@ const SupportManagement = () => {
     }, 30000);
     return () => clearInterval(interval);
   }, [selectedTenantId, filterStatus, filterPriority]); // Reload when tenant changes
+  
+  const fetchStaff = async () => {
+    try {
+      const result = await apiCall('/api/staff');
+      if (result.success) {
+        setStaff(result.staff || []);
+      }
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    }
+  };
 
   const fetchDevices = async () => {
     try {
