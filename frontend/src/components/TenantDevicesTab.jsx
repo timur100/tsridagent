@@ -333,12 +333,14 @@ const TenantDevicesTab = ({ tenantId }) => {
   
   // Build geo options from devices using station lookup
   const enrichedDevices = devices.map(device => {
-    const station = stations.find(s => s.location_code === device.locationcode);
+    const station = stations.find(s => 
+      s.main_code === device.locationcode || s.location_code === device.locationcode
+    );
     return {
       ...device,
-      bundesland: station?.state || null,
-      city: station?.city || device.city,
-      ort: station?.city || device.city,
+      bundesland: station?.bundesl ? getFullBundeslandName(station.bundesl) : (station?.state || null),
+      city: station?.ort || station?.city || device.city,
+      ort: station?.ort || station?.city || device.city,
       stationsname: device.device_id,
       continent: station?.continent || 'Europa'
     };
