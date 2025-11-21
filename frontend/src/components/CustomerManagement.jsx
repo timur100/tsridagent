@@ -548,7 +548,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                     type="checkbox"
                     name="shop_enabled"
                     checked={formData.shop_enabled}
-                    onChange={(e) => setFormData(prev => ({...prev, shop_enabled: e.target.checked})}
+                    onChange={(e) => setFormData(prev => ({...prev, shop_enabled: e.target.checked}))}
                     className="w-5 h-5 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
                   />
                   <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
