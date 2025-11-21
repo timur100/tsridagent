@@ -23,7 +23,7 @@ BACKEND_URL = "https://portal-live.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://") + "/api"
 
-class WebSocketBackendTester:
+class WebSocketDeviceUpdateTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -34,6 +34,8 @@ class WebSocketBackendTester:
         self.admin_token = None
         self.test_tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Europcar tenant ID for testing
         self.websocket_connections = []
+        self.test_device_id = None
+        self.received_messages = []
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
