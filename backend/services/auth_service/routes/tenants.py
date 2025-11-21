@@ -166,6 +166,21 @@ async def get_tenant_stats():
         # Count locations (all tenants)
         total_locations = await portal_db.tenant_locations.count_documents({})
         
+        # Count in_preparation items (devices + locations)
+        in_prep_devices = await portal_db.tenant_devices.count_documents({
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"}
+            ]
+        })
+        in_prep_locations = await portal_db.tenant_locations.count_documents({
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"}
+            ]
+        })
+        in_preparation = in_prep_devices + in_prep_locations
+        
         # Count scans (all tenants) - assuming scans are in verification_db
         verification_db = client['verification_db']
         
@@ -185,6 +200,7 @@ async def get_tenant_stats():
             total_locations=total_locations,
             online_devices=online_devices,
             offline_devices=offline_devices,
+            in_preparation=in_preparation,
             total_scans=total_scans,
             correct_scans=correct_scans,
             unknown_scans=unknown_scans,
