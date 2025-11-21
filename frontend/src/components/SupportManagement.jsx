@@ -7,16 +7,19 @@ import { Button } from './ui/button';
 import { 
   Ticket, AlertCircle, Clock, CheckCircle, XCircle, 
   TrendingUp, Plus, Search, Filter, MessageSquare,
-  User, MapPin, Monitor, AlertTriangle, X, Video, Circle
+  User, MapPin, Monitor, AlertTriangle, X, Video, Circle, Users
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TicketDetailModal from './TicketDetailModal';
+import SLAWarningsPanel from './SLAWarningsPanel';
+import StaffManagement from './StaffManagement';
 
 const SupportManagement = () => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
   const { selectedTenantId } = useTenant();
   
+  const [activeTab, setActiveTab] = useState('tickets'); // tickets, sla, staff
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +31,7 @@ const SupportManagement = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [devices, setDevices] = useState([]);
   const [statusTileFilter, setStatusTileFilter] = useState(null);
+  const [staff, setStaff] = useState([]);
 
   useEffect(() => {
     fetchStats();
