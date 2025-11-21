@@ -172,7 +172,7 @@ async def get_sla_warnings(token_data: dict = Depends(verify_token)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{ticket_id}")
-def get_ticket_sla(
+async def get_ticket_sla(
     ticket_id: str,
     token_data: dict = Depends(verify_token)
 ):
