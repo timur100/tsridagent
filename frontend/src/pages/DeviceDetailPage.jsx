@@ -206,7 +206,9 @@ const DeviceDetailPage = () => {
 
       toast.success('Gerät erfolgreich verschoben');
       setShowTransferModal(false);
-      navigate(`/admin/tenants/${selectedTenant}`);
+      navigate(`/portal/admin/tenants/${selectedTenant}`, {
+        state: { activeTab: 'devices' }
+      });
     } catch (error) {
       console.error('Error transferring device:', error);
       toast.error('Fehler beim Verschieben');
