@@ -2546,9 +2546,23 @@ frontend:
           agent: "main"
           comment: "✅ SupportManagement nutzt useTenant() Hook. fetchTickets() fügt tenant_id Parameter zu URL Query hinzu. useEffect dependency array enthält selectedTenantId für Auto-Reload bei Tenant-Wechsel."
 
+  - task: "In Vorbereitung Kachel Synchronisation - Admin & Kundenportal"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/tenant_devices.py, backend/services/auth_service/routes/tenants.py, frontend/src/components/CustomerPortalContent.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ IN VORBEREITUNG SYNCHRONISATION IMPLEMENTIERT: Problem identifiziert - Kundenportal berechnete 'In Vorbereitung' Anzahl CLIENT-SEITIG, während Admin-Portal Backend-API verwendete. BACKEND FIXES: 1) Neuer Endpoint GET /api/tenant-devices/{tenant_id}/in-preparation erstellt für tenant-spezifische 'In Vorbereitung' Items (unterstützt status: 'in_preparation', 'preparation', 'in_vorbereitung' für Geräte und 'preparation_status: in_vorbereitung' für Standorte), 2) Dashboard-Stats Endpoint /api/tenants/{tenant_id}/dashboard-stats erweitert um kombinierte Zählung von Geräten und Standorten mit in_preparation Status (devices + locations), 3) Unterstützt jetzt mehrere Status-Varianten ($or query mit allen Varianten). FRONTEND FIXES CustomerPortalContent.jsx: 1) dashboardStats State erweitert um in_preparation Feld, 2) loadDashboardStats() aktualisiert um in_preparation vom Backend zu laden, 3) inPreparationDevices verwendet jetzt dashboardStats.in_preparation statt client-seitiger Berechnung. ERGEBNIS: Beide Portale verwenden jetzt die gleiche Backend-API, zeigen synchronisierte Werte in Echtzeit an. Backend neugestartet (RUNNING pid 1162). Bereit für Backend & Frontend Testing."
+
 agent_communication:
     - agent: "main"
       message: "✅ PHASE 3 & 4 ABGESCHLOSSEN: Backend Microservices (Device, Inventory, Order, Ticketing) sind jetzt tenant-aware mit tenant_id Parametern. Frontend-Komponenten (InventoryManagement, OrdersManagement, SupportManagement, AllLocationsTab) nutzen TenantContext und filtern automatisch nach gewähltem Tenant. Frontend kompiliert erfolgreich. System bereit für End-to-End Testing."
     - agent: "testing"
       message: "✅ CUSTOMER PORTAL DATA ENDPOINTS TESTING COMPLETED SUCCESSFULLY: Comprehensive testing of customer portal data endpoints completed with all 5/5 tests passed. CRITICAL DATABASE FIXES: Fixed routes/devices.py to use multi_tenant_admin database for europcar_devices collection, fixed routes/customer_data.py to use correct databases (multi_tenant_admin for devices, portal_db for tenant_locations). AUTHENTICATION: Successfully authenticated as admin@tsrid.com with tenant admin credentials. ENDPOINTS VERIFIED: ✅ GET /api/portal/europcar-devices returns 215 devices filtered by tenant_id with summary (total: 215, online: 151, offline: 64), ✅ GET /api/portal/customer-data/europcar-stations returns 198 stations with devices and proper device counts. DATABASE CONTEXT: Confirmed multi_tenant_admin.europcar_devices (215 documents) and portal_db.tenant_locations (213 documents) collections working correctly with tenant_id filtering. All review request requirements met - both endpoints return data (not empty arrays) for tenant admin as expected."
+    - agent: "main"
+      message: "✅ IN VORBEREITUNG SYNCHRONISATION IMPLEMENTIERT: Neuer Backend-Endpoint /api/tenant-devices/{tenant_id}/in-preparation für tenant-spezifische 'In Vorbereitung' Items erstellt. Dashboard-Stats API erweitert um kombinierte Zählung (devices + locations). Kundenportal verwendet jetzt Backend-API statt client-seitiger Berechnung. Beide Portale zeigen jetzt synchronisierte Werte an. Bereit für Testing zur Verifikation der Synchronisation zwischen Admin- und Kundenportal."
 
