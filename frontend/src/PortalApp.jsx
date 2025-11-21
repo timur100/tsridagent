@@ -12,6 +12,7 @@ import LocationDetailPage from './pages/LocationDetailPage';
 import CustomerLocationDetailPage from './pages/CustomerLocationDetailPage';
 import DeviceDetailPage from './pages/DeviceDetailPage';
 import CatalogPortal from './pages/CatalogPortal';
+import AdminLayout from './components/AdminLayout';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
