@@ -68,6 +68,7 @@ const PortalRoutes = () => {
         }
       />
       
+      {/* Customer Portal with nested routes */}
       <Route
         path="/customer"
         element={
@@ -75,7 +76,11 @@ const PortalRoutes = () => {
             <CustomerPortal />
           </ProtectedRoute>
         }
-      />
+      >
+        {/* Nested routes - rendered inside CustomerPortal's Outlet */}
+        <Route path="locations/:locationId" element={<CustomerLocationDetailPage />} />
+        <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
+      </Route>
       
       {/* Admin Portal with nested routes */}
       <Route
@@ -93,25 +98,6 @@ const PortalRoutes = () => {
         <Route path="tenants/:tenantId/devices/:deviceId" element={<DeviceDetailPage />} />
         <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
       </Route>
-
-      {/* Customer Portal Routes */}
-      <Route
-        path="/customer/locations/:locationId"
-        element={
-          <ProtectedRoute>
-            <CustomerLocationDetailPage />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/customer/devices/:deviceId"
-        element={
-          <ProtectedRoute>
-            <DeviceDetailPage />
-          </ProtectedRoute>
-        }
-      />
       
       <Route
         path="/catalog"
