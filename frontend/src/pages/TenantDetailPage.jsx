@@ -101,20 +101,20 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const handleWSDeviceCreated = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket device created:', data);
     toast.success('Neues Gerät hinzugefügt', { duration: 3000, icon: '📱' });
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSDeviceDeleted = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket device deleted:', data);
     toast.info('Gerät wurde gelöscht', { duration: 3000, icon: '🗑️' });
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSDeviceStatusUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket device status:', data);
     const statusIcon = data.status === 'online' ? '🟢' : '🔴';
     toast.info(`Gerät ${data.status}`, { duration: 2000, icon: statusIcon });
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSTenantUpdated = useCallback((data) => {
