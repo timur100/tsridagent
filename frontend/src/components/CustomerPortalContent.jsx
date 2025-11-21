@@ -1755,18 +1755,6 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         <CustomerTickets />
       )}
 
-      {/* Device Details Modal */}
-      {showDeviceModal && selectedDeviceForModal && (
-        <DeviceDetailsModal
-          device={selectedDeviceForModal}
-          onClose={() => {
-            setShowDeviceModal(false);
-            setSelectedDeviceForModal(null);
-          }}
-          onUpdate={handleDeviceUpdate}
-        />
-      )}
-
       {/* Add Device Modal */}
       {showAddDeviceModal && (
         <AddDeviceModal
