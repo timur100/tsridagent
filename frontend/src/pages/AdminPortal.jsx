@@ -62,11 +62,12 @@ const AdminPortalContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Check if we're on a nested route (detail page)
+  // Check if we're on a nested route (detail page or dedicated overview page)
   const isOnDetailPage = location.pathname !== '/portal/admin' && 
                          (location.pathname.includes('/tenants/') || 
                           location.pathname.includes('/devices/') || 
-                          location.pathname.includes('/locations/'));
+                          location.pathname.includes('/locations/') ||
+                          location.pathname.includes('/in-preparation'));
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
