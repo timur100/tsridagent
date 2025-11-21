@@ -125,9 +125,17 @@ const CustomerPortal = () => {
   };
 
   const handleSearchNavigate = (tab, itemId) => {
-    setActiveTab(tab);
-    // You can add additional logic here to select/highlight the specific item
-    // For now, just navigate to the tab
+    // Navigate to detail pages instead of just switching tabs
+    if (tab === 'devices' && itemId) {
+      // Navigate to Device Detail Page
+      navigate(`/portal/customer/devices/${itemId}`);
+    } else if (tab === 'locations' && itemId) {
+      // Navigate to Location Detail Page
+      navigate(`/portal/customer/locations/${itemId}`);
+    } else {
+      // For other tabs (shop, tickets) that don't have detail pages yet, just switch tab
+      setActiveTab(tab);
+    }
   };
 
   return (
