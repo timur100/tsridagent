@@ -405,6 +405,32 @@ const DeviceDetailPage = () => {
                 </select>
               </div>
 
+              {/* Tenant Selection - Only for Admin users */}
+              {user?.role === 'admin' && (
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Mandant (Tenant)
+                  </label>
+                  <select
+                    value={currentData.tenant_id || ''}
+                    onChange={(e) => handleFieldChange('tenant_id', e.target.value)}
+                    disabled={!isEditing}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] text-white border-gray-700'
+                        : 'bg-white text-gray-900 border-gray-300'
+                    } ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}
+                  >
+                    <option value="">Bitte wählen...</option>
+                    {availableTenants.map(tenant => (
+                      <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                        {tenant.display_name || tenant.name || tenant.tenant_id}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   Location Code
