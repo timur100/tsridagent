@@ -107,7 +107,7 @@ def calculate_sla_status(ticket: dict) -> dict:
     }
 
 @router.get("/warnings")
-def get_sla_warnings(token_data: dict = Depends(verify_token)):
+async def get_sla_warnings(token_data: dict = Depends(verify_token)):
     """
     Get all tickets with SLA warnings/breaches
     Admin only
