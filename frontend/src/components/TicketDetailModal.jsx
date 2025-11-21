@@ -1028,5 +1028,8 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
           </div>
         </div>
       )}
+    </div>
+  );
+};
 
 export default TicketDetailModal;
