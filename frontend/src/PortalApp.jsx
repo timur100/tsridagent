@@ -81,6 +81,7 @@ const PortalRoutes = () => {
         }
       >
         {/* Nested routes - rendered inside CustomerPortal's Outlet */}
+        <Route path="in-preparation" element={<CustomerInPreparationPage />} />
         <Route path="locations/:locationId" element={<CustomerLocationDetailPage />} />
         <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
       </Route>
