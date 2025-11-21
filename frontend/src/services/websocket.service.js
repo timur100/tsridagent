@@ -206,11 +206,12 @@ class WebSocketService {
         break;
       
       case 'location_update':
-        this.notifyHandlers('location_update', data);
+        this.notifyHandlers('location_update', message);
         break;
       
       case 'device_update':
-        this.notifyHandlers('device_update', data);
+        console.log('[WebSocket] Device update received:', message);
+        this.notifyHandlers('device_update', message);
         break;
       
       case 'dashboard_stats':
