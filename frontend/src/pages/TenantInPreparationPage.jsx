@@ -45,9 +45,29 @@ const TenantInPreparationPage = () => {
   const loadTenantName = async () => {
     try {
       const response = await apiCall(`/api/tenants/${tenantId}`);
-      setTenantName(response?.display_name || response?.name || 'Tenant');
+      console.log('[TenantInPreparation] Tenant response:', response);
+      
+      // Handle different response structures
+      let name = 'Tenant';
+      if (response?.display_name) {
+        name = response.display_name;
+      } else if (response?.name) {
+        name = response.name;
+      } else if (response?.data?.display_name) {
+        name = response.data.display_name;
+      } else if (response?.data?.name) {
+        name = response.data.name;
+      } else if (response?.tenant?.display_name) {
+        name = response.tenant.display_name;
+      } else if (response?.tenant?.name) {
+        name = response.tenant.name;
+      }
+      
+      console.log('[TenantInPreparation] Setting tenant name:', name);
+      setTenantName(name);
     } catch (error) {
       console.error('[TenantInPreparation] Error loading tenant name:', error);
+      setTenantName('Unbekannt');
     }
   };
 
