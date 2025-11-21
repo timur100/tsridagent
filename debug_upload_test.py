@@ -10,7 +10,7 @@ import sys
 import io
 
 # Backend URL from environment
-BACKEND_URL = "https://portal-live.preview.emergentagent.com"
+BACKEND_URL = "https://device-sync-15.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():
