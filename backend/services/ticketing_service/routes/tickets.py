@@ -436,3 +436,164 @@ async def delete_ticket(
     except Exception as e:
         print(f"Delete ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{ticket_id}/comments")
+async def add_comment(
+    ticket_id: str,
+    comment_data: TicketComment,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Add a comment to a ticket
+    """
+    try:
+        if not token_data:
+            raise HTTPException(status_code=401, detail="Authentication required")
+        
+        user_role = token_data.get("role")
+        user_email = token_data.get("sub")
+        
+        # Get ticket
+        ticket = await tickets_collection.find_one({"id": ticket_id})
+        if not ticket:
+            raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
+        
+        # Check access
+        if user_role == "customer" and ticket.get("customer_email") != user_email:
+            raise HTTPException(status_code=403, detail="Zugriff verweigert")
+        
+        # Customers cannot add internal notes
+        if user_role == "customer" and comment_data.internal:
+            raise HTTPException(status_code=403, detail="Kunden können keine internen Notizen hinzufügen")
+        
+        # Get user name from database
+        main_db = db.client['test_database']
+        user = await main_db.portal_users.find_one({"email": user_email})
+        user_name = user.get("name", user_email) if user else user_email
+        
+        # Create comment
+        comment = {
+            "id": str(uuid.uuid4()),
+            "comment": comment_data.comment,
+            "internal": comment_data.internal,
+            "created_by": user_email,
+            "created_by_name": user_name,
+            "created_by_role": user_role,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            # Add these for frontend compatibility
+            "author": user_name,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Add comment to ticket
+        await tickets_collection.update_one(
+            {"id": ticket_id},
+            {
+                "$push": {"comments": comment},
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": "Kommentar hinzugefügt",
+            "comment": comment
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Add comment error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{ticket_id}/status/{new_status}")
+async def update_ticket_status(
+    ticket_id: str,
+    new_status: str,
+    status_update: TicketStatusUpdate,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Update ticket status
+    Admin/Staff only
+    """
+    try:
+        if not token_data or token_data.get("role") not in ["admin", "support_agent", "support_manager"]:
+            raise HTTPException(status_code=403, detail="Support access required")
+        
+        # Validate status
+        valid_statuses = ["open", "in_progress", "waiting", "resolved", "closed"]
+        if new_status not in valid_statuses:
+            raise HTTPException(status_code=400, detail=f"Ungültiger Status. Erlaubt: {', '.join(valid_statuses)}")
+        
+        # Get ticket
+        ticket = await tickets_collection.find_one({"id": ticket_id})
+        if not ticket:
+            raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
+        
+        old_status = ticket.get("status")
+        
+        update_fields = {
+            "status": new_status,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Set resolved_at when status changes to resolved
+        if new_status == "resolved" and old_status != "resolved":
+            update_fields["resolved_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Set closed_at when status changes to closed
+        if new_status == "closed" and old_status != "closed":
+            update_fields["closed_at"] = datetime.now(timezone.utc).isoformat()
+        
+        # Update ticket
+        await tickets_collection.update_one(
+            {"id": ticket_id},
+            {"$set": update_fields}
+        )
+        
+        # Add status change note to comments
+        user_email = token_data.get("sub")
+        main_db = db.client['test_database']
+        user = await main_db.portal_users.find_one({"email": user_email})
+        user_name = user.get("name", user_email) if user else user_email
+        
+        status_labels = {
+            "open": "Offen",
+            "in_progress": "In Bearbeitung",
+            "waiting": "Wartend",
+            "resolved": "Gelöst",
+            "closed": "Geschlossen"
+        }
+        
+        comment_text = f"Status geändert von '{status_labels.get(old_status, old_status)}' zu '{status_labels.get(new_status, new_status)}'"
+        if status_update.notes:
+            comment_text += f". Notiz: {status_update.notes}"
+        
+        comment = {
+            "id": str(uuid.uuid4()),
+            "comment": comment_text,
+            "internal": False,
+            "created_by": user_email,
+            "created_by_name": user_name,
+            "created_by_role": token_data.get("role"),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "author": user_name,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await tickets_collection.update_one(
+            {"id": ticket_id},
+            {"$push": {"comments": comment}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Status aktualisiert"
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Update ticket status error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
