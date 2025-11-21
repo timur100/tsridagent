@@ -56,14 +56,26 @@ const TenantInPreparationPage = () => {
     try {
       // Load devices for this tenant
       const devicesResponse = await apiCall(`/api/tenant-devices/${tenantId}`);
-      const allDevices = devicesResponse?.data || devicesResponse || [];
+      console.log('[TenantInPreparation] Devices response:', devicesResponse);
+      
+      // Extract devices array from response
+      let allDevices = [];
+      if (Array.isArray(devicesResponse)) {
+        allDevices = devicesResponse;
+      } else if (devicesResponse?.data && Array.isArray(devicesResponse.data)) {
+        allDevices = devicesResponse.data;
+      } else if (devicesResponse?.success && Array.isArray(devicesResponse.data?.devices)) {
+        allDevices = devicesResponse.data.devices;
+      }
+      
+      console.log('[TenantInPreparation] All devices count:', allDevices.length);
       
       // Filter only in_preparation devices
       const inPrepDevices = allDevices.filter(d => 
         d.status === 'in_preparation' || d.status === 'preparation'
       );
       
-      console.log('[TenantInPreparation] Devices:', inPrepDevices.length);
+      console.log('[TenantInPreparation] In preparation devices:', inPrepDevices.length);
       setDevices(inPrepDevices);
       
       // Load locations for this tenant
