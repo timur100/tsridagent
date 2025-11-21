@@ -67,7 +67,7 @@ const TenantInPreparationPage = () => {
       setDevices(inPrepDevices);
       
       // Load locations for this tenant
-      const locationsResponse = await apiCall(`/api/tenant-locations/tenant/${tenantId}`);
+      const locationsResponse = await apiCall(`/api/tenant-locations/${tenantId}`);
       const allLocations = locationsResponse?.locations || locationsResponse || [];
       
       // Filter only in_preparation locations
