@@ -81,7 +81,7 @@ async def create_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/")
-def get_all_staff(
+async def get_all_staff(
     is_active: Optional[bool] = None,
     token_data: dict = Depends(verify_token)
 ):
