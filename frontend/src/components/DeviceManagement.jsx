@@ -252,8 +252,18 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   };
 
   const handleDeviceClick = (device) => {
-    setSelectedDevice(device);
-    setShowModal(true);
+    // Navigate to device detail page
+    // If we have a specific tenant selected, use tenant-specific route
+    if (selectedTenantId && selectedTenantId !== 'all') {
+      navigate(`/portal/admin/tenants/${selectedTenantId}/devices/${device.device_id}`, {
+        state: { fromTab: 'devices', tenantId: selectedTenantId }
+      });
+    } else {
+      // For "Alle Kunden" view, use global device route
+      navigate(`/portal/admin/devices/${device.device_id}`, {
+        state: { fromAllDevices: true }
+      });
+    }
   };
 
   const handleDeviceUpdate = (updatedDevice) => {
