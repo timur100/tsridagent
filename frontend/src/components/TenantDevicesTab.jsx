@@ -42,6 +42,11 @@ const TenantDevicesTab = ({ tenantId }) => {
     key: 'device_id',
     direction: 'asc'
   });
+  
+  // Inline editing state
+  const [editingDeviceId, setEditingDeviceId] = useState(null);
+  const [editedValues, setEditedValues] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
