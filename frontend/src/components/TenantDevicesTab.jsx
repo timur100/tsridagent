@@ -240,7 +240,10 @@ const TenantDevicesTab = ({ tenantId }) => {
 
   const handleDeviceClick = (device) => {
     // Navigate to device detail page instead of modal
-    navigate(`/portal/admin/tenants/${tenantId}/devices/${device.device_id}`);
+    // Pass state to remember we came from devices tab
+    navigate(`/portal/admin/tenants/${tenantId}/devices/${device.device_id}`, {
+      state: { fromTab: 'devices', tenantId }
+    });
   };
 
   const handleDeviceUpdate = (updatedDevice) => {
