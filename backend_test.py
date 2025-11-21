@@ -183,8 +183,8 @@ class Phase1TicketingSystemTester:
         """Test POST /api/staff - Neuen Mitarbeiter erstellen"""
         try:
             staff_data = {
-                "email": "test.agent@support.de",
-                "name": "Test Agent",
+                "email": "agent1@support.de",
+                "name": "Test Agent 1",
                 "role": "support_agent",
                 "max_active_tickets": 10
             }
