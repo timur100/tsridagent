@@ -734,14 +734,19 @@ const TenantDevicesTab = ({ tenantId }) => {
             </tr>
           </thead>
           <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-            {filteredDevices.map((device, index) => (
+            {filteredDevices.map((device, index) => {
+              const isEditing = editingDeviceId === device.device_id;
+              
+              return (
               <tr 
                 key={device.device_id}
-                onClick={() => handleDeviceClick(device)}
+                onClick={(e) => handleDeviceClick(device, e)}
                 className={`border-t cursor-pointer transition-colors ${
-                  theme === 'dark' 
-                    ? 'border-gray-700 hover:bg-[#1a1a1a]' 
-                    : 'border-gray-200 hover:bg-gray-50'
+                  isEditing
+                    ? (theme === 'dark' ? 'bg-blue-900/20 border-blue-700' : 'bg-blue-50 border-blue-300')
+                    : (theme === 'dark' 
+                        ? 'border-gray-700 hover:bg-[#1a1a1a]' 
+                        : 'border-gray-200 hover:bg-gray-50')
                 }`}
               >
                 <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
