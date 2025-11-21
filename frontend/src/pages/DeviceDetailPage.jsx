@@ -326,12 +326,13 @@ const DeviceDetailPage = () => {
                 <input
                   type="text"
                   value={currentData.device_id || ''}
-                  disabled
-                  className={`w-full px-3 py-2 rounded-lg ${
+                  onChange={(e) => handleFieldChange('device_id', e.target.value)}
+                  disabled={!isEditing}
+                  className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark'
-                      ? 'bg-[#2a2a2a] text-gray-400 border-gray-700'
-                      : 'bg-gray-100 text-gray-600 border-gray-300'
-                  } border`}
+                      ? 'bg-[#2a2a2a] text-white border-gray-700'
+                      : 'bg-white text-gray-900 border-gray-300'
+                  } ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}
                 />
               </div>
 
