@@ -212,6 +212,7 @@ app.include_router(scanner_pin_router)
 
 # Service Proxy (for accessing microservices externally)
 app.include_router(service_proxy_router)
+app.include_router(ticketing_proxy_router)
 
 # Service MongoDB Info
 app.include_router(service_mongodb_info_router)
