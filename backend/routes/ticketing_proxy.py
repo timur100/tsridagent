@@ -78,16 +78,18 @@ async def proxy_sla(request: Request, path: str = ""):
         logger.error(f"Error proxying to Ticketing Service: {e}")
         raise HTTPException(status_code=502, detail=f"Proxy error: {str(e)}")
 
-@router.api_route("/api/staff/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-@router.api_route("/api/staff", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+@router.api_route("/api/staff/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
+@router.api_route("/api/staff/", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 async def proxy_staff(request: Request, path: str = ""):
     """
     Proxy all /api/staff/* requests to Ticketing Service
     """
     try:
-        target_url = f"{TICKETING_SERVICE_URL}/api/staff"
-        if path:
-            target_url += f"/{path}"
+        # Remove trailing slash from path if present
+        clean_path = path.rstrip('/') if path else ""
+        target_url = f"{TICKETING_SERVICE_URL}/api/staff/"
+        if clean_path:
+            target_url += clean_path
         
         body = await request.body()
         
