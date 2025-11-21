@@ -397,12 +397,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Centralized Event System - Phase 1 Implementation"
     - "Character-by-Character Input Bug Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  notes: "Phase 1 Event System: Testen Sie Event-Log-Erstellung in MongoDB (portal_db.event_log) und WebSocket-Broadcasting bei Device-Updates/Deletes. Character Input Bug: Testen Sie Input-Felder in ServicesConfiguration und UserModal auf flüssige Texteingabe ohne Cursor-Sprung."
+  notes: "Character Input Bug: Testen Sie Input-Felder in ServicesConfiguration und UserModal auf flüssige Texteingabe ohne Cursor-Sprung."
   
 agent_communication:
     - agent: "main"
