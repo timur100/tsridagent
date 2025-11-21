@@ -105,6 +105,21 @@
 user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
 
 backend:
+  - task: "WebSocket Device Update Fix - Backend Implementation"
+    implemented: true
+    working: true
+    file: "backend/routes/devices.py, backend/routes/tenant_devices.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ WebSocket Device Update Fix Applied: 1) Added missing WebSocket broadcast in PUT /{device_id} endpoint in routes/devices.py (Customer Portal), now broadcasts: { type: 'device_update', device_id: device_id, device: updated_device }, 2) Fixed message structure in frontend websocket.service.js to pass entire message object instead of just data field, 3) Both Customer Portal (/api/portal/europcar-devices/{device_id}) and Admin Portal (/api/tenant-devices/device/{device_id}) endpoints now properly broadcast device updates via WebSocket, 4) Device creation also broadcasts via WebSocket with type: 'device_created'. Backend logs show proper broadcast messages: '📡 [Device Update] Broadcasting update for {device_id}' and '✅ [Device Update] Broadcast sent to tenant {tenant_id}'."
+        - working: true
+          agent: "testing"
+          comment: "✅ WEBSOCKET DEVICE UPDATE FIX TESTING COMPLETED SUCCESSFULLY: Comprehensive testing completed with 7/7 tests passed successfully. ALL REVIEW REQUEST REQUIREMENTS VERIFIED: ✅ AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123 credentials, received valid JWT token with proper claims. ✅ DEVICE UPDATE VIA CUSTOMER PORTAL: PUT /api/portal/europcar-devices/{device_id} successfully triggers WebSocket broadcast with correct message structure: type='device_update', device_id='{device_id}', device={updated_device_object}. Tested with device AAHC01-01, updated city field, received WebSocket message immediately. ✅ DEVICE CREATE BROADCAST: POST /api/portal/europcar-devices successfully creates device and triggers WebSocket broadcast with type='device_created', device={new_device_object}. Created test device TEST-9723582d, received proper broadcast message. ✅ ADMIN PORTAL DEVICE UPDATE: PUT /api/tenant-devices/device/{device_id} successfully triggers WebSocket broadcast with identical message structure. Both Customer Portal and Admin Portal endpoints broadcast correctly. ✅ WEBSOCKET MESSAGE STRUCTURE: All broadcast messages include required fields - type (device_update/device_created), device_id (for updates), and device (complete device object with all fields). ✅ BACKEND LOGS VERIFICATION: Backend logs show proper broadcast messages: '📡 [Device Update] Broadcasting update for AAHC01-01 to tenant 1d3653db-86cb-4dd1-9ef5-0236b116def8', '✅ [Device Update] Broadcast sent to tenant 1d3653db-86cb-4dd1-9ef5-0236b116def8', '📡 [Device Create] Broadcasting new device TEST-9723582d', '📡 Broadcasting device update for AAHC01-01'. ✅ WEBSOCKET CONNECTION: WebSocket connection to wss://portal-live.preview.emergentagent.com/api/ws/{tenant_id}?token={jwt_token} working correctly, receiving all broadcast messages in real-time. SUCCESS CRITERIA MET: Device updates via both Customer Portal and Admin Portal endpoints trigger WebSocket broadcasts, backend logs show broadcast messages, message structure includes device_id and device fields as expected, no errors in WebSocket broadcast functionality. WebSocket device_update payload bug is fully resolved and production-ready."
+
   - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
     implemented: true
     working: true
