@@ -15,8 +15,9 @@ DB_NAME = 'multi_tenant_admin'
 client = MongoClient(MONGO_URL)
 db = client[DB_NAME]
 
-# Also connect to portal_db for locations
+# Also connect to portal_db for locations and auth_db for tenants
 portal_db = client['portal_db']
+auth_db = client['auth_db']
 
 
 def enrich_devices_with_location_data(devices, tenant_id):
