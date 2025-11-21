@@ -60,13 +60,22 @@ const TenantInPreparationPage = () => {
       
       // Extract devices array from response
       // Response structure: {success: true, data: {summary: {...}, devices: [...]}}
+      console.log('[TenantInPreparation] Devices response keys:', Object.keys(devicesResponse || {}));
+      console.log('[TenantInPreparation] Devices response.data keys:', Object.keys(devicesResponse?.data || {}));
+      console.log('[TenantInPreparation] Devices response.data.devices type:', Array.isArray(devicesResponse?.data?.devices));
+      
       let allDevices = [];
       if (Array.isArray(devicesResponse)) {
+        console.log('[TenantInPreparation] Branch 1: devicesResponse is array');
         allDevices = devicesResponse;
       } else if (devicesResponse?.data?.devices && Array.isArray(devicesResponse.data.devices)) {
+        console.log('[TenantInPreparation] Branch 2: devicesResponse.data.devices is array');
         allDevices = devicesResponse.data.devices;
       } else if (Array.isArray(devicesResponse?.data)) {
+        console.log('[TenantInPreparation] Branch 3: devicesResponse.data is array');
         allDevices = devicesResponse.data;
+      } else {
+        console.log('[TenantInPreparation] No branch matched - devicesResponse structure:', JSON.stringify(devicesResponse).substring(0, 200));
       }
       
       console.log('[TenantInPreparation] All devices count:', allDevices.length);
