@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
   // Global lock to prevent duplicate login/register calls
   const authInProgressRef = useRef(false);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || process.env.REACT_APP_BACKEND_URL || window.location.origin;
 
   useEffect(() => {
     // Check if token exists in localStorage
