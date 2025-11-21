@@ -2197,28 +2197,28 @@ class CentralizedEventSystemTester:
             await self.cleanup_connections()
 
 async def main():
-    print("Starting Centralized Event System Testing (Phase 1)...")
+    print("Starting In Vorbereitung Status Tracking API Testing...")
     print()
     
-    # Test Centralized Event System
-    tester = CentralizedEventSystemTester()
+    # Test In Vorbereitung Status Tracking API
+    tester = InVorbereitungStatusTester()
     test_success = await tester.run_all_tests()
     
     print()
     print("=" * 80)
     print("OVERALL TESTING SUMMARY")
     print("=" * 80)
-    print(f"Centralized Event System Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"In Vorbereitung Status Tracking API Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 80)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 CENTRALIZED EVENT SYSTEM TESTING COMPLETED SUCCESSFULLY!")
-        print("Event logging to MongoDB and WebSocket broadcasting via decorators are working correctly.")
+        print("🎉 IN VORBEREITUNG STATUS TRACKING API TESTING COMPLETED SUCCESSFULLY!")
+        print("The new endpoint GET /api/tenant-devices/all/in-preparation is working correctly.")
         sys.exit(0)
     else:
-        print("❌ CENTRALIZED EVENT SYSTEM ISSUES FOUND!")
-        print("Event system functionality has issues that need to be addressed.")
+        print("❌ IN VORBEREITUNG STATUS TRACKING API ISSUES FOUND!")
+        print("The API functionality has issues that need to be addressed.")
         sys.exit(1)
 
 if __name__ == "__main__":
