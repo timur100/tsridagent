@@ -13,6 +13,7 @@ import CustomerLocationDetailPage from './pages/CustomerLocationDetailPage';
 import DeviceDetailPage from './pages/DeviceDetailPage';
 import InPreparationOverviewPage from './pages/InPreparationOverviewPage';
 import TenantInPreparationPage from './pages/TenantInPreparationPage';
+import CustomerInPreparationPage from './pages/CustomerInPreparationPage';
 import CatalogPortal from './pages/CatalogPortal';
 import AdminLayout from './components/AdminLayout';
 import { Toaster } from 'react-hot-toast';
