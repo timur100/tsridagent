@@ -902,6 +902,8 @@ const SupportManagement = () => {
       {showCreateModal && (
         <div>Create Ticket Modal (wird implementiert...)</div>
       )}
+      </>
+      )}
     </div>
   );
 };
