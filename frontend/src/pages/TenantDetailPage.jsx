@@ -50,10 +50,29 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const { tenantId: paramTenantId } = useParams();  // Get tenantId from URL params
+  const { selectedTenantId } = useTenant(); // Get selected tenant from context
   const [searchParams] = useSearchParams();
   
   // Use prop tenantId if available (from AdminPortal), otherwise use URL param (from direct route)
   const tenantId = propTenantId || paramTenantId;
+  
+  // React to tenant switcher changes - navigate to the new tenant
+  useEffect(() => {
+    if (selectedTenantId && selectedTenantId !== 'all' && selectedTenantId !== tenantId) {
+      console.log('[TenantDetailPage] Tenant switched to:', selectedTenantId);
+      navigate(`/portal/admin/tenants/${selectedTenantId}`, { 
+        state: { activeTab: activeTab },
+        replace: true 
+      });
+    } else if (selectedTenantId === 'all') {
+      // Navigate back to admin portal when "Alle Kunden" is selected
+      console.log('[TenantDetailPage] Switched to "Alle Kunden", navigating back');
+      navigate('/portal/admin', { 
+        state: { activeTab: 'tenants' },
+        replace: true 
+      });
+    }
+  }, [selectedTenantId, tenantId, navigate, activeTab]);
   
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
