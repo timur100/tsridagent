@@ -1753,6 +1753,31 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         <CustomerTickets />
       )}
 
+      {/* Device Details Modal */}
+      {showDeviceModal && selectedDeviceForModal && (
+        <DeviceDetailsModal
+          device={selectedDeviceForModal}
+          onClose={() => {
+            setShowDeviceModal(false);
+            setSelectedDeviceForModal(null);
+          }}
+          onUpdate={handleDeviceUpdate}
+        />
+      )}
+
+      {/* Add Device Modal */}
+      {showAddDeviceModal && (
+        <AddDeviceModal
+          onClose={() => setShowAddDeviceModal(false)}
+          onAdd={(newDevice) => {
+            setShowAddDeviceModal(false);
+            setDevices(prev => [...prev, newDevice]);
+            loadData();
+            toast.success('Gerät erfolgreich hinzugefügt');
+          }}
+        />
+      )}
+
       {/* Add Standort Modal */}
       {showAddStandortModal && (
         <AddStandortModal
