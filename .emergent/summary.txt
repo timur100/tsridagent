@@ -1,90 +1,74 @@
 <analysis>
 The user's primary language is German. The next agent must respond in German.
 
-The trajectory describes the implementation of a real-time WebSocket feature for a device management portal. After the user chose WebSockets over other options, the engineer began a multi-phase implementation.
+The trajectory details a complex, multi-stage development and debugging process for a device management portal. The initial goal was to implement a real-time WebSocket connection to replace polling. This was successfully built, but a series of major issues followed.
 
-Phase 1 (Backend): New files for a WebSocket manager (), a dedicated route ( in ), and a broadcast service were created. The main server file () was updated to include the new WebSocket router. The backend was tested and confirmed to be running.
+A critical bug involved a user () incorrectly seeing the company TSRID. This was a deep-rooted authentication and data caching problem, which required extensive backend changes to  to fetch correct tenant data on login and frontend changes to  to force data refreshes.
 
-Phase 2 (Frontend): A singleton WebSocket service () and a custom React hook () were created to manage the connection and state.
+The user then requested a massive expansion: make *all* data in the admin portal update in real-time and add universal editing capabilities. This led to a cascade of feature implementations and bug fixes:
+1.  **Real-time for Locations**: Implemented for opening hours and location details.
+2.  **Add Device feature**: Fixed a non-functional button by implementing the .
+3.  **Device Visibility**: Debugged why a new device (TSRTEST) was not appearing, which involved moving it between MongoDB collections and correcting its status.
+4.  **Device Detail Page**: Created a new page () with its own CRUD backend endpoints and fixed subsequent routing and token-passing issues.
+5.  **Global Search**: Completely overhauled the broken global search feature () to query across multiple tenants and collections.
 
-Phase 3 (Integration & Debugging): The  hook was integrated into  and . This triggered a prolonged and complex debugging cycle. Key issues encountered were:
-1.  An infinite re-render loop in components using the hook, caused by incorrect dependency arrays in  and . This was diagnosed by the  and involved multiple fixes, including wrapping callbacks and cleaning dependency arrays.
-2.  A component crash () due to a missing  import in .
-3.  The final and current issue: The WebSocket connection fails because the authentication token is not being passed to the  hook, resulting in a  log. The engineer's last action was to investigate the  to find the correct way to retrieve the token.
+The final and current issue is that WebSocket messages for device updates () are being received by the frontend with an  payload, causing a . The backend is correctly triggering the broadcast, but the message content is empty.
 </analysis>
-
 <product_requirements>
-The goal is to implement real-time data synchronization in the Admin and Customer portals using WebSockets, replacing the existing polling mechanism. This enhancement should provide instant updates for key metrics and statuses, improving user experience and reducing server load from constant polling.
+The application is a multi-tenant device and location management portal with two main interfaces: an Admin Portal and a Customer Portal.
 
-**Implementation Details:**
-- A secure WebSocket connection should be established for each tenant ().
-- The connection must be authenticated using the existing JWT.
-- Both the Customer Portal () and the Admin Portal's tenant detail view () must be updated to use this real-time connection.
-- The system should display a connection status indicator in the UI.
-- The previous polling mechanism should serve as a fallback if the WebSocket connection fails.
-- Data to be synchronized includes dashboard statistics (device counts) and location/device statuses.
+The core requirement is to provide a fully real-time experience where any data modification in the Admin Portal is instantly reflected in all other connected client sessions (Admin or Customer) without needing a page refresh. This applies to all major data entities: devices, locations, users, and their respective properties.
 
-The work is currently in the debugging phase, with the backend infrastructure in place but the frontend failing to establish an authenticated connection.
+**Key Features Implemented:**
+*   **Real-Time Sync**: A secure, tenant-based WebSocket system for instant data synchronisation.
+*   **Device Management**: Admins can view, create, edit, and delete devices. A dedicated detail page provides comprehensive editing capabilities.
+*   **Location Management**: Admins can edit location details, including opening hours, with changes propagating in real-time.
+*   **User Authentication**: A JWT-based authentication system that correctly associates users with their respective tenants (e.g., Europcar).
+*   **Global Search**: A cross-tenant search function allowing admins to find devices, locations, users, and other entities across the entire system.
+
+The application is currently in the final stages of debugging the real-time device update functionality.
 </product_requirements>
-
 <key_technical_concepts>
-- **Backend**: FastAPI, WebSockets.
+- **Backend**: FastAPI, WebSockets (for real-time communication), Pydantic.
 - **Frontend**: React, React Hooks (, , ), Custom Hooks ().
-- **Authentication**: JWT token passed via query parameter for WebSocket connection.
+- **Database**: MongoDB (accessed via ).
 - **State Management**: React Context API (, ).
-- **Debugging**: Identifying infinite loops from incorrect hook dependencies, handling  side effects, and tracing component lifecycle issues.
+- **Authentication**: JWT passed via query parameter for WebSockets and Bearer token for HTTP APIs.
+- **Architecture**: Monorepo with separate  and  directories.
 </key_technical_concepts>
-
 <code_architecture>
-The application is a monorepo with a React frontend and a FastAPI backend.
+The application is a monorepo containing a FastAPI backend and a React frontend. The backend handles API logic, database interactions with MongoDB, and WebSocket broadcasting. The frontend is a single-page application that uses React Context for state management and a custom hook for WebSocket integration.
 
-- ****:
-  - **Importance**: Manages all active WebSocket connections, organizing them by  into rooms for targeted broadcasting.
-  - **Summary of changes**: Created to handle connection, disconnection, and broadcasting logic.
 
-- ****:
-  - **Importance**: Defines the  endpoint for clients to connect to.
-  - **Summary of changes**: Created to handle the WebSocket handshake, including JWT authentication from a query parameter.
 
-- ****:
-  - **Importance**: The main FastAPI application entry point.
-  - **Summary of changes**: Modified to import and register the new  directly with the app instance under the  prefix.
+-   ****: Handles user login and session information. Modified to correctly fetch and return the  name from the tenant database instead of a stale/incorrect value, fixing the TSRID bug.
+-   ****: Manages CRUD operations for locations. Modified to add WebSocket broadcast calls () after updates to enable real-time synchronization of location and opening hours data.
+-   ****: Manages device CRUD operations. Modified to add a WebSocket broadcast on device creation () to notify clients. This is the area of the current bug.
+-   ****: Implements the global search API. The original file was completely rewritten to fix incorrect database connections and to aggregate results from multiple MongoDB collections and tenants.
+-   ****: A crucial custom hook that manages the WebSocket lifecycle. It was heavily modified to add handlers for new message types like , , , and .
+-   ****: Manages user authentication state. Significantly modified to include a  hook that fetches fresh user data from the  endpoint on app load, ensuring cached data in  is always up-to-date.
+-   ****: A singleton wrapper for the WebSocket connection. It was modified to recognize and route new message types (e.g., , ) to the appropriate handlers.
+-   ****: A new page created to provide detailed viewing and editing capabilities for a single device, mirroring the functionality of the location detail page. It was debugged to fix API token passing by using the  hook.
+-   ****: The modal for creating new devices. It was fixed to show a populated dropdown of tenants and to use the correct API endpoint () for device creation.
+-   ****: Main router for the authenticated portal. Modified to add the route for the new .
 
-- ****:
-  - **Importance**: A singleton service that abstracts the raw WebSocket API, managing the connection lifecycle (connect, disconnect, message handling).
-  - **Summary of changes**: Created to provide a clean, reusable interface for the rest of the frontend.
-
-- ****:
-  - **Importance**: A custom React hook that integrates the  into the React component lifecycle. It provides connection status and message callbacks.
-  - **Summary of changes**: This file was the center of extensive debugging. It was created and then repeatedly modified to fix an infinite re-render loop by optimizing  and  dependency arrays, as advised by the .
-
-- ****:
-  - **Importance**: The main view for the customer portal.
-  - **Summary of changes**: The  hook was integrated. Callbacks for handling incoming messages were added and wrapped in  to prevent re-renders. A connection status indicator was added to the UI.
-
-- ****:
-  - **Importance**: The main view for the admin portal when viewing a specific tenant.
-  - **Summary of changes**: Integrated the  hook similarly to the customer portal. A critical bug was fixed here by adding a missing import for , which was causing the component to crash.
 </code_architecture>
-
 <pending_tasks>
-- **Fix WebSocket Authentication**: The primary task is to resolve the  issue by correctly retrieving the JWT from  and passing it to the WebSocket connection service.
-- **Full End-to-End Testing**: Once the connection is established, the real-time update functionality needs to be thoroughly tested.
-- **Original Backlog**: Google Maps integration and fixing the  login issue remain pending.
+- **Universal Edit Buttons**: The user's request to have edit and save buttons everywhere in the admin portal tables is not fully implemented. While detail pages for locations and devices exist, inline editing or modals for all table data is still pending.
+- **Fix Character-by-Character Input**: The user mentioned that sometimes there are fields that only allow text input per character. This was acknowledged but not explicitly addressed or fixed.
 </pending_tasks>
-
 <current_work>
-The engineer is actively debugging a critical issue preventing the WebSocket connection from being established. After a long series of fixes related to React hook dependency loops and a component crashing due to a missing import, the root cause has been narrowed down.
+The engineer was actively debugging a critical real-time update failure. The user reported that creating a new device in the admin portal did not make it appear in the customer portal without a manual refresh.
 
-The latest console logs from the user clearly show the problem:
+**Investigation and Findings:**
+1.  **Backend Broadcast Confirmed**: By adding logging and creating a test device (TESTWS001), the engineer confirmed that the backend  route *is* correctly sending a  broadcast via WebSocket.
+2.  **Frontend Handler Confirmed**: The  and  hooks have handlers for the  and  events.
+3.  **Root Cause Identified from Console Logs**: The user provided frontend console logs that revealed the core problem. The WebSocket message for  is being received, but its payload is . This causes a crash in the frontend handler.
 
+**Console Log Evidence:**
 
-
-This indicates that the JWT authentication token is not being successfully retrieved from the  and passed to the  hook. The attempt to use  failed.
-
-The immediate task is to inspect the implementation of  to understand how the token is stored and exposed, and then modify  and  to pass the token correctly to the  hook. The backend and frontend infrastructure for WebSockets is otherwise complete, but this authentication failure is blocking all further progress.
+This proves the connection is working, but the backend is not attaching the device data to the WebSocket message. The engineer's last thought was to correct this on the backend. The same issue likely affects the  message, which was the original user complaint.
 </current_work>
-
 <optional_next_step>
-Investigate  to determine the correct way to access the authentication token, then apply the fix in the components using the  hook.
+Investigate the backend code where WebSocket messages like  and  are constructed and broadcast. Ensure the full data payload of the device is included in the message sent to the WebSocket manager.
 </optional_next_step>

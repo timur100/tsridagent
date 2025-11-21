@@ -23,7 +23,7 @@ import jwt
 from datetime import datetime, timezone, timedelta
 
 # Backend URL from environment
-BACKEND_URL = "https://live-device-sync.preview.emergentagent.com"
+BACKEND_URL = "https://portal-live.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 
