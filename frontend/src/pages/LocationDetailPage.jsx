@@ -105,8 +105,28 @@ const LocationDetailPage = () => {
   useEffect(() => {
     if (locationId) {
       fetchLocationDetails();
+      fetchAvailableTenants();
     }
   }, [locationId]);
+
+  const fetchAvailableTenants = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const tenantsArray = data?.data || data || [];
+        setAvailableTenants(tenantsArray);
+      }
+    } catch (error) {
+      console.error('[LocationDetail] Error fetching tenants:', error);
+    }
+  };
 
   const fetchLocationDetails = async () => {
     setLoading(true);
