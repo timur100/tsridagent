@@ -1043,6 +1043,34 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 </div>
               </Card>
 
+              {/* In Vorbereitung */}
+              <Card 
+                onClick={() => {
+                  setActiveTab('devices');
+                  // TODO: Set filter to show only in_preparation devices
+                }}
+                className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      In Vorbereitung
+                    </p>
+                    <p className={`text-3xl font-bold text-yellow-500`}>
+                      {dashboardStats.in_preparation || 0}
+                    </p>
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Geräte & Standorte
+                    </p>
+                  </div>
+                  <Clock className={`h-12 w-12 text-yellow-500`} />
+                </div>
+              </Card>
+
               {/* Scans Insgesamt */}
               <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
