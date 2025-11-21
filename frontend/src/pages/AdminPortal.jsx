@@ -617,9 +617,14 @@ const AdminPortalContent = () => {
               <GlobalSearch 
                 onResultSelect={(result) => {
                   if (result.type === 'standort') {
-                    // Open Standort Modal
-                    setSelectedStandortForModal(result.data);
-                    setShowStandortModal(true);
+                    // Navigate to Location Detail Page
+                    const locationId = result.data.location_id || result.data.id;
+                    const tenantId = result.data.tenant_id;
+                    if (tenantId) {
+                      navigate(`/portal/admin/tenants/${tenantId}/locations/${locationId}`);
+                    } else {
+                      navigate(`/portal/admin/locations/${locationId}`);
+                    }
                   } else if (result.type === 'artikel') {
                     // Switch to inventory tab and open artikel detail
                     setActiveTab('inventory');
@@ -629,10 +634,14 @@ const AdminPortalContent = () => {
                     setActiveTab('orders');
                     setSelectedOrderId(result.data.id);
                   } else if (result.type === 'geraet') {
-                    // Open Device Modal and switch to devices tab
-                    setSelectedDeviceForModal(result.data);
-                    setShowDeviceModal(true);
-                    setActiveTab('devices');
+                    // Navigate to Device Detail Page instead of modal
+                    const deviceId = result.data.device_id || result.data.id;
+                    const tenantId = result.data.tenant_id;
+                    if (tenantId) {
+                      navigate(`/portal/admin/tenants/${tenantId}/devices/${deviceId}`);
+                    } else {
+                      navigate(`/portal/admin/devices/${deviceId}`);
+                    }
                   }
                 }}
               />
