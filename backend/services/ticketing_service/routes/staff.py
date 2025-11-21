@@ -310,19 +310,19 @@ async def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
             email = staff.get("email")
             
             # Count tickets by status
-            open_count = tickets_collection.count_documents({
+            open_count = await tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "open"
             })
-            in_progress_count = tickets_collection.count_documents({
+            in_progress_count = await tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "in_progress"
             })
-            waiting_count = tickets_collection.count_documents({
+            waiting_count = await tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "waiting"
             })
-            resolved_count = tickets_collection.count_documents({
+            resolved_count = await tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "resolved"
             })
