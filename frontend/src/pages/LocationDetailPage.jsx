@@ -866,6 +866,38 @@ const LocationDetailPage = () => {
                   <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.country || '-'}</p>
                 )}
               </div>
+              
+              {/* Tenant Selection - Only for Admin users */}
+              {user?.role === 'admin' && (
+                <div>
+                  <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Mandant (Tenant)</p>
+                  {isEditing ? (
+                    <select
+                      value={editedData?.tenant_id || locationData.tenant_id || ''}
+                      onChange={(e) => handleFieldChange('tenant_id', e.target.value)}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    >
+                      <option value="">Bitte wählen...</option>
+                      {availableTenants.map(tenant => (
+                        <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                          {tenant.display_name || tenant.name || tenant.tenant_id}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {availableTenants.find(t => t.tenant_id === locationData.tenant_id)?.display_name || 
+                       availableTenants.find(t => t.tenant_id === locationData.tenant_id)?.name || 
+                       locationData.tenant_id || '-'}
+                    </p>
+                  )}
+                </div>
+              )}
+              
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</p>
                 {isEditing ? (
