@@ -776,7 +776,21 @@ const TenantDevicesTab = ({ tenantId }) => {
                   {device.zip || '-'}
                 </td>
                 <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.city || '-'}
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedValues.city}
+                      onChange={(e) => handleFieldEdit('city', e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`inline-edit-field w-full px-2 py-1 text-sm font-mono rounded border ${
+                        theme === 'dark'
+                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    />
+                  ) : (
+                    device.city || '-'
+                  )}
                 </td>
                 <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {device.country || '-'}
