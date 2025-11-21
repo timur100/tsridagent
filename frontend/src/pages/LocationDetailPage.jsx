@@ -48,6 +48,10 @@ const LocationDetailPage = () => {
   const [openingHours, setOpeningHours] = useState(null);
   const [isEditingHours, setIsEditingHours] = useState(false);
   const [editedHours, setEditedHours] = useState(null);
+  
+  // General editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedData, setEditedData] = useState(null);
   const [saving, setSaving] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
