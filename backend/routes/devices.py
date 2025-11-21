@@ -245,14 +245,17 @@ async def update_device(
         device_update['updated_at'] = datetime.now(timezone.utc).isoformat()
         device_update['updated_by'] = token_data.get("sub")
         
+        # Check if device_id is being changed
+        new_device_id = device_update.get('device_id', device_id)
+        
         # Update device in MongoDB
         db.europcar_devices.update_one(
             {"device_id": device_id},
             {"$set": device_update}
         )
         
-        # Fetch updated device (exclude _id)
-        updated_device = db.europcar_devices.find_one({"device_id": device_id}, {'_id': 0})
+        # Fetch updated device (exclude _id) - use new device_id if it was changed
+        updated_device = db.europcar_devices.find_one({"device_id": new_device_id}, {'_id': 0})
         
         # Broadcast device update via WebSocket
         tenant_id = updated_device.get('tenant_id')
