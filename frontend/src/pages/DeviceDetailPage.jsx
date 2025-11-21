@@ -252,8 +252,18 @@ const DeviceDetailPage = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
+                // Check if we're in customer portal context (URL starts with /portal/customer/)
+                const isCustomerPortal = location.pathname.includes('/portal/customer/');
+                
+                if (isCustomerPortal) {
+                  // Navigate back to customer portal devices tab
+                  navigate('/portal/customer', { 
+                    state: { activeTab: 'devices' },
+                    replace: true 
+                  });
+                }
                 // If we came from devices tab in tenant detail, navigate back with devices tab active
-                if (location.state?.fromTab === 'devices' && location.state?.tenantId) {
+                else if (location.state?.fromTab === 'devices' && location.state?.tenantId) {
                   navigate(`/portal/admin/tenants/${location.state.tenantId}`, {
                     state: { activeTab: 'devices' }
                   });
