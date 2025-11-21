@@ -1624,54 +1624,8 @@ const AdminPortalContent = () => {
         </>
       )}
       
-      {/* Global Search Modals */}
-      {showCustomerModal && selectedCustomerForModal && (
-        <CustomerDetailsModal
-          customer={selectedCustomerForModal}
-          onClose={() => {
-            setShowCustomerModal(false);
-            setSelectedCustomerForModal(null);
-          }}
-          stats={stats}
-          onUpdate={(updatedCustomer) => {
-            // Refresh customer list if needed
-            loadData();
-          }}
-        />
-      )}
+      {/* Global Search now navigates to detail pages instead of modals */}
       
-      {showStandortModal && selectedStandortForModal && (
-        <StandortDetailsModal
-          standort={selectedStandortForModal}
-          onClose={() => {
-            setShowStandortModal(false);
-            setSelectedStandortForModal(null);
-          }}
-          onUpdate={(updatedStandort) => {
-            // Optionally refresh standort data
-          }}
-        />
-      )}
-      
-      {showDeviceModal && selectedDeviceForModal && (
-        <DeviceDetailsModal
-          device={selectedDeviceForModal}
-          onClose={() => {
-            setShowDeviceModal(false);
-            setSelectedDeviceForModal(null);
-          }}
-          onUpdate={(updatedDevice) => {
-            // Optionally refresh device data
-            toast.success('Gerät aktualisiert');
-          }}
-          onDelete={(deviceId) => {
-            // Force re-render of DeviceManagement by changing key
-            setDeviceListKey(prev => prev + 1);
-            // Don't show toast here, it's already shown in the modal
-          }}
-        />
-      )}
-
       {showAddDeviceModal && (
         <AddDeviceModal
           onClose={() => setShowAddDeviceModal(false)}
