@@ -8,16 +8,17 @@ router = APIRouter(tags=["ticketing-proxy"])
 
 TICKETING_SERVICE_URL = "http://localhost:8103"
 
-@router.api_route("/api/tickets/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
-@router.api_route("/api/tickets", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+@router.api_route("/api/tickets/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
+@router.api_route("/api/tickets/", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 async def proxy_tickets(request: Request, path: str = ""):
     """
     Proxy all /api/tickets/* requests to Ticketing Service
     """
     try:
-        target_url = f"{TICKETING_SERVICE_URL}/api/tickets"
-        if path:
-            target_url += f"/{path}"
+        clean_path = path.rstrip('/') if path else ""
+        target_url = f"{TICKETING_SERVICE_URL}/api/tickets/"
+        if clean_path:
+            target_url += clean_path
         
         body = await request.body()
         
