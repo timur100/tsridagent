@@ -189,10 +189,18 @@ const TenantDevicesTab = ({ tenantId }) => {
 
     // Geographic filters - use station lookup to get bundesland
     filtered = filterByGeo(filtered, filters, (device) => {
-      // Find station by locationcode
-      const station = stations.find(s => s.location_code === device.locationcode);
-      if (station && station.state) {
-        return station.state;
+      // Find station by locationcode (support both main_code and location_code)
+      const station = stations.find(s => 
+        s.main_code === device.locationcode || s.location_code === device.locationcode
+      );
+      if (station) {
+        // Try bundesl field first (German format), then state
+        if (station.bundesl) {
+          return getFullBundeslandName(station.bundesl);
+        }
+        if (station.state) {
+          return station.state;
+        }
       }
       return null;
     });
