@@ -227,7 +227,8 @@ const CustomerPortal = () => {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main Content - only show when not on detail page */}
+      {!isOnDetailPage && (
       <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
         <CustomerPortalContent 
           isImpersonation={false} 
@@ -236,6 +237,10 @@ const CustomerPortal = () => {
           scanStats={scanStats}
         />
       </main>
+      )}
+
+      {/* Outlet for nested routes - renders child routes like DeviceDetailPage */}
+      <Outlet />
     </div>
   );
 };
