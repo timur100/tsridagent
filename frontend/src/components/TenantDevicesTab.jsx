@@ -69,6 +69,21 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
     }
   };
 
+  // Apply initial status filter when provided
+  useEffect(() => {
+    if (initialStatusFilter) {
+      console.log('[TenantDevicesTab] Applying initial status filter:', initialStatusFilter);
+      setFilters(prev => ({
+        ...prev,
+        status: initialStatusFilter
+      }));
+      // Notify parent that filter has been applied
+      if (onFilterApplied) {
+        onFilterApplied();
+      }
+    }
+  }, [initialStatusFilter, onFilterApplied]);
+
   useEffect(() => {
     filterDevices();
   }, [searchTerm, filters, devices, stations, sortConfig]);
