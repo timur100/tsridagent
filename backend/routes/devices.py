@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
 from pymongo import MongoClient
+from decorators.broadcast_decorator import broadcast_changes
 
 router = APIRouter(prefix="/api/portal/europcar-devices", tags=["europcar-devices"])
 
