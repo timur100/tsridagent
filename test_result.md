@@ -123,15 +123,18 @@ backend:
 frontend:
   - task: "WebSocket Real-Time Data Refresh Fix - Customer & Admin Portal"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/components/CustomerPortalContent.jsx, frontend/src/pages/TenantDetailPage.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ WEBSOCKET ECHTZEIT-DATEN-AKTUALISIERUNG BEHOBEN: User-Feedback: Gerätedetail-Änderungen wurden nicht in Echtzeit im Kundenportal angezeigt. PROBLEM IDENTIFIZIERT: WebSocket-Handler (handleWSDeviceUpdate, handleWSLocationUpdate) machten nur State-Updates (setDevices(prev => [...prev])) ohne tatsächliche Daten neu zu laden. Dies löste nur Re-Rendering aus, aber keine Daten-Aktualisierung. LÖSUNG CUSTOMER PORTAL (CustomerPortalContent.jsx): 1) handleWSDeviceUpdate: Jetzt ruft loadDashboardStats() + loadData() auf und zeigt Toast 'Gerät wurde aktualisiert', 2) handleWSLocationUpdate: Jetzt ruft loadDashboardStats() + loadData() auf und zeigt Toast 'Standort wurde aktualisiert', 3) handleWSRefreshAll: Jetzt ruft loadDashboardStats() + loadData() auf statt nur State-Updates. LÖSUNG ADMIN PORTAL (TenantDetailPage.jsx): 1) handleWSDeviceUpdate: Ruft jetzt fetchDashboardStats() auf und zeigt Toast 'Gerät aktualisiert', 2) handleWSLocationUpdate: Ruft jetzt fetchDashboardStats() auf und zeigt Toast 'Standort aktualisiert', 3) handleWSDeviceCreated/Deleted/StatusUpdate: Alle rufen jetzt fetchDashboardStats() auf statt nur State-Updates, 4) handleWSLocationCreated/Deleted: Alle rufen jetzt fetchDashboardStats() auf, 5) handleWSRefreshAll: Ruft jetzt fetchTenantDetails() + fetchDashboardStats() auf. AUSWIRKUNG: Beide Portale laden jetzt tatsächlich neue Daten vom Backend, wenn WebSocket-Nachrichten empfangen werden. Alle Updates werden in Echtzeit mit Toast-Benachrichtigungen angezeigt. Bereit für Frontend E2E Testing."
+        - working: false
+          agent: "testing"
+          comment: "❌ WEBSOCKET REAL-TIME DATA REFRESH TESTING FAILED - PORTAL ACCESS ISSUE: Comprehensive E2E testing attempted but unable to access Customer Portal or Admin Portal interfaces for WebSocket functionality verification. CRITICAL FINDINGS: 1) PORTAL ACCESS BLOCKED: All attempts to access Customer Portal (info@europcar.com/Berlin#2018) and Admin Portal (admin@tsrid.com/admin123) redirect to document scanner interface instead of expected portal dashboards. 2) WEBSOCKET TESTING IMPOSSIBLE: Cannot verify WebSocket real-time data refresh functionality without access to portal interfaces where 'Echtzeit'/'Live' status indicators and device/location management features are located. 3) AUTHENTICATION FLOW ISSUE: Login forms not found on main page, suggesting portal access requires different authentication mechanism or entry point than expected. 4) INTERFACE MISMATCH: Current live URL (https://live-device-sync.preview.emergentagent.com) shows document verification scanner rather than device management portal described in review request. 5) BACKEND INTEGRATION CONFIRMED: Network monitoring shows API requests to /api/portal/europcar-devices and related endpoints, confirming backend infrastructure exists but frontend portal interface is not accessible. RECOMMENDATION: Portal access mechanism needs investigation - either authentication routing is incorrect, or portal interface is deployed at different URL/path. WebSocket real-time functionality cannot be verified until portal interface access is resolved. Code review shows WebSocket implementation is correctly integrated in CustomerPortalContent.jsx and TenantDetailPage.jsx components."
 
   - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
     implemented: true
