@@ -1610,6 +1610,7 @@ const AdminPortalContent = () => {
           );
         })()}
           </main>
+          )}
         </>
       )}
       
