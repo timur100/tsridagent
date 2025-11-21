@@ -814,33 +814,81 @@ const TenantDevicesTab = ({ tenantId }) => {
                   {device.sw_version || '-'}
                 </td>
                 <td className="px-2 py-2 text-center">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
-                    device.status === 'online' 
-                      ? 'bg-green-500/20 text-green-400'
-                      : device.status === 'offline'
-                      ? 'bg-red-500/20 text-red-400'
-                      : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {device.status === 'online' && (
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                      </span>
-                    )}
-                    {device.status === 'offline' && (
-                      <span className="h-2 w-2 rounded-full bg-red-500"></span>
-                    )}
-                    {device.status !== 'online' && device.status !== 'offline' && (
-                      <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
-                    )}
-                    {device.status === 'online' ? 'Online' : device.status === 'offline' ? 'Offline' : 'Vorbereitung'}
-                  </span>
+                  {isEditing ? (
+                    <select
+                      value={editedValues.status}
+                      onChange={(e) => handleFieldEdit('status', e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`inline-edit-field w-full px-2 py-1 text-xs rounded border ${
+                        theme === 'dark'
+                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    >
+                      <option value="online">Online</option>
+                      <option value="offline">Offline</option>
+                      <option value="in_preparation">Vorbereitung</option>
+                    </select>
+                  ) : (
+                    <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
+                      device.status === 'online' 
+                        ? 'bg-green-500/20 text-green-400'
+                        : device.status === 'offline'
+                        ? 'bg-red-500/20 text-red-400'
+                        : 'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {device.status === 'online' && (
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                      )}
+                      {device.status === 'offline' && (
+                        <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                      )}
+                      {device.status !== 'online' && device.status !== 'offline' && (
+                        <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                      )}
+                      {device.status === 'online' ? 'Online' : device.status === 'offline' ? 'Offline' : 'Vorbereitung'}
+                    </span>
+                  )}
                 </td>
                 <td className={`px-2 py-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   {device.hardware_model || '-'}
                 </td>
+                <td className="px-2 py-2 text-center edit-actions">
+                  {isEditing ? (
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        onClick={(e) => handleSaveEdit(device, e)}
+                        disabled={isSaving}
+                        className="p-1.5 rounded hover:bg-green-100 dark:hover:bg-green-900/30 text-green-600 dark:text-green-400 transition-colors disabled:opacity-50"
+                        title="Speichern"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleCancelEdit(e)}
+                        disabled={isSaving}
+                        className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 transition-colors disabled:opacity-50"
+                        title="Abbrechen"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={(e) => handleStartEdit(device, e)}
+                      className="p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Bearbeiten"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>
