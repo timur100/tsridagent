@@ -492,6 +492,13 @@ const TenantInPreparationPage = () => {
                     Name <SortIcon columnKey="station_name" />
                   </th>
                   <th 
+                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
+                    }`}
+                  >
+                    Mandant
+                  </th>
+                  <th 
                     onClick={() => handleSort('city')}
                     className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider cursor-pointer hover:bg-opacity-80 ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-700'
