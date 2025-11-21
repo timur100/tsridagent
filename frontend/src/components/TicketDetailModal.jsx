@@ -934,4 +934,103 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
   );
 };
 
+
+      {/* Assignment Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
+          <div className={`w-full max-w-md rounded-lg ${
+            theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'
+          }`}>
+            <div className={`flex items-center justify-between p-6 border-b ${
+              theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+            }`}>
+              <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Ticket zuweisen
+              </h3>
+              <button
+                onClick={() => {
+                  setShowAssignModal(false);
+                  setAssignNotes('');
+                  setSelectedStaffEmail('');
+                }}
+                className={`p-2 rounded-lg ${
+                  theme === 'dark' 
+                    ? 'hover:bg-[#3a3a3a] text-gray-400' 
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Mitarbeiter auswählen *
+                </label>
+                <select
+                  value={selectedStaffEmail}
+                  onChange={(e) => setSelectedStaffEmail(e.target.value)}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="">-- Bitte wählen --</option>
+                  {staff.map((member) => (
+                    <option key={member.id} value={member.email}>
+                      {member.name} ({member.active_tickets || 0}/{member.max_active_tickets})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Notiz (optional)
+                </label>
+                <textarea
+                  value={assignNotes}
+                  onChange={(e) => setAssignNotes(e.target.value)}
+                  rows={3}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                  placeholder="Zusätzliche Informationen..."
+                />
+              </div>
+            </div>
+            
+            <div className={`flex justify-end gap-3 p-6 border-t ${
+              theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
+            }`}>
+              <Button
+                onClick={() => {
+                  setShowAssignModal(false);
+                  setAssignNotes('');
+                  setSelectedStaffEmail('');
+                }}
+                variant="outline"
+                className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+              >
+                Abbrechen
+              </Button>
+              <Button
+                onClick={handleAssignTicket}
+                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              >
+                Zuweisen
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
 export default TicketDetailModal;
