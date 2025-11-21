@@ -98,6 +98,7 @@ const PortalRoutes = () => {
         <Route path="tenants/:tenantId/locations/:locationId" element={<LocationDetailPage />} />
         <Route path="tenants/:tenantId/devices/:deviceId" element={<DeviceDetailPage />} />
         <Route path="devices/:deviceId" element={<DeviceDetailPage />} />
+        <Route path="in-preparation" element={<InPreparationOverviewPage />} />
       </Route>
       
       <Route
