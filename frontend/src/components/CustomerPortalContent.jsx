@@ -260,7 +260,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
           total_locations: stats.total_locations || 0,
           online_devices: stats.online_devices || 0,
           offline_devices: stats.offline_devices || 0,
-          total_devices: stats.total_devices || (stats.online_devices || 0) + (stats.offline_devices || 0)
+          total_devices: stats.total_devices || (stats.online_devices || 0) + (stats.offline_devices || 0),
+          in_preparation: stats.in_preparation || 0
         });
       }
     } catch (error) {
