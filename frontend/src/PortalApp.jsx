@@ -95,6 +95,7 @@ const PortalRoutes = () => {
       >
         {/* Nested routes - rendered inside AdminPortal's Outlet */}
         <Route path="tenants/:tenantId" element={<TenantDetailPage />} />
+        <Route path="tenants/:tenantId/in-preparation" element={<TenantInPreparationPage />} />
         <Route path="locations/:locationId" element={<LocationDetailPage />} />
         <Route path="tenants/:tenantId/locations/:locationId" element={<LocationDetailPage />} />
         <Route path="tenants/:tenantId/devices/:deviceId" element={<DeviceDetailPage />} />
