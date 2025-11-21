@@ -804,7 +804,8 @@ const AdminPortalContent = () => {
             </div>
           </div>
 
-          {/* Content */}
+          {/* Content - only show when not on detail page */}
+          {!isOnDetailPage && (
           <main className="px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
