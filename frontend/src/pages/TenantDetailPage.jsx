@@ -80,6 +80,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTenant, setEditedTenant] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deviceStatusFilter, setDeviceStatusFilter] = useState(null);
 
   // Update activeTab when initialTab changes (from AdminPortal navigation)
   useEffect(() => {
