@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite
-Tests various backend API implementations including:
-- Phase 1 Ticketing System APIs (Staff Management, SLA, Ticket Assignment)
-- In Vorbereitung Status Tracking API
-- Event logging to MongoDB (portal_db.event_log)
-- WebSocket broadcasting via decorators
-- Decorator functionality and backend logs
-- Device CRUD operations with event system integration
+Backend API Testing Suite - PHASE 1 TICKETING SYSTEM RE-TESTING
+Tests Phase 1 Ticketing System APIs after MongoDB AsyncIOMotorCursor bug fix:
+- Staff Management APIs (GET /api/staff, POST /api/staff, GET /api/staff/tickets/by-staff)
+- SLA Warnings API (GET /api/sla/warnings)
+- Integration Test (Create Staff → Create Ticket → Assign → Verify Capacity)
+- Verify no AsyncIOMotorCursor errors
 """
 
 import requests
@@ -26,13 +24,11 @@ import uuid
 # Backend URL from environment
 BACKEND_URL = "https://tenant-prep-dash.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://") + "/api"
 
-# MongoDB connection for event log verification
+# MongoDB connection for verification
 MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
-portal_db = mongo_client['portal_db']
-event_log_collection = portal_db['event_log']
+ticketing_db = mongo_client['ticketing_db']
 
 class Phase1TicketingSystemTester:
     def __init__(self):
