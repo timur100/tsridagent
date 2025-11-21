@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-WebSocket Backend Authentication Fix Verification
-Tests WebSocket backend infrastructure after authentication bug fix.
-Verifies WebSocket connections, JWT authentication, multi-tenant rooms, heartbeat mechanism, and message broadcasting.
+WebSocket Device Update Fix Testing
+Tests WebSocket device update functionality after fixes to backend and frontend.
+Verifies device update broadcasts, message structure, and WebSocket integration.
 """
 
 import requests
@@ -16,6 +16,7 @@ import websockets
 import jwt
 from datetime import datetime, timezone
 import time
+import uuid
 
 # Backend URL from environment
 BACKEND_URL = "https://portal-live.preview.emergentagent.com"
