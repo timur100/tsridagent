@@ -127,7 +127,7 @@ def get_sla_warnings(token_data: dict = Depends(verify_token)):
             "at_risk": []
         }
         
-        for ticket in cursor:
+        async for ticket in cursor:
             sla_status = calculate_sla_status(ticket)
             
             # Remove MongoDB _id
