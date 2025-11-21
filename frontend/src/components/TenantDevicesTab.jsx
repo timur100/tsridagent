@@ -263,6 +263,71 @@ const TenantDevicesTab = ({ tenantId }) => {
     toast.success('Gerät aktualisiert');
   };
 
+  // Inline editing handlers
+  const handleStartEdit = (device, e) => {
+    e.stopPropagation();
+    setEditingDeviceId(device.device_id);
+    setEditedValues({
+      status: device.status || 'offline',
+      locationcode: device.locationcode || '',
+      city: device.city || ''
+    });
+  };
+
+  const handleCancelEdit = (e) => {
+    e.stopPropagation();
+    setEditingDeviceId(null);
+    setEditedValues({});
+  };
+
+  const handleFieldEdit = (field, value) => {
+    setEditedValues(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleSaveEdit = async (device, e) => {
+    e.stopPropagation();
+    
+    if (isSaving) return;
+    
+    setIsSaving(true);
+    
+    try {
+      const response = await apiCall(`${BACKEND_URL}/api/tenant-devices/device/${device.device_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...device,
+          status: editedValues.status,
+          locationcode: editedValues.locationcode,
+          city: editedValues.city
+        })
+      });
+
+      if (response.success) {
+        // Update local state with saved values
+        setDevices(prev => prev.map(d => 
+          d.device_id === device.device_id 
+            ? { ...d, ...editedValues }
+            : d
+        ));
+        
+        toast.success('Gerät erfolgreich aktualisiert');
+        setEditingDeviceId(null);
+        setEditedValues({});
+      } else {
+        toast.error('Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Error saving device:', error);
+      toast.error('Fehler beim Speichern des Geräts');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   // Get unique cities and geo options
   const uniqueCities = [...new Set(devices.map(d => d.city).filter(Boolean))].sort();
   
