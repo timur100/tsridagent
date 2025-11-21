@@ -930,10 +930,6 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
           </div>
         </div>
       </div>
-    </div>
-  );
-};
-
 
       {/* Assignment Modal */}
       {showAssignModal && (
