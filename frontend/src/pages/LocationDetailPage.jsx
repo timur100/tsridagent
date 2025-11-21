@@ -28,7 +28,7 @@ const LocationDetailPage = () => {
   const { theme } = useTheme();
   const { locationId, tenantId } = useParams();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [locationData, setLocationData] = useState(null);
