@@ -106,7 +106,7 @@ async def get_all_staff(
                 del staff['_id']
             
             # Get active ticket count
-            active_tickets = tickets_collection.count_documents({
+            active_tickets = await tickets_collection.count_documents({
                 "assigned_to": staff["email"],
                 "status": {"$nin": ["resolved", "closed"]}
             })
