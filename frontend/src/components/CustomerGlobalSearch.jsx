@@ -40,9 +40,11 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
         const response = await apiCall(`/api/search/global?query=${encodeURIComponent(query.trim())}`);
         console.log('[GlobalSearch] Response:', response);
         if (response && response.success) {
-          setResults(response.results);
+          // Extract results from response.data or response directly
+          const result = response.data || response;
+          setResults(result.results);
           setIsOpen(true);
-          console.log('[GlobalSearch] Results set:', response.results);
+          console.log('[GlobalSearch] Results set:', result.results);
         } else {
           console.log('[GlobalSearch] No success in response');
           setResults(null);
