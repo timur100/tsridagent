@@ -205,21 +205,17 @@ class WebSocketService {
         this.send({ type: 'pong', timestamp: new Date().toISOString() });
         break;
       
-      case 'location_update':
-        this.notifyHandlers('location_update', message);
-        break;
-      
       case 'device_update':
         console.log('[WebSocket] Device update received:', message);
         this.notifyHandlers('device_update', message);
         break;
       
       case 'dashboard_stats':
-        this.notifyHandlers('dashboard_stats', data);
+        this.notifyHandlers('dashboard_stats', message);
         break;
       
       case 'refresh_all':
-        this.notifyHandlers('refresh_all', data);
+        this.notifyHandlers('refresh_all', message);
         break;
       
       case 'opening_hours_update':
