@@ -1041,9 +1041,9 @@ class WebSocketDeviceUpdateTester:
             )
     
     async def run_all_tests(self):
-        """Run all WebSocket backend tests"""
+        """Run all WebSocket device update tests"""
         print("=" * 80)
-        print("WEBSOCKET BACKEND AUTHENTICATION FIX VERIFICATION")
+        print("WEBSOCKET DEVICE UPDATE FIX TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"WebSocket URL: {WS_BASE}")
@@ -1058,37 +1058,39 @@ class WebSocketDeviceUpdateTester:
                 print("❌ Admin authentication failed. Stopping tests.")
                 return False
             
-            # Step 2: Test WebSocket connection with valid token
-            print("\n🔍 STEP 2: Testing WebSocket connection with valid token...")
+            # Step 2: Get existing device for testing
+            print("\n🔍 STEP 2: Getting existing device for testing...")
+            test_device = self.get_existing_device()
+            if not test_device:
+                print("❌ Could not find test device. Stopping tests.")
+                return False
+            
+            # Step 3: Test WebSocket connection
+            print("\n🔍 STEP 3: Testing WebSocket connection...")
             websocket_connection_ok = await self.test_websocket_connection_with_valid_token()
+            if not websocket_connection_ok:
+                print("❌ WebSocket connection failed. Stopping tests.")
+                return False
             
-            # Step 3: Test WebSocket stats endpoint
-            print("\n🔍 STEP 3: Testing WebSocket stats endpoint...")
-            stats_endpoint_ok = self.test_websocket_stats_endpoint()
+            # Step 4: Test device update via Customer Portal endpoint
+            print("\n🔍 STEP 4: Testing device update WebSocket broadcast (Customer Portal)...")
+            customer_portal_update_ok = await self.test_device_update_websocket_broadcast()
             
-            # Step 4: Test multi-tenant room management
-            print("\n🔍 STEP 4: Testing multi-tenant room management...")
-            multi_tenant_ok = await self.test_multi_tenant_room_management()
+            # Step 5: Test device creation WebSocket broadcast
+            print("\n🔍 STEP 5: Testing device creation WebSocket broadcast...")
+            device_create_ok = await self.test_device_create_websocket_broadcast()
             
-            # Step 5: Test heartbeat/ping-pong mechanism
-            print("\n🔍 STEP 5: Testing heartbeat/ping-pong mechanism...")
-            heartbeat_ok = await self.test_heartbeat_ping_pong()
+            # Step 6: Test device update via Admin Portal endpoint
+            print("\n🔍 STEP 6: Testing device update WebSocket broadcast (Admin Portal)...")
+            admin_portal_update_ok = await self.test_admin_portal_device_update_broadcast()
             
-            # Step 6: Test message broadcasting
-            print("\n🔍 STEP 6: Testing message broadcasting...")
-            broadcasting_ok = await self.test_message_broadcasting()
-            
-            # Step 7: Test authentication edge cases
-            print("\n🔍 STEP 7: Testing authentication edge cases...")
-            auth_edge_cases_ok = await self.test_authentication_edge_cases()
-            
-            # Step 8: Test connection cleanup
-            print("\n🔍 STEP 8: Testing connection cleanup...")
-            cleanup_ok = await self.test_connection_cleanup()
+            # Step 7: Test backend logs verification
+            print("\n🔍 STEP 7: Testing backend logs verification...")
+            logs_ok = self.test_backend_logs_for_broadcasts()
             
             # Summary
             print("\n" + "=" * 80)
-            print("WEBSOCKET BACKEND TESTING SUMMARY")
+            print("WEBSOCKET DEVICE UPDATE TESTING SUMMARY")
             print("=" * 80)
             
             passed = sum(1 for r in self.results if r['success'])
@@ -1096,16 +1098,13 @@ class WebSocketDeviceUpdateTester:
             
             print(f"Tests completed: {passed}/{total} passed")
             
-            # Print critical WebSocket results
-            print("\n🔍 CRITICAL WEBSOCKET FUNCTIONALITY:")
-            print(f"   • WebSocket Connection with Valid Token: {'✅ WORKING' if websocket_connection_ok else '❌ FAILED'}")
-            print(f"   • JWT Token Authentication Flow: {'✅ WORKING' if websocket_connection_ok else '❌ FAILED'}")
-            print(f"   • Multi-Tenant Room Management: {'✅ WORKING' if multi_tenant_ok else '❌ FAILED'}")
-            print(f"   • Heartbeat/Ping-Pong Mechanism: {'✅ WORKING' if heartbeat_ok else '❌ FAILED'}")
-            print(f"   • Message Broadcasting: {'✅ WORKING' if broadcasting_ok else '❌ FAILED'}")
-            print(f"   • Authentication Edge Cases: {'✅ WORKING' if auth_edge_cases_ok else '❌ FAILED'}")
-            print(f"   • Connection Cleanup: {'✅ WORKING' if cleanup_ok else '❌ FAILED'}")
-            print(f"   • WebSocket Stats Endpoint: {'✅ WORKING' if stats_endpoint_ok else '❌ FAILED'}")
+            # Print critical WebSocket device update results
+            print("\n🔍 CRITICAL WEBSOCKET DEVICE UPDATE FUNCTIONALITY:")
+            print(f"   • WebSocket Connection: {'✅ WORKING' if websocket_connection_ok else '❌ FAILED'}")
+            print(f"   • Customer Portal Device Update Broadcast: {'✅ WORKING' if customer_portal_update_ok else '❌ FAILED'}")
+            print(f"   • Device Creation Broadcast: {'✅ WORKING' if device_create_ok else '❌ FAILED'}")
+            print(f"   • Admin Portal Device Update Broadcast: {'✅ WORKING' if admin_portal_update_ok else '❌ FAILED'}")
+            print(f"   • Backend Logs Verification: {'✅ WORKING' if logs_ok else '❌ FAILED'}")
             
             # Print failed tests
             failed_tests = [r for r in self.results if not r['success']]
