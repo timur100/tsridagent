@@ -221,8 +221,18 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
     );
   }
   
-  if (!warnings) {
-    return null;
+  if (!warnings || !warnings.warnings) {
+    return (
+      <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <AlertTriangle className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+        <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          Keine SLA-Daten verfügbar
+        </h3>
+        <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+          Fehler beim Laden der SLA-Warnungen
+        </p>
+      </Card>
+    );
   }
   
   return (
@@ -245,8 +255,8 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
       <WarningSection
         title="Kritische Priorität"
         icon={AlertTriangle}
-        count={warnings.critical_count}
-        items={warnings.warnings.critical}
+        count={warnings.critical_count || 0}
+        items={warnings.warnings?.critical || []}
         sectionKey="critical"
         color="text-red-600 dark:text-red-400"
       />
@@ -254,8 +264,8 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
       <WarningSection
         title="SLA Überschritten"
         icon={XCircle}
-        count={warnings.breached_count}
-        items={warnings.warnings.breached}
+        count={warnings.breached_count || 0}
+        items={warnings.warnings?.breached || []}
         sectionKey="breached"
         color="text-red-600 dark:text-red-400"
       />
@@ -263,8 +273,8 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
       <WarningSection
         title="Gefährdet (< 2h verbleibend)"
         icon={Clock}
-        count={warnings.at_risk_count}
-        items={warnings.warnings.at_risk}
+        count={warnings.at_risk_count || 0}
+        items={warnings.warnings?.at_risk || []}
         sectionKey="at_risk"
         color="text-orange-600 dark:text-orange-400"
       />
