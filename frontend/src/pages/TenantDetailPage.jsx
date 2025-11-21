@@ -167,9 +167,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
 
   const handleWSRefreshAll = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket refresh all triggered:', data);
-    // Trigger refresh via state update
-    setTenant(prev => ({ ...prev }));
-    setDashboardStats(prev => ({ ...prev }));
+    // Reload all data
+    fetchTenantDetails();
+    fetchDashboardStats();
+    toast.info('Daten aktualisiert', { duration: 2000, icon: '🔄' });
   }, []);
   
   const { 
