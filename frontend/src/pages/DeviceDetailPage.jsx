@@ -229,7 +229,7 @@ const DeviceDetailPage = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate(`/admin/tenants/${tenantId}`)}
+              onClick={() => navigate(-1)}
               className={`p-2 rounded-lg ${
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white'
