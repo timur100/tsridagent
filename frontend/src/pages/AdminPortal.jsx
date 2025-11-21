@@ -18,11 +18,10 @@ import CustomerPortalContent from '../components/CustomerPortalContent';
 import StandorteManagement from '../components/StandorteManagement';
 import AllLocationsTab from '../components/AllLocationsTab';
 import DeviceManagement from '../components/DeviceManagement';
-import DeviceDetailsModal from '../components/DeviceDetailsModal';
 import AddDeviceModal from '../components/AddDeviceModal';
 import GlobalSearch from '../components/GlobalSearch';
-import CustomerDetailsModal from '../components/CustomerDetailsModal';
-import StandortDetailsModal from '../components/StandortDetailsModal';
+// Removed old modals: DeviceDetailsModal, CustomerDetailsModal, StandortDetailsModal
+// Now using navigation to detail pages instead
 import AddStandortModal from '../components/AddStandortModal';
 import DeviceFileUpload from '../components/DeviceFileUpload';
 import TeamViewerSettings from '../components/TeamViewerSettings';
