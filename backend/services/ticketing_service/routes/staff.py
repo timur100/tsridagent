@@ -1,20 +1,43 @@
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Optional
+from pydantic import BaseModel
+from typing import List, Optional
 from datetime import datetime, timezone
+from pymongo import MongoClient
+import os
 import uuid
-from models.staff import SupportStaff, StaffCreate, StaffUpdate, TicketAssignment
-from utils.db import db, tickets_collection
-from utils.auth import verify_token
+from routes.portal_auth import verify_token
 
-router = APIRouter(prefix="/staff", tags=["Support Staff"])
+router = APIRouter(prefix="/api/staff", tags=["Support Staff"])
 
-# Use auth_db for staff members
-auth_db = db.client['auth_db']
+# MongoDB connection
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+mongo_client = MongoClient(mongo_url)
+auth_db = mongo_client['auth_db']
+main_db = mongo_client['test_database']
 staff_collection = auth_db.support_staff
+tickets_collection = main_db.tickets
+
+class SupportStaff(BaseModel):
+    email: str
+    name: str
+    role: str = "support_agent"  # support_agent, support_manager, admin
+    specialization: Optional[List[str]] = []
+    max_active_tickets: int = 10
+
+class StaffUpdate(BaseModel):
+    name: Optional[str] = None
+    role: Optional[str] = None
+    specialization: Optional[List[str]] = None
+    max_active_tickets: Optional[int] = None
+    is_active: Optional[bool] = None
+
+class TicketAssignment(BaseModel):
+    staff_email: str
+    notes: Optional[str] = None
 
 @router.post("/")
-async def create_staff(
-    staff: StaffCreate,
+def create_staff(
+    staff: SupportStaff,
     token_data: dict = Depends(verify_token)
 ):
     """
@@ -26,7 +49,7 @@ async def create_staff(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if email already exists
-        existing = await staff_collection.find_one({"email": staff.email})
+        existing = staff_collection.find_one({"email": staff.email})
         if existing:
             raise HTTPException(status_code=400, detail="Staff member with this email already exists")
         
@@ -44,7 +67,7 @@ async def create_staff(
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await staff_collection.insert_one(staff_doc)
+        staff_collection.insert_one(staff_doc)
         
         # Remove MongoDB _id
         if '_id' in staff_doc:
@@ -63,7 +86,7 @@ async def create_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/")
-async def get_all_staff(
+def get_all_staff(
     is_active: Optional[bool] = None,
     token_data: dict = Depends(verify_token)
 ):
@@ -82,13 +105,13 @@ async def get_all_staff(
         cursor = staff_collection.find(query)
         staff_list = []
         
-        async for staff in cursor:
+        for staff in cursor:
             # Remove MongoDB _id
             if '_id' in staff:
                 del staff['_id']
             
-            # Get active ticket count for each staff member
-            active_tickets = await tickets_collection.count_documents({
+            # Get active ticket count
+            active_tickets = tickets_collection.count_documents({
                 "assigned_to": staff["email"],
                 "status": {"$nin": ["resolved", "closed"]}
             })
@@ -108,51 +131,8 @@ async def get_all_staff(
         print(f"Get staff error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/{staff_id}")
-async def get_staff(
-    staff_id: str,
-    token_data: dict = Depends(verify_token)
-):
-    """
-    Get single staff member
-    """
-    try:
-        if not token_data or token_data.get("role") not in ["admin", "support_manager"]:
-            raise HTTPException(status_code=403, detail="Admin/Manager access required")
-        
-        staff = await staff_collection.find_one({"id": staff_id})
-        if not staff:
-            raise HTTPException(status_code=404, detail="Mitarbeiter nicht gefunden")
-        
-        # Remove MongoDB _id
-        if '_id' in staff:
-            del staff['_id']
-        
-        # Get tickets assigned to this staff member
-        active_tickets = await tickets_collection.count_documents({
-            "assigned_to": staff["email"],
-            "status": {"$nin": ["resolved", "closed"]}
-        })
-        total_tickets = await tickets_collection.count_documents({
-            "assigned_to": staff["email"]
-        })
-        
-        staff["active_tickets"] = active_tickets
-        staff["total_tickets"] = total_tickets
-        
-        return {
-            "success": True,
-            "staff": staff
-        }
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Get staff error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
 @router.put("/{staff_id}")
-async def update_staff(
+def update_staff(
     staff_id: str,
     staff_update: StaffUpdate,
     token_data: dict = Depends(verify_token)
@@ -166,7 +146,7 @@ async def update_staff(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if staff exists
-        staff = await staff_collection.find_one({"id": staff_id})
+        staff = staff_collection.find_one({"id": staff_id})
         if not staff:
             raise HTTPException(status_code=404, detail="Mitarbeiter nicht gefunden")
         
@@ -182,7 +162,7 @@ async def update_staff(
         update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         # Update staff
-        await staff_collection.update_one(
+        staff_collection.update_one(
             {"id": staff_id},
             {"$set": update_fields}
         )
@@ -199,12 +179,12 @@ async def update_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.delete("/{staff_id}")
-async def delete_staff(
+def delete_staff(
     staff_id: str,
     token_data: dict = Depends(verify_token)
 ):
     """
-    Delete staff member (soft delete - set is_active to False)
+    Delete staff member (soft delete)
     Admin only
     """
     try:
@@ -212,7 +192,7 @@ async def delete_staff(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Soft delete
-        result = await staff_collection.update_one(
+        result = staff_collection.update_one(
             {"id": staff_id},
             {"$set": {
                 "is_active": False,
@@ -235,7 +215,7 @@ async def delete_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/tickets/{ticket_id}/assign")
-async def assign_ticket(
+def assign_ticket(
     ticket_id: str,
     assignment: TicketAssignment,
     token_data: dict = Depends(verify_token)
@@ -249,12 +229,12 @@ async def assign_ticket(
             raise HTTPException(status_code=403, detail="Admin/Manager access required")
         
         # Check if ticket exists
-        ticket = await tickets_collection.find_one({"id": ticket_id})
+        ticket = tickets_collection.find_one({"id": ticket_id})
         if not ticket:
             raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
         
         # Check if staff exists and is active
-        staff = await staff_collection.find_one({
+        staff = staff_collection.find_one({
             "email": assignment.staff_email,
             "is_active": True
         })
@@ -262,13 +242,13 @@ async def assign_ticket(
             raise HTTPException(status_code=404, detail="Mitarbeiter nicht gefunden oder nicht aktiv")
         
         # Check if staff has capacity
-        active_tickets = await tickets_collection.count_documents({
+        active_tickets = tickets_collection.count_documents({
             "assigned_to": assignment.staff_email,
             "status": {"$nin": ["resolved", "closed"]}
         })
         
         if active_tickets >= staff.get("max_active_tickets", 10):
-            raise HTTPException(status_code=400, detail=f"Mitarbeiter hat bereits {active_tickets} aktive Tickets (Maximum: {staff.get('max_active_tickets', 10)})")
+            raise HTTPException(status_code=400, detail=f"Mitarbeiter hat bereits {active_tickets} aktive Tickets")
         
         # Update ticket
         update_fields = {
@@ -282,12 +262,12 @@ async def assign_ticket(
         if ticket.get("status") == "open":
             update_fields["status"] = "in_progress"
         
-        await tickets_collection.update_one(
+        tickets_collection.update_one(
             {"id": ticket_id},
             {"$set": update_fields}
         )
         
-        # Add assignment note to comments
+        # Add assignment note
         if assignment.notes:
             comment = {
                 "id": str(uuid.uuid4()),
@@ -296,10 +276,12 @@ async def assign_ticket(
                 "created_by_name": token_data.get("name", "Admin"),
                 "created_by_role": token_data.get("role"),
                 "created_at": datetime.now(timezone.utc).isoformat(),
-                "internal": False
+                "internal": False,
+                "author": token_data.get("name", "Admin"),
+                "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
-            await tickets_collection.update_one(
+            tickets_collection.update_one(
                 {"id": ticket_id},
                 {"$push": {"comments": comment}}
             )
@@ -316,9 +298,7 @@ async def assign_ticket(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/tickets/by-staff")
-async def get_tickets_by_staff(
-    token_data: dict = Depends(verify_token)
-):
+def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
     """
     Get ticket count grouped by staff member
     Admin/Manager only
@@ -331,23 +311,23 @@ async def get_tickets_by_staff(
         cursor = staff_collection.find({"is_active": True})
         staff_stats = []
         
-        async for staff in cursor:
+        for staff in cursor:
             email = staff.get("email")
             
             # Count tickets by status
-            open_count = await tickets_collection.count_documents({
+            open_count = tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "open"
             })
-            in_progress_count = await tickets_collection.count_documents({
+            in_progress_count = tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "in_progress"
             })
-            waiting_count = await tickets_collection.count_documents({
+            waiting_count = tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "waiting"
             })
-            resolved_count = await tickets_collection.count_documents({
+            resolved_count = tickets_collection.count_documents({
                 "assigned_to": email,
                 "status": "resolved"
             })
@@ -370,8 +350,8 @@ async def get_tickets_by_staff(
                 "capacity_used_percent": round((total_active / staff.get("max_active_tickets", 10)) * 100, 1)
             })
         
-        # Also get unassigned tickets
-        unassigned_count = await tickets_collection.count_documents({
+        # Get unassigned tickets
+        unassigned_count = tickets_collection.count_documents({
             "$or": [
                 {"assigned_to": {"$exists": False}},
                 {"assigned_to": None},
