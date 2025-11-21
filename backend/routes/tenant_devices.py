@@ -481,10 +481,10 @@ async def get_all_in_preparation(
         
         print(f"✅ Found {len(locations)} locations in preparation")
         
-        # Get tenant names for all involved tenants
+        # Get tenant names for all involved tenants from auth_db
         tenant_names = {}
         for tenant_id in tenant_ids:
-            tenant = db.tenants.find_one({"tenant_id": tenant_id})
+            tenant = auth_db.tenants.find_one({"tenant_id": tenant_id})
             if tenant:
                 tenant_names[tenant_id] = tenant.get('display_name', tenant.get('name', 'Unbekannt'))
             else:
