@@ -239,12 +239,14 @@ async def update_device(
 
 
 @router.delete("/device/{device_id}")
+@broadcast_changes(entity_type="device", event_type="deleted")
 async def delete_device(
     device_id: str,
     token_data: dict = Depends(verify_token)
 ):
     """
     Delete a device
+    Now uses centralized event system for broadcasting
     """
     try:
         print(f"🔍 delete_device called with device_id: {device_id}")
@@ -259,26 +261,14 @@ async def delete_device(
         # Delete device
         db.europcar_devices.delete_one({"device_id": device_id})
         
-        # Broadcast deletion via WebSocket
-        print(f"📡 Broadcasting device deletion for {device_id}")
-        try:
-            from websocket_manager import manager
-            import asyncio
-            
-            message = {
-                "type": "device_deleted",
-                "device_id": device_id
-            }
-            
-            if tenant_id:
-                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
-                print(f"✅ Broadcast sent to tenant {tenant_id}")
-        except Exception as e:
-            print(f"⚠️ Broadcast error: {str(e)}")
+        # Decorator will automatically broadcast and log this event
+        print(f"✨ Device deleted - decorator will handle broadcasting")
         
         return {
             "success": True,
-            "message": "Device deleted successfully"
+            "message": "Device deleted successfully",
+            "tenant_id": tenant_id,
+            "device_id": device_id
         }
     
     except HTTPException:
