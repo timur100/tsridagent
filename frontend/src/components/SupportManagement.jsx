@@ -219,6 +219,67 @@ const SupportManagement = () => {
 
   return (
     <div className="space-y-6">
+      {/* Tabs */}
+      <Card className={`p-1 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setActiveTab('tickets')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'tickets'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <Ticket className="h-5 w-5" />
+            Tickets
+          </button>
+          <button
+            onClick={() => setActiveTab('sla')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'sla'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <AlertTriangle className="h-5 w-5" />
+            SLA Warnungen
+          </button>
+          <button
+            onClick={() => setActiveTab('staff')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'staff'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <Users className="h-5 w-5" />
+            Mitarbeiter
+          </button>
+        </div>
+      </Card>
+      
+      {/* SLA Tab */}
+      {activeTab === 'sla' && (
+        <SLAWarningsPanel 
+          onTicketClick={(ticket) => {
+            setSelectedTicket(ticket);
+            setShowDetailModal(true);
+          }}
+        />
+      )}
+      
+      {/* Staff Tab */}
+      {activeTab === 'staff' && <StaffManagement />}
+      
+      {/* Tickets Tab */}
+      {activeTab === 'tickets' && (
+        <>
       {/* Stats Dashboard */}
       {stats && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
