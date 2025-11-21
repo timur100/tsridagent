@@ -35,8 +35,49 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
     // Fetch resources only for admins
     if (isAdmin) {
       fetchResources();
+      fetchStaff();
     }
   }, [ticket, isAdmin]);
+  
+  const fetchStaff = async () => {
+    try {
+      const result = await apiCall('/api/staff?is_active=true');
+      if (result.success) {
+        setStaff(result.staff || []);
+      }
+    } catch (error) {
+      console.error('Error fetching staff:', error);
+    }
+  };
+  
+  const handleAssignTicket = async () => {
+    if (!selectedStaffEmail) {
+      toast.error('Bitte Mitarbeiter auswählen');
+      return;
+    }
+    
+    try {
+      const result = await apiCall(`/api/staff/tickets/${ticket.id}/assign`, {
+        method: 'POST',
+        body: JSON.stringify({
+          staff_email: selectedStaffEmail,
+          notes: assignNotes
+        })
+      });
+      
+      if (result.success) {
+        toast.success('Ticket erfolgreich zugewiesen');
+        setShowAssignModal(false);
+        setAssignNotes('');
+        setSelectedStaffEmail('');
+        if (onUpdate) onUpdate();
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error assigning ticket:', error);
+      toast.error(error.message || 'Fehler beim Zuweisen');
+    }
+  };
 
   const fetchResources = async () => {
     setLoadingResources(true);
