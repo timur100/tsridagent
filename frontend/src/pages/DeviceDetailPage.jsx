@@ -5,7 +5,6 @@ import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket } from '../hooks/useWebSocket';
 import { Card } from '../components/ui/card';
 import { ArrowLeft, Edit2, Save, X, Trash2, Users } from 'lucide-react';
-import ThemeToggle from '../components/ThemeToggle';
 import toast from 'react-hot-toast';
 
 const DeviceDetailPage = () => {
