@@ -317,6 +317,48 @@ const LocationDetailPage = () => {
               </p>
             </div>
           </div>
+
+          {/* Edit/Save/Cancel Buttons */}
+          <div className="flex gap-2">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={handleSave}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-green-600 hover:bg-green-700 text-white'
+                      : 'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
+                >
+                  <Save className="w-4 h-4" />
+                  Speichern
+                </button>
+                <button
+                  onClick={handleCancel}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-gray-600 hover:bg-gray-700 text-white'
+                      : 'bg-gray-500 hover:bg-gray-600 text-white'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                  Abbrechen
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={handleEdit}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                    : 'bg-blue-500 hover:bg-blue-600 text-white'
+                }`}
+              >
+                <Edit2 className="w-4 h-4" />
+                Bearbeiten
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Statistics Cards - 10 Kacheln */}
