@@ -43,14 +43,24 @@ const InPreparationOverviewPage = () => {
     setLoading(true);
     try {
       const response = await apiCall('/api/tenant-devices/all/in-preparation');
-      const data = response?.data || response;
       
-      console.log('[InPreparationOverview] Loaded data:', data);
+      console.log('[InPreparationOverview] Full response:', response);
       
-      setDevices(data?.devices || []);
-      setLocations(data?.locations || []);
+      // Handle response structure: {success: true, data: {summary, devices, locations}}
+      const responseData = response?.data || response;
+      console.log('[InPreparationOverview] Response data:', responseData);
       
-      toast.success('In Vorbereitung-Artikel geladen');
+      // Access devices and locations from the data object
+      const devicesArray = responseData?.data?.devices || responseData?.devices || [];
+      const locationsArray = responseData?.data?.locations || responseData?.locations || [];
+      
+      console.log('[InPreparationOverview] Devices:', devicesArray.length);
+      console.log('[InPreparationOverview] Locations:', locationsArray.length);
+      
+      setDevices(devicesArray);
+      setLocations(locationsArray);
+      
+      toast.success(`${devicesArray.length + locationsArray.length} In Vorbereitung-Artikel geladen`);
     } catch (error) {
       console.error('[InPreparationOverview] Error loading data:', error);
       toast.error('Fehler beim Laden der Daten');
