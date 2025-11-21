@@ -148,6 +148,18 @@ frontend:
           agent: "main"
           comment: "✅ DEVICE-ID BEARBEITUNGSFUNKTION IMPLEMENTIERT: User-Feedback: Nach dem Speichern eines Gerätes konnte die device_id nicht mehr geändert werden. PROBLEM IDENTIFIZIERT: 1) FRONTEND: device_id Feld war hardcoded auf 'disabled' statt 'disabled={!isEditing}' (DeviceDetailPage.jsx Zeile 329), 2) BACKEND: Nach Update wurde immer mit der alten device_id gesucht, was bei ID-Änderung fehlschlug. LÖSUNG FRONTEND (DeviceDetailPage.jsx): 1) device_id Input-Feld: Geändert von 'disabled' zu 'disabled={!isEditing}', 2) onChange Handler hinzugefügt: onChange={(e) => handleFieldChange('device_id', e.target.value)}, 3) Styling angepasst: Konsistent mit anderen editierbaren Feldern, 4) handleSave: Nach erfolgreichem Update mit geänderter device_id navigiert es zur neuen URL (/admin/tenants/{tenantId}/devices/{newDeviceId}). LÖSUNG BACKEND devices.py & tenant_devices.py: 1) new_device_id Variable: Extrahiert neue device_id aus device_update dict, 2) Fetch nach Update: Verwendet new_device_id statt alte device_id, 3) WebSocket Broadcast: Wenn device_id geändert wurde, sendet zuerst 'device_deleted' für alte ID, dann 'device_update' für neue ID, 4) Logging verbessert mit neuer device_id. AUSWIRKUNG: Device-ID kann jetzt im Bearbeitungsmodus geändert werden, Backend aktualisiert korrekt, WebSocket-Broadcasts informieren Clients über ID-Änderung (alte ID gelöscht, neue ID hinzugefügt), Frontend navigiert automatisch zur neuen URL nach Speichern. Backend neugestartet (RUNNING pid 7550). Bereit für Testing."
 
+  - task: "Device Detail Back Button Navigation Fix"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/DeviceDetailPage.jsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ ZURÜCK-BUTTON NAVIGATION KORRIGIERT: User-Feedback: Zurück-Button von Gerätedetailseite landet bei Verifikationsseite (Dashboard), sollte aber zurück zur Standorte-Tabelle führen. PROBLEM IDENTIFIZIERT: Zurück-Button navigierte hardcoded zu `/admin/tenants/${tenantId}` (Tenant-Übersicht/Dashboard), ignorierte von wo der User kam (Standorte-Tab, Geräte-Tab, Suche, etc.). LÖSUNG: Geändert von `navigate(\`/admin/tenants/\${tenantId}\`)` zu `navigate(-1)` (Browser-History-basierte Navigation). AUSWIRKUNG: Zurück-Button verhält sich jetzt wie Browser-Zurück-Button - kehrt zur tatsächlichen vorherigen Seite zurück: Vom Standorte-Tab → zurück zum Standorte-Tab, Vom Geräte-Tab → zurück zum Geräte-Tab, Von Suche → zurück zur Suche. Konsistent mit LocationDetailPage, die bereits navigate(-1) verwendet. Hot-Reload aktiv, keine Server-Neustart nötig."
+
   - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
     implemented: true
     working: true
