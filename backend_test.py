@@ -2,6 +2,7 @@
 """
 Backend API Testing Suite
 Tests various backend API implementations including:
+- Phase 1 Ticketing System APIs (Staff Management, SLA, Ticket Assignment)
 - In Vorbereitung Status Tracking API
 - Event logging to MongoDB (portal_db.event_log)
 - WebSocket broadcasting via decorators
