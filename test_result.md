@@ -151,14 +151,17 @@ frontend:
   - task: "Device Detail Back Button Navigation Fix"
     implemented: true
     working: "NA"
-    file: "frontend/src/pages/DeviceDetailPage.jsx"
+    file: "frontend/src/pages/DeviceDetailPage.jsx, frontend/src/components/TenantDevicesTab.jsx"
     stuck_count: 0
     priority: "medium"
     needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
-          comment: "✅ ZURÜCK-BUTTON NAVIGATION KORRIGIERT: User-Feedback: Zurück-Button von Gerätedetailseite landet bei Verifikationsseite (Dashboard), sollte aber zurück zur Standorte-Tabelle führen. PROBLEM IDENTIFIZIERT: Zurück-Button navigierte hardcoded zu `/admin/tenants/${tenantId}` (Tenant-Übersicht/Dashboard), ignorierte von wo der User kam (Standorte-Tab, Geräte-Tab, Suche, etc.). LÖSUNG: Geändert von `navigate(\`/admin/tenants/\${tenantId}\`)` zu `navigate(-1)` (Browser-History-basierte Navigation). AUSWIRKUNG: Zurück-Button verhält sich jetzt wie Browser-Zurück-Button - kehrt zur tatsächlichen vorherigen Seite zurück: Vom Standorte-Tab → zurück zum Standorte-Tab, Vom Geräte-Tab → zurück zum Geräte-Tab, Von Suche → zurück zur Suche. Konsistent mit LocationDetailPage, die bereits navigate(-1) verwendet. Hot-Reload aktiv, keine Server-Neustart nötig."
+          comment: "✅ ZURÜCK-BUTTON NAVIGATION KORRIGIERT (Phase 1): User-Feedback: Zurück-Button von Gerätedetailseite landet bei Verifikationsseite (Dashboard), sollte aber zurück zur Standorte-Tabelle führen. PROBLEM IDENTIFIZIERT: Zurück-Button navigierte hardcoded zu `/admin/tenants/${tenantId}` (Tenant-Übersicht/Dashboard), ignorierte von wo der User kam (Standorte-Tab, Geräte-Tab, Suche, etc.). LÖSUNG: Geändert von `navigate(\`/admin/tenants/\${tenantId}\`)` zu `navigate(-1)` (Browser-History-basierte Navigation). AUSWIRKUNG: Zurück-Button verhält sich jetzt wie Browser-Zurück-Button - kehrt zur tatsächlichen vorherigen Seite zurück: Vom Standorte-Tab → zurück zum Standorte-Tab, Vom Geräte-Tab → zurück zum Geräte-Tab, Von Suche → zurück zur Suche. Konsistent mit LocationDetailPage, die bereits navigate(-1) verwendet. Hot-Reload aktiv, keine Server-Neustart nötig."
+        - working: "NA"
+          agent: "main"
+          comment: "✅ GERÄTE-NAVIGATION BUG BEHOBEN (Phase 2): User-Feedback: Zurück-Button von Gerätedetailseite landet bei Verifikationsseite. ROOT CAUSE IDENTIFIZIERT: TenantDevicesTab.jsx navigierte zu FALSCHER Route `/portal/admin/tenants/${tenantId}/devices/${deviceId}` (mit /portal Prefix), aber DeviceDetailPage Route ist `/admin/tenants/${tenantId}/devices/${deviceId}` (OHNE /portal). FOLGE: 1) Navigation zu nicht-existierender Route, 2) Catch-all Route in PortalApp.jsx leitet zu /portal/login um (Zeile 155), 3) Nach Login: Umleitung zur Standard-Startseite (Scanner/Verifikationsseite), 4) Browser-History enthält diese Umleitungen, 5) navigate(-1) führt zurück durch diese fehlerhafte History. LÖSUNG: TenantDevicesTab.jsx Zeile 243 geändert von `/portal/admin/tenants/...` zu `/admin/tenants/...` (entfernt falsches /portal Prefix). AUSWIRKUNG: Navigation zu DeviceDetailPage funktioniert jetzt korrekt, keine Umleitung mehr zur Verifikationsseite, Browser-History ist sauber, navigate(-1) führt korrekt zurück zum Geräte-Tab. Hot-Reload aktiv."
 
   - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
     implemented: true
