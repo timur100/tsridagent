@@ -53,6 +53,7 @@ const LocationDetailPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedData, setEditedData] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [availableTenants, setAvailableTenants] = useState([]);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
   
