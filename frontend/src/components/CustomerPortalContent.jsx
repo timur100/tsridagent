@@ -186,13 +186,13 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
   // Update ref when modals change
   useEffect(() => {
-    modalOpenRef.current = showAddDeviceModal || showAddStandortModal || showDeviceModal || showStandortModal;
+    modalOpenRef.current = showAddDeviceModal || showAddStandortModal || showStandortModal;
     if (modalOpenRef.current) {
       console.log('[CustomerPortal] Modal opened - polling paused');
     } else {
       console.log('[CustomerPortal] Modal closed - polling will resume');
     }
-  }, [showAddDeviceModal, showAddStandortModal, showDeviceModal, showStandortModal]);
+  }, [showAddDeviceModal, showAddStandortModal, showStandortModal]);
 
   useEffect(() => {
     console.log('[CustomerPortal] useEffect triggered - user:', user);
