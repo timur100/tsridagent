@@ -122,6 +122,16 @@ const PortalRoutes = () => {
         }
       />
 
+      {/* Customer Portal Device Details */}
+      <Route
+        path="/customer/devices/:deviceId"
+        element={
+          <ProtectedRoute>
+            <DeviceDetailPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Device Detail Page */}
       <Route
         path="/admin/tenants/:tenantId/devices/:deviceId"
