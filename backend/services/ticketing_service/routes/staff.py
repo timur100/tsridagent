@@ -237,7 +237,7 @@ async def assign_ticket(
             raise HTTPException(status_code=404, detail="Mitarbeiter nicht gefunden oder nicht aktiv")
         
         # Check if staff has capacity
-        active_tickets = tickets_collection.count_documents({
+        active_tickets = await tickets_collection.count_documents({
             "assigned_to": assignment.staff_email,
             "status": {"$nin": ["resolved", "closed"]}
         })
