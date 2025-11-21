@@ -57,8 +57,6 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
   const [standorteSearchTerm, setStandorteSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [standortStatusFilter, setStandortStatusFilter] = useState('all');
-  const [showDeviceModal, setShowDeviceModal] = useState(false);
-  const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
   const [showStandortModal, setShowStandortModal] = useState(false);
   const [selectedStandortForModal, setSelectedStandortForModal] = useState(null);
   const [filters, setFilters] = useState({
