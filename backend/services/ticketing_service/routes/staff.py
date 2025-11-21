@@ -229,7 +229,7 @@ async def assign_ticket(
             raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
         
         # Check if staff exists and is active
-        staff = staff_collection.find_one({
+        staff = await staff_collection.find_one({
             "email": assignment.staff_email,
             "is_active": True
         })
