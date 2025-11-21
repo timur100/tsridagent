@@ -10,7 +10,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # Import routes
-from routes import tickets, comments, workflow, location_details
+from routes import tickets, comments, workflow, location_details, sla, staff
 
 # Get configuration from environment
 SERVICE_PORT = int(os.environ.get('SERVICE_PORT', 8103))
