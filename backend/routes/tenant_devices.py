@@ -432,6 +432,98 @@ async def get_all_devices(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/all/in-preparation")
+async def get_all_in_preparation(
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Get all devices and locations with status 'in_preparation' from all tenants
+    """
+    try:
+        print(f"🔍 get_all_in_preparation called")
+        
+        # Get all devices with in_preparation status from portal_db
+        devices_cursor = portal_db.tenant_devices.find({
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"}
+            ]
+        })
+        
+        devices = []
+        tenant_ids = set()
+        
+        for device in devices_cursor:
+            # Remove MongoDB _id field
+            if '_id' in device:
+                del device['_id']
+            devices.append(device)
+            tenant_ids.add(device.get('tenant_id'))
+        
+        print(f"✅ Found {len(devices)} devices in preparation from {len(tenant_ids)} tenants")
+        
+        # Get all locations with in_preparation status
+        locations_cursor = portal_db.tenant_locations.find({
+            "$or": [
+                {"status": "in_preparation"},
+                {"status": "preparation"}
+            ]
+        })
+        
+        locations = []
+        for loc in locations_cursor:
+            # Remove MongoDB _id field
+            if '_id' in loc:
+                del loc['_id']
+            locations.append(loc)
+            tenant_ids.add(loc.get('tenant_id'))
+        
+        print(f"✅ Found {len(locations)} locations in preparation")
+        
+        # Get tenant names for all involved tenants
+        tenant_names = {}
+        for tenant_id in tenant_ids:
+            tenant = db.tenants.find_one({"tenant_id": tenant_id})
+            if tenant:
+                tenant_names[tenant_id] = tenant.get('display_name', tenant.get('name', 'Unbekannt'))
+            else:
+                tenant_names[tenant_id] = 'Unbekannt'
+        
+        # Enrich devices with tenant names
+        for device in devices:
+            device['tenant_name'] = tenant_names.get(device.get('tenant_id'), 'Unbekannt')
+        
+        # Enrich locations with tenant names
+        for location in locations:
+            location['tenant_name'] = tenant_names.get(location.get('tenant_id'), 'Unbekannt')
+        
+        result = {
+            "success": True,
+            "data": {
+                "summary": {
+                    "total_devices": len(devices),
+                    "total_locations": len(locations),
+                    "total_items": len(devices) + len(locations),
+                    "tenant_count": len(tenant_ids)
+                },
+                "devices": devices,
+                "locations": locations
+            }
+        }
+        
+        print(f"✅ Returning {len(devices)} devices and {len(locations)} locations in preparation")
+        
+        return result
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Get all in-preparation error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/{tenant_id}/{device_id}")
 async def get_tenant_device(
     tenant_id: str,
