@@ -507,7 +507,7 @@ const ServicesConfiguration = () => {
                 <Label htmlFor="service_type">Service Typ *</Label>
                 <Select 
                   value={formData.service_type} 
-                  onValueChange={(value) => setFormData({...formData, service_type: value})}
+                  onValueChange={(value) => setFormData(prev => ({...prev, service_type: value}))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -527,7 +527,7 @@ const ServicesConfiguration = () => {
                 <Input
                   id="base_url"
                   value={formData.base_url}
-                  onChange={(e) => setFormData({...formData, base_url: e.target.value})}
+                  onChange={(e) => setFormData(prev => ({...prev, base_url: e.target.value}))}
                   placeholder="http://localhost:8101"
                   required
                 />
@@ -541,10 +541,10 @@ const ServicesConfiguration = () => {
                 <Input
                   id="external_url"
                   value={formData.settings?.external_url || ''}
-                  onChange={(e) => setFormData({
-                    ...formData, 
-                    settings: {...formData.settings, external_url: e.target.value}
-                  })}
+                  onChange={(e) => setFormData(prev => ({
+                    ...prev, 
+                    settings: {...prev.settings, external_url: e.target.value}
+                  }))}
                   placeholder="https://service.example.com oder leer für automatisch"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
