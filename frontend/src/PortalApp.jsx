@@ -149,7 +149,9 @@ const PortalRoutes = () => {
         path="/admin/devices/:deviceId"
         element={
           <ProtectedRoute adminOnly>
-            <DeviceDetailPage />
+            <AdminLayout>
+              <DeviceDetailPage />
+            </AdminLayout>
           </ProtectedRoute>
         }
       />
