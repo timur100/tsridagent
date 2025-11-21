@@ -887,13 +887,15 @@ const TenantDevicesTab = ({ tenantId }) => {
                       </button>
                     </div>
                   ) : (
-                    <button
-                      onClick={(e) => handleStartEdit(device, e)}
-                      className="p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
-                      title="Bearbeiten"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
+                    <div className="edit-actions">
+                      <button
+                        onClick={(e) => handleStartEdit(device, e)}
+                        className="p-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 transition-colors opacity-0 group-hover:opacity-100"
+                        title="Bearbeiten"
+                      >
+                        <Edit2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   )}
                 </td>
               </tr>
