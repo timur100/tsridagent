@@ -228,8 +228,15 @@ const LocationDetailPage = () => {
   const handleSave = async () => {
     try {
       const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      const tenantIdToUse = locationData.tenant_id || tenantId;
+      
+      if (!tenantIdToUse) {
+        toast.error('Tenant-ID fehlt');
+        return;
+      }
+      
       const response = await fetch(
-        `${BACKEND_URL}/api/tenant-locations/${locationId}`,
+        `${BACKEND_URL}/api/tenant-locations/${tenantIdToUse}/${locationId}`,
         {
           method: 'PUT',
           headers: {
