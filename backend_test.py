@@ -33,7 +33,7 @@ mongo_client = pymongo.MongoClient(MONGO_URL)
 portal_db = mongo_client['portal_db']
 event_log_collection = portal_db['event_log']
 
-class InVorbereitungStatusTester:
+class InVorbereitungSynchronisationTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
@@ -42,6 +42,8 @@ class InVorbereitungStatusTester:
         })
         self.results = []
         self.admin_token = None
+        self.tenant_admin_token = None
+        self.europcar_tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
