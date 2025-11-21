@@ -787,7 +787,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
-            onClick={onBack}
+            onClick={() => {
+              if (onBack) {
+                onBack();
+              } else {
+                // Navigate back to admin portal when used as route
+                navigate('/portal/admin', { state: { activeTab: 'tenants' } });
+              }
+            }}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all hover:scale-105 ${
               theme === 'dark'
                 ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#333]'
