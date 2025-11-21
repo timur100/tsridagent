@@ -193,25 +193,39 @@ async def update_device(
         from datetime import datetime, timezone
         device_data['updated_at'] = datetime.now(timezone.utc).isoformat()
         
+        # Check if device_id is being changed
+        new_device_id = device_data.get('device_id', device_id)
+        
         db.europcar_devices.update_one(
             {"device_id": device_id},
             {"$set": device_data}
         )
         
-        # Get updated device
-        updated_device = db.europcar_devices.find_one({"device_id": device_id})
+        # Get updated device - use new device_id if it was changed
+        updated_device = db.europcar_devices.find_one({"device_id": new_device_id})
         if '_id' in updated_device:
             del updated_device['_id']
         
         # Broadcast update via WebSocket
-        print(f"📡 Broadcasting device update for {device_id}")
+        print(f"📡 Broadcasting device update for {new_device_id}")
         try:
             from websocket_manager import manager
             import asyncio
             
+            # If device_id was changed, broadcast delete for old ID
+            if new_device_id != device_id:
+                print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
+                delete_message = {
+                    "type": "device_deleted",
+                    "device_id": device_id
+                }
+                if tenant_id:
+                    asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
+            
+            # Broadcast update for new device_id
             message = {
                 "type": "device_update",
-                "device_id": device_id,
+                "device_id": new_device_id,
                 "device": updated_device
             }
             
