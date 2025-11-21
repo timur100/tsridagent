@@ -199,7 +199,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
               <input
                 type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value })}
                 placeholder="z.B. Standard, Premium, Enterprise"
                 className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
               />
@@ -212,7 +212,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
               </label>
               <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value })}
                 placeholder="Kurze Beschreibung des Pakets"
                 rows={3}
                 className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
@@ -227,7 +227,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
                 </label>
                 <select
                   value={formData.duration_days}
-                  onChange={(e) => setFormData({ ...formData, duration_days: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, duration_days: parseInt(e.target.value) })}
                   className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
                 >
                   <option value={30}>1 Monat</option>
@@ -245,7 +245,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
                 <input
                   type="number"
                   value={formData.price}
-                  onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) })}
                   placeholder="0.00"
                   step="0.01"
                   className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
