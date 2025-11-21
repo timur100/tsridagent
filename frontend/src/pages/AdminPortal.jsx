@@ -61,6 +61,7 @@ const AdminPortalContent = () => {
   const { selectedCustomer, setCustomers } = useCustomerFilter();
   const { selectedTenantId, selectedTenantName, setSelectedTenant } = useTenant();
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Check if we're on a nested route (detail page)
   const isOnDetailPage = location.pathname !== '/portal/admin' && 
