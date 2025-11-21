@@ -287,7 +287,7 @@ async def update_device(
         raise
     except Exception as e:
         print(f"Update device error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("")
