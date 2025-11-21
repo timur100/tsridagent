@@ -10,7 +10,11 @@ export const AuthProvider = ({ children }) => {
   // Global lock to prevent duplicate login/register calls
   const authInProgressRef = useRef(false);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin;
+  // Always use HTTPS for production
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 
+                      (typeof window !== 'undefined' && window.location.origin.startsWith('https') 
+                        ? window.location.origin 
+                        : 'https://tenant-prep-dash.preview.emergentagent.com');
 
   useEffect(() => {
     // Check if token exists in localStorage
