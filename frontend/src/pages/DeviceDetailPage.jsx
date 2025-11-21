@@ -231,12 +231,18 @@ const DeviceDetailPage = () => {
           <div className="flex items-center gap-4">
             <button
               onClick={() => {
-                // If we came from devices tab, navigate back to tenant detail with devices tab active
+                // If we came from devices tab in tenant detail, navigate back with devices tab active
                 if (location.state?.fromTab === 'devices' && location.state?.tenantId) {
                   navigate(`/portal/admin/tenants/${location.state.tenantId}`, {
                     state: { activeTab: 'devices' }
                   });
-                } else {
+                }
+                // If we came from "Alle Kunden" devices view, navigate back to admin portal devices tab
+                else if (location.state?.fromAllDevices) {
+                  navigate('/portal/admin', { state: { activeTab: 'devices' } });
+                }
+                // Default: use browser back
+                else {
                   navigate(-1);
                 }
               }}
