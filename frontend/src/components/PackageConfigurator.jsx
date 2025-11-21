@@ -227,7 +227,7 @@ const PackageConfigurator = ({ availableFeatures, onPackageCreated }) => {
                 </label>
                 <select
                   value={formData.duration_days}
-                  onChange={(e) => setFormData(prev => ({ ...prev, duration_days: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, duration_days: parseInt(e.target.value) }))}
                   className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
                 >
                   <option value={30}>1 Monat</option>
