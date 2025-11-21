@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Phase 2: Vollständige Implementierung des Tenants-Management-Moduls. Erweitern des Auth & Identity Service mit vollständiger Tenant-Management-Funktionalität für optimale Multi-Tenant-Isolation. Anforderungen: 1) Vollständiges Tenant-Datenmodell (Name, Domain, Status, Kontakt, Subscription-Pläne, Ressourcen-Limits, Custom-Settings), 2) Vollständige CRUD-APIs für Tenants (Liste, Erstellen, Anzeigen, Bearbeiten, Löschen, Statistiken, Suche), 3) Frontend: Card-Grid UI für Tenants-Verwaltung (responsives Design wie bei Services Configuration), 4) Tenant-Isolation-Features: Status-Management (active/trial/suspended/inactive), Ressourcen-Limits pro Tenant (Users, Devices, Storage, API-Calls), Tenant-Admin-User-Erstellung bei Tenant-Creation."
+user_problem_statement: "In Vorbereitung Status Tracking: 1) TenantDetailPage - Clickable stat card zeigt Anzahl der Items 'In Vorbereitung', beim Klick wird Liste gefiltert. 2) Admin Dashboard ('Alle Kunden') - Summary stat card zeigt alle 'In Vorbereitung' Items über alle Tenants, beim Klick zu neuer Übersichtsseite. Status-Feld: 'in_preparation' oder 'preparation' in portal_db.tenant_devices und portal_db.tenant_locations Collections."
 
 backend:
   - task: "Centralized Event System - Phase 1 Implementation"
