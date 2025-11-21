@@ -213,6 +213,7 @@ async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
 
 
 @router.put("/{device_id}")
+@broadcast_changes(entity_type="device", event_type="updated", data_field="device")
 async def update_device(
     device_id: str,
     device_update: dict,
@@ -221,6 +222,7 @@ async def update_device(
     """
     Update device information
     Only accessible to admin or active Europcar customer
+    Now uses centralized event system for broadcasting
     """
     try:
         # Check access permissions
@@ -248,6 +250,18 @@ async def update_device(
         
         # Check if device_id is being changed
         new_device_id = device_update.get('device_id', device_id)
+        tenant_id = device.get('tenant_id')
+        
+        # Handle device_id change - broadcast delete for old ID
+        if new_device_id != device_id and tenant_id:
+            print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
+            from websocket_manager import manager
+            import asyncio
+            delete_message = {
+                "type": "device_deleted",
+                "device_id": device_id
+            }
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
         
         # Update device in MongoDB
         db.europcar_devices.update_one(
@@ -258,48 +272,22 @@ async def update_device(
         # Fetch updated device (exclude _id) - use new device_id if it was changed
         updated_device = db.europcar_devices.find_one({"device_id": new_device_id}, {'_id': 0})
         
-        # Broadcast device update via WebSocket
-        tenant_id = updated_device.get('tenant_id')
-        if tenant_id:
-            print(f"📡 [Device Update] Broadcasting update for {new_device_id} to tenant {tenant_id}")
-            try:
-                from websocket_manager import manager
-                import asyncio
-                
-                # If device_id was changed, broadcast delete for old ID
-                if new_device_id != device_id:
-                    print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
-                    delete_message = {
-                        "type": "device_deleted",
-                        "device_id": device_id
-                    }
-                    asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
-                
-                # Broadcast update/create for new device_id
-                message = {
-                    "type": "device_update",
-                    "device_id": new_device_id,
-                    "device": updated_device
-                }
-                
-                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
-                print(f"✅ [Device Update] Broadcast sent to tenant {tenant_id}")
-            except Exception as e:
-                print(f"⚠️ [Device Update] Broadcast error: {str(e)}")
-        else:
-            print(f"⚠️ [Device Update] No tenant_id for device {new_device_id}, skipping broadcast")
+        # Decorator will automatically broadcast and log this event
+        print(f"✨ [Device Update] Returning response - decorator will handle broadcasting")
         
         return {
             "success": True,
             "message": "Device updated successfully",
-            "device": updated_device
+            "device": updated_device,
+            "tenant_id": tenant_id,
+            "device_id": new_device_id
         }
     
     except HTTPException:
         raise
     except Exception as e:
         print(f"Update device error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)}
 
 
 @router.post("")
