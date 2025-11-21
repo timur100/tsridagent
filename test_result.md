@@ -135,7 +135,44 @@ backend:
           agent: "testing"
           comment: "✅ WEBSOCKET DEVICE UPDATE FIX TESTING COMPLETED SUCCESSFULLY: Comprehensive testing completed with 7/7 tests passed successfully. ALL REVIEW REQUEST REQUIREMENTS VERIFIED: ✅ AUTHENTICATION: Successfully authenticated as admin@tsrid.com with admin123 credentials, received valid JWT token with proper claims. ✅ DEVICE UPDATE VIA CUSTOMER PORTAL: PUT /api/portal/europcar-devices/{device_id} successfully triggers WebSocket broadcast with correct message structure: type='device_update', device_id='{device_id}', device={updated_device_object}. Tested with device AAHC01-01, updated city field, received WebSocket message immediately. ✅ DEVICE CREATE BROADCAST: POST /api/portal/europcar-devices successfully creates device and triggers WebSocket broadcast with type='device_created', device={new_device_object}. Created test device TEST-9723582d, received proper broadcast message. ✅ ADMIN PORTAL DEVICE UPDATE: PUT /api/tenant-devices/device/{device_id} successfully triggers WebSocket broadcast with identical message structure. Both Customer Portal and Admin Portal endpoints broadcast correctly. ✅ WEBSOCKET MESSAGE STRUCTURE: All broadcast messages include required fields - type (device_update/device_created), device_id (for updates), and device (complete device object with all fields). ✅ BACKEND LOGS VERIFICATION: Backend logs show proper broadcast messages: '📡 [Device Update] Broadcasting update for AAHC01-01 to tenant 1d3653db-86cb-4dd1-9ef5-0236b116def8', '✅ [Device Update] Broadcast sent to tenant 1d3653db-86cb-4dd1-9ef5-0236b116def8', '📡 [Device Create] Broadcasting new device TEST-9723582d', '📡 Broadcasting device update for AAHC01-01'. ✅ WEBSOCKET CONNECTION: WebSocket connection to wss://portal-live.preview.emergentagent.com/api/ws/{tenant_id}?token={jwt_token} working correctly, receiving all broadcast messages in real-time. SUCCESS CRITERIA MET: Device updates via both Customer Portal and Admin Portal endpoints trigger WebSocket broadcasts, backend logs show broadcast messages, message structure includes device_id and device fields as expected, no errors in WebSocket broadcast functionality. WebSocket device_update payload bug is fully resolved and production-ready."
 
+backend:
+  - task: "In Vorbereitung Status Tracking - Backend API"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/tenant_devices.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Backend-API für 'In Vorbereitung' Tracking implementiert: Neuer Endpoint GET /api/tenant-devices/all/in-preparation erstellt, der alle Geräte und Standorte mit status='in_preparation' oder 'preparation' aus portal_db.tenant_devices und portal_db.tenant_locations aggregiert. Response enthält: Summary (total_devices, total_locations, total_items, tenant_count), devices array mit tenant_name enrichment, locations array mit tenant_name enrichment. Query: $or operator für beide Status-Varianten (in_preparation, preparation), Tenant-Namen aus multi_tenant_admin.tenants Collection, entfernt MongoDB _id Felder. Backend neugestartet und bereit für Testing."
+
 frontend:
+  - task: "In Vorbereitung Status Tracking - Phase 1 (TenantDetailPage Filter)"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/TenantDetailPage.jsx, frontend/src/components/TenantDevicesTab.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Phase 1 implementiert: TenantDetailPage.jsx - State 'deviceStatusFilter' hinzugefügt, onClick-Handler der 'In Vorbereitung' Kachel vervollständigt (setzt activeTab='devices' und deviceStatusFilter='in_preparation'), TenantDevicesTab als prop übergeben mit initialStatusFilter und onFilterApplied callback. TenantDevicesTab.jsx - Props 'initialStatusFilter' und 'onFilterApplied' akzeptiert, neuer useEffect für automatische Filter-Setzung beim Mount wenn initialStatusFilter vorhanden, nutzt bestehende Filter-Logik (filters.status), console.log für Debugging. Filter wird automatisch auf 'in_preparation' gesetzt wenn User auf Kachel klickt, bestehende Status-Filter-Funktion (Zeile 181-183) filtert korrekt nach in_preparation. Bereit für Frontend-Testing."
+  
+  - task: "In Vorbereitung Status Tracking - Phase 2 (Admin Portal Übersichtsseite)"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/InPreparationOverviewPage.jsx, frontend/src/pages/AdminPortal.jsx, frontend/src/PortalApp.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ Phase 2 implementiert: InPreparationOverviewPage.jsx - Neue Komponente erstellt mit Summary Cards (Gesamt/Geräte/Standorte/Mandanten), Filter-Tabs (Alle/Nur Geräte/Nur Standorte), Suchfunktion (Device ID, Tenant, Standort, Stadt), Sortierbare Tabellen (Geräte und Standorte separat), Click-Navigation (handleDeviceClick → /portal/admin/tenants/{tenantId}/devices/{deviceId}, handleLocationClick → /portal/admin/tenants/{tenantId}/locations/{locationId}), Empty State und Loading State, Dark/Light Theme Support. AdminPortal.jsx - onClick-Handler zur 'In Vorbereitung' Kachel hinzugefügt (navigate('/portal/admin/in-preparation')). PortalApp.jsx - Import InPreparationOverviewPage hinzugefügt, Route als Nested Route im /admin Pfad registriert (<Route path='in-preparation' element={<InPreparationOverviewPage />} />), rendert innerhalb AdminPortal Layout mit persistent header. Bereit für Frontend-Testing."
+
   - task: "Character-by-Character Input Bug Fix"
     implemented: true
     working: true
