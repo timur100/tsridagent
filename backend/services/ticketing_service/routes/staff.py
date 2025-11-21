@@ -141,7 +141,7 @@ async def update_staff(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if staff exists
-        staff = staff_collection.find_one({"id": staff_id})
+        staff = await staff_collection.find_one({"id": staff_id})
         if not staff:
             raise HTTPException(status_code=404, detail="Mitarbeiter nicht gefunden")
         
