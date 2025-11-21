@@ -293,7 +293,7 @@ async def assign_ticket(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/tickets/by-staff")
-def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
+async def get_tickets_by_staff(token_data: dict = Depends(verify_token)):
     """
     Get ticket count grouped by staff member
     Admin/Manager only
