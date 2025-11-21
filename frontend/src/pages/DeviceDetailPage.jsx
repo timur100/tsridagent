@@ -230,7 +230,16 @@ const DeviceDetailPage = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => {
+                // If we came from devices tab, navigate back to tenant detail with devices tab active
+                if (location.state?.fromTab === 'devices' && location.state?.tenantId) {
+                  navigate(`/portal/admin/tenants/${location.state.tenantId}`, {
+                    state: { activeTab: 'devices' }
+                  });
+                } else {
+                  navigate(-1);
+                }
+              }}
               className={`p-2 rounded-lg ${
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] hover:bg-[#2a2a2a] text-white'
