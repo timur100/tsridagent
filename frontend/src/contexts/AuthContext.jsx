@@ -247,11 +247,13 @@ export const AuthProvider = ({ children }) => {
   };
 
   const apiCall = async (endpoint, options = {}) => {
-    // Use XMLHttpRequest to completely avoid Response cloning issues
+    // Use XMLHttpRequest with relative URLs to avoid Mixed Content
+    // Browser will automatically use HTTPS for same-origin requests
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       const method = options.method || 'GET';
-      const url = `${BACKEND_URL}${endpoint}`;
+      // Use relative URL - browser handles protocol automatically
+      const url = endpoint.startsWith('http') ? endpoint : endpoint;
       
       xhr.open(method, url);
       
