@@ -12,7 +12,7 @@ const AdminLayout = ({ children }) => {
 
   // Get company branding
   const companyName = user?.company_name || 'TSRID';
-  const companyLogo Light = user?.company_logo_light;
+  const companyLogoLight = user?.company_logo_light;
   const companyLogoDark = user?.company_logo_dark;
 
   const handleLogout = () => {
