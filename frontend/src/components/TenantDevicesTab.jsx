@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
-import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Plus } from 'lucide-react';
+import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Plus, Edit2, Check, X } from 'lucide-react';
 import DeviceDetailsModal from './DeviceDetailsModal';
 import AddDeviceModal from './AddDeviceModal';
 import toast from 'react-hot-toast';
