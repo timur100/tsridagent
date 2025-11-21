@@ -164,7 +164,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -181,7 +181,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     <input
                       type="text"
                       value={formData.first_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, first_name: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -198,7 +198,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     <input
                       type="text"
                       value={formData.last_name}
-                      onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, last_name: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -216,7 +216,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       type="password"
                       required={!user}
                       value={formData.password}
-                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                       placeholder={user ? 'Leer lassen, um nicht zu ändern' : 'Mindestens 6 Zeichen'}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
@@ -248,7 +248,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     <input
                       type="tel"
                       value={formData.phone}
-                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -265,7 +265,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     <input
                       type="text"
                       value={formData.position}
-                      onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -282,7 +282,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     <input
                       type="text"
                       value={formData.department}
-                      onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, department: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
@@ -298,7 +298,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                     </label>
                     <select
                       value={formData.status}
-                      onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))
+                      onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value }))}
                       className={`w-full px-4 py-2 rounded-lg ${
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'

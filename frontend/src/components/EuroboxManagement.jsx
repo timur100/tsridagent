@@ -673,7 +673,7 @@ const EuroboxManagement = () => {
                 <input
                   type="text"
                   value={formData.eurobox_number}
-                  onChange={(e) => setFormData(prev => ({ ...prev, eurobox_number: e.target.value }))
+                  onChange={(e) => setFormData(prev => ({ ...prev, eurobox_number: e.target.value }))}
                   disabled={!!editingEurobox}
                   className={`w-full px-4 py-2 border rounded-lg ${
                     theme === 'dark'
@@ -690,7 +690,7 @@ const EuroboxManagement = () => {
                 </label>
                 <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   className={`w-full px-4 py-2 border rounded-lg ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white'
