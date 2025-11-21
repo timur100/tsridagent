@@ -169,7 +169,14 @@ const DeviceDetailPage = () => {
       }
 
       toast.success('Gerät erfolgreich gelöscht');
-      navigate(`/admin/tenants/${tenantId}`);
+      // Navigate back to tenant page or admin devices page
+      if (tenantId) {
+        navigate(`/portal/admin/tenants/${tenantId}`, {
+          state: { activeTab: 'devices' }
+        });
+      } else {
+        navigate('/portal/admin', { state: { activeTab: 'devices' } });
+      }
     } catch (error) {
       console.error('Error deleting device:', error);
       toast.error('Fehler beim Löschen');
