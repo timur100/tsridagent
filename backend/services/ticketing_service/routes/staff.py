@@ -2,20 +2,15 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
-import os
 import uuid
-from routes.portal_auth import verify_token
+from utils.db import db, tickets_collection
+from utils.auth import verify_token
 
-router = APIRouter(prefix="/api/staff", tags=["Support Staff"])
+router = APIRouter(prefix="/staff", tags=["Support Staff"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-auth_db = mongo_client['auth_db']
-main_db = mongo_client['test_database']
+# Database collections
+auth_db = db.client['auth_db']
 staff_collection = auth_db.support_staff
-tickets_collection = main_db.tickets
 
 class SupportStaff(BaseModel):
     email: str
