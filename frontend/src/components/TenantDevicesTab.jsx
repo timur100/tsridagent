@@ -726,6 +726,11 @@ const TenantDevicesTab = ({ tenantId }) => {
               >
                 Hardware {getSortIcon('hardware_model')}
               </th>
+              <th 
+                className={`w-24 px-2 py-3 text-center text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+              >
+                Aktionen
+              </th>
             </tr>
           </thead>
           <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
