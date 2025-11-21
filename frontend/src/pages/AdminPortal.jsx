@@ -1665,6 +1665,9 @@ const AdminPortalContent = () => {
           selectedCustomer={selectedCustomer}
         />
       )}
+
+      {/* Outlet for nested routes - renders child routes like DeviceDetailPage */}
+      <Outlet />
     </div>
   );
 };
