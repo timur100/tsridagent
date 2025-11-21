@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Centralized Event System Testing (Phase 1)
-Tests the centralized event system implementation including:
+Backend API Testing Suite
+Tests various backend API implementations including:
+- In Vorbereitung Status Tracking API
 - Event logging to MongoDB (portal_db.event_log)
 - WebSocket broadcasting via decorators
 - Decorator functionality and backend logs
