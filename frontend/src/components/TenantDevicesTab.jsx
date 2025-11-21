@@ -243,7 +243,12 @@ const TenantDevicesTab = ({ tenantId }) => {
     }));
   };
 
-  const handleDeviceClick = (device) => {
+  const handleDeviceClick = (device, e) => {
+    // Don't navigate if clicking on edit buttons or input fields
+    if (e.target.closest('.edit-actions') || e.target.closest('.inline-edit-field')) {
+      return;
+    }
+    
     // Navigate to device detail page instead of modal
     // Pass state to remember we came from devices tab
     navigate(`/portal/admin/tenants/${tenantId}/devices/${device.device_id}`, {
