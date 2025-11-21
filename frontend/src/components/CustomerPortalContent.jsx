@@ -870,11 +870,13 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
             </Card>
 
             {/* In Vorbereitung */}
-            <Card className={`p-6 rounded-xl ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1' 
-                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer hover:-translate-y-1'
-            }`}>
+            <Card 
+              onClick={() => navigate('/portal/customer/in-preparation')}
+              className={`p-6 rounded-xl ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] transition-all duration-300 cursor-pointer hover:-translate-y-1'
+              }`}>
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
