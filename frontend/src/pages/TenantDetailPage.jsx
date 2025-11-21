@@ -2037,7 +2037,11 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         )}
 
         {activeTab === 'devices' && (
-          <TenantDevicesTab tenantId={tenantId} />
+          <TenantDevicesTab 
+            tenantId={tenantId} 
+            initialStatusFilter={deviceStatusFilter}
+            onFilterApplied={() => setDeviceStatusFilter(null)}
+          />
         )}
 
         {activeTab === 'branding' && (
