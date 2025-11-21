@@ -2971,27 +2971,27 @@ class CentralizedEventSystemTester:
             await self.cleanup_connections()
 
 async def main():
-    print("Starting In Vorbereitung Status Tracking API Testing...")
+    print("Starting Phase 1 Ticketing System API Testing...")
     print()
     
-    # Test In Vorbereitung Status Tracking API
-    tester = InVorbereitungStatusTester()
-    test_success = await tester.run_all_tests()
+    # Test Phase 1 Ticketing System APIs
+    ticketing_tester = Phase1TicketingSystemTester()
+    ticketing_success = await ticketing_tester.run_all_tests()
     
     print()
     print("=" * 80)
     print("OVERALL TESTING SUMMARY")
     print("=" * 80)
-    print(f"In Vorbereitung Status Tracking API Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Phase 1 Ticketing System API Testing: {'✅ ALL TESTS PASSED' if ticketing_success else '❌ ISSUES FOUND'}")
     print("=" * 80)
     
     # Exit with appropriate code
-    if test_success:
-        print("🎉 IN VORBEREITUNG STATUS TRACKING API TESTING COMPLETED SUCCESSFULLY!")
-        print("The new endpoint GET /api/tenant-devices/all/in-preparation is working correctly.")
+    if ticketing_success:
+        print("🎉 PHASE 1 TICKETING SYSTEM API TESTING COMPLETED SUCCESSFULLY!")
+        print("All Staff Management, SLA, and Ticket Assignment APIs are working correctly.")
         sys.exit(0)
     else:
-        print("❌ IN VORBEREITUNG STATUS TRACKING API ISSUES FOUND!")
+        print("❌ PHASE 1 TICKETING SYSTEM API ISSUES FOUND!")
         print("The API functionality has issues that need to be addressed.")
         sys.exit(1)
 
