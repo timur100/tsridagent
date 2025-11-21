@@ -127,7 +127,7 @@ async def get_all_staff(
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{staff_id}")
-def update_staff(
+async def update_staff(
     staff_id: str,
     staff_update: StaffUpdate,
     token_data: dict = Depends(verify_token)
