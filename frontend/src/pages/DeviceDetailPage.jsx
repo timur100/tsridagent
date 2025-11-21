@@ -126,6 +126,13 @@ const DeviceDetailPage = () => {
       setEditedData(data.device);
       setIsEditing(false);
       toast.success('Gerät erfolgreich aktualisiert');
+      
+      // If device_id was changed, navigate to the new URL
+      const newDeviceId = data.device.device_id;
+      if (newDeviceId && newDeviceId !== deviceId) {
+        console.log(`[DeviceDetail] Device ID changed from ${deviceId} to ${newDeviceId}, navigating...`);
+        navigate(`/admin/tenants/${tenantId}/devices/${newDeviceId}`, { replace: true });
+      }
     } catch (error) {
       console.error('Error updating device:', error);
       toast.error('Fehler beim Speichern');
