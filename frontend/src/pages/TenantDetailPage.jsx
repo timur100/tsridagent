@@ -141,19 +141,19 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
 
   const handleWSScanUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket scan update:', data);
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSLocationCreated = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket location created:', data);
     toast.success('Neuer Standort hinzugefügt', { duration: 3000, icon: '📍' });
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSLocationDeleted = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket location deleted:', data);
     toast.info('Standort wurde gelöscht', { duration: 3000, icon: '🗑️' });
-    setDashboardStats(prev => ({ ...prev })); // Trigger refresh
+    fetchDashboardStats(); // Reload stats
   }, []);
 
   const handleWSDashboardStats = useCallback((data) => {
