@@ -2355,6 +2355,18 @@ backend:
           agent: "main"
           comment: "✅ Ticketing Service angepasst: TicketCreate Model hat tenant_id Feld. GET /api/tickets Endpoint hat tenant_id Query Parameter und filtert Tickets entsprechend. Query-Filter implementiert."
 
+  - task: "WebSocket Device Update Payload Fix"
+    implemented: true
+    working: "NA"
+    file: "backend/routes/devices.py, frontend/src/services/websocket.service.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "✅ WEBSOCKET DEVICE UPDATE BUG BEHOBEN: Problem identifiziert und gelöst. PROBLEM: Backend sendete WebSocket-Nachrichten mit { type: 'device_update', device_id: '...', device: {...} }, aber Frontend erwartete ein 'data' Feld, was zu undefined Payloads führte. Console-Logs zeigten: 'TypeError: Cannot read properties of undefined (reading device_id)'. LÖSUNG FRONTEND: 1) websocket.service.js geändert - Alle Message-Handler (device_update, location_update, dashboard_stats, etc.) geben jetzt das gesamte 'message' Objekt weiter statt nur 'data', 2) Duplikate 'location_update' Cases entfernt für Code-Konsistenz. LÖSUNG BACKEND: 1) devices.py PUT /{device_id} Route erweitert - WebSocket-Broadcast nach Device-Update hinzugefügt (fehlte komplett), 2) Broadcast-Struktur identisch zu tenant_devices.py: { type: 'device_update', device_id: device_id, device: updated_device }, 3) Logging hinzugefügt für Debug-Zwecke. AUSWIRKUNGEN: Device-Updates in /api/portal/europcar-devices senden jetzt WebSocket-Nachrichten, Frontend erhält vollständiges message-Objekt mit device_id und device Feldern, DeviceDetailPage.jsx kann jetzt device_id aus WebSocket-Nachricht lesen ohne undefined Error. Backend neugestartet (RUNNING pid 1124). Bereit für Backend-Testing."
+
 frontend:
   - task: "InventoryManagement - Tenant-Filterung"
     implemented: true
