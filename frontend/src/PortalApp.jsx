@@ -132,6 +132,16 @@ const PortalRoutes = () => {
         }
       />
       
+      {/* Global Device Detail Page (for "Alle Kunden" view) */}
+      <Route
+        path="/admin/devices/:deviceId"
+        element={
+          <ProtectedRoute adminOnly>
+            <DeviceDetailPage />
+          </ProtectedRoute>
+        }
+      />
+      
       <Route
         path="/catalog"
         element={
