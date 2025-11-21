@@ -399,11 +399,12 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "In Vorbereitung Status Tracking - Phase 1 & 2"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  notes: "Character Input Bug Fix completed and verified through code review. All affected components now use functional state updates."
+  notes: "Implementing In Vorbereitung tracking feature with filter functionality on TenantDetailPage and global overview page in Admin Portal."
   
 agent_communication:
     - agent: "main"
