@@ -969,19 +969,71 @@ const LocationDetailPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Main Typ</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.main_type || ''}
+                    onChange={(e) => handleFieldChange('main_type', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.main_type || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>ID Checker</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.id_checker || ''}
+                    onChange={(e) => handleFieldChange('id_checker', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.id_checker || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Switch</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.switch_info || ''}
+                    onChange={(e) => handleFieldChange('switch_info', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.switch_info || '-'}</p>
+                )}
               </div>
               <div>
                 <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Port</p>
-                <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={editedData?.port || ''}
+                    onChange={(e) => handleFieldChange('port', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  />
+                ) : (
+                  <p className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{locationData.port || '-'}</p>
+                )}
               </div>
             </div>
           </Card>
