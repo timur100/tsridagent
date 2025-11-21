@@ -306,17 +306,37 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
             <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getPriorityColor(ticket.priority)}`}>
               {ticket.priority.toUpperCase()}
             </span>
+            {ticket.assigned_to && (
+              <span className={`flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium ${
+                theme === 'dark' ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-800'
+              }`}>
+                <User className="h-3 w-3" />
+                {ticket.assigned_to_name || ticket.assigned_to}
+              </span>
+            )}
           </div>
-          <button
-            onClick={onClose}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark' 
-                ? 'hover:bg-gray-800 text-gray-400' 
-                : 'hover:bg-gray-100 text-gray-600'
-            }`}
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {isAdmin && !ticket.assigned_to && (
+              <Button
+                onClick={() => setShowAssignModal(true)}
+                size="sm"
+                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              >
+                <User className="h-4 w-4 mr-2" />
+                Zuweisen
+              </Button>
+            )}
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-lg transition-colors ${
+                theme === 'dark' 
+                  ? 'hover:bg-gray-800 text-gray-400' 
+                  : 'hover:bg-gray-100 text-gray-600'
+              }`}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </div>
 
         {/* Main Content: Two-column layout (Jitbit style) */}
