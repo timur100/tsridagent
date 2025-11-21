@@ -254,6 +254,27 @@ async def update_device(
         # Fetch updated device (exclude _id)
         updated_device = db.europcar_devices.find_one({"device_id": device_id}, {'_id': 0})
         
+        # Broadcast device update via WebSocket
+        tenant_id = updated_device.get('tenant_id')
+        if tenant_id:
+            print(f"📡 [Device Update] Broadcasting update for {device_id} to tenant {tenant_id}")
+            try:
+                from websocket_manager import manager
+                import asyncio
+                
+                message = {
+                    "type": "device_update",
+                    "device_id": device_id,
+                    "device": updated_device
+                }
+                
+                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
+                print(f"✅ [Device Update] Broadcast sent to tenant {tenant_id}")
+            except Exception as e:
+                print(f"⚠️ [Device Update] Broadcast error: {str(e)}")
+        else:
+            print(f"⚠️ [Device Update] No tenant_id for device {device_id}, skipping broadcast")
+        
         return {
             "success": True,
             "message": "Device updated successfully",
