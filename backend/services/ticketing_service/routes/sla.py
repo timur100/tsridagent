@@ -183,7 +183,7 @@ async def get_ticket_sla(
         if not token_data:
             raise HTTPException(status_code=401, detail="Authentication required")
         
-        ticket = tickets_collection.find_one({"id": ticket_id})
+        ticket = await tickets_collection.find_one({"id": ticket_id})
         if not ticket:
             raise HTTPException(status_code=404, detail="Ticket nicht gefunden")
         
