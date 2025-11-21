@@ -168,12 +168,9 @@ from routes.branding import router as branding_router
 app.include_router(branding_router)
 
 # Import and include tickets router
-from routes.tickets import router as tickets_router
-from routes.sla import router as sla_router
-from routes.staff import router as staff_router
-app.include_router(tickets_router)
-app.include_router(sla_router)
-app.include_router(staff_router)
+# Tickets are handled by Ticketing Microservice
+# from routes.tickets import router as tickets_router
+# app.include_router(tickets_router)
 
 # Import and include catalog router
 from routes.catalog import router as catalog_router
