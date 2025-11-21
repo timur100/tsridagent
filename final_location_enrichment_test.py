@@ -15,7 +15,7 @@ import sys
 import random
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-portal-174.preview.emergentagent.com"
+BACKEND_URL = "https://quick-device-1.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class FinalLocationEnrichmentTester:
