@@ -172,6 +172,7 @@ async def get_device_details(
 
 
 @router.put("/device/{device_id}")
+@broadcast_changes(entity_type="device", event_type="updated", data_field="device")
 async def update_device(
     device_id: str,
     device_data: dict,
@@ -179,6 +180,7 @@ async def update_device(
 ):
     """
     Update device information
+    Now uses centralized event system for broadcasting
     """
     try:
         print(f"🔍 update_device called with device_id: {device_id}")
@@ -192,11 +194,21 @@ async def update_device(
         tenant_id = existing_device.get('tenant_id')
         
         # Update device
-        from datetime import datetime, timezone
         device_data['updated_at'] = datetime.now(timezone.utc).isoformat()
         
         # Check if device_id is being changed
         new_device_id = device_data.get('device_id', device_id)
+        
+        # Handle device_id change - broadcast delete for old ID
+        if new_device_id != device_id and tenant_id:
+            print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
+            from websocket_manager import manager
+            import asyncio
+            delete_message = {
+                "type": "device_deleted",
+                "device_id": device_id
+            }
+            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
         
         db.europcar_devices.update_one(
             {"device_id": device_id},
@@ -208,39 +220,15 @@ async def update_device(
         if '_id' in updated_device:
             del updated_device['_id']
         
-        # Broadcast update via WebSocket
-        print(f"📡 Broadcasting device update for {new_device_id}")
-        try:
-            from websocket_manager import manager
-            import asyncio
-            
-            # If device_id was changed, broadcast delete for old ID
-            if new_device_id != device_id:
-                print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
-                delete_message = {
-                    "type": "device_deleted",
-                    "device_id": device_id
-                }
-                if tenant_id:
-                    asyncio.create_task(manager.broadcast_to_tenant(tenant_id, delete_message))
-            
-            # Broadcast update for new device_id
-            message = {
-                "type": "device_update",
-                "device_id": new_device_id,
-                "device": updated_device
-            }
-            
-            if tenant_id:
-                asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
-                print(f"✅ Broadcast sent to tenant {tenant_id}")
-        except Exception as e:
-            print(f"⚠️ Broadcast error: {str(e)}")
+        # Decorator will automatically broadcast and log this event
+        print(f"✨ Returning response - decorator will handle broadcasting")
         
         return {
             "success": True,
             "message": "Device updated successfully",
-            "device": updated_device
+            "device": updated_device,
+            "tenant_id": tenant_id,
+            "device_id": new_device_id
         }
     
     except HTTPException:
