@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """
-WebSocket Device Update Fix Testing
-Tests WebSocket device update functionality after fixes to backend and frontend.
-Verifies device update broadcasts, message structure, and WebSocket integration.
+Centralized Event System Testing (Phase 1)
+Tests the centralized event system implementation including:
+- Event logging to MongoDB (portal_db.event_log)
+- WebSocket broadcasting via decorators
+- Decorator functionality and backend logs
+- Device CRUD operations with event system integration
 """
 
 import requests
@@ -22,6 +25,12 @@ import uuid
 BACKEND_URL = "https://admin-portal-174.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://") + "/api"
+
+# MongoDB connection for event log verification
+MONGO_URL = "mongodb://localhost:27017"
+mongo_client = pymongo.MongoClient(MONGO_URL)
+portal_db = mongo_client['portal_db']
+event_log_collection = portal_db['event_log']
 
 class WebSocketDeviceUpdateTester:
     def __init__(self):
