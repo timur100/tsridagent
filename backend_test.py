@@ -1562,28 +1562,28 @@ class CentralizedEventSystemTester:
             await self.cleanup_connections()
 
 async def main():
-    print("Starting WebSocket Device Update Fix Testing...")
+    print("Starting Centralized Event System Testing (Phase 1)...")
     print()
     
-    # Test WebSocket Device Update
-    tester = WebSocketDeviceUpdateTester()
+    # Test Centralized Event System
+    tester = CentralizedEventSystemTester()
     test_success = await tester.run_all_tests()
     
     print()
     print("=" * 80)
     print("OVERALL TESTING SUMMARY")
     print("=" * 80)
-    print(f"WebSocket Device Update Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
+    print(f"Centralized Event System Testing: {'✅ ALL TESTS PASSED' if test_success else '❌ ISSUES FOUND'}")
     print("=" * 80)
     
     # Exit with appropriate code
     if test_success:
-        print("🎉 WEBSOCKET DEVICE UPDATE FIX TESTING COMPLETED SUCCESSFULLY!")
-        print("WebSocket device update broadcasts are working correctly with proper message structure.")
+        print("🎉 CENTRALIZED EVENT SYSTEM TESTING COMPLETED SUCCESSFULLY!")
+        print("Event logging to MongoDB and WebSocket broadcasting via decorators are working correctly.")
         sys.exit(0)
     else:
-        print("❌ WEBSOCKET DEVICE UPDATE ISSUES FOUND!")
-        print("WebSocket device update functionality has issues that need to be addressed.")
+        print("❌ CENTRALIZED EVENT SYSTEM ISSUES FOUND!")
+        print("Event system functionality has issues that need to be addressed.")
         sys.exit(1)
 
 if __name__ == "__main__":
