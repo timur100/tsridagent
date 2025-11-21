@@ -1610,9 +1610,8 @@ const AdminPortalContent = () => {
           );
         })()}
           </main>
-          )}
         </>
-      )}
+      )}}
       
       {/* Global Search Modals */}
       {showCustomerModal && selectedCustomerForModal && (
