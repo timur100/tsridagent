@@ -1,0 +1,93 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
+import { Shield, LogOut, User } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
+
+const AdminLayout = ({ children }) => {
+  const { theme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Get company branding
+  const companyName = user?.company_name || 'TSRID';
+  const companyLogo Light = user?.company_logo_light;
+  const companyLogoDark = user?.company_logo_dark;
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  return (
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+      {/* Header */}
+      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div 
+              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/portal/admin')}
+            >
+              {(theme === 'dark' ? companyLogoDark : companyLogoLight) ? (
+                <>
+                  <img 
+                    src={theme === 'dark' ? companyLogoDark : companyLogoLight} 
+                    alt={companyName} 
+                    className="h-12 w-auto max-w-[200px] object-contain"
+                  />
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                    Admin Portal
+                  </h1>
+                </>
+              ) : (
+                <>
+                  <Shield className={`h-10 w-10 ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`} />
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                    {companyName} Admin Portal
+                  </h1>
+                </>
+              )}
+            </div>
+
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              
+              {/* User Menu */}
+              <div className="flex items-center space-x-2">
+                <div className={`flex items-center space-x-2 px-3 py-2 rounded-lg ${
+                  theme === 'dark' ? 'bg-white/10' : 'bg-gray-100'
+                }`}>
+                  <User className={`h-5 w-5 ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`} />
+                  <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-700'}`}>
+                    {user?.email}
+                  </span>
+                </div>
+                
+                <button
+                  onClick={handleLogout}
+                  className={`p-2 rounded-lg transition-colors ${
+                    theme === 'dark'
+                      ? 'hover:bg-white/10 text-white'
+                      : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                  title="Abmelden"
+                >
+                  <LogOut className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Content */}
+      <main>
+        {children}
+      </main>
+    </div>
+  );
+};
+
+export default AdminLayout;
