@@ -86,14 +86,16 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // Stable WebSocket callback functions with useCallback to prevent re-registration
   const handleWSLocationUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket location update:', data);
-    // Trigger refresh via state update
-    setDashboardStats(prev => ({ ...prev }));
+    // Reload dashboard stats to reflect the update
+    fetchDashboardStats();
+    toast.info('Standort aktualisiert', { duration: 2000, icon: '📍' });
   }, []);
 
   const handleWSDeviceUpdate = useCallback((data) => {
     console.log('[TenantDetailPage] WebSocket device update:', data);
-    // Trigger refresh via state update
-    setDashboardStats(prev => ({ ...prev }));
+    // Reload dashboard stats to reflect the update
+    fetchDashboardStats();
+    toast.info('Gerät aktualisiert', { duration: 2000, icon: '🔄' });
   }, []);
 
   const handleWSDeviceCreated = useCallback((data) => {
