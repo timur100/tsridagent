@@ -467,11 +467,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "In Vorbereitung Status Tracking - Phase 1 & 2"
-  stuck_tasks: []
+    - "Phase 1 Ticketing System - Staff Management, SLA, and Assignment APIs"
+  stuck_tasks:
+    - "Phase 1 Ticketing System - Staff Management, SLA, and Assignment APIs"
   test_all: false
   test_priority: "high_first"
-  notes: "Implementing In Vorbereitung tracking feature with filter functionality on TenantDetailPage and global overview page in Admin Portal."
+  notes: "Phase 1 Ticketing System has critical MongoDB cursor iteration bugs preventing Staff Management and SLA APIs from working. Requires immediate fix in Ticketing Microservice."
   
 agent_communication:
     - agent: "main"
