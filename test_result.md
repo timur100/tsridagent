@@ -150,10 +150,10 @@ frontend:
 
   - task: "Device Detail Back Button Navigation Fix"
     implemented: true
-    working: "NA"
-    file: "frontend/src/pages/DeviceDetailPage.jsx, frontend/src/components/TenantDevicesTab.jsx"
+    working: true
+    file: "frontend/src/pages/DeviceDetailPage.jsx, frontend/src/components/TenantDevicesTab.jsx, frontend/src/components/DeviceManagement.jsx, frontend/src/pages/AdminPortal.jsx, frontend/src/PortalApp.jsx"
     stuck_count: 0
-    priority: "medium"
+    priority: "high"
     needs_retesting: false
     status_history:
         - working: "NA"
@@ -162,6 +162,9 @@ frontend:
         - working: "NA"
           agent: "main"
           comment: "✅ GERÄTE-NAVIGATION BUG BEHOBEN (Phase 2): User-Feedback: Zurück-Button von Gerätedetailseite landet bei Verifikationsseite. ROOT CAUSE IDENTIFIZIERT: TenantDevicesTab.jsx navigierte zu FALSCHER Route `/portal/admin/tenants/${tenantId}/devices/${deviceId}` (mit /portal Prefix), aber DeviceDetailPage Route ist `/admin/tenants/${tenantId}/devices/${deviceId}` (OHNE /portal). FOLGE: 1) Navigation zu nicht-existierender Route, 2) Catch-all Route in PortalApp.jsx leitet zu /portal/login um (Zeile 155), 3) Nach Login: Umleitung zur Standard-Startseite (Scanner/Verifikationsseite), 4) Browser-History enthält diese Umleitungen, 5) navigate(-1) führt zurück durch diese fehlerhafte History. LÖSUNG: TenantDevicesTab.jsx Zeile 243 geändert von `/portal/admin/tenants/...` zu `/admin/tenants/...` (entfernt falsches /portal Prefix). AUSWIRKUNG: Navigation zu DeviceDetailPage funktioniert jetzt korrekt, keine Umleitung mehr zur Verifikationsseite, Browser-History ist sauber, navigate(-1) führt korrekt zurück zum Geräte-Tab. Hot-Reload aktiv."
+        - working: true
+          agent: "main"
+          comment: "✅ VOLLSTÄNDIGE GERÄTE-NAVIGATION LÖSUNG (Phase 3): User-Feedback: 1) Zwei unterschiedliche Ansichten für Gerätedetails (Modal vs. Seite), 2) Gerätedetails öffnet falsche Seite (Verifizierung). ALLE PROBLEME BEHOBEN: 1) KONSISTENTE ANSICHT: Beide Pfade verwenden jetzt DeviceDetailPage statt Modal - 'Alle Kunden → Devices' navigiert zu /portal/admin/devices/{deviceId} (neue globale Route), 'Tenants → Geräte' navigiert zu /portal/admin/tenants/{tenantId}/devices/{deviceId}. 2) KORREKTE NAVIGATION: TenantDevicesTab.jsx verwendet jetzt korrektes /portal Prefix und übergibt Navigation State (fromTab: 'devices', tenantId). 3) INTELLIGENTER ZURÜCK-BUTTON: DeviceDetailPage prüft location.state und navigiert zurück zum richtigen Tab - Von Tenant-Geräte: Zurück zu Tenant mit Geräte-Tab aktiv, Von Alle Kunden: Zurück zu Admin Portal mit Devices-Tab aktiv, Fallback: navigate(-1). 4) NEUE ROUTE: /portal/admin/devices/:deviceId für globale Geräteansicht hinzugefügt. 5) AKTIVE TAB WIEDERHERSTELLUNG: AdminPortal und TenantDetailPage reagieren auf location.state?.activeTab. TESTING: ✅ Alle Kunden → Devices → AAHC01-01 → Zurück = Devices Tab aktiv, ✅ Tenants → Europcar → Geräte → AAHC01-01 → Zurück = Geräte Tab aktiv. DATEIEN GEÄNDERT: DeviceDetailPage.jsx (useLocation, intelligenter Zurück-Button), TenantDevicesTab.jsx (korrektes /portal Prefix, Navigation State), DeviceManagement.jsx (Navigation statt Modal, useNavigate), PortalApp.jsx (neue globale Device Route), AdminPortal.jsx (activeTab State Handling)."
 
   - task: "Toast-Benachrichtigung bei erfolgreichen Device-Laden entfernen"
     implemented: true
