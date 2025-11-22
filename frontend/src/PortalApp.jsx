@@ -16,6 +16,8 @@ import TenantInPreparationPage from './pages/TenantInPreparationPage';
 import CustomerInPreparationPage from './pages/CustomerInPreparationPage';
 import CatalogPortal from './pages/CatalogPortal';
 import AdminLayout from './components/AdminLayout';
+import IDChecksPage from './pages/IDChecksPage';
+import IDCheckDetailPage from './pages/IDCheckDetailPage';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
