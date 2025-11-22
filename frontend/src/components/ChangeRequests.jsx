@@ -63,10 +63,13 @@ const ChangeRequests = () => {
   const handleCreate = async (e) => {
     e.preventDefault();
     try {
+      console.log('[ChangeRequests] Creating with data:', formData);
       const response = await apiCall('/api/change-requests', {
         method: 'POST',
         body: JSON.stringify(formData)
       });
+      
+      console.log('[ChangeRequests] Create response:', response);
       
       if (response.success) {
         toast.success('Change Request erfolgreich erstellt!');
@@ -79,12 +82,19 @@ const ChangeRequests = () => {
           impact_description: '',
           requested_date: ''
         });
-        fetchChangeRequests();
-        fetchStats();
+        
+        // Refresh data
+        console.log('[ChangeRequests] Refreshing data...');
+        await fetchChangeRequests();
+        await fetchStats();
+        console.log('[ChangeRequests] Data refreshed');
+      } else {
+        console.error('[ChangeRequests] Creation failed:', response);
+        toast.error('Fehler: ' + (response.message || 'Unbekannter Fehler'));
       }
     } catch (error) {
       console.error('Error creating change request:', error);
-      toast.error('Fehler beim Erstellen');
+      toast.error('Fehler beim Erstellen: ' + error.message);
     }
   };
 
