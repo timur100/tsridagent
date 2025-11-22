@@ -682,7 +682,7 @@ const AdminPortalContent = () => {
                     : 'text-gray-500'
                 }`} />
                 {newOrdersCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-[10px] font-bold text-black animate-pulse">
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-yellow-500 text-[10px] font-bold text-black animate-heartbeat">
                     {newOrdersCount > 9 ? '9+' : newOrdersCount}
                   </span>
                 )}
