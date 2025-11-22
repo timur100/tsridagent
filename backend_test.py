@@ -29,6 +29,7 @@ API_BASE = f"{BACKEND_URL}/api"
 MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
 ticketing_db = mongo_client['ticketing_db']
+portal_db = mongo_client['portal_db']
 
 class Phase1TicketingSystemTester:
     def __init__(self):
