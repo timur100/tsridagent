@@ -3191,20 +3191,32 @@ class TicketCreationVerificationTester:
                 )
                 return False
             
-            # Verify required fields
+            # Verify ticket object exists
+            if "ticket" not in data:
+                self.log_result(
+                    "Customer Ticket Creation (Device + Location)",
+                    False,
+                    "Missing ticket object in response",
+                    data
+                )
+                return False
+            
+            ticket = data["ticket"]
+            
+            # Verify required fields in ticket object
             required_fields = ["ticket_number", "customer_email", "location_name", "device_name"]
             for field in required_fields:
-                if field not in data:
+                if field not in ticket:
                     self.log_result(
                         "Customer Ticket Creation (Device + Location)",
                         False,
-                        f"Missing required field: {field}",
+                        f"Missing required field in ticket: {field}",
                         data
                     )
                     return False
             
             # Verify ticket number format (TK.YYYYMMDD.XXX)
-            ticket_number = data["ticket_number"]
+            ticket_number = ticket["ticket_number"]
             if not ticket_number.startswith("TK."):
                 self.log_result(
                     "Customer Ticket Creation (Device + Location)",
