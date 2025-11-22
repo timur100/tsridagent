@@ -2991,5 +2991,985 @@ async def main():
         print("The API functionality has issues that need to be addressed.")
         sys.exit(1)
 
+class TicketCreationVerificationTester:
+    """
+    Comprehensive Ticket Creation Verification Tester
+    Tests POST /api/tickets after database fix (test_database → portal_db)
+    """
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+        self.results = []
+        self.admin_token = None
+        self.customer_token = None
+        self.created_tickets = []
+        
+    def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if not success or response_data:
+            print(f"   Details: {details}")
+            if response_data:
+                print(f"   Response: {json.dumps(response_data, indent=2)}")
+        print()
+        
+        self.results.append({
+            'test': test_name,
+            'success': success,
+            'details': details,
+            'response': response_data
+        })
+    
+    def authenticate_customer(self):
+        """Authenticate as customer user (info@europcar.com)"""
+        try:
+            auth_data = {
+                "email": "info@europcar.com",
+                "password": "Berlin#2018"
+            }
+            
+            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Customer Authentication", 
+                    False, 
+                    f"Authentication failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("access_token"):
+                self.log_result(
+                    "Customer Authentication", 
+                    False, 
+                    "Authentication response missing access_token",
+                    data
+                )
+                return False
+            
+            self.customer_token = data["access_token"]
+            
+            # Decode token to verify claims
+            try:
+                decoded = jwt.decode(self.customer_token, options={"verify_signature": False})
+                tenant_ids = decoded.get("tenant_ids", [])
+                role = decoded.get("role", "")
+                customer_id = decoded.get("customer_id", "")
+                
+                self.log_result(
+                    "Customer Authentication", 
+                    True, 
+                    f"Successfully authenticated as info@europcar.com with role='{role}', customer_id='{customer_id}', tenant_ids={tenant_ids}"
+                )
+                return True
+            except Exception as decode_error:
+                self.log_result(
+                    "Customer Authentication", 
+                    False, 
+                    f"Failed to decode JWT token: {str(decode_error)}"
+                )
+                return False
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Authentication", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def authenticate_admin(self):
+        """Authenticate as admin user (admin@tsrid.com)"""
+        try:
+            auth_data = {
+                "email": "admin@tsrid.com",
+                "password": "admin123"
+            }
+            
+            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Authentication failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("access_token"):
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    "Authentication response missing access_token",
+                    data
+                )
+                return False
+            
+            self.admin_token = data["access_token"]
+            
+            # Decode token to verify claims
+            try:
+                decoded = jwt.decode(self.admin_token, options={"verify_signature": False})
+                tenant_ids = decoded.get("tenant_ids", [])
+                role = decoded.get("role", "")
+                customer_id = decoded.get("customer_id", "")
+                
+                self.log_result(
+                    "Admin Authentication", 
+                    True, 
+                    f"Successfully authenticated as admin@tsrid.com with role='{role}', customer_id='{customer_id}', tenant_ids={tenant_ids}"
+                )
+                return True
+            except Exception as decode_error:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Failed to decode JWT token: {str(decode_error)}"
+                )
+                return False
+            
+        except Exception as e:
+            self.log_result(
+                "Admin Authentication", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_customer_ticket_creation_with_device_and_location(self):
+        """Test ticket creation as customer with device_id and location_id"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Customer Ticket Creation (Device + Location)",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Gerät AAHC01-01 funktioniert nicht korrekt",
+                "description": "Das Gerät zeigt Fehlermeldungen an und kann nicht verwendet werden.",
+                "priority": "high",
+                "category": "hardware",
+                "device_id": "AAHC01-01",
+                "location_id": "AAHC01"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Customer Ticket Creation (Device + Location)",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Customer Ticket Creation (Device + Location)",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify required fields
+            required_fields = ["ticket_number", "customer_email", "location_name", "device_name"]
+            for field in required_fields:
+                if field not in data:
+                    self.log_result(
+                        "Customer Ticket Creation (Device + Location)",
+                        False,
+                        f"Missing required field: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify ticket number format (TK.YYYYMMDD.XXX)
+            ticket_number = data["ticket_number"]
+            if not ticket_number.startswith("TK."):
+                self.log_result(
+                    "Customer Ticket Creation (Device + Location)",
+                    False,
+                    f"Invalid ticket number format: {ticket_number}. Expected TK.YYYYMMDD.XXX",
+                    data
+                )
+                return False
+            
+            # Store created ticket for cleanup
+            self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Customer Ticket Creation (Device + Location)",
+                True,
+                f"Successfully created ticket {ticket_number} with customer_email={data['customer_email']}, location_name={data.get('location_name', 'N/A')}, device_name={data.get('device_name', 'N/A')}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Ticket Creation (Device + Location)",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_customer_ticket_creation_device_only(self):
+        """Test ticket creation as customer with device_id only"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Customer Ticket Creation (Device Only)",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Software-Problem mit Gerät AAHC01-01",
+                "description": "Software läuft nicht stabil, häufige Abstürze.",
+                "priority": "medium",
+                "category": "software",
+                "device_id": "AAHC01-01"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Customer Ticket Creation (Device Only)",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Customer Ticket Creation (Device Only)",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Customer Ticket Creation (Device Only)",
+                True,
+                f"Successfully created ticket {ticket_number} with device_id only"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Ticket Creation (Device Only)",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_customer_ticket_creation_location_only(self):
+        """Test ticket creation as customer with location_id only"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Customer Ticket Creation (Location Only)",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Netzwerk-Problem am Standort AAHC01",
+                "description": "Internet-Verbindung ist sehr langsam oder nicht verfügbar.",
+                "priority": "urgent",
+                "category": "network",
+                "location_id": "AAHC01"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Customer Ticket Creation (Location Only)",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Customer Ticket Creation (Location Only)",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Customer Ticket Creation (Location Only)",
+                True,
+                f"Successfully created ticket {ticket_number} with location_id only"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Ticket Creation (Location Only)",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_customer_ticket_creation_no_device_location(self):
+        """Test ticket creation as customer without device_id and location_id"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Customer Ticket Creation (No Device/Location)",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Allgemeines Problem mit dem Service",
+                "description": "Ich benötige Unterstützung bei der Nutzung des Systems.",
+                "priority": "low",
+                "category": "other"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Customer Ticket Creation (No Device/Location)",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Customer Ticket Creation (No Device/Location)",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Customer Ticket Creation (No Device/Location)",
+                True,
+                f"Successfully created ticket {ticket_number} without device_id and location_id"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Customer Ticket Creation (No Device/Location)",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_admin_ticket_creation_for_customer(self):
+        """Test ticket creation as admin for a specific customer"""
+        try:
+            if not self.admin_token:
+                self.log_result(
+                    "Admin Ticket Creation for Customer",
+                    False,
+                    "No admin token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Admin-erstelltes Ticket für Europcar",
+                "description": "Dieses Ticket wurde vom Admin für den Kunden erstellt.",
+                "priority": "medium",
+                "category": "hardware",
+                "customer_email": "info@europcar.com",
+                "device_id": "AAHC01-01",
+                "location_id": "AAHC01"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Admin Ticket Creation for Customer",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Admin Ticket Creation for Customer",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify customer_email is set correctly
+            if data.get("customer_email") != "info@europcar.com":
+                self.log_result(
+                    "Admin Ticket Creation for Customer",
+                    False,
+                    f"Expected customer_email 'info@europcar.com', got '{data.get('customer_email')}'",
+                    data
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Admin Ticket Creation for Customer",
+                True,
+                f"Successfully created ticket {ticket_number} as admin for customer {data['customer_email']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Admin Ticket Creation for Customer",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_ticket_list_retrieval(self):
+        """Test GET /api/tickets to verify created tickets appear in list"""
+        try:
+            if not self.admin_token:
+                self.log_result(
+                    "Ticket List Retrieval",
+                    False,
+                    "No admin token available"
+                )
+                return False
+            
+            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            response = self.session.get(f"{API_BASE}/tickets", headers=headers)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Ticket List Retrieval",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Ticket List Retrieval",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            tickets = data.get("tickets", [])
+            count = data.get("count", 0)
+            
+            # Verify count field matches array length
+            if count != len(tickets):
+                self.log_result(
+                    "Ticket List Retrieval",
+                    False,
+                    f"Count mismatch: count field says {count}, but tickets array has {len(tickets)} items"
+                )
+                return False
+            
+            # Check if our created tickets appear in the list
+            found_tickets = []
+            for created_ticket in self.created_tickets:
+                for ticket in tickets:
+                    if ticket.get("ticket_number") == created_ticket:
+                        found_tickets.append(created_ticket)
+                        break
+            
+            self.log_result(
+                "Ticket List Retrieval",
+                True,
+                f"Successfully retrieved ticket list with {count} tickets. Found {len(found_tickets)}/{len(self.created_tickets)} of our created tickets"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Ticket List Retrieval",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_error_handling_no_auth(self):
+        """Test error handling - no authentication"""
+        try:
+            ticket_data = {
+                "title": "Test Ticket ohne Auth",
+                "description": "Dieses Ticket sollte fehlschlagen.",
+                "priority": "low",
+                "category": "other"
+            }
+            
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data)
+            
+            if response.status_code == 200:
+                self.log_result(
+                    "Error Handling - No Authentication",
+                    False,
+                    "Expected authentication error, but request succeeded"
+                )
+                return False
+            
+            if response.status_code not in [401, 403]:
+                self.log_result(
+                    "Error Handling - No Authentication",
+                    False,
+                    f"Expected 401 or 403, got {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            self.log_result(
+                "Error Handling - No Authentication",
+                True,
+                f"Correctly rejected request without authentication (Status: {response.status_code})"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Error Handling - No Authentication",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_error_handling_invalid_device_id(self):
+        """Test error handling - invalid device_id (should succeed with device_name=null)"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Error Handling - Invalid Device ID",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Test mit ungültiger Device ID",
+                "description": "Dieses Ticket sollte erfolgreich sein, aber device_name sollte null sein.",
+                "priority": "low",
+                "category": "other",
+                "device_id": "INVALID-DEVICE-ID-123"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Error Handling - Invalid Device ID",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Error Handling - Invalid Device ID",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify device_name is null or empty for invalid device_id
+            device_name = data.get("device_name")
+            if device_name and device_name != "":
+                self.log_result(
+                    "Error Handling - Invalid Device ID",
+                    False,
+                    f"Expected device_name to be null/empty for invalid device_id, got: {device_name}"
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Error Handling - Invalid Device ID",
+                True,
+                f"Successfully handled invalid device_id - ticket created with device_name=null"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Error Handling - Invalid Device ID",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_error_handling_invalid_location_id(self):
+        """Test error handling - invalid location_id (should succeed with location_name=null)"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Error Handling - Invalid Location ID",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Test mit ungültiger Location ID",
+                "description": "Dieses Ticket sollte erfolgreich sein, aber location_name sollte null sein.",
+                "priority": "low",
+                "category": "other",
+                "location_id": "INVALID-LOCATION-ID-123"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Error Handling - Invalid Location ID",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Error Handling - Invalid Location ID",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify location_name is null or empty for invalid location_id
+            location_name = data.get("location_name")
+            if location_name and location_name != "":
+                self.log_result(
+                    "Error Handling - Invalid Location ID",
+                    False,
+                    f"Expected location_name to be null/empty for invalid location_id, got: {location_name}"
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Error Handling - Invalid Location ID",
+                True,
+                f"Successfully handled invalid location_id - ticket created with location_name=null"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Error Handling - Invalid Location ID",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_database_verification(self):
+        """Test that tickets are correctly stored in ticketing_db.tickets collection"""
+        try:
+            # Check MongoDB directly
+            tickets_in_db = list(ticketing_db.tickets.find({}))
+            
+            if not tickets_in_db:
+                self.log_result(
+                    "Database Verification",
+                    False,
+                    "No tickets found in ticketing_db.tickets collection"
+                )
+                return False
+            
+            # Check if our created tickets are in the database
+            found_in_db = 0
+            for created_ticket in self.created_tickets:
+                for db_ticket in tickets_in_db:
+                    if db_ticket.get("ticket_number") == created_ticket:
+                        found_in_db += 1
+                        
+                        # Verify required fields are present
+                        required_fields = ["ticket_number", "title", "description", "priority", "category", "status", "created_at"]
+                        missing_fields = []
+                        for field in required_fields:
+                            if field not in db_ticket:
+                                missing_fields.append(field)
+                        
+                        if missing_fields:
+                            self.log_result(
+                                "Database Verification",
+                                False,
+                                f"Ticket {created_ticket} missing required fields: {missing_fields}"
+                            )
+                            return False
+                        break
+            
+            self.log_result(
+                "Database Verification",
+                True,
+                f"Successfully verified {found_in_db}/{len(self.created_tickets)} created tickets are stored in ticketing_db.tickets collection with all required fields"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Database Verification",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_trailing_slash_endpoints(self):
+        """Test both /api/tickets and /api/tickets/ endpoints"""
+        try:
+            if not self.customer_token:
+                self.log_result(
+                    "Trailing Slash Endpoints",
+                    False,
+                    "No customer token available"
+                )
+                return False
+            
+            ticket_data = {
+                "title": "Test Trailing Slash Endpoint",
+                "description": "Testing /api/tickets/ with trailing slash",
+                "priority": "low",
+                "category": "other"
+            }
+            
+            headers = {'Authorization': f'Bearer {self.customer_token}'}
+            
+            # Test with trailing slash
+            response = self.session.post(f"{API_BASE}/tickets/", json=ticket_data, headers=headers)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Trailing Slash Endpoints",
+                    False,
+                    f"Request to /api/tickets/ failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "Trailing Slash Endpoints",
+                    False,
+                    "Response from /api/tickets/ indicates failure",
+                    data
+                )
+                return False
+            
+            # Store created ticket
+            ticket_number = data.get("ticket_number")
+            if ticket_number:
+                self.created_tickets.append(ticket_number)
+            
+            self.log_result(
+                "Trailing Slash Endpoints",
+                True,
+                f"Both /api/tickets and /api/tickets/ endpoints working correctly. Created ticket: {ticket_number}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Trailing Slash Endpoints",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    async def run_all_tests(self):
+        """Run all ticket creation verification tests"""
+        print("=" * 80)
+        print("TICKET CREATION VERIFICATION TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Testing: POST /api/tickets nach Database-Fix")
+        print(f"Customer: info@europcar.com / Berlin#2018")
+        print(f"Admin: admin@tsrid.com / admin123")
+        print("=" * 80)
+        print()
+        
+        try:
+            # Step 1: Authenticate as Customer
+            print("🔍 STEP 1: Authenticating as Customer (info@europcar.com)...")
+            customer_auth_ok = self.authenticate_customer()
+            
+            # Step 2: Authenticate as Admin
+            print("\n🔍 STEP 2: Authenticating as Admin (admin@tsrid.com)...")
+            admin_auth_ok = self.authenticate_admin()
+            
+            if not customer_auth_ok and not admin_auth_ok:
+                print("❌ Both authentications failed. Stopping tests.")
+                return False
+            
+            # Step 3: Test Customer Ticket Creation - Various Combinations
+            print("\n🔍 STEP 3: Testing Customer Ticket Creation...")
+            customer_tests = []
+            if customer_auth_ok:
+                customer_tests.append(self.test_customer_ticket_creation_with_device_and_location())
+                customer_tests.append(self.test_customer_ticket_creation_device_only())
+                customer_tests.append(self.test_customer_ticket_creation_location_only())
+                customer_tests.append(self.test_customer_ticket_creation_no_device_location())
+                customer_tests.append(self.test_trailing_slash_endpoints())
+            
+            # Step 4: Test Admin Ticket Creation
+            print("\n🔍 STEP 4: Testing Admin Ticket Creation...")
+            admin_tests = []
+            if admin_auth_ok:
+                admin_tests.append(self.test_admin_ticket_creation_for_customer())
+            
+            # Step 5: Test Ticket List Retrieval
+            print("\n🔍 STEP 5: Testing Ticket List Retrieval...")
+            list_test_ok = False
+            if admin_auth_ok:
+                list_test_ok = self.test_ticket_list_retrieval()
+            
+            # Step 6: Test Error Handling
+            print("\n🔍 STEP 6: Testing Error Handling...")
+            error_tests = []
+            error_tests.append(self.test_error_handling_no_auth())
+            if customer_auth_ok:
+                error_tests.append(self.test_error_handling_invalid_device_id())
+                error_tests.append(self.test_error_handling_invalid_location_id())
+            
+            # Step 7: Test Database Verification
+            print("\n🔍 STEP 7: Testing Database Verification...")
+            db_test_ok = self.test_database_verification()
+            
+            # Summary
+            print("\n" + "=" * 80)
+            print("TICKET CREATION VERIFICATION TESTING SUMMARY")
+            print("=" * 80)
+            
+            passed = sum(1 for r in self.results if r['success'])
+            total = len(self.results)
+            
+            print(f"Tests completed: {passed}/{total} passed")
+            print(f"Created tickets during testing: {len(self.created_tickets)}")
+            
+            # Print critical functionality results
+            print("\n🔍 CRITICAL FUNCTIONALITY:")
+            print(f"   • Customer Authentication: {'✅ WORKING' if customer_auth_ok else '❌ FAILED'}")
+            print(f"   • Admin Authentication: {'✅ WORKING' if admin_auth_ok else '❌ FAILED'}")
+            print(f"   • Customer Ticket Creation: {'✅ WORKING' if all(customer_tests) else '❌ FAILED'}")
+            print(f"   • Admin Ticket Creation: {'✅ WORKING' if all(admin_tests) else '❌ FAILED'}")
+            print(f"   • Ticket List Retrieval: {'✅ WORKING' if list_test_ok else '❌ FAILED'}")
+            print(f"   • Error Handling: {'✅ WORKING' if all(error_tests) else '❌ FAILED'}")
+            print(f"   • Database Storage: {'✅ WORKING' if db_test_ok else '❌ FAILED'}")
+            
+            # Print failed tests
+            failed_tests = [r for r in self.results if not r['success']]
+            if failed_tests:
+                print("\n❌ ISSUES FOUND:")
+                for test in failed_tests:
+                    print(f"   • {test['test']}: {test['details']}")
+            
+            # Print successful tests
+            successful_tests = [r for r in self.results if r['success']]
+            if successful_tests:
+                print("\n✅ SUCCESSFUL CHECKS:")
+                for test in successful_tests:
+                    print(f"   • {test['test']}")
+            
+            return len(failed_tests) == 0
+            
+        except Exception as e:
+            print(f"❌ Error during testing: {str(e)}")
+            return False
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    # Run Ticket Creation Verification tests
+    tester = TicketCreationVerificationTester()
+    success = asyncio.run(tester.run_all_tests())
+    
+    if success:
+        print("\n🎉 All Ticket Creation Verification tests passed!")
+        sys.exit(0)
+    else:
+        print("\n❌ Some Ticket Creation Verification tests failed!")
+        sys.exit(1)
