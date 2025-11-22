@@ -28,6 +28,6 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8104))
+    port = int(os.getenv("PORT", 8105))
     print(f"Starting Verification Service on port {port}...")
     uvicorn.run(app, host="0.0.0.0", port=port)
