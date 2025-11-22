@@ -3753,7 +3753,7 @@ class TicketCreationVerificationTester:
                 return False
             
             # Store created ticket
-            ticket_number = data.get("ticket_number")
+            ticket_number = data.get("ticket", {}).get("ticket_number")
             if ticket_number:
                 self.created_tickets.append(ticket_number)
             
