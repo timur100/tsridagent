@@ -3473,25 +3473,37 @@ class TicketCreationVerificationTester:
                 )
                 return False
             
-            # Verify customer_email is set correctly
-            if data.get("customer_email") != "info@europcar.com":
+            # Verify ticket object exists
+            if "ticket" not in data:
                 self.log_result(
                     "Admin Ticket Creation for Customer",
                     False,
-                    f"Expected customer_email 'info@europcar.com', got '{data.get('customer_email')}'",
+                    "Missing ticket object in response",
+                    data
+                )
+                return False
+            
+            ticket = data["ticket"]
+            
+            # Verify customer_email is set correctly
+            if ticket.get("customer_email") != "info@europcar.com":
+                self.log_result(
+                    "Admin Ticket Creation for Customer",
+                    False,
+                    f"Expected customer_email 'info@europcar.com', got '{ticket.get('customer_email')}'",
                     data
                 )
                 return False
             
             # Store created ticket
-            ticket_number = data.get("ticket_number")
+            ticket_number = ticket.get("ticket_number")
             if ticket_number:
                 self.created_tickets.append(ticket_number)
             
             self.log_result(
                 "Admin Ticket Creation for Customer",
                 True,
-                f"Successfully created ticket {ticket_number} as admin for customer {data['customer_email']}"
+                f"Successfully created ticket {ticket_number} as admin for customer {ticket['customer_email']}"
             )
             return True
             
