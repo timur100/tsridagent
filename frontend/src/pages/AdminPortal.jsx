@@ -399,6 +399,13 @@ const AdminPortalContent = () => {
     }
   }, [isImpersonating]);
 
+  // Sync activeTab with current URL
+  useEffect(() => {
+    if (location.pathname.includes('/id-checks')) {
+      setActiveTab('id-checks');
+    }
+  }, [location.pathname]);
+
   // Clear new orders badge when orders tab is viewed
   useEffect(() => {
     if (activeTab === 'orders') {
