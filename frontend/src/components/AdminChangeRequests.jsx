@@ -52,7 +52,7 @@ const AdminChangeRequests = () => {
         params.append('tenant_id', selectedTenantId);
       }
       const response = await apiCall(`/api/change-requests/stats/summary?${params.toString()}`);
-      if (response.success) {
+      if (response.success && response.stats) {
         setStats(response.stats);
       }
     } catch (error) {
