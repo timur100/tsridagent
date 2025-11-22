@@ -217,7 +217,9 @@ const CustomerPortal = () => {
                 { id: 'devices', label: 'Geräte', icon: Monitor },
                 { id: 'locations', label: 'Standorte', icon: MapPin },
                 ...(user?.shop_enabled ? [{ id: 'shop', label: 'Shop', icon: ShoppingBag }] : []),
-                { id: 'tickets', label: 'Support', icon: Headphones }
+                { id: 'tickets', label: 'Support', icon: Headphones },
+                { id: 'changes', label: 'Change Requests', icon: RefreshCw },
+                { id: 'help', label: 'Hilfe', icon: BookOpen }
               ].map((tab) => (
                 <button
                   key={tab.id}
