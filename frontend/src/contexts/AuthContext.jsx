@@ -247,13 +247,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   const apiCall = async (endpoint, options = {}) => {
-    // Use XMLHttpRequest with relative URLs to avoid Mixed Content
-    // Browser will automatically use HTTPS for same-origin requests
+    // Use XMLHttpRequest with BACKEND_URL to ensure HTTPS
     return new Promise((resolve) => {
       const xhr = new XMLHttpRequest();
       const method = options.method || 'GET';
-      // Use relative URL - browser handles protocol automatically
-      const url = endpoint.startsWith('http') ? endpoint : endpoint;
+      // If endpoint is absolute (starts with http), use as-is, otherwise prefix with BACKEND_URL
+      const url = endpoint.startsWith('http') ? endpoint : `${BACKEND_URL}${endpoint}`;
+      
+      console.log('[apiCall] Calling:', url);
       
       xhr.open(method, url);
       
