@@ -2556,13 +2556,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "TenantContext Integration Testing"
-    - "CustomerSwitcher Synchronisation"
-    - "Bidirektionale Tenant-Filterung"
-    - "Superadmin Check (admin@tsrid.com)"
+    - "Chat/Messages Frontend E2E Testing"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
 agent_communication:
     - agent: "testing"
