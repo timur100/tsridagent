@@ -47,6 +47,7 @@ async def proxy_tickets(request: Request, path: str = ""):
 
 @router.api_route("/api/sla/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 @router.api_route("/api/sla/", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
+@router.api_route("/api/sla", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 async def proxy_sla(request: Request, path: str = ""):
     """
     Proxy all /api/sla/* requests to Ticketing Service
