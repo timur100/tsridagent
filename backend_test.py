@@ -3744,7 +3744,8 @@ class TicketCreationVerificationTester:
                 return False
             
             # Verify location_name is null or empty for invalid location_id
-            location_name = data.get("location_name")
+            ticket = data.get("ticket", {})
+            location_name = ticket.get("location_name")
             if location_name and location_name != "":
                 self.log_result(
                     "Error Handling - Invalid Location ID",
