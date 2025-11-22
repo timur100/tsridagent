@@ -42,6 +42,10 @@ app.include_router(workflow.router, prefix="/api")
 app.include_router(location_details.router, prefix="/api")
 app.include_router(sla.router, prefix="/api")
 app.include_router(staff.router, prefix="/api")
+app.include_router(change_requests.router, prefix="/api")
+app.include_router(knowledge_base.router, prefix="/api")
+app.include_router(chat_messages.router, prefix="/api")
+app.include_router(ticket_templates.router, prefix="/api")
 
 @app.get("/")
 async def root():
