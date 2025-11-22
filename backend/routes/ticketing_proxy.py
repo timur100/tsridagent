@@ -16,11 +16,13 @@ async def proxy_tickets(request: Request, path: str = ""):
     Proxy all /api/tickets/* requests to Ticketing Service
     """
     try:
+        logger.info(f"🎫 [Ticketing Proxy] {request.method} /api/tickets{path} - Forwarding to Ticketing Service")
         clean_path = path.rstrip('/') if path else ""
         target_url = f"{TICKETING_SERVICE_URL}/api/tickets/"
         if clean_path:
             target_url += clean_path
         
+        logger.info(f"🎯 [Ticketing Proxy] Target URL: {target_url}")
         body = await request.body()
         
         async with httpx.AsyncClient(timeout=30.0) as client:
