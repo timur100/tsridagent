@@ -13,6 +13,8 @@ import SearchInput from './SearchInput';
 import ShopView from './ShopView';
 import CustomerTickets from './CustomerTickets';
 import LocationsTabEnhanced from './LocationsTabEnhanced';
+import ChangeRequests from './ChangeRequests';
+import HelpCenter from './HelpCenter';
 import { getFullBundeslandName } from '../utils/bundesland';
 import { 
   extractGeoFilterOptions, 
