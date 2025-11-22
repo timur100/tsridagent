@@ -141,11 +141,13 @@ async def send_message(
 async def upload_file(
     file: UploadFile = File(...),
     ticket_id: str = Form(...),
+    is_audio: Optional[str] = Form(None),
     token_data: dict = Depends(verify_token)
 ):
     """
     Upload a file for chat message
     Max size: 10MB
+    Supports regular files and audio messages
     """
     try:
         # Verify file size
@@ -175,6 +177,7 @@ async def upload_file(
             "file_path": file_path,
             "file_size": file_size,
             "file_type": file.content_type,
+            "is_audio": is_audio and is_audio.lower() in ('true', '1', 'yes'),
             "ticket_id": ticket_id,
             "uploaded_by": token_data.get("sub"),
             "uploaded_at": datetime.now(timezone.utc).isoformat()
@@ -188,9 +191,11 @@ async def upload_file(
         if '_id' in file_metadata:
             del file_metadata['_id']
         
+        message_text = "Sprachnachricht" if file_metadata['is_audio'] else "Datei hochgeladen"
+        
         return {
             "success": True,
-            "message": "Datei hochgeladen",
+            "message": message_text,
             "file": file_metadata
         }
     
