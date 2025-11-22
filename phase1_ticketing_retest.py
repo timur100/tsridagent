@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from environment
-BACKEND_URL = "https://device-tracker-63.preview.emergentagent.com"
+BACKEND_URL = "https://device-ticket-system.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class Phase1TicketingReTest:
