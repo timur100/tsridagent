@@ -232,6 +232,53 @@ async def download_file(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/files/{filename}")
+async def serve_file(
+    filename: str,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Serve uploaded files (audio, documents, etc.)
+    """
+    try:
+        from fastapi.responses import FileResponse
+        
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="Datei nicht gefunden")
+        
+        # Security: Ensure file is within upload directory
+        if not os.path.abspath(file_path).startswith(os.path.abspath(UPLOAD_DIR)):
+            raise HTTPException(status_code=403, detail="Zugriff verweigert")
+        
+        # Determine media type
+        if filename.endswith('.webm'):
+            media_type = 'audio/webm'
+        elif filename.endswith('.mp3'):
+            media_type = 'audio/mpeg'
+        elif filename.endswith('.wav'):
+            media_type = 'audio/wav'
+        elif filename.endswith('.ogg'):
+            media_type = 'audio/ogg'
+        elif filename.endswith('.m4a'):
+            media_type = 'audio/mp4'
+        else:
+            media_type = 'application/octet-stream'
+        
+        return FileResponse(
+            path=file_path,
+            media_type=media_type,
+            filename=filename
+        )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error serving file: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/messages/{ticket_id}", response_model=dict)
 async def get_ticket_messages(
     ticket_id: str,
