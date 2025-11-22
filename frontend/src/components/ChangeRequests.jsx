@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Plus, Search, Clock, CheckCircle, XCircle, AlertCircle, Filter } from 'lucide-react';
