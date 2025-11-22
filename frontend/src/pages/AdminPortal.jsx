@@ -93,6 +93,8 @@ const AdminPortalContent = () => {
   const [lastCheckedOrders, setLastCheckedOrders] = useState(null);
   const [newTicketsCount, setNewTicketsCount] = useState(0);
   const [lastCheckedTickets, setLastCheckedTickets] = useState(null);
+  const [newChangeRequestsCount, setNewChangeRequestsCount] = useState(0);
+  const [lastCheckedChangeRequests, setLastCheckedChangeRequests] = useState(null);
   const [settingsTab, setSettingsTab] = useState('branding');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [inventoryTab, setInventoryTab] = useState('items'); // 'items' or 'goods-receipt'
