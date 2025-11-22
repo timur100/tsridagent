@@ -67,6 +67,33 @@ const SupportSettings = () => {
     }
   };
   
+  const handleManualArchive = async () => {
+    if (!window.confirm(`Wirklich alle Nachrichten archivieren, die älter als ${settings.archive_after_days} Tage sind?`)) {
+      return;
+    }
+    
+    try {
+      setSaving(true);
+      const formData = new FormData();
+      formData.append('days_old', settings.archive_after_days.toString());
+      
+      const result = await apiCall('/api/chat/archive', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (result.success) {
+        const archivedCount = result.archived_count || 0;
+        toast.success(`${archivedCount} Nachricht(en) archiviert`);
+      }
+    } catch (error) {
+      console.error('Error archiving messages:', error);
+      toast.error('Fehler beim Archivieren');
+    } finally {
+      setSaving(false);
+    }
+  };
+  
   const handleReset = () => {
     if (window.confirm('Alle Änderungen verwerfen?')) {
       fetchSettings();
