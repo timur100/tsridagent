@@ -318,6 +318,19 @@ const SupportManagement = () => {
             <Circle className="h-5 w-5" />
             Knowledge Base
           </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'settings'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <MessageSquare className="h-5 w-5" />
+            Einstellungen
+          </button>
         </div>
       </Card>
       
