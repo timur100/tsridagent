@@ -1043,25 +1043,22 @@ const AdminPortalContent = () => {
                 {newOrdersCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('orders')}
-                    className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       theme === 'dark' 
                         ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(234,179,8,0.5)] hover:-translate-y-1 animate-heartbeat' 
                         : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(234,179,8,0.4)] hover:-translate-y-1 animate-heartbeat'
                     }`}>
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full -mr-10 -mt-10"></div>
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/10 rounded-full -mr-8 -mt-8"></div>
                     <div className="flex items-center justify-between relative z-10">
                       <div>
-                        <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
-                          🔔 NEUE BESTELLUNGEN
+                        <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
+                          🔔 Neue Bestellungen
                         </p>
-                        <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
-                          ⚡ {newOrdersCount}
-                        </p>
-                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-yellow-400/70' : 'text-yellow-700'}`}>
-                          Aktion erforderlich
+                        <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                          {newOrdersCount}
                         </p>
                       </div>
-                      <ShoppingCart className={`h-10 w-10 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
+                      <ShoppingCart className={`h-8 w-8 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
