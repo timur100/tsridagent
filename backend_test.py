@@ -3671,7 +3671,8 @@ class TicketCreationVerificationTester:
                 return False
             
             # Verify device_name is null or empty for invalid device_id
-            device_name = data.get("device_name")
+            ticket = data.get("ticket", {})
+            device_name = ticket.get("device_name")
             if device_name and device_name != "":
                 self.log_result(
                     "Error Handling - Invalid Device ID",
