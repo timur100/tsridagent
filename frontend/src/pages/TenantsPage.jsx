@@ -225,7 +225,7 @@ const TenantsPage = ({ onSelectTenant }) => {
             }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans</p>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans Insgesamt</p>
                   <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
                 </div>
                 <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
