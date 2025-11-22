@@ -13,7 +13,7 @@ from typing import Dict, Any, List
 from pathlib import Path
 
 # Backend URL from environment
-BACKEND_URL = "https://chatportal-6.preview.emergentagent.com"
+BACKEND_URL = "https://supportportal-id.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class DocumentUploadTester:
