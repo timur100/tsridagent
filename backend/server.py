@@ -244,8 +244,11 @@ app.include_router(electron_router)
 # WebSocket (Real-Time Updates) - MUST be added to app directly, not api_router
 app.include_router(websocket_router, prefix="/api")
 
-# Include Verification proxy router
+# Include Verification proxy router (for microservice fallback)
 app.include_router(verification_proxy_router)
+
+# Include ID Scans router (integrated directly)
+app.include_router(id_scans_router, prefix="/api")
 
 # Include the router in the main app
 app.include_router(api_router)
