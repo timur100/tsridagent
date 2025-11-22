@@ -403,24 +403,24 @@ body > iframe[style*="position: fixed"] {
         transform: scale(1);
         opacity: 1;
     }
-    14% {
-        transform: scale(1.15);
-        opacity: 0.9;
+    10% {
+        transform: scale(1.03);
+        opacity: 0.98;
     }
-    28% {
+    20% {
         transform: scale(1);
         opacity: 1;
     }
-    42% {
-        transform: scale(1.08);
-        opacity: 0.95;
+    30% {
+        transform: scale(1.02);
+        opacity: 0.99;
     }
-    70% {
+    50% {
         transform: scale(1);
         opacity: 1;
     }
 }
 
 .animate-heartbeat {
-    animation: heartbeat 2s ease-in-out infinite;
+    animation: heartbeat 3.5s ease-in-out infinite;
 }
