@@ -253,12 +253,14 @@ async def update_change_request(
         if updated_cr:
             try:
                 import httpx
+                tenant_id = updated_cr.get("tenant_id")
+                print(f"🔔 [Change Request Updated] Broadcasting update for CR: {cr_id}, tenant: {tenant_id}")
+                
                 async with httpx.AsyncClient(timeout=5.0) as client:
-                    tenant_id = updated_cr.get("tenant_id")
-                    
                     # Broadcast to customer's tenant
                     if tenant_id:
-                        await client.post(
+                        print(f"  → Broadcasting to tenant room: {tenant_id}")
+                        response = await client.post(
                             "http://localhost:8001/api/ws/broadcast",
                             json={
                                 "tenant_id": tenant_id,
@@ -268,9 +270,11 @@ async def update_change_request(
                                 }
                             }
                         )
+                        print(f"  ✅ Tenant broadcast response: {response.status_code}")
                     
                     # Also broadcast to admin room
-                    await client.post(
+                    print(f"  → Broadcasting to admin room: all")
+                    response = await client.post(
                         "http://localhost:8001/api/ws/broadcast",
                         json={
                             "tenant_id": "all",
@@ -280,8 +284,11 @@ async def update_change_request(
                             }
                         }
                     )
+                    print(f"  ✅ Admin broadcast response: {response.status_code}")
             except Exception as e:
                 print(f"⚠️ [Change Request Updated] Broadcast failed: {str(e)}")
+                import traceback
+                traceback.print_exc()
         
         return {
             "success": True,
