@@ -1,0 +1,33 @@
+from fastapi import HTTPException, Header
+from typing import Optional
+import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
+import os
+
+# JWT Secret (should match main backend)
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
+JWT_ALGORITHM = 'HS256'
+
+async def verify_token(authorization: Optional[str] = Header(None)):
+    """
+    Verify JWT token from Authorization header
+    Raises 401 if no token or invalid token
+    """
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+    
+    try:
+        # Extract token from "Bearer <token>"
+        if authorization.startswith('Bearer '):
+            token = authorization.split(' ')[1]
+        else:
+            token = authorization
+        
+        # Decode token
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
