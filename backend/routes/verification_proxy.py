@@ -5,7 +5,7 @@ import os
 
 router = APIRouter()
 
-VERIFICATION_SERVICE_URL = "http://localhost:8104"
+VERIFICATION_SERVICE_URL = "http://localhost:8105"
 
 @router.api_route("/api/id-scans/{path:path}", methods=["GET", "POST", "PATCH", "DELETE", "PUT"])
 async def proxy_id_scans(path: str, request: Request):
