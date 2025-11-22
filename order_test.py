@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 # Backend URL from environment
-BACKEND_URL = "https://realtime-tickets.preview.emergentagent.com"
+BACKEND_URL = "https://chatportal-6.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OrderAPITester:

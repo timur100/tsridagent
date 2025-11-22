@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const authInProgressRef = useRef(false);
 
   // Always use HTTPS - hardcoded for production
-  const BACKEND_URL = 'https://realtime-tickets.preview.emergentagent.com';
+  const BACKEND_URL = 'https://chatportal-6.preview.emergentagent.com';
   
   // Debug logging
   console.log('[AuthContext] BACKEND_URL:', BACKEND_URL);
