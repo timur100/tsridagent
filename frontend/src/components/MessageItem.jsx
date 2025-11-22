@@ -76,8 +76,73 @@ const MessageItem = ({ message, isOwnMessage, theme, onDelete, onEdit }) => {
     return diffMinutes <= 5;
   };
   
+  const [attachmentData, setAttachmentData] = useState({});
+  
+  // Fetch attachment metadata when component mounts
+  React.useEffect(() => {
+    if (message.attachments && message.attachments.length > 0) {
+      message.attachments.forEach(async (attachmentId) => {
+        try {
+          const result = await apiCall(`/api/chat/download/${attachmentId}`);
+          if (result.success) {
+            setAttachmentData(prev => ({
+              ...prev,
+              [attachmentId]: result.file
+            }));
+          }
+        } catch (error) {
+          console.error('Error fetching attachment:', error);
+        }
+      });
+    }
+  }, [message.attachments]);
+  
   const renderAttachment = (attachmentId) => {
-    // Simplified attachment rendering
+    const fileData = attachmentData[attachmentId];
+    
+    if (!fileData) {
+      return (
+        <div
+          key={attachmentId}
+          className={`flex items-center gap-2 p-2 rounded-lg mt-2 ${
+            theme === 'dark' ? 'bg-[#3a3a3a]' : 'bg-gray-100'
+          }`}
+        >
+          <FileText className="h-4 w-4 text-blue-500" />
+          <span className="text-sm">Laden...</span>
+        </div>
+      );
+    }
+    
+    // Check if it's an audio file
+    const isAudio = fileData.file_type?.startsWith('audio/') || 
+                    fileData.filename?.match(/\.(mp3|wav|ogg|webm|m4a)$/i);
+    
+    if (isAudio) {
+      return (
+        <div
+          key={attachmentId}
+          className={`mt-2 p-3 rounded-lg ${
+            theme === 'dark' ? 'bg-[#3a3a3a]' : 'bg-gray-100'
+          }`}
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Volume2 className="h-4 w-4 text-blue-500" />
+            <span className="text-sm font-medium">Sprachnachricht</span>
+          </div>
+          <audio
+            controls
+            className="w-full"
+            style={{ maxWidth: '300px' }}
+          >
+            <source src={`/api/chat/files/${fileData.unique_filename}`} type={fileData.file_type} />
+            Ihr Browser unterstützt das Audio-Element nicht.
+          </audio>
+        </div>
+      );
+    }
+    
+    // Regular file attachment
     return (
       <div
         key={attachmentId}
@@ -86,13 +151,18 @@ const MessageItem = ({ message, isOwnMessage, theme, onDelete, onEdit }) => {
         }`}
       >
         <FileText className="h-4 w-4 text-blue-500" />
-        <span className="text-sm">Anhang</span>
+        <span className="text-sm">{fileData.filename}</span>
+        <span className={`text-xs ml-2 ${
+          theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
+        }`}>
+          ({(fileData.file_size / 1024).toFixed(1)} KB)
+        </span>
         <button
           onClick={() => {
-            // Download logic here
-            toast.success('Download gestartet');
+            window.open(`/api/chat/files/${fileData.unique_filename}`, '_blank');
           }}
           className="ml-auto text-blue-500 hover:text-blue-600"
+          title="Herunterladen"
         >
           <Download className="h-4 w-4" />
         </button>
