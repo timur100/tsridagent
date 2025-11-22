@@ -1799,10 +1799,10 @@ class ChatMessagesTester:
                 )
                 return False
             
-            # Create a small test file
-            test_content = "This is a test file for chat upload functionality."
+            # Create a small test file content
+            test_content = b"This is a test file for chat upload functionality."
             
-            # Prepare multipart form data
+            # Prepare multipart form data with proper structure
             files = {
                 'file': ('test.txt', test_content, 'text/plain')
             }
@@ -1810,10 +1810,14 @@ class ChatMessagesTester:
                 'ticket_id': self.test_ticket_id
             }
             
-            # Remove Content-Type header for multipart upload
-            headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+            # Create a new session without Content-Type header for multipart upload
+            upload_session = requests.Session()
+            upload_session.headers.update({
+                'Authorization': f'Bearer {self.admin_token}',
+                'Accept': 'application/json'
+            })
             
-            response = self.session.post(f"{API_BASE}/chat/upload", files=files, data=data, headers=headers)
+            response = upload_session.post(f"{API_BASE}/chat/upload", files=files, data=data)
             
             if response.status_code not in [200, 201]:
                 self.log_result(
@@ -1824,26 +1828,26 @@ class ChatMessagesTester:
                 )
                 return False
             
-            data = response.json()
+            response_data = response.json()
             
             # Verify response structure
-            if not data.get("success"):
+            if not response_data.get("success"):
                 self.log_result(
                     "Upload File",
                     False,
                     "Response indicates failure",
-                    data
+                    response_data
                 )
                 return False
             
             # Verify file object exists
-            file_obj = data.get("file")
+            file_obj = response_data.get("file")
             if not file_obj:
                 self.log_result(
                     "Upload File",
                     False,
                     "Response missing file object",
-                    data
+                    response_data
                 )
                 return False
             
@@ -1855,7 +1859,7 @@ class ChatMessagesTester:
                         "Upload File",
                         False,
                         f"File object missing required field: {field}",
-                        data
+                        response_data
                     )
                     return False
             
