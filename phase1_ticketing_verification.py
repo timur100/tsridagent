@@ -17,7 +17,7 @@ import jwt
 from datetime import datetime, timezone
 
 # Backend URLs
-BACKEND_URL = "https://support-hub-67.preview.emergentagent.com"
+BACKEND_URL = "https://realtime-tickets.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 MICROSERVICE_URL = "http://localhost:8103"
 
@@ -156,7 +156,7 @@ class Phase1TicketingVerificationTester:
             return False
 
     def test_ticket_list_via_proxy(self):
-        """Test 2: Ticket List (via Proxy) - GET https://support-hub-67.preview.emergentagent.com/api/tickets/"""
+        """Test 2: Ticket List (via Proxy) - GET https://realtime-tickets.preview.emergentagent.com/api/tickets/"""
         try:
             response = self.session.get(f"{API_BASE}/tickets/")
             
@@ -204,7 +204,7 @@ class Phase1TicketingVerificationTester:
             return False
 
     def test_staff_management_via_proxy(self):
-        """Test 3: Staff Management (via Proxy) - GET https://support-hub-67.preview.emergentagent.com/api/staff/"""
+        """Test 3: Staff Management (via Proxy) - GET https://realtime-tickets.preview.emergentagent.com/api/staff/"""
         try:
             response = self.session.get(f"{API_BASE}/staff/")
             
@@ -247,7 +247,7 @@ class Phase1TicketingVerificationTester:
             return False
 
     def test_sla_warnings_via_proxy(self):
-        """Test 4: SLA Warnings (via Proxy) - GET https://support-hub-67.preview.emergentagent.com/api/sla/warnings"""
+        """Test 4: SLA Warnings (via Proxy) - GET https://realtime-tickets.preview.emergentagent.com/api/sla/warnings"""
         try:
             response = self.session.get(f"{API_BASE}/sla/warnings")
             
@@ -296,7 +296,7 @@ class Phase1TicketingVerificationTester:
             return False
 
     def test_staff_ticket_statistics(self):
-        """Test 5: Staff Ticket Statistics - GET https://support-hub-67.preview.emergentagent.com/api/staff/tickets/by-staff"""
+        """Test 5: Staff Ticket Statistics - GET https://realtime-tickets.preview.emergentagent.com/api/staff/tickets/by-staff"""
         try:
             response = self.session.get(f"{API_BASE}/staff/tickets/by-staff")
             
