@@ -31,6 +31,7 @@ MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
 ticketing_db = mongo_client['ticketing_db']
 portal_db = mongo_client['portal_db']
+event_log_collection = portal_db['event_log']
 
 class Phase1TicketingSystemTester:
     def __init__(self):
