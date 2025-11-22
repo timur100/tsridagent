@@ -209,14 +209,21 @@ export const useWebSocket = (tenantId, handlers = {}, options = {}) => {
 
   // Connect to WebSocket
   const connect = useCallback(() => {
-    if (!tenantId || !token) {
-      console.warn('[useWebSocket] Cannot connect: missing tenantId or token');
+    if (!tenantId) {
+      console.warn('[useWebSocket] Cannot connect: missing tenantId');
+      return;
+    }
+    
+    // Get token from localStorage as fallback
+    const authToken = localStorage.getItem('portal_token');
+    if (!authToken) {
+      console.warn('[useWebSocket] Cannot connect: no token available');
       return;
     }
 
     console.log('[useWebSocket] Connecting to WebSocket for tenant:', tenantId);
-    websocketService.connect(tenantId, token);
-  }, [tenantId, token]);
+    websocketService.connect(tenantId, authToken);
+  }, [tenantId]);
 
   // Disconnect from WebSocket
   const disconnect = useCallback(() => {
