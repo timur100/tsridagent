@@ -13,6 +13,7 @@ const IDCheckDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { apiCall } = useAuth();
 
   const [scan, setScan] = useState(null);
   const [loading, setLoading] = useState(true);
