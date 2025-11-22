@@ -17,7 +17,7 @@ import StaffManagement from './StaffManagement';
 
 const SupportManagement = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
+  const { apiCall, user, token } = useAuth();
   const { selectedTenantId } = useTenant();
   
   const [activeTab, setActiveTab] = useState('tickets'); // tickets, sla, staff
@@ -33,6 +33,32 @@ const SupportManagement = () => {
   const [devices, setDevices] = useState([]);
   const [statusTileFilter, setStatusTileFilter] = useState(null);
   const [staff, setStaff] = useState([]);
+  
+  // Get tenant_id for WebSocket (admin users should listen to all tenants)
+  const tenantId = user?.tenant_ids?.[0] || null;
+  
+  // WebSocket for real-time ticket updates
+  const { connectionStatus } = useWebSocket(tenantId, {
+    ticket_created: (data) => {
+      console.log('📨 [Admin Support] New ticket created:', data);
+      // Refresh tickets list and stats
+      fetchTickets();
+      fetchStats();
+      toast.success('Neues Support-Ticket!', {
+        duration: 4000,
+        icon: '🎫'
+      });
+    },
+    ticket_updated: (data) => {
+      console.log('📨 [Admin Support] Ticket updated:', data);
+      // Refresh tickets list
+      fetchTickets();
+      toast.success('Ticket aktualisiert!', {
+        duration: 2000,
+        icon: '🔄'
+      });
+    }
+  });
 
   useEffect(() => {
     fetchStats();
