@@ -108,10 +108,10 @@ backend:
   - task: "Phase 1 Ticketing System - Staff Management, SLA, and Assignment APIs"
     implemented: true
     working: true
-    file: "Ticketing Microservice (Port 8103), backend/routes/ticketing_proxy.py"
+    file: "Ticketing Microservice (Port 8103), backend/routes/ticketing_proxy.py, backend/services/ticketing_service/routes/tickets.py"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
