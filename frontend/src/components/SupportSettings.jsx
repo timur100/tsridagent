@@ -26,12 +26,21 @@ const SupportSettings = () => {
     try {
       setLoading(true);
       const result = await apiCall('/api/support-settings');
-      if (result.success) {
-        setSettings(result.settings);
+      console.log('[SupportSettings] Fetch result:', result);
+      
+      // Handle both direct and nested data structures
+      const settingsData = result.data?.settings || result.settings;
+      console.log('[SupportSettings] Settings data:', settingsData);
+      
+      if (settingsData) {
+        setSettings(settingsData);
         setHasChanges(false);
+      } else {
+        console.error('[SupportSettings] No settings in response');
+        toast.error('Fehler beim Laden der Einstellungen');
       }
     } catch (error) {
-      console.error('Error fetching settings:', error);
+      console.error('[SupportSettings] Error fetching settings:', error);
       toast.error('Fehler beim Laden der Einstellungen');
     } finally {
       setLoading(false);
