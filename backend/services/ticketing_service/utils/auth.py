@@ -11,10 +11,10 @@ JWT_ALGORITHM = 'HS256'
 async def verify_token(authorization: Optional[str] = Header(None)):
     """
     Verify JWT token from Authorization header
-    Optional auth - if no token provided, returns None
+    Raises 401 if no token or invalid token
     """
     if not authorization:
-        return None
+        raise HTTPException(status_code=401, detail="Missing authorization token")
     
     try:
         # Extract token from "Bearer <token>"
