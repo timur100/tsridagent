@@ -11,3 +11,8 @@ db = client[mongo_db_name]
 
 # Collections
 tickets_collection = db['tickets']
+
+# Helper function for getting database instance
+async def get_database():
+    """Get the ticketing database instance"""
+    return db
