@@ -9,6 +9,8 @@ import PortalSwitcher from '../components/PortalSwitcher';
 import CustomerPortalContent from '../components/CustomerPortalContent';
 import CustomerTickets from '../components/CustomerTickets';
 import CustomerGlobalSearch from '../components/CustomerGlobalSearch';
+import ChangeRequests from '../components/ChangeRequests';
+import HelpCenter from '../components/HelpCenter';
 import toast from 'react-hot-toast';
 
 const CustomerPortal = () => {
