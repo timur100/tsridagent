@@ -14,6 +14,8 @@ import toast from 'react-hot-toast';
 import TicketDetailModal from './TicketDetailModal';
 import SLAWarningsPanel from './SLAWarningsPanel';
 import StaffManagement from './StaffManagement';
+import AdminChangeRequests from './AdminChangeRequests';
+import KnowledgeBaseEditor from './KnowledgeBaseEditor';
 
 const SupportManagement = () => {
   const { theme } = useTheme();
