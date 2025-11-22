@@ -78,13 +78,13 @@ const SupportSettings = () => {
     setHasChanges(true);
   };
   
-  if (loading) {
+  if (loading || !settings) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Einstellungen werden geladen...
+            {loading ? 'Einstellungen werden geladen...' : 'Keine Einstellungen verfügbar'}
           </p>
         </div>
       </div>
