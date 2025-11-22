@@ -244,6 +244,45 @@ async def update_change_request(
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Change Request not found")
         
+        # Get updated CR for broadcasting
+        updated_cr = await change_requests_collection.find_one({"id": cr_id})
+        if updated_cr and '_id' in updated_cr:
+            del updated_cr['_id']
+        
+        # Broadcast update via WebSocket
+        if updated_cr:
+            try:
+                import httpx
+                async with httpx.AsyncClient(timeout=5.0) as client:
+                    tenant_id = updated_cr.get("tenant_id")
+                    
+                    # Broadcast to customer's tenant
+                    if tenant_id:
+                        await client.post(
+                            "http://localhost:8001/api/ws/broadcast",
+                            json={
+                                "tenant_id": tenant_id,
+                                "message_type": "change_request_updated",
+                                "data": {
+                                    "change_request": updated_cr
+                                }
+                            }
+                        )
+                    
+                    # Also broadcast to admin room
+                    await client.post(
+                        "http://localhost:8001/api/ws/broadcast",
+                        json={
+                            "tenant_id": "all",
+                            "message_type": "change_request_updated",
+                            "data": {
+                                "change_request": updated_cr
+                            }
+                        }
+                    )
+            except Exception as e:
+                print(f"⚠️ [Change Request Updated] Broadcast failed: {str(e)}")
+        
         return {
             "success": True,
             "message": "Change Request aktualisiert"
