@@ -67,8 +67,14 @@ async def websocket_endpoint(
         user_role = token_data.get('role', '')
         
         # Check if user has access to this tenant
-        # Admin can access any tenant, tenant users only their own
-        if user_role != 'admin' and tenant_id not in user_tenant_ids:
+        # Admin can access any tenant including "all" room, tenant users only their own
+        if tenant_id == 'all':
+            # Only admins can connect to "all" room
+            if user_role != 'admin':
+                await websocket.close(code=1008, reason="Unauthorized access to 'all' tenant room")
+                logger.warning(f"WebSocket connection rejected: Non-admin user tried to access 'all' room")
+                return
+        elif user_role != 'admin' and tenant_id not in user_tenant_ids:
             await websocket.close(code=1008, reason="Unauthorized access to tenant")
             logger.warning(f"WebSocket connection rejected: User does not have access to tenant {tenant_id}")
             return
