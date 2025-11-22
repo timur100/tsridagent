@@ -1325,10 +1325,6 @@ const AdminPortalContent = () => {
           />
         )}
 
-        {activeTab === 'id-checks' && (
-          <Outlet />
-        )}
-
         {activeTab === 'devices' && (
           <div>
             {/* Header with Search and Add Button in one row */}
