@@ -332,6 +332,12 @@ const SupportManagement = () => {
       
       {/* Staff Tab */}
       {activeTab === 'staff' && <StaffManagement />}
+
+      {/* Change Requests Tab */}
+      {activeTab === 'changes' && <AdminChangeRequests />}
+
+      {/* Knowledge Base Tab */}
+      {activeTab === 'kb' && <KnowledgeBaseEditor />}
       
       {/* Tickets Tab */}
       {activeTab === 'tickets' && (
