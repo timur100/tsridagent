@@ -449,6 +449,28 @@ const SupportSettings = () => {
               </p>
             </div>
           )}
+          
+          {/* Manual Archive Now Button */}
+          <div className="p-4 rounded-lg border border-orange-500/20 bg-orange-500/5">
+            <p className={`font-medium mb-2 ${
+              theme === 'dark' ? 'text-white' : 'text-gray-900'
+            }`}>
+              Sofortige Archivierung
+            </p>
+            <p className={`text-sm mb-3 ${
+              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+            }`}>
+              Archiviert alle Nachrichten, die älter als die konfigurierten Tage sind
+            </p>
+            <Button
+              onClick={handleManualArchive}
+              disabled={saving}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
+            >
+              <Archive className="h-4 w-4 mr-2" />
+              Jetzt archivieren
+            </Button>
+          </div>
         </div>
       </Card>
       
