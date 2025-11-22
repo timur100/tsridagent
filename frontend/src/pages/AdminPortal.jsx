@@ -1036,14 +1036,14 @@ const AdminPortalContent = () => {
               </div>
             </div>
 
-            {/* Row 3: Neue Bestellungen & Neue Tickets - Responsive Grid */}
-            {(newOrdersCount > 0 || newTicketsCount > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+            {/* Row 3: Neue Bestellungen, Neue Tickets & Change Requests - Responsive Grid */}
+            {(newOrdersCount > 0 || newTicketsCount > 0 || newChangeRequestsCount > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {/* Neue Bestellungen */}
                 {newOrdersCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('orders')}
-                    className={`p-6 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       theme === 'dark' 
                         ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(234,179,8,0.5)] hover:-translate-y-1 animate-heartbeat' 
                         : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(234,179,8,0.4)] hover:-translate-y-1 animate-heartbeat'
@@ -1051,17 +1051,17 @@ const AdminPortalContent = () => {
                     <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full -mr-10 -mt-10"></div>
                     <div className="flex items-center justify-between relative z-10">
                       <div>
-                        <p className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
+                        <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
                           🔔 NEUE BESTELLUNGEN
                         </p>
-                        <p className={`text-4xl font-bold mt-2 ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                        <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
                           ⚡ {newOrdersCount}
                         </p>
-                        <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-yellow-400/70' : 'text-yellow-700'}`}>
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-yellow-400/70' : 'text-yellow-700'}`}>
                           Aktion erforderlich
                         </p>
                       </div>
-                      <ShoppingCart className={`h-12 w-12 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
+                      <ShoppingCart className={`h-10 w-10 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
@@ -1070,7 +1070,7 @@ const AdminPortalContent = () => {
                 {newTicketsCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('support')}
-                    className={`p-6 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       theme === 'dark' 
                         ? 'bg-[#2a2a2a] border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(249,115,22,0.5)] hover:-translate-y-1 animate-heartbeat' 
                         : 'bg-orange-50 border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(249,115,22,0.4)] hover:-translate-y-1 animate-heartbeat'
@@ -1078,17 +1078,44 @@ const AdminPortalContent = () => {
                     <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 rounded-full -mr-10 -mt-10"></div>
                     <div className="flex items-center justify-between relative z-10">
                       <div>
-                        <p className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
+                        <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
                           🎫 NEUE TICKETS
                         </p>
-                        <p className={`text-4xl font-bold mt-2 ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
+                        <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
                           ⚡ {newTicketsCount}
                         </p>
-                        <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-orange-400/70' : 'text-orange-700'}`}>
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-orange-400/70' : 'text-orange-700'}`}>
                           Support benötigt
                         </p>
                       </div>
-                      <Headphones className={`h-12 w-12 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
+                      <Headphones className={`h-10 w-10 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
+                    </div>
+                  </Card>
+                )}
+
+                {/* Change Requests */}
+                {newChangeRequestsCount > 0 && (
+                  <Card 
+                    onClick={() => setActiveTab('support')}
+                    className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                      theme === 'dark' 
+                        ? 'bg-[#2a2a2a] border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(168,85,247,0.5)] hover:-translate-y-1 animate-heartbeat' 
+                        : 'bg-purple-50 border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(168,85,247,0.4)] hover:-translate-y-1 animate-heartbeat'
+                    }`}>
+                    <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/10 rounded-full -mr-10 -mt-10"></div>
+                    <div className="flex items-center justify-between relative z-10">
+                      <div>
+                        <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-800'}`}>
+                          📝 CHANGE REQUESTS
+                        </p>
+                        <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
+                          ⚡ {newChangeRequestsCount}
+                        </p>
+                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-purple-400/70' : 'text-purple-700'}`}>
+                          Offen
+                        </p>
+                      </div>
+                      <FileText className={`h-10 w-10 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
