@@ -73,6 +73,39 @@ async def create_change_request(
         if '_id' in cr_doc:
             del cr_doc['_id']
         
+        # Broadcast change request creation via WebSocket
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                # Broadcast to customer's tenant
+                if tenant_id:
+                    await client.post(
+                        "http://localhost:8001/api/ws/broadcast",
+                        json={
+                            "tenant_id": tenant_id,
+                            "message_type": "change_request_created",
+                            "data": {
+                                "change_request": cr_doc
+                            }
+                        }
+                    )
+                    print(f"📨 [Change Request Created] Broadcasted to tenant {tenant_id}")
+                
+                # Also broadcast to admin room
+                await client.post(
+                    "http://localhost:8001/api/ws/broadcast",
+                    json={
+                        "tenant_id": "all",
+                        "message_type": "change_request_created",
+                        "data": {
+                            "change_request": cr_doc
+                        }
+                    }
+                )
+                print(f"📨 [Change Request Created] Broadcasted to admin room 'all'")
+        except Exception as e:
+            print(f"⚠️ [Change Request Created] Broadcast failed: {str(e)}")
+        
         return {
             "success": True,
             "message": "Change Request erfolgreich erstellt",
