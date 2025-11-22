@@ -8,6 +8,7 @@ class MessageType(str, Enum):
     system = "system"
     file = "file"
     image = "image"
+    audio = "audio"
 
 class ChatMessageCreate(BaseModel):
     ticket_id: str
