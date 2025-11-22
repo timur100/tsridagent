@@ -28,6 +28,7 @@ import TeamViewerSettings from '../components/TeamViewerSettings';
 import PortalFeatureSettings from '../components/PortalFeatureSettings';
 import SearchInput from '../components/SearchInput';
 import InventoryManagement from '../components/InventoryManagement';
+import IDChecksPage from './IDChecksPage';
 import OrdersManagement from '../components/OrdersManagement';
 import EuroboxManagement from '../components/EuroboxManagement';
 import BackupManagement from '../components/BackupManagement';
