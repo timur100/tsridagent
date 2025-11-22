@@ -3,16 +3,8 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import os
 import uuid
-import sys
-
-# Add backend directory to Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../..'))
-
 from utils.db import get_database
 from utils.auth import verify_token
-
-# Import models from relative path
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 from models.id_scan import (
     IDScan, IDScanCreate, IDScanUpdate, ManualActionRequest,
     ScanStatus, ScanImage, ImageType, ManualAction
