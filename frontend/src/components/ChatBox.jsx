@@ -83,6 +83,35 @@ const ChatBox = ({ ticketId, tenantId }) => {
     scrollToBottom();
   }, [messages]);
   
+  // Mark unread messages as read when chat is opened
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      if (!messages || messages.length === 0 || !user?.email) return;
+      
+      // Find messages not read by current user
+      const unreadMessages = messages.filter(msg => 
+        msg.sender_email !== user.email && 
+        !msg.read_by?.includes(user.email)
+      );
+      
+      // Mark each unread message as read
+      for (const msg of unreadMessages) {
+        try {
+          await apiCall(`/api/chat/mark-read/${msg.id}`, {
+            method: 'POST'
+          });
+        } catch (error) {
+          console.error('Error marking message as read:', error);
+        }
+      }
+    };
+    
+    // Mark messages as read after a short delay (500ms)
+    const timeout = setTimeout(markMessagesAsRead, 500);
+    
+    return () => clearTimeout(timeout);
+  }, [messages, user?.email]);
+  
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
