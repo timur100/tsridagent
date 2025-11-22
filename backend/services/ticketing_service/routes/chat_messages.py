@@ -307,7 +307,7 @@ async def get_unread_count(
 @router.post("/typing/", response_model=dict, include_in_schema=False)
 async def send_typing_indicator(
     ticket_id: str = Form(...),
-    is_typing: bool = Form(...),
+    is_typing: str = Form(...),
     token_data: dict = Depends(verify_token)
 ):
     """
