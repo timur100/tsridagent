@@ -215,7 +215,7 @@ const ChatBox = ({ ticketId, tenantId }) => {
     try {
       const formData = new FormData();
       formData.append('ticket_id', ticketId);
-      formData.append('is_typing', isTyping.toString());
+      formData.append('is_typing', isTyping ? 'true' : 'false');
       
       await apiCall('/api/chat/typing', {
         method: 'POST',
