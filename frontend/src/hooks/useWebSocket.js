@@ -315,7 +315,7 @@ export const useWebSocket = (tenantId, handlers = {}, options = {}) => {
         disconnect();
       }
     };
-  }, [tenantId, token, autoConnect, connect, disconnect]);
+  }, [tenantId, autoConnect, connect, disconnect]);
 
   // Handle connection status changes for fallback
   useEffect(() => {
