@@ -13,7 +13,7 @@ import TicketDetailModal from './TicketDetailModal';
 
 const CustomerTickets = () => {
   const { theme } = useTheme();
-  const { apiCall, user } = useAuth();
+  const { apiCall, user, token } = useAuth();
   
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +30,31 @@ const CustomerTickets = () => {
   });
   const [statusFilter, setStatusFilter] = useState(null); // null means 'all'
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Get tenant_id from user
+  const tenantId = user?.tenant_ids?.[0] || null;
+  
+  // WebSocket for real-time ticket updates
+  const { connectionStatus } = useWebSocket(tenantId, {
+    ticket_created: (data) => {
+      console.log('📨 [Tickets] New ticket created:', data);
+      // Refresh tickets list
+      fetchTickets();
+      toast.success('Neues Ticket erstellt!', {
+        duration: 3000,
+        icon: '🎫'
+      });
+    },
+    ticket_updated: (data) => {
+      console.log('📨 [Tickets] Ticket updated:', data);
+      // Refresh tickets list
+      fetchTickets();
+      toast.success('Ticket aktualisiert!', {
+        duration: 2000,
+        icon: '🔄'
+      });
+    }
+  });
   
   // Create form state
   const [title, setTitle] = useState('');
