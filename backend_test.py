@@ -6111,13 +6111,16 @@ class TicketCreationVerificationTester:
             return False
 
 if __name__ == "__main__":
-    # Run Chat/Messages API tests
-    tester = ChatMessagesTester()
-    success = asyncio.run(tester.run_all_tests())
+    import asyncio
     
-    if success:
-        print("\n🎉 All Chat/Messages API tests passed!")
+    # Run Audio Messages tests (as requested in review)
+    print("🎤 Starting Audio Messages Backend API Testing...")
+    audio_tester = AudioMessagesTester()
+    audio_success = asyncio.run(audio_tester.run_all_tests())
+    
+    if audio_success:
+        print("\n🎉 All Audio Messages tests passed!")
         sys.exit(0)
     else:
-        print("\n❌ Some Chat/Messages API tests failed!")
+        print("\n💥 Some Audio Messages tests failed!")
         sys.exit(1)
