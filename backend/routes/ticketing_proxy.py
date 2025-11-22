@@ -10,6 +10,7 @@ TICKETING_SERVICE_URL = "http://localhost:8103"
 
 @router.api_route("/api/tickets/{path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 @router.api_route("/api/tickets/", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
+@router.api_route("/api/tickets", methods=["GET", "POST", "PUT", "DELETE", "PATCH"], include_in_schema=False)
 async def proxy_tickets(request: Request, path: str = ""):
     """
     Proxy all /api/tickets/* requests to Ticketing Service
