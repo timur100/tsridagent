@@ -335,9 +335,16 @@ const MessageItem = ({ message, isOwnMessage, theme, onDelete, onEdit }) => {
           </span>
           
           {isOwnMessage && (
-            <div className="flex items-center">
+            <div className="flex items-center gap-1">
               {message.read_by && message.read_by.length > 1 ? (
-                <CheckCheck className="h-3 w-3 text-blue-400" title="Gelesen" />
+                <>
+                  <CheckCheck className="h-3 w-3 text-blue-400" title={`Gelesen von ${message.read_by.length - 1} Person(en)`} />
+                  {message.read_by.length > 2 && (
+                    <span className={`text-xs ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+                      {message.read_by.length - 1}
+                    </span>
+                  )}
+                </>
               ) : (
                 <Check className="h-3 w-3 text-gray-400" title="Gesendet" />
               )}
