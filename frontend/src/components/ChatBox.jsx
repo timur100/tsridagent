@@ -61,6 +61,17 @@ const ChatBox = ({ ticketId, tenantId }) => {
           setTypingUsers(prev => prev.filter(email => email !== data.user_email));
         }
       }
+    },
+    message_read: (data) => {
+      console.log('👁️ [Chat] Message read:', data);
+      if (data.ticket_id === ticketId) {
+        // Update local messages state to reflect read status
+        setMessages(prev => prev.map(msg => 
+          msg.id === data.message_id 
+            ? { ...msg, read_by: [...(msg.read_by || []), data.read_by] }
+            : msg
+        ));
+      }
     }
   });
   
