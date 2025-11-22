@@ -34,7 +34,7 @@ const AdminChangeRequests = () => {
       }
       
       const response = await apiCall(`/api/change-requests?${params.toString()}`);
-      if (response.success) {
+      if (response.success && response.change_requests) {
         setChangeRequests(response.change_requests);
       }
     } catch (error) {
