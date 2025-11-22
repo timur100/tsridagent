@@ -271,7 +271,7 @@ const KnowledgeBaseEditor = () => {
 
       <Card className="p-4">
         <div className="text-sm text-muted-foreground mb-4">
-          {articles.length} Artikel • {articles.filter(a => a.status === 'published').length} veröffentlicht
+          {(articles || []).length} Artikel • {(articles || []).filter(a => a.status === 'published').length} veröffentlicht
         </div>
       </Card>
 
