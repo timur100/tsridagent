@@ -10,6 +10,7 @@ import {
 import { Button } from './ui/button';
 import RichTextEditor from './RichTextEditor';
 import toast from 'react-hot-toast';
+import ChatBox from './ChatBox';
 
 const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = false }) => {
   const { theme } = useTheme();
