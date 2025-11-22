@@ -52,7 +52,7 @@ const ChangeRequests = () => {
   const fetchStats = async () => {
     try {
       const response = await apiCall('/api/change-requests/stats/summary');
-      if (response.success) {
+      if (response.success && response.stats) {
         setStats(response.stats);
       }
     } catch (error) {
