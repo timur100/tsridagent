@@ -663,7 +663,7 @@ const AdminPortalContent = () => {
                 onClick={() => setActiveTab('orders')}
                 className={`relative p-2 rounded-lg transition-all ${
                   newOrdersCount > 0
-                    ? 'animate-pulse'
+                    ? 'animate-heartbeat'
                     : ''
                 } ${
                   theme === 'dark'
