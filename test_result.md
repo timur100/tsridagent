@@ -111,7 +111,7 @@ backend:
     file: "Ticketing Microservice (Port 8103), backend/routes/ticketing_proxy.py, backend/services/ticketing_service/routes/tickets.py"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
