@@ -1093,7 +1093,7 @@ const AdminPortalContent = () => {
                 {/* Change Requests - Always show */}
                 <Card 
                   onClick={() => setActiveTab('support')}
-                  className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                  className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                     newChangeRequestsCount > 0
                       ? theme === 'dark' 
                         ? 'bg-[#2a2a2a] border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(168,85,247,0.5)] hover:-translate-y-1 animate-heartbeat' 
@@ -1102,20 +1102,17 @@ const AdminPortalContent = () => {
                         ? 'bg-[#2a2a2a] border border-purple-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1'
                         : 'bg-purple-50/30 border border-purple-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
                   }`}>
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-purple-500/10 rounded-full -mr-10 -mt-10"></div>
+                  <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8"></div>
                   <div className="flex items-center justify-between relative z-10">
                     <div>
-                      <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-800'}`}>
-                        📝 CHANGE REQUESTS
+                      <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-800'}`}>
+                        📝 Change Requests
                       </p>
-                      <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
-                        {newChangeRequestsCount > 0 ? '⚡ ' : ''}{newChangeRequestsCount}
-                      </p>
-                      <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-purple-400/70' : 'text-purple-700'}`}>
-                        {newChangeRequestsCount > 0 ? 'Offen' : 'Keine offenen'}
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
+                        {newChangeRequestsCount}
                       </p>
                     </div>
-                    <FileText className={`h-10 w-10 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} ${newChangeRequestsCount > 0 ? 'animate-bounce' : ''}`} />
+                    <FileText className={`h-8 w-8 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} ${newChangeRequestsCount > 0 ? 'animate-bounce' : ''}`} />
                   </div>
                 </Card>
               </div>
