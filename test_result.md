@@ -479,11 +479,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Phase 1 Ticketing System - Staff Management, SLA, and Assignment APIs"
+    - "Phase 1 Ticketing System - POST /api/tickets Database Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
-  notes: "Phase 1 Ticketing System AsyncIOMotorCursor bug has been successfully fixed. All Staff Management and SLA APIs are now working correctly."
+  notes: "POST /api/tickets 404 error fixed by correcting database name (test_database → portal_db) and collection names (europcar_stations/europcar_devices → tenant_locations/tenant_devices) in Ticketing Service. Ticket creation now working successfully."
   
 agent_communication:
     - agent: "main"
