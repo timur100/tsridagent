@@ -20,7 +20,7 @@ const SupportManagement = () => {
   const { apiCall, user, token } = useAuth();
   const { selectedTenantId } = useTenant();
   
-  const [activeTab, setActiveTab] = useState('tickets'); // tickets, sla, staff
+  const [activeTab, setActiveTab] = useState('tickets'); // tickets, sla, staff, changes, kb, settings
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
