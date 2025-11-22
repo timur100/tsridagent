@@ -34,7 +34,7 @@ async def create_ticket(
             customer_email = user_email
         
         # Get customer info from main database
-        main_db = db.client['test_database']
+        main_db = db.client['portal_db']
         customer = await main_db.portal_users.find_one({"email": customer_email})
         if not customer:
             raise HTTPException(status_code=404, detail="Kunde nicht gefunden")
