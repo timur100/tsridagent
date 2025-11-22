@@ -16,6 +16,7 @@ import SLAWarningsPanel from './SLAWarningsPanel';
 import StaffManagement from './StaffManagement';
 import AdminChangeRequests from './AdminChangeRequests';
 import KnowledgeBaseEditor from './KnowledgeBaseEditor';
+import SupportSettings from './SupportSettings';
 
 const SupportManagement = () => {
   const { theme } = useTheme();
