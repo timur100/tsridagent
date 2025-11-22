@@ -19,7 +19,7 @@ mongo_client = AsyncIOMotorClient(mongo_url)
 mongo_db = mongo_client.get_database('main_db')
 
 # JWT Auth
-JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 JWT_ALGORITHM = 'HS256'
 
 # Upload directory for ID scan images
