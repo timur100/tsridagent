@@ -162,3 +162,41 @@ async def websocket_stats():
             for tenant_id in manager.active_connections.keys()
         }
     }
+
+
+@router.post("/ws/broadcast")
+async def broadcast_message(payload: dict):
+    """
+    Internal endpoint for microservices to broadcast messages to tenants
+    
+    Payload:
+    {
+        "tenant_id": "uuid",
+        "message_type": "ticket_created|ticket_updated|...",
+        "data": {...}
+    }
+    """
+    try:
+        tenant_id = payload.get("tenant_id")
+        message_type = payload.get("message_type")
+        data = payload.get("data", {})
+        
+        if not tenant_id or not message_type:
+            raise HTTPException(status_code=400, detail="tenant_id and message_type are required")
+        
+        # Broadcast to tenant
+        message = {
+            "type": message_type,
+            **data
+        }
+        
+        await manager.broadcast_to_tenant(tenant_id, message)
+        
+        return {
+            "success": True,
+            "message": f"Broadcasted {message_type} to tenant {tenant_id}"
+        }
+    
+    except Exception as e:
+        logger.error(f"Broadcast error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
