@@ -255,7 +255,22 @@ const TenantsPage = ({ onSelectTenant }) => {
           </div>
 
           {/* Row 3: Scan Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+            {/* Scans Insgesamt - Moved from Row 1 */}
+            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+            }`}>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans Insgesamt</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
+                </div>
+                <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+              </div>
+            </Card>
+
             <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
               theme === 'dark' 
                 ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
