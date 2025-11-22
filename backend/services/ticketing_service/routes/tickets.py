@@ -62,12 +62,12 @@ async def create_ticket(
         device_name = None
         
         if ticket.location_id:
-            location = await main_db.europcar_stations.find_one({"main_code": ticket.location_id})
+            location = await main_db.tenant_locations.find_one({"location_code": ticket.location_id})
             if location:
-                location_name = f"{location.get('main_code')} - {location.get('stationsname', location.get('name', ''))}"
+                location_name = f"{location.get('location_code')} - {location.get('station_name', location.get('name', ''))}"
         
         if ticket.device_id:
-            device = await main_db.europcar_devices.find_one({"device_id": ticket.device_id})
+            device = await main_db.tenant_devices.find_one({"device_id": ticket.device_id})
             if device:
                 device_name = f"{device.get('device_id')} - {device.get('station_name', device.get('locationcode', ''))}"
         
