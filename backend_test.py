@@ -1895,13 +1895,17 @@ class ChatMessagesTester:
             # Prepare form data
             typing_data = {
                 'ticket_id': self.test_ticket_id,
-                'is_typing': True
+                'is_typing': 'true'  # Form data expects string
             }
             
-            # Remove Content-Type header for form data
-            headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+            # Create a new session without Content-Type header for form data
+            form_session = requests.Session()
+            form_session.headers.update({
+                'Authorization': f'Bearer {self.admin_token}',
+                'Accept': 'application/json'
+            })
             
-            response = self.session.post(f"{API_BASE}/chat/typing", data=typing_data, headers=headers)
+            response = form_session.post(f"{API_BASE}/chat/typing", data=typing_data)
             
             if response.status_code not in [200, 201]:
                 self.log_result(
@@ -1912,15 +1916,15 @@ class ChatMessagesTester:
                 )
                 return False
             
-            data = response.json()
+            response_data = response.json()
             
             # Verify response structure
-            if not data.get("success"):
+            if not response_data.get("success"):
                 self.log_result(
                     "Send Typing Indicator",
                     False,
                     "Response indicates failure",
-                    data
+                    response_data
                 )
                 return False
             
