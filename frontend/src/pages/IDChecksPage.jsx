@@ -11,8 +11,8 @@ import {
 } from 'lucide-react';
 
 const IDChecksPage = () => {
-  const { theme } = useContext(ThemeContext);
-  const { user } = useContext(AuthContext);
+  const { theme } = useTheme();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   // Data states
