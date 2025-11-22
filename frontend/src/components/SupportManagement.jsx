@@ -8,7 +8,7 @@ import { Button } from './ui/button';
 import { 
   Ticket, AlertCircle, Clock, CheckCircle, XCircle, 
   TrendingUp, Plus, Search, Filter, MessageSquare,
-  User, MapPin, Monitor, AlertTriangle, X, Video, Circle, Users
+  User, MapPin, Monitor, AlertTriangle, X, Video, Circle, Users, RefreshCw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TicketDetailModal from './TicketDetailModal';
