@@ -80,11 +80,14 @@ const ChatBox = ({ ticketId, tenantId }) => {
     try {
       setLoading(true);
       const result = await apiCall(`/api/chat/messages/${ticketId}`);
-      if (result.success) {
-        setMessages(result.messages || []);
-      }
+      console.log('[ChatBox] fetchMessages result:', result);
+      
+      // Handle both direct and nested data structures
+      const messagesData = result.data?.messages || result.messages || [];
+      console.log('[ChatBox] Setting messages:', messagesData.length, 'messages');
+      setMessages(messagesData);
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      console.error('[ChatBox] Error fetching messages:', error);
       toast.error('Fehler beim Laden der Nachrichten');
     } finally {
       setLoading(false);
