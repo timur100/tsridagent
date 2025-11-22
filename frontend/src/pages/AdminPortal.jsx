@@ -1005,8 +1005,8 @@ const AdminPortalContent = () => {
                     onClick={() => setActiveTab('orders')}
                     className={`p-6 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       theme === 'dark' 
-                        ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(234,179,8,0.5)] hover:-translate-y-1 animate-pulse' 
-                        : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(234,179,8,0.4)] hover:-translate-y-1 animate-pulse'
+                        ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(234,179,8,0.5)] hover:-translate-y-1 animate-heartbeat' 
+                        : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(234,179,8,0.4)] hover:-translate-y-1 animate-heartbeat'
                     }`}>
                     <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-500/10 rounded-full -mr-10 -mt-10"></div>
                     <div className="flex items-center justify-between relative z-10">
