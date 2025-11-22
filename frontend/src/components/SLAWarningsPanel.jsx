@@ -28,10 +28,12 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
   const loadWarnings = async () => {
     try {
       const result = await apiCall('/api/sla/warnings');
+      console.log('SLA Warnings result:', result);
+      
       if (result.success && result.data) {
         setWarnings(result.data);
-      } else {
-        // Set empty warnings structure if no data
+      } else if (result.success) {
+        // API returned success but no data structure - set empty
         setWarnings({
           critical_count: 0,
           breached_count: 0,
@@ -42,10 +44,15 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
             at_risk: []
           }
         });
+      } else {
+        throw new Error('API returned unsuccessful response');
       }
     } catch (error) {
       console.error('Error loading SLA warnings:', error);
-      toast.error('Fehler beim Laden der SLA-Warnungen');
+      // Only show toast on actual error, not on empty data
+      if (error.message !== 'API returned unsuccessful response') {
+        toast.error('Fehler beim Laden der SLA-Warnungen');
+      }
       // Set empty warnings structure on error
       setWarnings({
         critical_count: 0,
