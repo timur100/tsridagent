@@ -1438,6 +1438,564 @@ class InVorbereitungSynchronisationTester:
             print(f"❌ Error during testing: {str(e)}")
             return False
 
+class ChangeRequestTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+        self.results = []
+        self.admin_token = None
+        self.created_change_request_id = None
+        
+    def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if not success or response_data:
+            print(f"   Details: {details}")
+            if response_data:
+                print(f"   Response: {json.dumps(response_data, indent=2)}")
+        print()
+        
+        self.results.append({
+            'test': test_name,
+            'success': success,
+            'details': details,
+            'response': response_data
+        })
+    
+    def authenticate_admin(self):
+        """Authenticate as admin user (admin@tsrid.com)"""
+        try:
+            auth_data = {
+                "email": "admin@tsrid.com",
+                "password": "admin123"
+            }
+            
+            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Authentication failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("access_token"):
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    "Authentication response missing access_token",
+                    data
+                )
+                return False
+            
+            self.admin_token = data["access_token"]
+            self.session.headers.update({
+                'Authorization': f'Bearer {self.admin_token}'
+            })
+            
+            # Decode token to verify claims
+            try:
+                decoded = jwt.decode(self.admin_token, options={"verify_signature": False})
+                tenant_ids = decoded.get("tenant_ids", [])
+                role = decoded.get("role", "")
+                customer_id = decoded.get("customer_id", "")
+                
+                self.log_result(
+                    "Admin Authentication", 
+                    True, 
+                    f"Successfully authenticated as admin@tsrid.com with role='{role}', customer_id='{customer_id}', tenant_ids={tenant_ids}"
+                )
+                return True
+            except Exception as decode_error:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Failed to decode JWT token: {str(decode_error)}"
+                )
+                return False
+            
+        except Exception as e:
+            self.log_result(
+                "Admin Authentication", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_change_request_creation(self):
+        """Test POST /api/change-requests - Create a new change request"""
+        try:
+            change_request_data = {
+                "title": "Test Change Request from Backend Test",
+                "description": "Testing the fixed authentication flow",
+                "category": "location_change",
+                "priority": "high",
+                "requested_date": datetime.now(timezone.utc).isoformat(),
+                "impact_description": "Testing impact for authentication fix verification"
+            }
+            
+            response = self.session.post(f"{API_BASE}/change-requests", json=change_request_data)
+            
+            if response.status_code not in [200, 201]:
+                self.log_result(
+                    "Change Request Creation",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Change Request Creation",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify change_request object exists
+            change_request = data.get("change_request")
+            if not change_request:
+                self.log_result(
+                    "Change Request Creation",
+                    False,
+                    "Response missing change_request object",
+                    data
+                )
+                return False
+            
+            # Verify required fields
+            required_fields = ["id", "title", "description", "category", "priority", "status", "created_at"]
+            for field in required_fields:
+                if field not in change_request:
+                    self.log_result(
+                        "Change Request Creation",
+                        False,
+                        f"Change request missing required field: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify status is "open"
+            if change_request.get("status") != "open":
+                self.log_result(
+                    "Change Request Creation",
+                    False,
+                    f"Expected status 'open', got: {change_request.get('status')}",
+                    data
+                )
+                return False
+            
+            # Store the created change request ID for later tests
+            self.created_change_request_id = change_request.get("id")
+            
+            self.log_result(
+                "Change Request Creation",
+                True,
+                f"Successfully created change request with ID: {self.created_change_request_id}, status: {change_request.get('status')}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Change Request Creation",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_change_request_list(self):
+        """Test GET /api/change-requests - Fetch all change requests"""
+        try:
+            response = self.session.get(f"{API_BASE}/change-requests")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Change Request List",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Change Request List",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify change_requests array exists
+            change_requests = data.get("change_requests")
+            if not isinstance(change_requests, list):
+                self.log_result(
+                    "Change Request List",
+                    False,
+                    "Response missing change_requests array or not a list",
+                    data
+                )
+                return False
+            
+            # Verify count field matches array length
+            count = data.get("count", 0)
+            if count != len(change_requests):
+                self.log_result(
+                    "Change Request List",
+                    False,
+                    f"Count mismatch: count={count}, array length={len(change_requests)}",
+                    data
+                )
+                return False
+            
+            # If we created a change request, verify it appears in the list
+            if self.created_change_request_id:
+                found_created_request = False
+                for cr in change_requests:
+                    if cr.get("id") == self.created_change_request_id:
+                        found_created_request = True
+                        break
+                
+                if not found_created_request:
+                    self.log_result(
+                        "Change Request List",
+                        False,
+                        f"Created change request {self.created_change_request_id} not found in list",
+                        data
+                    )
+                    return False
+            
+            self.log_result(
+                "Change Request List",
+                True,
+                f"Successfully retrieved {count} change requests" + 
+                (f", including our created request {self.created_change_request_id}" if self.created_change_request_id else "")
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Change Request List",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_change_request_stats(self):
+        """Test GET /api/change-requests/stats/summary - Fetch change request statistics"""
+        try:
+            response = self.session.get(f"{API_BASE}/change-requests/stats/summary")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Change Request Stats",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Change Request Stats",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify stats object exists
+            stats = data.get("stats")
+            if not isinstance(stats, dict):
+                self.log_result(
+                    "Change Request Stats",
+                    False,
+                    "Response missing stats object or not a dict",
+                    data
+                )
+                return False
+            
+            # Verify required stats fields
+            required_stats = ["total", "open", "in_progress", "completed", "rejected"]
+            for stat in required_stats:
+                if stat not in stats:
+                    self.log_result(
+                        "Change Request Stats",
+                        False,
+                        f"Stats missing required field: {stat}",
+                        data
+                    )
+                    return False
+                
+                # Verify field is a number
+                if not isinstance(stats[stat], int):
+                    self.log_result(
+                        "Change Request Stats",
+                        False,
+                        f"Stats field {stat} should be integer, got {type(stats[stat])}",
+                        data
+                    )
+                    return False
+            
+            # Verify total equals sum of individual counts
+            expected_total = stats["open"] + stats["in_progress"] + stats["completed"] + stats["rejected"]
+            if stats["total"] != expected_total:
+                self.log_result(
+                    "Change Request Stats",
+                    False,
+                    f"Total count mismatch: total={stats['total']}, sum of parts={expected_total}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "Change Request Stats",
+                True,
+                f"Successfully retrieved stats: total={stats['total']}, open={stats['open']}, in_progress={stats['in_progress']}, completed={stats['completed']}, rejected={stats['rejected']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Change Request Stats",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_no_401_errors(self):
+        """Test that all APIs return no 401 errors (authentication working)"""
+        try:
+            test_endpoints = [
+                "/api/change-requests",
+                "/api/change-requests/stats/summary"
+            ]
+            
+            error_endpoints = []
+            
+            for endpoint in test_endpoints:
+                try:
+                    response = self.session.get(f"{BACKEND_URL}{endpoint}")
+                    if response.status_code == 401:
+                        error_endpoints.append(f"{endpoint} -> 401 Unauthorized")
+                except Exception as e:
+                    error_endpoints.append(f"{endpoint} -> Exception: {str(e)}")
+            
+            if error_endpoints:
+                self.log_result(
+                    "No 401 Authentication Errors",
+                    False,
+                    f"Found authentication errors: {error_endpoints}"
+                )
+                return False
+            else:
+                self.log_result(
+                    "No 401 Authentication Errors",
+                    True,
+                    "All tested endpoints return no 401 authentication errors"
+                )
+                return True
+            
+        except Exception as e:
+            self.log_result(
+                "No 401 Authentication Errors",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_ticketing_service_health(self):
+        """Test that Ticketing Service is running and accessible"""
+        try:
+            # Test direct connection to microservice
+            direct_response = self.session.get("http://localhost:8103/health")
+            
+            if direct_response.status_code != 200:
+                self.log_result(
+                    "Ticketing Service Health",
+                    False,
+                    f"Ticketing Service health check failed: {direct_response.status_code}"
+                )
+                return False
+            
+            data = direct_response.json()
+            if data.get("service") != "Ticketing Service":
+                self.log_result(
+                    "Ticketing Service Health",
+                    False,
+                    f"Unexpected service response: {data}"
+                )
+                return False
+            
+            self.log_result(
+                "Ticketing Service Health",
+                True,
+                "Ticketing Service is running and responding correctly on port 8103"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Ticketing Service Health",
+                False,
+                f"Cannot connect to Ticketing Service: {str(e)}"
+            )
+            return False
+
+    def test_mongodb_persistence(self):
+        """Test that change requests are persisted in MongoDB"""
+        try:
+            if not self.created_change_request_id:
+                self.log_result(
+                    "MongoDB Persistence",
+                    False,
+                    "No created change request ID to verify"
+                )
+                return False
+            
+            # Check MongoDB directly
+            ticketing_db = mongo_client['ticketing_db']
+            change_request = ticketing_db.change_requests.find_one({"id": self.created_change_request_id})
+            
+            if not change_request:
+                self.log_result(
+                    "MongoDB Persistence",
+                    False,
+                    f"Change request {self.created_change_request_id} not found in MongoDB"
+                )
+                return False
+            
+            # Verify required fields in MongoDB document
+            required_fields = ["id", "title", "description", "category", "priority", "status", "created_at"]
+            for field in required_fields:
+                if field not in change_request:
+                    self.log_result(
+                        "MongoDB Persistence",
+                        False,
+                        f"MongoDB document missing required field: {field}"
+                    )
+                    return False
+            
+            self.log_result(
+                "MongoDB Persistence",
+                True,
+                f"Change request {self.created_change_request_id} successfully persisted in MongoDB with all required fields"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "MongoDB Persistence",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    async def run_all_tests(self):
+        """Run all Change Request tests"""
+        print("=" * 80)
+        print("CHANGE REQUEST FUNCTIONALITY TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Testing Authentication Fix and Change Request APIs")
+        print(f"Microservice: Ticketing Service (Port 8103)")
+        print("=" * 80)
+        print()
+        
+        try:
+            # Step 1: Test Ticketing Service Health
+            print("🔍 STEP 1: Testing Ticketing Service Health...")
+            health_ok = self.test_ticketing_service_health()
+            if not health_ok:
+                print("❌ Ticketing Service not available. Stopping tests.")
+                return False
+            
+            # Step 2: Authenticate as Admin
+            print("\n🔍 STEP 2: Authenticating as Admin (admin@tsrid.com)...")
+            if not self.authenticate_admin():
+                print("❌ Admin authentication failed. Stopping tests.")
+                return False
+            
+            # Step 3: Test Change Request Creation
+            print("\n🔍 STEP 3: Testing Change Request Creation (POST /api/change-requests)...")
+            creation_ok = self.test_change_request_creation()
+            
+            # Step 4: Test Change Request List
+            print("\n🔍 STEP 4: Testing Change Request List (GET /api/change-requests)...")
+            list_ok = self.test_change_request_list()
+            
+            # Step 5: Test Change Request Stats
+            print("\n🔍 STEP 5: Testing Change Request Stats (GET /api/change-requests/stats/summary)...")
+            stats_ok = self.test_change_request_stats()
+            
+            # Step 6: Test No 401 Errors
+            print("\n🔍 STEP 6: Testing No 401 Authentication Errors...")
+            no_401_ok = self.test_no_401_errors()
+            
+            # Step 7: Test MongoDB Persistence
+            print("\n🔍 STEP 7: Testing MongoDB Data Persistence...")
+            persistence_ok = self.test_mongodb_persistence()
+            
+            # Summary
+            print("\n" + "=" * 80)
+            print("CHANGE REQUEST FUNCTIONALITY TESTING SUMMARY")
+            print("=" * 80)
+            
+            passed = sum(1 for r in self.results if r['success'])
+            total = len(self.results)
+            
+            print(f"Tests completed: {passed}/{total} passed")
+            
+            # Print critical functionality results
+            print("\n🔍 CRITICAL FUNCTIONALITY:")
+            print(f"   • Ticketing Service Health: {'✅ WORKING' if health_ok else '❌ FAILED'}")
+            print(f"   • Admin Authentication: {'✅ WORKING' if self.admin_token else '❌ FAILED'}")
+            print(f"   • Change Request Creation: {'✅ WORKING' if creation_ok else '❌ FAILED'}")
+            print(f"   • Change Request List: {'✅ WORKING' if list_ok else '❌ FAILED'}")
+            print(f"   • Change Request Stats: {'✅ WORKING' if stats_ok else '❌ FAILED'}")
+            print(f"   • No 401 Errors: {'✅ WORKING' if no_401_ok else '❌ FAILED'}")
+            print(f"   • MongoDB Persistence: {'✅ WORKING' if persistence_ok else '❌ FAILED'}")
+            
+            # Print failed tests
+            failed_tests = [r for r in self.results if not r['success']]
+            if failed_tests:
+                print("\n❌ ISSUES FOUND:")
+                for test in failed_tests:
+                    print(f"   • {test['test']}: {test['details']}")
+            
+            # Print successful tests
+            successful_tests = [r for r in self.results if r['success']]
+            if successful_tests:
+                print("\n✅ SUCCESSFUL CHECKS:")
+                for test in successful_tests:
+                    print(f"   • {test['test']}")
+            
+            return len(failed_tests) == 0
+            
+        except Exception as e:
+            print(f"❌ Error during testing: {str(e)}")
+            return False
+
+
 class CentralizedEventSystemTester:
     def __init__(self):
         self.session = requests.Session()
