@@ -1635,8 +1635,12 @@ class AudioMessagesTester:
             # Create test audio file
             audio_file_path = self.create_test_audio_file()
             
-            # Prepare multipart form data
-            headers = {'Authorization': f'Bearer {self.admin_token}'}
+            # Create a new session without Content-Type header for multipart upload
+            upload_session = requests.Session()
+            upload_session.headers.update({
+                'Authorization': f'Bearer {self.admin_token}',
+                'Accept': 'application/json'
+            })
             
             with open(audio_file_path, 'rb') as f:
                 files = {
@@ -1647,11 +1651,10 @@ class AudioMessagesTester:
                     'is_audio': 'true'
                 }
                 
-                response = self.session.post(
+                response = upload_session.post(
                     f"{API_BASE}/chat/upload",
                     files=files,
-                    data=data,
-                    headers=headers
+                    data=data
                 )
             
             # Clean up temp file
