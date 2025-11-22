@@ -27,7 +27,7 @@ const HelpCenter = () => {
       if (selectedCategory !== 'all') params.append('category', selectedCategory);
       
       const response = await apiCall(`/api/knowledge-base/articles?${params.toString()}`);
-      if (response.success) {
+      if (response.success && response.articles) {
         setArticles(response.articles);
       }
     } catch (error) {
