@@ -1036,29 +1036,28 @@ const AdminPortalContent = () => {
               </div>
             </div>
 
-            {/* Row 3: Neue Bestellungen, Neue Tickets & Change Requests - Always show in 3 columns */}
+            {/* Row 3: Neue Bestellungen, Neue Tickets, Change Requests - 4 columns like other cards */}
             {(newOrdersCount > 0 || newTicketsCount > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
                 {/* Neue Bestellungen */}
                 {newOrdersCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('orders')}
-                    className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                       theme === 'dark' 
-                        ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(234,179,8,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(234,179,8,0.5)] hover:-translate-y-1 animate-heartbeat' 
-                        : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(234,179,8,0.4)] hover:-translate-y-1 animate-heartbeat'
+                        ? 'bg-[#2a2a2a] border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1 animate-heartbeat' 
+                        : 'bg-yellow-50 border-2 border-yellow-500 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1 animate-heartbeat'
                     }`}>
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500/10 rounded-full -mr-8 -mt-8"></div>
-                    <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
-                          🔔 Neue Bestellungen
+                        <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>
+                          Neue Bestellungen
                         </p>
-                        <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                        <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
                           {newOrdersCount}
                         </p>
                       </div>
-                      <ShoppingCart className={`h-8 w-8 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
+                      <ShoppingCart className={`h-12 w-12 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
@@ -1067,22 +1066,21 @@ const AdminPortalContent = () => {
                 {newTicketsCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('support')}
-                    className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                       theme === 'dark' 
-                        ? 'bg-[#2a2a2a] border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(249,115,22,0.5)] hover:-translate-y-1 animate-heartbeat' 
-                        : 'bg-orange-50 border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(249,115,22,0.4)] hover:-translate-y-1 animate-heartbeat'
+                        ? 'bg-[#2a2a2a] border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1 animate-heartbeat' 
+                        : 'bg-orange-50 border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1 animate-heartbeat'
                     }`}>
-                    <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/10 rounded-full -mr-8 -mt-8"></div>
-                    <div className="flex items-center justify-between relative z-10">
+                    <div className="flex items-center justify-between">
                       <div>
-                        <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
-                          🎫 Neue Tickets
+                        <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
+                          Neue Tickets
                         </p>
-                        <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
+                        <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
                           {newTicketsCount}
                         </p>
                       </div>
-                      <Headphones className={`h-8 w-8 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
+                      <Headphones className={`h-12 w-12 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
@@ -1090,26 +1088,25 @@ const AdminPortalContent = () => {
                 {/* Change Requests - Always show */}
                 <Card 
                   onClick={() => setActiveTab('support')}
-                  className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                  className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                     newChangeRequestsCount > 0
                       ? theme === 'dark' 
-                        ? 'bg-[#2a2a2a] border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(168,85,247,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(168,85,247,0.5)] hover:-translate-y-1 animate-heartbeat' 
-                        : 'bg-purple-50 border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(168,85,247,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(168,85,247,0.4)] hover:-translate-y-1 animate-heartbeat'
+                        ? 'bg-[#2a2a2a] border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1 animate-heartbeat' 
+                        : 'bg-purple-50 border-2 border-purple-500 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1 animate-heartbeat'
                       : theme === 'dark'
                         ? 'bg-[#2a2a2a] border border-purple-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1'
-                        : 'bg-purple-50/30 border border-purple-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                        : 'bg-purple-50 border border-purple-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
                   }`}>
-                  <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/10 rounded-full -mr-8 -mt-8"></div>
-                  <div className="flex items-center justify-between relative z-10">
+                  <div className="flex items-center justify-between">
                     <div>
-                      <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-800'}`}>
-                        📝 Change Requests
+                      <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-800'}`}>
+                        Change Requests
                       </p>
-                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
+                      <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-purple-300' : 'text-purple-600'}`}>
                         {newChangeRequestsCount}
                       </p>
                     </div>
-                    <FileText className={`h-8 w-8 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} ${newChangeRequestsCount > 0 ? 'animate-bounce' : ''}`} />
+                    <FileText className={`h-12 w-12 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} ${newChangeRequestsCount > 0 ? 'animate-bounce' : ''}`} />
                   </div>
                 </Card>
               </div>
