@@ -824,7 +824,13 @@ const AdminPortalContent = () => {
                 ].map((tab) => (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      // Navigate to nested routes for certain tabs
+                      if (tab.id === 'id-checks') {
+                        navigate('/portal/admin/id-checks');
+                      }
+                    }}
                     className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                       activeTab === tab.id
                         ? 'border-[#c00000] text-[#c00000]'
