@@ -228,6 +228,9 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
     );
   }
   
+  // Show empty state if no warnings at all (but not an error)
+  const totalWarnings = (warnings?.critical_count || 0) + (warnings?.breached_count || 0) + (warnings?.at_risk_count || 0);
+  
   if (!warnings || !warnings.warnings) {
     return (
       <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
@@ -236,9 +239,51 @@ const SLAWarningsPanel = ({ onTicketClick }) => {
           Keine SLA-Daten verfügbar
         </h3>
         <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-          Fehler beim Laden der SLA-Warnungen
+          Es konnten keine SLA-Warnungen geladen werden. Bitte versuchen Sie es später erneut.
         </p>
+        <Button
+          onClick={loadWarnings}
+          className="mt-4"
+          variant="outline"
+        >
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Erneut versuchen
+        </Button>
       </Card>
+    );
+  }
+  
+  // Show "all good" state if data loaded but no warnings
+  if (totalWarnings === 0) {
+    return (
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            SLA Warnungen
+          </h2>
+          <Button
+            onClick={loadWarnings}
+            variant="outline"
+            size="sm"
+            className={theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Aktualisieren
+          </Button>
+        </div>
+        
+        <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+            <TrendingUp className="h-8 w-8 text-green-600 dark:text-green-400" />
+          </div>
+          <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Alle SLAs eingehalten
+          </h3>
+          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+            Aktuell gibt es keine kritischen Tickets oder SLA-Verstöße
+          </p>
+        </Card>
+      </div>
     );
   }
   
