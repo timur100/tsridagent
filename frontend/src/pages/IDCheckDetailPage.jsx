@@ -12,7 +12,7 @@ import {
 const IDCheckDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
 
   const [scan, setScan] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -472,7 +472,7 @@ const IDCheckDetailPage = () => {
 
 // Helper component for data fields
 const DataField = ({ label, value }) => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
   
   return (
     <div>
