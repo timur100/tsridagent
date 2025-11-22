@@ -157,26 +157,26 @@ async def get_change_requests(
                 del cr['_id']
             change_requests.append(cr)
         
-        # Enrich with tenant names from portal_db
+        # Enrich with tenant names from portal_db.portal_users
         if change_requests:
-            # Get unique tenant IDs
-            tenant_ids = list(set([cr.get('tenant_id') for cr in change_requests if cr.get('tenant_id')]))
+            # Connect to portal_db to get company names from users
+            portal_db = db.client['portal_db']
+            users_collection = portal_db['portal_users']
             
-            if tenant_ids:
-                # Connect to portal_db to get tenant names
-                portal_db = db.client['portal_db']
-                tenants_collection = portal_db['tenants']
+            # Get unique emails to lookup
+            emails = list(set([cr.get('requested_by_email') for cr in change_requests if cr.get('requested_by_email')]))
+            
+            if emails:
+                # Fetch user info to get company names
+                user_company_map = {}
+                async for user in users_collection.find({"email": {"$in": emails}}):
+                    user_company_map[user['email']] = user.get('company', 'Unknown Company')
                 
-                # Fetch tenant info
-                tenant_map = {}
-                async for tenant in tenants_collection.find({"id": {"$in": tenant_ids}}):
-                    tenant_map[tenant['id']] = tenant.get('name', tenant.get('company_name', 'Unknown'))
-                
-                # Add tenant_name to each change request
+                # Add tenant_name (company) to each change request
                 for cr in change_requests:
-                    tenant_id = cr.get('tenant_id')
-                    if tenant_id and tenant_id in tenant_map:
-                        cr['tenant_name'] = tenant_map[tenant_id]
+                    email = cr.get('requested_by_email')
+                    if email and email in user_company_map:
+                        cr['tenant_name'] = user_company_map[email]
         
         return {
             "success": True,
