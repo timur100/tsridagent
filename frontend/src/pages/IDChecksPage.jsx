@@ -11,7 +11,7 @@ import {
 
 const IDChecksPage = () => {
   const { theme } = useTheme();
-  const { user } = useAuth();
+  const { user, apiCall } = useAuth();
   const navigate = useNavigate();
 
   // Data states
