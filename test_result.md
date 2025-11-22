@@ -2718,6 +2718,22 @@ agent_communication:
     - agent: "main"
       message: "✅ PHASE 3 & 4 ABGESCHLOSSEN: Backend Microservices (Device, Inventory, Order, Ticketing) sind jetzt tenant-aware mit tenant_id Parametern. Frontend-Komponenten (InventoryManagement, OrdersManagement, SupportManagement, AllLocationsTab) nutzen TenantContext und filtern automatisch nach gewähltem Tenant. Frontend kompiliert erfolgreich. System bereit für End-to-End Testing."
     - agent: "testing"
+
+  - task: "ID-Checks Page Double Rendering Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🐛 DOUBLE RENDERING PROBLEM IDENTIFIZIERT: User berichtete 'id-check ist doppelt auf der seite'. ROOT CAUSE: 1) IDChecksPage wurde durch ZWEI <Outlet /> Komponenten gerendert (Zeile 1328 innerhalb activeTab condition UND Zeile 1696 global), 2) isOnDetailPage-Logik (Zeile 67-71) enthielt NICHT /id-checks, sodass Tab-Content weiterhin gerendert wurde. LÖSUNG IMPLEMENTIERT: 1) /id-checks zur isOnDetailPage-Logik hinzugefügt (Zeile 72), 2) Überflüssiges <Outlet /> in Zeile 1327-1329 entfernt, 3) useEffect hinzugefügt für activeTab-Synchronisation bei URL-Änderungen (setzt activeTab='id-checks' wenn pathname /id-checks enthält). ERGEBNIS: ID-Checks Page wird jetzt nur EINMAL über das globale <Outlet /> gerendert, Tab-Content wird korrekt ausgeblendet wenn auf ID-Checks Seite. Frontend hot-reload aktiv, keine Neustart nötig."
+        - working: true
+          agent: "main"
+          comment: "✅ FIX VISUELL VERIFIZIERT: Screenshot zeigt ID-Checks Page korrekt mit: 1) Tab 'ID-Checks' richtig hervorgehoben (rot unterstrichen), 2) Stats-Karten (Gesamt: 0, Validated: 0, Rejected: 0, Unknown: 0, Pending: 0) werden EINMAL angezeigt, 3) Tabelle mit korrekten Spalten (Zeitstempel, Kunde, Standort, Gerät, Dokumenttyp, Status, Name, Dokumentennummer, Gescannt von, Aktionen), 4) 'Keine ID-Scans gefunden' Meldung erscheint nur EINMAL, 5) Kein doppeltes Rendering mehr sichtbar. Problem vollständig behoben! ✅"
+
       message: "✅ CUSTOMER PORTAL DATA ENDPOINTS TESTING COMPLETED SUCCESSFULLY: Comprehensive testing of customer portal data endpoints completed with all 5/5 tests passed. CRITICAL DATABASE FIXES: Fixed routes/devices.py to use multi_tenant_admin database for europcar_devices collection, fixed routes/customer_data.py to use correct databases (multi_tenant_admin for devices, portal_db for tenant_locations). AUTHENTICATION: Successfully authenticated as admin@tsrid.com with tenant admin credentials. ENDPOINTS VERIFIED: ✅ GET /api/portal/europcar-devices returns 215 devices filtered by tenant_id with summary (total: 215, online: 151, offline: 64), ✅ GET /api/portal/customer-data/europcar-stations returns 198 stations with devices and proper device counts. DATABASE CONTEXT: Confirmed multi_tenant_admin.europcar_devices (215 documents) and portal_db.tenant_locations (213 documents) collections working correctly with tenant_id filtering. All review request requirements met - both endpoints return data (not empty arrays) for tenant admin as expected."
     - agent: "testing"
       message: "🎤 AUDIO MESSAGES BACKEND TESTING COMPLETED SUCCESSFULLY: All 9/9 tests passed for Audio Messages Feature. CRITICAL FINDINGS: ✅ Audio file upload working with is_audio=true flag, ✅ Audio message creation with message_type='audio' working, ✅ Audio file serving with correct Content-Type headers working, ✅ Audio messages appear in chat message list, ✅ File metadata retrieval with is_audio flag working, ✅ WebSocket broadcasts triggered for real-time updates, ✅ File storage in /app/backend/uploads/chat_files/ working, ✅ All endpoints return 200 OK with no errors. AUTHENTICATION: Both admin@tsrid.com and info@europcar.com credentials working correctly. TESTING METHODOLOGY: Created comprehensive AudioMessagesTester with 9 test cases covering all review request requirements using existing ticket TK.20251122.021. BACKEND IMPLEMENTATION VERIFIED: MessageType enum includes 'audio', file upload endpoint supports is_audio flag, file serving endpoint supports WebM/MP3/WAV/OGG/M4A with correct media types, WebSocket broadcasting functional. The Audio Messages Feature backend implementation is fully functional and production-ready."
