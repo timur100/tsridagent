@@ -258,8 +258,14 @@ export const AuthProvider = ({ children }) => {
       
       xhr.open(method, url);
       
-      // Set headers
-      xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+      // Set headers - CRITICAL FIX: Always read token from localStorage to avoid race conditions
+      const currentToken = token || localStorage.getItem('portal_token');
+      if (currentToken) {
+        xhr.setRequestHeader('Authorization', `Bearer ${currentToken}`);
+        console.log('[apiCall] Token present:', currentToken ? 'YES' : 'NO');
+      } else {
+        console.warn('[apiCall] No token available for request to:', url);
+      }
       
       // Handle different body types
       if (options.body && !options.isFormData && !options.skipContentType) {
