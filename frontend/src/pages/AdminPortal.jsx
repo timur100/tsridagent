@@ -1318,14 +1318,8 @@ const AdminPortalContent = () => {
           />
         )}
 
-        {activeTab === 'id-checks' && !outletElement && (
-          <IDChecksPage />
-        )}
-        
-        {activeTab === 'id-checks' && outletElement && (
-          <div className="flex-1">
-            <Outlet />
-          </div>
+        {activeTab === 'id-checks' && (
+          <Outlet />
         )}
 
         {activeTab === 'devices' && (
