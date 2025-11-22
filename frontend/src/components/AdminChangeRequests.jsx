@@ -10,7 +10,7 @@ import toast from 'react-hot-toast';
 
 const AdminChangeRequests = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
+  const { apiCall, user } = useAuth();
   const { selectedTenantId } = useTenant();
   
   const [changeRequests, setChangeRequests] = useState([]);
@@ -19,6 +19,26 @@ const AdminChangeRequests = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [viewMode, setViewMode] = useState('all'); // all, by_tenant
   const [stats, setStats] = useState({ total: 0, open: 0, in_progress: 0, completed: 0, rejected: 0 });
+  
+  // WebSocket for real-time updates (admin listens to 'all' room)
+  const tenantId = user?.role === 'admin' ? 'all' : (user?.tenant_ids?.[0] || null);
+  
+  const { connectionStatus } = useWebSocket(tenantId, {
+    change_request_created: (data) => {
+      console.log('📨 [Admin Change Requests] New change request:', data);
+      fetchChangeRequests();
+      fetchStats();
+      toast.success('Neues Change Request eingegangen!', {
+        duration: 4000,
+        icon: '🔄'
+      });
+    },
+    change_request_updated: (data) => {
+      console.log('📨 [Admin Change Requests] Change request updated:', data);
+      fetchChangeRequests();
+      fetchStats();
+    }
+  });
 
   useEffect(() => {
     fetchChangeRequests();
