@@ -353,6 +353,9 @@ const SupportManagement = () => {
       {/* Knowledge Base Tab */}
       {activeTab === 'kb' && <KnowledgeBaseEditor />}
       
+      {/* Settings Tab */}
+      {activeTab === 'settings' && <SupportSettings />}
+      
       {/* Tickets Tab */}
       {activeTab === 'tickets' && (
         <>
