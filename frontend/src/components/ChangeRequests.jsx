@@ -64,8 +64,15 @@ const ChangeRequests = () => {
       if (filterStatus) params.append('status', filterStatus);
       
       const response = await apiCall(`/api/change-requests?${params.toString()}`);
-      if (response.success && response.change_requests) {
-        setChangeRequests(response.change_requests);
+      console.log('[ChangeRequests] Fetch response:', response);
+      // apiCall wraps backend response in { success, data, status }
+      if (response.success && response.data) {
+        const backendData = response.data;
+        if (backendData.change_requests) {
+          setChangeRequests(backendData.change_requests);
+        } else {
+          setChangeRequests([]);
+        }
       }
     } catch (error) {
       console.error('Error fetching change requests:', error);
@@ -78,8 +85,13 @@ const ChangeRequests = () => {
   const fetchStats = async () => {
     try {
       const response = await apiCall('/api/change-requests/stats/summary');
-      if (response.success && response.stats) {
-        setStats(response.stats);
+      console.log('[ChangeRequests] Stats response:', response);
+      // apiCall wraps backend response in { success, data, status }
+      if (response.success && response.data) {
+        const backendData = response.data;
+        if (backendData.stats) {
+          setStats(backendData.stats);
+        }
       }
     } catch (error) {
       console.error('Error fetching stats:', error);
