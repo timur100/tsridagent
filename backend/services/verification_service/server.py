@@ -3,8 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+# Add current service directory to Python path so utils and models can be imported
+sys.path.insert(0, os.path.dirname(__file__))
 
 from routes.id_scans import router as id_scans_router
 
