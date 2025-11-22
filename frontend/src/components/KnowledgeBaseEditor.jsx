@@ -32,7 +32,7 @@ const KnowledgeBaseEditor = () => {
     try {
       setLoading(true);
       const response = await apiCall('/api/knowledge-base/articles');
-      if (response.success) {
+      if (response.success && response.articles) {
         setArticles(response.articles);
       }
     } catch (error) {
