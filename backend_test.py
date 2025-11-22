@@ -24,6 +24,7 @@ import uuid
 # Backend URL from environment
 BACKEND_URL = "https://support-hub-67.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
+WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 
 # MongoDB connection for verification
 MONGO_URL = "mongodb://localhost:27017"
