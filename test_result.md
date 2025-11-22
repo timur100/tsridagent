@@ -240,15 +240,18 @@ backend:
 
   - task: "Chat/Messages Frontend E2E Testing"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/components/ChatBox.jsx, frontend/src/components/SupportSettings.jsx, frontend/src/components/TicketDetailModal.jsx, frontend/src/components/MessageItem.jsx"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "🎯 CHAT/MESSAGES FRONTEND E2E TESTING REQUIRED: Comprehensive frontend testing needed for Chat/Messages feature implementation. COMPONENTS IMPLEMENTED: ✅ ChatBox.jsx - Complete chat interface with message sending, file upload, emoji picker, audio recording, typing indicators, WebSocket real-time updates. ✅ SupportSettings.jsx - Support settings configuration with chat settings, file upload limits, audio messages, archiving, notifications. ✅ TicketDetailModal.jsx - Ticket detail modal with dual tabs (Kommentare/Live Chat), integrated ChatBox component. ✅ MessageItem.jsx - Individual message component with edit/delete actions, read receipts, attachments. TESTING PHASES REQUIRED: 1) Login & Navigation (admin@tsrid.com/admin123), 2) Support Settings Test (Einstellungen tab), 3) Ticket Chat Test (Live Chat tab), 4) Chat Functionality (send messages), 5) File Upload Test, 6) Emoji Picker Test, 7) Typing Indicator Test, 8) Message Actions Test (edit/delete), 9) WebSocket Real-Time Test, 10) Customer Portal Test (info@europcar.com/Berlin#2018). BACKEND APIs VERIFIED: All Chat/Messages backend APIs tested and working (POST /api/chat/messages, GET /api/chat/messages/{ticket_id}, POST /api/chat/upload, POST /api/chat/typing, GET/PUT /api/support-settings). Ready for comprehensive frontend E2E testing."
+        - working: false
+          agent: "testing"
+          comment: "❌ CHAT/MESSAGES FRONTEND E2E TESTING BLOCKED BY PORTAL ACCESS ISSUE: Comprehensive testing attempted but unable to access portal login due to critical routing issue. FINDINGS: 1) PORTAL ROUTING ISSUE: External URL https://portal-live.preview.emergentagent.com/portal/login serves iframe loading system instead of React portal app, iframe loads from https://app.emergent.sh/loading-preview which shows document scanner interface instead of portal login. 2) FRONTEND SERVICE VERIFICATION: ✅ Frontend service running correctly (RUNNING pid 1697), ✅ React app builds successfully (webpack compiled successfully), ✅ Local frontend serves portal correctly (http://localhost:3000/portal/login returns proper React HTML), ✅ All Chat/Messages components implemented and present in codebase. 3) COMPONENT IMPLEMENTATION VERIFIED: ✅ ChatBox.jsx - Complete chat interface with WebSocket integration, message sending, file upload, emoji picker, audio recording, typing indicators, ✅ SupportSettings.jsx - Full settings configuration with all required sections (Chat-Einstellungen, Datei-Upload, Audio-Nachrichten, Archivierung, Benachrichtigungen), ✅ TicketDetailModal.jsx - Dual tab system (Kommentare/Live Chat) with integrated ChatBox, ✅ MessageItem.jsx - Message actions (edit/delete), read receipts, attachments support. 4) BACKEND INTEGRATION READY: All Chat/Messages backend APIs tested and working, WebSocket broadcasting functional, file upload endpoints operational. CRITICAL BLOCKER: Portal access blocked by preview system routing - external URL redirects to document scanner instead of portal login. Frontend components are fully implemented but cannot be tested due to infrastructure routing issue. RECOMMENDATION: Fix portal routing configuration to serve React app directly instead of through preview iframe system."
 
 frontend:
   - task: "In Vorbereitung Status Tracking - Phase 1 (TenantDetailPage Filter)"
