@@ -8,30 +8,32 @@ import websocketService from '../services/websocket.service';
 /**
  * Custom hook for WebSocket connection
  * @param {string} tenantId - The tenant ID to connect to
- * @param {string} token - JWT authentication token
+ * @param {object} handlers - Event handlers object (e.g., { message_type: handlerFn })
  * @param {object} options - Configuration options
  * @returns {object} WebSocket state and handlers
  */
-export const useWebSocket = (tenantId, token, options = {}) => {
+export const useWebSocket = (tenantId, handlers = {}, options = {}) => {
   const {
     autoConnect = true,
     enableFallback = true,
     pollingInterval = 30000,
-    onLocationUpdate = null,
-    onDeviceUpdate = null,
-    onDashboardStats = null,
-    onRefreshAll = null,
-    onOpeningHoursUpdate = null,
-    onLocationCreated = null,
-    onLocationDeleted = null,
-    onDeviceCreated = null,
-    onDeviceDeleted = null,
-    onDeviceStatusUpdate = null,
-    onTenantUpdated = null,
-    onUserCreated = null,
-    onUserUpdated = null,
-    onUserDeleted = null,
-    onScanUpdate = null
+    onLocationUpdate = handlers.location_update || null,
+    onDeviceUpdate = handlers.device_update || null,
+    onDashboardStats = handlers.dashboard_stats || null,
+    onRefreshAll = handlers.refresh_all || null,
+    onOpeningHoursUpdate = handlers.opening_hours_update || null,
+    onLocationCreated = handlers.location_created || null,
+    onLocationDeleted = handlers.location_deleted || null,
+    onDeviceCreated = handlers.device_created || null,
+    onDeviceDeleted = handlers.device_deleted || null,
+    onDeviceStatusUpdate = handlers.device_status_update || null,
+    onTenantUpdated = handlers.tenant_updated || null,
+    onUserCreated = handlers.user_created || null,
+    onUserUpdated = handlers.user_updated || null,
+    onUserDeleted = handlers.user_deleted || null,
+    onScanUpdate = handlers.scan_update || null,
+    // Additional handlers from new parameter
+    ...customHandlers
   } = options;
 
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
