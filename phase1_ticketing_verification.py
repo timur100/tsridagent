@@ -312,7 +312,16 @@ class Phase1TicketingVerificationTester:
             data = response.json()
             
             # Check if response is a list or dict with stats
-            stats_data = data if isinstance(data, list) else data.get("stats", data.get("data", []))
+            if isinstance(data, list):
+                stats_data = data
+            elif isinstance(data, dict):
+                # Handle nested structure: {"success": true, "data": {"staff_stats": [...]}}
+                if "data" in data and "staff_stats" in data["data"]:
+                    stats_data = data["data"]["staff_stats"]
+                else:
+                    stats_data = data.get("stats", data.get("data", []))
+            else:
+                stats_data = []
             
             if not isinstance(stats_data, list):
                 self.log_result(
