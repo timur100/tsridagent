@@ -28,6 +28,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignNotes, setAssignNotes] = useState('');
   const [selectedStaffEmail, setSelectedStaffEmail] = useState('');
+  const [activeConversationTab, setActiveConversationTab] = useState('comments'); // 'comments' or 'chat'
 
   useEffect(() => {
     if (ticket?.location_id) {
