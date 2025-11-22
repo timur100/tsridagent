@@ -205,12 +205,43 @@ const ChatBox = ({ ticketId, tenantId }) => {
     if (!audioBlob) return;
     
     try {
-      const audioFile = new File([audioBlob], 'audio-message.webm', { type: 'audio/webm' });
-      await handleFileUpload([audioFile]);
-      setAudioBlob(null);
+      setSending(true);
+      
+      // Upload audio file
+      const audioFile = new File([audioBlob], `audio-${Date.now()}.webm`, { type: 'audio/webm' });
+      const formData = new FormData();
+      formData.append('file', audioFile);
+      formData.append('ticket_id', ticketId);
+      formData.append('is_audio', 'true'); // Mark as audio message
+      
+      const uploadResult = await apiCall('/api/chat/upload', {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (uploadResult.success) {
+        // Send message with audio attachment
+        const messageResult = await apiCall('/api/chat/messages', {
+          method: 'POST',
+          body: JSON.stringify({
+            ticket_id: ticketId,
+            message: '🎤 Sprachnachricht',
+            message_type: 'audio',
+            attachments: [uploadResult.file.id]
+          })
+        });
+        
+        if (messageResult.success) {
+          setAudioBlob(null);
+          await fetchMessages();
+          toast.success('Sprachnachricht gesendet');
+        }
+      }
     } catch (error) {
       console.error('Error sending audio:', error);
       toast.error('Fehler beim Senden der Sprachnachricht');
+    } finally {
+      setSending(false);
     }
   };
   
