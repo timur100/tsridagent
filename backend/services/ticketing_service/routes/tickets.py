@@ -103,26 +103,42 @@ async def create_ticket(
         if '_id' in ticket_doc:
             del ticket_doc['_id']
         
-        # Broadcast ticket creation via WebSocket to all tenants
-        # Since this is a support system, we broadcast to all admin tenants
+        # Broadcast ticket creation via WebSocket to all active tenants
+        # This ensures both the customer AND admin portals receive the update
         try:
             import httpx
             async with httpx.AsyncClient(timeout=5.0) as client:
-                # Get tenant_id from customer (assuming all portal users have a tenant_id)
+                # Get tenant_ids from customer
                 tenant_ids = token_data.get("tenant_ids", [])
-                if tenant_ids:
-                    for tenant_id in tenant_ids:
-                        await client.post(
-                            "http://localhost:8001/api/ws/broadcast",
-                            json={
-                                "tenant_id": tenant_id,
-                                "message_type": "ticket_created",
-                                "data": {
-                                    "ticket": ticket_doc
-                                }
+                
+                # Broadcast to customer's tenants
+                for tenant_id in tenant_ids:
+                    await client.post(
+                        "http://localhost:8001/api/ws/broadcast",
+                        json={
+                            "tenant_id": tenant_id,
+                            "message_type": "ticket_created",
+                            "data": {
+                                "ticket": ticket_doc
                             }
-                        )
-                        print(f"📨 [Ticket Created] Broadcasted to tenant {tenant_id}")
+                        }
+                    )
+                    print(f"📨 [Ticket Created] Broadcasted to customer tenant {tenant_id}")
+                
+                # CRITICAL: Also broadcast to "all" tenant room for admins
+                # Admins typically connect with tenant_id="all" to see all tickets
+                await client.post(
+                    "http://localhost:8001/api/ws/broadcast",
+                    json={
+                        "tenant_id": "all",
+                        "message_type": "ticket_created",
+                        "data": {
+                            "ticket": ticket_doc
+                        }
+                    }
+                )
+                print(f"📨 [Ticket Created] Broadcasted to admin room 'all'")
+                
         except Exception as e:
             print(f"⚠️ [Ticket Created] Broadcast failed: {str(e)}")
             # Don't fail the ticket creation if broadcast fails
