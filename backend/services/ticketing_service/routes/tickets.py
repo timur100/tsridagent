@@ -103,6 +103,30 @@ async def create_ticket(
         if '_id' in ticket_doc:
             del ticket_doc['_id']
         
+        # Broadcast ticket creation via WebSocket to all tenants
+        # Since this is a support system, we broadcast to all admin tenants
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                # Get tenant_id from customer (assuming all portal users have a tenant_id)
+                tenant_ids = token_data.get("tenant_ids", [])
+                if tenant_ids:
+                    for tenant_id in tenant_ids:
+                        await client.post(
+                            "http://localhost:8001/api/ws/broadcast",
+                            json={
+                                "tenant_id": tenant_id,
+                                "message_type": "ticket_created",
+                                "data": {
+                                    "ticket": ticket_doc
+                                }
+                            }
+                        )
+                        print(f"📨 [Ticket Created] Broadcasted to tenant {tenant_id}")
+        except Exception as e:
+            print(f"⚠️ [Ticket Created] Broadcast failed: {str(e)}")
+            # Don't fail the ticket creation if broadcast fails
+        
         return {
             "success": True,
             "message": "Ticket erfolgreich erstellt",
