@@ -64,11 +64,11 @@ const HelpCenter = () => {
     { id: 'quick_guide', label: 'Schnellstart', icon: BookOpen }
   ];
 
-  const filteredArticles = articles.filter(article => {
+  const filteredArticles = (articles || []).filter(article => {
     if (searchQuery) {
       return article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
              article.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-             article.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+             (article.tags || []).some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     }
     return true;
   });
