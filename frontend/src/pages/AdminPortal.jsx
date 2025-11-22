@@ -1325,8 +1325,7 @@ const AdminPortalContent = () => {
         {activeTab === 'id-checks' && outletElement && (
           <div className="flex-1">
             <Outlet />
-            <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>UI wird in Kürze implementiert...</p>
-          </Card>
+          </div>
         )}
 
         {activeTab === 'devices' && (
