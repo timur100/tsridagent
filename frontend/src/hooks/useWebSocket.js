@@ -277,11 +277,31 @@ export const useWebSocket = (tenantId, handlers = {}, options = {}) => {
     };
   }, []); // Empty deps - only run on mount/unmount
 
+  // Register custom handlers from the handlers parameter
+  useEffect(() => {
+    if (!handlers || Object.keys(handlers).length === 0) return;
+    
+    console.log('[useWebSocket] Registering custom handlers:', Object.keys(handlers));
+    
+    // Register each handler
+    Object.keys(handlers).forEach(messageType => {
+      websocketService.on(messageType, handlers[messageType]);
+    });
+    
+    // Cleanup
+    return () => {
+      Object.keys(handlers).forEach(messageType => {
+        websocketService.off(messageType, handlers[messageType]);
+      });
+    };
+  }, [handlers]);
+
   // Auto-connect on mount
   useEffect(() => {
-    console.log('[useWebSocket] Auto-connect effect - tenantId:', tenantId, 'token:', token ? 'present' : 'missing', 'autoConnect:', autoConnect);
+    const authToken = localStorage.getItem('portal_token');
+    console.log('[useWebSocket] Auto-connect effect - tenantId:', tenantId, 'token:', authToken ? 'present' : 'missing', 'autoConnect:', autoConnect);
     
-    if (autoConnect && tenantId && token) {
+    if (autoConnect && tenantId && authToken) {
       console.log('[useWebSocket] Calling connect()...');
       connect();
     } else {
