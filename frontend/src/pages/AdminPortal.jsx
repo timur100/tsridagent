@@ -1324,11 +1324,7 @@ const AdminPortalContent = () => {
           />
         )}
 
-        {activeTab === 'id-checks' && location.pathname === '/portal/admin/id-checks' && (
-          <IDChecksPage />
-        )}
-        
-        {activeTab === 'id-checks' && location.pathname.startsWith('/portal/admin/id-checks/') && (
+        {activeTab === 'id-checks' && (
           <Outlet />
         )}
 
