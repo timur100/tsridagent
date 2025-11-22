@@ -4548,13 +4548,13 @@ class TicketCreationVerificationTester:
             return False
 
 if __name__ == "__main__":
-    # Run Ticket Creation Verification tests
-    tester = TicketCreationVerificationTester()
+    # Run Change Request functionality tests
+    tester = ChangeRequestTester()
     success = asyncio.run(tester.run_all_tests())
     
     if success:
-        print("\n🎉 All Ticket Creation Verification tests passed!")
+        print("\n🎉 All Change Request functionality tests passed!")
         sys.exit(0)
     else:
-        print("\n❌ Some Ticket Creation Verification tests failed!")
+        print("\n❌ Some Change Request functionality tests failed!")
         sys.exit(1)
