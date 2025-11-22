@@ -1036,9 +1036,9 @@ const AdminPortalContent = () => {
               </div>
             </div>
 
-            {/* Row 3: Neue Bestellungen, Neue Tickets & Change Requests - Responsive Grid */}
-            {(newOrdersCount > 0 || newTicketsCount > 0 || newChangeRequestsCount > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            {/* Row 3: Neue Bestellungen, Neue Tickets & Change Requests - Always show in 3 columns */}
+            {(newOrdersCount > 0 || newTicketsCount > 0) && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                 {/* Neue Bestellungen */}
                 {newOrdersCount > 0 && (
                   <Card 
