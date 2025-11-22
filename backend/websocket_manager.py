@@ -115,6 +115,15 @@ class ConnectionManager:
         }
         await self.broadcast_to_tenant(tenant_id, message)
     
+    async def broadcast_ticket_update(self, tenant_id: str, ticket_data: dict, action: str = "created"):
+        """Broadcast ticket update to all clients in tenant room"""
+        message = {
+            "type": "ticket_update",
+            "action": action,  # created, updated, deleted
+            "data": ticket_data
+        }
+        await self.broadcast_to_tenant(tenant_id, message)
+    
     async def send_heartbeat(self, websocket: WebSocket):
         """Send a heartbeat/ping message to check connection health"""
         try:
