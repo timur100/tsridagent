@@ -795,12 +795,12 @@ const AdminPortalContent = () => {
                     <tab.icon className="h-4 w-4" />
                     <span>{tab.label}</span>
                     {tab.id === 'orders' && newOrdersCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
                         {newOrdersCount > 9 ? '9+' : newOrdersCount}
                       </span>
                     )}
                     {tab.id === 'support' && newTicketsCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-pulse">
+                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
                         {newTicketsCount > 9 ? '9+' : newTicketsCount}
                       </span>
                     )}
