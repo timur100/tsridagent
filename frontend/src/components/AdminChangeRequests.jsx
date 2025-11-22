@@ -100,7 +100,7 @@ const AdminChangeRequests = () => {
   };
 
   // Group by tenant
-  const groupedByTenant = changeRequests.reduce((acc, cr) => {
+  const groupedByTenant = (changeRequests || []).reduce((acc, cr) => {
     const tenant = cr.tenant_id || 'unknown';
     if (!acc[tenant]) acc[tenant] = [];
     acc[tenant].push(cr);
