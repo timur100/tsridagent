@@ -111,7 +111,7 @@ backend:
     file: "Ticketing Microservice (Port 8103), backend/routes/ticketing_proxy.py"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
@@ -119,6 +119,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ PHASE 1 TICKETING SYSTEM ASYNC FIX SUCCESSFUL: Comprehensive re-testing completed with 7/7 tests passed successfully after MongoDB AsyncIOMotorCursor bug fix. ALL REVIEW REQUEST REQUIREMENTS VERIFIED: ✅ STAFF MANAGEMENT APIS WORKING: GET /api/staff successfully returns staff list (found 1 staff member), POST /api/staff successfully creates staff members (agent1@support.de created), GET /api/staff/tickets/by-staff successfully returns ticket statistics (1 staff member, 1 unassigned ticket). ✅ SLA WARNINGS API WORKING: GET /api/sla/warnings successfully returns SLA data (0 critical, 1 breached, 1 at risk tickets). ✅ ASYNCIOMOTORCURSOR BUG FIXED: All MongoDB cursor operations now use proper 'async for cursor' iteration and 'await collection.find_one()' calls. Fixed missing await statements in staff.py (lines 47, 109, 144, 227, 232, 241, 313-328, 349) and sla.py (line 186). ✅ INTEGRATION WORKFLOW FUNCTIONAL: Staff creation → ticket statistics → capacity tracking all working correctly. ✅ NO 500 ERRORS: All tested endpoints return 200 OK with proper JSON responses. ✅ AUTHENTICATION: Admin credentials (admin@tsrid.com/admin123) working correctly. ✅ MICROSERVICE HEALTH: Ticketing Service running on port 8103 and responding to health checks. TECHNICAL FIXES APPLIED: 1) Added missing 'await' keywords to all AsyncIOMotorCollection operations, 2) Fixed cursor iteration using 'async for' pattern, 3) Restarted Ticketing Service to apply fixes. TESTING METHODOLOGY: Created focused re-test script (phase1_ticketing_retest.py) that directly tests microservice endpoints to bypass proxy redirect issues. All core Phase 1 Ticketing System functionality is now production-ready and fully functional."
+        - working: "NA"
+          agent: "main"
+          comment: "🔧 MIXED CONTENT ERROR FIX APPLIED: User reported persistent Mixed Content errors preventing frontend from calling ticketing APIs. ROOT CAUSE IDENTIFIED: In frontend/src/contexts/AuthContext.jsx line 256, the apiCall function had a no-op condition `const url = endpoint.startsWith('http') ? endpoint : endpoint;` which did NOTHING with relative URLs. This caused relative URLs like `/api/tickets` to be used as-is, and the browser was somehow converting them to HTTP instead of HTTPS. FIX APPLIED: Changed line 256 to: `const url = endpoint.startsWith('http') ? endpoint : `${BACKEND_URL}${endpoint}`;` This ensures all relative API endpoints are prefixed with the hardcoded HTTPS BACKEND_URL. Added console.log for debugging: `console.log('[apiCall] Calling:', url);`. FRONTEND REBUILT: Ran yarn build successfully, new build hash fec560b0.js generated. Frontend service restarted via supervisorctl. VERIFICATION: Browser console logs show NO MORE Mixed Content errors! Console logs from latest build show: '[AuthContext] BACKEND_URL: https://device-tracker-63.preview.emergentagent.com' without any HTTP Mixed Content warnings. Next step: Backend testing to verify ticket list appears correctly in Admin Support view."
 
   - task: "Centralized Event System - Phase 1 Implementation"
     implemented: true
