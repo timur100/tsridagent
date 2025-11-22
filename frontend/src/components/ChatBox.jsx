@@ -215,15 +215,16 @@ const ChatBox = ({ ticketId, tenantId }) => {
     try {
       const formData = new FormData();
       formData.append('ticket_id', ticketId);
-      formData.append('is_typing', isTyping);
+      formData.append('is_typing', isTyping.toString());
       
       await apiCall('/api/chat/typing', {
         method: 'POST',
-        body: formData,
-        headers: {}
+        body: formData
+        // Let apiCall handle headers automatically
       });
     } catch (error) {
-      console.error('Error sending typing indicator:', error);
+      // Silently fail for typing indicator - not critical
+      console.log('Typing indicator not sent:', error.message);
     }
   };
   
