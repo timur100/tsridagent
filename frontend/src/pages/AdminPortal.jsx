@@ -338,6 +338,44 @@ const AdminPortalContent = () => {
     return () => clearInterval(interval);
   }, [apiCall, lastCheckedTickets]);
 
+  // Check for new change requests periodically
+  useEffect(() => {
+    const checkNewChangeRequests = async () => {
+      try {
+        const result = await apiCall('/api/change-requests/stats/summary');
+        
+        // The apiCall wrapper returns data in result.data
+        const stats = result?.data?.stats || result?.stats;
+        
+        if (result.success && stats) {
+          const currentOpenCRs = stats.open || 0;
+          
+          // Only update and show toast if count increased
+          if (lastCheckedChangeRequests !== null && currentOpenCRs > lastCheckedChangeRequests) {
+            const diff = currentOpenCRs - lastCheckedChangeRequests;
+            setNewChangeRequestsCount(currentOpenCRs);
+            toast.success(`${diff} neue Change Request${diff > 1 ? 's' : ''}!`, {
+              duration: 5000,
+              icon: '📝'
+            });
+          } else {
+            // Just update the count without toast
+            setNewChangeRequestsCount(currentOpenCRs);
+          }
+          
+          setLastCheckedChangeRequests(currentOpenCRs);
+        }
+      } catch (error) {
+        console.error('Error checking new change requests:', error);
+      }
+    };
+
+    checkNewChangeRequests();
+    const interval = setInterval(checkNewChangeRequests, 30000); // Check every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, [apiCall, lastCheckedChangeRequests]);
+
   useEffect(() => {
     loadData();
     loadSyncMode();
