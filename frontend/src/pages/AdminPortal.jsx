@@ -68,7 +68,8 @@ const AdminPortalContent = () => {
                          (location.pathname.includes('/tenants/') || 
                           location.pathname.includes('/devices/') || 
                           location.pathname.includes('/locations/') ||
-                          location.pathname.includes('/in-preparation'));
+                          location.pathname.includes('/in-preparation') ||
+                          location.pathname.includes('/id-checks'));
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
