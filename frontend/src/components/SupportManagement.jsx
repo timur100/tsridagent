@@ -34,8 +34,9 @@ const SupportManagement = () => {
   const [statusTileFilter, setStatusTileFilter] = useState(null);
   const [staff, setStaff] = useState([]);
   
-  // Get tenant_id for WebSocket (admin users should listen to all tenants)
-  const tenantId = user?.tenant_ids?.[0] || null;
+  // Get tenant_id for WebSocket
+  // Admin users connect to "all" room to receive tickets from all tenants
+  const tenantId = user?.role === 'admin' ? 'all' : (user?.tenant_ids?.[0] || null);
   
   // WebSocket for real-time ticket updates
   const { connectionStatus } = useWebSocket(tenantId, {
