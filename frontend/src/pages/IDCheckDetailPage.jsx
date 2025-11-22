@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ThemeContext } from '../context/ThemeContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { apiCall } from '../utils/api';
 import { toast } from 'react-hot-toast';
 import { 
