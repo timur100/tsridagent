@@ -256,21 +256,26 @@ const MessageItem = ({ message, isOwnMessage, theme, onDelete, onEdit }) => {
               </div>
             ) : (
               <>
-                <p className="whitespace-pre-wrap break-words">
-                  {message.message}
-                </p>
-                
-                {message.edited && (
-                  <span className={`text-xs italic mt-1 block ${
-                    isOwnMessage ? 'text-blue-100' : theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
-                  }`}>
-                    (bearbeitet)
-                  </span>
+                {/* Text message or audio label */}
+                {message.message_type !== 'audio' && (
+                  <>
+                    <p className="whitespace-pre-wrap break-words">
+                      {message.message}
+                    </p>
+                    
+                    {message.edited && (
+                      <span className={`text-xs italic mt-1 block ${
+                        isOwnMessage ? 'text-blue-100' : theme === 'dark' ? 'text-gray-500' : 'text-gray-500'
+                      }`}>
+                        (bearbeitet)
+                      </span>
+                    )}
+                  </>
                 )}
                 
                 {/* Attachments */}
                 {message.attachments && message.attachments.length > 0 && (
-                  <div className="mt-2">
+                  <div className={message.message_type === 'audio' ? '' : 'mt-2'}>
                     {message.attachments.map(attachmentId => renderAttachment(attachmentId))}
                   </div>
                 )}
