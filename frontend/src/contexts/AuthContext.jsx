@@ -25,7 +25,15 @@ export const AuthProvider = ({ children }) => {
     if (savedToken && savedUser) {
       const parsedUser = JSON.parse(savedUser);
       
-      // CRITICAL FIX: Force refresh from backend ALWAYS to get correct company
+      // CRITICAL FIX: Set token and user IMMEDIATELY from localStorage
+      // This prevents race condition where ProtectedRoute checks before data is loaded
+      setUser(parsedUser);
+      setToken(savedToken);
+      setLoading(false);
+      
+      console.log('[AuthContext] Loaded user from localStorage:', parsedUser.email);
+      
+      // THEN refresh from backend in background to get latest data
       const refreshUserData = async () => {
         try {
           const xhr = new XMLHttpRequest();
@@ -46,7 +54,6 @@ export const AuthProvider = ({ children }) => {
                 };
                 
                 setUser(updatedUser);
-                setToken(savedToken);
                 localStorage.setItem('portal_user', JSON.stringify(updatedUser));
                 
                 if (parsedUser.company !== data.company) {
@@ -54,37 +61,25 @@ export const AuthProvider = ({ children }) => {
                 }
               } catch (e) {
                 console.error('[AuthContext] Error parsing user refresh:', e);
-                // Fallback to saved user
-                setUser(parsedUser);
-                setToken(savedToken);
               }
-            } else {
-              // Fallback to saved user if API fails
-              setUser(parsedUser);
-              setToken(savedToken);
+            } else if (xhr.status === 401) {
+              // Token expired, logout
+              console.warn('[AuthContext] Token expired during refresh, logging out');
+              logout();
             }
-            setLoading(false);
           };
           
           xhr.onerror = function() {
-            console.error('[AuthContext] Error refreshing user data');
-            // Fallback to saved user
-            setUser(parsedUser);
-            setToken(savedToken);
-            setLoading(false);
+            console.error('[AuthContext] Error refreshing user data, keeping cached data');
           };
           
           xhr.send();
         } catch (error) {
           console.error('[AuthContext] Error refreshing user data:', error);
-          // Fallback to saved user
-          setUser(parsedUser);
-          setToken(savedToken);
-          setLoading(false);
         }
       };
       
-      // Call refresh immediately
+      // Call refresh in background
       refreshUserData();
     } else {
       setLoading(false);
