@@ -11,7 +11,7 @@ load_dotenv(ROOT_DIR / '.env')
 
 # Import routes
 from routes import tickets, comments, workflow, location_details, sla, staff
-from routes import change_requests, knowledge_base, chat_messages, ticket_templates
+from routes import change_requests, knowledge_base, chat_messages, ticket_templates, support_settings
 
 # Get configuration from environment
 SERVICE_PORT = int(os.environ.get('SERVICE_PORT', 8103))
