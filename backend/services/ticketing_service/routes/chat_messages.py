@@ -325,13 +325,16 @@ async def send_typing_indicator(
         # Get user info
         sender_email = token_data.get("sub")
         
+        # Convert string to boolean
+        is_typing_bool = is_typing.lower() in ('true', '1', 'yes')
+        
         # Broadcast typing indicator
         tenant_id = ticket.get('tenant_id')
         ws_payload = {
             "type": "user_typing",
             "ticket_id": ticket_id,
             "user_email": sender_email,
-            "is_typing": is_typing,
+            "is_typing": is_typing_bool,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
         
