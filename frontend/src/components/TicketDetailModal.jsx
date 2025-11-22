@@ -502,29 +502,39 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               )}
             </div>
 
-              </div>
-
-              {/* Reply Form */}
-              {ticket.status !== 'closed' && (
-                <div className={`mt-4 border-t pt-4 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                  <div className="mb-3">
-                    <RichTextEditor
-                      value={replyText}
-                      onChange={setReplyText}
-                      placeholder="Ihre Nachricht... (Sie können auch Bilder einfügen)"
+                    {/* Reply Form */}
+                    {ticket.status !== 'closed' && (
+                      <div className={`mt-4 border-t pt-4 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                        <div className="mb-3">
+                          <RichTextEditor
+                            value={replyText}
+                            onChange={setReplyText}
+                            placeholder="Ihre Nachricht... (Sie können auch Bilder einfügen)"
+                          />
+                        </div>
+                        <Button
+                          onClick={handleReply}
+                          disabled={replyLoading || !replyText.trim()}
+                          size="sm"
+                          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                        >
+                          <MessageSquare className="h-4 w-4 mr-2" />
+                          {replyLoading ? 'Wird gesendet...' : 'Antwort senden'}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  /* Chat Tab Content */
+                  <div>
+                    <ChatBox 
+                      ticketId={ticket.ticket_number} 
+                      tenantId={ticket.tenant_id}
                     />
                   </div>
-                  <Button
-                    onClick={handleReply}
-                    disabled={replyLoading || !replyText.trim()}
-                    size="sm"
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
-                  >
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    {replyLoading ? 'Wird gesendet...' : 'Antwort senden'}
-                  </Button>
-                </div>
-              )}
+                )}
+
+              </div>
             </div>
           </div>
 
