@@ -898,7 +898,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
 
           {/* Third Row - Scan Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* All Scans */}
+            {/* Total Scans */}
             <Card className={`p-6 rounded-xl ${
               theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1' 
@@ -907,7 +907,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Alle Scans
+                    Scans Insgesamt
                   </p>
                   <p className={`text-3xl font-bold mt-2 text-blue-600`}>
                     {scanStats.total_scans.toLocaleString()}
