@@ -1070,25 +1070,22 @@ const AdminPortalContent = () => {
                 {newTicketsCount > 0 && (
                   <Card 
                     onClick={() => setActiveTab('support')}
-                    className={`p-5 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
+                    className={`p-4 rounded-xl transition-all duration-300 cursor-pointer relative overflow-hidden ${
                       theme === 'dark' 
                         ? 'bg-[#2a2a2a] border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.3),0_0_20px_rgba(249,115,22,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_30px_rgba(249,115,22,0.5)] hover:-translate-y-1 animate-heartbeat' 
                         : 'bg-orange-50 border-2 border-orange-500 shadow-[0_2px_8px_rgba(0,0,0,0.08),0_0_20px_rgba(249,115,22,0.2)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12),0_0_30px_rgba(249,115,22,0.4)] hover:-translate-y-1 animate-heartbeat'
                     }`}>
-                    <div className="absolute top-0 right-0 w-20 h-20 bg-orange-500/10 rounded-full -mr-10 -mt-10"></div>
+                    <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/10 rounded-full -mr-8 -mt-8"></div>
                     <div className="flex items-center justify-between relative z-10">
                       <div>
-                        <p className={`text-xs font-bold mb-1 flex items-center gap-2 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
-                          🎫 NEUE TICKETS
+                        <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-800'}`}>
+                          🎫 Neue Tickets
                         </p>
-                        <p className={`text-3xl font-bold mt-1 ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
-                          ⚡ {newTicketsCount}
-                        </p>
-                        <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-orange-400/70' : 'text-orange-700'}`}>
-                          Support benötigt
+                        <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-orange-300' : 'text-orange-600'}`}>
+                          {newTicketsCount}
                         </p>
                       </div>
-                      <Headphones className={`h-10 w-10 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
+                      <Headphones className={`h-8 w-8 ${theme === 'dark' ? 'text-orange-400' : 'text-orange-600'} animate-bounce`} />
                     </div>
                   </Card>
                 )}
