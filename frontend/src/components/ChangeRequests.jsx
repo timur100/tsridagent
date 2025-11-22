@@ -118,7 +118,7 @@ const ChangeRequests = () => {
     return colors[priority] || 'text-gray-500';
   };
 
-  const filteredRequests = changeRequests.filter(cr => {
+  const filteredRequests = (changeRequests || []).filter(cr => {
     if (searchQuery) {
       return cr.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
              cr.description.toLowerCase().includes(searchQuery.toLowerCase());
