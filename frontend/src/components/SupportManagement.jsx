@@ -291,6 +291,32 @@ const SupportManagement = () => {
             <Users className="h-5 w-5" />
             Mitarbeiter
           </button>
+          <button
+            onClick={() => setActiveTab('changes')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'changes'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <RefreshCw className="h-5 w-5" />
+            Change Requests
+          </button>
+          <button
+            onClick={() => setActiveTab('kb')}
+            className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+              activeTab === 'kb'
+                ? 'bg-[#c00000] text-white'
+                : theme === 'dark'
+                ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+          >
+            <Circle className="h-5 w-5" />
+            Knowledge Base
+          </button>
         </div>
       </Card>
       
