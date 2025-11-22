@@ -396,3 +396,31 @@ body > iframe[style*="position: fixed"] {
 .animate-slide-in {
     animation: slide-in 0.3s ease-out;
 }
+
+/* Heartbeat animation for new tickets notification */
+@keyframes heartbeat {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    14% {
+        transform: scale(1.15);
+        opacity: 0.9;
+    }
+    28% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    42% {
+        transform: scale(1.08);
+        opacity: 0.95;
+    }
+    70% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.animate-heartbeat {
+    animation: heartbeat 2s ease-in-out infinite;
+}
