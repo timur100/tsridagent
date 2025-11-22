@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
-import { LogOut, Shield, Monitor, MapPin, ShoppingBag, Headphones } from 'lucide-react';
+import { LogOut, Shield, Monitor, MapPin, ShoppingBag, Headphones, RefreshCw, BookOpen } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import ThemeToggle from '../components/ThemeToggle';
 import PortalSwitcher from '../components/PortalSwitcher';
