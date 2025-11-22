@@ -31,8 +31,11 @@ const ChatBox = ({ ticketId, tenantId }) => {
   const mediaRecorderRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   
+  // Use provided tenantId or fallback to user's tenant_id or 'all' for admins
+  const effectiveTenantId = tenantId || (user?.role === 'admin' ? 'all' : user?.tenant_ids?.[0]);
+  
   // WebSocket for real-time updates
-  const { connectionStatus } = useWebSocket(tenantId, {
+  const { connectionStatus } = useWebSocket(effectiveTenantId, {
     chat_message_created: (data) => {
       console.log('📨 [Chat] New message received:', data);
       if (data.ticket_id === ticketId) {
