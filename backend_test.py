@@ -5333,13 +5333,13 @@ class TicketCreationVerificationTester:
             return False
 
 if __name__ == "__main__":
-    # Run Change Request functionality tests
-    tester = ChangeRequestTester()
+    # Run Chat/Messages API tests
+    tester = ChatMessagesTester()
     success = asyncio.run(tester.run_all_tests())
     
     if success:
-        print("\n🎉 All Change Request functionality tests passed!")
+        print("\n🎉 All Chat/Messages API tests passed!")
         sys.exit(0)
     else:
-        print("\n❌ Some Change Request functionality tests failed!")
+        print("\n❌ Some Chat/Messages API tests failed!")
         sys.exit(1)
