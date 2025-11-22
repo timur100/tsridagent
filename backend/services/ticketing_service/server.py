@@ -17,10 +17,12 @@ SERVICE_PORT = int(os.environ.get('SERVICE_PORT', 8103))
 SERVICE_NAME = os.environ.get('SERVICE_NAME', 'Ticketing Service')
 
 # Create FastAPI app
+# redirect_slashes=False prevents FastAPI from auto-redirecting HTTP when adding trailing slashes
 app = FastAPI(
     title=SERVICE_NAME,
     description="Microservice for Ticket Management",
-    version="1.0.0"
+    version="1.0.0",
+    redirect_slashes=False
 )
 
 # CORS configuration
