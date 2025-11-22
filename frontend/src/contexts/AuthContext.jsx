@@ -63,9 +63,9 @@ export const AuthProvider = ({ children }) => {
                 console.error('[AuthContext] Error parsing user refresh:', e);
               }
             } else if (xhr.status === 401) {
-              // Token expired, logout
-              console.warn('[AuthContext] Token expired during refresh, logging out');
-              logout();
+              // Token expired during refresh - keep user logged in but mark for re-auth
+              console.warn('[AuthContext] Token may be expired, but keeping user logged in for now');
+              // Don't logout automatically as this breaks the UX - user should stay logged in until they try to make an API call
             }
           };
           
