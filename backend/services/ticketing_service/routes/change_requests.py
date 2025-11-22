@@ -157,6 +157,27 @@ async def get_change_requests(
                 del cr['_id']
             change_requests.append(cr)
         
+        # Enrich with tenant names from portal_db
+        if change_requests:
+            # Get unique tenant IDs
+            tenant_ids = list(set([cr.get('tenant_id') for cr in change_requests if cr.get('tenant_id')]))
+            
+            if tenant_ids:
+                # Connect to portal_db to get tenant names
+                portal_db = db.client['portal_db']
+                tenants_collection = portal_db['tenants']
+                
+                # Fetch tenant info
+                tenant_map = {}
+                async for tenant in tenants_collection.find({"id": {"$in": tenant_ids}}):
+                    tenant_map[tenant['id']] = tenant.get('name', tenant.get('company_name', 'Unknown'))
+                
+                # Add tenant_name to each change request
+                for cr in change_requests:
+                    tenant_id = cr.get('tenant_id')
+                    if tenant_id and tenant_id in tenant_map:
+                        cr['tenant_name'] = tenant_map[tenant_id]
+        
         return {
             "success": True,
             "count": len(change_requests),
