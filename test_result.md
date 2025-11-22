@@ -112,6 +112,14 @@ backend:
     stuck_count: 1
     priority: "critical"
     needs_retesting: false
+  
+  - task: "WebSocket Real-Time Change Request Updates"
+    implemented: true
+    working: true
+    file: "frontend/src/components/ChangeRequests.jsx, frontend/src/hooks/useWebSocket.js, frontend/src/services/websocket.service.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
     status_history:
         - working: false
           agent: "testing"
