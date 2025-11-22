@@ -1,10 +1,11 @@
-from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
+from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form, Header
 from typing import List, Optional
 from datetime import datetime, timezone
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import uuid
-from utils.db import get_database
-from utils.auth import verify_token
+import jwt
+from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from models.id_scan import (
     IDScan, IDScanCreate, IDScanUpdate, ManualActionRequest,
     ScanStatus, ScanImage, ImageType, ManualAction
@@ -12,11 +13,47 @@ from models.id_scan import (
 
 router = APIRouter(prefix="/id-scans", tags=["ID Scans"])
 
+# MongoDB connection
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+mongo_client = AsyncIOMotorClient(mongo_url)
+mongo_db = mongo_client.get_database('main_db')
+
+# JWT Auth
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-here-change-in-production')
+JWT_ALGORITHM = 'HS256'
+
 # Upload directory for ID scan images
 UPLOAD_DIR = "/app/backend/uploads/id_scans"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10MB per image
+
+
+# Helper function for JWT verification
+async def verify_token(authorization: Optional[str] = Header(None)):
+    """Verify JWT token from Authorization header"""
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Missing authorization token")
+    
+    try:
+        if authorization.startswith('Bearer '):
+            token = authorization.split(' ')[1]
+        else:
+            token = authorization
+        
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        return payload
+    
+    except ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail="Token expired")
+    except InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+# Helper function to get database
+async def get_database():
+    """Get the main database instance"""
+    return mongo_db
 
 
 @router.post("/", response_model=dict)
