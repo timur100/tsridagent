@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Clock, CheckCircle, XCircle, AlertCircle, Filter, Users } from 'lucide-react';
