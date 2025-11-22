@@ -3232,7 +3232,7 @@ class TicketCreationVerificationTester:
             self.log_result(
                 "Customer Ticket Creation (Device + Location)",
                 True,
-                f"Successfully created ticket {ticket_number} with customer_email={data['customer_email']}, location_name={data.get('location_name', 'N/A')}, device_name={data.get('device_name', 'N/A')}"
+                f"Successfully created ticket {ticket_number} with customer_email={ticket['customer_email']}, location_name={ticket.get('location_name', 'N/A')}, device_name={ticket.get('device_name', 'N/A')}"
             )
             return True
             
