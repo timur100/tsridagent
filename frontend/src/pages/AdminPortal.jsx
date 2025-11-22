@@ -932,7 +932,7 @@ const AdminPortalContent = () => {
                       </p>
                     </div>
                     <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-500/20' : 'bg-green-200'}`}>
-                      <div className="h-6 w-6 bg-green-600 rounded-full animate-pulse"></div>
+                      <div className="h-6 w-6 bg-green-600 rounded-full animate-heartbeat"></div>
                     </div>
                   </div>
                 </Card>
