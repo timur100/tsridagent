@@ -140,8 +140,8 @@ const ChatBox = ({ ticketId, tenantId }) => {
         
         const result = await apiCall('/api/chat/upload', {
           method: 'POST',
-          body: formData,
-          headers: {} // Let browser set Content-Type for FormData
+          body: formData
+          // Let apiCall handle headers automatically for FormData
         });
         
         if (result.success) {
