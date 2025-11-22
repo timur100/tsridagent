@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 
 const ChangeRequests = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
+  const { apiCall, user } = useAuth();
   
   const [changeRequests, setChangeRequests] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,6 +17,31 @@ const ChangeRequests = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [stats, setStats] = useState({ total: 0, open: 0, in_progress: 0, completed: 0, rejected: 0 });
+  
+  // Get tenant_id from user
+  const tenantId = user?.tenant_ids?.[0] || null;
+  
+  // WebSocket for real-time change request updates
+  const { connectionStatus } = useWebSocket(tenantId, {
+    change_request_created: (data) => {
+      console.log('📨 [Change Requests] New change request created:', data);
+      fetchChangeRequests();
+      fetchStats();
+      toast.success('Neues Change Request erstellt!', {
+        duration: 3000,
+        icon: '🔄'
+      });
+    },
+    change_request_updated: (data) => {
+      console.log('📨 [Change Requests] Change request updated:', data);
+      fetchChangeRequests();
+      fetchStats();
+      toast.success('Change Request aktualisiert!', {
+        duration: 2000,
+        icon: '✓'
+      });
+    }
+  });
   
   const [formData, setFormData] = useState({
     title: '',
