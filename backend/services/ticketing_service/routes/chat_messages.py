@@ -537,6 +537,76 @@ async def delete_message(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/mark-read/{message_id}", response_model=dict)
+@router.post("/mark-read/{message_id}/", response_model=dict, include_in_schema=False)
+async def mark_message_as_read(
+    message_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Mark a specific message as read by current user
+    """
+    try:
+        db = await get_database()
+        messages_collection = db['chat_messages']
+        tickets_collection = db['tickets']
+        
+        # Get message
+        message = await messages_collection.find_one({"id": message_id})
+        if not message:
+            raise HTTPException(status_code=404, detail="Nachricht nicht gefunden")
+        
+        user_email = token_data.get("sub")
+        
+        # Add user to read_by array if not already there
+        if user_email not in message.get("read_by", []):
+            await messages_collection.update_one(
+                {"id": message_id},
+                {
+                    "$addToSet": {"read_by": user_email},
+                    "$set": {"last_read_at": datetime.now(timezone.utc).isoformat()}
+                }
+            )
+            
+            # Broadcast read receipt via WebSocket
+            ticket = await tickets_collection.find_one({"ticket_number": message["ticket_id"]})
+            if ticket:
+                tenant_id = ticket.get('tenant_id')
+                ws_payload = {
+                    "type": "message_read",
+                    "message_id": message_id,
+                    "ticket_id": message["ticket_id"],
+                    "read_by": user_email,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+                
+                # Broadcast to tenant room
+                if tenant_id:
+                    async with httpx.AsyncClient(timeout=5.0) as client:
+                        await client.post(
+                            f"{BACKEND_URL}/api/ws/broadcast",
+                            json={"tenant_id": tenant_id, "message": ws_payload}
+                        )
+                
+                # Also broadcast to admin room
+                async with httpx.AsyncClient(timeout=5.0) as client:
+                    await client.post(
+                        f"{BACKEND_URL}/api/ws/broadcast",
+                        json={"tenant_id": "all", "message": ws_payload}
+                    )
+        
+        return {
+            "success": True,
+            "message": "Nachricht als gelesen markiert"
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error marking message as read: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/archive", response_model=dict)
 @router.post("/archive/", response_model=dict, include_in_schema=False)
 async def archive_old_messages(
