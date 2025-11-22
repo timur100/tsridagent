@@ -283,7 +283,9 @@ class WebSocketService {
         break;
       
       default:
-        console.warn('[WebSocket] Unknown message type:', type);
+        // Handle dynamic message types (like change_request_created, change_request_updated, etc.)
+        console.log('[WebSocket] Received message type:', type, message);
+        this.notifyHandlers(type, message);
     }
   }
 
