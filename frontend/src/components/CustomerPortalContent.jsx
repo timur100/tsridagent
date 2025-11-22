@@ -1757,6 +1757,14 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
         <CustomerTickets />
       )}
 
+      {currentActiveTab === 'changes' && (
+        <ChangeRequests />
+      )}
+
+      {currentActiveTab === 'help' && (
+        <HelpCenter />
+      )}
+
       {/* Add Device Modal */}
       {showAddDeviceModal && (
         <AddDeviceModal
