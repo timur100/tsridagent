@@ -69,7 +69,8 @@ client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
 # Create the main app without a prefix
-app = FastAPI()
+# redirect_slashes=False prevents FastAPI from auto-redirecting HTTP when adding trailing slashes
+app = FastAPI(redirect_slashes=False)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
