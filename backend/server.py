@@ -59,6 +59,7 @@ from routes.documents import router as documents_router
 from routes.tenant_locations import router as tenant_locations_router
 from routes.websocket import router as websocket_router
 from routes.verification_proxy import router as verification_proxy_router
+from routes.id_scans import router as id_scans_router
 
 
 ROOT_DIR = Path(__file__).parent
