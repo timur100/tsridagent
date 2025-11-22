@@ -383,22 +383,53 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
 
               {/* Conversation Section */}
               <div className={`border-t pt-4 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                <div className="flex items-center gap-2 mb-3">
-                  <MessageSquare className="h-4 w-4 text-[#c00000]" />
-                  <h3 className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Antworten
-                  </h3>
-                  {ticket.comments && ticket.comments.length > 0 && (
-                    <span className={`px-2 py-0.5 text-xs rounded-full ${
-                      theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                    }`}>
-                      {ticket.comments.length}
-                    </span>
-                  )}
+                {/* Tab Navigation */}
+                <div className="flex items-center gap-4 mb-4 border-b pb-2">
+                  <button
+                    onClick={() => setActiveConversationTab('comments')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-t-lg transition-colors ${
+                      activeConversationTab === 'comments'
+                        ? theme === 'dark'
+                          ? 'bg-[#2a2a2a] text-white border-b-2 border-blue-500'
+                          : 'bg-gray-100 text-gray-900 border-b-2 border-blue-500'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span className="text-sm font-medium">Kommentare</span>
+                    {ticket.comments && ticket.comments.length > 0 && (
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${
+                        theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
+                      }`}>
+                        {ticket.comments.length}
+                      </span>
+                    )}
+                  </button>
+                  
+                  <button
+                    onClick={() => setActiveConversationTab('chat')}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-t-lg transition-colors ${
+                      activeConversationTab === 'chat'
+                        ? theme === 'dark'
+                          ? 'bg-[#2a2a2a] text-white border-b-2 border-blue-500'
+                          : 'bg-gray-100 text-gray-900 border-b-2 border-blue-500'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-300'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                    <span className="text-sm font-medium">Live Chat</span>
+                  </button>
                 </div>
                 
-                {/* Chat Messages */}
-                <div className="space-y-4">
+                {/* Tab Content */}
+                {activeConversationTab === 'comments' ? (
+                  <>
+                    {/* Chat Messages */}
+                    <div className="space-y-4">
               {ticket.comments && ticket.comments.length > 0 ? (
                 ticket.comments.map((comment, index) => {
                   const isSupport = comment.author !== ticket.customer_name;
