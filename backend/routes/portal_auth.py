@@ -142,9 +142,16 @@ async def login(request: LoginRequest):
         if not user.get('enabled', True) and not user.get('is_active', True):
             raise HTTPException(status_code=401, detail="User account is deactivated")
         
-        # Create token with customer_id
+        # CRITICAL: Enforce admin role ONLY for admin@tsrid.com
         # Get role - support both formats
         user_role = user.get('role') or (user.get('roles', ['user'])[0] if user.get('roles') else 'user')
+        
+        # SECURITY: Only admin@tsrid.com can have admin role
+        if request.email.lower() != 'admin@tsrid.com':
+            # Force all other users to customer role, regardless of what's in DB
+            if user_role == 'admin':
+                print(f"⚠️ [Security] Blocked admin role for non-super-admin: {request.email}")
+                user_role = 'customer'
         
         access_token = create_access_token(
             data={
