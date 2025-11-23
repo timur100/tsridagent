@@ -46,8 +46,8 @@ Fügen Sie folgende Zeilen zur `backend/.env` hinzu:
 ```env
 # Webhook Integration zu ID-Check Service
 WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-ID_CHECK_WEBHOOK_URL=https://scan-sync-1.preview.emergentagent.com/api/webhooks/scan-completed
-ID_CHECK_IMAGE_UPLOAD_URL=https://scan-sync-1.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+ID_CHECK_WEBHOOK_URL=https://regula-scanner.preview.emergentagent.com/api/webhooks/scan-completed
+ID_CHECK_IMAGE_UPLOAD_URL=https://regula-scanner.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
 ```
 
 ### Schritt 3: Dependencies installieren
@@ -155,7 +155,7 @@ sudo supervisorctl start webhook_retry_worker
 ### Test 1: Webhook Receiver Health Check
 
 ```bash
-curl -X GET https://scan-sync-1.preview.emergentagent.com/api/webhooks/health
+curl -X GET https://regula-scanner.preview.emergentagent.com/api/webhooks/health
 ```
 
 Erwartete Antwort:
@@ -220,7 +220,7 @@ tail -f /var/log/supervisor/webhook_retry_worker.*.log
 **Lösung:** 
 1. Überprüfen Sie die Queue: `sqlite3 /app/backend/scan_queue.db "SELECT * FROM scan_queue;"`
 2. Prüfen Sie Backend Logs auf Fehler
-3. Testen Sie die Netzwerkverbindung: `curl https://scan-sync-1.preview.emergentagent.com/api/webhooks/health`
+3. Testen Sie die Netzwerkverbindung: `curl https://regula-scanner.preview.emergentagent.com/api/webhooks/health`
 
 ### Problem: Retry Worker läuft nicht
 
