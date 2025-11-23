@@ -270,10 +270,11 @@ const IDCheckDetailPage = () => {
                 
                 const img = foundImage;
                 const label = expected.label;
-                  
-                  return (
-                    <div key={img.image_type}>
-                      <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                
+                return (
+                  <div key={expected.type}>
+                    <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                    {img ? (
                       <div 
                         className="relative group cursor-pointer"
                         onClick={() => openLightbox(img.image_type)}
@@ -302,9 +303,17 @@ const IDCheckDetailPage = () => {
                           <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
-                    </div>
-                  );
-                })
+                    ) : (
+                      // Placeholder für fehlendes Bild
+                      <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                        <FileText className={`h-8 w-8 mb-1 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}`}>Nicht verfügbar</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              });
+            })()}
             ) : (
               // Fallback if no images
               [
