@@ -872,47 +872,49 @@ const AdminPortalContent = () => {
         
         {/* ID-Checks Sub-Tabs - Show only when on ID-Checks section */}
         {activeTab === 'id-checks' && (
-          <div className={`flex gap-1 mb-6 p-2 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'}`}>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                theme === 'dark'
-                  ? 'bg-[#c00000] text-white'
-                  : 'bg-[#c00000] text-white'
-              }`}
-            >
-              <FileText className="h-4 w-4" />
-              Dokumentenscan
-            </button>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                theme === 'dark'
-                  ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <Users className="h-4 w-4" />
-              Facematch
-            </button>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                theme === 'dark'
-                  ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <Fingerprint className="h-4 w-4" />
-              Fingerprint
-            </button>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-                theme === 'dark'
-                  ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-white'
-              }`}
-            >
-              <Search className="h-4 w-4" />
-              KI-Suche
-            </button>
+          <div className={`mb-6 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'}`}>
+            <div className="flex gap-2">
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+                  theme === 'dark'
+                    ? 'bg-[#c00000] text-white'
+                    : 'bg-[#c00000] text-white'
+                }`}
+              >
+                <FileText className="h-4 w-4" />
+                Dokumentenscan
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+                  theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                }`}
+              >
+                <Users className="h-4 w-4" />
+                Facematch
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+                  theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                }`}
+              >
+                <Fingerprint className="h-4 w-4" />
+                Fingerprint
+              </button>
+              <button
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
+                  theme === 'dark'
+                    ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-white'
+                }`}
+              >
+                <Search className="h-4 w-4" />
+                KI-Suche
+              </button>
+            </div>
           </div>
         )}
         {activeTab === 'dashboard' && (
