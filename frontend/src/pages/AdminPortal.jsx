@@ -1561,30 +1561,32 @@ const AdminPortalContent = () => {
         {activeTab === 'licenses' && (
           <div>
             {/* License Sub-Navigation */}
-            <div className="mb-6 border-b" style={{borderColor: theme === 'dark' ? '#374151' : '#e5e7eb'}}>
-              <div className="flex gap-6">
+            <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
+              <div className="flex gap-2">
                 <button
                   onClick={() => setLicenseSubTab('hardware')}
-                  className={`pb-3 px-2 border-b-2 font-medium transition-colors ${
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     licenseSubTab === 'hardware'
-                      ? 'border-[#c00000] text-[#c00000]'
+                      ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
-                      ? 'border-transparent text-gray-400 hover:text-gray-300'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
+                  <Key className="h-5 w-5" />
                   Hardware-Lizenzen (Scanner)
                 </button>
                 <button
                   onClick={() => setLicenseSubTab('software')}
-                  className={`pb-3 px-2 border-b-2 font-medium transition-colors ${
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     licenseSubTab === 'software'
-                      ? 'border-[#c00000] text-[#c00000]'
+                      ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
-                      ? 'border-transparent text-gray-400 hover:text-gray-300'
-                      : 'border-transparent text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
+                  <Shield className="h-5 w-5" />
                   Software-Lizenzen
                 </button>
               </div>
