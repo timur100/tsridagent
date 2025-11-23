@@ -235,16 +235,16 @@ const IDCheckDetailPage = () => {
           </h2>
           
           <div className="grid grid-cols-2 gap-3">
-            {/* Show all document-related images (exclude portraits for separate display) */}
+            {/* Show all document-related images (exclude main portrait for separate display) */}
             {scan.images && scan.images.length > 0 ? (
               scan.images
                 .filter(img => {
-                  // Only exclude portraits that will be shown separately
-                  // Keep front_front, back images, UV, IR, WHITE, signature, etc.
+                  // Only exclude front_portrait (shown separately in Portrait section)
+                  // Keep ALL other images including back_portrait, back_signature, etc.
                   const isMainPortrait = img.image_type === 'front_portrait' || img.image_type === 'portrait';
                   return !isMainPortrait;
                 })
-                .slice(0, 6)
+                // ⚠️ REMOVED .slice(0, 6) to show ALL available images!
                 .map((img, idx) => {
                   const labelMap = {
                     'front_front': 'Vorderseite',
@@ -255,7 +255,10 @@ const IDCheckDetailPage = () => {
                     'front_uv': 'UV (Vorderseite)',
                     'back_uv': 'UV (Rückseite)',
                     'front_white': 'Weißlicht (V)',
-                    'back_white': 'Weißlicht (R)'
+                    'back_white': 'Weißlicht (R)',
+                    'back_portrait': 'Portrait (Hinten)',
+                    'back_signature': 'Unterschrift',
+                    'back_document_front': 'Dokument (V)'
                   };
                   const label = labelMap[img.image_type] || img.image_type;
                   
