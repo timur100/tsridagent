@@ -240,10 +240,15 @@ const IDCheckDetailPage = () => {
           </h2>
           
           <div className="grid grid-cols-2 gap-3">
-            {/* Dynamically show all available document images */}
+            {/* Show all document-related images (exclude portraits for separate display) */}
             {scan.images && scan.images.length > 0 ? (
               scan.images
-                .filter(img => img.image_type !== 'front_portrait' && img.image_type !== 'back_portrait' && img.image_type !== 'back_signature')
+                .filter(img => {
+                  // Only exclude portraits that will be shown separately
+                  // Keep front_front, back images, UV, IR, WHITE, signature, etc.
+                  const isMainPortrait = img.image_type === 'front_portrait' || img.image_type === 'portrait';
+                  return !isMainPortrait;
+                })
                 .slice(0, 6)
                 .map((img, idx) => {
                   const labelMap = {
