@@ -210,20 +210,25 @@ const IDCheckDetailPage = () => {
         )}
       </div>
 
-      {/* Three Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: DOKUMENTE */}
+      {/* Two Column Layout for Images */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Left Column: Vorderseite (Original, IR, UV) */}
         <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Dokumente
+            Vorderseite
           </h2>
           
           <div className="space-y-4">
-            {imageTypes.map(({ key, label }) => {
+            {['front_original', 'front_ir', 'front_uv'].map((key) => {
+              const labels = {
+                'front_original': 'Original',
+                'front_ir': 'IR',
+                'front_uv': 'UV'
+              };
               const image = scan.images?.find(img => img.image_type === key);
               return (
                 <div key={key}>
-                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{labels[key]}</p>
                   {image ? (
                     <div 
                       className="relative group cursor-pointer"
@@ -231,21 +236,119 @@ const IDCheckDetailPage = () => {
                     >
                       <img
                         src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={label}
-                        className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                        alt={labels[key]}
+                        className={`w-full h-48 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
                         <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
                   ) : (
-                    <div className={`w-full h-32 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                    <div className={`w-full h-48 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
                       <p className="text-gray-500 text-xs">Kein Bild</p>
                     </div>
                   )}
                 </div>
               );
             })}
+          </div>
+        </div>
+
+        {/* Right Column: Rückseite (Original, IR, UV) */}
+        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Rückseite
+          </h2>
+          
+          <div className="space-y-4">
+            {['back_original', 'back_ir', 'back_uv'].map((key) => {
+              const labels = {
+                'back_original': 'Original',
+                'back_ir': 'IR',
+                'back_uv': 'UV'
+              };
+              const image = scan.images?.find(img => img.image_type === key);
+              return (
+                <div key={key}>
+                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{labels[key]}</p>
+                  {image ? (
+                    <div 
+                      className="relative group cursor-pointer"
+                      onClick={() => openLightbox(key)}
+                    >
+                      <img
+                        src={`/api/id-scans/${scan.id}/images/${key}`}
+                        alt={labels[key]}
+                        className={`w-full h-48 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                        <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`w-full h-48 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                      <p className="text-gray-500 text-xs">Kein Bild</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Additional Info Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Basic Info */}
+        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Scan-Informationen
+          </h2>
+          
+          <div className="space-y-3">
+            <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <Calendar className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zeitstempel</p>
+              </div>
+              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {new Date(scan.scan_timestamp).toLocaleString('de-DE')}
+              </p>
+            </div>
+
+            <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+              <div className="flex items-center gap-2 mb-1">
+                <Building className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</p>
+              </div>
+              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {scan.tenant_name}
+              </p>
+            </div>
+
+            {scan.location_name && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <MapPin className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standort</p>
+                </div>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.location_name}
+                </p>
+              </div>
+            )}
+
+            {scan.device_name && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Monitor className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gerät</p>
+                </div>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.device_name}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
