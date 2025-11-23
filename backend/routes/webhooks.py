@@ -410,9 +410,9 @@ async def regula_scan_webhook(
             "scan_id": scan_id,
             "images_saved": len(images_saved),
             "personal_data": {
-                "name": f"{idscan_data.get('first_name')} {idscan_data.get('last_name')}",
-                "document_number": idscan_data.get('document_number'),
-                "document_type": idscan_data.get('document_type')
+                "name": f"{extracted.get('first_name')} {extracted.get('last_name')}",
+                "document_number": extracted.get('document_number'),
+                "document_type": extracted.get('document_type')
             }
         }
     
