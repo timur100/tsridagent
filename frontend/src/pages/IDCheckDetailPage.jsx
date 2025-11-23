@@ -35,8 +35,10 @@ const IDCheckDetailPage = () => {
   const loadScan = async () => {
     try {
       const result = await apiCall(`/api/id-scans/${id}`);
-      if (result.success) {
-        setScan(result.scan);
+      console.log('[IDCheckDetailPage] loadScan result:', result);
+      if (result.success && result.data) {
+        console.log('[IDCheckDetailPage] Setting scan:', result.data.scan);
+        setScan(result.data.scan);
       }
     } catch (error) {
       console.error('Error loading scan:', error);
