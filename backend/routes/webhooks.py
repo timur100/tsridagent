@@ -305,12 +305,24 @@ async def regula_scan_webhook(
         print(f"📄 [Regula Webhook] Parsing incoming scan data...")
         parsed_data = parser.parse_all_data(scan_data)
         
-        # Extract optional fields
-        customer_id = scan_data.get('customer_id')
-        location = scan_data.get('location')
+        # Extract tenant/location/device info from request
+        tenant_id = scan_data.get('tenant_id', 'default')
+        tenant_name = scan_data.get('tenant_name', 'Default Tenant')
+        location_id = scan_data.get('location_id')
+        location_name = scan_data.get('location_name')
+        device_id = scan_data.get('device_id')
+        device_name = scan_data.get('device_name')
         
         # Convert to IDScan format
-        idscan_data = create_idscan_from_regula(parsed_data, customer_id, location)
+        idscan_data = create_idscan_from_regula(
+            parsed_data, 
+            tenant_id=tenant_id,
+            tenant_name=tenant_name,
+            location_id=location_id,
+            location_name=location_name,
+            device_id=device_id,
+            device_name=device_name
+        )
         scan_id = idscan_data['id']
         
         now = datetime.now(timezone.utc).isoformat()
