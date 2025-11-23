@@ -336,15 +336,18 @@ const IDCheckDetailPage = () => {
                     <img
                       src={`/api/id-scans/${scan.id}/images/${portraitImg.image_type}`}
                       alt="Portrait"
+                      crossOrigin="use-credentials"
                       className={`w-full flex-1 object-contain rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                      onLoad={() => console.log('✅ Portrait loaded:', portraitImg.image_type)}
                       onError={(e) => {
-                        // If image fails to load, show placeholder
+                        console.error('❌ Portrait failed to load:', portraitImg.image_type, e.target.src);
                         e.target.parentElement.innerHTML = `
                           <div class="w-full h-full flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}">
                             <div class="h-20 w-20 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}">
                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
                             </div>
                             <p class="text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}">Portrait nicht verfügbar</p>
+                            <p class="text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}">${portraitImg.image_type}</p>
                           </div>
                         `;
                       }}
