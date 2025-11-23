@@ -183,9 +183,9 @@ const IDChecksPage = () => {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
           ID-Checks
         </h1>
@@ -219,6 +219,7 @@ const IDChecksPage = () => {
         </div>
       </div>
 
+      <div className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
