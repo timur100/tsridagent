@@ -312,9 +312,18 @@ async def regula_scan_webhook(
         # Initialize parser
         parser = RegulaParser()
         
-        # Parse all Regula data
-        print(f"📄 [Regula Webhook] Parsing incoming scan data...")
-        parsed_data = parser.parse_all_data(scan_data)
+        # Detect if this is a combined front+back request or single side
+        has_front = 'front' in scan_data and isinstance(scan_data['front'], dict)
+        has_back = 'back' in scan_data and isinstance(scan_data['back'], dict)
+        
+        if has_front or has_back:
+            # Combined front+back in one request
+            print(f"📄 [Regula Webhook] Processing combined front+back scan...")
+            return await _process_combined_scan(scan_data, parser, scans_collection)
+        else:
+            # Single side request
+            print(f"📄 [Regula Webhook] Processing single-side scan...")
+            parsed_data = parser.parse_all_data(scan_data)
         
         # Extract tenant/location/device info from request
         tenant_id = scan_data.get('tenant_id', 'default')
