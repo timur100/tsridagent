@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { 
   ArrowLeft, CheckCircle, XCircle, Ban, MessageSquare,
   User, Calendar, MapPin, Monitor, Building, FileText,
-  Shield, AlertCircle, Download
+  Shield, AlertCircle, Download, ZoomIn, X, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 const IDCheckDetailPage = () => {
