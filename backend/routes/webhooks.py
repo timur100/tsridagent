@@ -329,7 +329,18 @@ async def regula_scan_webhook(
         
         # Save images to disk
         images_saved = []
+        images_array = []
         images = parsed_data.get('images', {})
+        
+        # Map image types for IDScan model
+        image_type_mapping = {
+            'front': 'front_original',
+            'back': 'back_original',
+            'portrait': 'portrait',
+            'ir': 'front_ir',
+            'uv': 'front_uv',
+            'white': 'front_white'
+        }
         
         for image_type, base64_data in images.items():
             if base64_data and len(base64_data) > 100:
@@ -345,17 +356,16 @@ async def regula_scan_webhook(
                         async with aiofiles.open(file_path, 'wb') as f:
                             await f.write(image_bytes)
                         
-                        # Store file path in IDScan data
-                        if image_type == 'front':
-                            idscan_data['front_image'] = file_path
-                        elif image_type == 'back':
-                            idscan_data['back_image'] = file_path
-                        elif image_type == 'portrait':
-                            idscan_data['portrait_image'] = file_path
-                        elif image_type == 'ir':
-                            idscan_data['ir_image'] = file_path
-                        elif image_type == 'uv':
-                            idscan_data['uv_image'] = file_path
+                        # Get standardized image type for IDScan model
+                        std_image_type = image_type_mapping.get(image_type, image_type)
+                        
+                        # Add to images array
+                        images_array.append({
+                            "image_type": std_image_type,
+                            "file_path": file_path,
+                            "file_size": len(image_bytes),
+                            "uploaded_at": now
+                        })
                         
                         images_saved.append({
                             "type": image_type,
@@ -366,6 +376,9 @@ async def regula_scan_webhook(
                         print(f"✅ [Regula Webhook] Saved {image_type} image ({len(image_bytes)} bytes)")
                 except Exception as img_error:
                     print(f"⚠️  [Regula Webhook] Failed to save {image_type} image: {img_error}")
+        
+        # Update images array in IDScan data
+        idscan_data['images'] = images_array
         
         # Add additional metadata
         idscan_data['source'] = 'regula-scanner'
