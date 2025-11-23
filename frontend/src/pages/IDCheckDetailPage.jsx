@@ -78,6 +78,39 @@ const IDCheckDetailPage = () => {
     }
   };
 
+  // Lightbox functions
+  const openLightbox = (imageKey) => {
+    const imageTypes = [
+      { key: 'front_original', label: 'Vorderseite' },
+      { key: 'front_ir', label: 'Vorderseite (IR)' },
+      { key: 'front_uv', label: 'Vorderseite (UV)' },
+      { key: 'back_original', label: 'Rückseite' },
+      { key: 'back_ir', label: 'Rückseite (IR)' },
+      { key: 'back_uv', label: 'Rückseite (UV)' }
+    ];
+    
+    const images = imageTypes
+      .filter(({ key }) => scan.images?.some(img => img.image_type === key))
+      .map(({ key, label }) => ({
+        key,
+        label,
+        url: `/api/id-scans/${id}/images/${key}`
+      }));
+    
+    setAvailableImages(images);
+    const index = images.findIndex(img => img.key === imageKey);
+    setCurrentImageIndex(index >= 0 ? index : 0);
+    setLightboxOpen(true);
+  };
+
+  const nextImage = () => {
+    setCurrentImageIndex((prev) => (prev + 1) % availableImages.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIndex((prev) => (prev - 1 + availableImages.length) % availableImages.length);
+  };
+
   const StatusBadge = ({ status }) => {
     const statusConfig = {
       validated: { color: 'green', icon: CheckCircle, label: 'Validated' },
