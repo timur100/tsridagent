@@ -251,6 +251,10 @@ app.include_router(id_scans_router, prefix="/api/id-scans")
 from routes.webhooks import router as webhooks_router
 app.include_router(webhooks_router, prefix="/api")
 
+# Include Test Webhook router (for testing webhook integration)
+from routes.test_webhook import router as test_webhook_router
+app.include_router(test_webhook_router, prefix="/api")
+
 # Include the router in the main app
 app.include_router(api_router)
 
