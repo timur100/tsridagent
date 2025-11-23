@@ -41,19 +41,22 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   if (adminOnly) {
     const isSuperAdmin = user?.email?.toLowerCase() === 'admin@tsrid.com';
     
+    console.log('[ProtectedRoute] Checking admin access:', {
+      email: user?.email,
+      isSuperAdmin,
+      isImpersonating,
+      role: user?.role
+    });
+    
     // Allow access if:
-    // 1. User is super admin (admin@tsrid.com) AND has admin role
+    // 1. User is super admin (admin@tsrid.com)
     // 2. OR user is impersonating (admin viewing customer portal)
     if (!isSuperAdmin && !isImpersonating) {
-      console.log('[ProtectedRoute] Access denied to admin portal:', user?.email, '| Role:', user?.role);
+      console.log('[ProtectedRoute] ❌ Access denied - Not super admin and not impersonating');
       return <Navigate to="/portal/customer" replace />;
     }
     
-    // Double check: even if role is admin, must be admin@tsrid.com
-    if (!isImpersonating && !isSuperAdmin) {
-      console.log('[ProtectedRoute] Security block: Non-super-admin attempted admin access');
-      return <Navigate to="/portal/customer" replace />;
-    }
+    console.log('[ProtectedRoute] ✅ Access granted to admin portal');
   }
 
   return children;
