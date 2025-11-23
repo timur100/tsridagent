@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 
 const IDChecksPage = () => {
+  console.log('[IDChecksPage] Component mounted/rendered');
   const { theme } = useTheme();
   const { user, apiCall } = useAuth();
   const navigate = useNavigate();
