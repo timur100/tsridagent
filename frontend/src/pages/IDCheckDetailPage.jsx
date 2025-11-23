@@ -269,15 +269,22 @@ const IDCheckDetailPage = () => {
                         <img
                           src={`/api/id-scans/${scan.id}/images/${img.image_type}`}
                           alt={label}
+                          crossOrigin="use-credentials"
                           className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                          onLoad={(e) => {
+                            console.log('✅ Image loaded:', img.image_type);
+                          }}
                           onError={(e) => {
+                            console.error('❌ Image failed to load:', img.image_type, e.target.src);
                             e.target.style.display = 'none';
-                            e.target.nextSibling.style.display = 'flex';
+                            const errorDiv = e.target.nextElementSibling;
+                            if (errorDiv) errorDiv.style.display = 'flex';
                           }}
                         />
                         <div style={{display: 'none'}} className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
                           <FileText className="h-8 w-8 text-red-500 mb-1" />
                           <p className="text-gray-500 text-xs">Fehler beim Laden</p>
+                          <p className="text-gray-500 text-xs">{img.image_type}</p>
                         </div>
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
                           <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
