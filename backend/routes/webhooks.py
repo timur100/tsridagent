@@ -263,30 +263,41 @@ async def regula_scan_webhook(
     api_key_valid: bool = Depends(verify_api_key)
 ):
     """
-    Webhook endpoint to receive completed scans from Regula scanner
+    Enhanced Webhook endpoint for Regula scanner (supports Front & Back sides)
     
-    Accepts a comprehensive JSON object containing:
-    - Graphics_Data (with Base64 images)
-    - Text_Data (with extracted personal information)
-    - ChoosenDoctype_Data (with document type and metadata)
-    - SecurityChecks_Data
-    - IR, UV, WHITE light images
-    - And other Regula data files
+    Accepts comprehensive JSON data for either:
+    - Front side only (page_idx=0)
+    - Back side only (page_idx=1)  
+    - Both sides in one request
+    
+    Automatically links front/back using TransactionID.
     
     Required headers:
         X-API-Key: API key for authentication
     
-    Example payload:
+    Example payload (single side):
     {
-        "Graphics_Data": {...},
+        "Graphics_Data": {...},      // Front side
         "Text_Data": {...},
         "ChoosenDoctype_Data": {...},
-        "SecurityChecks_Data": {...},
-        "IR": {...},
-        "UV": {...},
-        "WHITE": {...},
-        "customer_id": "optional-customer-id",
-        "location": "optional-location-name"
+        "tenant_id": "...",
+        "tenant_name": "..."
+    }
+    
+    Example payload (both sides):
+    {
+        "front": {
+            "Graphics_Data": {...},
+            "Text_Data": {...},
+            ...
+        },
+        "back": {
+            "Images_Data": {...},
+            "Status_Data": {...},
+            ...
+        },
+        "tenant_id": "...",
+        "tenant_name": "..."
     }
     """
     try:
