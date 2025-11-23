@@ -239,18 +239,20 @@ const IDCheckDetailPage = () => {
           <div className="grid grid-cols-2 gap-3">
             {/* Display structured document images: WHITE, IR, UV for front and back */}
             {(() => {
-              // Define the expected image structure for proper document scanning
-              // Vorderseite: Portrait wird separat angezeigt, hier nur Lichtquellen
-              // Rückseite: Portrait, Signature, und Document
+              // Define the expected 6 image structure: 2 columns (Front/Back), 3 rows (WHITE/IR/UV)
               const expectedImages = [
-                { type: 'front_front', label: 'WHITE (V)', fallbackTypes: ['front_original', 'front_white'] },
-                { type: 'front_ir', label: 'IR (V)', fallbackTypes: [] },
-                { type: 'front_uv', label: 'UV (V)', fallbackTypes: [] },
-                { type: 'back_portrait', label: 'Portrait (R)', fallbackTypes: [] },
-                { type: 'back_signature', label: 'Signature (R)', fallbackTypes: [] },
-                { type: 'back_document_front', label: 'WHITE (R)', fallbackTypes: ['back_original', 'back_front', 'back_white'] },
-                { type: 'back_ir', label: 'IR (R)', fallbackTypes: [] },
-                { type: 'back_uv', label: 'UV (R)', fallbackTypes: [] }
+                // Linke Spalte - Vorderseite
+                { type: 'front_front', label: 'WHITE (Vorderseite)', fallbackTypes: ['front_original', 'front_white'] },
+                // Rechte Spalte - Rückseite
+                { type: 'back_document_front', label: 'WHITE (Rückseite)', fallbackTypes: ['back_original', 'back_front', 'back_white'] },
+                // Linke Spalte - Vorderseite
+                { type: 'front_ir', label: 'IR (Vorderseite)', fallbackTypes: [] },
+                // Rechte Spalte - Rückseite
+                { type: 'back_ir', label: 'IR (Rückseite)', fallbackTypes: [] },
+                // Linke Spalte - Vorderseite
+                { type: 'front_uv', label: 'UV (Vorderseite)', fallbackTypes: [] },
+                // Rechte Spalte - Rückseite
+                { type: 'back_uv', label: 'UV (Rückseite)', fallbackTypes: [] }
               ];
               
               // Find available images
