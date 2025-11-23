@@ -441,13 +441,6 @@ const IDCheckDetailPage = () => {
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Basic Info */}
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
-          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Scan-Informationen
-          </h2>
-          
-          <div className="space-y-3">
             <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
