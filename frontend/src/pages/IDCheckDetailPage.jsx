@@ -145,14 +145,27 @@ const IDCheckDetailPage = () => {
     );
   }
 
-  const imageTypes = [
-    { key: 'front_original', label: 'Vorderseite' },
-    { key: 'front_ir', label: 'IR' },
-    { key: 'front_uv', label: 'UV' },
-    { key: 'back_original', label: 'Rückseite' },
-    { key: 'back_ir', label: 'IR' },
-    { key: 'back_uv', label: 'UV' }
-  ];
+  // Dynamic image types based on actual images in scan
+  const imageLabelMap = {
+    'front_front': 'Vorderseite',
+    'front_portrait': 'Portrait (Vorne)',
+    'front_ir': 'IR (Vorne)',
+    'front_uv': 'UV (Vorne)',
+    'front_white': 'Weißlicht (Vorne)',
+    'back_portrait': 'Portrait (Hinten)',
+    'back_signature': 'Unterschrift',
+    'back_document_front': 'Dokument Vorderseite',
+    'back_ir': 'IR (Hinten)',
+    'back_uv': 'UV (Hinten)',
+    'back_white': 'Weißlicht (Hinten)',
+    'front_original': 'Vorderseite',
+    'back_original': 'Rückseite'
+  };
+  
+  const imageTypes = (scan.images || []).map(img => ({
+    key: img.image_type,
+    label: imageLabelMap[img.image_type] || img.image_type
+  }));
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
