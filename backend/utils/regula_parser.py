@@ -1,6 +1,7 @@
 """
-Regula Scanner Data Parser
+Regula Scanner Data Parser (Enhanced for Front & Back Side)
 Parses complex JSON/XML data from Regula document scanners
+Supports both page_idx=0 (front) and page_idx=1 (back)
 """
 import base64
 import json
@@ -10,7 +11,7 @@ import uuid
 
 
 class RegulaParser:
-    """Parser for Regula scanner output data"""
+    """Enhanced Parser for Regula scanner output data (Front & Back sides)"""
     
     def __init__(self):
         self.parsed_data = {}
@@ -18,6 +19,7 @@ class RegulaParser:
     def parse_all_data(self, scan_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Parse all Regula scanner data from a combined JSON object
+        Automatically detects front side (page_idx=0) vs back side (page_idx=1)
         
         Args:
             scan_data: Dictionary containing all scan data
@@ -25,28 +27,103 @@ class RegulaParser:
         Returns:
             Dictionary with parsed and structured data
         """
+        # Determine which side this is
+        page_idx = self._detect_page_index(scan_data)
+        
         result = {
+            'page_idx': page_idx,
+            'side': 'front' if page_idx == 0 else 'back',
             'metadata': {},
             'document_info': {},
             'personal_data': {},
             'images': {},
             'security_checks': {},
+            'status': {},
+            'quality_score': None,
+            'mrz_data': {},
             'raw_data': {}
         }
         
-        # Parse Graphics Data (contains images)
-        if 'Graphics_Data' in scan_data:
-            result['images'] = self._parse_graphics_data(scan_data['Graphics_Data'])
-            
-        # Parse Text Data (contains personal information)
-        if 'Text_Data' in scan_data:
-            result['personal_data'] = self._parse_text_data(scan_data['Text_Data'])
-            
-        # Parse Chosen Document Type Data
+        # Parse metadata first (contains TransactionID)
         if 'ChoosenDoctype_Data' in scan_data:
             result['document_info'] = self._parse_document_type(scan_data['ChoosenDoctype_Data'])
             result['metadata'] = self._parse_metadata(scan_data['ChoosenDoctype_Data'])
+        
+        # Parse based on page_idx
+        if page_idx == 0:
+            # FRONT SIDE
+            result = self._parse_front_side(scan_data, result)
+        else:
+            # BACK SIDE
+            result = self._parse_back_side(scan_data, result)
             
+        # Parse common data (available on both sides)
+        result = self._parse_common_data(scan_data, result)
+        
+        return result
+    
+    def _detect_page_index(self, scan_data: Dict[str, Any]) -> int:
+        """Detect whether this is front (0) or back (1) side"""
+        # Check ChoosenDoctype_Data
+        if 'ChoosenDoctype_Data' in scan_data:
+            doctype = scan_data['ChoosenDoctype_Data']
+            if isinstance(doctype, dict):
+                # Check page_idx directly
+                if 'page_idx' in doctype:
+                    return doctype['page_idx']
+                # Check nested structure
+                if 'DOC_DOCUMENT_TYPE_DATA' in doctype:
+                    doc_data = doctype['DOC_DOCUMENT_TYPE_DATA']
+                    if 'PageIndex' in doc_data:
+                        return int(doc_data['PageIndex'])
+                # Check document name
+                doc_candidate = doctype.get('DOC_DOCUMENT_TYPE_DATA', {}).get('Document_Candidate', {})
+                doc_name = doc_candidate.get('DocumentName', '')
+                if 'Side B' in doc_name or 'Back' in doc_name:
+                    return 1
+        
+        # Check for Images_Data (only on back side)
+        if 'Images_Data' in scan_data:
+            return 1
+        
+        # Default to front side
+        return 0
+    
+    def _parse_front_side(self, scan_data: Dict[str, Any], result: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse front side specific data"""
+        # Parse Graphics Data (contains all images on front side)
+        if 'Graphics_Data' in scan_data:
+            result['images'] = self._parse_graphics_data(scan_data['Graphics_Data'])
+            
+        # Parse Text Data (contains personal information - only on front)
+        if 'Text_Data' in scan_data:
+            result['personal_data'] = self._parse_text_data(scan_data['Text_Data'])
+        
+        # Parse MRZ.TXT if provided
+        if 'MRZ_TXT' in scan_data:
+            result['mrz_data'] = self._parse_mrz_txt(scan_data['MRZ_TXT'])
+        
+        # Parse Results.TXT if provided
+        if 'Results_TXT' in scan_data:
+            result['raw_data']['results_txt'] = self._parse_results_txt(scan_data['Results_TXT'])
+            
+        return result
+    
+    def _parse_back_side(self, scan_data: Dict[str, Any], result: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse back side specific data"""
+        # Parse Images_Data (back side uses different structure)
+        if 'Images_Data' in scan_data:
+            result['images'] = self._parse_images_data(scan_data['Images_Data'])
+        
+        # Parse Status_Data (only available on back side)
+        if 'Status_Data' in scan_data:
+            result['status'] = self._parse_status_data(scan_data['Status_Data'])
+            result['quality_score'] = self._calculate_quality_score(result['status'])
+            
+        return result
+    
+    def _parse_common_data(self, scan_data: Dict[str, Any], result: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse data available on both sides"""
         # Parse Security Checks
         if 'SecurityChecks_Data' in scan_data:
             result['security_checks'] = self._parse_security_checks(scan_data['SecurityChecks_Data'])
