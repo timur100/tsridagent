@@ -866,6 +866,50 @@ const AdminPortalContent = () => {
             </div>
           </div>
 
+          {/* ID-Checks Sub-Tabs - Show only when on ID-Checks section */}
+          {activeTab === 'id-checks' && (
+            <div className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className="flex gap-2 px-4 sm:px-6 lg:px-8">
+                <button
+                  className={`px-6 py-3 font-semibold transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-[#c00000] text-white'
+                      : 'bg-[#c00000] text-white'
+                  }`}
+                >
+                  Dokumentenscan
+                </button>
+                <button
+                  className={`px-6 py-3 font-semibold transition-colors ${
+                    theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  Facematch
+                </button>
+                <button
+                  className={`px-6 py-3 font-semibold transition-colors ${
+                    theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  Fingerprint
+                </button>
+                <button
+                  className={`px-6 py-3 font-semibold transition-colors ${
+                    theme === 'dark'
+                      ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  KI-Suche
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Content - only show when not on detail page */}
           {!isOnDetailPage && (
           <main className="px-4 sm:px-6 lg:px-8 py-8">
