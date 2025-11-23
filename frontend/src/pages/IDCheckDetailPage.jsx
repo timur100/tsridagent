@@ -485,10 +485,9 @@ const IDCheckDetailPage = () => {
               </div>
             )}
           </div>
-        </div>
+      </div>
 
-        {/* Portrait Section */}
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+      {/* Action Modal */}
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Portrait
           </h2>
