@@ -444,6 +444,142 @@ async def regula_scan_webhook(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+async def _process_combined_scan(scan_data: dict, parser: "RegulaParser", scans_collection) -> dict:
+    """Process a combined front+back scan in one request"""
+    from utils.regula_parser import create_idscan_from_regula
+    import aiofiles
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Extract tenant/location/device info
+    tenant_id = scan_data.get('tenant_id', 'default')
+    tenant_name = scan_data.get('tenant_name', 'Default Tenant')
+    location_id = scan_data.get('location_id')
+    location_name = scan_data.get('location_name')
+    device_id = scan_data.get('device_id')
+    device_name = scan_data.get('device_name')
+    
+    # Parse both sides
+    front_data = scan_data.get('front', {})
+    back_data = scan_data.get('back', {})
+    
+    parsed_front = parser.parse_all_data(front_data) if front_data else None
+    parsed_back = parser.parse_all_data(back_data) if back_data else None
+    
+    # Use front side for main data, back side for quality assessment
+    main_parsed = parsed_front if parsed_front else parsed_back
+    
+    # Merge quality data from back side
+    if parsed_back:
+        main_parsed['status'] = parsed_back.get('status', {})
+        main_parsed['quality_score'] = parsed_back.get('quality_score', 0)
+    
+    # Convert to IDScan format
+    idscan_data = create_idscan_from_regula(
+        main_parsed,
+        tenant_id=tenant_id,
+        tenant_name=tenant_name,
+        location_id=location_id,
+        location_name=location_name,
+        device_id=device_id,
+        device_name=device_name
+    )
+    
+    scan_id = idscan_data['id']
+    
+    # Save images from both sides
+    images_array = []
+    images_saved = []
+    
+    # Front side images
+    if parsed_front:
+        front_images = parsed_front.get('images', {})
+        for img_type, base64_data in front_images.items():
+            if base64_data and len(base64_data) > 100:
+                saved_info = await _save_image(parser, scan_id, f"front_{img_type}", base64_data, now)
+                if saved_info:
+                    images_array.append(saved_info['db_entry'])
+                    images_saved.append(saved_info['response'])
+    
+    # Back side images  
+    if parsed_back:
+        back_images = parsed_back.get('images', {})
+        for img_type, base64_data in back_images.items():
+            if base64_data and len(base64_data) > 100:
+                saved_info = await _save_image(parser, scan_id, f"back_{img_type}", base64_data, now)
+                if saved_info:
+                    images_array.append(saved_info['db_entry'])
+                    images_saved.append(saved_info['response'])
+    
+    # Update IDScan with images
+    idscan_data['images'] = images_array
+    idscan_data['source'] = 'regula-scanner-combined'
+    idscan_data['created_at'] = now
+    idscan_data['updated_at'] = now
+    
+    # Save to database
+    await scans_collection.insert_one(idscan_data)
+    
+    if '_id' in idscan_data:
+        del idscan_data['_id']
+    
+    # Log success
+    extracted = idscan_data.get('extracted_data', {})
+    print(f"✅ [Regula Webhook] Combined scan {scan_id} processed")
+    print(f"   Name: {extracted.get('first_name')} {extracted.get('last_name')}")
+    print(f"   Images: {len(images_saved)} saved")
+    print(f"   Quality: {idscan_data['regula_metadata'].get('quality_score', 0)}/100")
+    
+    return {
+        "success": True,
+        "message": "Combined front+back scan processed successfully",
+        "scan_id": scan_id,
+        "images_saved": len(images_saved),
+        "quality_score": idscan_data['regula_metadata'].get('quality_score', 0),
+        "requires_manual_review": idscan_data.get('requires_manual_review', False),
+        "personal_data": {
+            "name": f"{extracted.get('first_name')} {extracted.get('last_name')}",
+            "document_number": extracted.get('document_number'),
+            "document_type": extracted.get('document_type')
+        }
+    }
+
+
+async def _save_image(parser: "RegulaParser", scan_id: str, image_type: str, base64_data: str, timestamp: str) -> Optional[dict]:
+    """Helper function to save a single image"""
+    import aiofiles
+    
+    try:
+        image_bytes = parser.decode_base64_image(base64_data)
+        if not image_bytes:
+            return None
+        
+        filename = f"{scan_id}_{image_type}.jpg"
+        file_path = os.path.join(UPLOAD_DIR, filename)
+        
+        async with aiofiles.open(file_path, 'wb') as f:
+            await f.write(image_bytes)
+        
+        print(f"✅ [Regula Webhook] Saved {image_type} ({len(image_bytes)} bytes)")
+        
+        return {
+            'db_entry': {
+                "image_type": image_type,
+                "file_path": file_path,
+                "file_size": len(image_bytes),
+                "uploaded_at": timestamp
+            },
+            'response': {
+                "type": image_type,
+                "path": file_path,
+                "size": len(image_bytes)
+            }
+        }
+    except Exception as e:
+        print(f"⚠️  [Regula Webhook] Failed to save {image_type}: {e}")
+        return None
+
+
 @router.get("/health", response_model=dict)
 async def webhook_health():
     """Health check endpoint for webhook service"""
