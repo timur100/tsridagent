@@ -315,26 +315,50 @@ const IDCheckDetailPage = () => {
           </h2>
           
           <div className="flex flex-col items-center h-[calc(100%-3rem)]">
-            {scan.images?.find(img => img.image_type === 'portrait') ? (
-              <div className="w-full h-full flex flex-col">
-                <img
-                  src={`/api/id-scans/${scan.id}/images/portrait`}
-                  alt="Portrait"
-                  className={`w-full flex-1 object-contain rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
-                />
-                <button
-                  className="w-full mt-4 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold flex items-center justify-center gap-2"
-                >
-                  <CheckCircle className="h-4 w-4" />
-                  Verifiziert
-                </button>
-              </div>
-            ) : (
-              <div className={`w-full h-full flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                <User className={`h-20 w-20 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Kein Portrait verfügbar</p>
-              </div>
-            )}
+            {(() => {
+              // Try to find portrait in different formats
+              const portraitImg = scan.images?.find(img => 
+                img.image_type === 'portrait' || 
+                img.image_type === 'front_portrait' || 
+                img.image_type === 'back_portrait'
+              );
+              
+              if (portraitImg) {
+                return (
+                  <div className="w-full h-full flex flex-col">
+                    <img
+                      src={`/api/id-scans/${scan.id}/images/${portraitImg.image_type}`}
+                      alt="Portrait"
+                      className={`w-full flex-1 object-contain rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                      onError={(e) => {
+                        // If image fails to load, show placeholder
+                        e.target.parentElement.innerHTML = `
+                          <div class="w-full h-full flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}">
+                            <div class="h-20 w-20 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}">
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                            </div>
+                            <p class="text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}">Portrait nicht verfügbar</p>
+                          </div>
+                        `;
+                      }}
+                    />
+                    <button
+                      className="w-full mt-4 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="h-4 w-4" />
+                      Verifiziert
+                    </button>
+                  </div>
+                );
+              } else {
+                return (
+                  <div className={`w-full h-full flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                    <User className={`h-20 w-20 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Kein Portrait verfügbar</p>
+                  </div>
+                );
+              }
+            })()}
           </div>
         </div>
 
