@@ -334,6 +334,225 @@ class RegulaParser:
         except Exception as e:
             print(f"Error saving image: {e}")
         return False
+    
+    def _parse_images_data(self, images_data: Dict[str, Any]) -> Dict[str, str]:
+        """Parse Images_Data.json (back side) to extract Base64 images"""
+        images = {}
+        
+        if not images_data:
+            return images
+            
+        try:
+            # Images_Data has a different structure than Graphics_Data
+            field_list = images_data.get('Images', {}).get('fieldList', [])
+            
+            for field in field_list:
+                field_type = field.get('fieldType', '')
+                field_name = field.get('fieldName', '')
+                
+                # Extract Base64 image data
+                value_list = field.get('valueList', [])
+                if value_list and len(value_list) > 0:
+                    value = value_list[0].get('value', '')
+                    
+                    if value and len(value) > 100:
+                        # Map field types
+                        if field_type == 201 or 'Portrait' in field_name:
+                            images['portrait'] = value
+                        elif field_type == 204 or 'Signature' in field_name:
+                            images['signature'] = value
+                        elif field_type == 207 or 'front side' in field_name.lower():
+                            images['document_front'] = value
+                            
+        except Exception as e:
+            print(f"Error parsing Images_Data: {e}")
+            
+        return images
+    
+    def _parse_status_data(self, status_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse Status_Data.json for quality assessment"""
+        status = {}
+        
+        if not status_data:
+            return status
+            
+        try:
+            status_obj = status_data.get('Status', {})
+            
+            # Overall status
+            status['overall_status'] = status_obj.get('overallStatus', 0)
+            status['optical'] = status_obj.get('optical', 0)
+            status['rfid'] = status_obj.get('rfid', 0)
+            
+            # Optical details
+            optical_details = status_obj.get('detailsOptical', {})
+            status['optical_details'] = {
+                'overall_status': optical_details.get('overallStatus', 0),
+                'mrz': optical_details.get('mrz', 0),
+                'text': optical_details.get('text', 0),
+                'doc_type': optical_details.get('docType', 0),
+                'security': optical_details.get('security', 0),
+                'image_qa': optical_details.get('imageQA', 0),
+                'expiry': optical_details.get('expiry', 0),
+                'pages_count': optical_details.get('pagesCount', 0),
+                'vds': optical_details.get('vds', 0)
+            }
+            
+            # RFID details
+            rfid_details = status_obj.get('detailsRFID', {})
+            status['rfid_details'] = {
+                'overall_status': rfid_details.get('overallStatus', 0),
+                'pa': rfid_details.get('PA', 0),
+                'ca': rfid_details.get('CA', 0),
+                'aa': rfid_details.get('AA', 0),
+                'ta': rfid_details.get('TA', 0),
+                'bac': rfid_details.get('BAC', 0),
+                'pace': rfid_details.get('PACE', 0)
+            }
+            
+            # Other checks
+            status['portrait'] = status_obj.get('portrait', 0)
+            status['stop_list'] = status_obj.get('stopList', 0)
+            
+        except Exception as e:
+            print(f"Error parsing Status_Data: {e}")
+            
+        return status
+    
+    def _calculate_quality_score(self, status: Dict[str, Any]) -> int:
+        """
+        Calculate quality score (0-100) based on Status_Data
+        
+        Status codes:
+        1 = SUCCESS
+        2 = ERROR/NOT AVAILABLE
+        """
+        if not status:
+            return 0
+            
+        try:
+            optical = status.get('optical_details', {})
+            
+            # Critical checks (must be 1 for high quality)
+            critical_checks = [
+                optical.get('text', 0),
+                optical.get('doc_type', 0),
+                optical.get('security', 0),
+                optical.get('expiry', 0)
+            ]
+            
+            # Count successful critical checks
+            critical_success = sum(1 for c in critical_checks if c == 1)
+            critical_score = (critical_success / len(critical_checks)) * 70  # 70% weight
+            
+            # Optional checks
+            optional_checks = [
+                optical.get('image_qa', 0),
+                status.get('overall_status', 0),
+                optical.get('overall_status', 0)
+            ]
+            
+            optional_success = sum(1 for c in optional_checks if c == 1)
+            optional_score = (optional_success / len(optional_checks)) * 30  # 30% weight
+            
+            total_score = int(critical_score + optional_score)
+            
+            # Note: MRZ=2 and RFID=2 are NORMAL for driver's licenses, so we don't penalize
+            
+            return total_score
+            
+        except Exception as e:
+            print(f"Error calculating quality score: {e}")
+            return 0
+    
+    def _parse_mrz_txt(self, mrz_txt: str) -> Dict[str, Any]:
+        """Parse MRZ.TXT file content"""
+        mrz_data = {}
+        
+        if not mrz_txt:
+            return mrz_data
+            
+        try:
+            lines = mrz_txt.split('\n')
+            current_section = None
+            
+            for line in lines:
+                line = line.strip()
+                if not line:
+                    continue
+                    
+                # Detect sections
+                if line.startswith('[') and line.endswith(']'):
+                    current_section = line[1:-1]
+                    mrz_data[current_section] = {}
+                elif '=' in line and current_section:
+                    key, value = line.split('=', 1)
+                    mrz_data[current_section][key.strip()] = value.strip()
+                    
+        except Exception as e:
+            print(f"Error parsing MRZ.TXT: {e}")
+            
+        return mrz_data
+    
+    def _parse_results_txt(self, results_txt: str) -> List[Dict[str, Any]]:
+        """Parse Results.TXT (CSV format) file content"""
+        results = []
+        
+        if not results_txt:
+            return results
+            
+        try:
+            lines = results_txt.split('\n')
+            if len(lines) < 2:
+                return results
+                
+            # First line is header
+            headers = lines[0].split(';')
+            
+            # Parse each data line
+            for line in lines[1:]:
+                if not line.strip():
+                    continue
+                    
+                values = line.split(';')
+                if len(values) >= len(headers):
+                    row = {}
+                    for i, header in enumerate(headers):
+                        row[header] = values[i] if i < len(values) else ''
+                    results.append(row)
+                    
+        except Exception as e:
+            print(f"Error parsing Results.TXT: {e}")
+            
+        return results
+    
+    def should_require_manual_review(self, status: Dict[str, Any], quality_score: int) -> bool:
+        """
+        Determine if scan requires manual review based on status and quality
+        
+        Returns:
+            True if manual review is required, False otherwise
+        """
+        if not status:
+            return True  # No status data = require review
+            
+        # Require review if quality score is low
+        if quality_score < 50:
+            return True
+            
+        # Check critical optical checks
+        optical = status.get('optical_details', {})
+        critical_checks = [
+            optical.get('text', 0),
+            optical.get('doc_type', 0),
+            optical.get('security', 0)
+        ]
+        
+        # If any critical check failed, require review
+        if any(c != 1 for c in critical_checks):
+            return True
+            
+        return False
 
 
 def create_idscan_from_regula(
