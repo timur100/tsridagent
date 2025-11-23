@@ -258,18 +258,18 @@ const IDCheckDetailPage = () => {
         </div>
 
         {/* Container 2: PORTRAIT (Hochkant) */}
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+        <div className={`p-6 rounded-lg h-full ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Portrait
           </h2>
           
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center h-[calc(100%-3rem)]">
             {scan.images?.find(img => img.image_type === 'portrait') ? (
-              <div className="w-full">
+              <div className="w-full h-full flex flex-col">
                 <img
                   src={`/api/id-scans/${scan.id}/images/portrait`}
                   alt="Portrait"
-                  className={`w-full h-[400px] object-contain rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                  className={`w-full flex-1 object-contain rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
                 />
                 <button
                   className="w-full mt-4 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold flex items-center justify-center gap-2"
@@ -279,7 +279,7 @@ const IDCheckDetailPage = () => {
                 </button>
               </div>
             ) : (
-              <div className={`w-full h-[400px] flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+              <div className={`w-full h-full flex flex-col items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
                 <User className={`h-20 w-20 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Kein Portrait verfügbar</p>
               </div>
@@ -288,7 +288,7 @@ const IDCheckDetailPage = () => {
         </div>
 
         {/* Container 3: AUSWEISDATEN */}
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+        <div className={`p-6 rounded-lg h-full flex flex-col ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <div className="flex items-center justify-between mb-4">
             <h2 className={`text-xl font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Ausweisdaten
