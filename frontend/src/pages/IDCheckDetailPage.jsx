@@ -488,9 +488,7 @@ const IDCheckDetailPage = () => {
       </div>
 
       {/* Action Modal */}
-          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Portrait
-          </h2>
+      {actionModalOpen && (
           
           <div className="space-y-4">
             {scan.images?.find(img => img.image_type === 'portrait') ? (
