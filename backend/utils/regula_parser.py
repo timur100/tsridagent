@@ -632,6 +632,9 @@ def create_idscan_from_regula(
     
     # Determine if manual review is needed
     parser = RegulaParser()
+    # Ensure quality_score is not None
+    if quality_score is None:
+        quality_score = 0
     requires_review = parser.should_require_manual_review(status, quality_score)
     
     # Determine verification status based on quality
