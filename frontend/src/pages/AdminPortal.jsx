@@ -872,7 +872,7 @@ const AdminPortalContent = () => {
         
         {/* ID-Checks Sub-Tabs - Show only when on ID-Checks section */}
         {activeTab === 'id-checks' && (
-          <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
+          <div className={`mb-4 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
             <div className="flex gap-2">
               <button
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
