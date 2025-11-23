@@ -22,6 +22,11 @@ const IDCheckDetailPage = () => {
   const [actionComment, setActionComment] = useState('');
   const [actionReason, setActionReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  
+  // Lightbox state
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [availableImages, setAvailableImages] = useState([]);
 
   useEffect(() => {
     loadScan();
