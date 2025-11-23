@@ -1,0 +1,20 @@
+# =============================================================================
+# Webhook Integration Configuration für scan-verify-hub
+# =============================================================================
+# 
+# Fügen Sie diese Zeilen zur /app/backend/.env Datei in Ihrem 
+# scan-verify-hub Projekt hinzu
+#
+# =============================================================================
+
+# Webhook Integration zu ID-Check Service
+WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
+ID_CHECK_WEBHOOK_URL=https://identity-checks.preview.emergentagent.com/api/webhooks/scan-completed
+ID_CHECK_IMAGE_UPLOAD_URL=https://identity-checks.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+
+# SQLite Queue Database Path (optional - default: /app/backend/scan_queue.db)
+# SCAN_QUEUE_DB_PATH=/app/backend/scan_queue.db
+
+# Retry Worker Configuration (optional)
+# RETRY_WORKER_INTERVAL=300  # seconds (default: 300 = 5 minutes)
+# RETRY_MAX_ATTEMPTS=5       # max retry attempts (default: 5)
