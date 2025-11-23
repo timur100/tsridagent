@@ -1,0 +1,17 @@
+# =============================================================================
+# Zusätzliche Python Dependencies für scan-verify-hub
+# =============================================================================
+# 
+# Fügen Sie diese Zeilen zur requirements.txt in Ihrem 
+# scan-verify-hub Backend hinzu
+#
+# =============================================================================
+
+# Async HTTP Client für Webhook-Sending
+aiohttp>=3.9.0
+
+# Async File I/O für Bild-Uploads
+aiofiles>=23.2.0
+
+# Async SQLite für Offline-Queue
+aiosqlite>=0.19.0
