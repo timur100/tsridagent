@@ -249,11 +249,19 @@ const IDCheckDetailPage = () => {
                   <div key={key} className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                     <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
                     {image ? (
-                      <img
-                        src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={label}
-                        className="w-full h-48 object-cover rounded"
-                      />
+                      <div 
+                        className="relative group cursor-pointer"
+                        onClick={() => openLightbox(key)}
+                      >
+                        <img
+                          src={`/api/id-scans/${scan.id}/images/${key}`}
+                          alt={label}
+                          className="w-full h-48 object-cover rounded"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                          <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
                     ) : (
                       <div className="w-full h-48 flex items-center justify-center bg-gray-700 rounded">
                         <p className="text-gray-500 text-sm">Kein Bild vorhanden</p>
@@ -277,11 +285,19 @@ const IDCheckDetailPage = () => {
                   <div key={key} className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                     <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
                     {image ? (
-                      <img
-                        src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={label}
-                        className="w-full h-48 object-cover rounded"
-                      />
+                      <div 
+                        className="relative group cursor-pointer"
+                        onClick={() => openLightbox(key)}
+                      >
+                        <img
+                          src={`/api/id-scans/${scan.id}/images/${key}`}
+                          alt={label}
+                          className="w-full h-48 object-cover rounded"
+                        />
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                          <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
                     ) : (
                       <div className="w-full h-48 flex items-center justify-center bg-gray-700 rounded">
                         <p className="text-gray-500 text-sm">Kein Bild vorhanden</p>
