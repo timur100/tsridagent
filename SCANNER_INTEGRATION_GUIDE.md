@@ -67,7 +67,7 @@ Alle Integrationsdateien befinden sich in: `/app/SCAN_SERVICE_INTEGRATION_FILES/
 
 ```bash
 # Erstellt einen Test-Scan direkt in der ID-Checks Tabelle
-curl -X POST https://identity-checks.preview.emergentagent.com/api/test/simulate-scan
+curl -X POST https://scan-sync-1.preview.emergentagent.com/api/test/simulate-scan
 ```
 
 **Ergebnis:**
@@ -83,7 +83,7 @@ curl -X POST https://identity-checks.preview.emergentagent.com/api/test/simulate
 
 ```bash
 # Überprüft ob der Webhook-Empfänger läuft
-curl https://identity-checks.preview.emergentagent.com/api/webhooks/health
+curl https://scan-sync-1.preview.emergentagent.com/api/webhooks/health
 ```
 
 **Erwartete Antwort:**
@@ -102,7 +102,7 @@ curl https://identity-checks.preview.emergentagent.com/api/webhooks/health
 ### Schritt 1: Dateien kopieren
 
 Öffnen Sie scan-verify-hub in VSCode:
-https://vscode-98a55481-d7f9-4b1a-a06e-cc77b711bf10.preview.emergentagent.com/?folder=/app
+https://scan-sync-1.preview.emergentagent.com/?folder=/app
 
 Kopieren Sie diese Dateien in scan-verify-hub:
 
@@ -125,8 +125,8 @@ Fügen Sie zur `/app/backend/.env` im scan-verify-hub hinzu:
 ```env
 # Webhook Integration
 WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-ID_CHECK_WEBHOOK_URL=https://identity-checks.preview.emergentagent.com/api/webhooks/scan-completed
-ID_CHECK_IMAGE_UPLOAD_URL=https://identity-checks.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+ID_CHECK_WEBHOOK_URL=https://scan-sync-1.preview.emergentagent.com/api/webhooks/scan-completed
+ID_CHECK_IMAGE_UPLOAD_URL=https://scan-sync-1.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
 ```
 
 ### Schritt 3: Dependencies installieren
@@ -261,7 +261,7 @@ python test_webhook_integration.py
 ### Test 3: Webhook-Status überprüfen
 
 ```bash
-curl https://identity-checks.preview.emergentagent.com/api/webhooks/health
+curl https://scan-sync-1.preview.emergentagent.com/api/webhooks/health
 ```
 
 ---
@@ -300,12 +300,12 @@ tail -f /var/log/supervisor/backend.*.log | grep "Webhook"
 Erstellen Sie einen Test-Scan im ID-Check Service:
 
 ```bash
-curl -X POST https://identity-checks.preview.emergentagent.com/api/test/simulate-scan
+curl -X POST https://scan-sync-1.preview.emergentagent.com/api/test/simulate-scan
 ```
 
 Dann öffnen Sie das Admin-Portal:
 ```
-https://identity-checks.preview.emergentagent.com/portal/admin/id-checks
+https://scan-sync-1.preview.emergentagent.com/portal/admin/id-checks
 ```
 
 Der Scan sollte dort erscheinen! ✅
