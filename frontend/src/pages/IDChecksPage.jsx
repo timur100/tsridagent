@@ -222,6 +222,58 @@ const IDChecksPage = () => {
         </div>
       </div>
 
+      {/* Tab Menu */}
+      <div className={`flex gap-2 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <button
+          onClick={() => setActiveTab('dokumentenscan')}
+          className={`px-6 py-3 font-semibold transition-colors relative ${
+            activeTab === 'dokumentenscan'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          Dokumentenscan
+        </button>
+        <button
+          onClick={() => setActiveTab('facematch')}
+          className={`px-6 py-3 font-semibold transition-colors relative ${
+            activeTab === 'facematch'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          Facematch
+        </button>
+        <button
+          onClick={() => setActiveTab('fingerprint')}
+          className={`px-6 py-3 font-semibold transition-colors relative ${
+            activeTab === 'fingerprint'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          Fingerprint
+        </button>
+        <button
+          onClick={() => setActiveTab('ki-suche')}
+          className={`px-6 py-3 font-semibold transition-colors relative ${
+            activeTab === 'ki-suche'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
+              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+          }`}
+        >
+          KI-Suche
+        </button>
+      </div>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
