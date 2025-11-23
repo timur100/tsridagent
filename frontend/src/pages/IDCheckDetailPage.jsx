@@ -161,11 +161,6 @@ const IDCheckDetailPage = () => {
     'front_original': 'Vorderseite',
     'back_original': 'Rückseite'
   };
-  
-  const imageTypes = (scan.images || []).map(img => ({
-    key: img.image_type,
-    label: imageLabelMap[img.image_type] || img.image_type
-  }));
 
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
