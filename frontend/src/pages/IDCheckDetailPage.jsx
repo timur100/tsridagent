@@ -488,6 +488,8 @@ const IDCheckDetailPage = () => {
       </div>
 
       {/* Action Modal */}
+      {actionModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className={`w-full max-w-lg mx-4 p-6 rounded-lg ${
             theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
           }`}>
