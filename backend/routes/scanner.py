@@ -492,3 +492,240 @@ async def get_firmware_info():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/scan")
+async def perform_scan():
+    """
+    Perform a document scan using the connected scanner
+    Automatically sends results to ID-Checks dashboard
+    """
+    try:
+        # Get current config
+        config = await scanner_config_collection.find_one({})
+        
+        if not config or not config.get("connected"):
+            raise HTTPException(
+                status_code=400,
+                detail="Scanner nicht verbunden. Bitte zuerst verbinden."
+            )
+        
+        scanner_type = config.get("scanner_type")
+        
+        # Perform scan based on scanner type
+        if scanner_type == "desko" and DESKO_AVAILABLE:
+            # Use hardware DESKO scanner
+            desko = get_desko_scanner()
+            
+            if not desko.connected:
+                raise HTTPException(
+                    status_code=400,
+                    detail="DESKO Scanner nicht verbunden"
+                )
+            
+            # Perform scan
+            scan_result = desko.scan("/tmp/desko_scan.jpg")
+            
+            if not scan_result.get("success"):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Scan fehlgeschlagen: {scan_result.get('message')}"
+                )
+            
+            # TODO: Extract data from scanned image
+            # For now, create simulated data
+            scan_data = {
+                "success": True,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "scanner_type": "desko",
+                "scanner_mode": scan_result.get("mode"),
+                "image_path": scan_result.get("image_path"),
+                "document_data": {
+                    "document_type": "Personalausweis",  # TODO: OCR/MRZ extraction
+                    "document_number": "",
+                    "first_name": "",
+                    "last_name": "",
+                    "birth_date": "",
+                    "expiry_date": "",
+                    "nationality": "",
+                    "sex": "",
+                    "issuing_country": "DEU"
+                },
+                "images": [
+                    {
+                        "type": "front_original",
+                        "path": scan_result.get("image_path"),
+                        "format": "jpeg"
+                    }
+                ]
+            }
+            
+        elif scanner_type == "regula":
+            # Forward to Regula scanner endpoint
+            raise HTTPException(
+                status_code=501,
+                detail="Verwenden Sie /api/scanner/regula/scan für Regula Scanner"
+            )
+        else:
+            # Simulation mode
+            scan_data = {
+                "success": True,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "scanner_type": scanner_type,
+                "scanner_mode": "simulation",
+                "image_path": "/tmp/simulated_scan.jpg",
+                "document_data": {
+                    "document_type": "Personalausweis",
+                    "document_number": "T220001293",
+                    "first_name": "Max",
+                    "last_name": "Mustermann",
+                    "birth_date": "1985-03-15",
+                    "expiry_date": "2030-01-01",
+                    "nationality": "DEUTSCH",
+                    "sex": "M",
+                    "issuing_country": "DEU"
+                },
+                "images": []
+            }
+        
+        # Log scan event
+        await scanner_logs_collection.insert_one({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "event_type": "scan",
+            "scanner_type": scanner_type,
+            "success": True,
+            "details": "Document scanned successfully"
+        })
+        
+        # INTEGRATION: Send to ID-Checks
+        try:
+            scan_id = await send_scan_to_id_checks(scan_data)
+            scan_data["id_check_scan_id"] = scan_id
+        except Exception as e:
+            print(f"⚠️ Failed to send scan to ID-Checks (non-critical): {str(e)}")
+        
+        return scan_data
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Log error
+        await scanner_logs_collection.insert_one({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "event_type": "scan_error",
+            "scanner_type": config.get("scanner_type") if config else "unknown",
+            "success": False,
+            "details": str(e)
+        })
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+async def send_scan_to_id_checks(scan_result: dict) -> str:
+    """
+    Sendet Scandaten an ID-Checks Dashboard
+    """
+    try:
+        # MongoDB connection for ID-Checks
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        mongo_client = AsyncIOMotorClient(mongo_url)
+        mongo_db = mongo_client.get_database('main_db')
+        scans_collection = mongo_db['id_scans']
+        
+        # Device configuration from environment
+        device_id = os.environ.get('DEVICE_ID', 'BERN01-01')
+        device_name = os.environ.get('DEVICE_NAME', device_id)
+        location_id = os.environ.get('LOCATION_ID', 'LOC-BERLIN-REINICKENDORF')
+        location_name = os.environ.get('LOCATION_NAME', 'Berlin North Reinickendorf -IKC-')
+        tenant_id = os.environ.get('TENANT_ID', '1d3653db-86cb-4dd1-9ef5-0236b116def8')
+        tenant_name = os.environ.get('TENANT_NAME', 'Europcar')
+        scanner_id = os.environ.get('SCANNER_ID', device_id)
+        scanner_name = os.environ.get('SCANNER_NAME', f"{scan_result.get('scanner_type', 'Unknown').upper()} Scanner {device_id}")
+        
+        scan_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Extract document data
+        doc_data = scan_result.get('document_data', {})
+        
+        # Create extracted_data
+        extracted_data = {
+            "document_class": doc_data.get('document_type', 'Unknown'),
+            "country": doc_data.get('issuing_country', ''),
+            "document_number": doc_data.get('document_number', ''),
+            "first_name": doc_data.get('first_name', ''),
+            "last_name": doc_data.get('last_name', ''),
+            "date_of_birth": doc_data.get('birth_date', ''),
+            "nationality": doc_data.get('nationality', ''),
+            "sex": doc_data.get('sex', ''),
+            "expiry_date": doc_data.get('expiry_date', '')
+        }
+        
+        # Determine status
+        status = "validated" if scan_result.get('success') else "rejected"
+        
+        # Create verification object
+        verification = {
+            "confidence_score": 90 if scan_result.get('success') else 50,
+            "status": "valid" if scan_result.get('success') else "invalid",
+            "checks": {
+                "document_scanned": scan_result.get('success', False),
+                "images_captured": len(scan_result.get('images', [])) > 0,
+                "data_extracted": bool(extracted_data.get('document_number'))
+            }
+        }
+        
+        # Process images
+        images_array = []
+        for img in scan_result.get('images', []):
+            images_array.append({
+                "image_type": img.get('type', 'front_original'),
+                "file_path": img.get('path', ''),
+                "format": img.get('format', 'jpeg'),
+                "uploaded_at": now
+            })
+        
+        # Create scan document
+        scan_data = {
+            "id": scan_id,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant_name,
+            "location_id": location_id,
+            "location_name": location_name,
+            "device_id": device_id,
+            "device_name": device_name,
+            "scanner_id": scanner_id,
+            "scanner_name": scanner_name,
+            "scan_timestamp": scan_result.get('timestamp', now),
+            "status": status,
+            "document_type": doc_data.get('document_type', 'Unknown'),
+            "scanned_by": None,
+            "operator_id": None,
+            "images": images_array,
+            "extracted_data": extracted_data,
+            "verification": verification,
+            "requires_manual_review": False,
+            "manual_actions": [],
+            "created_at": now,
+            "updated_at": now,
+            "ip_address": None,
+            "notes": f"Scanned with {scan_result.get('scanner_type', 'Unknown')} scanner in {scan_result.get('scanner_mode', 'unknown')} mode",
+            "tags": [scan_result.get('scanner_type', 'scanner'), "automated"],
+            "source": f"{scan_result.get('scanner_type', 'unknown')}-scanner",
+            "raw_scanner_data": scan_result
+        }
+        
+        # Save to MongoDB
+        await scans_collection.insert_one(scan_data)
+        
+        print(f"✅ [ID-Checks] Scan {scan_id} sent to ID-Checks")
+        print(f"   Device: {device_name}")
+        print(f"   Location: {location_name}")
+        print(f"   Scanner: {scanner_name}")
+        print(f"   Document: {extracted_data.get('document_class')}")
+        
+        return scan_id
+        
+    except Exception as e:
+        print(f"❌ [ID-Checks] Error: {str(e)}")
+        raise
