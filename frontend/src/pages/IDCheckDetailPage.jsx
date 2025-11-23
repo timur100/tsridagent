@@ -378,18 +378,18 @@ const IDCheckDetailPage = () => {
           </div>
           
           <div className="space-y-3 flex-1 overflow-y-auto">
-            {/* Document Class */}
-            {scan.extracted_data?.document_class && (
+            {/* Document Type */}
+            {(scan.extracted_data?.document_type || scan.extracted_data?.document_class) && (
               <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <FileText className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
-                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumentenklasse</p>
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumenttyp</p>
                   </div>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </div>
                 <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {scan.extracted_data.document_class}
+                  {scan.extracted_data.document_type || scan.extracted_data.document_class}
                 </p>
               </div>
             )}
