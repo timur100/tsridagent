@@ -39,6 +39,8 @@ const IDCheckDetailPage = () => {
       console.log('[IDCheckDetailPage] loadScan result:', result);
       if (result.success && result.data) {
         console.log('[IDCheckDetailPage] Setting scan:', result.data.scan);
+        console.log('[IDCheckDetailPage] Available images:', result.data.scan.images?.length || 0);
+        console.log('[IDCheckDetailPage] Image types:', result.data.scan.images?.map(img => img.image_type).join(', '));
         setScan(result.data.scan);
       }
     } catch (error) {
