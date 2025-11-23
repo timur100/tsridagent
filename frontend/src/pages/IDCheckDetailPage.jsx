@@ -149,7 +149,7 @@ const IDCheckDetailPage = () => {
   return (
     <div className="px-4 sm:px-6 lg:px-8 py-8">
       {/* Header with Back Button and Actions */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/portal/admin/id-checks')}
