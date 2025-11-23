@@ -179,7 +179,8 @@ async def scan_document(scan_request: ScanRequest):
         # Set LED to green (success)
         await control_led(LEDControl(state="on", color="green", duration=2000))
         
-        return {
+        # Prepare response
+        scan_result = {
             "success": True,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "images": images,
@@ -188,6 +189,14 @@ async def scan_document(scan_request: ScanRequest):
             "raw_response": scan_data,
             "message": "Document scanned successfully"
         }
+        
+        # INTEGRATION: Send scan to ID-Checks service
+        try:
+            await send_scan_to_id_checks(scan_result)
+        except Exception as e:
+            logger.warning(f"Failed to send scan to ID-Checks (non-critical): {str(e)}")
+        
+        return scan_result
         
     except HTTPException:
         raise
