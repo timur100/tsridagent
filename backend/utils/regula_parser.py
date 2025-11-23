@@ -259,14 +259,26 @@ class RegulaParser:
         return False
 
 
-def create_idscan_from_regula(parsed_data: Dict[str, Any], customer_id: str = None, location: str = None) -> Dict[str, Any]:
+def create_idscan_from_regula(
+    parsed_data: Dict[str, Any], 
+    tenant_id: str = None,
+    tenant_name: str = None,
+    location_id: str = None,
+    location_name: str = None,
+    device_id: str = None,
+    device_name: str = None
+) -> Dict[str, Any]:
     """
     Convert parsed Regula data to IDScan model format
     
     Args:
         parsed_data: Parsed data from RegulaParser
-        customer_id: Optional customer ID
-        location: Optional location/station
+        tenant_id: Tenant ID (required for IDScan model)
+        tenant_name: Tenant name (required for IDScan model)
+        location_id: Optional location ID
+        location_name: Optional location name
+        device_id: Optional device ID
+        device_name: Optional device name
         
     Returns:
         Dictionary ready for IDScan model
@@ -295,43 +307,81 @@ def create_idscan_from_regula(parsed_data: Dict[str, Any], customer_id: str = No
             pass
         return date_str
     
-    idscan = {
-        'id': scan_id,
-        'customer_id': customer_id,
-        'location': location or metadata.get('computer_name', 'Unknown'),
-        
-        # Personal Information
+    # Use metadata or provided values
+    computer_name = metadata.get('computer_name', 'Unknown')
+    user_name = metadata.get('user_name', 'Unknown')
+    
+    # Build extracted data
+    extracted_data = {
         'first_name': personal.get('given_names', ''),
         'last_name': personal.get('surname', ''),
+        'full_name': f"{personal.get('given_names', '')} {personal.get('surname', '')}".strip(),
         'date_of_birth': parse_date(personal.get('date_of_birth', '')),
         'place_of_birth': personal.get('place_of_birth', ''),
         'nationality': personal.get('nationality', ''),
         'sex': personal.get('sex', ''),
-        
-        # Document Information
-        'document_type': doc_info.get('document_type', 'Unknown'),
         'document_number': personal.get('document_number', ''),
-        'issuing_country': doc_info.get('country_name', ''),
+        'document_type': doc_info.get('document_type', 'Unknown'),
         'issuing_authority': personal.get('issuing_authority', ''),
-        'date_of_issue': parse_date(personal.get('date_of_issue', '')),
-        'date_of_expiry': parse_date(personal.get('date_of_expiry', '')),
+        'issue_date': parse_date(personal.get('date_of_issue', '')),
+        'expiry_date': parse_date(personal.get('date_of_expiry', '')),
+        'issuing_country': doc_info.get('country_name', ''),
+    }
+    
+    idscan = {
+        'id': scan_id,
         
-        # Scan Metadata
-        'scan_datetime': metadata.get('scan_datetime', datetime.now().isoformat()),
-        'device_type': metadata.get('device_type', ''),
-        'device_serial': metadata.get('device_serial', ''),
-        'transaction_id': metadata.get('transaction_id', ''),
+        # Tenant/Location/Device Info
+        'tenant_id': tenant_id or 'default',
+        'tenant_name': tenant_name or 'Default Tenant',
+        'location_id': location_id,
+        'location_name': location_name or computer_name,
+        'device_id': device_id,
+        'device_name': device_name or metadata.get('device_type', 'Unknown Device'),
         
-        # Images (will be file paths after saving)
-        'front_image': None,
-        'back_image': None,
-        'portrait_image': None,
-        'ir_image': None,
-        'uv_image': None,
+        # Scan Info
+        'scan_timestamp': metadata.get('scan_datetime', datetime.now().isoformat()),
+        'status': 'pending',
+        'document_type': None,  # Will be set from extracted_data
         
-        # Additional data
-        'verification_status': 'pending',
+        # Operator Info
+        'scanned_by': user_name,
+        'operator_id': None,
+        
+        # Images
+        'images': [],
+        
+        # Extracted Data
+        'extracted_data': extracted_data,
+        
+        # Verification (empty for now)
+        'verification': {
+            'confidence_score': None,
+            'authenticity_score': None,
+            'document_validity': None,
+            'security_features': [],
+            'warnings': [],
+            'errors': []
+        },
+        
+        # Manual Review
+        'requires_manual_review': False,
+        'manual_actions': [],
+        
+        # Metadata
         'created_at': datetime.now().isoformat(),
+        'updated_at': datetime.now().isoformat(),
+        'ip_address': None,
+        'notes': None,
+        'tags': [],
+        
+        # Additional Regula-specific data
+        'regula_metadata': {
+            'transaction_id': metadata.get('transaction_id', ''),
+            'device_type': metadata.get('device_type', ''),
+            'device_serial': metadata.get('device_serial', ''),
+            'sdk_version': metadata.get('sdk_version', ''),
+        }
     }
     
     return idscan
