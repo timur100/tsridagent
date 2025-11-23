@@ -358,6 +358,18 @@ frontend:
         - working: "NA"
           agent: "main"
           comment: "✅ DEVICE-ID BEARBEITUNGSFUNKTION IMPLEMENTIERT: User-Feedback: Nach dem Speichern eines Gerätes konnte die device_id nicht mehr geändert werden. PROBLEM IDENTIFIZIERT: 1) FRONTEND: device_id Feld war hardcoded auf 'disabled' statt 'disabled={!isEditing}' (DeviceDetailPage.jsx Zeile 329), 2) BACKEND: Nach Update wurde immer mit der alten device_id gesucht, was bei ID-Änderung fehlschlug. LÖSUNG FRONTEND (DeviceDetailPage.jsx): 1) device_id Input-Feld: Geändert von 'disabled' zu 'disabled={!isEditing}', 2) onChange Handler hinzugefügt: onChange={(e) => handleFieldChange('device_id', e.target.value)}, 3) Styling angepasst: Konsistent mit anderen editierbaren Feldern, 4) handleSave: Nach erfolgreichem Update mit geänderter device_id navigiert es zur neuen URL (/admin/tenants/{tenantId}/devices/{newDeviceId}). LÖSUNG BACKEND devices.py & tenant_devices.py: 1) new_device_id Variable: Extrahiert neue device_id aus device_update dict, 2) Fetch nach Update: Verwendet new_device_id statt alte device_id, 3) WebSocket Broadcast: Wenn device_id geändert wurde, sendet zuerst 'device_deleted' für alte ID, dann 'device_update' für neue ID, 4) Logging verbessert mit neuer device_id. AUSWIRKUNG: Device-ID kann jetzt im Bearbeitungsmodus geändert werden, Backend aktualisiert korrekt, WebSocket-Broadcasts informieren Clients über ID-Änderung (alte ID gelöscht, neue ID hinzugefügt), Frontend navigiert automatisch zur neuen URL nach Speichern. Backend neugestartet (RUNNING pid 7550). Bereit für Testing."
+  
+  - task: "ID-Checks Detail Page with Lightbox and Admin Actions"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/IDCheckDetailPage.jsx, frontend/src/pages/IDChecksPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🎉 ID-CHECKS DETAIL PAGE FULLY IMPLEMENTED: Complete detail page for ID scans with all requested features. LAYOUT FIX: Removed excessive padding (py-8) from IDChecksPage.jsx - heading 'ID-Checks' now has consistent spacing with other menu items. DETAIL PAGE FEATURES: 1) Comprehensive scan information display (timestamp, customer, location, device, document type, scanned by), 2) Extracted data section showing all parsed document fields, 3) Verification details with confidence score bar (green/yellow/red based on percentage), 4) All scanned images displayed (Front/Back Original/IR/UV). LIGHTBOX FUNCTIONALITY: 1) All images are clickable and open in fullscreen lightbox, 2) Hover effect shows zoom icon overlay, 3) Navigation arrows (left/right) for multiple images, 4) Image label and position counter ('1 von 4'), 5) Close button (X) to exit, 6) Black semi-transparent background (90% opacity). ADMIN ACTIONS: 1) Three action buttons (Genehmigen, Ablehnen, Bannen) visible for admin role, 2) Modal dialog for each action with Grund (optional) and Kommentar (required) fields, 3) Validation enforces comment requirement, 4) Actions sent to backend POST /api/id-scans/{scan_id}/action endpoint. API FIX: Corrected loadScan() to parse nested response structure (result.data.scan instead of result.scan) matching other API calls. SCREENSHOTS VERIFIED: Detail page loads correctly ✓, All images display ✓, Lightbox opens and works ✓, Admin action modal appears ✓. Backend endpoints already exist and working (GET /{scan_id}, POST /{scan_id}/action, GET /{scan_id}/images/{image_type}). Ready for comprehensive frontend E2E testing."
 
   - task: "Device Detail Back Button Navigation Fix"
     implemented: true
