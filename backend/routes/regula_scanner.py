@@ -409,3 +409,139 @@ async def get_scanner_info():
             status_code=500,
             detail=f"Failed to get scanner info: {str(e)}"
         )
+
+
+# ============================================================================
+# ID-CHECKS INTEGRATION
+# ============================================================================
+
+async def send_scan_to_id_checks(scan_result: dict):
+    """
+    Sendet Scandaten an den ID-Checks Service (Webhook)
+    
+    Diese Funktion wird nach jedem erfolgreichen Scan aufgerufen und
+    übermittelt alle Daten an das ID-Checks Dashboard.
+    """
+    try:
+        import os
+        import json
+        from motor.motor_asyncio import AsyncIOMotorClient
+        import uuid
+        
+        # MongoDB connection
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        mongo_client = AsyncIOMotorClient(mongo_url)
+        mongo_db = mongo_client.get_database('main_db')
+        scans_collection = mongo_db['id_scans']
+        
+        # Hole Device-Informationen aus der Umgebung oder Konfiguration
+        # TODO: Diese Werte sollten aus der Device-Konfiguration kommen
+        device_id = os.environ.get('DEVICE_ID', 'BERN01-01')
+        device_name = os.environ.get('DEVICE_NAME', device_id)
+        location_id = os.environ.get('LOCATION_ID', 'LOC-BERLIN-REINICKENDORF')
+        location_name = os.environ.get('LOCATION_NAME', 'Berlin North Reinickendorf -IKC-')
+        tenant_id = os.environ.get('TENANT_ID', '1d3653db-86cb-4dd1-9ef5-0236b116def8')
+        tenant_name = os.environ.get('TENANT_NAME', 'Europcar')
+        scanner_id = os.environ.get('SCANNER_ID', device_id)
+        scanner_name = os.environ.get('SCANNER_NAME', 'Regula Scanner')
+        
+        scan_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Extrahiere Dokumentdaten
+        doc_data = scan_result.get('document_data', {})
+        
+        # Erstelle extracted_data aus den Scanner-Daten
+        extracted_data = {
+            "document_class": doc_data.get('document_type', 'Unknown'),
+            "country": doc_data.get('issuing_country', ''),
+            "document_number": doc_data.get('document_number', ''),
+            "first_name": doc_data.get('first_name', ''),
+            "last_name": doc_data.get('last_name', ''),
+            "date_of_birth": doc_data.get('birth_date', ''),
+            "nationality": doc_data.get('nationality', ''),
+            "sex": doc_data.get('sex', ''),
+            "expiry_date": doc_data.get('expiry_date', ''),
+            "license_classes": doc_data.get('license_classes', [])
+        }
+        
+        # Bestimme Status basierend auf Scan-Erfolg
+        # TODO: Hier könnte eine echte Verification-Logik implementiert werden
+        status = "validated" if scan_result.get('success') else "rejected"
+        
+        # Erstelle Verification-Objekt
+        verification = {
+            "confidence_score": 95 if scan_result.get('success') else 50,
+            "status": "valid" if scan_result.get('success') else "invalid",
+            "checks": {
+                "document_scanned": scan_result.get('success', False),
+                "images_captured": len(scan_result.get('images', [])) > 0,
+                "data_extracted": bool(extracted_data.get('document_number'))
+            }
+        }
+        
+        # Verarbeite Bilder
+        # TODO: Bilder sollten gespeichert und Pfade hier eingefügt werden
+        images_array = []
+        for img in scan_result.get('images', []):
+            img_type = img.get('type', 'unknown').lower()
+            # Map Scanner light types to our naming convention
+            if 'white' in img_type or 'visible' in img_type:
+                img_type = 'front_original'
+            elif 'uv' in img_type:
+                img_type = 'front_uv'
+            elif 'ir' in img_type:
+                img_type = 'front_ir'
+            
+            images_array.append({
+                "image_type": img_type,
+                "image_data": img.get('data', ''),  # Base64 encoded
+                "format": img.get('format', 'jpeg'),
+                "uploaded_at": now
+            })
+        
+        # Erstelle Scan-Dokument
+        scan_data = {
+            "id": scan_id,
+            "tenant_id": tenant_id,
+            "tenant_name": tenant_name,
+            "location_id": location_id,
+            "location_name": location_name,
+            "device_id": device_id,
+            "device_name": device_name,
+            "scanner_id": scanner_id,
+            "scanner_name": scanner_name,
+            "scan_timestamp": scan_result.get('timestamp', now),
+            "status": status,
+            "document_type": doc_data.get('document_type', 'Unknown'),
+            "scanned_by": None,  # TODO: Operator-Info wenn verfügbar
+            "operator_id": None,
+            "images": images_array,
+            "extracted_data": extracted_data,
+            "verification": verification,
+            "rfid_data": scan_result.get('rfid_data'),
+            "requires_manual_review": False,
+            "manual_actions": [],
+            "created_at": now,
+            "updated_at": now,
+            "ip_address": None,  # TODO: IP-Adresse des Scanners
+            "notes": None,
+            "tags": ["regula", "automated"],
+            "source": "regula-scanner",
+            "raw_scanner_data": scan_result.get('raw_response')  # Original-Antwort für Debugging
+        }
+        
+        # Speichere in MongoDB
+        await scans_collection.insert_one(scan_data)
+        
+        logger.info(f"✅ [ID-Checks] Scan {scan_id} successfully sent to ID-Checks")
+        logger.info(f"   Device: {device_name} ({device_id})")
+        logger.info(f"   Location: {location_name}")
+        logger.info(f"   Document: {extracted_data.get('document_class')}")
+        logger.info(f"   Holder: {extracted_data.get('first_name')} {extracted_data.get('last_name')}")
+        
+        return scan_id
+        
+    except Exception as e:
+        logger.error(f"❌ [ID-Checks] Failed to send scan to ID-Checks: {str(e)}")
+        raise
