@@ -71,8 +71,10 @@ const IDChecksPage = () => {
       params.append('skip', (currentPage - 1) * itemsPerPage);
 
       const result = await apiCall(`/api/id-scans/?${params.toString()}`);
+      console.log('[IDChecksPage] Scans result:', result);
       
       if (result.success) {
+        console.log('[IDChecksPage] Setting scans:', result.scans);
         setScans(result.scans || []);
       }
     } catch (error) {
