@@ -1485,36 +1485,32 @@ const AdminPortalContent = () => {
             <h2 className={`text-2xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Lagerverwaltung</h2>
             
             {/* Inventory Sub-Tabs */}
-            <div className="mb-6">
-              <div className={`flex gap-2 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
+              <div className="flex gap-2">
                 <button
                   onClick={() => setInventoryTab('items')}
-                  className={`px-6 py-3 font-medium transition-all ${
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'items'
-                      ? theme === 'dark'
-                        ? 'text-[#c00000] border-b-2 border-[#c00000]'
-                        : 'text-[#c00000] border-b-2 border-[#c00000]'
+                      ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <Package className="inline h-4 w-4 mr-2" />
+                  <Package className="h-5 w-5" />
                   Inventar
                 </button>
                 <button
                   onClick={() => setInventoryTab('goods-receipt')}
-                  className={`px-6 py-3 font-medium transition-all ${
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'goods-receipt'
-                      ? theme === 'dark'
-                        ? 'text-[#c00000] border-b-2 border-[#c00000]'
-                        : 'text-[#c00000] border-b-2 border-[#c00000]'
+                      ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
-                      ? 'text-gray-400 hover:text-gray-300'
-                      : 'text-gray-600 hover:text-gray-900'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
                   }`}
                 >
-                  <PackageCheck className="inline h-4 w-4 mr-2" />
+                  <PackageCheck className="h-5 w-5" />
                   Wareneingang
                 </button>
               </div>
