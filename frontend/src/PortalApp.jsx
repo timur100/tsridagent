@@ -60,7 +60,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 };
 
 const PortalRoutes = () => {
-  const { isAuthenticated, isAdmin } = useAuth();
+  const { isAuthenticated, isAdmin, user } = useAuth();
   const { isImpersonating } = useImpersonation();
   const location = useLocation();
 
@@ -70,7 +70,11 @@ const PortalRoutes = () => {
       // During impersonation, stay on admin route
       return "/portal/admin";
     }
-    return isAdmin ? "/portal/admin" : "/portal/customer";
+    
+    // SECURITY: Only admin@tsrid.com can access admin portal
+    const isSuperAdmin = user?.email?.toLowerCase() === 'admin@tsrid.com';
+    
+    return (isSuperAdmin && isAdmin) ? "/portal/admin" : "/portal/customer";
   };
 
   return (
