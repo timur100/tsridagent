@@ -407,7 +407,61 @@ async def regula_scan_webhook(
         idscan_data['created_at'] = now
         idscan_data['updated_at'] = now
         
-        # Save to database
+        # Get TransactionID and page_idx
+        transaction_id = parsed_data.get('metadata', {}).get('transaction_id', '')
+        page_idx = parsed_data.get('page_idx', 0)
+        side = parsed_data.get('side', 'front')
+        
+        # Check if we need to link with existing scan
+        if transaction_id and page_idx == 1:
+            # This is a back side - try to find front side by TransactionID
+            existing_scan = await scans_collection.find_one({
+                'regula_metadata.transaction_id': transaction_id,
+                'regula_metadata.page_idx': 0
+            })
+            
+            if existing_scan:
+                # Update existing scan with back side data
+                print(f"🔗 [Regula Webhook] Linking back side to existing scan {existing_scan['id']}")
+                
+                # Merge images
+                existing_images = existing_scan.get('images', [])
+                existing_images.extend(images_array)
+                
+                # Merge quality data
+                update_data = {
+                    'images': existing_images,
+                    'verification.status_details': parsed_data.get('status', {}),
+                    'verification.confidence_score': parsed_data.get('quality_score', 0),
+                    'verification.authenticity_score': parsed_data.get('quality_score', 0),
+                    'requires_manual_review': idscan_data.get('requires_manual_review', False),
+                    'regula_metadata.back_side_processed': True,
+                    'regula_metadata.quality_score': parsed_data.get('quality_score', 0),
+                    'updated_at': now
+                }
+                
+                await scans_collection.update_one(
+                    {'id': existing_scan['id']},
+                    {'$set': update_data}
+                )
+                
+                extracted = existing_scan.get('extracted_data', {})
+                print(f"✅ [Regula Webhook] Back side linked to scan {existing_scan['id']}")
+                print(f"   Total images: {len(existing_images)}")
+                print(f"   Quality: {parsed_data.get('quality_score', 0)}/100")
+                
+                return {
+                    "success": True,
+                    "message": "Back side linked to existing scan",
+                    "scan_id": existing_scan['id'],
+                    "linked": True,
+                    "images_saved": len(images_saved),
+                    "total_images": len(existing_images),
+                    "quality_score": parsed_data.get('quality_score', 0),
+                    "requires_manual_review": idscan_data.get('requires_manual_review', False)
+                }
+        
+        # Save new scan to database (front side or standalone)
         await scans_collection.insert_one(idscan_data)
         
         # Remove _id from response
@@ -416,19 +470,26 @@ async def regula_scan_webhook(
         
         # Extract info for logging
         extracted = idscan_data.get('extracted_data', {})
-        print(f"✅ [Regula Webhook] Scan {scan_id} processed successfully")
+        quality_score = idscan_data['regula_metadata'].get('quality_score', 0)
+        
+        print(f"✅ [Regula Webhook] {side.capitalize()} side scan {scan_id} processed")
         print(f"   Name: {extracted.get('first_name')} {extracted.get('last_name')}")
         print(f"   Document: {extracted.get('document_type')}")
         print(f"   Number: {extracted.get('document_number')}")
-        print(f"   Tenant: {idscan_data.get('tenant_name')}")
-        print(f"   Location: {idscan_data.get('location_name')}")
+        print(f"   TransactionID: {transaction_id}")
         print(f"   Images: {len(images_saved)} saved")
+        if quality_score > 0:
+            print(f"   Quality: {quality_score}/100")
         
         return {
             "success": True,
-            "message": "Regula scan processed successfully",
+            "message": f"Regula {side} side scan processed successfully",
             "scan_id": scan_id,
+            "side": side,
+            "transaction_id": transaction_id,
             "images_saved": len(images_saved),
+            "quality_score": quality_score,
+            "requires_manual_review": idscan_data.get('requires_manual_review', False),
             "personal_data": {
                 "name": f"{extracted.get('first_name')} {extracted.get('last_name')}",
                 "document_number": extracted.get('document_number'),
