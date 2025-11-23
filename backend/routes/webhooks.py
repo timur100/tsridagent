@@ -257,6 +257,144 @@ async def upload_scan_images(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/regula-scan", response_model=dict)
+async def regula_scan_webhook(
+    scan_data: dict,
+    api_key_valid: bool = Depends(verify_api_key)
+):
+    """
+    Webhook endpoint to receive completed scans from Regula scanner
+    
+    Accepts a comprehensive JSON object containing:
+    - Graphics_Data (with Base64 images)
+    - Text_Data (with extracted personal information)
+    - ChoosenDoctype_Data (with document type and metadata)
+    - SecurityChecks_Data
+    - IR, UV, WHITE light images
+    - And other Regula data files
+    
+    Required headers:
+        X-API-Key: API key for authentication
+    
+    Example payload:
+    {
+        "Graphics_Data": {...},
+        "Text_Data": {...},
+        "ChoosenDoctype_Data": {...},
+        "SecurityChecks_Data": {...},
+        "IR": {...},
+        "UV": {...},
+        "WHITE": {...},
+        "customer_id": "optional-customer-id",
+        "location": "optional-location-name"
+    }
+    """
+    try:
+        import json
+        import sys
+        sys.path.append('/app/backend')
+        from utils.regula_parser import RegulaParser, create_idscan_from_regula
+        
+        db = await get_database()
+        scans_collection = db['id_scans']
+        
+        # Initialize parser
+        parser = RegulaParser()
+        
+        # Parse all Regula data
+        print(f"📄 [Regula Webhook] Parsing incoming scan data...")
+        parsed_data = parser.parse_all_data(scan_data)
+        
+        # Extract optional fields
+        customer_id = scan_data.get('customer_id')
+        location = scan_data.get('location')
+        
+        # Convert to IDScan format
+        idscan_data = create_idscan_from_regula(parsed_data, customer_id, location)
+        scan_id = idscan_data['id']
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Save images to disk
+        images_saved = []
+        images = parsed_data.get('images', {})
+        
+        for image_type, base64_data in images.items():
+            if base64_data and len(base64_data) > 100:
+                try:
+                    # Decode Base64
+                    image_bytes = parser.decode_base64_image(base64_data)
+                    if image_bytes:
+                        # Generate filename
+                        filename = f"{scan_id}_{image_type}.jpg"
+                        file_path = os.path.join(UPLOAD_DIR, filename)
+                        
+                        # Save to disk
+                        async with aiofiles.open(file_path, 'wb') as f:
+                            await f.write(image_bytes)
+                        
+                        # Store file path in IDScan data
+                        if image_type == 'front':
+                            idscan_data['front_image'] = file_path
+                        elif image_type == 'back':
+                            idscan_data['back_image'] = file_path
+                        elif image_type == 'portrait':
+                            idscan_data['portrait_image'] = file_path
+                        elif image_type == 'ir':
+                            idscan_data['ir_image'] = file_path
+                        elif image_type == 'uv':
+                            idscan_data['uv_image'] = file_path
+                        
+                        images_saved.append({
+                            "type": image_type,
+                            "path": file_path,
+                            "size": len(image_bytes)
+                        })
+                        
+                        print(f"✅ [Regula Webhook] Saved {image_type} image ({len(image_bytes)} bytes)")
+                except Exception as img_error:
+                    print(f"⚠️  [Regula Webhook] Failed to save {image_type} image: {img_error}")
+        
+        # Add additional metadata
+        idscan_data['source'] = 'regula-scanner'
+        idscan_data['images_info'] = images_saved
+        idscan_data['raw_security_checks'] = parsed_data.get('security_checks', {})
+        idscan_data['created_at'] = now
+        idscan_data['updated_at'] = now
+        
+        # Save to database
+        await scans_collection.insert_one(idscan_data)
+        
+        # Remove _id from response
+        if '_id' in idscan_data:
+            del idscan_data['_id']
+        
+        print(f"✅ [Regula Webhook] Scan {scan_id} processed successfully")
+        print(f"   Name: {idscan_data.get('first_name')} {idscan_data.get('last_name')}")
+        print(f"   Document: {idscan_data.get('document_type')}")
+        print(f"   Number: {idscan_data.get('document_number')}")
+        print(f"   Images: {len(images_saved)} saved")
+        
+        return {
+            "success": True,
+            "message": "Regula scan processed successfully",
+            "scan_id": scan_id,
+            "images_saved": len(images_saved),
+            "personal_data": {
+                "name": f"{idscan_data.get('first_name')} {idscan_data.get('last_name')}",
+                "document_number": idscan_data.get('document_number'),
+                "document_type": idscan_data.get('document_type')
+            }
+        }
+    
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"❌ [Regula Webhook] Error processing scan: {str(e)}")
+        print(error_details)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/health", response_model=dict)
 async def webhook_health():
     """Health check endpoint for webhook service"""
