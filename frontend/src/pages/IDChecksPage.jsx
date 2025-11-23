@@ -73,9 +73,9 @@ const IDChecksPage = () => {
       const result = await apiCall(`/api/id-scans/?${params.toString()}`);
       console.log('[IDChecksPage] Scans result:', result);
       
-      if (result.success) {
-        console.log('[IDChecksPage] Setting scans:', result.scans);
-        setScans(result.scans || []);
+      if (result.success && result.data) {
+        console.log('[IDChecksPage] Setting scans:', result.data.scans);
+        setScans(result.data.scans || []);
       }
     } catch (error) {
       console.error('Error loading scans:', error);
