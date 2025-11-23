@@ -407,7 +407,7 @@ async def manual_action(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{scan_id}/images/{image_type}", response_model=dict)
+@router.get("/{scan_id}/images/{image_type}")
 async def get_scan_image(
     scan_id: str,
     image_type: str,
@@ -418,6 +418,7 @@ async def get_scan_image(
     """
     try:
         from fastapi.responses import FileResponse
+        import os
         
         db = await get_database()
         scans_collection = db['id_scans']
@@ -434,12 +435,22 @@ async def get_scan_image(
                 break
         
         if not image:
-            raise HTTPException(status_code=404, detail="Image not found")
+            # Return a more helpful error
+            available_types = [img["image_type"] for img in scan.get("images", [])]
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Image type '{image_type}' not found. Available: {available_types}"
+            )
         
         file_path = image["file_path"]
         
         if not os.path.exists(file_path):
-            raise HTTPException(status_code=404, detail="Image file not found on disk")
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Image file not found on disk: {file_path}"
+            )
+        
+        print(f"[Image] Serving: {file_path} for scan {scan_id}, type {image_type}")
         
         return FileResponse(
             path=file_path,
