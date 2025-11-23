@@ -236,23 +236,13 @@ const IDCheckDetailPage = () => {
             Dokumente
           </h2>
           
-          <div className="grid grid-cols-2 gap-3">
-            {/* Display structured document images: WHITE, IR, UV for front and back */}
+          <div className="space-y-6">
+            {/* Vorderseite (Front Side) - 1 row with 3 columns: WHITE, IR, UV */}
             {(() => {
-              // Define the expected 6 image structure: 2 columns (Front/Back), 3 rows (WHITE/IR/UV)
-              const expectedImages = [
-                // Linke Spalte - Vorderseite
-                { type: 'front_front', label: 'WHITE (Vorderseite)', fallbackTypes: ['front_original', 'front_white'] },
-                // Rechte Spalte - Rückseite
-                { type: 'back_document_front', label: 'WHITE (Rückseite)', fallbackTypes: ['back_original', 'back_front', 'back_white'] },
-                // Linke Spalte - Vorderseite
-                { type: 'front_ir', label: 'IR (Vorderseite)', fallbackTypes: [] },
-                // Rechte Spalte - Rückseite
-                { type: 'back_ir', label: 'IR (Rückseite)', fallbackTypes: [] },
-                // Linke Spalte - Vorderseite
-                { type: 'front_uv', label: 'UV (Vorderseite)', fallbackTypes: [] },
-                // Rechte Spalte - Rückseite
-                { type: 'back_uv', label: 'UV (Rückseite)', fallbackTypes: [] }
+              const frontImages = [
+                { type: 'front_front', label: 'WHITE', fallbackTypes: ['front_original', 'front_white'] },
+                { type: 'front_ir', label: 'IR', fallbackTypes: [] },
+                { type: 'front_uv', label: 'UV', fallbackTypes: [] }
               ];
               
               // Find available images
