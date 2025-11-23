@@ -164,17 +164,30 @@ class RegulaParser:
                     value = field.get('value', '')
                     if value and isinstance(value, str) and len(value) > 100:
                         # Determine image type
+                        field_type_str = str(field_type)  # Convert to string for comparison
+                        
                         if 'Document image' in field_name:
-                            if 'light 6' in field_name or 'WHITE' in field_name:
-                                images['front'] = value
+                            # WHITE Light (light 6)
+                            if 'light 6' in field_name or 'WHITE' in field_name.upper():
+                                images['white'] = value
+                                print(f"[Parser] Found WHITE light image (fieldName: {field_name})")
+                            # Back side (light 16777216)
                             elif 'light 16777216' in field_name:
                                 images['back'] = value
                         elif 'Portrait' in field_name:
                             images['portrait'] = value
-                        elif field_type == '201':  # IR Light
+                        # IR Light - check both string and int
+                        elif field_type_str == '201' or field_type == 201:
                             images['ir'] = value
-                        elif field_type == '202':  # UV Light
+                            print(f"[Parser] Found IR image (fieldType: {field_type}, fieldName: {field_name})")
+                        # UV Light - check both string and int
+                        elif field_type_str == '202' or field_type == 202:
                             images['uv'] = value
+                            print(f"[Parser] Found UV image (fieldType: {field_type}, fieldName: {field_name})")
+                        else:
+                            # Debug: Print unrecognized images
+                            if len(value) > 1000:  # Only log if it looks like a real image
+                                print(f"[Parser] Unrecognized image: fieldType={field_type}, fieldName={field_name[:50]}")
                             
         except Exception as e:
             print(f"Error parsing graphics data: {e}")
