@@ -240,41 +240,71 @@ const IDCheckDetailPage = () => {
           </h2>
           
           <div className="grid grid-cols-2 gap-3">
-            {[
-              { key: 'front_original', label: 'Vorderseite' },
-              { key: 'back_original', label: 'Rückseite' },
-              { key: 'front_ir', label: 'IR (Vorderseite)' },
-              { key: 'back_ir', label: 'IR (Rückseite)' },
-              { key: 'front_uv', label: 'UV (Vorderseite)' },
-              { key: 'back_uv', label: 'UV (Rückseite)' }
-            ].map(({ key, label }) => {
-              const image = scan.images?.find(img => img.image_type === key);
-              return (
-                <div key={key}>
-                  <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
-                  {image ? (
-                    <div 
-                      className="relative group cursor-pointer"
-                      onClick={() => openLightbox(key)}
-                    >
-                      <img
-                        src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={label}
-                        className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                        <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            {/* Dynamically show all available document images */}
+            {scan.images && scan.images.length > 0 ? (
+              scan.images
+                .filter(img => img.image_type !== 'front_portrait' && img.image_type !== 'back_portrait' && img.image_type !== 'back_signature')
+                .slice(0, 6)
+                .map((img, idx) => {
+                  const labelMap = {
+                    'front_front': 'Vorderseite',
+                    'front_original': 'Vorderseite',
+                    'back_original': 'Rückseite',
+                    'front_ir': 'IR (Vorderseite)',
+                    'back_ir': 'IR (Rückseite)',
+                    'front_uv': 'UV (Vorderseite)',
+                    'back_uv': 'UV (Rückseite)',
+                    'front_white': 'Weißlicht (V)',
+                    'back_white': 'Weißlicht (R)'
+                  };
+                  const label = labelMap[img.image_type] || img.image_type;
+                  
+                  return (
+                    <div key={img.image_type}>
+                      <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                      <div 
+                        className="relative group cursor-pointer"
+                        onClick={() => openLightbox(img.image_type)}
+                      >
+                        <img
+                          src={`/api/id-scans/${scan.id}/images/${img.image_type}`}
+                          alt={label}
+                          className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.nextSibling.style.display = 'flex';
+                          }}
+                        />
+                        <div style={{display: 'none'}} className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                          <FileText className="h-8 w-8 text-red-500 mb-1" />
+                          <p className="text-gray-500 text-xs">Fehler beim Laden</p>
+                        </div>
+                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                          <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
                       </div>
                     </div>
-                  ) : (
-                    <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                      <FileText className="h-8 w-8 text-red-500 mb-1" />
-                      <p className="text-gray-500 text-xs">{label}</p>
-                    </div>
-                  )}
+                  );
+                })
+            ) : (
+              // Fallback if no images
+              [
+                { key: 'front', label: 'Vorderseite' },
+                { key: 'back', label: 'Rückseite' },
+                { key: 'ir_front', label: 'IR (V)' },
+                { key: 'ir_back', label: 'IR (R)' },
+                { key: 'uv_front', label: 'UV (V)' },
+                { key: 'uv_back', label: 'UV (R)' }
+              ].map(({ key, label }) => (
+                <div key={key}>
+                  <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                  <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                    <FileText className="h-8 w-8 text-gray-500 mb-1" />
+                    <p className="text-gray-500 text-xs">{label}</p>
+                  </div>
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
 
