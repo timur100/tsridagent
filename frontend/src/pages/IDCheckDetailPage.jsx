@@ -210,25 +210,25 @@ const IDCheckDetailPage = () => {
         )}
       </div>
 
-      {/* Two Column Layout for Images */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Left Column: Vorderseite (Original, IR, UV) */}
+      {/* Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: DOKUMENTE (2x2 Grid) */}
         <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Vorderseite
+            Dokumente
           </h2>
           
-          <div className="space-y-4">
-            {['front_original', 'front_ir', 'front_uv'].map((key) => {
-              const labels = {
-                'front_original': 'Original',
-                'front_ir': 'IR',
-                'front_uv': 'UV'
-              };
+          <div className="grid grid-cols-2 gap-4">
+            {[
+              { key: 'front_original', label: 'Vorderseite' },
+              { key: 'back_original', label: 'Rückseite' },
+              { key: 'front_ir', label: 'IR' },
+              { key: 'front_uv', label: 'UV' }
+            ].map(({ key, label }) => {
               const image = scan.images?.find(img => img.image_type === key);
               return (
                 <div key={key}>
-                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{labels[key]}</p>
+                  <p className={`text-xs mb-2 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
                   {image ? (
                     <div 
                       className="relative group cursor-pointer"
@@ -236,16 +236,17 @@ const IDCheckDetailPage = () => {
                     >
                       <img
                         src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={labels[key]}
-                        className={`w-full h-48 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                        alt={label}
+                        className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                        <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
                   ) : (
-                    <div className={`w-full h-48 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                      <p className="text-gray-500 text-xs">Kein Bild</p>
+                    <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                      <FileText className="h-8 w-8 text-red-500 mb-2" />
+                      <p className="text-gray-500 text-xs">{label}</p>
                     </div>
                   )}
                 </div>
@@ -253,49 +254,6 @@ const IDCheckDetailPage = () => {
             })}
           </div>
         </div>
-
-        {/* Right Column: Rückseite (Original, IR, UV) */}
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
-          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Rückseite
-          </h2>
-          
-          <div className="space-y-4">
-            {['back_original', 'back_ir', 'back_uv'].map((key) => {
-              const labels = {
-                'back_original': 'Original',
-                'back_ir': 'IR',
-                'back_uv': 'UV'
-              };
-              const image = scan.images?.find(img => img.image_type === key);
-              return (
-                <div key={key}>
-                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{labels[key]}</p>
-                  {image ? (
-                    <div 
-                      className="relative group cursor-pointer"
-                      onClick={() => openLightbox(key)}
-                    >
-                      <img
-                        src={`/api/id-scans/${scan.id}/images/${key}`}
-                        alt={labels[key]}
-                        className={`w-full h-48 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                        <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className={`w-full h-48 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                      <p className="text-gray-500 text-xs">Kein Bild</p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
 
       {/* Additional Info Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
