@@ -559,6 +559,7 @@ const IDChecksPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
