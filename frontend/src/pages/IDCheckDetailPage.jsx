@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,15 +6,16 @@ import { toast } from 'react-hot-toast';
 import { 
   ArrowLeft, CheckCircle, XCircle, Ban, MessageSquare,
   User, Calendar, MapPin, Monitor, Building, FileText,
-  Shield, AlertCircle, Download, ZoomIn, X, ChevronLeft, ChevronRight
+  Shield, AlertCircle, Download, ZoomIn, X, ChevronLeft, ChevronRight,
+  Clock, CreditCard, Hash, Cake, Users
 } from 'lucide-react';
 
 const IDCheckDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
-
+  const { user, apiCall } = useAuth();
+  
   const [scan, setScan] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionModalOpen, setActionModalOpen] = useState(false);
@@ -84,11 +85,11 @@ const IDCheckDetailPage = () => {
   const openLightbox = (imageKey) => {
     const imageTypes = [
       { key: 'front_original', label: 'Vorderseite' },
-      { key: 'front_ir', label: 'Vorderseite (IR)' },
-      { key: 'front_uv', label: 'Vorderseite (UV)' },
+      { key: 'front_ir', label: 'IR' },
+      { key: 'front_uv', label: 'UV' },
       { key: 'back_original', label: 'Rückseite' },
-      { key: 'back_ir', label: 'Rückseite (IR)' },
-      { key: 'back_uv', label: 'Rückseite (UV)' }
+      { key: 'back_ir', label: 'IR' },
+      { key: 'back_uv', label: 'UV' }
     ];
     
     const images = imageTypes
@@ -113,35 +114,13 @@ const IDCheckDetailPage = () => {
     setCurrentImageIndex((prev) => (prev - 1 + availableImages.length) % availableImages.length);
   };
 
-  const StatusBadge = ({ status }) => {
-    const statusConfig = {
-      validated: { color: 'green', icon: CheckCircle, label: 'Validated' },
-      rejected: { color: 'red', icon: XCircle, label: 'Rejected' },
-      unknown: { color: 'yellow', icon: AlertCircle, label: 'Unknown' },
-      pending: { color: 'gray', icon: Shield, label: 'Pending' }
-    };
-
-    const config = statusConfig[status] || statusConfig.pending;
-    const Icon = config.icon;
-
-    return (
-      <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-semibold
-        ${config.color === 'green' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : ''}
-        ${config.color === 'red' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : ''}
-        ${config.color === 'yellow' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' : ''}
-        ${config.color === 'gray' ? 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-400' : ''}
-      `}>
-        <Icon className="h-4 w-4" />
-        {config.label}
-      </span>
-    );
-  };
-
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
+      <div className="px-4 sm:px-6 lg:px-8 py-8 flex items-center justify-center h-screen">
         <div className="text-center">
-          <Shield className={`h-8 w-8 animate-spin mx-auto mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+          <div className={`animate-spin rounded-full h-12 w-12 border-b-2 mx-auto mb-4 ${
+            theme === 'dark' ? 'border-white' : 'border-gray-900'
+          }`}></div>
           <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lade Scan-Details...</p>
         </div>
       </div>
@@ -150,32 +129,27 @@ const IDCheckDetailPage = () => {
 
   if (!scan) {
     return (
-      <div className="text-center py-12">
-        <AlertCircle className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
-        <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scan nicht gefunden</p>
-        <button
-          onClick={() => navigate('/portal/admin/id-checks')}
-          className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-        >
-          Zurück zur Übersicht
-        </button>
+      <div className="px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Scan nicht gefunden</p>
+        </div>
       </div>
     );
   }
 
   const imageTypes = [
-    { key: 'front_original', label: 'Vorderseite Original' },
-    { key: 'front_ir', label: 'Vorderseite IR' },
-    { key: 'front_uv', label: 'Vorderseite UV' },
-    { key: 'back_original', label: 'Rückseite Original' },
-    { key: 'back_ir', label: 'Rückseite IR' },
-    { key: 'back_uv', label: 'Rückseite UV' }
+    { key: 'front_original', label: 'Vorderseite' },
+    { key: 'front_ir', label: 'IR' },
+    { key: 'front_uv', label: 'UV' },
+    { key: 'back_original', label: 'Rückseite' },
+    { key: 'back_ir', label: 'IR' },
+    { key: 'back_uv', label: 'UV' }
   ];
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header with Back Button and Actions */}
+      <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate('/portal/admin/id-checks')}
@@ -190,275 +164,363 @@ const IDCheckDetailPage = () => {
               ID-Check Details
             </h1>
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              {new Date(scan.scan_timestamp).toLocaleString('de-DE')}
+              Scan ID: {scan.id}
             </p>
           </div>
         </div>
-        <StatusBadge status={scan.status} />
-      </div>
-
-      {/* Actions */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => {
-            setActionType('approved');
-            setActionModalOpen(true);
-          }}
-          disabled={scan.status === 'validated'}
-          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <CheckCircle className="h-5 w-5" />
-          Genehmigen
-        </button>
-        <button
-          onClick={() => {
-            setActionType('rejected');
-            setActionModalOpen(true);
-          }}
-          disabled={scan.status === 'rejected'}
-          className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <XCircle className="h-5 w-5" />
-          Ablehnen
-        </button>
-        <button
-          onClick={() => {
-            setActionType('banned');
-            setActionModalOpen(true);
-          }}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-800"
-        >
-          <Ban className="h-5 w-5" />
-          Bannen
-        </button>
-      </div>
-
-      {/* Images Grid */}
-      <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border'}`}>
-        <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Gescannte Bilder
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Front Side */}
-          <div>
-            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-              Vorderseite
-            </h3>
-            <div className="space-y-3">
-              {imageTypes.slice(0, 3).map(({ key, label }) => {
-                const image = scan.images?.find(img => img.image_type === key);
-                return (
-                  <div key={key} className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
-                    {image ? (
-                      <div 
-                        className="relative group cursor-pointer"
-                        onClick={() => openLightbox(key)}
-                      >
-                        <img
-                          src={`/api/id-scans/${scan.id}/images/${key}`}
-                          alt={label}
-                          className="w-full h-48 object-cover rounded"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                          <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full h-48 flex items-center justify-center bg-gray-700 rounded">
-                        <p className="text-gray-500 text-sm">Kein Bild vorhanden</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+        
+        {/* Admin Actions */}
+        {user?.role === 'admin' && (
+          <div className="flex items-center gap-2">
+            {scan.status !== 'validated' && (
+              <button
+                onClick={() => {
+                  setActionType('approved');
+                  setActionModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+              >
+                <CheckCircle className="h-5 w-5" />
+                Genehmigen
+              </button>
+            )}
+            {scan.status !== 'rejected' && (
+              <button
+                onClick={() => {
+                  setActionType('rejected');
+                  setActionModalOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+              >
+                <XCircle className="h-5 w-5" />
+                Ablehnen
+              </button>
+            )}
+            <button
+              onClick={() => {
+                setActionType('ban');
+                setActionModalOpen(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-800 transition-colors"
+            >
+              <Ban className="h-5 w-5" />
+              Sperren
+            </button>
           </div>
-
-          {/* Back Side */}
-          <div>
-            <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-              Rückseite
-            </h3>
-            <div className="space-y-3">
-              {imageTypes.slice(3, 6).map(({ key, label }) => {
-                const image = scan.images?.find(img => img.image_type === key);
-                return (
-                  <div key={key} className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                    <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
-                    {image ? (
-                      <div 
-                        className="relative group cursor-pointer"
-                        onClick={() => openLightbox(key)}
-                      >
-                        <img
-                          src={`/api/id-scans/${scan.id}/images/${key}`}
-                          alt={label}
-                          className="w-full h-48 object-cover rounded"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                          <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="w-full h-48 flex items-center justify-center bg-gray-700 rounded">
-                        <p className="text-gray-500 text-sm">Kein Bild vorhanden</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Extracted Data */}
-      <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border'}`}>
-        <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Extrahierte Daten
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DataField label="Vollständiger Name" value={scan.extracted_data?.full_name} />
-          <DataField label="Vorname" value={scan.extracted_data?.first_name} />
-          <DataField label="Nachname" value={scan.extracted_data?.last_name} />
-          <DataField label="Geburtsdatum" value={scan.extracted_data?.date_of_birth} />
-          <DataField label="Geburtsort" value={scan.extracted_data?.place_of_birth} />
-          <DataField label="Nationalität" value={scan.extracted_data?.nationality} />
-          <DataField label="Geschlecht" value={scan.extracted_data?.sex} />
-          <DataField label="Dokumentennummer" value={scan.extracted_data?.document_number} />
-          <DataField label="Dokumenttyp" value={scan.extracted_data?.document_type} />
-          <DataField label="Ausstellende Behörde" value={scan.extracted_data?.issuing_authority} />
-          <DataField label="Ausstellungsdatum" value={scan.extracted_data?.issue_date} />
-          <DataField label="Ablaufdatum" value={scan.extracted_data?.expiry_date} />
-          <DataField label="Ausstellungsland" value={scan.extracted_data?.issuing_country} />
-          <DataField label="Adresse" value={scan.extracted_data?.address} />
-          <DataField label="Stadt" value={scan.extracted_data?.city} />
-          <DataField label="PLZ" value={scan.extracted_data?.postal_code} />
-        </div>
-      </div>
-
-      {/* Verification Details */}
-      {scan.verification && (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border'}`}>
-          <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Verifizierungs-Details
+      {/* Three Column Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column: DOKUMENTE */}
+        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Dokumente
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <DataField 
-              label="Confidence Score" 
-              value={scan.verification.confidence_score ? `${scan.verification.confidence_score}%` : null} 
-            />
-            <DataField 
-              label="Authenticity Score" 
-              value={scan.verification.authenticity_score ? `${scan.verification.authenticity_score}%` : null} 
-            />
-            <DataField 
-              label="Dokument gültig" 
-              value={scan.verification.document_validity ? 'Ja' : 'Nein'} 
-            />
-          </div>
-          {scan.verification.warnings && scan.verification.warnings.length > 0 && (
-            <div className="mt-4">
-              <h3 className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-700'}`}>
-                Warnungen:
-              </h3>
-              <ul className="list-disc list-inside space-y-1">
-                {scan.verification.warnings.map((warning, i) => (
-                  <li key={i} className={`text-sm ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-600'}`}>
-                    {warning}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Scan Info */}
-      <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border'}`}>
-        <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Scan-Informationen
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="flex items-start gap-3">
-            <Building className="h-5 w-5 text-gray-500 mt-0.5" />
-            <div>
-              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Kunde</p>
-              <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{scan.tenant_name}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <MapPin className="h-5 w-5 text-gray-500 mt-0.5" />
-            <div>
-              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Standort</p>
-              <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{scan.location_name || '-'}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <Monitor className="h-5 w-5 text-gray-500 mt-0.5" />
-            <div>
-              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Gerät</p>
-              <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{scan.device_name || '-'}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-3">
-            <User className="h-5 w-5 text-gray-500 mt-0.5" />
-            <div>
-              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Gescannt von</p>
-              <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{scan.scanned_by || '-'}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Manual Actions History */}
-      {scan.manual_actions && scan.manual_actions.length > 0 && (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border'}`}>
-          <h2 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Manuelle Aktionen
-          </h2>
-          <div className="space-y-3">
-            {scan.manual_actions.map((action, i) => (
-              <div key={i} className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <div className="flex items-center justify-between mb-2">
-                  <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {action.action}
-                  </span>
-                  <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {new Date(action.performed_at).toLocaleString('de-DE')}
-                  </span>
+          
+          <div className="space-y-4">
+            {imageTypes.map(({ key, label }) => {
+              const image = scan.images?.find(img => img.image_type === key);
+              return (
+                <div key={key}>
+                  <p className={`text-xs mb-2 uppercase tracking-wide ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                  {image ? (
+                    <div 
+                      className="relative group cursor-pointer"
+                      onClick={() => openLightbox(key)}
+                    >
+                      <img
+                        src={`/api/id-scans/${scan.id}/images/${key}`}
+                        alt={label}
+                        className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                        <ZoomIn className="h-8 w-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`w-full h-32 flex items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                      <p className="text-gray-500 text-xs">Kein Bild</p>
+                    </div>
+                  )}
                 </div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Von: {action.performed_by}
-                </p>
-                {action.comment && (
-                  <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Kommentar: {action.comment}
-                  </p>
-                )}
-                {action.reason && (
-                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Grund: {action.reason}
-                  </p>
-                )}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
-      )}
+
+        {/* Middle Column: PORTRAIT */}
+        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Portrait
+          </h2>
+          
+          <div className="space-y-4">
+            {scan.images?.find(img => img.image_type === 'portrait') ? (
+              <div>
+                <img
+                  src={`/api/id-scans/${scan.id}/images/portrait`}
+                  alt="Portrait"
+                  className={`w-full h-auto rounded-lg border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                />
+                <button
+                  className="w-full mt-4 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold flex items-center justify-center gap-2"
+                >
+                  <div className="w-2 h-2 rounded-full bg-white"></div>
+                  Verifiziert
+                </button>
+              </div>
+            ) : (
+              <div className={`w-full h-64 flex items-center justify-center rounded-lg border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                <p className="text-gray-500 text-sm">Kein Portrait verfügbar</p>
+              </div>
+            )}
+
+            {/* Basic Info */}
+            <div className="space-y-2 mt-6">
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Calendar className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zeitstempel</p>
+                </div>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {new Date(scan.scan_timestamp).toLocaleString('de-DE')}
+                </p>
+              </div>
+
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Building className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</p>
+                </div>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.tenant_name}
+                </p>
+              </div>
+
+              {scan.location_name && (
+                <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <MapPin className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standort</p>
+                  </div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {scan.location_name}
+                  </p>
+                </div>
+              )}
+
+              {scan.device_name && (
+                <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Monitor className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gerät</p>
+                  </div>
+                  <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {scan.device_name}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: AUSWEISDATEN */}
+        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className={`text-xl font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Ausweisdaten
+            </h2>
+            <span className={`text-xs px-3 py-1 rounded ${
+              scan.status === 'validated' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+              scan.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+              'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'
+            }`}>
+              Prüfung
+            </span>
+          </div>
+          
+          <div className="space-y-3">
+            {/* Document Class */}
+            {scan.extracted_data?.document_class && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumentenklasse</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.document_class}
+                </p>
+              </div>
+            )}
+
+            {/* Country */}
+            {scan.extracted_data?.country && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <MapPin className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.country}
+                </p>
+              </div>
+            )}
+
+            {/* Document Number */}
+            {scan.extracted_data?.document_number && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Hash className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumentennummer</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.document_number}
+                </p>
+              </div>
+            )}
+
+            {/* Expiry Date */}
+            {scan.extracted_data?.expiry_date && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Clock className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gültig bis</p>
+                  </div>
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.expiry_date}
+                </p>
+              </div>
+            )}
+
+            {/* Birth Date */}
+            {scan.extracted_data?.birth_date && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Cake className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Geburtstag</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.birth_date}
+                </p>
+              </div>
+            )}
+
+            {/* Gender */}
+            {scan.extracted_data?.gender && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Geschlecht</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.gender === 'M' ? 'Männlich' : scan.extracted_data.gender === 'F' ? 'Weiblich' : scan.extracted_data.gender}
+                </p>
+              </div>
+            )}
+
+            {/* First Name */}
+            {scan.extracted_data?.first_name && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Vorname</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.first_name}
+                </p>
+              </div>
+            )}
+
+            {/* Last Name */}
+            {scan.extracted_data?.last_name && (
+              <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <User className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                    <p className={`text-xs uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Nachname</p>
+                  </div>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+                <p className={`text-sm font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {scan.extracted_data.last_name}
+                </p>
+              </div>
+            )}
+
+            {/* Warnings Section */}
+            {scan.verification?.warnings && scan.verification.warnings.length > 0 && (
+              <div className={`p-4 rounded mt-4 border-l-4 border-yellow-500 ${theme === 'dark' ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="h-5 w-5 text-yellow-500" />
+                  <p className={`font-bold uppercase text-sm ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>Warnungen</p>
+                </div>
+                <ul className="space-y-1">
+                  {scan.verification.warnings.map((warning, idx) => (
+                    <li key={idx} className={`text-xs ${theme === 'dark' ? 'text-yellow-300' : 'text-yellow-700'}`}>
+                      • {warning}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Timestamp */}
+            <div className={`text-xs text-center mt-4 pt-4 border-t ${theme === 'dark' ? 'text-gray-500 border-gray-700' : 'text-gray-400 border-gray-200'}`}>
+              Geprüft am: {new Date(scan.scan_timestamp).toLocaleString('de-DE')}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Action Modal */}
       {actionModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className={`w-full max-w-md p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {actionType === 'approved' ? 'Genehmigen' : actionType === 'rejected' ? 'Ablehnen' : 'Bannen'}
-            </h3>
-            
+          <div className={`w-full max-w-lg mx-4 p-6 rounded-lg ${
+            theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+          }`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {actionType === 'approved' ? 'Genehmigen' : actionType === 'rejected' ? 'Ablehnen' : 'Sperren'}
+              </h3>
+              <button
+                onClick={() => {
+                  setActionModalOpen(false);
+                  setActionComment('');
+                  setActionReason('');
+                }}
+                className={`p-1 rounded ${theme === 'dark' ? 'hover:bg-[#3a3a3a]' : 'hover:bg-gray-100'}`}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
             <div className="space-y-4">
               <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                <label className={`block text-sm font-medium mb-2 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
                   Grund (optional)
                 </label>
                 <input
@@ -469,56 +531,59 @@ const IDCheckDetailPage = () => {
                   className={`w-full px-4 py-2 rounded-lg ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] text-white border border-gray-700'
-                      : 'bg-white text-gray-900 border border-gray-300'
-                  }`}
+                      : 'bg-gray-50 text-gray-900 border border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
               </div>
-              
+
               <div>
-                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Kommentar {actionType !== 'approved' && <span className="text-red-500">*</span>}
+                <label className={`block text-sm font-medium mb-2 ${
+                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  Kommentar *
                 </label>
                 <textarea
                   value={actionComment}
                   onChange={(e) => setActionComment(e.target.value)}
-                  rows={4}
                   placeholder="Geben Sie einen Kommentar ein..."
+                  rows={4}
                   className={`w-full px-4 py-2 rounded-lg ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] text-white border border-gray-700'
-                      : 'bg-white text-gray-900 border border-gray-300'
-                  }`}
+                      : 'bg-gray-50 text-gray-900 border border-gray-300'
+                  } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
               </div>
-            </div>
 
-            <div className="flex gap-2 mt-6">
-              <button
-                onClick={handleAction}
-                disabled={submitting}
-                className={`flex-1 px-4 py-2 rounded-lg text-white ${
-                  actionType === 'approved' 
-                    ? 'bg-green-600 hover:bg-green-700' 
-                    : 'bg-red-600 hover:bg-red-700'
-                } disabled:opacity-50`}
-              >
-                {submitting ? 'Wird ausgeführt...' : 'Bestätigen'}
-              </button>
-              <button
-                onClick={() => {
-                  setActionModalOpen(false);
-                  setActionComment('');
-                  setActionReason('');
-                }}
-                disabled={submitting}
-                className={`flex-1 px-4 py-2 rounded-lg ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 text-white hover:bg-gray-600'
-                    : 'bg-gray-200 text-gray-900 hover:bg-gray-300'
-                }`}
-              >
-                Abbrechen
-              </button>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => {
+                    setActionModalOpen(false);
+                    setActionComment('');
+                    setActionReason('');
+                  }}
+                  className={`px-4 py-2 rounded-lg ${
+                    theme === 'dark'
+                      ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3a3a3a]'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={handleAction}
+                  disabled={submitting || !actionComment.trim()}
+                  className={`px-4 py-2 rounded-lg text-white ${
+                    actionType === 'approved'
+                      ? 'bg-green-600 hover:bg-green-700'
+                      : actionType === 'rejected'
+                      ? 'bg-red-600 hover:bg-red-700'
+                      : 'bg-gray-700 hover:bg-gray-800'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
+                >
+                  {submitting ? 'Wird verarbeitet...' : 'Bestätigen'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -526,64 +591,47 @@ const IDCheckDetailPage = () => {
 
       {/* Lightbox */}
       {lightboxOpen && availableImages.length > 0 && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-          <div className="relative max-w-4xl max-h-full p-4">
-            <button
-              onClick={() => setLightboxOpen(false)}
-              className="absolute top-4 right-4 z-10 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70"
-            >
-              <X className="h-6 w-6" />
-            </button>
-            
-            {availableImages.length > 1 && (
-              <>
-                <button
-                  onClick={prevImage}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </button>
-                <button
-                  onClick={nextImage}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 z-10 p-2 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-70"
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </button>
-              </>
-            )}
-            
-            <div className="text-center">
-              <img
-                src={availableImages[currentImageIndex]?.url}
-                alt={availableImages[currentImageIndex]?.label}
-                className="max-w-full max-h-[80vh] object-contain"
-              />
-              <p className="text-white mt-4 text-lg">
-                {availableImages[currentImageIndex]?.label}
-              </p>
-              {availableImages.length > 1 && (
-                <p className="text-gray-300 text-sm mt-2">
-                  {currentImageIndex + 1} von {availableImages.length}
-                </p>
-              )}
-            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-95 flex items-center justify-center z-50">
+          <button
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-4 right-4 text-white hover:text-gray-300 p-2"
+          >
+            <X className="h-8 w-8" />
+          </button>
+
+          {availableImages.length > 1 && (
+            <>
+              <button
+                onClick={prevImage}
+                className="absolute left-4 text-white hover:text-gray-300 p-2"
+              >
+                <ChevronLeft className="h-12 w-12" />
+              </button>
+              
+              <button
+                onClick={nextImage}
+                className="absolute right-4 text-white hover:text-gray-300 p-2"
+              >
+                <ChevronRight className="h-12 w-12" />
+              </button>
+            </>
+          )}
+
+          <div className="text-center">
+            <img 
+              src={availableImages[currentImageIndex].url}
+              alt={availableImages[currentImageIndex].label}
+              className="max-h-[80vh] max-w-[90vw] object-contain rounded-lg"
+            />
+            <p className="text-white text-lg mt-4">
+              {availableImages[currentImageIndex].label}
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              {currentImageIndex + 1} / {availableImages.length}
+            </p>
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-// Helper component for data fields
-const DataField = ({ label, value }) => {
-  const { theme } = useTheme();
-  
-  return (
-    <div>
-      <p className={`text-xs mb-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>{label}</p>
-      <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-        {value || '-'}
-      </p>
     </div>
   );
 };
