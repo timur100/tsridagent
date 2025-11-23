@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Images</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a1a; color: white; }
+        .image-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }
+        .image-box { border: 2px solid #444; padding: 10px; border-radius: 8px; }
+        img { width: 100%; height: auto; border-radius: 4px; }
+        h3 { margin-top: 0; color: #4CAF50; }
+        .error { color: #ff4444; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ Image Load Test</h1>
+    <p>Scan ID: <code>eac69421-aa53-4447-8e18-4553555bb93b</code></p>
+    
+    <div class="image-grid">
+        <div class="image-box">
+            <h3>Vorderseite (front_front)</h3>
+            <img 
+                src="/api/id-scans/eac69421-aa53-4447-8e18-4553555bb93b/images/front_front" 
+                alt="Front"
+                onerror="this.parentElement.innerHTML += '<p class=error>❌ Failed to load</p>'"
+                onload="this.parentElement.innerHTML += '<p style=color:#4CAF50>✅ Loaded successfully</p>'"
+            />
+        </div>
+        
+        <div class="image-box">
+            <h3>Portrait Vorne (front_portrait)</h3>
+            <img 
+                src="/api/id-scans/eac69421-aa53-4447-8e18-4553555bb93b/images/front_portrait" 
+                alt="Front Portrait"
+                onerror="this.parentElement.innerHTML += '<p class=error>❌ Failed to load</p>'"
+                onload="this.parentElement.innerHTML += '<p style=color:#4CAF50>✅ Loaded successfully</p>'"
+            />
+        </div>
+        
+        <div class="image-box">
+            <h3>Portrait Hinten (back_portrait)</h3>
+            <img 
+                src="/api/id-scans/eac69421-aa53-4447-8e18-4553555bb93b/images/back_portrait" 
+                alt="Back Portrait"
+                onerror="this.parentElement.innerHTML += '<p class=error>❌ Failed to load</p>'"
+                onload="this.parentElement.innerHTML += '<p style=color:#4CAF50>✅ Loaded successfully</p>'"
+            />
+        </div>
+        
+        <div class="image-box">
+            <h3>Unterschrift (back_signature)</h3>
+            <img 
+                src="/api/id-scans/eac69421-aa53-4447-8e18-4553555bb93b/images/back_signature" 
+                alt="Signature"
+                onerror="this.parentElement.innerHTML += '<p class=error>❌ Failed to load</p>'"
+                onload="this.parentElement.innerHTML += '<p style=color:#4CAF50>✅ Loaded successfully</p>'"
+            />
+        </div>
+    </div>
+    
+    <hr style="margin: 40px 0; border-color: #444;">
+    
+    <h2>📋 Debugging Info</h2>
+    <div style="background: #2a2a2a; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+        <p><strong>Browser Console:</strong> Press F12 and check for errors</p>
+        <p><strong>Expected URL format:</strong> <code>/api/id-scans/{scan_id}/images/{image_type}</code></p>
+        <p><strong>Image types in DB:</strong> front_front, front_portrait, back_portrait, back_signature</p>
+        <p><strong>Auth:</strong> Images should be accessible when logged in to portal</p>
+    </div>
+    
+    <script>
+        // Log all image load attempts
+        document.querySelectorAll('img').forEach(img => {
+            console.log('Attempting to load:', img.src);
+            img.addEventListener('error', (e) => {
+                console.error('Failed to load:', e.target.src);
+                fetch(e.target.src)
+                    .then(r => r.text())
+                    .then(text => console.log('Error response:', text))
+                    .catch(err => console.error('Fetch error:', err));
+            });
+        });
+    </script>
+</body>
+</html>
