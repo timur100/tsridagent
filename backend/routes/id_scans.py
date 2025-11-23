@@ -11,7 +11,7 @@ from models.id_scan import (
     ScanStatus, ScanImage, ImageType, ManualAction
 )
 
-router = APIRouter(prefix="/id-scans", tags=["ID Scans"])
+router = APIRouter(tags=["ID Scans"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
