@@ -245,14 +245,20 @@ const IDCheckDetailPage = () => {
                 { type: 'front_uv', label: 'UV', fallbackTypes: [] }
               ];
               
-              // Find available images
               const availableImages = scan.images || [];
               const imageMap = {};
               availableImages.forEach(img => {
                 imageMap[img.image_type] = img;
               });
               
-              return expectedImages.map((expected, idx) => {
+              return (
+                <div>
+                  {/* Vorderseite Label */}
+                  <h3 className={`text-sm font-semibold mb-2 uppercase tracking-wider ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Vorderseite
+                  </h3>
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {frontImages.map((expected, idx) => {
                 // Try to find the image (check main type and fallback types)
                 let foundImage = imageMap[expected.type];
                 if (!foundImage && expected.fallbackTypes) {
