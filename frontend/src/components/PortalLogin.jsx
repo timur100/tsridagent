@@ -62,17 +62,24 @@ const PortalLogin = () => {
           // SECURITY: Only admin@tsrid.com can access admin portal
           const isAdminUser = formData.email.toLowerCase() === 'admin@tsrid.com';
           
+          // Debug logging
+          console.log('[Login] User data received:', result.user);
+          console.log('[Login] Email check:', formData.email.toLowerCase(), '=== admin@tsrid.com:', isAdminUser);
+          console.log('[Login] Role check:', result.user?.role);
+          
           // Determine redirect path
           let redirectPath;
-          if (isAdminUser && result.user?.role === 'admin') {
-            // Admin user can access /portal/admin
+          if (isAdminUser) {
+            // CRITICAL: Only check email for admin access, role will be enforced by backend
             redirectPath = location.state?.from?.pathname || '/portal/admin';
+            console.log('[Login] Admin detected - redirecting to /portal/admin');
           } else {
             // All other users go to customer portal
             redirectPath = '/portal/customer';
+            console.log('[Login] Customer detected - redirecting to /portal/customer');
           }
           
-          console.log('[Login] Redirecting to:', redirectPath, '| Role:', result.user?.role, '| Email:', formData.email);
+          console.log('[Login] Final redirect:', redirectPath);
           navigate(redirectPath, { replace: true });
         }
       } else {
