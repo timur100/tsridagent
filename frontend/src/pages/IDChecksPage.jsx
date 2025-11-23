@@ -467,7 +467,7 @@ const IDChecksPage = () => {
                     )}
                     {visibleColumns.document_type && (
                       <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                        {scan.document_type || '-'}
+                        {scan.extracted_data?.document_type || scan.document_type || '-'}
                       </td>
                     )}
                     {visibleColumns.status && (
