@@ -218,14 +218,14 @@ const IDCheckDetailPage = () => {
             Dokumente
           </h2>
           
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {[
               { key: 'front_original', label: 'Vorderseite' },
-              { key: 'front_ir', label: 'IR' },
-              { key: 'front_uv', label: 'UV' },
               { key: 'back_original', label: 'Rückseite' },
-              { key: 'back_ir', label: 'IR' },
-              { key: 'back_uv', label: 'UV' }
+              { key: 'front_ir', label: 'IR (Vorderseite)' },
+              { key: 'back_ir', label: 'IR (Rückseite)' },
+              { key: 'front_uv', label: 'UV (Vorderseite)' },
+              { key: 'back_uv', label: 'UV (Rückseite)' }
             ].map(({ key, label }) => {
               const image = scan.images?.find(img => img.image_type === key);
               return (
@@ -239,15 +239,15 @@ const IDCheckDetailPage = () => {
                       <img
                         src={`/api/id-scans/${scan.id}/images/${key}`}
                         alt={label}
-                        className={`w-full h-24 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                        className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                        <ZoomIn className="h-5 w-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                     </div>
                   ) : (
-                    <div className={`w-full h-24 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                      <FileText className="h-6 w-6 text-red-500 mb-1" />
+                    <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                      <FileText className="h-8 w-8 text-red-500 mb-1" />
                       <p className="text-gray-500 text-xs">{label}</p>
                     </div>
                   )}
