@@ -324,7 +324,7 @@ const IDCheckDetailPage = () => {
                   <div className="grid grid-cols-3 gap-3">
                     {(() => {
                       const backImages = [
-                        { type: 'back_white', label: 'WHITE', fallbackTypes: ['back_document_front', 'back_original', 'back_front'] },
+                        { type: 'back_white', label: 'WHITE', fallbackTypes: ['back_document_front', 'back_original', 'back_front', 'back'] },
                         { type: 'back_ir', label: 'IR', fallbackTypes: [] },
                         { type: 'back_uv', label: 'UV', fallbackTypes: [] }
                       ];
