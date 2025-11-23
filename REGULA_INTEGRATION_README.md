@@ -6,9 +6,11 @@ Diese Integration ermöglicht es, Scan-Daten von Regula-Dokumentenscannern über
 
 ## 🎯 Funktionsweise
 
-### 1. Datenformat
+### 1. Datenformat & Zwei-Seiten-Scan
 
-Der Regula-Scanner erzeugt mehrere JSON/XML-Dateien pro Scan:
+Der Regula-Scanner erzeugt für **jede Seite** eines Dokuments mehrere JSON/XML-Dateien:
+
+**VORDERSEITE (page_idx=0):**
 
 **JSON-Dateien:**
 - `Graphics_Data.json` - Enthält Base64-kodierte Bilder
