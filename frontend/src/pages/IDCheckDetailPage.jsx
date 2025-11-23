@@ -314,24 +314,6 @@ const IDCheckDetailPage = () => {
                 );
               });
             })()}
-            ) : (
-              // Fallback if no images
-              [
-                { key: 'front', label: 'Vorderseite' },
-                { key: 'back', label: 'Rückseite' },
-                { key: 'ir_front', label: 'IR (V)' },
-                { key: 'ir_back', label: 'IR (R)' },
-                { key: 'uv_front', label: 'UV (V)' },
-                { key: 'uv_back', label: 'UV (R)' }
-              ].map(({ key, label }) => (
-                <div key={key}>
-                  <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
-                  <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                    <FileText className="h-8 w-8 text-gray-500 mb-1" />
-                    <p className="text-gray-500 text-xs">{label}</p>
-                  </div>
-                </div>
-              ))
             )}
           </div>
         </div>
