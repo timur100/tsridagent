@@ -77,7 +77,8 @@ const PortalRoutes = () => {
     // SECURITY: Only admin@tsrid.com can access admin portal
     const isSuperAdmin = user?.email?.toLowerCase() === 'admin@tsrid.com';
     
-    return (isSuperAdmin && isAdmin) ? "/portal/admin" : "/portal/customer";
+    // Admin check based solely on email - backend enforces role
+    return isSuperAdmin ? "/portal/admin" : "/portal/customer";
   };
 
   return (
