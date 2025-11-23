@@ -211,8 +211,8 @@ const IDCheckDetailPage = () => {
       </div>
 
       {/* Top Row: Three Equal Containers */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Container 1: DOKUMENTE (3x2 Grid) */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6 items-start">
+        {/* Container 1: DOKUMENTE (2x3 Grid) */}
         <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Dokumente
