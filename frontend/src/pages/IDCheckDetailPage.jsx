@@ -289,7 +289,7 @@ const IDCheckDetailPage = () => {
 
         {/* Container 3: AUSWEISDATEN */}
         <div className={`p-6 rounded-lg h-full flex flex-col ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 flex-shrink-0">
             <h2 className={`text-xl font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Ausweisdaten
             </h2>
@@ -302,7 +302,7 @@ const IDCheckDetailPage = () => {
             </span>
           </div>
           
-          <div className="space-y-3 max-h-[440px] overflow-y-auto">
+          <div className="space-y-3 flex-1 overflow-y-auto">
             {/* Document Class */}
             {scan.extracted_data?.document_class && (
               <div className={`p-3 rounded ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
