@@ -83,21 +83,29 @@ const IDCheckDetailPage = () => {
 
   // Lightbox functions
   const openLightbox = (imageKey) => {
-    const imageTypes = [
-      { key: 'front_original', label: 'Vorderseite' },
-      { key: 'front_ir', label: 'IR' },
-      { key: 'front_uv', label: 'UV' },
-      { key: 'back_original', label: 'Rückseite' },
-      { key: 'back_ir', label: 'IR' },
-      { key: 'back_uv', label: 'UV' }
-    ];
+    // Dynamic image mapping based on actual images in scan
+    const imageLabelMap = {
+      'front_front': 'Vorderseite',
+      'front_portrait': 'Portrait (Vorne)',
+      'front_ir': 'IR (Vorne)',
+      'front_uv': 'UV (Vorne)',
+      'front_white': 'Weißlicht (Vorne)',
+      'back_portrait': 'Portrait (Hinten)',
+      'back_signature': 'Unterschrift',
+      'back_document_front': 'Dokument Vorderseite',
+      'back_ir': 'IR (Hinten)',
+      'back_uv': 'UV (Hinten)',
+      'back_white': 'Weißlicht (Hinten)',
+      // Legacy support
+      'front_original': 'Vorderseite',
+      'back_original': 'Rückseite'
+    };
     
-    const images = imageTypes
-      .filter(({ key }) => scan.images?.some(img => img.image_type === key))
-      .map(({ key, label }) => ({
-        key,
-        label,
-        url: `/api/id-scans/${id}/images/${key}`
+    const images = (scan.images || [])
+      .map(img => ({
+        key: img.image_type,
+        label: imageLabelMap[img.image_type] || img.image_type,
+        url: `/api/id-scans/${id}/images/${img.image_type}`
       }));
     
     setAvailableImages(images);
