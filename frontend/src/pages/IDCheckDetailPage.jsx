@@ -259,62 +259,137 @@ const IDCheckDetailPage = () => {
                   </h3>
                   <div className="grid grid-cols-3 gap-3 mb-4">
                     {frontImages.map((expected, idx) => {
-                // Try to find the image (check main type and fallback types)
-                let foundImage = imageMap[expected.type];
-                if (!foundImage && expected.fallbackTypes) {
-                  for (const fallbackType of expected.fallbackTypes) {
-                    if (imageMap[fallbackType]) {
-                      foundImage = imageMap[fallbackType];
-                      break;
-                    }
-                  }
-                }
-                
-                const img = foundImage;
-                const label = expected.label;
-                
-                return (
-                  <div key={expected.type}>
-                    <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
-                    {img ? (
-                      <div 
-                        className="relative group cursor-pointer"
-                        onClick={() => openLightbox(img.image_type)}
-                      >
-                        <img
-                          src={`/api/id-scans/${scan.id}/images/${img.image_type}`}
-                          alt={label}
-                          crossOrigin="use-credentials"
-                          className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
-                          onLoad={(e) => {
-                            console.log('✅ Image loaded:', img.image_type);
-                          }}
-                          onError={(e) => {
-                            console.error('❌ Image failed to load:', img.image_type, e.target.src);
-                            e.target.style.display = 'none';
-                            const errorDiv = e.target.nextElementSibling;
-                            if (errorDiv) errorDiv.style.display = 'flex';
-                          }}
-                        />
-                        <div style={{display: 'none'}} className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                          <FileText className="h-8 w-8 text-red-500 mb-1" />
-                          <p className="text-gray-500 text-xs">Fehler beim Laden</p>
-                          <p className="text-gray-500 text-xs">{img.image_type}</p>
+                      // Try to find the image (check main type and fallback types)
+                      let foundImage = imageMap[expected.type];
+                      if (!foundImage && expected.fallbackTypes) {
+                        for (const fallbackType of expected.fallbackTypes) {
+                          if (imageMap[fallbackType]) {
+                            foundImage = imageMap[fallbackType];
+                            break;
+                          }
+                        }
+                      }
+                      
+                      const img = foundImage;
+                      const label = expected.label;
+                      
+                      return (
+                        <div key={expected.type}>
+                          <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                          {img ? (
+                            <div 
+                              className="relative group cursor-pointer"
+                              onClick={() => openLightbox(img.image_type)}
+                            >
+                              <img
+                                src={`/api/id-scans/${scan.id}/images/${img.image_type}`}
+                                alt={label}
+                                crossOrigin="use-credentials"
+                                className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                                onLoad={(e) => {
+                                  console.log('✅ Image loaded:', img.image_type);
+                                }}
+                                onError={(e) => {
+                                  console.error('❌ Image failed to load:', img.image_type, e.target.src);
+                                  e.target.style.display = 'none';
+                                  const errorDiv = e.target.nextElementSibling;
+                                  if (errorDiv) errorDiv.style.display = 'flex';
+                                }}
+                              />
+                              <div style={{display: 'none'}} className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                                <FileText className="h-8 w-8 text-red-500 mb-1" />
+                                <p className="text-gray-500 text-xs">Fehler beim Laden</p>
+                                <p className="text-gray-500 text-xs">{img.image_type}</p>
+                              </div>
+                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                                <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                              </div>
+                            </div>
+                          ) : (
+                            // Placeholder für fehlendes Bild
+                            <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                              <FileText className={`h-8 w-8 mb-1 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                              <p className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}`}>Nicht verfügbar</p>
+                            </div>
+                          )}
                         </div>
-                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
-                          <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    ) : (
-                      // Placeholder für fehlendes Bild
-                      <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
-                        <FileText className={`h-8 w-8 mb-1 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}`}>Nicht verfügbar</p>
-                      </div>
-                    )}
+                      );
+                    })}
                   </div>
-                );
-              });
+                  
+                  {/* Rückseite Label */}
+                  <h3 className={`text-sm font-semibold mb-2 uppercase tracking-wider ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Rückseite
+                  </h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {(() => {
+                      const backImages = [
+                        { type: 'back_document_front', label: 'WHITE', fallbackTypes: ['back_original', 'back_front', 'back_white'] },
+                        { type: 'back_ir', label: 'IR', fallbackTypes: [] },
+                        { type: 'back_uv', label: 'UV', fallbackTypes: [] }
+                      ];
+                      
+                      return backImages.map((expected, idx) => {
+                        // Try to find the image (check main type and fallback types)
+                        let foundImage = imageMap[expected.type];
+                        if (!foundImage && expected.fallbackTypes) {
+                          for (const fallbackType of expected.fallbackTypes) {
+                            if (imageMap[fallbackType]) {
+                              foundImage = imageMap[fallbackType];
+                              break;
+                            }
+                          }
+                        }
+                        
+                        const img = foundImage;
+                        const label = expected.label;
+                        
+                        return (
+                          <div key={expected.type}>
+                            <p className={`text-xs mb-1 uppercase tracking-wide text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>{label}</p>
+                            {img ? (
+                              <div 
+                                className="relative group cursor-pointer"
+                                onClick={() => openLightbox(img.image_type)}
+                              >
+                                <img
+                                  src={`/api/id-scans/${scan.id}/images/${img.image_type}`}
+                                  alt={label}
+                                  crossOrigin="use-credentials"
+                                  className={`w-full h-32 object-cover rounded border-2 ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}
+                                  onLoad={(e) => {
+                                    console.log('✅ Image loaded:', img.image_type);
+                                  }}
+                                  onError={(e) => {
+                                    console.error('❌ Image failed to load:', img.image_type, e.target.src);
+                                    e.target.style.display = 'none';
+                                    const errorDiv = e.target.nextElementSibling;
+                                    if (errorDiv) errorDiv.style.display = 'flex';
+                                  }}
+                                />
+                                <div style={{display: 'none'}} className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                                  <FileText className="h-8 w-8 text-red-500 mb-1" />
+                                  <p className="text-gray-500 text-xs">Fehler beim Laden</p>
+                                  <p className="text-gray-500 text-xs">{img.image_type}</p>
+                                </div>
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all rounded flex items-center justify-center">
+                                  <ZoomIn className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                              </div>
+                            ) : (
+                              // Placeholder für fehlendes Bild
+                              <div className={`w-full h-32 flex flex-col items-center justify-center rounded border-2 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-100 border-gray-300'}`}>
+                                <FileText className={`h-8 w-8 mb-1 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                                <p className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-500'}`}>Nicht verfügbar</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
+                </div>
+              );
             })()}
             )}
           </div>
