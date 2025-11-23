@@ -212,18 +212,20 @@ const IDCheckDetailPage = () => {
 
       {/* Three Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column: DOKUMENTE (2x2 Grid) */}
+        {/* Left Column: DOKUMENTE (3x2 Grid) */}
         <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
           <h2 className={`text-xl font-bold mb-4 uppercase tracking-wider ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Dokumente
           </h2>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-3 gap-4">
             {[
               { key: 'front_original', label: 'Vorderseite' },
-              { key: 'back_original', label: 'Rückseite' },
               { key: 'front_ir', label: 'IR' },
-              { key: 'front_uv', label: 'UV' }
+              { key: 'front_uv', label: 'UV' },
+              { key: 'back_original', label: 'Rückseite' },
+              { key: 'back_ir', label: 'IR' },
+              { key: 'back_uv', label: 'UV' }
             ].map(({ key, label }) => {
               const image = scan.images?.find(img => img.image_type === key);
               return (
