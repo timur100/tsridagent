@@ -394,10 +394,14 @@ async def regula_scan_webhook(
         if '_id' in idscan_data:
             del idscan_data['_id']
         
+        # Extract info for logging
+        extracted = idscan_data.get('extracted_data', {})
         print(f"✅ [Regula Webhook] Scan {scan_id} processed successfully")
-        print(f"   Name: {idscan_data.get('first_name')} {idscan_data.get('last_name')}")
-        print(f"   Document: {idscan_data.get('document_type')}")
-        print(f"   Number: {idscan_data.get('document_number')}")
+        print(f"   Name: {extracted.get('first_name')} {extracted.get('last_name')}")
+        print(f"   Document: {extracted.get('document_type')}")
+        print(f"   Number: {extracted.get('document_number')}")
+        print(f"   Tenant: {idscan_data.get('tenant_name')}")
+        print(f"   Location: {idscan_data.get('location_name')}")
         print(f"   Images: {len(images_saved)} saved")
         
         return {
