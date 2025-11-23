@@ -835,6 +835,9 @@ const AdminPortalContent = () => {
                       // Navigate to nested routes for certain tabs
                       if (tab.id === 'id-checks') {
                         navigate('/portal/admin/id-checks');
+                      } else if (location.pathname !== '/portal/admin') {
+                        // Navigate back to /portal/admin if we're on a nested route
+                        navigate('/portal/admin');
                       }
                     }}
                     className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
