@@ -624,6 +624,24 @@ def create_idscan_from_regula(
         'issuing_country': doc_info.get('country_name', ''),
     }
     
+    # Get quality info
+    status = parsed_data.get('status', {})
+    quality_score = parsed_data.get('quality_score', 0)
+    page_idx = parsed_data.get('page_idx', 0)
+    side = parsed_data.get('side', 'front')
+    
+    # Determine if manual review is needed
+    parser = RegulaParser()
+    requires_review = parser.should_require_manual_review(status, quality_score)
+    
+    # Determine verification status based on quality
+    if quality_score >= 80:
+        verification_status = 'validated'
+    elif quality_score >= 50:
+        verification_status = 'pending'
+    else:
+        verification_status = 'rejected'
+    
     idscan = {
         'id': scan_id,
         
@@ -637,7 +655,7 @@ def create_idscan_from_regula(
         
         # Scan Info
         'scan_timestamp': metadata.get('scan_datetime', datetime.now().isoformat()),
-        'status': 'pending',
+        'status': verification_status,
         'document_type': None,  # Will be set from extracted_data
         
         # Operator Info
@@ -650,18 +668,19 @@ def create_idscan_from_regula(
         # Extracted Data
         'extracted_data': extracted_data,
         
-        # Verification (empty for now)
+        # Verification (now with quality data)
         'verification': {
-            'confidence_score': None,
-            'authenticity_score': None,
-            'document_validity': None,
+            'confidence_score': quality_score,
+            'authenticity_score': quality_score,
+            'document_validity': quality_score >= 50,
             'security_features': [],
             'warnings': [],
-            'errors': []
+            'errors': [],
+            'status_details': status  # Include full status
         },
         
         # Manual Review
-        'requires_manual_review': False,
+        'requires_manual_review': requires_review,
         'manual_actions': [],
         
         # Metadata
@@ -674,9 +693,13 @@ def create_idscan_from_regula(
         # Additional Regula-specific data
         'regula_metadata': {
             'transaction_id': metadata.get('transaction_id', ''),
+            'page_idx': page_idx,
+            'side': side,
             'device_type': metadata.get('device_type', ''),
             'device_serial': metadata.get('device_serial', ''),
             'sdk_version': metadata.get('sdk_version', ''),
+            'mrz_data': parsed_data.get('mrz_data', {}),
+            'quality_score': quality_score
         }
     }
     
