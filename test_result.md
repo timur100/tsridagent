@@ -2766,3 +2766,21 @@ agent_communication:
     - agent: "main"
       message: "🎉 ID-CHECKS DETAIL PAGE IMPLEMENTED: Vollständige Detailseite für ID-Scans mit allen Features implementiert: 1) Layout-Fix: Padding-Problem der ID-Checks Überschrift behoben (py-8 entfernt), 2) Detailseite: Zeigt alle Scan-Informationen (Zeitstempel, Kunde, Standort, Gerät, Dokumenttyp), extrahierte Daten, Verifizierungsdaten mit Confidence Score Bar, 3) Lightbox: Alle Bilder (Vorderseite/Rückseite Original/IR/UV) sind vergrößerbar mit Vollbild-Lightbox, Navigation (Links/Rechts Pfeile), Bildname und Position ('1 von 4'), Schließen-Button, 4) Admin-Aktionen: Drei Buttons (Genehmigen, Ablehnen, Bannen) mit Modal für Grund (optional) und Kommentar (Pflichtfeld), 5) API-Fix: Korrigiert result.scan zu result.data.scan wegen verschachtelter Response-Struktur. SCREENSHOTS VERIFIZIERT: Detail-Seite lädt korrekt ✓, Bilder werden angezeigt ✓, Lightbox funktioniert ✓, Admin-Modal öffnet sich ✓. Bereit für umfassende Frontend-Testing zur Verifikation aller Funktionen."
 
+
+frontend:
+  - task: "ID-Checks Detail Page - Image Display Bug Fix"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/pages/IDCheckDetailPage.jsx"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🐛 IMAGE DISPLAY BUG BEHOBEN: User berichtete, dass nicht alle Bilder auf der ID-Check-Detailseite angezeigt werden. ROOT CAUSE IDENTIFIZIERT: In Zeile 252 wurde .slice(0, 6) verwendet, was nur die ersten 6 Bilder nach dem Filtern anzeigte. Wenn mehr als 6 Bilder vorhanden waren (z.B. front_front, front_ir, front_uv, back_portrait, back_signature, back_ir, back_uv, back_document_front), wurden die letzten Bilder NICHT angezeigt. LÖSUNG IMPLEMENTIERT: 1) Entfernt .slice(0, 6) in Zeile 252, damit ALLE verfügbaren Bilder gerendert werden, 2) Erweiterte labelMap um fehlende Bildtypen (back_portrait, back_signature, back_document_front), 3) Verbesserte Console-Logs in loadScan() für besseres Debugging (zeigt Anzahl und Typen der verfügbaren Bilder), 4) Entfernte ungenutzte imageTypes Variable (Zeile 165-168). ERWARTETES ERGEBNIS: Alle Bilder aus scan.images werden jetzt im 'Dokumente' Grid angezeigt (außer front_portrait, das separat in der Portrait-Sektion angezeigt wird). Frontend hot-reload aktiv. Bereit für Frontend-Testing zur Verifikation der Bildanzeige."
+
+agent_communication:
+    - agent: "main"
+      message: "🔧 ID-CHECKS IMAGE DISPLAY BUG FIX APPLIED: Fixed critical bug where only first 6 images were displayed on ID-Check detail page. Removed .slice(0, 6) limitation to show ALL available images. Extended image label mapping to include back-side images (back_portrait, back_signature, back_document_front). Added enhanced console logging to help debug image availability. Frontend changes are hot-reloaded and ready for frontend testing verification."
+
