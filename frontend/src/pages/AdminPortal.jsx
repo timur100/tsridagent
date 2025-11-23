@@ -5,7 +5,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useImpersonation } from '../contexts/ImpersonationContext';
 import { useTenant } from '../contexts/TenantContext';
 import { CustomerFilterProvider, useCustomerFilter } from '../contexts/CustomerFilterContext';
-import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen } from 'lucide-react';
+import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen, Fingerprint } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import ThemeToggle from '../components/ThemeToggle';
