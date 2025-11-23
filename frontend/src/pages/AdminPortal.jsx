@@ -868,42 +868,46 @@ const AdminPortalContent = () => {
 
           {/* ID-Checks Sub-Tabs - Show only when on ID-Checks section */}
           {activeTab === 'id-checks' && (
-            <div className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-              <div className="flex gap-2 px-4 sm:px-6 lg:px-8">
+            <div className={`${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'} border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className="flex gap-1 px-4 sm:px-6 lg:px-8 py-2">
                 <button
-                  className={`px-6 py-3 font-semibold transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     theme === 'dark'
                       ? 'bg-[#c00000] text-white'
                       : 'bg-[#c00000] text-white'
                   }`}
                 >
+                  <FileText className="h-4 w-4" />
                   Dokumentenscan
                 </button>
                 <button
-                  className={`px-6 py-3 font-semibold transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     theme === 'dark'
                       ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                   }`}
                 >
+                  <Users className="h-4 w-4" />
                   Facematch
                 </button>
                 <button
-                  className={`px-6 py-3 font-semibold transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     theme === 'dark'
                       ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                   }`}
                 >
+                  <Fingerprint className="h-4 w-4" />
                   Fingerprint
                 </button>
                 <button
-                  className={`px-6 py-3 font-semibold transition-colors ${
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
                     theme === 'dark'
                       ? 'text-gray-400 hover:text-white hover:bg-[#2a2a2a]'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white'
                   }`}
                 >
+                  <Search className="h-4 w-4" />
                   KI-Suche
                 </button>
               </div>
