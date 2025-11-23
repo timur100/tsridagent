@@ -236,29 +236,49 @@ const IDCheckDetailPage = () => {
             Dokumente
           </h2>
           
-          <div className="space-y-6">
-            {/* Vorderseite (Front Side) - 1 row with 3 columns: WHITE, IR, UV */}
+          {/* 3 rows × 2 columns: Left=Vorderseite, Right=Rückseite */}
+          <div className="space-y-3">
             {(() => {
-              const frontImages = [
-                { type: 'front_white', label: 'WHITE', fallbackTypes: ['front_front', 'front_original', 'document_front', 'front'] },
-                { type: 'front_ir', label: 'IR', fallbackTypes: ['ir'] },
-                { type: 'front_uv', label: 'UV', fallbackTypes: ['uv'] }
-              ];
-              
               const availableImages = scan.images || [];
               const imageMap = {};
               availableImages.forEach(img => {
                 imageMap[img.image_type] = img;
               });
               
+              // Define image pairs: [front, back] for each light type
+              const imagePairs = [
+                {
+                  front: { type: 'front_white', label: 'WHITE', fallbackTypes: ['front_front', 'front_original', 'document_front', 'front'] },
+                  back: { type: 'back_white', label: 'WHITE', fallbackTypes: ['back_document_front', 'back_original', 'back_front', 'back'] }
+                },
+                {
+                  front: { type: 'front_ir', label: 'IR', fallbackTypes: ['ir'] },
+                  back: { type: 'back_ir', label: 'IR', fallbackTypes: [] }
+                },
+                {
+                  front: { type: 'front_uv', label: 'UV', fallbackTypes: ['uv'] },
+                  back: { type: 'back_uv', label: 'UV', fallbackTypes: [] }
+                }
+              ];
+              
               return (
-                <div>
-                  {/* Vorderseite Label */}
-                  <h3 className={`text-sm font-semibold mb-2 uppercase tracking-wider ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Vorderseite
-                  </h3>
-                  <div className="grid grid-cols-3 gap-3 mb-4">
-                    {frontImages.map((expected, idx) => {
+                <>
+                  {/* Column headers */}
+                  <div className="grid grid-cols-2 gap-3 mb-2">
+                    <h3 className={`text-sm font-semibold uppercase tracking-wider text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Vorderseite
+                    </h3>
+                    <h3 className={`text-sm font-semibold uppercase tracking-wider text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Rückseite
+                    </h3>
+                  </div>
+                  
+                  {/* Image rows */}
+                  {imagePairs.map((pair, rowIdx) => (
+                    <div key={rowIdx} className="grid grid-cols-2 gap-3">
+                      {/* Vorderseite (left column) */}
+                      {(() => {
+                        const expected = pair.front;
                       // Try to find the image (check main type and fallback types)
                       let foundImage = imageMap[expected.type];
                       if (!foundImage && expected.fallbackTypes) {
