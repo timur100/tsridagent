@@ -16,13 +16,27 @@ BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://identity-checks.p
 @router.post("/simulate-scan", response_model=dict)
 async def simulate_scan():
     """
-    Simuliert einen kompletten Scan und sendet ihn an den Webhook-Endpunkt
+    Simuliert einen kompletten Scan und fügt ihn direkt in die Datenbank ein
     
-    Dieser Endpunkt testet die Webhook-Integration ohne echten Scanner
+    Dieser Endpunkt testet die Scan-Integration ohne echten Scanner
     """
     try:
+        from motor.motor_asyncio import AsyncIOMotorClient
+        import uuid
+        import json
+        
+        # MongoDB connection
+        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        mongo_client = AsyncIOMotorClient(mongo_url)
+        mongo_db = mongo_client.get_database('main_db')
+        scans_collection = mongo_db['id_scans']
+        
+        scan_id = str(uuid.uuid4())
+        now = datetime.now(timezone.utc).isoformat()
+        
         # Simulierte Scandaten
         scan_data = {
+            "id": scan_id,
             "tenant_id": "1d3653db-86cb-4dd1-9ef5-0236b116def8",  # Europcar
             "tenant_name": "Europcar",
             "location_id": "LOC-BERLIN-HBF",
@@ -31,110 +45,69 @@ async def simulate_scan():
             "device_name": "Test Scanner Terminal",
             "scanner_id": "SCANNER-TEST-001",
             "scanner_name": "Test DESKO Scanner",
-            "scan_timestamp": datetime.now(timezone.utc).isoformat(),
+            "scan_timestamp": now,
+            "status": "validated",
             "document_type": "Personalausweis",
+            "scanned_by": None,
+            "operator_id": None,
+            "images": [],
+            "extracted_data": {
+                "document_class": "Personalausweis",
+                "country": "Deutschland",
+                "document_number": "T220001293",
+                "first_name": "Max",
+                "last_name": "Mustermann",
+                "date_of_birth": "1985-03-15",
+                "place_of_birth": "Berlin",
+                "nationality": "DEUTSCH",
+                "valid_from": "2020-01-01",
+                "valid_until": "2030-01-01",
+                "address": "Musterstraße 123, 10115 Berlin",
+                "issuing_authority": "Stadt Berlin"
+            },
+            "verification": {
+                "confidence_score": 92,
+                "status": "valid",
+                "checks": {
+                    "mrz_valid": True,
+                    "document_authentic": True,
+                    "security_features": True,
+                    "hologram_present": True
+                }
+            },
+            "requires_manual_review": False,
+            "manual_actions": [],
+            "created_at": now,
+            "updated_at": now,
             "ip_address": "192.168.1.100",
+            "notes": "Simulierter Test-Scan",
+            "tags": ["test", "simulated"],
+            "source": "test-endpoint"
         }
         
-        # Simulierte extrahierte Daten
-        extracted_data = {
-            "document_class": "Personalausweis",
-            "country": "Deutschland",
-            "document_number": "T220001293",
-            "first_name": "Max",
-            "last_name": "Mustermann",
-            "date_of_birth": "1985-03-15",
-            "place_of_birth": "Berlin",
-            "nationality": "DEUTSCH",
-            "valid_from": "2020-01-01",
-            "valid_until": "2030-01-01",
-            "address": "Musterstraße 123, 10115 Berlin",
-            "issuing_authority": "Stadt Berlin"
+        print(f"🧪 [Test] Creating simulated scan: {scan_id}")
+        
+        # Save to database
+        await scans_collection.insert_one(scan_data)
+        
+        # Remove _id from response
+        if '_id' in scan_data:
+            del scan_data['_id']
+        
+        print(f"✅ [Test] Scan created successfully!")
+        print(f"   Scan ID: {scan_id}")
+        print(f"   Tenant: {scan_data['tenant_name']}")
+        print(f"   Location: {scan_data['location_name']}")
+        print(f"   Status: {scan_data['status']}")
+        
+        return {
+            "success": True,
+            "message": "Simulated scan created successfully",
+            "scan_id": scan_id,
+            "scan_data": scan_data,
+            "view_url": f"/portal/admin/id-checks/{scan_id}"
         }
-        
-        # Simulierte Verification-Daten
-        verification = {
-            "confidence_score": 92,
-            "status": "valid",
-            "checks": {
-                "mrz_valid": True,
-                "document_authentic": True,
-                "security_features": True,
-                "hologram_present": True
-            }
-        }
-        
-        # Simulierte Bildpfade (würden im echten Scanner existieren)
-        image_paths = [
-            {"type": "front_original", "file_path": "/app/backend/test_images/front_original.jpg"},
-            {"type": "front_ir", "file_path": "/app/backend/test_images/front_ir.jpg"},
-            {"type": "front_uv", "file_path": "/app/backend/test_images/front_uv.jpg"},
-            {"type": "back_original", "file_path": "/app/backend/test_images/back_original.jpg"},
-            {"type": "back_ir", "file_path": "/app/backend/test_images/back_ir.jpg"},
-            {"type": "back_uv", "file_path": "/app/backend/test_images/back_uv.jpg"},
-            {"type": "portrait", "file_path": "/app/backend/test_images/portrait.jpg"}
-        ]
-        
-        # Sende an Webhook-Endpunkt
-        webhook_url = f"{BACKEND_URL}/api/webhooks/scan-completed"
-        
-        print(f"🧪 [Test] Sending simulated scan to webhook: {webhook_url}")
-        
-        # Prepare form data
-        form_data = {
-            "tenant_id": scan_data["tenant_id"],
-            "tenant_name": scan_data["tenant_name"],
-            "location_id": scan_data["location_id"],
-            "location_name": scan_data["location_name"],
-            "device_id": scan_data["device_id"],
-            "device_name": scan_data["device_name"],
-            "scanner_id": scan_data["scanner_id"],
-            "scanner_name": scan_data["scanner_name"],
-            "scan_timestamp": scan_data["scan_timestamp"],
-            "document_type": scan_data["document_type"],
-            "ip_address": scan_data["ip_address"],
-            "extracted_data": str(extracted_data).replace("'", '"'),
-            "verification": str(verification).replace("'", '"'),
-            "image_paths": str(image_paths).replace("'", '"')
-        }
-        
-        # Send request
-        headers = {
-            "X-API-Key": WEBHOOK_API_KEY
-        }
-        
-        response = requests.post(
-            webhook_url,
-            data=form_data,
-            headers=headers,
-            timeout=30
-        )
-        
-        if response.status_code == 200:
-            result = response.json()
-            print(f"✅ [Test] Webhook successful!")
-            print(f"   Scan ID: {result.get('scan_id')}")
-            print(f"   Status: {result.get('status')}")
-            
-            return {
-                "success": True,
-                "message": "Simulated scan sent successfully",
-                "webhook_response": result,
-                "scan_data": scan_data
-            }
-        else:
-            error_text = response.text
-            print(f"❌ [Test] Webhook failed: {response.status_code}")
-            print(f"   Error: {error_text}")
-            
-            raise HTTPException(
-                status_code=500,
-                detail=f"Webhook request failed: {response.status_code} - {error_text}"
-            )
     
-    except requests.RequestException as e:
-        print(f"❌ [Test] Request error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")
     except Exception as e:
         print(f"❌ [Test] Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
