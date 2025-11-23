@@ -92,9 +92,9 @@ const IDChecksPage = () => {
       console.log('[IDChecksPage] Loading stats...');
       const result = await apiCall('/api/id-scans/stats/summary');
       console.log('[IDChecksPage] Stats result:', result);
-      if (result && result.success && result.stats) {
-        console.log('[IDChecksPage] Setting stats:', result.stats);
-        setStats(result.stats);
+      if (result && result.success && result.data && result.data.stats) {
+        console.log('[IDChecksPage] Setting stats:', result.data.stats);
+        setStats(result.data.stats);
       } else {
         console.log('[IDChecksPage] No stats in result, setting defaults');
         // Set default stats if API fails
