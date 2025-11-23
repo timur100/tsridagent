@@ -240,7 +240,7 @@ const IDCheckDetailPage = () => {
             {/* Vorderseite (Front Side) - 1 row with 3 columns: WHITE, IR, UV */}
             {(() => {
               const frontImages = [
-                { type: 'front_front', label: 'WHITE', fallbackTypes: ['front_original', 'front_white'] },
+                { type: 'front_white', label: 'WHITE', fallbackTypes: ['front_front', 'front_original'] },
                 { type: 'front_ir', label: 'IR', fallbackTypes: [] },
                 { type: 'front_uv', label: 'UV', fallbackTypes: [] }
               ];
