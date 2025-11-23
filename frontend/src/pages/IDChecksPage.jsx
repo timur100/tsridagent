@@ -87,15 +87,19 @@ const IDChecksPage = () => {
   // Load stats
   const loadStats = async () => {
     try {
+      console.log('[IDChecksPage] Loading stats...');
       const result = await apiCall('/api/id-scans/stats/summary');
+      console.log('[IDChecksPage] Stats result:', result);
       if (result && result.success && result.stats) {
+        console.log('[IDChecksPage] Setting stats:', result.stats);
         setStats(result.stats);
       } else {
+        console.log('[IDChecksPage] No stats in result, setting defaults');
         // Set default stats if API fails
         setStats({ total: 0, validated: 0, rejected: 0, unknown: 0, pending: 0 });
       }
     } catch (error) {
-      console.error('Error loading stats:', error);
+      console.error('[IDChecksPage] Error loading stats:', error);
       setStats({ total: 0, validated: 0, rejected: 0, unknown: 0, pending: 0 });
     }
   };
