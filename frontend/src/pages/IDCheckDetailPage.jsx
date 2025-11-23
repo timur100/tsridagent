@@ -237,32 +237,39 @@ const IDCheckDetailPage = () => {
           </h2>
           
           <div className="grid grid-cols-2 gap-3">
-            {/* Show all document-related images (exclude main portrait for separate display) */}
-            {scan.images && scan.images.length > 0 ? (
-              scan.images
-                .filter(img => {
-                  // Only exclude front_portrait (shown separately in Portrait section)
-                  // Keep ALL other images including back_portrait, back_signature, etc.
-                  const isMainPortrait = img.image_type === 'front_portrait' || img.image_type === 'portrait';
-                  return !isMainPortrait;
-                })
-                // ⚠️ REMOVED .slice(0, 6) to show ALL available images!
-                .map((img, idx) => {
-                  const labelMap = {
-                    'front_front': 'Vorderseite',
-                    'front_original': 'Vorderseite',
-                    'back_original': 'Rückseite',
-                    'front_ir': 'IR (Vorderseite)',
-                    'back_ir': 'IR (Rückseite)',
-                    'front_uv': 'UV (Vorderseite)',
-                    'back_uv': 'UV (Rückseite)',
-                    'front_white': 'Weißlicht (V)',
-                    'back_white': 'Weißlicht (R)',
-                    'back_portrait': 'Portrait (Hinten)',
-                    'back_signature': 'Unterschrift',
-                    'back_document_front': 'Dokument (V)'
-                  };
-                  const label = labelMap[img.image_type] || img.image_type;
+            {/* Display structured document images: WHITE, IR, UV for front and back */}
+            {(() => {
+              // Define the expected image structure for proper document scanning
+              const expectedImages = [
+                { type: 'front_front', label: 'WHITE (Vorderseite)', fallbackTypes: ['front_original', 'front_white'] },
+                { type: 'front_ir', label: 'IR (Vorderseite)', fallbackTypes: [] },
+                { type: 'front_uv', label: 'UV (Vorderseite)', fallbackTypes: [] },
+                { type: 'back_portrait', label: 'Portrait (Rückseite)', fallbackTypes: [] },
+                { type: 'back_signature', label: 'Unterschrift', fallbackTypes: [] },
+                { type: 'back_document_front', label: 'Dokument (Rückseite)', fallbackTypes: ['back_original', 'back_front', 'back_white'] }
+              ];
+              
+              // Find available images
+              const availableImages = scan.images || [];
+              const imageMap = {};
+              availableImages.forEach(img => {
+                imageMap[img.image_type] = img;
+              });
+              
+              return expectedImages.map((expected, idx) => {
+                // Try to find the image (check main type and fallback types)
+                let foundImage = imageMap[expected.type];
+                if (!foundImage && expected.fallbackTypes) {
+                  for (const fallbackType of expected.fallbackTypes) {
+                    if (imageMap[fallbackType]) {
+                      foundImage = imageMap[fallbackType];
+                      break;
+                    }
+                  }
+                }
+                
+                const img = foundImage;
+                const label = expected.label;
                   
                   return (
                     <div key={img.image_type}>
