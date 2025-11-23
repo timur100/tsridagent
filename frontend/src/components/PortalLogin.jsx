@@ -70,8 +70,8 @@ const PortalLogin = () => {
           // Determine redirect path
           let redirectPath;
           if (isAdminUser) {
-            // CRITICAL: Only check email for admin access, role will be enforced by backend
-            redirectPath = location.state?.from?.pathname || '/portal/admin';
+            // CRITICAL: Admin always goes to /portal/admin, ignore any previous location
+            redirectPath = '/portal/admin';
             console.log('[Login] Admin detected - redirecting to /portal/admin');
           } else {
             // All other users go to customer portal
