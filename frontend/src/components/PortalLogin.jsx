@@ -59,9 +59,21 @@ const PortalLogin = () => {
           // Successful login or approved registration
           toast.success(isLoginMode ? 'Login erfolgreich!' : 'Registrierung erfolgreich!');
           
-          // Redirect to the page they tried to access, or default
-          const from = location.state?.from?.pathname || (result.user?.role === 'admin' ? '/portal/admin' : '/portal/customer');
-          navigate(from, { replace: true });
+          // SECURITY: Only admin@tsrid.com can access admin portal
+          const isAdminUser = formData.email.toLowerCase() === 'admin@tsrid.com';
+          
+          // Determine redirect path
+          let redirectPath;
+          if (isAdminUser && result.user?.role === 'admin') {
+            // Admin user can access /portal/admin
+            redirectPath = location.state?.from?.pathname || '/portal/admin';
+          } else {
+            // All other users go to customer portal
+            redirectPath = '/portal/customer';
+          }
+          
+          console.log('[Login] Redirecting to:', redirectPath, '| Role:', result.user?.role, '| Email:', formData.email);
+          navigate(redirectPath, { replace: true });
         }
       } else {
         toast.error(result.error || 'Ein Fehler ist aufgetreten');
