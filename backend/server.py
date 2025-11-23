@@ -245,7 +245,7 @@ app.include_router(electron_router)
 app.include_router(websocket_router, prefix="/api")
 
 # Include ID Scans router (integrated directly - no proxy needed)
-app.include_router(id_scans_router, prefix="/api")
+app.include_router(id_scans_router, prefix="/api/id-scans")
 
 # Include the router in the main app
 app.include_router(api_router)
