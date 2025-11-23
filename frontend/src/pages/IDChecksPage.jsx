@@ -15,6 +15,9 @@ const IDChecksPage = () => {
   const { user, apiCall } = useAuth();
   const navigate = useNavigate();
 
+  // Tab state
+  const [activeTab, setActiveTab] = useState('dokumentenscan');
+
   // Data states
   const [scans, setScans] = useState([]);
   const [stats, setStats] = useState({ total: 0, validated: 0, rejected: 0, unknown: 0, pending: 0 });
