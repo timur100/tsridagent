@@ -7,11 +7,11 @@ import requests
 import os
 
 # Get backend URL from env
-BACKEND_URL = os.getenv('REACT_APP_BACKEND_URL', 'http://localhost:8001')
+BACKEND_URL = "https://scan-sync-1.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 
-# API Key (should be set in backend/.env as WEBHOOK_API_KEY)
-API_KEY = "your-webhook-api-key-here"  # Replace with actual key from .env
+# API Key from backend/.env
+API_KEY = "G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg"
 
 def load_sample_data():
     """Load sample Regula data from uploaded files"""
