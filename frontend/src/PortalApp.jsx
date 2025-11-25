@@ -18,6 +18,7 @@ import CatalogPortal from './pages/CatalogPortal';
 import AdminLayout from './components/AdminLayout';
 import IDChecksPage from './pages/IDChecksPage';
 import IDCheckDetailPage from './pages/IDCheckDetailPage';
+import IdeasPage from './pages/IdeasPage';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
