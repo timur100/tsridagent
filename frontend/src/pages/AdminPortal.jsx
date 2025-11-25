@@ -51,6 +51,7 @@ import TenantsPage from './TenantsPage';
 import TenantDetailPage from './TenantDetailPage';
 import SubscriptionPlans from './SubscriptionPlans';
 import UsersRolesPage from './UsersRolesPage';
+import IdeasModal from '../components/IdeasModal';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
@@ -61,6 +62,7 @@ const AdminPortalContent = () => {
   const { selectedTenantId, selectedTenantName, setSelectedTenant } = useTenant();
   const location = useLocation();
   const navigate = useNavigate();
+  const [showIdeasModal, setShowIdeasModal] = useState(false);
   
   // Check if we're on a nested route (detail page or dedicated overview page)
   const isOnDetailPage = location.pathname !== '/portal/admin' && 
