@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Lightbulb, Plus, Save, Trash2, Edit2, Clock } from 'lucide-react';
-import { apiCall } from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const IdeasModal = ({ isOpen, onClose, theme }) => {
