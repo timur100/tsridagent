@@ -740,6 +740,20 @@ const AdminPortalContent = () => {
                 <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>Administrator</p>
               </div>
               <CustomerSwitcher />
+              
+              {/* Ideas Button - Navigate to Ideas Page */}
+              <button
+                onClick={() => navigate('/portal/admin/ideas')}
+                className={`p-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'hover:bg-white/10 text-yellow-400'
+                    : 'hover:bg-gray-100 text-yellow-600'
+                }`}
+                title="Ideen & Verbesserungsvorschläge"
+              >
+                <Lightbulb className="h-5 w-5" />
+              </button>
+              
               <ThemeToggle />
               <Button
                 variant="outline"
