@@ -852,6 +852,8 @@ const AdminPortalContent = () => {
                       // Navigate to nested routes for certain tabs
                       if (tab.id === 'id-checks') {
                         navigate('/portal/admin/id-checks');
+                      } else if (tab.id === 'ideas') {
+                        navigate('/portal/admin/ideas');
                       } else if (location.pathname !== '/portal/admin') {
                         // Navigate back to /portal/admin if we're on a nested route
                         navigate('/portal/admin');
