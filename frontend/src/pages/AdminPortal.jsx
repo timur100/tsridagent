@@ -841,6 +841,7 @@ const AdminPortalContent = () => {
                   { id: 'inventory', label: 'Inventory', icon: Package },
                   { id: 'orders', label: 'Orders', icon: ShoppingCart },
                   { id: 'support', label: 'Support', icon: Headphones },
+                  { id: 'ideas', label: 'Ideen', icon: Lightbulb },
                   { id: 'licenses', label: 'Licenses', icon: Key },
                   { id: 'settings', label: 'Settings', icon: Settings }
                 ].map((tab) => (
