@@ -101,6 +101,13 @@ const AdminLayout = ({ children }) => {
       <main>
         {children}
       </main>
+      
+      {/* Ideas Modal */}
+      <IdeasModal 
+        isOpen={showIdeasModal} 
+        onClose={() => setShowIdeasModal(false)} 
+        theme={theme}
+      />
     </div>
   );
 };
