@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const IdeasModal = ({ isOpen, onClose, theme }) => {
+  const { apiCall } = useAuth();
   const [ideas, setIdeas] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
