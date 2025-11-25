@@ -1746,13 +1746,6 @@ const AdminPortalContent = () => {
 
       {/* Outlet for nested routes - renders child routes like DeviceDetailPage */}
       <Outlet />
-      
-      {/* Ideas Modal */}
-      <IdeasModal 
-        isOpen={showIdeasModal} 
-        onClose={() => setShowIdeasModal(false)} 
-        theme={theme}
-      />
     </div>
   );
 };
