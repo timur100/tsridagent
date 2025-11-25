@@ -27,11 +27,19 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
       const params = filterStatus !== 'all' ? `?status=${filterStatus}` : '';
       const result = await apiCall(`/api/ideas/${params}`);
       
-      if (Array.isArray(result)) {
+      console.log('[IdeasModal] API result:', result);
+      
+      // apiCall returns an object with success, data, status
+      if (result.success && Array.isArray(result.data)) {
+        console.log('[IdeasModal] Setting ideas:', result.data.length, 'items');
+        setIdeas(result.data);
+      } else if (Array.isArray(result)) {
+        // Fallback if API returns array directly
+        console.log('[IdeasModal] Setting ideas (direct array):', result.length, 'items');
         setIdeas(result);
       }
     } catch (error) {
-      console.error('Error loading ideas:', error);
+      console.error('[IdeasModal] Error loading ideas:', error);
       toast.error('Fehler beim Laden der Ideen');
     } finally {
       setLoading(false);
