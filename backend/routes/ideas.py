@@ -8,7 +8,7 @@ import os
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from models.idea import Idea, IdeaCreate, IdeaUpdate
-from middleware.auth import verify_token
+from routes.portal_auth import verify_token
 
 router = APIRouter(prefix="/api/ideas", tags=["Ideas"])
 
