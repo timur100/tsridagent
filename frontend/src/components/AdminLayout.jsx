@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Shield, LogOut, User } from 'lucide-react';
+import { Shield, LogOut, User, Lightbulb } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
+import IdeasModal from './IdeasModal';
 
 const AdminLayout = ({ children }) => {
   const { theme } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [showIdeasModal, setShowIdeasModal] = useState(false);
 
   // Get company branding
   const companyName = user?.company_name || 'TSRID';
