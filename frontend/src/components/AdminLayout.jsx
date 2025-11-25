@@ -54,6 +54,19 @@ const AdminLayout = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
+              {/* Ideas Button */}
+              <button
+                onClick={() => setShowIdeasModal(true)}
+                className={`p-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'hover:bg-white/10 text-yellow-400'
+                    : 'hover:bg-gray-100 text-yellow-600'
+                }`}
+                title="Ideen & Verbesserungsvorschläge"
+              >
+                <Lightbulb className="h-5 w-5" />
+              </button>
+              
               <ThemeToggle />
               
               {/* User Menu */}
