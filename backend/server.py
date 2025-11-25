@@ -248,6 +248,9 @@ app.include_router(websocket_router, prefix="/api")
 # Include ID Scans router (integrated directly - no proxy needed)
 app.include_router(id_scans_router, prefix="/api/id-scans")
 
+# Include ideas router
+app.include_router(ideas_router)
+
 # Include Webhooks router (for external integrations)
 from routes.webhooks import router as webhooks_router
 app.include_router(webhooks_router, prefix="/api")
