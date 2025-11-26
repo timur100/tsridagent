@@ -132,10 +132,50 @@ async def global_search(
                 "data": location
             })
         
-        # Calculate total
-        total_results = len(geraete_results) + len(standorte_results)
+        # 3. Search ID-Checks
+        id_checks_query = {
+            "$or": [
+                {"id": search_regex},
+                {"tenant_name": search_regex},
+                {"extracted_data.name": search_regex},
+                {"extracted_data.surname": search_regex},
+                {"extracted_data.document_number": search_regex},
+                {"extracted_data.document_type": search_regex}
+            ]
+        }
         
-        print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)})")
+        id_checks = []
+        if user_role == "admin":
+            # Admin: search all ID checks
+            print(f"[Global Search] Admin search - all ID checks")
+            id_checks = list(main_db.id_scans.find(id_checks_query).sort('created_at', -1).limit(50))
+        
+        print(f"[Global Search] Found {len(id_checks)} ID checks")
+        
+        # Process ID check results
+        for check in id_checks:
+            if '_id' in check:
+                del check['_id']
+            
+            extracted = check.get('extracted_data', {})
+            name = f"{extracted.get('name', '')} {extracted.get('surname', '')}".strip() or 'N/A'
+            doc_type = extracted.get('document_type', 'Unbekannt')
+            doc_number = extracted.get('document_number', 'N/A')
+            
+            id_checks_results.append({
+                "type": "id-check",
+                "id": check.get('id'),
+                "title": f"{name} - {doc_type}",
+                "subtitle": f"Dokumentennr: {doc_number} | Tenant: {check.get('tenant_name', 'N/A')}",
+                "status": check.get('status', 'completed'),
+                "created_at": check.get('created_at'),
+                "data": check
+            })
+        
+        # Calculate total
+        total_results = len(geraete_results) + len(standorte_results) + len(id_checks_results)
+        
+        print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, ID-Checks: {len(id_checks_results)})")
         
         return {
             "success": True,
@@ -144,6 +184,7 @@ async def global_search(
             "results": {
                 "geraete": geraete_results[:25],  # Limit to 25
                 "standorte": standorte_results[:25],  # Limit to 25
+                "id_checks": id_checks_results[:25],  # Limit to 25
                 "bestellungen": []  # Placeholder for future
             }
         }
