@@ -687,6 +687,10 @@ const AdminPortalContent = () => {
                     } else {
                       navigate(`/portal/admin/devices/${deviceId}`);
                     }
+                  } else if (result.type === 'id-check') {
+                    // Navigate to ID-Check Detail Page
+                    const checkId = result.data.id || result.id;
+                    navigate(`/portal/admin/id-checks/${checkId}`);
                   }
                 }}
               />
