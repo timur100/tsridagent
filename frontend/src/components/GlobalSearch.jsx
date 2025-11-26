@@ -222,6 +222,8 @@ const GlobalSearch = ({ onResultSelect }) => {
         return <Ticket className="h-5 w-5 text-red-500" />;
       case 'eurobox':
         return <Box className="h-5 w-5 text-[#c00000]" />;
+      case 'id-check':
+        return <Fingerprint className="h-5 w-5 text-indigo-500" />;
       default:
         return <Search className="h-5 w-5 text-gray-500" />;
     }
