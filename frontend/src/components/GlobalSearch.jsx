@@ -418,6 +418,36 @@ const GlobalSearch = ({ onResultSelect }) => {
             </div>
           )}
 
+          {/* ID-Checks Results */}
+          {results.results.id_checks && results.results.id_checks.length > 0 && (
+            <div>
+              <div className={`px-4 py-2 text-xs font-semibold uppercase ${
+                theme === 'dark' ? 'text-gray-400 bg-[#1a1a1a]' : 'text-gray-600 bg-gray-50'
+              }`}>
+                ID-Checks ({results.results.id_checks.length})
+              </div>
+              {results.results.id_checks.map((item, idx) => (
+                <button
+                  key={`id-check-${idx}`}
+                  onClick={() => handleResultClick(item)}
+                  className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-opacity-50 transition-colors ${
+                    theme === 'dark' ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {getIcon('id-check')}
+                  <div className="flex-1 text-left">
+                    <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {item.title}
+                    </div>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {item.subtitle}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Tickets Section */}
           {results.results.tickets && results.results.tickets.length > 0 && (
             <div>
