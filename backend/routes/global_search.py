@@ -51,6 +51,7 @@ async def global_search(
         # Initialize results
         geraete_results = []
         standorte_results = []
+        id_checks_results = []
         
         # 1. Search Devices (HIGH PRIORITY)
         device_query = {
