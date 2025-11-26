@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Search, Package, Monitor, MapPin, Loader, ShoppingBag, X, Ticket, Box } from 'lucide-react';
+import { Search, Package, Monitor, MapPin, Loader, ShoppingBag, X, Ticket, Box, Fingerprint } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const GlobalSearch = ({ onResultSelect }) => {
