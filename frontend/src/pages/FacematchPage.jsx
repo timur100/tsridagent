@@ -22,6 +22,111 @@ const FacematchPage = () => {
   const [loading, setLoading] = useState(false);
   const [comparing, setComparing] = useState(false);
 
+  useEffect(() => {
+    // Cleanup: Stop camera when component unmounts
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [stream]);
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: 1280, 
+          height: 720,
+          facingMode: 'user'
+        } 
+      });
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+      
+      setStream(mediaStream);
+      setCameraActive(true);
+      toast.success('Kamera gestartet');
+    } catch (error) {
+      console.error('Camera access error:', error);
+      toast.error('Kamera-Zugriff fehlgeschlagen. Bitte Berechtigungen prüfen.');
+    }
+  };
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      setStream(null);
+      setCameraActive(false);
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      toast.success('Kamera gestoppt');
+    }
+  };
+
+  const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+
+    // Set canvas dimensions to match video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    // Draw current video frame to canvas
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Convert canvas to base64 image
+    const imageData = canvas.toDataURL('image/jpeg', 0.9);
+    setCapturedImage(imageData);
+    
+    // Stop camera after capture
+    stopCamera();
+    
+    toast.success('Foto aufgenommen');
+  };
+
+  const retakePhoto = () => {
+    setCapturedImage(null);
+    setMatches([]);
+    startCamera();
+  };
+
+  const compareWithDatabase = async () => {
+    if (!capturedImage) {
+      toast.error('Bitte nehmen Sie zuerst ein Foto auf');
+      return;
+    }
+
+    setComparing(true);
+    try {
+      // Call backend API to compare face
+      const result = await apiCall('/api/facematch/compare', {
+        method: 'POST',
+        body: JSON.stringify({
+          image: capturedImage
+        })
+      });
+
+      if (result.success && result.data) {
+        setMatches(result.data.matches || []);
+        toast.success(`${result.data.matches?.length || 0} Übereinstimmung(en) gefunden`);
+      } else {
+        toast.error('Keine Übereinstimmungen gefunden');
+        setMatches([]);
+      }
+    } catch (error) {
+      console.error('Facematch error:', error);
+      toast.error('Fehler beim Gesichtsvergleich');
+    } finally {
+      setComparing(false);
+    }
+  };
+
   return (
     <div>
       {/* Sub-Tab Menu */}
