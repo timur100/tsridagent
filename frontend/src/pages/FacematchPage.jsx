@@ -598,16 +598,17 @@ const FacematchPage = () => {
 
             {cameraActive && step === 1 && (
               <div className="space-y-4">
-                <div className="relative mx-auto" style={{ maxWidth: '480px' }}>
+                <div className="relative mx-auto overflow-hidden rounded-2xl" style={{ maxWidth: '480px' }}>
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
-                    className="w-full rounded-2xl"
+                    className="w-full"
                     style={{ 
                       aspectRatio: '3/4',
                       objectFit: 'cover',
-                      transform: 'scaleX(-1)' // Mirror for better UX
+                      transform: `scaleX(-1) scale(${zoomLevel})`, // Mirror + Auto-Zoom
+                      transition: 'transform 0.3s ease-out'
                     }}
                   />
                   
