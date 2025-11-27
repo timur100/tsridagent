@@ -33,14 +33,9 @@ const FacematchPage = () => {
   const [autoCapturing, setAutoCapturing] = useState(false);
   const [step, setStep] = useState(1); // 1: capture live image, 2: select document, 3: compare
 
-  // Fetch available scans on mount
-  useEffect(() => {
-    fetchAvailableScans();
-  }, []);
-
   // Auto-start camera when component mounts
   useEffect(() => {
-    if (!cameraActive && !capturedImage) {
+    if (step === 1 && !cameraActive && !capturedImage) {
       startCamera();
     }
     
@@ -52,15 +47,36 @@ const FacematchPage = () => {
     };
   }, []);
 
-  // Face detection loop
+  // Fetch scans only when needed (step 2)
+  useEffect(() => {
+    if (step === 2 && availableScans.length === 0) {
+      fetchAvailableScans();
+    }
+  }, [step]);
+
+  // Simulated face detection loop (for visual feedback)
   useEffect(() => {
     let animationId;
+    let checkCount = 0;
     
-    if (cameraActive && videoRef.current && !autoCapturing) {
+    if (cameraActive && videoRef.current && !autoCapturing && step === 1) {
       const detectFace = async () => {
-        // TODO: Implement real-time face detection
-        // For now, we'll simulate it
-        // In production, you'd send frames to backend or use a client-side library
+        checkCount++;
+        
+        // Simulate face detection every 30 frames (~1 second at 30fps)
+        if (checkCount % 30 === 0) {
+          // Simulate face detection states
+          const states = ['outside', 'too-far', 'too-close', 'perfect'];
+          const randomState = states[Math.floor(Math.random() * states.length)];
+          
+          setFaceDetected(randomState !== 'outside');
+          setFacePosition(randomState);
+          
+          // In real implementation, you would:
+          // 1. Capture current video frame
+          // 2. Send to backend for face detection
+          // 3. Get face location and position feedback
+        }
         
         animationId = requestAnimationFrame(detectFace);
       };
@@ -73,7 +89,7 @@ const FacematchPage = () => {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [cameraActive, autoCapturing]);
+  }, [cameraActive, autoCapturing, step]);
 
   const fetchAvailableScans = async () => {
     setLoading(true);
