@@ -446,6 +446,8 @@ const FacematchPage = () => {
     setTargetZoom(1.2);
     setPositionHistory([]);
     setCountdown(0);
+    setPerfectPositionCount(0);
+    setAutoCapturing(false);
     startCamera();
   };
 
