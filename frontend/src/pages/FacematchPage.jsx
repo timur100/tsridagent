@@ -208,44 +208,13 @@ const FacematchPage = () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     context.restore();
 
-    // Hintergrund-Entfernung (vereinfacht mit Canvas-Manipulation)
-    // In Produktion: MediaPipe Selfie Segmentation oder Backend-API
-    try {
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      
-      // Einfacher Hintergrund-Blur/Removal-Effekt
-      // Erstelle einen weichen Übergang zum weißen Hintergrund
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const maxRadius = Math.min(canvas.width, canvas.height) * 0.4; // Oval-Radius
-      
-      for (let i = 0; i < data.length; i += 4) {
-        const x = (i / 4) % canvas.width;
-        const y = Math.floor((i / 4) / canvas.width);
-        
-        // Berechne Distanz vom Zentrum (oval)
-        const dx = (x - centerX) / (canvas.width * 0.35);
-        const dy = (y - centerY) / (canvas.height * 0.42);
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Wenn außerhalb des ovalen Bereichs -> Weißer Hintergrund mit Übergang
-        if (distance > 1) {
-          const fadeStart = 1.0;
-          const fadeEnd = 1.2;
-          const alpha = Math.min((distance - fadeStart) / (fadeEnd - fadeStart), 1);
-          
-          // Blend zu weiß
-          data[i] = data[i] * (1 - alpha) + 255 * alpha;     // R
-          data[i + 1] = data[i + 1] * (1 - alpha) + 255 * alpha; // G
-          data[i + 2] = data[i + 2] * (1 - alpha) + 255 * alpha; // B
-        }
-      }
-      
-      context.putImageData(imageData, 0, 0);
-    } catch (error) {
-      console.error('Hintergrund-Entfernung fehlgeschlagen:', error);
-      // Fortfahren ohne Hintergrund-Entfernung
+    // Hintergrund-Entfernung mit fortgeschrittener Methode
+    const backgroundRemoved = removeBackground(context, canvas.width, canvas.height, 'advanced');
+    
+    if (backgroundRemoved) {
+      console.log('[Facematch] Hintergrund erfolgreich entfernt');
+    } else {
+      console.warn('[Facematch] Hintergrund-Entfernung fehlgeschlagen, verwende Original');
     }
 
     // Convert canvas to base64 image
