@@ -55,10 +55,11 @@ const FacematchPage = () => {
     }
   }, [step]);
 
-  // Simulated face detection loop (for visual feedback)
+  // Simulated face detection loop with auto-capture
   useEffect(() => {
     let animationId;
     let checkCount = 0;
+    let perfectPositionCount = 0;
     
     if (cameraActive && videoRef.current && !autoCapturing && step === 1) {
       const detectFace = async () => {
@@ -72,6 +73,26 @@ const FacematchPage = () => {
           
           setFaceDetected(randomState !== 'outside');
           setFacePosition(randomState);
+          
+          // Auto-capture logic: wenn "perfect" für 3 Sekunden
+          if (randomState === 'perfect') {
+            perfectPositionCount++;
+            setCountdown(4 - perfectPositionCount); // 3, 2, 1
+            
+            // Nach 3 Sekunden in perfekter Position: Auto-Capture
+            if (perfectPositionCount >= 3) {
+              setAutoCapturing(true);
+              setTimeout(() => {
+                capturePhoto();
+              }, 500); // Kleine Verzögerung für besseres UX
+              perfectPositionCount = 0;
+              setCountdown(0);
+            }
+          } else {
+            // Position nicht mehr perfekt, Reset
+            perfectPositionCount = 0;
+            setCountdown(0);
+          }
           
           // In real implementation, you would:
           // 1. Capture current video frame
