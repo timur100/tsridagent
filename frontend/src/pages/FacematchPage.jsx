@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { 
-  Users, Search, FileText, Fingerprint, Upload, 
-  Image as ImageIcon, CheckCircle, XCircle, Eye
+  Users, Search, FileText, Fingerprint, Camera, 
+  Image as ImageIcon, CheckCircle, XCircle, Eye, X, RefreshCw
 } from 'lucide-react';
 
 const FacematchPage = () => {
@@ -13,8 +13,14 @@ const FacematchPage = () => {
   const { apiCall } = useAuth();
   const navigate = useNavigate();
   
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [stream, setStream] = useState(null);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [comparing, setComparing] = useState(false);
 
   return (
     <div>
