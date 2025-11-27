@@ -793,18 +793,20 @@ const FacematchPage = () => {
                     }}
                   />
                   
-                  {/* Canvas Overlay für Face Detection Visualisierung */}
-                  <canvas
-                    ref={overlayCanvasRef}
-                    className="absolute top-0 left-0 pointer-events-none"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      transform: `scaleX(-1) scale(${zoomLevel})`, // Gleiche Transformation wie Video
-                      transition: 'transform 0.3s ease-out',
-                      zIndex: 3
-                    }}
-                  />
+                  {/* Canvas Overlay für Face Detection Visualisierung - TEMPORÄR DEAKTIVIERT */}
+                  {false && (
+                    <canvas
+                      ref={overlayCanvasRef}
+                      className="absolute top-0 left-0 pointer-events-none"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        transform: `scaleX(-1) scale(${zoomLevel})`,
+                        transition: 'transform 0.3s ease-out',
+                        zIndex: 3
+                      }}
+                    />
+                  )}
                   
                   {/* Oval/Round face detection frame overlay */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
