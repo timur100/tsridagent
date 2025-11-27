@@ -268,12 +268,13 @@ const FacematchPage = () => {
                 return newHistory;
               });
               
-              // Auto-capture logic: nur wenn wirklich stabil "perfect"
+              // Auto-capture logic: nur wenn wirklich stabil "perfect" UND in Kamera schaut
               const recentPositions = positionHistory.slice(-3);
               const allPerfect = recentPositions.length === 3 && 
                                  recentPositions.every(p => p === 'perfect');
+              const lookingAtCamera = result.lookingAtCamera !== false; // Default true wenn nicht gesetzt
               
-              if (allPerfect && detectedPosition === 'perfect') {
+              if (allPerfect && detectedPosition === 'perfect' && lookingAtCamera) {
                 setPerfectPositionCount(prev => {
                   const newCount = prev + 1;
                   setCountdown(4 - newCount); // 3, 2, 1
