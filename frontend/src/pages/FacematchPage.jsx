@@ -186,16 +186,30 @@ const FacematchPage = () => {
         }
       }
       
+      } else if (overlayCanvasRef.current) {
+        // Wenn keine Detection, Canvas leeren
+        const canvas = overlayCanvasRef.current;
+        const ctx = canvas.getContext('2d', { alpha: true });
+        if (canvas.width > 0 && canvas.height > 0) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      
       animationId = requestAnimationFrame(drawOverlay);
     };
     
-    if (cameraActive && step === 1 && currentDetection) {
+    if (cameraActive && step === 1) {
       drawOverlay();
     }
     
     return () => {
       if (animationId) {
         cancelAnimationFrame(animationId);
+      }
+      // Canvas beim Cleanup leeren
+      if (overlayCanvasRef.current) {
+        const ctx = overlayCanvasRef.current.getContext('2d', { alpha: true });
+        ctx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
       }
     };
   }, [cameraActive, step, currentDetection]);
