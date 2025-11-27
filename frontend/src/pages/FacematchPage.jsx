@@ -83,6 +83,124 @@ const FacematchPage = () => {
     }
   }, [step]);
 
+  // Zeichne Face Detection Overlay (Bounding Box & Landmarks)
+  useEffect(() => {
+    let animationId;
+    
+    const drawOverlay = () => {
+      if (overlayCanvasRef.current && videoRef.current && currentDetection && currentDetection.detected) {
+        const canvas = overlayCanvasRef.current;
+        const video = videoRef.current;
+        const ctx = canvas.getContext('2d');
+        
+        // Canvas-Größe an Video anpassen
+        if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+        }
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Hole Detection-Daten
+        const detection = currentDetection.rawDetection;
+        if (detection && detection.boundingBox) {
+          const bbox = detection.boundingBox;
+          
+          // Berechne Bounding Box Position
+          const x = bbox.xCenter * canvas.width - (bbox.width * canvas.width) / 2;
+          const y = bbox.yCenter * canvas.height - (bbox.height * canvas.height) / 2;
+          const w = bbox.width * canvas.width;
+          const h = bbox.height * canvas.height;
+          
+          // Farbe basierend auf Position
+          const color = currentDetection.position === 'perfect' 
+            ? '#22c55e' 
+            : currentDetection.position === 'outside' 
+            ? '#ef4444' 
+            : '#eab308';
+          
+          // Zeichne Bounding Box
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 3;
+          ctx.strokeRect(x, y, w, h);
+          
+          // Zeichne Ecken (für forensischen Look)
+          const cornerLength = 20;
+          ctx.lineWidth = 4;
+          
+          // Top-left
+          ctx.beginPath();
+          ctx.moveTo(x, y + cornerLength);
+          ctx.lineTo(x, y);
+          ctx.lineTo(x + cornerLength, y);
+          ctx.stroke();
+          
+          // Top-right
+          ctx.beginPath();
+          ctx.moveTo(x + w - cornerLength, y);
+          ctx.lineTo(x + w, y);
+          ctx.lineTo(x + w, y + cornerLength);
+          ctx.stroke();
+          
+          // Bottom-left
+          ctx.beginPath();
+          ctx.moveTo(x, y + h - cornerLength);
+          ctx.lineTo(x, y + h);
+          ctx.lineTo(x + cornerLength, y + h);
+          ctx.stroke();
+          
+          // Bottom-right
+          ctx.beginPath();
+          ctx.moveTo(x + w - cornerLength, y + h);
+          ctx.lineTo(x + w, y + h);
+          ctx.lineTo(x + w, y + h - cornerLength);
+          ctx.stroke();
+          
+          // Zeichne Landmarks (Key Points)
+          if (detection.landmarks && detection.landmarks.length > 0) {
+            ctx.fillStyle = color;
+            detection.landmarks.forEach(landmark => {
+              const lx = landmark.x * canvas.width;
+              const ly = landmark.y * canvas.height;
+              
+              // Zeichne Punkt
+              ctx.beginPath();
+              ctx.arc(lx, ly, 4, 0, 2 * Math.PI);
+              ctx.fill();
+              
+              // Zeichne Glow-Effekt
+              ctx.strokeStyle = color;
+              ctx.lineWidth = 1;
+              ctx.beginPath();
+              ctx.arc(lx, ly, 6, 0, 2 * Math.PI);
+              ctx.stroke();
+            });
+          }
+          
+          // Zeichne Confidence Score
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+          ctx.fillRect(x, y - 30, 150, 25);
+          ctx.fillStyle = 'white';
+          ctx.font = '14px monospace';
+          ctx.fillText(`${(currentDetection.confidence * 100).toFixed(1)}% confident`, x + 5, y - 10);
+        }
+      }
+      
+      animationId = requestAnimationFrame(drawOverlay);
+    };
+    
+    if (cameraActive && step === 1 && currentDetection) {
+      drawOverlay();
+    }
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [cameraActive, step, currentDetection]);
+
   // Sanfter Zoom-Übergang (interpolation)
   useEffect(() => {
     let animationId;
