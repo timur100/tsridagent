@@ -34,7 +34,9 @@ const FacematchPage = () => {
   const [autoCapturing, setAutoCapturing] = useState(false);
   const [step, setStep] = useState(1); // 1: capture live image, 2: select document, 3: compare
   const [countdown, setCountdown] = useState(0); // Countdown for auto-capture
-  const [zoomLevel, setZoomLevel] = useState(1); // Auto-zoom level (1.0 - 2.0)
+  const [zoomLevel, setZoomLevel] = useState(1.2); // Auto-zoom level (1.0 - 1.5) - Start bei 1.2
+  const [targetZoom, setTargetZoom] = useState(1.2); // Ziel-Zoom für sanfte Übergänge
+  const [positionHistory, setPositionHistory] = useState([]); // Verlauf für Stabilisierung
 
   // Auto-start camera when component mounts
   useEffect(() => {
