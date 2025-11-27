@@ -428,8 +428,11 @@ const FacematchPage = () => {
     // Stop camera after capture
     stopCamera();
     
-    // Reset zoom
+    // Reset zoom and capture state
     setZoomLevel(1.0);
+    setAutoCapturing(false);
+    setPerfectPositionCount(0);
+    setCountdown(0);
     
     // Move to next step: document selection
     setStep(2);
