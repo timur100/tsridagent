@@ -42,10 +42,18 @@ const FacematchPage = () => {
   // Initialize MediaPipe on mount
   useEffect(() => {
     const init = async () => {
-      const initialized = await initMediaPipe();
-      if (initialized) {
-        console.log('[Facematch] MediaPipe bereit für professionelle Hintergrund-Entfernung');
-        toast.success('KI-Hintergrund-Entfernung aktiviert', { duration: 2000 });
+      // Initialisiere Face Detection
+      const faceDetectionInit = await initFaceDetection();
+      if (faceDetectionInit) {
+        console.log('[Facematch] Echte Gesichtserkennung aktiviert');
+        toast.success('KI-Gesichtserkennung aktiviert', { duration: 2000, icon: '🎯' });
+      }
+      
+      // Initialisiere Background Removal
+      const backgroundInit = await initMediaPipe();
+      if (backgroundInit) {
+        console.log('[Facematch] Hintergrund-Entfernung aktiviert');
+        toast.success('KI-Hintergrund-Entfernung aktiviert', { duration: 2000, icon: '✨' });
       }
     };
     
