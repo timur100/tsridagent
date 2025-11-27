@@ -195,6 +195,7 @@ const IDChecksPage = () => {
               Dokumentenscan
             </button>
             <button
+              onClick={() => navigate('/portal/admin/facematch')}
               className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                 theme === 'dark' ? 'text-gray-400 hover:bg-[#3a3a3a]' : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -203,6 +204,7 @@ const IDChecksPage = () => {
               Facematch
             </button>
             <button
+              onClick={() => navigate('/portal/admin/fingerprint')}
               className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                 theme === 'dark' ? 'text-gray-400 hover:bg-[#3a3a3a]' : 'text-gray-700 hover:bg-gray-100'
               }`}
@@ -211,6 +213,7 @@ const IDChecksPage = () => {
               Fingerprint
             </button>
             <button
+              onClick={() => navigate('/portal/admin/ki-search')}
               className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                 theme === 'dark' ? 'text-gray-400 hover:bg-[#3a3a3a]' : 'text-gray-700 hover:bg-gray-100'
               }`}
