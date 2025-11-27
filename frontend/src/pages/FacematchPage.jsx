@@ -756,11 +756,11 @@ const FacematchPage = () => {
                     </button>
                   </div>
                   
-                  {/* Zoom Indicator */}
-                  {zoomLevel > 1.05 && (
+                  {/* Zoom Indicator - nur wenn deutlich vom Standard abweicht */}
+                  {Math.abs(zoomLevel - 1.2) > 0.15 && (
                     <div className="absolute top-4 left-4 bg-blue-600 bg-opacity-90 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg flex items-center gap-2" style={{ zIndex: 5 }}>
                       <Search className="h-3 w-3" />
-                      {(zoomLevel * 100).toFixed(0)}% Zoom
+                      {zoomLevel > 1.2 ? '🔍 Näher' : '🔍 Weiter'}
                     </div>
                   )}
                 </div>
