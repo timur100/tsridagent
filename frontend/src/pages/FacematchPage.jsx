@@ -328,16 +328,76 @@ const FacematchPage = () => {
           </div>
         </div>
 
-        {/* Empty State */}
-        <div className={`text-center py-12 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-          <ImageIcon className={`mx-auto h-16 w-16 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-          <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Keine Facematch-Vergleiche vorhanden
-          </h3>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Laden Sie Bilder hoch, um den Gesichtsvergleich zu starten
-          </p>
-        </div>
+        {/* Results Section */}
+        {matches.length > 0 ? (
+          <div className="space-y-4">
+            <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Übereinstimmungen gefunden: {matches.length}
+            </h3>
+            {matches.map((match, index) => (
+              <div 
+                key={index}
+                className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}
+              >
+                <div className="flex items-start gap-4">
+                  <img
+                    src={match.document_image}
+                    alt="Document"
+                    className="w-24 h-24 rounded-lg object-cover"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {match.name}
+                      </h4>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                        match.confidence >= 80 
+                          ? 'bg-green-100 text-green-800'
+                          : match.confidence >= 60
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {match.confidence}% Übereinstimmung
+                      </span>
+                    </div>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Dokumentennummer: {match.document_number}
+                    </p>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Gescannt am: {new Date(match.scanned_at).toLocaleString('de-DE')}
+                    </p>
+                    <button
+                      onClick={() => navigate(`/portal/admin/id-checks/${match.scan_id}`)}
+                      className="mt-2 text-[#c00000] hover:underline text-sm font-semibold"
+                    >
+                      Details anzeigen →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : capturedImage ? (
+          <div className={`text-center py-12 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <XCircle className={`mx-auto h-16 w-16 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Keine Übereinstimmungen gefunden
+            </h3>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Das aufgenommene Gesicht stimmt mit keinem Dokument in der Datenbank überein
+            </p>
+          </div>
+        ) : (
+          <div className={`text-center py-12 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <ImageIcon className={`mx-auto h-16 w-16 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Bereit für Gesichtsvergleich
+            </h3>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Starten Sie die Kamera und nehmen Sie ein Foto auf
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
