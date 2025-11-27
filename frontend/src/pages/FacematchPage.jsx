@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { 
   Users, Search, FileText, Fingerprint, Camera, 
-  Image as ImageIcon, CheckCircle, XCircle, Eye, X, RefreshCw
+  Image as ImageIcon, CheckCircle, XCircle, Eye, X, RefreshCw, AlertTriangle, ChevronDown
 } from 'lucide-react';
 
 const FacematchPage = () => {
@@ -15,28 +15,86 @@ const FacematchPage = () => {
   
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const liveCanvasRef = useRef(null);
+  const docCanvasRef = useRef(null);
+  
+  // State management
   const [stream, setStream] = useState(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
-  const [matches, setMatches] = useState([]);
+  const [availableScans, setAvailableScans] = useState([]);
+  const [selectedScan, setSelectedScan] = useState(null);
+  const [matchResult, setMatchResult] = useState(null);
+  const [threshold, setThreshold] = useState(70);
   const [loading, setLoading] = useState(false);
   const [comparing, setComparing] = useState(false);
+  const [faceDetected, setFaceDetected] = useState(false);
+  const [facePosition, setFacePosition] = useState(null); // 'too-far', 'too-close', 'perfect'
+  const [autoCapturing, setAutoCapturing] = useState(false);
 
+  // Fetch available scans on mount
   useEffect(() => {
-    // Cleanup: Stop camera when component unmounts
+    fetchAvailableScans();
+  }, []);
+
+  // Auto-start camera when component mounts
+  useEffect(() => {
+    if (!cameraActive && !capturedImage) {
+      startCamera();
+    }
+    
+    // Cleanup
     return () => {
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [stream]);
+  }, []);
+
+  // Face detection loop
+  useEffect(() => {
+    let animationId;
+    
+    if (cameraActive && videoRef.current && !autoCapturing) {
+      const detectFace = async () => {
+        // TODO: Implement real-time face detection
+        // For now, we'll simulate it
+        // In production, you'd send frames to backend or use a client-side library
+        
+        animationId = requestAnimationFrame(detectFace);
+      };
+      
+      detectFace();
+    }
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [cameraActive, autoCapturing]);
+
+  const fetchAvailableScans = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/facematch/scans');
+      if (result.success && result.data) {
+        setAvailableScans(result.data.scans || []);
+      }
+    } catch (error) {
+      console.error('Error fetching scans:', error);
+      toast.error('Fehler beim Laden der Scans');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          width: 1280, 
-          height: 720,
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 },
           facingMode: 'user'
         } 
       });
@@ -47,7 +105,6 @@ const FacematchPage = () => {
       
       setStream(mediaStream);
       setCameraActive(true);
-      toast.success('Kamera gestartet');
     } catch (error) {
       console.error('Camera access error:', error);
       toast.error('Kamera-Zugriff fehlgeschlagen. Bitte Berechtigungen prüfen.');
@@ -62,7 +119,6 @@ const FacematchPage = () => {
       if (videoRef.current) {
         videoRef.current.srcObject = null;
       }
-      toast.success('Kamera gestoppt');
     }
   };
 
@@ -81,7 +137,7 @@ const FacematchPage = () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     // Convert canvas to base64 image
-    const imageData = canvas.toDataURL('image/jpeg', 0.9);
+    const imageData = canvas.toDataURL('image/jpeg', 0.95);
     setCapturedImage(imageData);
     
     // Stop camera after capture
@@ -92,8 +148,59 @@ const FacematchPage = () => {
 
   const retakePhoto = () => {
     setCapturedImage(null);
-    setMatches([]);
+    setMatchResult(null);
     startCamera();
+  };
+
+  const drawLandmarks = (canvasElement, landmarks, faceLocation, imageWidth, imageHeight) => {
+    const canvas = canvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw face bounding box
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 3;
+    const top = faceLocation.top;
+    const right = faceLocation.right;
+    const bottom = faceLocation.bottom;
+    const left = faceLocation.left;
+    
+    ctx.strokeRect(left, top, right - left, bottom - top);
+
+    // Draw landmarks
+    ctx.fillStyle = '#ffffff';
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 2;
+
+    // Draw facial feature points and connections
+    const featureGroups = [
+      'chin', 'left_eyebrow', 'right_eyebrow', 
+      'nose_bridge', 'nose_tip', 
+      'left_eye', 'right_eye', 
+      'top_lip', 'bottom_lip'
+    ];
+
+    featureGroups.forEach(feature => {
+      const points = landmarks[feature];
+      if (!points || points.length === 0) return;
+
+      // Draw connecting lines
+      ctx.beginPath();
+      ctx.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length; i++) {
+        ctx.lineTo(points[i][0], points[i][1]);
+      }
+      ctx.stroke();
+
+      // Draw points
+      points.forEach(point => {
+        ctx.beginPath();
+        ctx.arc(point[0], point[1], 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    });
   };
 
   const compareWithDatabase = async () => {
@@ -102,22 +209,80 @@ const FacematchPage = () => {
       return;
     }
 
+    if (!selectedScan) {
+      toast.error('Bitte wählen Sie ein Dokument zum Vergleich aus');
+      return;
+    }
+
     setComparing(true);
     try {
-      // Call backend API to compare face
       const result = await apiCall('/api/facematch/compare', {
         method: 'POST',
         body: JSON.stringify({
-          image: capturedImage
+          live_image: capturedImage,
+          scan_id: selectedScan.id,
+          threshold: threshold
         })
       });
 
       if (result.success && result.data) {
-        setMatches(result.data.matches || []);
-        toast.success(`${result.data.matches?.length || 0} Übereinstimmung(en) gefunden`);
+        setMatchResult(result.data);
+        
+        // Draw landmarks on both images
+        setTimeout(() => {
+          // Live image landmarks
+          if (liveCanvasRef.current && result.data.live_face) {
+            const liveImg = new Image();
+            liveImg.onload = () => {
+              liveCanvasRef.current.width = liveImg.width;
+              liveCanvasRef.current.height = liveImg.height;
+              const ctx = liveCanvasRef.current.getContext('2d');
+              ctx.drawImage(liveImg, 0, 0);
+              drawLandmarks(
+                liveCanvasRef.current,
+                result.data.live_face.landmarks,
+                result.data.live_face.location,
+                liveImg.width,
+                liveImg.height
+              );
+            };
+            liveImg.src = capturedImage;
+          }
+
+          // Document image landmarks
+          if (docCanvasRef.current && result.data.document_face) {
+            // Fetch document image
+            apiCall(`/api/id-scans/${selectedScan.id}/images/front_portrait`, {
+              method: 'GET',
+              responseType: 'blob'
+            }).then(blob => {
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const docImg = new Image();
+                docImg.onload = () => {
+                  docCanvasRef.current.width = docImg.width;
+                  docCanvasRef.current.height = docImg.height;
+                  const ctx = docCanvasRef.current.getContext('2d');
+                  ctx.drawImage(docImg, 0, 0);
+                  drawLandmarks(
+                    docCanvasRef.current,
+                    result.data.document_face.landmarks,
+                    result.data.document_face.location,
+                    docImg.width,
+                    docImg.height
+                  );
+                };
+                docImg.src = reader.result;
+              };
+              reader.readAsDataURL(blob);
+            });
+          }
+        }, 100);
+
+        const matchStatus = result.data.is_match ? 'Übereinstimmung' : 'Keine Übereinstimmung';
+        toast.success(`${matchStatus}: ${result.data.match_percentage}%`);
       } else {
-        toast.error('Keine Übereinstimmungen gefunden');
-        setMatches([]);
+        toast.error(result.error || 'Vergleich fehlgeschlagen');
       }
     } catch (error) {
       console.error('Facematch error:', error);
@@ -175,229 +340,327 @@ const FacematchPage = () => {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Facematch
+              Facematch - Forensischer Gesichtsvergleich
             </h1>
             <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Vergleichen Sie Gesichter aus ID-Dokumenten mit Live-Aufnahmen
+              Biometrischer Vergleich mit 68-Punkt-Landmarken-Analyse
             </p>
           </div>
         </div>
 
-        {/* Camera Section */}
+        {/* Document Selection */}
         <div className={`rounded-lg border p-6 mb-6 ${
           theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
         }`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Gesichtsaufnahme
+            Dokument zum Vergleich auswählen
           </h3>
-
-          {!cameraActive && !capturedImage && (
-            <div className={`rounded-lg border-2 border-dashed p-12 text-center ${
-              theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'
-            }`}>
-              <Camera className={`mx-auto h-12 w-12 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Kamera starten
-              </h4>
-              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Nehmen Sie ein Foto auf, um es mit der Datenbank zu vergleichen
-              </p>
-              <button
-                onClick={startCamera}
-                className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center gap-2 mx-auto"
+          
+          {loading ? (
+            <div className="text-center py-8">
+              <RefreshCw className={`h-8 w-8 animate-spin mx-auto mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lade Dokumente...</p>
+            </div>
+          ) : availableScans.length === 0 ? (
+            <div className={`text-center py-8 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+              <FileText className={`mx-auto h-12 w-12 mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Keine Dokumente mit Portraits verfügbar</p>
+            </div>
+          ) : (
+            <div className="relative">
+              <select
+                value={selectedScan?.id || ''}
+                onChange={(e) => {
+                  const scan = availableScans.find(s => s.id === e.target.value);
+                  setSelectedScan(scan);
+                  setMatchResult(null);
+                }}
+                className={`w-full px-4 py-3 rounded-lg border appearance-none cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white' 
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
               >
-                <Camera className="h-5 w-5" />
-                Kamera starten
-              </button>
+                <option value="">-- Dokument auswählen --</option>
+                {availableScans.map(scan => (
+                  <option key={scan.id} value={scan.id}>
+                    {scan.name} - {scan.document_type} ({scan.document_number})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown className={`absolute right-4 top-4 h-5 w-5 pointer-events-none ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`} />
             </div>
           )}
+        </div>
 
-          {cameraActive && (
-            <div className="space-y-4">
-              <div className="relative">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full rounded-lg"
-                  style={{ maxHeight: '500px', objectFit: 'cover' }}
-                />
-                <div className="absolute top-4 right-4 flex gap-2">
-                  <button
-                    onClick={stopCamera}
-                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-                    title="Kamera stoppen"
-                  >
-                    <X className="h-5 w-5" />
-                  </button>
-                </div>
+        {/* Threshold Slider */}
+        <div className={`rounded-lg border p-6 mb-6 ${
+          theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
+        }`}>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Übereinstimmungs-Schwellenwert
+            </h3>
+            <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {threshold}%
+            </span>
+          </div>
+          <input
+            type="range"
+            min="50"
+            max="95"
+            step="5"
+            value={threshold}
+            onChange={(e) => setThreshold(parseInt(e.target.value))}
+            className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, #c00000 0%, #c00000 ${(threshold - 50) / 45 * 100}%, #e5e7eb ${(threshold - 50) / 45 * 100}%, #e5e7eb 100%)`
+            }}
+          />
+          <div className="flex justify-between mt-2 text-sm">
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>50% (Niedrig)</span>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>95% (Hoch)</span>
+          </div>
+        </div>
+
+        {/* Main Comparison Area */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Left: Live Camera/Image */}
+          <div className={`rounded-lg border p-6 ${
+            theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Live-Aufnahme
+            </h3>
+
+            {!cameraActive && !capturedImage && (
+              <div className={`rounded-lg border-2 border-dashed p-12 text-center ${
+                theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'
+              }`}>
+                <Camera className={`mx-auto h-12 w-12 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Webcam wird gestartet...
+                </h4>
               </div>
-              <button
-                onClick={capturePhoto}
-                className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2"
-              >
-                <Camera className="h-5 w-5" />
-                Foto aufnehmen
-              </button>
-            </div>
-          )}
+            )}
 
-          {capturedImage && (
-            <div className="space-y-4">
-              <div className="relative">
+            {cameraActive && (
+              <div className="space-y-4">
+                <div className="relative">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    className="w-full rounded-lg"
+                    style={{ maxHeight: '400px', objectFit: 'cover' }}
+                  />
+                  {/* Green face detection overlay would go here */}
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={stopCamera}
+                      className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      title="Kamera stoppen"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+                <button
+                  onClick={capturePhoto}
+                  disabled={!selectedScan}
+                  className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Camera className="h-5 w-5" />
+                  Foto aufnehmen
+                </button>
+                {!selectedScan && (
+                  <p className="text-sm text-center text-yellow-600">
+                    <AlertTriangle className="inline h-4 w-4 mr-1" />
+                    Bitte wählen Sie zuerst ein Dokument aus
+                  </p>
+                )}
+              </div>
+            )}
+
+            {capturedImage && !matchResult && (
+              <div className="space-y-4">
                 <img
                   src={capturedImage}
                   alt="Captured"
                   className="w-full rounded-lg"
-                  style={{ maxHeight: '500px', objectFit: 'cover' }}
+                  style={{ maxHeight: '400px', objectFit: 'cover' }}
                 />
+                <div className="flex gap-3">
+                  <button
+                    onClick={retakePhoto}
+                    className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <RefreshCw className="h-5 w-5" />
+                    Neu aufnehmen
+                  </button>
+                  <button
+                    onClick={compareWithDatabase}
+                    disabled={comparing || !selectedScan}
+                    className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {comparing ? (
+                      <>
+                        <RefreshCw className="h-5 w-5 animate-spin" />
+                        Analysiere...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="h-5 w-5" />
+                        Vergleichen
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={retakePhoto}
-                  className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <RefreshCw className="h-5 w-5" />
-                  Neu aufnehmen
-                </button>
-                <button
-                  onClick={compareWithDatabase}
-                  disabled={comparing}
-                  className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {comparing ? (
-                    <>
-                      <RefreshCw className="h-5 w-5 animate-spin" />
-                      Vergleiche...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="h-5 w-5" />
-                      Mit Datenbank vergleichen
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          )}
+            )}
 
-          {/* Hidden canvas for photo capture */}
-          <canvas ref={canvasRef} style={{ display: 'none' }} />
-        </div>
-
-        {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt</p>
-                <p className={`text-2xl font-bold mt-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>0</p>
-              </div>
-              <Users className={`h-8 w-8 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            </div>
-          </div>
-
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Übereinstimmung</p>
-                <p className="text-2xl font-bold mt-1 text-green-500">0</p>
-              </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
-            </div>
-          </div>
-
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Keine Übereinstimmung</p>
-                <p className="text-2xl font-bold mt-1 text-red-500">0</p>
-              </div>
-              <XCircle className="h-8 w-8 text-red-500" />
-            </div>
-          </div>
-
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Ausstehend</p>
-                <p className="text-2xl font-bold mt-1 text-yellow-500">0</p>
-              </div>
-              <Eye className="h-8 w-8 text-yellow-500" />
-            </div>
-          </div>
-        </div>
-
-        {/* Results Section */}
-        {matches.length > 0 ? (
-          <div className="space-y-4">
-            <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Übereinstimmungen gefunden: {matches.length}
-            </h3>
-            {matches.map((match, index) => (
-              <div 
-                key={index}
-                className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}
-              >
-                <div className="flex items-start gap-4">
-                  <img
-                    src={match.document_image}
-                    alt="Document"
-                    className="w-24 h-24 rounded-lg object-cover"
+            {matchResult && (
+              <div className="space-y-4">
+                <div className="relative">
+                  <canvas
+                    ref={liveCanvasRef}
+                    className="w-full rounded-lg border-2 border-green-500"
+                    style={{ maxHeight: '400px', objectFit: 'contain' }}
                   />
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {match.name}
-                      </h4>
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                        match.confidence >= 80 
-                          ? 'bg-green-100 text-green-800'
-                          : match.confidence >= 60
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {match.confidence}% Übereinstimmung
-                      </span>
-                    </div>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Dokumentennummer: {match.document_number}
-                    </p>
-                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      Gescannt am: {new Date(match.scanned_at).toLocaleString('de-DE')}
-                    </p>
-                    <button
-                      onClick={() => navigate(`/portal/admin/id-checks/${match.scan_id}`)}
-                      className="mt-2 text-[#c00000] hover:underline text-sm font-semibold"
-                    >
-                      Details anzeigen →
-                    </button>
+                  <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm font-semibold">
+                    Live-Bild
                   </div>
                 </div>
               </div>
-            ))}
+            )}
           </div>
-        ) : capturedImage ? (
-          <div className={`text-center py-12 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <XCircle className={`mx-auto h-16 w-16 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Keine Übereinstimmungen gefunden
+
+          {/* Right: Document Image */}
+          <div className={`rounded-lg border p-6 ${
+            theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Dokument-Bild
             </h3>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Das aufgenommene Gesicht stimmt mit keinem Dokument in der Datenbank überein
-            </p>
+
+            {!selectedScan ? (
+              <div className={`rounded-lg border-2 border-dashed p-12 text-center ${
+                theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'
+              }`}>
+                <FileText className={`mx-auto h-12 w-12 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Kein Dokument ausgewählt
+                </h4>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Wählen Sie ein Dokument aus der Liste oben
+                </p>
+              </div>
+            ) : matchResult ? (
+              <div className="space-y-4">
+                <div className="relative">
+                  <canvas
+                    ref={docCanvasRef}
+                    className="w-full rounded-lg border-2 border-blue-500"
+                    style={{ maxHeight: '400px', objectFit: 'contain' }}
+                  />
+                  <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-3 py-1 rounded text-sm font-semibold">
+                    Dokument
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className={`rounded-lg border p-4 ${theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'}`}>
+                <img
+                  src={`${process.env.REACT_APP_BACKEND_URL}/api/id-scans/${selectedScan.id}/images/front_portrait`}
+                  alt="Document Portrait"
+                  className="w-full rounded-lg"
+                  style={{ maxHeight: '400px', objectFit: 'contain' }}
+                />
+                <div className="mt-4 space-y-2">
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <strong>Name:</strong> {selectedScan.name}
+                  </p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <strong>Dokumentnummer:</strong> {selectedScan.document_number}
+                  </p>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <strong>Typ:</strong> {selectedScan.document_type}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className={`text-center py-12 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <ImageIcon className={`mx-auto h-16 w-16 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Bereit für Gesichtsvergleich
-            </h3>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Starten Sie die Kamera und nehmen Sie ein Foto auf
-            </p>
+        </div>
+
+        {/* Match Result */}
+        {matchResult && (
+          <div className={`rounded-lg border p-6 mb-6 ${
+            matchResult.is_match 
+              ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+              : 'border-red-500 bg-red-50 dark:bg-red-900/20'
+          }`}>
+            <div className="flex items-center gap-4 mb-4">
+              {matchResult.is_match ? (
+                <CheckCircle className="h-12 w-12 text-green-600" />
+              ) : (
+                <XCircle className="h-12 w-12 text-red-600" />
+              )}
+              <div>
+                <h3 className={`text-2xl font-bold ${matchResult.is_match ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'}`}>
+                  {matchResult.is_match ? 'Übereinstimmung gefunden!' : 'Keine Übereinstimmung'}
+                </h3>
+                <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Übereinstimmung: <strong className="text-2xl">{matchResult.match_percentage}%</strong>
+                </p>
+              </div>
+            </div>
+
+            <div className={`grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-lg ${
+              theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'
+            }`}>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</p>
+                <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {matchResult.scan_info.name}
+                </p>
+              </div>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumentnummer</p>
+                <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {matchResult.scan_info.document_number}
+                </p>
+              </div>
+              <div>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Dokumenttyp</p>
+                <p className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {matchResult.scan_info.document_type}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={() => navigate(`/portal/admin/id-checks/${matchResult.scan_info.scan_id}`)}
+                className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center gap-2"
+              >
+                <Eye className="h-5 w-5" />
+                Scan-Details anzeigen
+              </button>
+              <button
+                onClick={retakePhoto}
+                className="px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2"
+              >
+                <RefreshCw className="h-5 w-5" />
+                Neuer Vergleich
+              </button>
+            </div>
           </div>
         )}
+
+        {/* Hidden canvas for photo capture */}
+        <canvas ref={canvasRef} style={{ display: 'none' }} />
       </div>
     </div>
   );
