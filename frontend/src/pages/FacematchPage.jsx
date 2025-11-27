@@ -278,34 +278,36 @@ const FacematchPage = () => {
               });
               
               // Auto-capture logic: nur wenn wirklich stabil "perfect"
-              setPositionHistory(current => {
-                const recentPositions = current.slice(-3);
-                const allPerfect = recentPositions.length === 3 && 
-                                   recentPositions.every(p => p === 'perfect');
-                
-                if (allPerfect && detectedPosition === 'perfect') {
-                  perfectPositionCount++;
-                  setCountdown(4 - perfectPositionCount); // 3, 2, 1
+              const recentPositions = positionHistory.slice(-3);
+              const allPerfect = recentPositions.length === 3 && 
+                                 recentPositions.every(p => p === 'perfect');
+              
+              if (allPerfect && detectedPosition === 'perfect') {
+                setPerfectPositionCount(prev => {
+                  const newCount = prev + 1;
+                  setCountdown(4 - newCount); // 3, 2, 1
                   
                   // Nach 3 Sekunden in stabiler perfekter Position: Auto-Capture
-                  if (perfectPositionCount >= 3) {
+                  if (newCount >= 3) {
                     setAutoCapturing(true);
                     setTimeout(() => {
                       capturePhoto();
                     }, 500);
-                    perfectPositionCount = 0;
-                    setCountdown(0);
+                    return 0;
                   }
-                } else {
-                  // Position nicht stabil, langsamer Reset
-                  if (perfectPositionCount > 0) {
-                    perfectPositionCount = Math.max(0, perfectPositionCount - 1);
-                    setCountdown(perfectPositionCount > 0 ? 4 - perfectPositionCount : 0);
+                  return newCount;
+                });
+              } else {
+                // Position nicht stabil, langsamer Reset
+                setPerfectPositionCount(prev => {
+                  if (prev > 0) {
+                    const newCount = Math.max(0, prev - 1);
+                    setCountdown(newCount > 0 ? 4 - newCount : 0);
+                    return newCount;
                   }
-                }
-                
-                return current;
-              });
+                  return 0;
+                });
+              }
               
               isDetecting = false;
             });
