@@ -84,11 +84,17 @@ const FacematchPage = () => {
     }
   }, [step]);
 
-  // Zeichne Face Detection Overlay (Bounding Box & Landmarks)
+  // Canvas-Drawing deaktiviert - wir verwenden jetzt SVG für bessere Performance
+  useEffect(() => {
+    // Deaktiviert - SVG-basierte Visualisierung wird verwendet
+    return () => {};
+  }, []);
+  
+  // Zeichne Face Detection Overlay (Bounding Box & Landmarks) - DEAKTIVIERT
   useEffect(() => {
     let animationId;
     
-    const drawOverlay = () => {
+    const drawOverlay_DISABLED = () => {
       if (overlayCanvasRef.current && videoRef.current && currentDetection && currentDetection.detected) {
         const canvas = overlayCanvasRef.current;
         const video = videoRef.current;
