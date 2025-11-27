@@ -875,6 +875,11 @@ const FacematchPage = () => {
                         <AlertTriangle className="h-4 w-4" />
                         Gesicht nicht erkannt
                       </div>
+                    ) : currentDetection && !currentDetection.lookingAtCamera ? (
+                      <div className="bg-orange-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg animate-pulse">
+                        <Eye className="h-4 w-4" />
+                        Bitte in die Kamera schauen
+                      </div>
                     ) : facePosition === 'too-far' ? (
                       <div className="bg-yellow-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg">
                         <AlertTriangle className="h-4 w-4" />
