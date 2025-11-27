@@ -180,33 +180,12 @@ async def compare_faces(
     """
     try:
         print(f"[Facematch] Comparing with scan_id: {request.scan_id}")
+        print(f"[Facematch] Mode: {'REAL' if FACE_RECOGNITION_AVAILABLE else 'MOCK'}")
         
         # 1. Load live image
         live_image = base64_to_numpy(request.live_image)
-        
-        # 2. Find face in live image
-        live_face_locations = face_recognition.face_locations(live_image)
-        if not live_face_locations:
-            return {
-                "success": False,
-                "error": "Kein Gesicht im Live-Bild erkannt. Bitte positionieren Sie sich korrekt."
-            }
-        
-        # Get the first face (assuming one person)
-        live_face_location = live_face_locations[0]
-        
-        # 3. Extract face encodings and landmarks from live image
-        live_face_encodings = face_recognition.face_encodings(live_image, [live_face_location])
-        live_face_landmarks = face_recognition.face_landmarks(live_image, [live_face_location])
-        
-        if not live_face_encodings or not live_face_landmarks:
-            return {
-                "success": False,
-                "error": "Gesichtsmerkmale konnten nicht erkannt werden."
-            }
-        
-        live_encoding = live_face_encodings[0]
-        live_landmarks = live_face_landmarks[0]
+        live_img_pil = Image.fromarray(live_image)
+        live_width, live_height = live_img_pil.size
         
         # 4. Fetch document scan from database
         scan = await db.id_scans.find_one({'id': request.scan_id})
@@ -229,30 +208,87 @@ async def compare_faces(
         # 6. Load document portrait image
         doc_image_base64 = portrait_img.get('image_data', '')
         doc_image = base64_to_numpy(doc_image_base64)
+        doc_img_pil = Image.fromarray(doc_image)
+        doc_width, doc_height = doc_img_pil.size
         
-        # 7. Extract face encodings and landmarks from document
-        doc_face_locations = face_recognition.face_locations(doc_image)
-        if not doc_face_locations:
-            return {
-                "success": False,
-                "error": "Kein Gesicht im Dokument-Bild erkannt."
-            }
-        
-        doc_face_location = doc_face_locations[0]
-        doc_face_encodings = face_recognition.face_encodings(doc_image, [doc_face_location])
-        doc_face_landmarks = face_recognition.face_landmarks(doc_image, [doc_face_location])
-        
-        if not doc_face_encodings or not doc_face_landmarks:
-            return {
-                "success": False,
-                "error": "Gesichtsmerkmale im Dokument konnten nicht erkannt werden."
-            }
-        
-        doc_encoding = doc_face_encodings[0]
-        doc_landmarks = doc_face_landmarks[0]
-        
-        # 8. Calculate match percentage
-        match_percentage = calculate_face_distance(live_encoding, doc_encoding)
+        if FACE_RECOGNITION_AVAILABLE:
+            # REAL MODE: Use face_recognition library
+            # 2. Find face in live image
+            live_face_locations = face_recognition.face_locations(live_image)
+            if not live_face_locations:
+                return {
+                    "success": False,
+                    "error": "Kein Gesicht im Live-Bild erkannt. Bitte positionieren Sie sich korrekt."
+                }
+            
+            live_face_location = live_face_locations[0]
+            
+            # 3. Extract face encodings and landmarks from live image
+            live_face_encodings = face_recognition.face_encodings(live_image, [live_face_location])
+            live_face_landmarks = face_recognition.face_landmarks(live_image, [live_face_location])
+            
+            if not live_face_encodings or not live_face_landmarks:
+                return {
+                    "success": False,
+                    "error": "Gesichtsmerkmale konnten nicht erkannt werden."
+                }
+            
+            live_encoding = live_face_encodings[0]
+            live_landmarks = live_face_landmarks[0]
+            
+            # 7. Extract face encodings and landmarks from document
+            doc_face_locations = face_recognition.face_locations(doc_image)
+            if not doc_face_locations:
+                return {
+                    "success": False,
+                    "error": "Kein Gesicht im Dokument-Bild erkannt."
+                }
+            
+            doc_face_location = doc_face_locations[0]
+            doc_face_encodings = face_recognition.face_encodings(doc_image, [doc_face_location])
+            doc_face_landmarks = face_recognition.face_landmarks(doc_image, [doc_face_location])
+            
+            if not doc_face_encodings or not doc_face_landmarks:
+                return {
+                    "success": False,
+                    "error": "Gesichtsmerkmale im Dokument konnten nicht erkannt werden."
+                }
+            
+            doc_encoding = doc_face_encodings[0]
+            doc_landmarks = doc_face_landmarks[0]
+            
+            # 8. Calculate match percentage
+            match_percentage = calculate_face_distance(live_encoding, doc_encoding)
+        else:
+            # MOCK MODE: Generate realistic mock data
+            print("[Facematch] Running in MOCK mode - generating sample landmarks")
+            
+            # Generate realistic face locations (centered in image)
+            live_face_location = (
+                int(live_height * 0.2),  # top
+                int(live_width * 0.7),   # right
+                int(live_height * 0.8),  # bottom
+                int(live_width * 0.3)    # left
+            )
+            
+            doc_face_location = (
+                int(doc_height * 0.2),
+                int(doc_width * 0.7),
+                int(doc_height * 0.8),
+                int(doc_width * 0.3)
+            )
+            
+            # Generate mock landmarks
+            live_landmarks = generate_mock_landmarks()
+            doc_landmarks = generate_mock_landmarks()
+            
+            # Mock encodings (not used in mock mode)
+            live_encoding = None
+            doc_encoding = None
+            
+            # Calculate mock match percentage
+            import random
+            match_percentage = round(random.uniform(70, 95), 2)
         
         # 9. Determine if it's a match based on threshold
         is_match = match_percentage >= request.threshold
@@ -270,6 +306,7 @@ async def compare_faces(
                 "match_percentage": match_percentage,
                 "is_match": is_match,
                 "threshold": request.threshold,
+                "mode": "real" if FACE_RECOGNITION_AVAILABLE else "mock",
                 "scan_info": {
                     "scan_id": request.scan_id,
                     "name": name,
