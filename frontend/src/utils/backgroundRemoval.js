@@ -1,7 +1,83 @@
 /**
  * Background Removal Utility
  * Verwendet verschiedene Methoden zur Hintergrund-Entfernung
+ * Inspiriert von remove.bg - professionelle AI-basierte Segmentierung
  */
+
+// MediaPipe Selfie Segmentation Instanz (lazy loaded)
+let selfieSegmentation = null;
+
+/**
+ * Initialisiert MediaPipe Selfie Segmentation
+ * @returns {Promise<boolean>} - Erfolgreich initialisiert
+ */
+export const initMediaPipe = async () => {
+  try {
+    // Prüfe ob MediaPipe bereits geladen ist
+    if (window.SelfieSegmentation) {
+      selfieSegmentation = new window.SelfieSegmentation({
+        locateFile: (file) => {
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
+        }
+      });
+      
+      selfieSegmentation.setOptions({
+        modelSelection: 1, // 0: general, 1: landscape (better quality)
+      });
+      
+      console.log('[MediaPipe] Selfie Segmentation initialisiert');
+      return true;
+    }
+    
+    console.warn('[MediaPipe] Nicht verfügbar, verwende Fallback');
+    return false;
+  } catch (error) {
+    console.error('[MediaPipe] Initialisierung fehlgeschlagen:', error);
+    return false;
+  }
+};
+
+/**
+ * AI-basierte Hintergrund-Entfernung mit MediaPipe
+ * @param {HTMLVideoElement|HTMLImageElement} source - Video oder Bild
+ * @param {CanvasRenderingContext2D} context - Canvas Context
+ * @param {number} width - Canvas Breite
+ * @param {number} height - Canvas Höhe
+ */
+export const removeBackgroundAI = async (source, context, width, height) => {
+  try {
+    if (!selfieSegmentation) {
+      console.warn('[AI Removal] MediaPipe nicht initialisiert');
+      return false;
+    }
+    
+    return new Promise((resolve) => {
+      selfieSegmentation.onResults((results) => {
+        // Zeichne Original-Bild
+        context.save();
+        context.clearRect(0, 0, width, height);
+        context.drawImage(results.segmentationMask, 0, 0, width, height);
+        
+        // Verwende die Maske für saubere Segmentierung
+        context.globalCompositeOperation = 'source-in';
+        context.drawImage(source, 0, 0, width, height);
+        
+        // Setze neutralen Hintergrund
+        context.globalCompositeOperation = 'destination-over';
+        context.fillStyle = '#f8f8f8';
+        context.fillRect(0, 0, width, height);
+        
+        context.restore();
+        resolve(true);
+      });
+      
+      selfieSegmentation.send({ image: source });
+    });
+  } catch (error) {
+    console.error('[AI Removal] Fehler:', error);
+    return false;
+  }
+};
 
 /**
  * Einfache Canvas-basierte Hintergrund-Entfernung mit ovalem Mask
