@@ -9,8 +9,16 @@ import base64
 import io
 import numpy as np
 from PIL import Image
-import face_recognition
 from motor.motor_asyncio import AsyncIOMotorClient
+
+# Try to import face_recognition, but fall back to mock if not available
+try:
+    import face_recognition
+    FACE_RECOGNITION_AVAILABLE = True
+    print("[Facematch] face_recognition library loaded successfully")
+except Exception as e:
+    FACE_RECOGNITION_AVAILABLE = False
+    print(f"[Facematch] Warning: face_recognition not available, using mock mode: {e}")
 
 from routes.portal_auth import verify_token
 
