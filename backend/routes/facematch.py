@@ -12,13 +12,20 @@ from PIL import Image
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Try to import face_recognition, but fall back to mock if not available
-try:
-    import face_recognition
-    FACE_RECOGNITION_AVAILABLE = True
-    print("[Facematch] face_recognition library loaded successfully")
-except Exception as e:
-    FACE_RECOGNITION_AVAILABLE = False
-    print(f"[Facematch] Warning: face_recognition not available, using mock mode: {e}")
+FACE_RECOGNITION_AVAILABLE = False
+face_recognition = None
+
+# Disable face_recognition import to prevent server crash
+# The models are not properly installed
+# try:
+#     import face_recognition
+#     FACE_RECOGNITION_AVAILABLE = True
+#     print("[Facematch] face_recognition library loaded successfully")
+# except Exception as e:
+#     FACE_RECOGNITION_AVAILABLE = False
+#     print(f"[Facematch] Warning: face_recognition not available, using mock mode: {e}")
+
+print("[Facematch] Using MOCK mode (face_recognition disabled for stability)")
 
 from routes.portal_auth import verify_token
 
