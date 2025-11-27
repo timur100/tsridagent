@@ -7,6 +7,7 @@ import {
   Users, Search, FileText, Fingerprint, Camera, 
   Image as ImageIcon, CheckCircle, XCircle, Eye, X, RefreshCw, AlertTriangle, ChevronDown
 } from 'lucide-react';
+import { removeBackground } from '../utils/backgroundRemoval';
 
 const FacematchPage = () => {
   const { theme } = useTheme();
