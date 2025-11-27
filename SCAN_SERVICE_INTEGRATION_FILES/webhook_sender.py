@@ -14,11 +14,11 @@ from services.sqlite_queue import ScanQueueService
 WEBHOOK_API_KEY = os.environ.get('WEBHOOK_API_KEY', '')
 ID_CHECK_WEBHOOK_URL = os.environ.get(
     'ID_CHECK_WEBHOOK_URL',
-    'https://regula-scanner.preview.emergentagent.com/api/webhooks/scan-completed'
+    'https://id-verify-12.preview.emergentagent.com/api/webhooks/scan-completed'
 )
 ID_CHECK_IMAGE_UPLOAD_URL = os.environ.get(
     'ID_CHECK_IMAGE_UPLOAD_URL',
-    'https://regula-scanner.preview.emergentagent.com/api/webhooks/scan-completed/upload-images'
+    'https://id-verify-12.preview.emergentagent.com/api/webhooks/scan-completed/upload-images'
 )
 
 

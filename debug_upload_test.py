@@ -10,7 +10,7 @@ import sys
 import io
 
 # Backend URL from environment
-BACKEND_URL = "https://regula-scanner.preview.emergentagent.com"
+BACKEND_URL = "https://id-verify-12.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():
