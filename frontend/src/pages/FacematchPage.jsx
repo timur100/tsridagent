@@ -40,6 +40,7 @@ const FacematchPage = () => {
   const [targetZoom, setTargetZoom] = useState(1.2); // Ziel-Zoom für sanfte Übergänge
   const [positionHistory, setPositionHistory] = useState([]); // Verlauf für Stabilisierung
   const [currentDetection, setCurrentDetection] = useState(null); // Aktuelle Face Detection für Visualisierung
+  const [perfectPositionCount, setPerfectPositionCount] = useState(0); // Counter für Auto-Capture
 
   // Initialize MediaPipe on mount
   useEffect(() => {
