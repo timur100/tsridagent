@@ -56,7 +56,7 @@ const FacematchPage = () => {
     }
   }, [step]);
 
-  // Simulated face detection loop with auto-capture
+  // Simulated face detection loop with auto-capture and auto-zoom
   useEffect(() => {
     let animationId;
     let checkCount = 0;
@@ -74,6 +74,26 @@ const FacematchPage = () => {
           
           setFaceDetected(randomState !== 'outside');
           setFacePosition(randomState);
+          
+          // Auto-Zoom basierend auf Position
+          if (randomState === 'too-far') {
+            // Zu weit weg -> Zoom in
+            setZoomLevel(prev => Math.min(prev + 0.05, 1.8));
+          } else if (randomState === 'too-close') {
+            // Zu nah -> Zoom out
+            setZoomLevel(prev => Math.max(prev - 0.05, 1.0));
+          } else if (randomState === 'perfect') {
+            // Perfekte Position -> Optimaler Zoom (1.3x)
+            setZoomLevel(prev => {
+              if (Math.abs(prev - 1.3) > 0.05) {
+                return prev < 1.3 ? prev + 0.05 : prev - 0.05;
+              }
+              return 1.3;
+            });
+          } else {
+            // Außerhalb -> Reset Zoom
+            setZoomLevel(prev => Math.max(prev - 0.05, 1.0));
+          }
           
           // Auto-capture logic: wenn "perfect" für 3 Sekunden
           if (randomState === 'perfect') {
@@ -99,6 +119,7 @@ const FacematchPage = () => {
           // 1. Capture current video frame
           // 2. Send to backend for face detection
           // 3. Get face location and position feedback
+          // 4. Calculate optimal zoom based on face size
         }
         
         animationId = requestAnimationFrame(detectFace);
