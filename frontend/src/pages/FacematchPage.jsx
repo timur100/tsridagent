@@ -370,82 +370,112 @@ const FacematchPage = () => {
           </div>
         </div>
 
-        {/* Document Selection */}
-        <div className={`rounded-lg border p-6 mb-6 ${
-          theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
-        }`}>
-          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Dokument zum Vergleich auswählen
-          </h3>
-          
-          {loading ? (
-            <div className="text-center py-8">
-              <RefreshCw className={`h-8 w-8 animate-spin mx-auto mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lade Dokumente...</p>
+        {/* Step Indicator */}
+        <div className="flex items-center justify-center mb-6">
+          <div className="flex items-center gap-4">
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              step === 1 ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-600'
+            }`}>
+              <Camera className="h-5 w-5" />
+              <span className="font-semibold">1. Live-Bild aufnehmen</span>
             </div>
-          ) : availableScans.length === 0 ? (
-            <div className={`text-center py-8 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-              <FileText className={`mx-auto h-12 w-12 mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Keine Dokumente mit Portraits verfügbar</p>
+            <div className="w-8 h-0.5 bg-gray-300"></div>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              step === 2 ? 'bg-[#c00000] text-white' : step > 2 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
+            }`}>
+              <FileText className="h-5 w-5" />
+              <span className="font-semibold">2. Dokument auswählen</span>
             </div>
-          ) : (
-            <div className="relative">
-              <select
-                value={selectedScan?.id || ''}
-                onChange={(e) => {
-                  const scan = availableScans.find(s => s.id === e.target.value);
-                  setSelectedScan(scan);
-                  setMatchResult(null);
-                }}
-                className={`w-full px-4 py-3 rounded-lg border appearance-none cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1a1a1a] border-gray-700 text-white' 
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              >
-                <option value="">-- Dokument auswählen --</option>
-                {availableScans.map(scan => (
-                  <option key={scan.id} value={scan.id}>
-                    {scan.name} - {scan.document_type} ({scan.document_number})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className={`absolute right-4 top-4 h-5 w-5 pointer-events-none ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`} />
+            <div className="w-8 h-0.5 bg-gray-300"></div>
+            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
+              step === 3 ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-600'
+            }`}>
+              <Search className="h-5 w-5" />
+              <span className="font-semibold">3. Vergleichen</span>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* Threshold Slider */}
-        <div className={`rounded-lg border p-6 mb-6 ${
-          theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
-        }`}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Übereinstimmungs-Schwellenwert
+        {/* Document Selection - Only show in Step 2 */}
+        {step >= 2 && !matchResult && (
+          <div className={`rounded-lg border p-6 mb-6 ${
+            theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
+          }`}>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Dokument zum Vergleich auswählen
             </h3>
-            <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {threshold}%
-            </span>
+            
+            {loading ? (
+              <div className="text-center py-8">
+                <RefreshCw className={`h-8 w-8 animate-spin mx-auto mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lade Dokumente...</p>
+              </div>
+            ) : availableScans.length === 0 ? (
+              <div className={`text-center py-8 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <FileText className={`mx-auto h-12 w-12 mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Keine Dokumente mit Portraits verfügbar</p>
+              </div>
+            ) : (
+              <div className="relative">
+                <select
+                  value={selectedScan?.id || ''}
+                  onChange={(e) => {
+                    const scan = availableScans.find(s => s.id === e.target.value);
+                    setSelectedScan(scan);
+                    setMatchResult(null);
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg border appearance-none cursor-pointer ${
+                    theme === 'dark' 
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="">-- Dokument auswählen --</option>
+                  {availableScans.map(scan => (
+                    <option key={scan.id} value={scan.id}>
+                      {scan.name} - {scan.document_type} ({scan.document_number})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className={`absolute right-4 top-4 h-5 w-5 pointer-events-none ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`} />
+              </div>
+            )}
           </div>
-          <input
-            type="range"
-            min="50"
-            max="95"
-            step="5"
-            value={threshold}
-            onChange={(e) => setThreshold(parseInt(e.target.value))}
-            className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #c00000 0%, #c00000 ${(threshold - 50) / 45 * 100}%, #e5e7eb ${(threshold - 50) / 45 * 100}%, #e5e7eb 100%)`
-            }}
-          />
-          <div className="flex justify-between mt-2 text-sm">
-            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>50% (Niedrig)</span>
-            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>95% (Hoch)</span>
+        )}
+
+        {/* Threshold Slider - Only show in Step 2 */}
+        {step >= 2 && !matchResult && (
+          <div className={`rounded-lg border p-6 mb-6 ${
+            theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
+          }`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Übereinstimmungs-Schwellenwert
+              </h3>
+              <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {threshold}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="50"
+              max="95"
+              step="5"
+              value={threshold}
+              onChange={(e) => setThreshold(parseInt(e.target.value))}
+              className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
+              style={{
+                background: `linear-gradient(to right, #c00000 0%, #c00000 ${(threshold - 50) / 45 * 100}%, #e5e7eb ${(threshold - 50) / 45 * 100}%, #e5e7eb 100%)`
+              }}
+            />
+            <div className="flex justify-between mt-2 text-sm">
+              <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>50% (Niedrig)</span>
+              <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>95% (Hoch)</span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Main Comparison Area */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
