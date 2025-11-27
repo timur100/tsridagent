@@ -179,12 +179,15 @@ const FacematchPage = () => {
             });
           }
           
-          // Zeichne Confidence Score
+          // Zeichne Confidence Score (gespiegelt korrigiert)
+          ctx.save();
+          ctx.scale(-1, 1); // Spiegle Text zurück
           ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-          ctx.fillRect(x, y - 30, 150, 25);
+          ctx.fillRect(-x - 150, y - 30, 150, 25);
           ctx.fillStyle = 'white';
           ctx.font = '14px monospace';
-          ctx.fillText(`${(currentDetection.confidence * 100).toFixed(1)}% confident`, x + 5, y - 10);
+          ctx.fillText(`${(currentDetection.confidence * 100).toFixed(1)}% confident`, -x - 145, y - 10);
+          ctx.restore();
         }
       }
       
