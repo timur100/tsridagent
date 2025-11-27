@@ -501,13 +501,13 @@ const FacematchPage = () => {
         )}
 
         {/* Main Comparison Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className={`${step === 1 ? 'max-w-2xl mx-auto' : 'grid grid-cols-1 lg:grid-cols-2 gap-6'} mb-6`}>
           {/* Left: Live Camera/Image */}
           <div className={`rounded-lg border p-6 ${
             theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
           }`}>
-            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Live-Aufnahme
+            <h3 className={`text-lg font-semibold mb-4 text-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {step === 1 ? 'Gesichtserkennung' : 'Live-Aufnahme'}
             </h3>
 
             {!cameraActive && !capturedImage && (
