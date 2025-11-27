@@ -160,12 +160,17 @@ const FacematchPage = () => {
     // Stop camera after capture
     stopCamera();
     
-    toast.success('Foto aufgenommen');
+    // Move to next step: document selection
+    setStep(2);
+    
+    toast.success('Live-Bild erfolgreich aufgenommen! Bitte wählen Sie nun ein Dokument zum Vergleich aus.');
   };
 
   const retakePhoto = () => {
     setCapturedImage(null);
     setMatchResult(null);
+    setSelectedScan(null);
+    setStep(1);
     startCamera();
   };
 
