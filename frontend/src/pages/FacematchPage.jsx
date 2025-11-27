@@ -130,6 +130,9 @@ const FacematchPage = () => {
             await detectFaceInVideo(videoRef.current, (result) => {
               const detectedPosition = result.position;
               
+              // Speichere Detection für Visualisierung
+              setCurrentDetection(result);
+              
               // Füge zur History hinzu (letzte 5 Positionen)
               setPositionHistory(prev => {
                 const newHistory = [...prev, detectedPosition].slice(-5);
