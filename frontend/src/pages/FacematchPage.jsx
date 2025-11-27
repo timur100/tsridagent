@@ -257,13 +257,15 @@ const FacematchPage = () => {
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     context.restore();
 
-    // Hintergrund-Entfernung mit fortgeschrittener Methode
-    const backgroundRemoved = removeBackground(context, canvas.width, canvas.height, 'advanced');
+    // Professionelle Hintergrund-Entfernung (AI wenn verfügbar, sonst Fallback)
+    const method = isMediaPipeAvailable() ? 'ai' : 'advanced';
+    const backgroundRemoved = await removeBackground(video, context, canvas.width, canvas.height, method);
     
     if (backgroundRemoved) {
-      console.log('[Facematch] Hintergrund erfolgreich entfernt');
+      console.log(`[Facematch] Hintergrund erfolgreich entfernt (Methode: ${method})`);
+      toast.success('Hintergrund entfernt', { duration: 1500 });
     } else {
-      console.warn('[Facematch] Hintergrund-Entfernung fehlgeschlagen, verwende Original');
+      console.warn('[Facematch] Hintergrund-Entfernung fehlgeschlagen');
     }
 
     // Convert canvas to base64 image
