@@ -886,8 +886,8 @@ const AdminPortalContent = () => {
             </div>
           </div>
 
-          {/* Content - only show when not on detail page */}
-          {!isOnDetailPage && (
+          {/* Content - only show when not on detail page and not on id-checks page */}
+          {!isOnDetailPage && activeTab !== 'id-checks' && (
           <main className="px-4 sm:px-6 lg:px-8 py-8">
         
         {/* Old ID-Checks Sub-Tabs - Now moved above */}
