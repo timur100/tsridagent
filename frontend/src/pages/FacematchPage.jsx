@@ -289,6 +289,10 @@ const FacematchPage = () => {
     setMatchResult(null);
     setSelectedScan(null);
     setStep(1);
+    setZoomLevel(1.2);
+    setTargetZoom(1.2);
+    setPositionHistory([]);
+    setCountdown(0);
     startCamera();
   };
 
