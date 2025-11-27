@@ -196,19 +196,39 @@ export const removeBackgroundAdvanced = (context, width, height) => {
 /**
  * Hauptfunktion für Hintergrund-Entfernung
  * Wählt automatisch die beste verfügbare Methode
+ * @param {HTMLVideoElement|HTMLImageElement} source - Quell-Element (für AI)
+ * @param {CanvasRenderingContext2D} context - Canvas Context
+ * @param {number} width - Canvas Breite
+ * @param {number} height - Canvas Höhe
+ * @param {string} method - 'ai', 'advanced', oder 'simple'
  */
-export const removeBackground = (context, width, height, method = 'advanced') => {
-  if (method === 'advanced') {
-    return removeBackgroundAdvanced(context, width, height);
-  } else {
-    return removeBackgroundSimple(context, width, height);
+export const removeBackground = async (source, context, width, height, method = 'advanced') => {
+  // Versuche AI-Methode zuerst (beste Qualität)
+  if (method === 'ai' && selfieSegmentation) {
+    const success = await removeBackgroundAI(source, context, width, height);
+    if (success) {
+      console.log('[Background Removal] AI-Methode erfolgreich');
+      return true;
+    }
   }
+  
+  // Fallback zu Canvas-basierten Methoden
+  if (method === 'advanced' || method === 'ai') {
+    const success = removeBackgroundAdvanced(context, width, height);
+    if (success) {
+      console.log('[Background Removal] Advanced-Methode verwendet');
+      return true;
+    }
+  }
+  
+  // Letzter Fallback
+  console.log('[Background Removal] Simple-Methode verwendet');
+  return removeBackgroundSimple(context, width, height);
 };
 
 /**
- * Prüft, ob MediaPipe verfügbar ist (für zukünftige Integration)
+ * Prüft, ob MediaPipe verfügbar ist
  */
 export const isMediaPipeAvailable = () => {
-  // Placeholder für MediaPipe Integration
-  return false;
+  return selfieSegmentation !== null;
 };
