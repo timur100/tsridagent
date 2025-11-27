@@ -39,6 +39,7 @@ const FacematchPage = () => {
   const [zoomLevel, setZoomLevel] = useState(1.2); // Auto-zoom level (1.0 - 1.5) - Start bei 1.2
   const [targetZoom, setTargetZoom] = useState(1.2); // Ziel-Zoom für sanfte Übergänge
   const [positionHistory, setPositionHistory] = useState([]); // Verlauf für Stabilisierung
+  const [currentDetection, setCurrentDetection] = useState(null); // Aktuelle Face Detection für Visualisierung
 
   // Initialize MediaPipe on mount
   useEffect(() => {
