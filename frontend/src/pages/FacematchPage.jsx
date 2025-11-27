@@ -111,8 +111,8 @@ const FacematchPage = () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
-          width: { ideal: 1280 }, 
-          height: { ideal: 720 },
+          width: { ideal: 720 },  // Portrait mode
+          height: { ideal: 960 }, // Portrait mode (4:3 aspect ratio)
           facingMode: 'user'
         } 
       });
