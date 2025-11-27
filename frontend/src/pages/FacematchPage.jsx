@@ -730,6 +730,14 @@ const FacematchPage = () => {
                       <X className="h-5 w-5" />
                     </button>
                   </div>
+                  
+                  {/* Zoom Indicator */}
+                  {zoomLevel > 1.05 && (
+                    <div className="absolute top-4 left-4 bg-blue-600 bg-opacity-90 text-white px-3 py-1.5 rounded-full text-xs font-semibold shadow-lg flex items-center gap-2" style={{ zIndex: 5 }}>
+                      <Search className="h-3 w-3" />
+                      {(zoomLevel * 100).toFixed(0)}% Zoom
+                    </div>
+                  )}
                 </div>
                 
                 {/* Info text */}
