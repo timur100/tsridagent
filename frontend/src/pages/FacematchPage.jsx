@@ -780,6 +780,17 @@ const FacematchPage = () => {
                     }}
                   />
                   
+                  {/* Canvas Overlay für Face Detection Visualisierung */}
+                  <canvas
+                    ref={overlayCanvasRef}
+                    className="absolute top-0 left-0 w-full h-full pointer-events-none"
+                    style={{
+                      transform: `scaleX(-1) scale(${zoomLevel})`, // Gleiche Transformation wie Video
+                      transition: 'transform 0.3s ease-out',
+                      zIndex: 3
+                    }}
+                  />
+                  
                   {/* Oval/Round face detection frame overlay */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     {/* Dark overlay with oval cutout */}
