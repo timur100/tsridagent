@@ -234,7 +234,6 @@ const FacematchPage = () => {
   useEffect(() => {
     let animationId;
     let checkCount = 0;
-    let perfectPositionCount = 0;
     let isDetecting = false;
     
     if (cameraActive && videoRef.current && !autoCapturing && step === 1) {
