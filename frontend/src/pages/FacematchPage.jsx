@@ -59,7 +59,35 @@ const FacematchPage = () => {
     }
   }, [step]);
 
-  // Simulated face detection loop with auto-capture and auto-zoom
+  // Sanfter Zoom-Übergang (interpolation)
+  useEffect(() => {
+    let animationId;
+    
+    const smoothZoom = () => {
+      setZoomLevel(current => {
+        const diff = targetZoom - current;
+        if (Math.abs(diff) < 0.01) {
+          return targetZoom;
+        }
+        // Sanfte Interpolation: 10% des Weges pro Frame
+        return current + diff * 0.1;
+      });
+      
+      animationId = requestAnimationFrame(smoothZoom);
+    };
+    
+    if (cameraActive && step === 1) {
+      smoothZoom();
+    }
+    
+    return () => {
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
+    };
+  }, [cameraActive, targetZoom, step]);
+
+  // Simulated face detection loop with stabilized zoom
   useEffect(() => {
     let animationId;
     let checkCount = 0;
@@ -69,60 +97,66 @@ const FacematchPage = () => {
       const detectFace = async () => {
         checkCount++;
         
-        // Simulate face detection every 30 frames (~1 second at 30fps)
-        if (checkCount % 30 === 0) {
+        // Simulate face detection every 60 frames (~2 seconds at 30fps) für mehr Stabilität
+        if (checkCount % 60 === 0) {
           // Simulate face detection states
-          const states = ['outside', 'too-far', 'too-close', 'perfect'];
+          const states = ['perfect', 'perfect', 'perfect', 'too-far', 'too-close']; // Mehr "perfect" für Stabilität
           const randomState = states[Math.floor(Math.random() * states.length)];
           
-          setFaceDetected(randomState !== 'outside');
-          setFacePosition(randomState);
-          
-          // Auto-Zoom basierend auf Position
-          if (randomState === 'too-far') {
-            // Zu weit weg -> Zoom in
-            setZoomLevel(prev => Math.min(prev + 0.05, 1.8));
-          } else if (randomState === 'too-close') {
-            // Zu nah -> Zoom out
-            setZoomLevel(prev => Math.max(prev - 0.05, 1.0));
-          } else if (randomState === 'perfect') {
-            // Perfekte Position -> Optimaler Zoom (1.3x)
-            setZoomLevel(prev => {
-              if (Math.abs(prev - 1.3) > 0.05) {
-                return prev < 1.3 ? prev + 0.05 : prev - 0.05;
-              }
-              return 1.3;
+          // Füge zur History hinzu (letzte 5 Positionen)
+          setPositionHistory(prev => {
+            const newHistory = [...prev, randomState].slice(-5);
+            
+            // Zähle Häufigkeit jeder Position
+            const counts = {};
+            newHistory.forEach(pos => {
+              counts[pos] = (counts[pos] || 0) + 1;
             });
-          } else {
-            // Außerhalb -> Reset Zoom
-            setZoomLevel(prev => Math.max(prev - 0.05, 1.0));
-          }
+            
+            // Finde dominante Position (muss mindestens 3x vorkommen)
+            const dominantPosition = Object.keys(counts).find(pos => counts[pos] >= 3);
+            
+            if (dominantPosition) {
+              setFaceDetected(dominantPosition !== 'outside');
+              setFacePosition(dominantPosition);
+              
+              // Setze Ziel-Zoom basierend auf stabilisierter Position
+              if (dominantPosition === 'too-far') {
+                setTargetZoom(1.4); // Moderat reinzoomen
+              } else if (dominantPosition === 'too-close') {
+                setTargetZoom(1.1); // Leicht rauszoomen
+              } else if (dominantPosition === 'perfect') {
+                setTargetZoom(1.2); // Optimaler Zoom
+              }
+            }
+            
+            return newHistory;
+          });
           
-          // Auto-capture logic: wenn "perfect" für 3 Sekunden
-          if (randomState === 'perfect') {
+          // Auto-capture logic: nur wenn wirklich stabil "perfect"
+          const recentPositions = positionHistory.slice(-3);
+          const allPerfect = recentPositions.length === 3 && recentPositions.every(p => p === 'perfect');
+          
+          if (allPerfect && randomState === 'perfect') {
             perfectPositionCount++;
             setCountdown(4 - perfectPositionCount); // 3, 2, 1
             
-            // Nach 3 Sekunden in perfekter Position: Auto-Capture
+            // Nach 3 Sekunden in stabiler perfekter Position: Auto-Capture
             if (perfectPositionCount >= 3) {
               setAutoCapturing(true);
               setTimeout(() => {
                 capturePhoto();
-              }, 500); // Kleine Verzögerung für besseres UX
+              }, 500);
               perfectPositionCount = 0;
               setCountdown(0);
             }
           } else {
-            // Position nicht mehr perfekt, Reset
-            perfectPositionCount = 0;
-            setCountdown(0);
+            // Position nicht stabil, Reset
+            if (perfectPositionCount > 0) {
+              perfectPositionCount = Math.max(0, perfectPositionCount - 1);
+              setCountdown(perfectPositionCount > 0 ? 4 - perfectPositionCount : 0);
+            }
           }
-          
-          // In real implementation, you would:
-          // 1. Capture current video frame
-          // 2. Send to backend for face detection
-          // 3. Get face location and position feedback
-          // 4. Calculate optimal zoom based on face size
         }
         
         animationId = requestAnimationFrame(detectFace);
@@ -136,7 +170,7 @@ const FacematchPage = () => {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [cameraActive, autoCapturing, step]);
+  }, [cameraActive, autoCapturing, step, positionHistory]);
 
   const fetchAvailableScans = async () => {
     setLoading(true);
