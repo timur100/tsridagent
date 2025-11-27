@@ -184,8 +184,6 @@ const FacematchPage = () => {
           ctx.fillText(`${(currentDetection.confidence * 100).toFixed(1)}% confident`, -x - 145, y - 10);
           ctx.restore();
         }
-      }
-      
       } else if (overlayCanvasRef.current) {
         // Wenn keine Detection, Canvas leeren
         const canvas = overlayCanvasRef.current;
