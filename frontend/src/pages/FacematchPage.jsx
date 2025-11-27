@@ -159,26 +159,13 @@ const FacematchPage = () => {
           ctx.lineTo(x + w, y + h - cornerLength);
           ctx.stroke();
           
-          // Zeichne Landmarks (Key Points)
-          if (detection.landmarks && detection.landmarks.length > 0) {
-            ctx.fillStyle = color;
-            detection.landmarks.forEach(landmark => {
-              const lx = landmark.x * canvas.width;
-              const ly = landmark.y * canvas.height;
-              
-              // Zeichne Punkt
-              ctx.beginPath();
-              ctx.arc(lx, ly, 4, 0, 2 * Math.PI);
-              ctx.fill();
-              
-              // Zeichne Glow-Effekt
-              ctx.strokeStyle = color;
-              ctx.lineWidth = 1;
-              ctx.beginPath();
-              ctx.arc(lx, ly, 6, 0, 2 * Math.PI);
-              ctx.stroke();
-            });
-          }
+          // Zeichne Face Mesh (468 Landmarks)
+          drawFaceMesh(ctx, landmarks, canvas.width, canvas.height, {
+            showAllLandmarks: false, // Nur wichtige Punkte
+            showIris: true,
+            showFaceOval: true,
+            color: color
+          });
           
           // Zeichne Confidence Score (gespiegelt korrigiert)
           ctx.save();
