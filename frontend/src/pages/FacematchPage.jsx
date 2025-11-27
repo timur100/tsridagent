@@ -92,7 +92,14 @@ const FacematchPage = () => {
       if (overlayCanvasRef.current && videoRef.current && currentDetection && currentDetection.detected) {
         const canvas = overlayCanvasRef.current;
         const video = videoRef.current;
-        const ctx = canvas.getContext('2d');
+        
+        // Prüfe ob Video bereit ist
+        if (!video.videoWidth || !video.videoHeight) {
+          animationId = requestAnimationFrame(drawOverlay);
+          return;
+        }
+        
+        const ctx = canvas.getContext('2d', { alpha: true });
         
         // Canvas-Größe an Video anpassen
         if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
@@ -100,7 +107,7 @@ const FacematchPage = () => {
           canvas.height = video.videoHeight;
         }
         
-        // Clear canvas
+        // Clear canvas mit transparentem Hintergrund
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         // Hole Detection-Daten
