@@ -8,6 +8,7 @@ import {
   Image as ImageIcon, CheckCircle, XCircle, Eye, X, RefreshCw, AlertTriangle, ChevronDown
 } from 'lucide-react';
 import { removeBackground, initMediaPipe, isMediaPipeAvailable } from '../utils/backgroundRemoval';
+import { initFaceDetection, detectFaceInVideo, isFaceDetectionReady } from '../utils/faceDetection';
 
 const FacematchPage = () => {
   const { theme } = useTheme();
