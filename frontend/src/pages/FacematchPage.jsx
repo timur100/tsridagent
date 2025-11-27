@@ -252,8 +252,8 @@ const FacematchPage = () => {
       const detectFace = async () => {
         checkCount++;
         
-        // Echte Face Detection alle 20 frames (~0.66 Sekunden bei 30fps)
-        if (checkCount % 20 === 0 && !isDetecting && isFaceDetectionReady()) {
+        // Echte Face Detection alle 30 frames (~1 Sekunde bei 30fps)
+        if (checkCount % 30 === 0 && !isDetecting && isFaceDetectionReady()) {
           isDetecting = true;
           
           try {
