@@ -29,8 +29,9 @@ const FacematchPage = () => {
   const [loading, setLoading] = useState(false);
   const [comparing, setComparing] = useState(false);
   const [faceDetected, setFaceDetected] = useState(false);
-  const [facePosition, setFacePosition] = useState(null); // 'too-far', 'too-close', 'perfect'
+  const [facePosition, setFacePosition] = useState(null); // 'too-far', 'too-close', 'perfect', 'outside'
   const [autoCapturing, setAutoCapturing] = useState(false);
+  const [step, setStep] = useState(1); // 1: capture live image, 2: select document, 3: compare
 
   // Fetch available scans on mount
   useEffect(() => {
