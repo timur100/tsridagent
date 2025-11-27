@@ -781,7 +781,9 @@ const FacematchPage = () => {
                     style={{
                       transform: `scaleX(-1) scale(${zoomLevel})`, // Gleiche Transformation wie Video
                       transition: 'transform 0.3s ease-out',
-                      zIndex: 3
+                      zIndex: 3,
+                      mixBlendMode: 'normal',
+                      opacity: 1
                     }}
                   />
                   
