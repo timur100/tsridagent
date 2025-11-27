@@ -71,7 +71,12 @@ const AdminPortalContent = () => {
                           location.pathname.includes('/ideas') ||
                           (location.pathname.includes('/id-checks/') && !location.pathname.endsWith('/id-checks')));
   
-  const [activeTab, setActiveTab] = useState('dashboard');
+  // Determine initial activeTab based on current path
+  const getInitialTab = () => {
+    if (location.pathname.includes('/id-checks')) return 'id-checks';
+    return 'dashboard';
+  };
+  const [activeTab, setActiveTab] = useState(getInitialTab());
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
   const [devices, setDevices] = useState([]);
