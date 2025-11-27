@@ -19,6 +19,7 @@ const FacematchPage = () => {
   const canvasRef = useRef(null);
   const liveCanvasRef = useRef(null);
   const docCanvasRef = useRef(null);
+  const overlayCanvasRef = useRef(null); // Für Face Detection Overlay
   
   // State management
   const [stream, setStream] = useState(null);
