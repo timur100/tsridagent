@@ -105,8 +105,9 @@ const FacematchPage = () => {
         
         // Hole Detection-Daten
         const detection = currentDetection.rawDetection;
-        if (detection && detection.boundingBox) {
+        if (detection && detection.boundingBox && detection.landmarks) {
           const bbox = detection.boundingBox;
+          const landmarks = detection.landmarks;
           
           // Berechne Bounding Box Position
           const x = bbox.xCenter * canvas.width - (bbox.width * canvas.width) / 2;
