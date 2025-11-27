@@ -109,75 +109,86 @@ const FacematchPage = () => {
     };
   }, [cameraActive, targetZoom, step]);
 
-  // Simulated face detection loop with stabilized zoom
+  // Echte Face Detection Loop mit stabilisiertem Zoom
   useEffect(() => {
     let animationId;
     let checkCount = 0;
     let perfectPositionCount = 0;
+    let isDetecting = false;
     
     if (cameraActive && videoRef.current && !autoCapturing && step === 1) {
       const detectFace = async () => {
         checkCount++;
         
-        // Simulate face detection every 60 frames (~2 seconds at 30fps) für mehr Stabilität
-        if (checkCount % 60 === 0) {
-          // Simulate face detection states
-          const states = ['perfect', 'perfect', 'perfect', 'too-far', 'too-close']; // Mehr "perfect" für Stabilität
-          const randomState = states[Math.floor(Math.random() * states.length)];
+        // Echte Face Detection alle 20 frames (~0.66 Sekunden bei 30fps)
+        if (checkCount % 20 === 0 && !isDetecting && isFaceDetectionReady()) {
+          isDetecting = true;
           
-          // Füge zur History hinzu (letzte 5 Positionen)
-          setPositionHistory(prev => {
-            const newHistory = [...prev, randomState].slice(-5);
-            
-            // Zähle Häufigkeit jeder Position
-            const counts = {};
-            newHistory.forEach(pos => {
-              counts[pos] = (counts[pos] || 0) + 1;
-            });
-            
-            // Finde dominante Position (muss mindestens 3x vorkommen)
-            const dominantPosition = Object.keys(counts).find(pos => counts[pos] >= 3);
-            
-            if (dominantPosition) {
-              setFaceDetected(dominantPosition !== 'outside');
-              setFacePosition(dominantPosition);
+          try {
+            await detectFaceInVideo(videoRef.current, (result) => {
+              const detectedPosition = result.position;
               
-              // Setze Ziel-Zoom basierend auf stabilisierter Position
-              if (dominantPosition === 'too-far') {
-                setTargetZoom(1.4); // Moderat reinzoomen
-              } else if (dominantPosition === 'too-close') {
-                setTargetZoom(1.1); // Leicht rauszoomen
-              } else if (dominantPosition === 'perfect') {
-                setTargetZoom(1.2); // Optimaler Zoom
-              }
-            }
-            
-            return newHistory;
-          });
-          
-          // Auto-capture logic: nur wenn wirklich stabil "perfect"
-          const recentPositions = positionHistory.slice(-3);
-          const allPerfect = recentPositions.length === 3 && recentPositions.every(p => p === 'perfect');
-          
-          if (allPerfect && randomState === 'perfect') {
-            perfectPositionCount++;
-            setCountdown(4 - perfectPositionCount); // 3, 2, 1
-            
-            // Nach 3 Sekunden in stabiler perfekter Position: Auto-Capture
-            if (perfectPositionCount >= 3) {
-              setAutoCapturing(true);
-              setTimeout(() => {
-                capturePhoto();
-              }, 500);
-              perfectPositionCount = 0;
-              setCountdown(0);
-            }
-          } else {
-            // Position nicht stabil, Reset
-            if (perfectPositionCount > 0) {
-              perfectPositionCount = Math.max(0, perfectPositionCount - 1);
-              setCountdown(perfectPositionCount > 0 ? 4 - perfectPositionCount : 0);
-            }
+              // Füge zur History hinzu (letzte 5 Positionen)
+              setPositionHistory(prev => {
+                const newHistory = [...prev, detectedPosition].slice(-5);
+                
+                // Zähle Häufigkeit jeder Position
+                const counts = {};
+                newHistory.forEach(pos => {
+                  counts[pos] = (counts[pos] || 0) + 1;
+                });
+                
+                // Finde dominante Position (muss mindestens 3x vorkommen)
+                const dominantPosition = Object.keys(counts).find(pos => counts[pos] >= 3);
+                
+                if (dominantPosition) {
+                  setFaceDetected(dominantPosition !== 'outside');
+                  setFacePosition(dominantPosition);
+                  
+                  // Setze Ziel-Zoom basierend auf echter Gesichtsanalyse
+                  if (result.optimalZoom) {
+                    setTargetZoom(result.optimalZoom);
+                  }
+                }
+                
+                return newHistory;
+              });
+              
+              // Auto-capture logic: nur wenn wirklich stabil "perfect"
+              setPositionHistory(current => {
+                const recentPositions = current.slice(-3);
+                const allPerfect = recentPositions.length === 3 && 
+                                   recentPositions.every(p => p === 'perfect');
+                
+                if (allPerfect && detectedPosition === 'perfect') {
+                  perfectPositionCount++;
+                  setCountdown(4 - perfectPositionCount); // 3, 2, 1
+                  
+                  // Nach 3 Sekunden in stabiler perfekter Position: Auto-Capture
+                  if (perfectPositionCount >= 3) {
+                    setAutoCapturing(true);
+                    setTimeout(() => {
+                      capturePhoto();
+                    }, 500);
+                    perfectPositionCount = 0;
+                    setCountdown(0);
+                  }
+                } else {
+                  // Position nicht stabil, langsamer Reset
+                  if (perfectPositionCount > 0) {
+                    perfectPositionCount = Math.max(0, perfectPositionCount - 1);
+                    setCountdown(perfectPositionCount > 0 ? 4 - perfectPositionCount : 0);
+                  }
+                }
+                
+                return current;
+              });
+              
+              isDetecting = false;
+            });
+          } catch (error) {
+            console.error('[Facematch] Face Detection Fehler:', error);
+            isDetecting = false;
           }
         }
         
