@@ -289,37 +289,32 @@ const FacematchPage = () => {
                 return newHistory;
               });
               
-              // Auto-capture logic: nur wenn wirklich stabil "perfect" UND in Kamera schaut
-              const recentPositions = positionHistory.slice(-3);
-              const allPerfect = recentPositions.length === 3 && 
-                                 recentPositions.every(p => p === 'perfect');
+              // Auto-capture logic: nur wenn "perfect" UND in Kamera schaut
               const lookingAtCamera = result.lookingAtCamera !== false; // Default true wenn nicht gesetzt
               
-              if (allPerfect && detectedPosition === 'perfect' && lookingAtCamera) {
+              if (detectedPosition === 'perfect' && lookingAtCamera) {
+                // Inkrementiere Counter
                 setPerfectPositionCount(prev => {
                   const newCount = prev + 1;
+                  console.log('[Auto-Capture] Count:', newCount, '/ 3');
                   setCountdown(4 - newCount); // 3, 2, 1
                   
-                  // Nach 3 Sekunden in stabiler perfekter Position: Auto-Capture
+                  // Nach 3 Checks in perfekter Position: Auto-Capture
                   if (newCount >= 3) {
+                    console.log('[Auto-Capture] TRIGGERING!');
                     setAutoCapturing(true);
                     setTimeout(() => {
                       capturePhoto();
-                    }, 500);
+                    }, 300);
                     return 0;
                   }
                   return newCount;
                 });
               } else {
-                // Position nicht stabil, langsamer Reset
-                setPerfectPositionCount(prev => {
-                  if (prev > 0) {
-                    const newCount = Math.max(0, prev - 1);
-                    setCountdown(newCount > 0 ? 4 - newCount : 0);
-                    return newCount;
-                  }
-                  return 0;
-                });
+                // Position nicht perfekt oder nicht in Kamera schauend -> Reset
+                console.log('[Auto-Capture] Reset - Position:', detectedPosition, 'Looking:', lookingAtCamera);
+                setPerfectPositionCount(0);
+                setCountdown(0);
               }
               
               isDetecting = false;
