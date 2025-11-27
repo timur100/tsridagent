@@ -498,7 +498,7 @@ const FacematchPage = () => {
               </div>
             )}
 
-            {cameraActive && (
+            {cameraActive && step === 1 && (
               <div className="space-y-4">
                 <div className="relative">
                   <video
@@ -506,9 +506,55 @@ const FacematchPage = () => {
                     autoPlay
                     playsInline
                     className="w-full rounded-lg"
-                    style={{ maxHeight: '400px', objectFit: 'cover' }}
+                    style={{ maxHeight: '500px', objectFit: 'cover' }}
                   />
-                  {/* Green face detection overlay would go here */}
+                  
+                  {/* Green face detection frame overlay */}
+                  {faceDetected && (
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                      <div 
+                        className="border-4 rounded-lg transition-all duration-300"
+                        style={{
+                          width: '60%',
+                          height: '70%',
+                          borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308',
+                          boxShadow: facePosition === 'perfect' ? '0 0 20px rgba(34, 197, 94, 0.5)' : '0 0 20px rgba(234, 179, 8, 0.5)'
+                        }}
+                      >
+                        {/* Corner markers */}
+                        <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
+                        <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
+                        <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
+                        <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Position feedback overlay */}
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                    {!faceDetected || facePosition === 'outside' ? (
+                      <div className="bg-red-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Kein Gesicht erkannt - Positionieren Sie sich im Rahmen
+                      </div>
+                    ) : facePosition === 'too-far' ? (
+                      <div className="bg-yellow-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Bitte näher zur Kamera kommen
+                      </div>
+                    ) : facePosition === 'too-close' ? (
+                      <div className="bg-yellow-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5" />
+                        Bitte weiter von der Kamera weggehen
+                      </div>
+                    ) : facePosition === 'perfect' ? (
+                      <div className="bg-green-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 animate-pulse">
+                        <CheckCircle className="h-5 w-5" />
+                        Perfekte Position! Foto aufnehmen bereit
+                      </div>
+                    ) : null}
+                  </div>
+                  
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
                       onClick={stopCamera}
@@ -521,18 +567,14 @@ const FacematchPage = () => {
                 </div>
                 <button
                   onClick={capturePhoto}
-                  disabled={!selectedScan}
-                  className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2"
                 >
                   <Camera className="h-5 w-5" />
                   Foto aufnehmen
                 </button>
-                {!selectedScan && (
-                  <p className="text-sm text-center text-yellow-600">
-                    <AlertTriangle className="inline h-4 w-4 mr-1" />
-                    Bitte wählen Sie zuerst ein Dokument aus
-                  </p>
-                )}
+                <p className="text-sm text-center text-gray-500">
+                  Positionieren Sie Ihr Gesicht im Rahmen für optimale Ergebnisse
+                </p>
               </div>
             )}
 
