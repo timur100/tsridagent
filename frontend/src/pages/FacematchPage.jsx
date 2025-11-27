@@ -793,10 +793,9 @@ const FacematchPage = () => {
                     }}
                   />
                   
-                  {/* Canvas Overlay für Face Detection Visualisierung - TEMPORÄR DEAKTIVIERT */}
-                  {false && (
-                    <canvas
-                      ref={overlayCanvasRef}
+                  {/* Face Detection Visualisierung mit SVG (lightweight) */}
+                  {currentDetection && currentDetection.detected && currentDetection.rawDetection && (
+                    <svg 
                       className="absolute top-0 left-0 pointer-events-none"
                       style={{
                         width: '100%',
@@ -805,7 +804,65 @@ const FacematchPage = () => {
                         transition: 'transform 0.3s ease-out',
                         zIndex: 3
                       }}
-                    />
+                      viewBox="0 0 100 100"
+                      preserveAspectRatio="none"
+                    >
+                      {(() => {
+                        const bbox = currentDetection.rawDetection.boundingBox;
+                        if (!bbox) return null;
+                        
+                        const x = (bbox.xCenter - bbox.width / 2) * 100;
+                        const y = (bbox.yCenter - bbox.height / 2) * 100;
+                        const w = bbox.width * 100;
+                        const h = bbox.height * 100;
+                        
+                        const color = currentDetection.position === 'perfect' 
+                          ? '#22c55e' 
+                          : currentDetection.position === 'outside' 
+                          ? '#ef4444' 
+                          : '#eab308';
+                        
+                        return (
+                          <g>
+                            {/* Bounding Box */}
+                            <rect
+                              x={x}
+                              y={y}
+                              width={w}
+                              height={h}
+                              fill="none"
+                              stroke={color}
+                              strokeWidth="0.5"
+                            />
+                            
+                            {/* Corner Markers */}
+                            <line x1={x} y1={y} x2={x} y2={y + 3} stroke={color} strokeWidth="0.7" />
+                            <line x1={x} y1={y} x2={x + 3} y2={y} stroke={color} strokeWidth="0.7" />
+                            
+                            <line x1={x + w} y1={y} x2={x + w} y2={y + 3} stroke={color} strokeWidth="0.7" />
+                            <line x1={x + w} y1={y} x2={x + w - 3} y2={y} stroke={color} strokeWidth="0.7" />
+                            
+                            <line x1={x} y1={y + h} x2={x} y2={y + h - 3} stroke={color} strokeWidth="0.7" />
+                            <line x1={x} y1={y + h} x2={x + 3} y2={y + h} stroke={color} strokeWidth="0.7" />
+                            
+                            <line x1={x + w} y1={y + h} x2={x + w} y2={y + h - 3} stroke={color} strokeWidth="0.7" />
+                            <line x1={x + w} y1={y + h} x2={x + w - 3} y2={y + h} stroke={color} strokeWidth="0.7" />
+                            
+                            {/* Confidence Score */}
+                            <text
+                              x={x + 1}
+                              y={y - 1}
+                              fill="white"
+                              fontSize="2"
+                              fontFamily="monospace"
+                              transform={`scale(-1, 1) translate(${-2 * (x + 1)}, 0)`}
+                            >
+                              {(currentDetection.confidence * 100).toFixed(0)}%
+                            </text>
+                          </g>
+                        );
+                      })()}
+                    </svg>
                   )}
                   
                   {/* Oval/Round face detection frame overlay */}
