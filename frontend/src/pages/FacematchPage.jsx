@@ -45,11 +45,11 @@ const FacematchPage = () => {
   // Initialize MediaPipe on mount
   useEffect(() => {
     const init = async () => {
-      // Initialisiere Face Detection
+      // Initialisiere Face Mesh (468 Landmarks + Iris)
       const faceDetectionInit = await initFaceDetection();
       if (faceDetectionInit) {
-        console.log('[Facematch] Echte Gesichtserkennung aktiviert');
-        toast.success('KI-Gesichtserkennung aktiviert', { duration: 2000, icon: '🎯' });
+        console.log('[Facematch] Face Mesh aktiviert (468 Landmarks + Iris)');
+        toast.success('Face Mesh aktiviert - 468 Punkte', { duration: 2000, icon: '🎯' });
       }
       
       // Initialisiere Background Removal
