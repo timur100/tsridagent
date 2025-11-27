@@ -199,21 +199,17 @@ const FacematchPage = () => {
         }
       }
       
-      animationId = requestAnimationFrame(drawOverlay);
+      // animationId = requestAnimationFrame(drawOverlay_DISABLED);
     };
     
-    if (cameraActive && step === 1) {
-      drawOverlay();
-    }
+    // Deaktiviert - SVG wird verwendet
+    // if (cameraActive && step === 1) {
+    //   drawOverlay_DISABLED();
+    // }
     
     return () => {
       if (animationId) {
         cancelAnimationFrame(animationId);
-      }
-      // Canvas beim Cleanup leeren
-      if (overlayCanvasRef.current) {
-        const ctx = overlayCanvasRef.current.getContext('2d', { alpha: true });
-        ctx.clearRect(0, 0, overlayCanvasRef.current.width, overlayCanvasRef.current.height);
       }
     };
   }, [cameraActive, step, currentDetection]);
