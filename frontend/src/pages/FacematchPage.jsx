@@ -680,16 +680,20 @@ const FacematchPage = () => {
 
             {capturedImage && step >= 2 && !matchResult && (
               <div className="space-y-4">
-                <div className="relative">
+                <div className="relative mx-auto" style={{ maxWidth: '480px' }}>
                   <img
                     src={capturedImage}
                     alt="Captured"
-                    className="w-full rounded-lg border-2 border-green-500"
-                    style={{ maxHeight: '500px', objectFit: 'cover' }}
+                    className="w-full rounded-2xl border-4 border-green-500"
+                    style={{ 
+                      aspectRatio: '3/4',
+                      objectFit: 'cover',
+                      transform: 'scaleX(-1)' // Mirror to match video
+                    }}
                   />
-                  <div className="absolute top-2 left-2 bg-green-600 bg-opacity-90 text-white px-3 py-1 rounded text-sm font-semibold flex items-center gap-2">
+                  <div className="absolute top-3 left-3 bg-green-600 bg-opacity-95 text-white px-3 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
                     <CheckCircle className="h-4 w-4" />
-                    Live-Bild aufgenommen
+                    Erfasst
                   </div>
                 </div>
                 <div className="flex gap-3">
