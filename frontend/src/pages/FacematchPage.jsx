@@ -38,6 +38,19 @@ const FacematchPage = () => {
   const [targetZoom, setTargetZoom] = useState(1.2); // Ziel-Zoom für sanfte Übergänge
   const [positionHistory, setPositionHistory] = useState([]); // Verlauf für Stabilisierung
 
+  // Initialize MediaPipe on mount
+  useEffect(() => {
+    const init = async () => {
+      const initialized = await initMediaPipe();
+      if (initialized) {
+        console.log('[Facematch] MediaPipe bereit für professionelle Hintergrund-Entfernung');
+        toast.success('KI-Hintergrund-Entfernung aktiviert', { duration: 2000 });
+      }
+    };
+    
+    init();
+  }, []);
+
   // Auto-start camera when component mounts
   useEffect(() => {
     if (step === 1 && !cameraActive && !capturedImage) {
