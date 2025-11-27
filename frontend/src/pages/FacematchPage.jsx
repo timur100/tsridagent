@@ -579,14 +579,20 @@ const FacematchPage = () => {
               </div>
             )}
 
-            {capturedImage && !matchResult && (
+            {capturedImage && step >= 2 && !matchResult && (
               <div className="space-y-4">
-                <img
-                  src={capturedImage}
-                  alt="Captured"
-                  className="w-full rounded-lg"
-                  style={{ maxHeight: '400px', objectFit: 'cover' }}
-                />
+                <div className="relative">
+                  <img
+                    src={capturedImage}
+                    alt="Captured"
+                    className="w-full rounded-lg border-2 border-green-500"
+                    style={{ maxHeight: '500px', objectFit: 'cover' }}
+                  />
+                  <div className="absolute top-2 left-2 bg-green-600 bg-opacity-90 text-white px-3 py-1 rounded text-sm font-semibold flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4" />
+                    Live-Bild aufgenommen
+                  </div>
+                </div>
                 <div className="flex gap-3">
                   <button
                     onClick={retakePhoto}
@@ -595,23 +601,25 @@ const FacematchPage = () => {
                     <RefreshCw className="h-5 w-5" />
                     Neu aufnehmen
                   </button>
-                  <button
-                    onClick={compareWithDatabase}
-                    disabled={comparing || !selectedScan}
-                    className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {comparing ? (
-                      <>
-                        <RefreshCw className="h-5 w-5 animate-spin" />
-                        Analysiere...
-                      </>
-                    ) : (
-                      <>
-                        <Search className="h-5 w-5" />
-                        Vergleichen
-                      </>
-                    )}
-                  </button>
+                  {step === 2 && selectedScan && (
+                    <button
+                      onClick={compareWithDatabase}
+                      disabled={comparing}
+                      className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {comparing ? (
+                        <>
+                          <RefreshCw className="h-5 w-5 animate-spin" />
+                          Analysiere...
+                        </>
+                      ) : (
+                        <>
+                          <Search className="h-5 w-5" />
+                          Jetzt vergleichen
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
               </div>
             )}
