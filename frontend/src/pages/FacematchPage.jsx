@@ -236,6 +236,7 @@ const FacematchPage = () => {
       return;
     }
 
+    setStep(3);
     setComparing(true);
     try {
       const result = await apiCall('/api/facematch/compare', {
