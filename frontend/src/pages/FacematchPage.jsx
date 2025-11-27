@@ -523,81 +523,158 @@ const FacematchPage = () => {
 
             {cameraActive && step === 1 && (
               <div className="space-y-4">
-                <div className="relative">
+                <div className="relative mx-auto" style={{ maxWidth: '480px' }}>
                   <video
                     ref={videoRef}
                     autoPlay
                     playsInline
-                    className="w-full rounded-lg"
-                    style={{ maxHeight: '500px', objectFit: 'cover' }}
+                    className="w-full rounded-2xl"
+                    style={{ 
+                      aspectRatio: '3/4',
+                      objectFit: 'cover',
+                      transform: 'scaleX(-1)' // Mirror for better UX
+                    }}
                   />
                   
-                  {/* Green face detection frame overlay */}
-                  {faceDetected && (
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                      <div 
-                        className="border-4 rounded-lg transition-all duration-300"
+                  {/* Oval/Round face detection frame overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    {/* Dark overlay with oval cutout */}
+                    <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 1 }}>
+                      <defs>
+                        <mask id="faceMask">
+                          <rect width="100%" height="100%" fill="white" />
+                          <ellipse 
+                            cx="50%" 
+                            cy="45%" 
+                            rx="35%" 
+                            ry="42%" 
+                            fill="black"
+                          />
+                        </mask>
+                      </defs>
+                      <rect 
+                        width="100%" 
+                        height="100%" 
+                        fill="rgba(0, 0, 0, 0.6)" 
+                        mask="url(#faceMask)"
+                      />
+                    </svg>
+                    
+                    {/* Oval border with color based on position */}
+                    <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 2 }}>
+                      <ellipse 
+                        cx="50%" 
+                        cy="45%" 
+                        rx="35%" 
+                        ry="42%" 
+                        fill="none"
+                        stroke={facePosition === 'perfect' ? '#22c55e' : facePosition === 'outside' || !faceDetected ? '#ef4444' : '#eab308'}
+                        strokeWidth="4"
+                        className="transition-all duration-300"
                         style={{
-                          width: '60%',
-                          height: '70%',
-                          borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308',
-                          boxShadow: facePosition === 'perfect' ? '0 0 20px rgba(34, 197, 94, 0.5)' : '0 0 20px rgba(234, 179, 8, 0.5)'
+                          filter: facePosition === 'perfect' 
+                            ? 'drop-shadow(0 0 12px rgba(34, 197, 94, 0.8))' 
+                            : facePosition === 'outside' || !faceDetected
+                            ? 'drop-shadow(0 0 12px rgba(239, 68, 68, 0.8))'
+                            : 'drop-shadow(0 0 12px rgba(234, 179, 8, 0.8))'
                         }}
-                      >
-                        {/* Corner markers */}
-                        <div className="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
-                        <div className="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-r-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
-                        <div className="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
-                        <div className="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-r-4" style={{ borderColor: facePosition === 'perfect' ? '#22c55e' : '#eab308' }}></div>
+                      />
+                      
+                      {/* Corner guide markers */}
+                      {faceDetected && (
+                        <>
+                          {/* Top markers */}
+                          <line x1="42%" y1="8%" x2="42%" y2="12%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                          <line x1="58%" y1="8%" x2="58%" y2="12%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                          
+                          {/* Side markers */}
+                          <line x1="12%" y1="43%" x2="17%" y2="43%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                          <line x1="83%" y1="43%" x2="88%" y2="43%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                          
+                          {/* Bottom markers */}
+                          <line x1="42%" y1="78%" x2="42%" y2="82%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                          <line x1="58%" y1="78%" x2="58%" y2="82%" 
+                            stroke={facePosition === 'perfect' ? '#22c55e' : '#eab308'} 
+                            strokeWidth="3" strokeLinecap="round" />
+                        </>
+                      )}
+                    </svg>
+                    
+                    {/* Countdown overlay when perfect position */}
+                    {facePosition === 'perfect' && countdown > 0 && (
+                      <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: 3 }}>
+                        <div className="bg-green-600 bg-opacity-90 text-white rounded-full w-24 h-24 flex items-center justify-center animate-pulse">
+                          <span className="text-5xl font-bold">{countdown}</span>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
                   
                   {/* Position feedback overlay */}
-                  <div className="absolute bottom-4 left-0 right-0 flex justify-center">
+                  <div className="absolute bottom-4 left-0 right-0 flex justify-center" style={{ zIndex: 4 }}>
                     {!faceDetected || facePosition === 'outside' ? (
-                      <div className="bg-red-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" />
-                        Kein Gesicht erkannt - Positionieren Sie sich im Rahmen
+                      <div className="bg-red-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg">
+                        <AlertTriangle className="h-4 w-4" />
+                        Gesicht nicht erkannt
                       </div>
                     ) : facePosition === 'too-far' ? (
-                      <div className="bg-yellow-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" />
-                        Bitte näher zur Kamera kommen
+                      <div className="bg-yellow-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg">
+                        <AlertTriangle className="h-4 w-4" />
+                        Näher kommen
                       </div>
                     ) : facePosition === 'too-close' ? (
-                      <div className="bg-yellow-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2">
-                        <AlertTriangle className="h-5 w-5" />
-                        Bitte weiter von der Kamera weggehen
+                      <div className="bg-yellow-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg">
+                        <AlertTriangle className="h-4 w-4" />
+                        Weiter weggehen
                       </div>
-                    ) : facePosition === 'perfect' ? (
-                      <div className="bg-green-600 bg-opacity-90 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 animate-pulse">
-                        <CheckCircle className="h-5 w-5" />
-                        Perfekte Position! Foto aufnehmen bereit
+                    ) : facePosition === 'perfect' && countdown === 0 ? (
+                      <div className="bg-green-600 bg-opacity-95 text-white px-4 py-2 rounded-full font-semibold flex items-center gap-2 text-sm shadow-lg">
+                        <CheckCircle className="h-4 w-4" />
+                        Perfekt! Halten Sie die Position...
                       </div>
                     ) : null}
                   </div>
                   
-                  <div className="absolute top-4 right-4 flex gap-2">
+                  <div className="absolute top-4 right-4 flex gap-2" style={{ zIndex: 5 }}>
                     <button
                       onClick={stopCamera}
-                      className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      className="p-2 bg-red-600 bg-opacity-90 text-white rounded-full hover:bg-red-700 transition-colors shadow-lg"
                       title="Kamera stoppen"
                     >
                       <X className="h-5 w-5" />
                     </button>
                   </div>
                 </div>
+                
+                {/* Info text */}
+                <div className="text-center space-y-2">
+                  <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Positionieren Sie Ihr Gesicht im ovalen Rahmen
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Das Foto wird automatisch aufgenommen, wenn die Position optimal ist
+                  </p>
+                </div>
+                
+                {/* Manual capture button (backup) */}
                 <button
                   onClick={capturePhoto}
-                  className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2"
+                  disabled={autoCapturing}
+                  className="w-full px-6 py-3 bg-gray-700 text-white rounded-lg font-semibold hover:bg-gray-600 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Camera className="h-5 w-5" />
-                  Foto aufnehmen
+                  Manuell aufnehmen
                 </button>
-                <p className="text-sm text-center text-gray-500">
-                  Positionieren Sie Ihr Gesicht im Rahmen für optimale Ergebnisse
-                </p>
               </div>
             )}
 
