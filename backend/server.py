@@ -61,6 +61,7 @@ from routes.websocket import router as websocket_router
 from routes.verification_proxy import router as verification_proxy_router
 from routes.id_scans import router as id_scans_router
 from routes.ideas import router as ideas_router
+from routes.facematch import router as facematch_router
 
 
 ROOT_DIR = Path(__file__).parent
