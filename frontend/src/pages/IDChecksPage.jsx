@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { 
   Search, Filter, RefreshCw, Download, Eye, CheckCircle, 
   XCircle, AlertCircle, Clock, Settings, Calendar,
-  MapPin, Monitor, Building, User
+  MapPin, Monitor, Building, User, FileText, Users, Fingerprint
 } from 'lucide-react';
 
 const IDChecksPage = () => {
