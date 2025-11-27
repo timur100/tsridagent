@@ -183,22 +183,106 @@ const FacematchPage = () => {
           </div>
         </div>
 
-        {/* Upload Section */}
-        <div className={`rounded-lg border-2 border-dashed p-12 text-center mb-6 ${
-          theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-gray-50'
+        {/* Camera Section */}
+        <div className={`rounded-lg border p-6 mb-6 ${
+          theme === 'dark' ? 'border-gray-700 bg-[#2a2a2a]' : 'border-gray-300 bg-white'
         }`}>
-          <Upload className={`mx-auto h-12 w-12 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-          <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Bilder für Facematch hochladen
+          <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Gesichtsaufnahme
           </h3>
-          <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Laden Sie ein Dokumentenbild und ein Vergleichsbild hoch
-          </p>
-          <button
-            className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors"
-          >
-            Bilder auswählen
-          </button>
+
+          {!cameraActive && !capturedImage && (
+            <div className={`rounded-lg border-2 border-dashed p-12 text-center ${
+              theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'
+            }`}>
+              <Camera className={`mx-auto h-12 w-12 mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+              <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Kamera starten
+              </h4>
+              <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Nehmen Sie ein Foto auf, um es mit der Datenbank zu vergleichen
+              </p>
+              <button
+                onClick={startCamera}
+                className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center gap-2 mx-auto"
+              >
+                <Camera className="h-5 w-5" />
+                Kamera starten
+              </button>
+            </div>
+          )}
+
+          {cameraActive && (
+            <div className="space-y-4">
+              <div className="relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  className="w-full rounded-lg"
+                  style={{ maxHeight: '500px', objectFit: 'cover' }}
+                />
+                <div className="absolute top-4 right-4 flex gap-2">
+                  <button
+                    onClick={stopCamera}
+                    className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                    title="Kamera stoppen"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+              <button
+                onClick={capturePhoto}
+                className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2"
+              >
+                <Camera className="h-5 w-5" />
+                Foto aufnehmen
+              </button>
+            </div>
+          )}
+
+          {capturedImage && (
+            <div className="space-y-4">
+              <div className="relative">
+                <img
+                  src={capturedImage}
+                  alt="Captured"
+                  className="w-full rounded-lg"
+                  style={{ maxHeight: '500px', objectFit: 'cover' }}
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={retakePhoto}
+                  className="flex-1 px-6 py-3 bg-gray-600 text-white rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="h-5 w-5" />
+                  Neu aufnehmen
+                </button>
+                <button
+                  onClick={compareWithDatabase}
+                  disabled={comparing}
+                  className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {comparing ? (
+                    <>
+                      <RefreshCw className="h-5 w-5 animate-spin" />
+                      Vergleiche...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-5 w-5" />
+                      Mit Datenbank vergleichen
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Hidden canvas for photo capture */}
+          <canvas ref={canvasRef} style={{ display: 'none' }} />
         </div>
 
         {/* Statistics Cards */}
