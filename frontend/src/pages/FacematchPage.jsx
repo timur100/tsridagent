@@ -32,6 +32,7 @@ const FacematchPage = () => {
   const [facePosition, setFacePosition] = useState(null); // 'too-far', 'too-close', 'perfect', 'outside'
   const [autoCapturing, setAutoCapturing] = useState(false);
   const [step, setStep] = useState(1); // 1: capture live image, 2: select document, 3: compare
+  const [countdown, setCountdown] = useState(0); // Countdown for auto-capture
 
   // Auto-start camera when component mounts
   useEffect(() => {
