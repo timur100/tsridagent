@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - TEAMVIEWER ID VERIFICATION TESTING
-Tests TeamViewer ID updates verification as requested in German review:
-- Test AAHC01-01 device should have teamviewer_id = "949746162"
-- Test AGBC02-01 device should have teamviewer_id = "969678983" 
-- Test 3-5 random locations to ensure all devices have TeamViewer IDs (no "-" anymore)
-- Verify statistics show ~213 of 218 devices now have TeamViewer IDs (98%)
-- Ensure IDs are numeric and without "r" prefix
+Backend API Testing Suite - GLOBAL SEARCH EXTENDED FIELD TESTING
+Tests Global Search functionality with extended field search as requested in German review:
+- Test Manager search (finds devices/locations with Manager field)
+- Test Status search (finds devices with status "online")
+- Test City search (finds devices/locations/vehicles in Berlin)
+- Test Color search (finds vehicles with color "Schwarz")
+- Test TeamViewer ID search (finds device AAHC01-01 with TeamViewer ID 949746162)
+- Verify all entities are searched (Devices, Locations, Vehicles, ID-Checks)
 """
 
 import requests
