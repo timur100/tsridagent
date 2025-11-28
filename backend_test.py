@@ -646,74 +646,7 @@ class FahrzeugverwaltungTester:
             )
             return False
 
-    def test_create_test_ticket(self):
-        """Create a test ticket for SLA and assignment testing"""
-        try:
-            ticket_data = {
-                "title": "Test Ticket für SLA und Assignment Testing",
-                "description": "Dies ist ein Test-Ticket für Phase 1 Ticketing System Testing",
-                "priority": "high",
-                "category": "technical",
-                "location_id": "BERN01"
-            }
-            
-            response = self.session.post(f"{API_BASE}/tickets", json=ticket_data)
-            
-            if response.status_code not in [200, 201]:
-                # If ticket creation fails due to missing customer, that's expected
-                if response.status_code == 404 and "nicht gefunden" in response.text:
-                    self.log_result(
-                        "Create Test Ticket",
-                        True,
-                        "Ticket creation API working (customer not found is expected - no portal users configured)"
-                    )
-                    return False  # Can't continue with ticket-specific tests
-                else:
-                    self.log_result(
-                        "Create Test Ticket",
-                        False,
-                        f"Request failed. Status: {response.status_code}",
-                        response.text
-                    )
-                    return False
-            
-            data = response.json()
-            
-            if isinstance(data, dict) and data.get("success") is False:
-                self.log_result(
-                    "Create Test Ticket",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Extract ticket ID
-            self.test_ticket_id = data.get("ticket_id") or data.get("id")
-            
-            if not self.test_ticket_id:
-                self.log_result(
-                    "Create Test Ticket",
-                    False,
-                    "Response missing ticket_id",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "Create Test Ticket",
-                True,
-                f"Successfully created test ticket with ID: {self.test_ticket_id}"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "Create Test Ticket",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
+    # Old test methods removed - replaced with Vehicle Management tests
 
     def test_sla_ticket_specific_api(self):
         """Test GET /api/sla/{ticket_id} - SLA-Status für spezifisches Ticket"""
