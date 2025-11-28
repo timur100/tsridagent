@@ -216,15 +216,26 @@ async def global_search(
             })
         
         # Calculate total
-        total_results = len(geraete_results) + len(standorte_results) + len(id_checks_results)
+        total_results = len(geraete_results) + len(standorte_results) + len(id_checks_results) + len(vehicles_results)
         
-        print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, ID-Checks: {len(id_checks_results)})")
+        print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, Vehicles: {len(vehicles_results)}, ID-Checks: {len(id_checks_results)})")
+        
+        # Determine priority match (for barcode scanning)
+        priority_match = None
+        if vehicles_results:
+            priority_match = vehicles_results[0]
+        elif geraete_results:
+            priority_match = geraete_results[0]
+        elif standorte_results:
+            priority_match = standorte_results[0]
         
         return {
             "success": True,
             "query": search_term,
             "total": total_results,
+            "priority_match": priority_match,
             "results": {
+                "vehicles": vehicles_results[:25],  # Limit to 25
                 "geraete": geraete_results[:25],  # Limit to 25
                 "standorte": standorte_results[:25],  # Limit to 25
                 "id_checks": id_checks_results[:25],  # Limit to 25
