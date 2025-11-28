@@ -1764,7 +1764,7 @@ const AdminPortalContent = () => {
                     
                     {/* KFZ-Kennzeichenerkennung */}
                     {rndTab === 'license-plate-recognition' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             KFZ-Kennzeichenerkennung (LPR)
@@ -1822,7 +1822,7 @@ const AdminPortalContent = () => {
                     
                     {/* Flottenmanagement */}
                     {rndTab === 'fleet-management' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Flottenmanagement
@@ -1865,7 +1865,7 @@ const AdminPortalContent = () => {
                     
                     {/* Europcar Integration */}
                     {rndTab === 'europcar-integration' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Europcar PKW-Vermietung
@@ -1908,7 +1908,7 @@ const AdminPortalContent = () => {
                     
                     {/* Parkhaussystem */}
                     {rndTab === 'parking-system' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Parkhaussystem mit Kennzeichenerkennung
@@ -1951,7 +1951,7 @@ const AdminPortalContent = () => {
                     
                     {/* Parkhaus-Bezahlsystem */}
                     {rndTab === 'parking-payment' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Parkhaus-Bezahlsystem
@@ -1994,7 +1994,7 @@ const AdminPortalContent = () => {
                     
                     {/* Parkzeitüberschreitung */}
                     {rndTab === 'parking-overstay' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Parkzeitüberschreitung
@@ -2037,7 +2037,7 @@ const AdminPortalContent = () => {
                     
                     {/* Zutrittssysteme */}
                     {rndTab === 'access-control' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Zutrittssysteme
@@ -2081,7 +2081,7 @@ const AdminPortalContent = () => {
                     
                     {/* Zeiterfassung */}
                     {rndTab === 'time-tracking' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Zeiterfassung
@@ -2126,7 +2126,7 @@ const AdminPortalContent = () => {
                     
                     {/* KI-Suche - Placeholder */}
                     {rndTab === 'ki-search' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             KI-Suche - Intelligente Dokumentensuche
@@ -2152,7 +2152,7 @@ const AdminPortalContent = () => {
                     {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
                         'parking-payment', 'parking-overstay', 'access-control', 'time-tracking'].includes(rndTab) && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             {rndTab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
