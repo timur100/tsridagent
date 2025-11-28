@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://id-verify-12.preview.emergentagent.com/portal/admin
+https://biometric-verify-1.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
