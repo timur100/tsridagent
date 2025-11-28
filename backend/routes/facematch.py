@@ -1,5 +1,6 @@
 """
 Facematch API Routes - Face comparison and verification with biometric landmarks
+Uses DeepFace library for robust face recognition
 """
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
@@ -10,22 +11,20 @@ import io
 import numpy as np
 from PIL import Image
 from motor.motor_asyncio import AsyncIOMotorClient
+import tempfile
 
-# Try to import face_recognition, but fall back to mock if not available
+# Try to import deepface
 FACE_RECOGNITION_AVAILABLE = False
-face_recognition = None
+DeepFace = None
 
-# Disable face_recognition import to prevent server crash
-# The models are not properly installed
-# try:
-#     import face_recognition
-#     FACE_RECOGNITION_AVAILABLE = True
-#     print("[Facematch] face_recognition library loaded successfully")
-# except Exception as e:
-#     FACE_RECOGNITION_AVAILABLE = False
-#     print(f"[Facematch] Warning: face_recognition not available, using mock mode: {e}")
-
-print("[Facematch] Using MOCK mode (face_recognition disabled for stability)")
+try:
+    from deepface import DeepFace as DF
+    DeepFace = DF
+    FACE_RECOGNITION_AVAILABLE = True
+    print("[Facematch] DeepFace library loaded successfully")
+except Exception as e:
+    FACE_RECOGNITION_AVAILABLE = False
+    print(f"[Facematch] Warning: DeepFace not available, using mock mode: {e}")
 
 from routes.portal_auth import verify_token
 
