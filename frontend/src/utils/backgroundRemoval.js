@@ -228,9 +228,9 @@ export const removeBackgroundAdvanced = (context, width, height) => {
  * @param {number} height - Canvas Höhe
  * @param {string} method - 'ai', 'advanced', oder 'simple'
  */
-export const removeBackground = async (source, context, width, height, method = 'advanced') => {
+export const removeBackground = async (source, context, width, height, method = 'ai') => {
   // Versuche AI-Methode zuerst (beste Qualität)
-  if (method === 'ai' && selfieSegmentation) {
+  if (method === 'ai' && isImglyReady) {
     const success = await removeBackgroundAI(source, context, width, height);
     if (success) {
       console.log('[Background Removal] AI-Methode erfolgreich');
@@ -253,8 +253,11 @@ export const removeBackground = async (source, context, width, height, method = 
 };
 
 /**
- * Prüft, ob MediaPipe verfügbar ist
+ * Prüft, ob die Background Removal Bibliothek verfügbar ist
  */
-export const isMediaPipeAvailable = () => {
-  return selfieSegmentation !== null;
+export const isBackgroundRemovalAvailable = () => {
+  return isImglyReady;
 };
+
+// Legacy-Kompatibilität
+export const isMediaPipeAvailable = isBackgroundRemovalAvailable;
