@@ -2037,7 +2037,7 @@ class LocationDetailsTeamViewerFallbackTester:
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Testing Endpoint: GET /api/tenant-locations/details/{self.location_id}")
-        print(f"Target Location: {self.location_id} (BERN03)")
+        print(f"Target Location: {self.location_id} (BFEC01)")
         print(f"Target Device: {self.expected_device}")
         print(f"Expected TeamViewer ID: {self.expected_teamviewer_id}")
         print("=" * 80)
