@@ -22,6 +22,7 @@ import IdeasPage from './pages/IdeasPage';
 import FacematchPage from './pages/FacematchPage';
 import FingerprintPage from './pages/FingerprintPage';
 import KISearchPage from './pages/KISearchPage';
+import VehicleDetailPage from './pages/VehicleDetailPage';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
