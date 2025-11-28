@@ -1678,10 +1678,17 @@ class TeamViewerIDVerificationTester:
         # Test data from German review request
         self.test_locations = [
             {
-                "location_id": "922d2044-de69-4361-bef3-692f344d9567",  # BFEC01
-                "location_name": "BFEC01",
-                "device_name": "BFEC01-01",
-                "expected_teamviewer_id": "444555666"  # WITHOUT "r" prefix
+                "location_name": "AAHC01",
+                "device_name": "AAHC01-01", 
+                "expected_teamviewer_id": "949746162"
+            },
+            {
+                "location_name": "AGBC02",
+                "device_name": "AGBC02-01",
+                "expected_teamviewer_id": "969678983"
+            }
+        ]
+        self.random_test_locations = []  # Will be populated from MongoDBx
             },
             {
                 "location_id": "b478a946-8fa3-4c75-894f-5b4e0c3a1562",  # BERN03
