@@ -673,9 +673,10 @@ const AdminPortalContent = () => {
               <GlobalSearch 
                 onResultSelect={(result) => {
                   if (result.type === 'vehicle') {
-                    // Navigate to Vehicle Detail Page
+                    // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
-                    navigate(`/portal/admin/vehicles/${vehicleId}`);
+                    setRndTab('vehicle-management');
+                    setSelectedVehicleId(vehicleId);
                   } else if (result.type === 'standort') {
                     // Navigate to Location Detail Page
                     const locationId = result.data.location_id || result.data.id;
