@@ -44,6 +44,7 @@ import APIKeysManagement from '../components/APIKeysManagement';
 import ComponentsManagement from '../components/ComponentsManagement';
 import ResourcesManagement from './ResourcesManagement';
 import SettingsSidebar from '../components/SettingsSidebar';
+import RnDSidebar from '../components/RnDSidebar';
 import CustomerSwitcher from '../components/CustomerSwitcher';
 import ServicesConfiguration from '../components/ServicesConfiguration';
 import ScannerPinSettings from '../components/ScannerPinSettings';
