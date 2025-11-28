@@ -134,7 +134,48 @@ async def global_search(
                 "data": location
             })
         
-        # 3. Search ID-Checks
+        # 3. Search Vehicles (R&D - Fahrzeugverwaltung)
+        vehicles_query = {
+            "$or": [
+                {"license_plate": search_regex},
+                {"brand": search_regex},
+                {"model": search_regex},
+                {"tenant_id": search_regex},
+                {"vin": search_regex}
+            ]
+        }
+        
+        vehicles = []
+        if user_role == "admin":
+            # Admin: search all vehicles across all tenants
+            print(f"[Global Search] Admin search - all vehicles")
+            vehicles = list(tsrid_db.vehicles.find(vehicles_query).sort('created_at', -1).limit(50))
+        
+        print(f"[Global Search] Found {len(vehicles)} vehicles")
+        
+        # Process vehicle results
+        for vehicle in vehicles:
+            if '_id' in vehicle:
+                del vehicle['_id']
+            
+            license_plate = vehicle.get('license_plate', 'N/A')
+            brand = vehicle.get('brand', 'N/A')
+            model = vehicle.get('model', 'N/A')
+            year = vehicle.get('year', 'N/A')
+            tenant_id = vehicle.get('tenant_id', 'N/A')
+            
+            vehicles_results.append({
+                "type": "vehicle",
+                "id": vehicle.get('id'),
+                "title": f"{license_plate}",
+                "subtitle": f"{brand} {model} ({year}) | Tenant: {tenant_id}",
+                "status": vehicle.get('status', 'active'),
+                "tenant_id": tenant_id,
+                "license_plate": license_plate,
+                "data": vehicle
+            })
+        
+        # 4. Search ID-Checks
         id_checks_query = {
             "$or": [
                 {"id": search_regex},
