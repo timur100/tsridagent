@@ -134,6 +134,7 @@ const PortalRoutes = () => {
         <Route path="in-preparation" element={<InPreparationOverviewPage />} />
         <Route path="id-checks" element={<IDChecksPage />} />
         <Route path="id-checks/:id" element={<IDCheckDetailPage />} />
+        <Route path="vehicles/:vehicleId" element={<VehicleDetailPage />} />
         <Route path="facematch" element={<FacematchPage />} />
         <Route path="fingerprint" element={<FingerprintPage />} />
         <Route path="ki-search" element={<KISearchPage />} />
