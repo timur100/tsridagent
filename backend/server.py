@@ -210,6 +210,9 @@ api_router.include_router(resources_router, prefix="/resources", tags=["resource
 # Customers (Multi-Tenancy)
 api_router.include_router(customers_router, prefix="/customers", tags=["customers"])
 
+# Vehicles (R&D - Fahrzeugverwaltung)
+api_router.include_router(vehicles_router, prefix="/vehicles", tags=["vehicles"])
+
 # Services Configuration (Microservices Management)
 app.include_router(services_config_router)
 
