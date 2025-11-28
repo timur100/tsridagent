@@ -1014,13 +1014,13 @@ class FahrzeugverwaltungTester:
             return False
 
     async def run_all_tests(self):
-        """Run all Phase 1 Ticketing System tests"""
+        """Run all Fahrzeugverwaltung (Vehicle Management) API tests"""
         print("=" * 80)
-        print("PHASE 1 TICKETING SYSTEM API TESTING")
+        print("FAHRZEUGVERWALTUNG (VEHICLE MANAGEMENT) API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Staff Management, SLA, Ticket Assignment")
-        print(f"Microservice: Ticketing Service (Port 8103)")
+        print(f"Testing APIs: Vehicle CRUD Operations")
+        print(f"Database: tsrid_db.vehicles collection")
         print("=" * 80)
         print()
         
@@ -1031,47 +1031,37 @@ class FahrzeugverwaltungTester:
                 print("❌ Admin authentication failed. Stopping tests.")
                 return False
             
-            # Step 2: Test Proxy Forwarding
-            print("\n🔍 STEP 2: Testing Proxy Forwarding to Ticketing Microservice...")
-            proxy_ok = self.test_proxy_forwarding()
+            # Step 2: Test GET /api/vehicles
+            print("\n🔍 STEP 2: Testing GET /api/vehicles - Fahrzeuge abrufen...")
+            get_vehicles_ok = self.test_get_vehicles_api()
             
-            # Step 3: Test Staff Management APIs
-            print("\n🔍 STEP 3: Testing Staff Management APIs...")
-            staff_list_ok = self.test_staff_list_api()
-            staff_create_ok = self.test_staff_create_api()
-            staff_stats_ok = self.test_staff_tickets_by_staff_api()
+            # Step 3: Test POST /api/vehicles
+            print("\n🔍 STEP 3: Testing POST /api/vehicles - Neues Fahrzeug hinzufügen...")
+            create_vehicle_ok = self.test_create_vehicle_api()
             
-            # Step 4: Test SLA APIs
-            print("\n🔍 STEP 4: Testing SLA APIs...")
-            sla_warnings_ok = self.test_sla_warnings_api()
+            # Step 4: Test GET /api/vehicles/{vehicle_id}
+            print("\n🔍 STEP 4: Testing GET /api/vehicles/{vehicle_id} - Fahrzeug abrufen...")
+            get_vehicle_by_id_ok = self.test_get_vehicle_by_id_api()
             
-            # Step 5: Test Ticket Creation (for assignment testing)
-            print("\n🔍 STEP 5: Creating Test Ticket for Assignment Testing...")
-            ticket_created = self.test_create_test_ticket()
+            # Step 5: Test PUT /api/vehicles/{vehicle_id}
+            print("\n🔍 STEP 5: Testing PUT /api/vehicles/{vehicle_id} - Fahrzeug aktualisieren...")
+            update_vehicle_ok = self.test_update_vehicle_api()
             
-            # Step 6: Test SLA Ticket-Specific API (if ticket was created)
-            sla_ticket_ok = True
-            if ticket_created:
-                print("\n🔍 STEP 6: Testing SLA Ticket-Specific API...")
-                sla_ticket_ok = self.test_sla_ticket_specific_api()
+            # Step 6: Test GET /api/vehicles/stats/summary
+            print("\n🔍 STEP 6: Testing GET /api/vehicles/stats/summary - Fahrzeugstatistiken...")
+            get_stats_ok = self.test_get_vehicle_stats_api()
             
-            # Step 7: Test Ticket Assignment API (if ticket and staff exist)
-            assignment_ok = True
-            if ticket_created and self.test_staff_email:
-                print("\n🔍 STEP 7: Testing Ticket Assignment API...")
-                assignment_ok = self.test_ticket_assignment_api()
+            # Step 7: Test GET /api/vehicles with filters
+            print("\n🔍 STEP 7: Testing GET /api/vehicles?brand=Volkswagen&status=active - Fahrzeuge filtern...")
+            filter_vehicles_ok = self.test_filter_vehicles_api()
             
-            # Step 8: Test Integration Workflow
-            print("\n🔍 STEP 8: Testing Integration Workflow...")
-            integration_ok = self.test_integration_workflow()
-            
-            # Step 9: Test No Server Errors
-            print("\n🔍 STEP 9: Testing No 500/502/503 Errors...")
-            no_errors_ok = self.test_no_500_errors()
+            # Step 8: Test DELETE /api/vehicles/{vehicle_id}
+            print("\n🔍 STEP 8: Testing DELETE /api/vehicles/{vehicle_id} - Fahrzeug löschen...")
+            delete_vehicle_ok = self.test_delete_vehicle_api()
             
             # Summary
             print("\n" + "=" * 80)
-            print("PHASE 1 TICKETING SYSTEM API TESTING SUMMARY")
+            print("FAHRZEUGVERWALTUNG API TESTING SUMMARY")
             print("=" * 80)
             
             passed = sum(1 for r in self.results if r['success'])
@@ -1081,12 +1071,13 @@ class FahrzeugverwaltungTester:
             
             # Print critical functionality results
             print("\n🔍 CRITICAL API FUNCTIONALITY:")
-            print(f"   • Proxy Forwarding: {'✅ WORKING' if proxy_ok else '❌ FAILED'}")
-            print(f"   • Staff Management APIs: {'✅ WORKING' if all([staff_list_ok, staff_create_ok, staff_stats_ok]) else '❌ FAILED'}")
-            print(f"   • SLA APIs: {'✅ WORKING' if all([sla_warnings_ok, sla_ticket_ok]) else '❌ FAILED'}")
-            print(f"   • Ticket Assignment: {'✅ WORKING' if assignment_ok else '❌ FAILED'}")
-            print(f"   • Integration Workflow: {'✅ WORKING' if integration_ok else '❌ FAILED'}")
-            print(f"   • No Server Errors: {'✅ WORKING' if no_errors_ok else '❌ FAILED'}")
+            print(f"   • GET /api/vehicles: {'✅ WORKING' if get_vehicles_ok else '❌ FAILED'}")
+            print(f"   • POST /api/vehicles: {'✅ WORKING' if create_vehicle_ok else '❌ FAILED'}")
+            print(f"   • GET /api/vehicles/{{id}}: {'✅ WORKING' if get_vehicle_by_id_ok else '❌ FAILED'}")
+            print(f"   • PUT /api/vehicles/{{id}}: {'✅ WORKING' if update_vehicle_ok else '❌ FAILED'}")
+            print(f"   • GET /api/vehicles/stats/summary: {'✅ WORKING' if get_stats_ok else '❌ FAILED'}")
+            print(f"   • GET /api/vehicles (filtered): {'✅ WORKING' if filter_vehicles_ok else '❌ FAILED'}")
+            print(f"   • DELETE /api/vehicles/{{id}}: {'✅ WORKING' if delete_vehicle_ok else '❌ FAILED'}")
             
             # Print failed tests
             failed_tests = [r for r in self.results if not r['success']]
