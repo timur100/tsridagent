@@ -77,8 +77,8 @@ const VehicleManagement = () => {
       if (filterYear) params.append('year', filterYear);
       
       const result = await apiCall(`/api/vehicles?${params.toString()}`);
-      if (result.success) {
-        setVehicles(result.data.vehicles || []);
+      if (result.success && result.data?.success) {
+        setVehicles(result.data.data?.vehicles || []);
       }
     } catch (error) {
       console.error('Error loading vehicles:', error);
@@ -91,8 +91,8 @@ const VehicleManagement = () => {
   const loadStats = async () => {
     try {
       const result = await apiCall('/api/vehicles/stats/summary');
-      if (result.success) {
-        setStats(result.data);
+      if (result.success && result.data?.success) {
+        setStats(result.data.data || {});
       }
     } catch (error) {
       console.error('Error loading stats:', error);
@@ -103,6 +103,7 @@ const VehicleManagement = () => {
     try {
       const result = await apiCall('/api/tenants/');
       if (result.success) {
+        // Tenants API returns array directly, not wrapped in { success, data }
         setTenants(result.data || []);
       }
     } catch (error) {
