@@ -264,12 +264,17 @@ const VehicleManagement = () => {
     );
   };
 
-  // Show detail view if vehicleId is present
-  if (vehicleId) {
+  // Show detail view if a vehicle is selected
+  if (showDetailView && selectedVehicleId) {
     return (
       <VehicleDetail 
-        vehicleId={vehicleId} 
-        onBack={() => navigate('/portal/admin')}
+        vehicleId={selectedVehicleId} 
+        onBack={() => {
+          setShowDetailView(false);
+          setSelectedVehicleId(null);
+          loadVehicles(); // Refresh list
+          loadStats();
+        }}
       />
     );
   }
