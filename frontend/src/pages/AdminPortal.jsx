@@ -1636,76 +1636,185 @@ const AdminPortalContent = () => {
           </div>
         )}
 
-        {activeTab === 'rnd' && (
-          <div className="p-6">
-            <div className="max-w-7xl mx-auto">
-              <div className="mb-6">
-                <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Research & Development
-                </h2>
-                <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Experimentelle Features und Entwicklungs-Tools
-                </p>
-              </div>
-
-              <div className="grid gap-6">
-                {/* Facematch Card */}
-                <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
-                      <UserCheck className="h-8 w-8 text-blue-500" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Facematch - Biometrische Gesichtserkennung
-                      </h3>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
-                      </p>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className="px-2 py-1 text-xs font-medium bg-green-500 bg-opacity-10 text-green-500 rounded">
-                          MediaPipe Face Mesh
-                        </span>
-                        <span className="px-2 py-1 text-xs font-medium bg-blue-500 bg-opacity-10 text-blue-500 rounded">
-                          Iris Tracking
-                        </span>
-                        <span className="px-2 py-1 text-xs font-medium bg-purple-500 bg-opacity-10 text-purple-500 rounded">
-                          Auto-Capture
-                        </span>
-                        <span className="px-2 py-1 text-xs font-medium bg-orange-500 bg-opacity-10 text-orange-500 rounded">
-                          Background Removal
-                        </span>
+        {activeTab === 'rnd' && (() => {
+          return (
+            <div className="flex h-[calc(100vh-180px)]">
+              {/* R&D Sidebar */}
+              <RnDSidebar
+                activeSection={rndTab}
+                onSectionChange={setRndTab}
+                collapsed={rndSidebarCollapsed}
+                onToggleCollapse={() => setRndSidebarCollapsed(!rndSidebarCollapsed)}
+              />
+              
+              {/* Main Content */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-6">
+                  <div className="max-w-7xl mx-auto">
+                    {/* Facematch */}
+                    {rndTab === 'facematch' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Facematch - Biometrische Gesichtserkennung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                              <UserCheck className="h-8 w-8 text-blue-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Features
+                              </h3>
+                              <div className="flex flex-wrap gap-2 mb-6">
+                                <span className="px-3 py-1.5 text-sm font-medium bg-green-500 bg-opacity-10 text-green-500 rounded-lg">
+                                  ✓ MediaPipe Face Mesh
+                                </span>
+                                <span className="px-3 py-1.5 text-sm font-medium bg-blue-500 bg-opacity-10 text-blue-500 rounded-lg">
+                                  ✓ Iris Tracking
+                                </span>
+                                <span className="px-3 py-1.5 text-sm font-medium bg-purple-500 bg-opacity-10 text-purple-500 rounded-lg">
+                                  ✓ Auto-Capture
+                                </span>
+                                <span className="px-3 py-1.5 text-sm font-medium bg-orange-500 bg-opacity-10 text-orange-500 rounded-lg">
+                                  ✓ Background Removal
+                                </span>
+                              </div>
+                              
+                              <div className={`mb-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+                                <h4 className={`font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                  Beschreibung
+                                </h4>
+                                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  Hochpräzise Gesichtserkennung für biometrische Authentifizierung. Das System nutzt Google MediaPipe für 
+                                  Echtzeit-Gesichtsmesh-Erkennung mit 468 Landmarks und automatischer Position-Optimierung.
+                                </p>
+                              </div>
+                              
+                              <button
+                                onClick={() => navigate('/portal/admin/id-checks/facematch')}
+                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                              >
+                                Facematch starten →
+                              </button>
+                            </div>
+                          </div>
+                        </Card>
                       </div>
-                      <button
-                        onClick={() => navigate('/portal/admin/id-checks/facematch')}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
-                      >
-                        Facematch öffnen →
-                      </button>
-                    </div>
+                    )}
+                    
+                    {/* Fingerprint - Placeholder */}
+                    {rndTab === 'fingerprint' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Fingerprint - Fingerabdruck-Erkennung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Biometrische Authentifizierung via Fingerabdruck
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <Fingerprint className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Dieses Feature wird derzeit entwickelt und steht bald zur Verfügung.
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Iris Scan - Placeholder */}
+                    {rndTab === 'iris-scan' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Iris Scan - Iris-Erkennung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Hochpräzise biometrische Authentifizierung durch Iris-Scan
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="inline-block p-4 bg-blue-500 bg-opacity-10 rounded-full mb-4">
+                            <svg className="h-16 w-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          </div>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Dieses Feature befindet sich in der Planungsphase.
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* KI-Suche - Placeholder */}
+                    {rndTab === 'ki-search' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            KI-Suche - Intelligente Dokumentensuche
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            KI-gestützte Suche und Analyse von Dokumenten
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <Search className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Dieses Feature wird derzeit entwickelt und steht bald zur Verfügung.
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Default Placeholder für alle anderen Tabs */}
+                    {!['facematch', 'fingerprint', 'iris-scan', 'ki-search'].includes(rndTab) && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {rndTab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Experimentelles Feature
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <FlaskConical className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Dieses Feature befindet sich in der Planungsphase und wird bald verfügbar sein.
+                          </p>
+                        </Card>
+                      </div>
+                    )}
                   </div>
-                </Card>
-
-                {/* Placeholder für weitere R&D Features */}
-                <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 bg-gray-500 bg-opacity-10 rounded-lg">
-                      <FlaskConical className="h-8 w-8 text-gray-500" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Weitere experimentelle Features
-                      </h3>
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Neue Features werden hier angezeigt, sobald sie verfügbar sind
-                      </p>
-                    </div>
-                  </div>
-                </Card>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {activeTab === 'settings' && (() => {
           return (
