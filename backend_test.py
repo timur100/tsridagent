@@ -6788,14 +6788,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run Fahrzeugverwaltung (Vehicle Management) tests (as requested in review)
-    print("🚙 Starting Fahrzeugverwaltung Backend API Testing...")
-    vehicle_tester = FahrzeugverwaltungTester()
-    vehicle_success = asyncio.run(vehicle_tester.run_all_tests())
+    # Run Location Details TeamViewer ID Fallback test (as requested in review)
+    print("🔍 Starting Location Details API - TeamViewer ID Fallback Testing...")
+    location_tester = LocationDetailsTeamViewerFallbackTester()
+    location_success = asyncio.run(location_tester.run_all_tests())
     
-    if vehicle_success:
-        print("\n🎉 All Fahrzeugverwaltung tests passed!")
+    if location_success:
+        print("\n🎉 Location Details TeamViewer ID Fallback test passed!")
         sys.exit(0)
     else:
-        print("\n💥 Some Fahrzeugverwaltung tests failed!")
+        print("\n💥 Location Details TeamViewer ID Fallback test failed!")
         sys.exit(1)
