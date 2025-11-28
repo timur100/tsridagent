@@ -481,34 +481,37 @@ const VehicleManagement = () => {
               ) : (
                 vehicles.map((vehicle) => (
                   <tr key={vehicle.id} className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors`}>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div className="flex items-center">
                         <Car className="h-4 w-4 mr-2 text-blue-500" />
                         <span className="font-semibold">{vehicle.license_plate}</span>
                       </div>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       {vehicle.tenant_name || vehicle.tenant_id}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {vehicle.brand} {vehicle.model}
+                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{vehicle.brand}</span>
+                        <span className="text-xs">{vehicle.model}</span>
+                      </div>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       {vehicle.year}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       {vehicle.mileage.toLocaleString()} km
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       {vehicle.color || '-'}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       {vehicle.fuel_type || '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
                       {getStatusBadge(vehicle.status)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => openEditModal(vehicle)}
