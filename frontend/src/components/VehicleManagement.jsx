@@ -249,9 +249,9 @@ const VehicleManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
           <div className="flex items-center justify-between">
             <div>
