@@ -63,19 +63,25 @@ const FacematchPage = () => {
     init();
   }, []);
 
-  // Auto-start camera when component mounts
+  // Auto-start camera when component mounts AND route is active
   useEffect(() => {
+    // Nur starten wenn auf Facematch-Seite und Step 1
     if (step === 1 && !cameraActive && !capturedImage) {
+      console.log('[Facematch] Starting camera - component mounted');
       startCamera();
     }
     
-    // Cleanup
+    // Cleanup: Kamera IMMER stoppen wenn Komponente unmounted wird
     return () => {
+      console.log('[Facematch] Stopping camera - component unmounting');
       if (stream) {
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach(track => {
+          track.stop();
+          console.log('[Facematch] Camera track stopped');
+        });
       }
     };
-  }, []);
+  }, []); // Nur beim Mount/Unmount
 
   // Fetch scans only when needed (step 2)
   useEffect(() => {
