@@ -151,14 +151,16 @@ const VehicleManagement = () => {
         body: JSON.stringify(formData)
       });
       
-      if (result.success) {
+      if (result.success && result.data?.success) {
         toast.success('Fahrzeug erfolgreich aktualisiert');
         setShowEditModal(false);
         setSelectedVehicle(null);
         resetForm();
         loadVehicles();
       } else {
-        toast.error(result.message || 'Fehler beim Aktualisieren');
+        const errorMsg = result.data?.message || result.data?.detail || result.error || 'Fehler beim Aktualisieren';
+        toast.error(errorMsg);
+        console.error('Update vehicle error:', result);
       }
     } catch (error) {
       console.error('Error updating vehicle:', error);
