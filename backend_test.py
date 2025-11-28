@@ -45,8 +45,8 @@ class FahrzeugverwaltungTester:
         })
         self.results = []
         self.admin_token = None
-        self.test_staff_email = None
-        self.test_ticket_id = None
+        self.test_vehicle_id = None
+        self.test_license_plate = None
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
