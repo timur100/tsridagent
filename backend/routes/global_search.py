@@ -55,13 +55,20 @@ async def global_search(
         id_checks_results = []
         vehicles_results = []
         
-        # 1. Search Devices (HIGH PRIORITY)
+        # 1. Search Devices (HIGH PRIORITY) - Search ALL fields
         device_query = {
             "$or": [
                 {"device_id": search_regex},
                 {"locationcode": search_regex},
                 {"sn_pc": search_regex},
-                {"sn_sc": search_regex}
+                {"sn_sc": search_regex},
+                {"device_name": search_regex},
+                {"status": search_regex},
+                {"city": search_regex},
+                {"country": search_regex},
+                {"manager": search_regex},
+                {"teamviewer_id": search_regex},
+                {"tvid": search_regex}
             ]
         }
         
