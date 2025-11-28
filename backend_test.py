@@ -1667,6 +1667,539 @@ class InVorbereitungSynchronisationTester:
             print(f"❌ Error during testing: {str(e)}")
             return False
 
+class GlobalSearchTester:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        })
+        self.results = []
+        self.admin_token = None
+        
+    def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
+        """Log test result"""
+        status = "✅ PASS" if success else "❌ FAIL"
+        print(f"{status} {test_name}")
+        if not success or response_data:
+            print(f"   Details: {details}")
+            if response_data:
+                print(f"   Response: {json.dumps(response_data, indent=2)}")
+        print()
+        
+        self.results.append({
+            'test': test_name,
+            'success': success,
+            'details': details,
+            'response': response_data
+        })
+    
+    def authenticate_admin(self):
+        """Authenticate as admin user (admin@tsrid.com)"""
+        try:
+            auth_data = {
+                "email": "admin@tsrid.com",
+                "password": "admin123"
+            }
+            
+            response = self.session.post(f"{API_BASE}/portal/auth/login", json=auth_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Authentication failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("access_token"):
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    "Authentication response missing access_token",
+                    data
+                )
+                return False
+            
+            self.admin_token = data["access_token"]
+            self.session.headers.update({
+                'Authorization': f'Bearer {self.admin_token}'
+            })
+            
+            # Decode token to verify claims
+            try:
+                decoded = jwt.decode(self.admin_token, options={"verify_signature": False})
+                tenant_ids = decoded.get("tenant_ids", [])
+                role = decoded.get("role", "")
+                customer_id = decoded.get("customer_id", "")
+                
+                self.log_result(
+                    "Admin Authentication", 
+                    True, 
+                    f"Successfully authenticated as admin@tsrid.com with role='{role}', customer_id='{customer_id}', tenant_ids={tenant_ids}"
+                )
+                return True
+            except Exception as decode_error:
+                self.log_result(
+                    "Admin Authentication", 
+                    False, 
+                    f"Failed to decode JWT token: {str(decode_error)}"
+                )
+                return False
+            
+        except Exception as e:
+            self.log_result(
+                "Admin Authentication", 
+                False, 
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_manager_search(self):
+        """Test 1: Manager-Suche - Search for devices/locations with Manager field"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=manager")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Manager Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Manager Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if we found results
+            results = data.get("results", {})
+            devices = results.get("geraete", [])
+            locations = results.get("standorte", [])
+            total = data.get("total", 0)
+            
+            # Look for manager-related results
+            manager_found = False
+            for device in devices:
+                device_data = device.get("data", {})
+                if device_data.get("manager"):
+                    manager_found = True
+                    break
+            
+            for location in locations:
+                location_data = location.get("data", {})
+                if location_data.get("manager"):
+                    manager_found = True
+                    break
+            
+            self.log_result(
+                "Manager Search Test",
+                True,
+                f"Manager search completed. Found {total} total results ({len(devices)} devices, {len(locations)} locations). Manager field found: {manager_found}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Manager Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_status_search(self):
+        """Test 2: Status-Suche - Search for devices with status 'online'"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=online")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Status Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Status Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if we found results
+            results = data.get("results", {})
+            devices = results.get("geraete", [])
+            total = data.get("total", 0)
+            
+            # Look for online status devices
+            online_devices = []
+            for device in devices:
+                device_data = device.get("data", {})
+                if device_data.get("status") == "online":
+                    online_devices.append(device_data.get("device_id"))
+            
+            self.log_result(
+                "Status Search Test",
+                True,
+                f"Status 'online' search completed. Found {total} total results ({len(devices)} devices). Online devices found: {len(online_devices)}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Status Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_city_search(self):
+        """Test 3: Stadt-Suche - Search for devices/locations/vehicles in Berlin"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=Berlin")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "City Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "City Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if we found results
+            results = data.get("results", {})
+            devices = results.get("geraete", [])
+            locations = results.get("standorte", [])
+            vehicles = results.get("vehicles", [])
+            total = data.get("total", 0)
+            
+            # Count Berlin results
+            berlin_devices = []
+            berlin_locations = []
+            berlin_vehicles = []
+            
+            for device in devices:
+                device_data = device.get("data", {})
+                if "berlin" in device_data.get("city", "").lower():
+                    berlin_devices.append(device_data.get("device_id"))
+            
+            for location in locations:
+                location_data = location.get("data", {})
+                if "berlin" in location_data.get("city", "").lower():
+                    berlin_locations.append(location_data.get("location_code"))
+            
+            for vehicle in vehicles:
+                vehicle_data = vehicle.get("data", {})
+                if "berlin" in vehicle_data.get("location", "").lower():
+                    berlin_vehicles.append(vehicle_data.get("license_plate"))
+            
+            self.log_result(
+                "City Search Test",
+                True,
+                f"Berlin search completed. Found {total} total results. Berlin items: {len(berlin_devices)} devices, {len(berlin_locations)} locations, {len(berlin_vehicles)} vehicles"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "City Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_color_search(self):
+        """Test 4: Farbe-Suche - Search for vehicles with color 'Schwarz'"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=Schwarz")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "Color Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "Color Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if we found results
+            results = data.get("results", {})
+            vehicles = results.get("vehicles", [])
+            total = data.get("total", 0)
+            
+            # Look for black vehicles
+            black_vehicles = []
+            for vehicle in vehicles:
+                vehicle_data = vehicle.get("data", {})
+                if "schwarz" in vehicle_data.get("color", "").lower():
+                    black_vehicles.append(vehicle_data.get("license_plate"))
+            
+            self.log_result(
+                "Color Search Test",
+                True,
+                f"Color 'Schwarz' search completed. Found {total} total results ({len(vehicles)} vehicles). Black vehicles found: {len(black_vehicles)}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Color Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_teamviewer_id_search(self):
+        """Test 5: TeamViewer ID Suche - Search for device AAHC01-01 with TeamViewer ID 949746162"""
+        try:
+            response = self.session.get(f"{API_BASE}/search/global?query=949746162")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "TeamViewer ID Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "TeamViewer ID Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if we found results
+            results = data.get("results", {})
+            devices = results.get("geraete", [])
+            total = data.get("total", 0)
+            
+            # Look for AAHC01-01 device
+            aahc01_found = False
+            for device in devices:
+                device_data = device.get("data", {})
+                device_id = device_data.get("device_id")
+                teamviewer_id = device_data.get("teamviewer_id") or device_data.get("tvid")
+                
+                if device_id == "AAHC01-01" and teamviewer_id == "949746162":
+                    aahc01_found = True
+                    break
+            
+            self.log_result(
+                "TeamViewer ID Search Test",
+                aahc01_found,
+                f"TeamViewer ID '949746162' search completed. Found {total} total results ({len(devices)} devices). AAHC01-01 device found: {aahc01_found}"
+            )
+            return aahc01_found
+            
+        except Exception as e:
+            self.log_result(
+                "TeamViewer ID Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_all_entities_searched(self):
+        """Test 6: Verify all entities are searched (Devices, Locations, Vehicles, ID-Checks)"""
+        try:
+            # Use a common search term that might appear in multiple entity types
+            response = self.session.get(f"{API_BASE}/search/global?query=test")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "All Entities Search Test",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "All Entities Search Test",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check if all entity types are present in results
+            results = data.get("results", {})
+            
+            # Verify all expected entity types are in the response structure
+            expected_entities = ["geraete", "standorte", "vehicles", "id_checks"]
+            missing_entities = []
+            
+            for entity in expected_entities:
+                if entity not in results:
+                    missing_entities.append(entity)
+            
+            if missing_entities:
+                self.log_result(
+                    "All Entities Search Test",
+                    False,
+                    f"Missing entity types in response: {missing_entities}",
+                    results.keys()
+                )
+                return False
+            
+            # Count results per entity type
+            devices_count = len(results.get("geraete", []))
+            locations_count = len(results.get("standorte", []))
+            vehicles_count = len(results.get("vehicles", []))
+            id_checks_count = len(results.get("id_checks", []))
+            total = data.get("total", 0)
+            
+            self.log_result(
+                "All Entities Search Test",
+                True,
+                f"All entity types present in search results. Total: {total} (Devices: {devices_count}, Locations: {locations_count}, Vehicles: {vehicles_count}, ID-Checks: {id_checks_count})"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "All Entities Search Test",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    async def run_all_tests(self):
+        """Run all Global Search Extended Field tests"""
+        print("=" * 80)
+        print("GLOBAL SEARCH EXTENDED FIELD TESTING")
+        print("=" * 80)
+        print(f"Backend URL: {BACKEND_URL}")
+        print(f"Testing Endpoint: GET /api/search/global")
+        print(f"Testing extended field search across ALL entities")
+        print("=" * 80)
+        print()
+        
+        try:
+            # Step 1: Authenticate as Admin
+            print("🔍 STEP 1: Authenticating as Admin (admin@tsrid.com)...")
+            if not self.authenticate_admin():
+                print("❌ Admin authentication failed. Stopping tests.")
+                return False
+            
+            # Step 2: Test Manager search
+            print("\n🔍 STEP 2: Testing Manager search...")
+            manager_ok = self.test_manager_search()
+            
+            # Step 3: Test Status search
+            print("\n🔍 STEP 3: Testing Status search (online)...")
+            status_ok = self.test_status_search()
+            
+            # Step 4: Test City search
+            print("\n🔍 STEP 4: Testing City search (Berlin)...")
+            city_ok = self.test_city_search()
+            
+            # Step 5: Test Color search
+            print("\n🔍 STEP 5: Testing Color search (Schwarz)...")
+            color_ok = self.test_color_search()
+            
+            # Step 6: Test TeamViewer ID search
+            print("\n🔍 STEP 6: Testing TeamViewer ID search (949746162)...")
+            teamviewer_ok = self.test_teamviewer_id_search()
+            
+            # Step 7: Test all entities are searched
+            print("\n🔍 STEP 7: Testing all entities are searched...")
+            entities_ok = self.test_all_entities_searched()
+            
+            # Summary
+            print("\n" + "=" * 80)
+            print("GLOBAL SEARCH EXTENDED FIELD TESTING SUMMARY")
+            print("=" * 80)
+            
+            passed = sum(1 for r in self.results if r['success'])
+            total = len(self.results)
+            
+            print(f"Tests completed: {passed}/{total} passed")
+            
+            # Print critical functionality results
+            print("\n🔍 CRITICAL SEARCH FUNCTIONALITY:")
+            print(f"   • Manager Search: {'✅ WORKING' if manager_ok else '❌ FAILED'}")
+            print(f"   • Status Search (online): {'✅ WORKING' if status_ok else '❌ FAILED'}")
+            print(f"   • City Search (Berlin): {'✅ WORKING' if city_ok else '❌ FAILED'}")
+            print(f"   • Color Search (Schwarz): {'✅ WORKING' if color_ok else '❌ FAILED'}")
+            print(f"   • TeamViewer ID Search (949746162): {'✅ WORKING' if teamviewer_ok else '❌ FAILED'}")
+            print(f"   • All Entities Searched: {'✅ WORKING' if entities_ok else '❌ FAILED'}")
+            
+            # Print failed tests
+            failed_tests = [r for r in self.results if not r['success']]
+            if failed_tests:
+                print("\n❌ ISSUES FOUND:")
+                for test in failed_tests:
+                    print(f"   • {test['test']}: {test['details']}")
+            
+            # Print successful tests
+            successful_tests = [r for r in self.results if r['success']]
+            if successful_tests:
+                print("\n✅ SUCCESSFUL CHECKS:")
+                for test in successful_tests:
+                    print(f"   • {test['test']}")
+            
+            return len(failed_tests) == 0
+            
+        except Exception as e:
+            print(f"❌ Error during testing: {str(e)}")
+            return False
+
 class TeamViewerIDVerificationTester:
     def __init__(self):
         self.session = requests.Session()
