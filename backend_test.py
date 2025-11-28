@@ -338,14 +338,27 @@ class FahrzeugverwaltungTester:
             )
             return False
 
-    def test_sla_warnings_api(self):
-        """Test GET /api/sla/warnings - SLA-Warnungen (kritisch, breached, at-risk)"""
+    def test_update_vehicle_api(self):
+        """Test PUT /api/vehicles/{vehicle_id} - Fahrzeug aktualisieren"""
         try:
-            response = self.session.get(f"{API_BASE}/sla/warnings")
+            if not self.test_vehicle_id:
+                self.log_result(
+                    "PUT Update Vehicle API",
+                    False,
+                    "No test vehicle ID available"
+                )
+                return False
+            
+            update_data = {
+                "mileage": 2000,
+                "color": "Rot"
+            }
+            
+            response = self.session.put(f"{API_BASE}/vehicles/{self.test_vehicle_id}", json=update_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "SLA Warnings API",
+                    "PUT Update Vehicle API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -355,37 +368,66 @@ class FahrzeugverwaltungTester:
             data = response.json()
             
             # Verify response structure
-            if not isinstance(data, dict):
+            if not data.get("success"):
                 self.log_result(
-                    "SLA Warnings API",
+                    "PUT Update Vehicle API",
                     False,
-                    "Response should be a dict",
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check for expected SLA warning categories
-            expected_categories = ["critical", "breached", "at_risk"]
-            found_categories = []
+            # Check for expected message
+            if data.get("message") != "Vehicle updated successfully":
+                self.log_result(
+                    "PUT Update Vehicle API",
+                    False,
+                    f"Unexpected message: {data.get('message')}",
+                    data
+                )
+                return False
             
-            if data.get("success", True):
-                warnings_data = data.get("warnings", data)
-                
-                # Check if warnings data contains expected categories
-                for category in expected_categories:
-                    if category in warnings_data or f"{category}_tickets" in warnings_data:
-                        found_categories.append(category)
+            # Check updated data
+            if "data" not in data:
+                self.log_result(
+                    "PUT Update Vehicle API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            updated_vehicle = data["data"]
+            
+            # Verify updates were applied
+            if updated_vehicle.get("mileage") != 2000:
+                self.log_result(
+                    "PUT Update Vehicle API",
+                    False,
+                    f"Mileage not updated correctly. Expected: 2000, Got: {updated_vehicle.get('mileage')}",
+                    data
+                )
+                return False
+            
+            if updated_vehicle.get("color") != "Rot":
+                self.log_result(
+                    "PUT Update Vehicle API",
+                    False,
+                    f"Color not updated correctly. Expected: Rot, Got: {updated_vehicle.get('color')}",
+                    data
+                )
+                return False
             
             self.log_result(
-                "SLA Warnings API",
+                "PUT Update Vehicle API",
                 True,
-                f"Successfully retrieved SLA warnings. Found categories: {found_categories if found_categories else 'none (no warnings)'}"
+                f"Successfully updated vehicle: mileage={updated_vehicle.get('mileage')}, color={updated_vehicle.get('color')}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "SLA Warnings API",
+                "PUT Update Vehicle API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
