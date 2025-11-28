@@ -192,21 +192,31 @@ class FahrzeugverwaltungTester:
             )
             return False
 
-    def test_staff_create_api(self):
-        """Test POST /api/staff - Neuen Mitarbeiter erstellen"""
+    def test_create_vehicle_api(self):
+        """Test POST /api/vehicles - Neues Fahrzeug hinzufügen"""
         try:
-            staff_data = {
-                "email": "agent1@support.de",
-                "name": "Test Agent 1",
-                "role": "support_agent",
-                "max_active_tickets": 10
+            # Generate random license plate to avoid duplicates
+            import random
+            random_suffix = random.randint(10000, 99999)
+            license_plate = f"FINAL-TEST-{random_suffix}"
+            
+            vehicle_data = {
+                "license_plate": license_plate,
+                "tenant_id": "europcar",
+                "brand": "Volkswagen",
+                "model": "Golf",
+                "year": 2024,
+                "mileage": 100,
+                "color": "Blau",
+                "fuel_type": "Benzin",
+                "status": "active"
             }
             
-            response = self.session.post(f"{API_BASE}/staff", json=staff_data)
+            response = self.session.post(f"{API_BASE}/vehicles", json=vehicle_data)
             
             if response.status_code not in [200, 201]:
                 self.log_result(
-                    "Staff Create API",
+                    "POST Create Vehicle API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -216,28 +226,40 @@ class FahrzeugverwaltungTester:
             data = response.json()
             
             # Check if response indicates success
-            if isinstance(data, dict) and data.get("success") is False:
+            if not data.get("success"):
                 self.log_result(
-                    "Staff Create API",
+                    "POST Create Vehicle API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Store test staff email for later use
-            self.test_staff_email = staff_data["email"]
+            # Check for expected message
+            if data.get("message") != "Vehicle created successfully":
+                self.log_result(
+                    "POST Create Vehicle API",
+                    False,
+                    f"Unexpected message: {data.get('message')}",
+                    data
+                )
+                return False
+            
+            # Store test vehicle data for later use
+            if "data" in data and "id" in data["data"]:
+                self.test_vehicle_id = data["data"]["id"]
+                self.test_license_plate = license_plate
             
             self.log_result(
-                "Staff Create API",
+                "POST Create Vehicle API",
                 True,
-                f"Successfully created staff member: {staff_data['email']}"
+                f"Successfully created vehicle: {license_plate} with ID: {self.test_vehicle_id}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Staff Create API",
+                "POST Create Vehicle API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
