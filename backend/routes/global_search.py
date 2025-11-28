@@ -148,14 +148,19 @@ async def global_search(
                 "data": location
             })
         
-        # 3. Search Vehicles (R&D - Fahrzeugverwaltung)
+        # 3. Search Vehicles (R&D - Fahrzeugverwaltung) - Search ALL fields
         vehicles_query = {
             "$or": [
                 {"license_plate": search_regex},
                 {"brand": search_regex},
                 {"model": search_regex},
                 {"tenant_id": search_regex},
-                {"vin": search_regex}
+                {"vin": search_regex},
+                {"color": search_regex},
+                {"fuel_type": search_regex},
+                {"status": search_regex},
+                {"location": search_regex},
+                {"notes": search_regex}
             ]
         }
         
