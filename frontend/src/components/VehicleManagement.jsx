@@ -503,7 +503,10 @@ const VehicleManagement = () => {
                 vehicles.map((vehicle) => (
                   <tr 
                     key={vehicle.id} 
-                    onClick={() => navigate(`/portal/admin/vehicles/${vehicle.id}`)}
+                    onClick={() => {
+                      // Navigate but stay in the same R&D context
+                      navigate(`/portal/admin/vehicles/${vehicle.id}`, { replace: false });
+                    }}
                     className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}
                   >
                     <td className={`px-4 lg:px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
