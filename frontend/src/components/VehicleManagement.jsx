@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 
 const VehicleManagement = () => {
+  const navigate = useNavigate();
   const { apiCall } = useAuth();
   const { theme } = useTheme();
   
