@@ -1,41 +1,33 @@
 /**
  * Background Removal Utility
- * Verwendet verschiedene Methoden zur Hintergrund-Entfernung
- * Inspiriert von remove.bg - professionelle AI-basierte Segmentierung
+ * Verwendet @imgly/background-removal für professionelle AI-basierte Segmentierung
+ * Komplett Browser-basiert, keine API-Schlüssel erforderlich
  */
 
-// MediaPipe Selfie Segmentation Instanz (lazy loaded)
-let selfieSegmentation = null;
+import { removeBackground as imglyRemoveBackground } from '@imgly/background-removal';
+
+// Status der Bibliothek
+let isImglyReady = false;
 
 /**
- * Initialisiert MediaPipe Selfie Segmentation
+ * Initialisiert die Background Removal Bibliothek
  * @returns {Promise<boolean>} - Erfolgreich initialisiert
  */
-export const initMediaPipe = async () => {
+export const initBackgroundRemoval = async () => {
   try {
-    // Prüfe ob MediaPipe bereits geladen ist
-    if (window.SelfieSegmentation) {
-      selfieSegmentation = new window.SelfieSegmentation({
-        locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`;
-        }
-      });
-      
-      selfieSegmentation.setOptions({
-        modelSelection: 1, // 0: general, 1: landscape (better quality)
-      });
-      
-      console.log('[MediaPipe] Selfie Segmentation initialisiert');
-      return true;
-    }
-    
-    console.warn('[MediaPipe] Nicht verfügbar, verwende Fallback');
-    return false;
+    // Die Bibliothek ist sofort verfügbar, keine extra Initialisierung nötig
+    isImglyReady = true;
+    console.log('[Background Removal] @imgly/background-removal bereit');
+    return true;
   } catch (error) {
-    console.error('[MediaPipe] Initialisierung fehlgeschlagen:', error);
+    console.error('[Background Removal] Initialisierung fehlgeschlagen:', error);
+    isImglyReady = false;
     return false;
   }
 };
+
+// Legacy-Kompatibilität
+export const initMediaPipe = initBackgroundRemoval;
 
 /**
  * AI-basierte Hintergrund-Entfernung mit MediaPipe
