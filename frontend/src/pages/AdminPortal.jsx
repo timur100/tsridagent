@@ -1762,6 +1762,394 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
+                    {/* KFZ-Kennzeichenerkennung */}
+                    {rndTab === 'license-plate-recognition' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            KFZ-Kennzeichenerkennung (LPR)
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Automatische Erkennung und Verarbeitung von Fahrzeugkennzeichen
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                              <Car className="h-8 w-8 text-blue-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Hauptfunktionen
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Echtzeit-Kennzeichenerkennung mit KI</li>
+                                <li>✓ Unterstützung für EU-Kennzeichen</li>
+                                <li>✓ Integration mit Fahrzeugdatenbanken</li>
+                                <li>✓ Automatische Zufahrtskontrolle</li>
+                                <li>✓ Videostream-Verarbeitung</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            KI-basierte Kennzeichenerkennung wird entwickelt
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Fahrzeugverwaltung */}
+                    {rndTab === 'vehicle-management' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Fahrzeugverwaltung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Zentrale Verwaltung aller Fahrzeuge und Fahrzeugdaten
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
+                              <Car className="h-8 w-8 text-green-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Features
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Fahrzeugstammdaten verwalten</li>
+                                <li>✓ Wartungs- und Inspektionshistorie</li>
+                                <li>✓ Fahrzeugzuweisungen tracken</li>
+                                <li>✓ Dokumentenverwaltung (Zulassung, TÜV, etc.)</li>
+                                <li>✓ Schadensmeldungen erfassen</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Umfassende Fahrzeugverwaltung wird implementiert
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Flottenmanagement */}
+                    {rndTab === 'fleet-management' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Flottenmanagement
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Professionelles Management für Fahrzeugflotten
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-purple-500 bg-opacity-10 rounded-lg">
+                              <Truck className="h-8 w-8 text-purple-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Funktionen
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Echtzeit-GPS-Tracking</li>
+                                <li>✓ Kraftstoffverbrauch-Monitoring</li>
+                                <li>✓ Routenoptimierung</li>
+                                <li>✓ Fahrerverwaltung & -bewertung</li>
+                                <li>✓ Wartungsplanung & Kostenübersicht</li>
+                                <li>✓ Compliance & Reporting</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Umfassendes Flottenmanagement-System in Vorbereitung
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Europcar Integration */}
+                    {rndTab === 'europcar-integration' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Europcar PKW-Vermietung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Automatisierte Fahrzeugvermietung nach ID-Verifizierung
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-yellow-500 bg-opacity-10 rounded-lg">
+                              <Key className="h-8 w-8 text-yellow-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Workflow
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Automatischer ID-Check bei Fahrzeugübergabe</li>
+                                <li>✓ Biometrische Verifizierung (Facematch)</li>
+                                <li>✓ Digitale Vertragsunterzeichnung</li>
+                                <li>✓ Fahrzeugzustandsdokumentation</li>
+                                <li>✓ Automatische Schlüsselübergabe</li>
+                                <li>✓ Integration mit Europcar-Systemen</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Europcar-Workflow wird implementiert
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Parkhaussystem */}
+                    {rndTab === 'parking-system' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Parkhaussystem mit Kennzeichenerkennung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Intelligentes Parkraummanagement
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                              <ParkingCircle className="h-8 w-8 text-blue-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                System-Features
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Kennzeichenerkennung Ein-/Ausfahrt</li>
+                                <li>✓ Automatische Schrankensteuerung</li>
+                                <li>✓ Echtzeit-Belegungsanzeige</li>
+                                <li>✓ Parkplatz-Reservierung</li>
+                                <li>✓ Besucherverwaltung</li>
+                                <li>✓ Integration mit Bezahlsystem</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Intelligentes Parkhaussystem in Entwicklung
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Parkhaus-Bezahlsystem */}
+                    {rndTab === 'parking-payment' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Parkhaus-Bezahlsystem
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Automatisiertes Bezahlsystem für Parkgebühren
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
+                              <CreditCard className="h-8 w-8 text-green-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Zahlungsmethoden
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Kennzeichen-basierte Abrechnung</li>
+                                <li>✓ Kreditkarten-Integration</li>
+                                <li>✓ Mobile Payment (Apple Pay, Google Pay)</li>
+                                <li>✓ Monatskarten & Abonnements</li>
+                                <li>✓ Automatische Rechnungsstellung</li>
+                                <li>✓ Integration mit Buchhaltungssystemen</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Bezahlsystem-Integration wird vorbereitet
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Parkzeitüberschreitung */}
+                    {rndTab === 'parking-overstay' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Parkzeitüberschreitung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Automatische Erkennung und Verwaltung von Parkzeitüberschreitungen
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
+                              <Clock className="h-8 w-8 text-orange-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Funktionen
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Automatische Zeitüberwachung</li>
+                                <li>✓ Push-Benachrichtigungen vor Ablauf</li>
+                                <li>✓ Strafzettel-Management</li>
+                                <li>✓ Eskalationsprozesse</li>
+                                <li>✓ Reporting & Statistiken</li>
+                                <li>✓ Integration mit Ordnungsamt</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Parkzeitüberwachung wird konzipiert
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Zutrittssysteme */}
+                    {rndTab === 'access-control' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Zutrittssysteme
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Intelligente Zutrittskontrolle und Sicherheitssysteme
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-red-500 bg-opacity-10 rounded-lg">
+                              <Shield className="h-8 w-8 text-red-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Zutrittsmethoden
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Biometrische Authentifizierung (Gesicht, Fingerabdruck)</li>
+                                <li>✓ RFID-Karten & Transponder</li>
+                                <li>✓ Mobile Access (Smartphone)</li>
+                                <li>✓ PIN-Code Eingabe</li>
+                                <li>✓ QR-Code Scanning</li>
+                                <li>✓ Zeitbasierte Zugangsrechte</li>
+                                <li>✓ Besuchermanagement</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Entwicklung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Zutrittskontrollsystem wird implementiert
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
+                    {/* Zeiterfassung */}
+                    {rndTab === 'time-tracking' && (
+                      <div>
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Zeiterfassung
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Digitale Arbeitszeiterfassung und Anwesenheitskontrolle
+                          </p>
+                        </div>
+                        
+                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <div className="flex items-start gap-4">
+                            <div className="p-3 bg-indigo-500 bg-opacity-10 rounded-lg">
+                              <Clock className="h-8 w-8 text-indigo-500" />
+                            </div>
+                            <div className="flex-1">
+                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Features
+                              </h3>
+                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <li>✓ Check-In/Check-Out Terminal</li>
+                                <li>✓ Biometrische Erfassung</li>
+                                <li>✓ Mobile Zeiterfassung</li>
+                                <li>✓ Projekt- und Aufgabenzuordnung</li>
+                                <li>✓ Pausenzeiten-Management</li>
+                                <li>✓ Überstunden-Tracking</li>
+                                <li>✓ Integration mit Lohnabrechnung</li>
+                                <li>✓ Urlaubsverwaltung</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </Card>
+                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            In Planung
+                          </h3>
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Zeiterfassungssystem wird konzipiert
+                          </p>
+                        </Card>
+                      </div>
+                    )}
+                    
                     {/* KI-Suche - Placeholder */}
                     {rndTab === 'ki-search' && (
                       <div>
@@ -1787,7 +2175,9 @@ const AdminPortalContent = () => {
                     )}
                     
                     {/* Default Placeholder für alle anderen Tabs */}
-                    {!['facematch', 'fingerprint', 'iris-scan', 'ki-search'].includes(rndTab) && (
+                    {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
+                        'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
+                        'parking-payment', 'parking-overstay', 'access-control', 'time-tracking'].includes(rndTab) && (
                       <div>
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
