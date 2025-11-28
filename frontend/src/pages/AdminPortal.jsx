@@ -1817,33 +1817,7 @@ const AdminPortalContent = () => {
                           </p>
                         </div>
                         
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
-                              <Car className="h-8 w-8 text-green-500" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Features
-                              </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Fahrzeugstammdaten verwalten</li>
-                                <li>✓ Wartungs- und Inspektionshistorie</li>
-                                <li>✓ Fahrzeugzuweisungen tracken</li>
-                                <li>✓ Dokumentenverwaltung (Zulassung, TÜV, etc.)</li>
-                                <li>✓ Schadensmeldungen erfassen</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Umfassende Fahrzeugverwaltung wird implementiert
-                          </p>
-                        </Card>
+                        <VehicleManagement />
                       </div>
                     )}
                     
