@@ -489,7 +489,11 @@ const VehicleManagement = () => {
                 </tr>
               ) : (
                 vehicles.map((vehicle) => (
-                  <tr key={vehicle.id} className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors`}>
+                  <tr 
+                    key={vehicle.id} 
+                    onClick={() => navigate(`/portal/admin/vehicles/${vehicle.id}`)}
+                    className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}
+                  >
                     <td className={`px-4 lg:px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div className="flex items-center">
                         <Car className="h-4 w-4 mr-2 text-blue-500" />
@@ -523,14 +527,20 @@ const VehicleManagement = () => {
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center gap-2">
                         <button
-                          onClick={() => openEditModal(vehicle)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditModal(vehicle);
+                          }}
                           className="text-blue-600 hover:text-blue-800"
                           title="Bearbeiten"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteVehicle(vehicle.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteVehicle(vehicle.id);
+                          }}
                           className="text-red-600 hover:text-red-800"
                           title="Löschen"
                         >
