@@ -103,14 +103,21 @@ async def global_search(
                     "data": device
                 })
         
-        # 2. Search Locations (HIGH PRIORITY)
+        # 2. Search Locations (HIGH PRIORITY) - Search ALL fields
         location_query = {
             "$or": [
                 {"location_code": search_regex},
                 {"station_name": search_regex},
+                {"location_name": search_regex},
                 {"city": search_regex},
                 {"zip": search_term},
-                {"location_id": search_regex}
+                {"location_id": search_regex},
+                {"street": search_regex},
+                {"country": search_regex},
+                {"manager": search_regex},
+                {"contact_name": search_regex},
+                {"contact_email": search_regex},
+                {"contact_phone": search_regex}
             ]
         }
         
