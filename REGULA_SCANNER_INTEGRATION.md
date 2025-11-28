@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://biometric-verify-1.preview.emergentagent.com/portal/admin/id-checks
+   https://auto-admin-portal-2.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

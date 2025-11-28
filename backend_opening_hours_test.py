@@ -14,7 +14,7 @@ import os
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://biometric-verify-1.preview.emergentagent.com"
+BACKEND_URL = "https://auto-admin-portal-2.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OpeningHoursTester:
