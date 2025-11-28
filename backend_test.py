@@ -265,14 +265,22 @@ class FahrzeugverwaltungTester:
             )
             return False
 
-    def test_staff_tickets_by_staff_api(self):
-        """Test GET /api/staff/tickets/by-staff - Ticket-Statistiken pro Mitarbeiter"""
+    def test_get_vehicle_by_id_api(self):
+        """Test GET /api/vehicles/{vehicle_id} - Fahrzeug abrufen"""
         try:
-            response = self.session.get(f"{API_BASE}/staff/tickets/by-staff")
+            if not self.test_vehicle_id:
+                self.log_result(
+                    "GET Vehicle By ID API",
+                    False,
+                    "No test vehicle ID available"
+                )
+                return False
+            
+            response = self.session.get(f"{API_BASE}/vehicles/{self.test_vehicle_id}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "Staff Tickets By Staff API",
+                    "GET Vehicle By ID API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -282,40 +290,49 @@ class FahrzeugverwaltungTester:
             data = response.json()
             
             # Verify response structure
-            if not isinstance(data, (list, dict)):
+            if not data.get("success"):
                 self.log_result(
-                    "Staff Tickets By Staff API",
+                    "GET Vehicle By ID API",
                     False,
-                    "Response should be a list or dict",
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            # If it's a dict, check for success field
-            if isinstance(data, dict):
-                if not data.get("success", True):
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Vehicle By ID API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            vehicle_data = data["data"]
+            
+            # Verify vehicle has expected fields
+            required_fields = ["id", "license_plate", "brand", "model", "year"]
+            for field in required_fields:
+                if field not in vehicle_data:
                     self.log_result(
-                        "Staff Tickets By Staff API",
+                        "GET Vehicle By ID API",
                         False,
-                        "Response indicates failure",
+                        f"Missing required field: {field}",
                         data
                     )
                     return False
-                
-                stats_data = data.get("stats", data.get("data", []))
-            else:
-                stats_data = data
             
             self.log_result(
-                "Staff Tickets By Staff API",
+                "GET Vehicle By ID API",
                 True,
-                f"Successfully retrieved ticket statistics for {len(stats_data)} staff members"
+                f"Successfully retrieved vehicle: {vehicle_data.get('license_plate')} ({vehicle_data.get('brand')} {vehicle_data.get('model')})"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "Staff Tickets By Staff API",
+                "GET Vehicle By ID API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
