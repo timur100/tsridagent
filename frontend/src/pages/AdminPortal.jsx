@@ -112,6 +112,13 @@ const AdminPortalContent = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null); // For opening vehicle detail from global search
   const [inventoryTab, setInventoryTab] = useState('items'); // 'items' or 'goods-receipt'
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
+  
+  // Reset selectedVehicleId when changing tabs
+  useEffect(() => {
+    if (rndTab !== 'vehicle-management') {
+      setSelectedVehicleId(null);
+    }
+  }, [rndTab]);
   const [companyLogoLight, setCompanyLogoLight] = useState(null);
   const [companyName, setCompanyName] = useState('TSRID');
   const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
