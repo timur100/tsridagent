@@ -179,12 +179,14 @@ const VehicleManagement = () => {
         method: 'DELETE'
       });
       
-      if (result.success) {
+      if (result.success && result.data?.success) {
         toast.success('Fahrzeug erfolgreich gelöscht');
         loadVehicles();
         loadStats();
       } else {
-        toast.error(result.message || 'Fehler beim Löschen');
+        const errorMsg = result.data?.message || result.data?.detail || result.error || 'Fehler beim Löschen';
+        toast.error(errorMsg);
+        console.error('Delete vehicle error:', result);
       }
     } catch (error) {
       console.error('Error deleting vehicle:', error);
