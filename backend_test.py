@@ -6411,14 +6411,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run Audio Messages tests (as requested in review)
-    print("🎤 Starting Audio Messages Backend API Testing...")
-    audio_tester = AudioMessagesTester()
-    audio_success = asyncio.run(audio_tester.run_all_tests())
+    # Run Fahrzeugverwaltung (Vehicle Management) tests (as requested in review)
+    print("🚙 Starting Fahrzeugverwaltung Backend API Testing...")
+    vehicle_tester = FahrzeugverwaltungTester()
+    vehicle_success = asyncio.run(vehicle_tester.run_all_tests())
     
-    if audio_success:
-        print("\n🎉 All Audio Messages tests passed!")
+    if vehicle_success:
+        print("\n🎉 All Fahrzeugverwaltung tests passed!")
         sys.exit(0)
     else:
-        print("\n💥 Some Audio Messages tests failed!")
+        print("\n💥 Some Fahrzeugverwaltung tests failed!")
         sys.exit(1)
