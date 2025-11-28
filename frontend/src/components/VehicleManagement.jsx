@@ -261,6 +261,16 @@ const VehicleManagement = () => {
     );
   };
 
+  // Show detail view if vehicleId is present
+  if (vehicleId) {
+    return (
+      <VehicleDetail 
+        vehicleId={vehicleId} 
+        onBack={() => navigate('/portal/admin')}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6 w-full">
       {/* Statistics Cards */}
