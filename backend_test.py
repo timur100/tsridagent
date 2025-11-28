@@ -7253,14 +7253,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run Location Details TeamViewer ID Fallback test (as requested in review)
-    print("🔍 Starting Location Details API - TeamViewer ID Fallback Testing...")
-    location_tester = LocationDetailsTeamViewerFallbackTester()
-    location_success = asyncio.run(location_tester.run_all_tests())
+    # Run TeamViewer ID Verification test (as requested in German review)
+    print("🔍 Starting TeamViewer ID Verification Testing (NO 'r' PREFIX)...")
+    teamviewer_tester = TeamViewerIDVerificationTester()
+    teamviewer_success = asyncio.run(teamviewer_tester.run_all_tests())
     
-    if location_success:
-        print("\n🎉 Location Details TeamViewer ID Fallback test passed!")
+    if teamviewer_success:
+        print("\n🎉 TeamViewer ID Verification test passed!")
         sys.exit(0)
     else:
-        print("\n💥 Location Details TeamViewer ID Fallback test failed!")
+        print("\n💥 TeamViewer ID Verification test failed!")
         sys.exit(1)
