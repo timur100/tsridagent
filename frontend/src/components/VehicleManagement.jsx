@@ -119,14 +119,18 @@ const VehicleManagement = () => {
         body: JSON.stringify(formData)
       });
       
-      if (result.success) {
+      // apiCall returns { success: isOk, data: backendResponse, status }
+      // Backend returns { success: true, message: "...", data: {...} }
+      if (result.success && result.data?.success) {
         toast.success('Fahrzeug erfolgreich hinzugefügt');
         setShowAddModal(false);
         resetForm();
         loadVehicles();
         loadStats();
       } else {
-        toast.error(result.message || 'Fehler beim Hinzufügen');
+        const errorMsg = result.data?.message || result.data?.detail || result.error || 'Fehler beim Hinzufügen';
+        toast.error(errorMsg);
+        console.error('Add vehicle error:', result);
       }
     } catch (error) {
       console.error('Error adding vehicle:', error);
