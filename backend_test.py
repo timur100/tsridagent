@@ -1677,9 +1677,10 @@ class LocationDetailsTeamViewerFallbackTester:
         })
         self.results = []
         self.admin_token = None
-        self.location_id = "b478a946-8fa3-4c75-894f-5b4e0c3a1562"  # BERN03
-        self.expected_device = "BERN03-01"
-        self.expected_teamviewer_id = "r987654321"
+        # BFEC01 Location Test Data from Review Request
+        self.location_id = "922d2044-de69-4361-bef3-692f344d9567"  # BFEC01
+        self.expected_device = "BFEC01-01"
+        self.expected_teamviewer_id = "r444555666"
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
