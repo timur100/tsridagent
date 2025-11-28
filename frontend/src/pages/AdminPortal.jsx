@@ -1650,9 +1650,8 @@ const AdminPortalContent = () => {
               
               {/* Main Content */}
               <div className="flex-1 overflow-y-auto">
-                <div className={rndTab === 'vehicle-management' ? 'p-6' : 'p-6'}>
-                  <div className={rndTab === 'vehicle-management' ? '' : 'max-w-7xl mx-auto'}>
-                    {/* Facematch */}
+                <div className="p-6 w-full">
+                  {/* Facematch */}
                     {rndTab === 'facematch' && (
                       <div>
                         <div className="mb-6">
