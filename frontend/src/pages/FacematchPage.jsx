@@ -63,6 +63,27 @@ const FacematchPage = () => {
     init();
   }, []);
 
+  // Stop camera when page visibility changes (user switches tabs/apps)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.hidden && cameraActive) {
+        console.log('[Facematch] Page hidden - pausing camera');
+        // Optional: Kamera pausieren wenn Tab nicht sichtbar
+        // stopCamera();
+      } else if (!document.hidden && step === 1 && !cameraActive && !capturedImage) {
+        console.log('[Facematch] Page visible again - resuming camera');
+        // Optional: Kamera wieder starten
+        // startCamera();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [cameraActive, step, capturedImage]);
+
   // Auto-start camera when component mounts AND route is active
   useEffect(() => {
     // Nur starten wenn auf Facematch-Seite und Step 1
