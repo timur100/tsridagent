@@ -1633,6 +1633,77 @@ const AdminPortalContent = () => {
           </div>
         )}
 
+        {activeTab === 'rnd' && (
+          <div className="p-6">
+            <div className="max-w-7xl mx-auto">
+              <div className="mb-6">
+                <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Research & Development
+                </h2>
+                <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Experimentelle Features und Entwicklungs-Tools
+                </p>
+              </div>
+
+              <div className="grid gap-6">
+                {/* Facematch Card */}
+                <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                      <UserCheck className="h-8 w-8 text-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Facematch - Biometrische Gesichtserkennung
+                      </h3>
+                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
+                      </p>
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <span className="px-2 py-1 text-xs font-medium bg-green-500 bg-opacity-10 text-green-500 rounded">
+                          MediaPipe Face Mesh
+                        </span>
+                        <span className="px-2 py-1 text-xs font-medium bg-blue-500 bg-opacity-10 text-blue-500 rounded">
+                          Iris Tracking
+                        </span>
+                        <span className="px-2 py-1 text-xs font-medium bg-purple-500 bg-opacity-10 text-purple-500 rounded">
+                          Auto-Capture
+                        </span>
+                        <span className="px-2 py-1 text-xs font-medium bg-orange-500 bg-opacity-10 text-orange-500 rounded">
+                          Background Removal
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => navigate('/portal/admin/id-checks/facematch')}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
+                      >
+                        Facematch öffnen →
+                      </button>
+                    </div>
+                  </div>
+                </Card>
+
+                {/* Placeholder für weitere R&D Features */}
+                <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-gray-500 bg-opacity-10 rounded-lg">
+                      <FlaskConical className="h-8 w-8 text-gray-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Weitere experimentelle Features
+                      </h3>
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Neue Features werden hier angezeigt, sobald sie verfügbar sind
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'settings' && (() => {
           return (
             <div className="flex h-[calc(100vh-180px)]">
