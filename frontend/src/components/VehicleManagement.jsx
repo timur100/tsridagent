@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
@@ -13,9 +13,12 @@ import VehicleDetail from './VehicleDetail';
 
 const VehicleManagement = () => {
   const navigate = useNavigate();
-  const { vehicleId } = useParams();
   const { apiCall } = useAuth();
   const { theme } = useTheme();
+  
+  // State for showing detail view
+  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
+  const [showDetailView, setShowDetailView] = useState(false);
   
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(false);
