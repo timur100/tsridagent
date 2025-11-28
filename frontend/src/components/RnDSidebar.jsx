@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   ChevronRight, ChevronDown, FlaskConical, UserCheck, Fingerprint, 
-  Search, Menu, X, Brain, Camera, Zap
+  Search, Menu, X, Brain, Camera, Zap, Car, ParkingCircle, 
+  Clock, Shield, CreditCard, Truck
 } from 'lucide-react';
 
 const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
