@@ -99,29 +99,51 @@ def generate_mock_landmarks():
     }
 
 
-def calculate_face_distance(encoding1, encoding2) -> float:
+def save_temp_image(image_array: np.ndarray, prefix: str = "img") -> str:
+    """Save numpy array as temporary image file and return path"""
+    img = Image.fromarray(image_array)
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.jpg', prefix=prefix)
+    img.save(temp_file.name)
+    return temp_file.name
+
+
+def calculate_face_similarity(img1_path: str, img2_path: str) -> float:
     """
-    Calculate face distance and convert to percentage match
-    Face distance ranges from 0 (identical) to 1+ (very different)
-    We convert this to a 0-100 percentage where lower distance = higher match
+    Calculate face similarity using DeepFace
+    Returns percentage match (0-100)
     """
     try:
-        if FACE_RECOGNITION_AVAILABLE:
-            distance = face_recognition.face_distance([encoding1], encoding2)[0]
-            
-            # Convert distance to percentage (0-100)
-            # Distance of 0 = 100% match, distance of 0.6 = ~40% match
-            # We use an exponential curve for better UX
-            percentage = max(0, min(100, (1 - distance) * 100))
-            
-            return round(percentage, 2)
-        else:
-            # Mock mode: Calculate based on image similarity (simplified)
+        if not FACE_RECOGNITION_AVAILABLE:
+            # Mock mode
             import random
-            # Generate realistic-looking scores between 65-95%
             return round(random.uniform(65, 95), 2)
+        
+        # Use DeepFace.verify for face comparison
+        result = DeepFace.verify(
+            img1_path=img1_path,
+            img2_path=img2_path,
+            model_name="VGG-Face",  # Fast and reliable model
+            detector_backend="opencv",
+            enforce_detection=True
+        )
+        
+        # DeepFace returns distance and verified flag
+        # Convert distance to percentage (lower distance = higher match)
+        distance = result.get('distance', 1.0)
+        threshold = result.get('threshold', 0.4)
+        
+        # Convert to percentage: 0 distance = 100%, threshold = 70%
+        if distance <= threshold:
+            percentage = 100 - (distance / threshold) * 30
+        else:
+            percentage = 70 - ((distance - threshold) / (1 - threshold)) * 70
+        
+        percentage = max(0, min(100, percentage))
+        return round(percentage, 2)
+        
     except Exception as e:
-        print(f"[Facematch] Error calculating distance: {e}")
+        print(f"[Facematch] Error calculating similarity: {e}")
+        # If face not detected, return low score
         return 0.0
 
 
