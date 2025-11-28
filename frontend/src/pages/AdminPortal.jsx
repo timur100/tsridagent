@@ -1776,12 +1776,12 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
-                    {/* KFZ-Kennzeichenerkennung */}
+                    {/* Kennzeichenerkennung */}
                     {rndTab === 'license-plate-recognition' && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            KFZ-Kennzeichenerkennung (LPR)
+                            Kennzeichenerkennung (LPR)
                           </h2>
                           <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             Automatische Erkennung und Verarbeitung von Fahrzeugkennzeichen
