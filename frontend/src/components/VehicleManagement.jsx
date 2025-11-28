@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
@@ -9,9 +9,11 @@ import {
   AlertCircle, RefreshCw, Download, Upload, X 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import VehicleDetail from './VehicleDetail';
 
 const VehicleManagement = () => {
   const navigate = useNavigate();
+  const { vehicleId } = useParams();
   const { apiCall } = useAuth();
   const { theme } = useTheme();
   
