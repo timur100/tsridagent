@@ -224,6 +224,8 @@ const GlobalSearch = ({ onResultSelect }) => {
         return <Box className="h-5 w-5 text-[#c00000]" />;
       case 'id-check':
         return <Fingerprint className="h-5 w-5 text-indigo-500" />;
+      case 'vehicle':
+        return <Car className="h-5 w-5 text-cyan-500" />;
       default:
         return <Search className="h-5 w-5 text-gray-500" />;
     }
