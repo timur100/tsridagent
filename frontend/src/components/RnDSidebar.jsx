@@ -26,7 +26,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       label: 'Fahrzeuge & Mobilität',
       icon: Car,
       items: [
-        { id: 'license-plate-recognition', label: 'KFZ-Kennzeichenerkennung', emoji: '🚗' },
+        { id: 'license-plate-recognition', label: 'Kennzeichenerkennung', emoji: '🚗' },
         { id: 'vehicle-management', label: 'Fahrzeugverwaltung', emoji: '🚙' },
         { id: 'fleet-management', label: 'Flottenmanagement', emoji: '🚚' },
         { id: 'europcar-integration', label: 'Europcar PKW-Vermietung', emoji: '🔑' }
