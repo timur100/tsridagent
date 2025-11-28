@@ -317,7 +317,7 @@ const VehicleManagement = () => {
       <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
         <div className="space-y-4">
           {/* Kennzeichen Search - Separate Row */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="flex-1 relative">
               <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
               <input
@@ -332,20 +332,22 @@ const VehicleManagement = () => {
                 }`}
               />
             </div>
-            <Button
-              onClick={() => setShowAddModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Fahrzeug hinzufügen
-            </Button>
-            <Button
-              onClick={loadVehicles}
-              variant="outline"
-              className={theme === 'dark' ? 'border-gray-700 text-gray-300' : ''}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowAddModal(true)}
+                className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Hinzufügen
+              </Button>
+              <Button
+                onClick={loadVehicles}
+                variant="outline"
+                className={`${theme === 'dark' ? 'border-gray-700 text-gray-300' : ''}`}
+              >
+                <RefreshCw className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Other Filters */}
