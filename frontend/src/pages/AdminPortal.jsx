@@ -1711,7 +1711,7 @@ const AdminPortalContent = () => {
                     
                     {/* Fingerprint - Placeholder */}
                     {rndTab === 'fingerprint' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Fingerprint - Fingerabdruck-Erkennung
