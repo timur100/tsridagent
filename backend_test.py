@@ -7776,14 +7776,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run TeamViewer ID Verification test (as requested in German review)
-    print("🔍 Starting TeamViewer ID Verification Testing (NO 'r' PREFIX)...")
-    teamviewer_tester = TeamViewerIDVerificationTester()
-    teamviewer_success = asyncio.run(teamviewer_tester.run_all_tests())
+    # Run Global Search Extended Field Testing (as requested in German review)
+    print("🔍 Starting Global Search Extended Field Testing...")
+    global_search_tester = GlobalSearchTester()
+    global_search_success = asyncio.run(global_search_tester.run_all_tests())
     
-    if teamviewer_success:
-        print("\n🎉 TeamViewer ID Verification test passed!")
+    if global_search_success:
+        print("\n🎉 Global Search Extended Field test passed!")
         sys.exit(0)
     else:
-        print("\n💥 TeamViewer ID Verification test failed!")
+        print("\n💥 Global Search Extended Field test failed!")
         sys.exit(1)
