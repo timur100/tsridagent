@@ -139,6 +139,9 @@ async def get_location_details(
             "locationcode": location_code
         }))
         
+        # Get portal_db devices for TeamViewer ID fallback
+        portal_db = mongo_client['portal_db']
+        
         # Format devices data
         device_list = []
         online_count = 0
@@ -156,6 +159,21 @@ async def get_location_details(
             else:
                 offline_count += 1
             
+            # Get TeamViewer ID from tenant_devices (multi_tenant_admin.europcar_devices)
+            teamviewer_id = device.get('teamviewer_id', '-')
+            
+            # If TeamViewer ID is missing or '-', try to get it from portal_db.devices
+            if not teamviewer_id or teamviewer_id == '-':
+                device_id = device.get('device_id')
+                if device_id:
+                    portal_device = portal_db.devices.find_one(
+                        {"device_id": device_id},
+                        {"teamviewer_id": 1, "_id": 0}
+                    )
+                    if portal_device and portal_device.get('teamviewer_id'):
+                        teamviewer_id = portal_device.get('teamviewer_id')
+                        print(f"[Location Details] Using TeamViewer ID from portal_db.devices for {device_id}: {teamviewer_id}")
+            
             device_list.append({
                 "device_id": device.get('device_id'),
                 "device_name": device.get('device_name') or device.get('device_id'),
@@ -164,7 +182,7 @@ async def get_location_details(
                 "sn_sc": device.get('sn_sc', '-'),
                 "status": 'Online' if is_online else 'Offline',
                 "is_online": is_online,
-                "teamviewer_id": device.get('teamviewer_id', '-')
+                "teamviewer_id": teamviewer_id
             })
         
         # Get employees for this location (placeholder - to be implemented)
