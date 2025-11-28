@@ -1688,15 +1688,7 @@ class TeamViewerIDVerificationTester:
                 "expected_teamviewer_id": "969678983"
             }
         ]
-        self.random_test_locations = []  # Will be populated from MongoDBx
-            },
-            {
-                "location_id": "b478a946-8fa3-4c75-894f-5b4e0c3a1562",  # BERN03
-                "location_name": "BERN03", 
-                "device_name": "BERN03-01",
-                "expected_teamviewer_id": "987654321"  # WITHOUT "r" prefix
-            }
-        ]
+        self.random_test_locations = []  # Will be populated from MongoDB
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
