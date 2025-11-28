@@ -351,7 +351,7 @@ const VehicleManagement = () => {
           </div>
 
           {/* Other Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <select
               value={filterTenant}
               onChange={(e) => setFilterTenant(e.target.value)}
@@ -411,7 +411,7 @@ const VehicleManagement = () => {
             <Button
               onClick={clearFilters}
               variant="outline"
-              className={`${theme === 'dark' ? 'border-gray-700 text-gray-300' : ''}`}
+              className={`${theme === 'dark' ? 'border-gray-700 text-gray-300' : ''} sm:col-span-2 lg:col-span-1`}
             >
               <X className="h-4 w-4 mr-2" />
               Filter zurücksetzen
