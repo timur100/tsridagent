@@ -8,7 +8,7 @@ import {
 
 const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
   const { theme } = useTheme();
-  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'ai']);
+  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'vehicles']);
 
   const menuStructure = [
     {
@@ -19,6 +19,36 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
         { id: 'facematch', label: 'Facematch', emoji: '👤' },
         { id: 'fingerprint', label: 'Fingerprint', emoji: '👆' },
         { id: 'iris-scan', label: 'Iris Scan', emoji: '👁️' }
+      ]
+    },
+    {
+      id: 'vehicles',
+      label: 'Fahrzeuge & Mobilität',
+      icon: Car,
+      items: [
+        { id: 'license-plate-recognition', label: 'KFZ-Kennzeichenerkennung', emoji: '🚗' },
+        { id: 'vehicle-management', label: 'Fahrzeugverwaltung', emoji: '🚙' },
+        { id: 'fleet-management', label: 'Flottenmanagement', emoji: '🚚' },
+        { id: 'europcar-integration', label: 'Europcar PKW-Vermietung', emoji: '🔑' }
+      ]
+    },
+    {
+      id: 'parking',
+      label: 'Parksysteme',
+      icon: ParkingCircle,
+      items: [
+        { id: 'parking-system', label: 'Parkhaussystem', emoji: '🅿️' },
+        { id: 'parking-payment', label: 'Parkhaus-Bezahlsystem', emoji: '💳' },
+        { id: 'parking-overstay', label: 'Parkzeitüberschreitung', emoji: '⏱️' }
+      ]
+    },
+    {
+      id: 'access',
+      label: 'Zutrittskontrolle',
+      icon: Shield,
+      items: [
+        { id: 'access-control', label: 'Zutrittssysteme', emoji: '🚪' },
+        { id: 'time-tracking', label: 'Zeiterfassung', emoji: '🕐' }
       ]
     },
     {
