@@ -671,10 +671,9 @@ const AdminPortalContent = () => {
               <GlobalSearch 
                 onResultSelect={(result) => {
                   if (result.type === 'vehicle') {
-                    // Navigate to Fahrzeugverwaltung (R&D section)
-                    setActiveRnDItem('vehicles');
-                    // Optionally, you could scroll to the vehicle or highlight it
-                    toast.success(`Fahrzeug ${result.license_plate} gefunden`);
+                    // Navigate to Vehicle Detail Page
+                    const vehicleId = result.data.id || result.id;
+                    navigate(`/portal/admin/vehicles/${vehicleId}`);
                   } else if (result.type === 'standort') {
                     // Navigate to Location Detail Page
                     const locationId = result.data.location_id || result.data.id;
