@@ -670,7 +670,12 @@ const AdminPortalContent = () => {
             <div className="flex-1 max-w-md mx-8">
               <GlobalSearch 
                 onResultSelect={(result) => {
-                  if (result.type === 'standort') {
+                  if (result.type === 'vehicle') {
+                    // Navigate to Fahrzeugverwaltung (R&D section)
+                    setActiveRnDItem('vehicles');
+                    // Optionally, you could scroll to the vehicle or highlight it
+                    toast.success(`Fahrzeug ${result.license_plate} gefunden`);
+                  } else if (result.type === 'standort') {
                     // Navigate to Location Detail Page
                     const locationId = result.data.location_id || result.data.id;
                     const tenantId = result.data.tenant_id;
