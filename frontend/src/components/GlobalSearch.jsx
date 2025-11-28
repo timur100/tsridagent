@@ -238,7 +238,7 @@ const GlobalSearch = ({ onResultSelect }) => {
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Suche nach Kunden, Standorten, Geräten, Serien..."
+          placeholder="Suche nach Kennzeichen, Kunden, Standorten, Geräten..."
           value={searchQuery}
           onChange={handleSearchChange}
           onFocus={() => results && setShowResults(true)}
