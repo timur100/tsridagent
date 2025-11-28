@@ -10,11 +10,12 @@ export const AuthProvider = ({ children }) => {
   // Global lock to prevent duplicate login/register calls
   const authInProgressRef = useRef(false);
 
-  // Always use HTTPS - hardcoded for production
-  const BACKEND_URL = 'https://auto-admin-portal-2.preview.emergentagent.com';
+  // Use environment variable for BACKEND_URL
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://auto-admin-portal-2.preview.emergentagent.com';
   
   // Debug logging
   console.log('[AuthContext] BACKEND_URL:', BACKEND_URL);
+  console.log('[AuthContext] process.env.REACT_APP_BACKEND_URL:', process.env.REACT_APP_BACKEND_URL);
   console.log('[AuthContext] window.location.origin:', window.location.origin);
 
   useEffect(() => {
