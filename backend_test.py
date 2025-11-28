@@ -1873,11 +1873,11 @@ class LocationDetailsTeamViewerFallbackTester:
     def test_mongodb_data_verification(self):
         """Verify MongoDB data setup for the test"""
         try:
-            # Check europcar_devices collection for BERN03-01
+            # Check europcar_devices collection for BFEC01-01
             europcar_devices_db = mongo_client['multi_tenant_admin']
             europcar_device = europcar_devices_db.europcar_devices.find_one({
                 "device_id": self.expected_device,
-                "locationcode": "BERN03"
+                "locationcode": "BFEC01"
             })
             
             if not europcar_device:
