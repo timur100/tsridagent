@@ -172,6 +172,10 @@ async def get_location_details(
                         teamviewer_id = main_device.get('teamviewer_id')
                         print(f"[Location Details] Using TeamViewer ID from multi_tenant_admin.devices for {device_id}: {teamviewer_id}")
             
+            # Remove leading 'r' from TeamViewer ID if present
+            if teamviewer_id and teamviewer_id != '-' and teamviewer_id.startswith('r'):
+                teamviewer_id = teamviewer_id[1:]
+            
             device_list.append({
                 "device_id": device.get('device_id'),
                 "device_name": device.get('device_name') or device.get('device_id'),
