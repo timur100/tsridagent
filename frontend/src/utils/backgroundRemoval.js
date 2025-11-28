@@ -30,41 +30,75 @@ export const initBackgroundRemoval = async () => {
 export const initMediaPipe = initBackgroundRemoval;
 
 /**
- * AI-basierte Hintergrund-Entfernung mit MediaPipe
- * @param {HTMLVideoElement|HTMLImageElement} source - Video oder Bild
+ * AI-basierte Hintergrund-Entfernung mit @imgly/background-removal
+ * @param {HTMLVideoElement|HTMLImageElement|Blob|string} source - Video, Bild, Blob oder Data URL
  * @param {CanvasRenderingContext2D} context - Canvas Context
  * @param {number} width - Canvas Breite
  * @param {number} height - Canvas Höhe
+ * @returns {Promise<boolean>} - Erfolgreich entfernt
  */
 export const removeBackgroundAI = async (source, context, width, height) => {
   try {
-    if (!selfieSegmentation) {
-      console.warn('[AI Removal] MediaPipe nicht initialisiert');
+    if (!isImglyReady) {
+      console.warn('[AI Removal] Bibliothek nicht initialisiert');
       return false;
     }
     
-    return new Promise((resolve) => {
-      selfieSegmentation.onResults((results) => {
-        // Zeichne Original-Bild
-        context.save();
-        context.clearRect(0, 0, width, height);
-        context.drawImage(results.segmentationMask, 0, 0, width, height);
-        
-        // Verwende die Maske für saubere Segmentierung
-        context.globalCompositeOperation = 'source-in';
-        context.drawImage(source, 0, 0, width, height);
-        
-        // Setze neutralen Hintergrund
-        context.globalCompositeOperation = 'destination-over';
-        context.fillStyle = '#f8f8f8';
-        context.fillRect(0, 0, width, height);
-        
-        context.restore();
-        resolve(true);
-      });
+    console.log('[AI Removal] Starte Hintergrundentfernung...');
+    
+    // Konvertiere source zu einem Blob oder Image Element
+    let imageSource = source;
+    
+    // Falls source ein Canvas/Video Element ist, konvertiere zu Blob
+    if (source instanceof HTMLVideoElement || source instanceof HTMLCanvasElement) {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = width;
+      tempCanvas.height = height;
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.drawImage(source, 0, 0, width, height);
       
-      selfieSegmentation.send({ image: source });
+      const blob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
+      imageSource = blob;
+    }
+    
+    // Entferne Hintergrund mit @imgly/background-removal
+    const resultBlob = await imglyRemoveBackground(imageSource, {
+      output: {
+        format: 'image/png',
+        quality: 1.0,
+      },
+      // Optional: progress callback
+      progress: (key, current, total) => {
+        console.log(`[AI Removal] ${key}: ${current}/${total}`);
+      }
     });
+    
+    // Lade das Ergebnis-Bild
+    const resultUrl = URL.createObjectURL(resultBlob);
+    const resultImg = new Image();
+    
+    await new Promise((resolve, reject) => {
+      resultImg.onload = resolve;
+      resultImg.onerror = reject;
+      resultImg.src = resultUrl;
+    });
+    
+    // Zeichne das Ergebnis auf den Canvas
+    context.clearRect(0, 0, width, height);
+    
+    // Setze neutralen Hintergrund
+    context.fillStyle = '#f8f8f8';
+    context.fillRect(0, 0, width, height);
+    
+    // Zeichne das Bild ohne Hintergrund
+    context.drawImage(resultImg, 0, 0, width, height);
+    
+    // Cleanup
+    URL.revokeObjectURL(resultUrl);
+    
+    console.log('[AI Removal] Hintergrund erfolgreich entfernt');
+    return true;
+    
   } catch (error) {
     console.error('[AI Removal] Fehler:', error);
     return false;
