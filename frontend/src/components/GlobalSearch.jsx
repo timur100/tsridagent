@@ -280,6 +280,47 @@ const GlobalSearch = ({ onResultSelect }) => {
             ? 'bg-[#2d2d2d] border-gray-700'
             : 'bg-white border-gray-200'
         }`}>
+          {/* Vehicles Results */}
+          {results.results.vehicles && results.results.vehicles.length > 0 && (
+            <div>
+              <div className={`px-4 py-2 text-xs font-semibold uppercase ${
+                theme === 'dark' ? 'text-gray-400 bg-[#1a1a1a]' : 'text-gray-600 bg-gray-50'
+              }`}>
+                Fahrzeuge ({results.results.vehicles.length})
+              </div>
+              {results.results.vehicles.map((item, idx) => (
+                <button
+                  key={`vehicle-${idx}`}
+                  onClick={() => handleResultClick(item)}
+                  className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-opacity-50 transition-colors ${
+                    theme === 'dark' ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {getIcon('vehicle')}
+                  <div className="flex-1 text-left">
+                    <div className={`font-medium font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {item.title}
+                    </div>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {item.subtitle}
+                    </div>
+                    {item.status && (
+                      <div className={`text-xs mt-1 inline-block px-2 py-0.5 rounded ${
+                        item.status === 'active' ? 'bg-green-500/20 text-green-600' :
+                        item.status === 'maintenance' ? 'bg-yellow-500/20 text-yellow-600' :
+                        'bg-red-500/20 text-red-600'
+                      }`}>
+                        {item.status === 'active' ? 'Aktiv' :
+                         item.status === 'maintenance' ? 'Wartung' :
+                         'Inaktiv'}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Artikel Results */}
           {results.results.artikel && results.results.artikel.length > 0 && (
             <div>
