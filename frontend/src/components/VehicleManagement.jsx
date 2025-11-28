@@ -531,6 +531,8 @@ const VehicleManagement = () => {
               )}
             </tbody>
           </table>
+            </div>
+          </div>
         </div>
       </Card>
 
