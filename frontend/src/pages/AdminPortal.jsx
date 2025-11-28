@@ -69,6 +69,7 @@ const AdminPortalContent = () => {
                          (location.pathname.includes('/tenants/') || 
                           location.pathname.includes('/devices/') || 
                           location.pathname.includes('/locations/') ||
+                          location.pathname.includes('/vehicles/') ||
                           location.pathname.includes('/in-preparation') ||
                           location.pathname.includes('/ideas') ||
                           (location.pathname.includes('/id-checks/') && !location.pathname.endsWith('/id-checks')));
