@@ -1815,7 +1815,7 @@ class LocationDetailsTeamViewerFallbackTester:
             return False, None
 
     def test_device_presence_and_teamviewer_id(self, location_data):
-        """Test that BERN03-01 device is present and has correct TeamViewer ID"""
+        """Test that BFEC01-01 device is present and has correct TeamViewer ID"""
         try:
             if not location_data:
                 self.log_result(
@@ -1827,7 +1827,7 @@ class LocationDetailsTeamViewerFallbackTester:
             
             devices = location_data.get("devices", [])
             
-            # Find BERN03-01 device
+            # Find BFEC01-01 device
             target_device = None
             for device in devices:
                 if device.get("device_id") == self.expected_device:
