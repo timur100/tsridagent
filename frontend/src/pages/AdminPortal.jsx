@@ -2173,7 +2173,6 @@ const AdminPortalContent = () => {
                         </Card>
                       </div>
                     )}
-                  </div>
                 </div>
               </div>
             </div>
