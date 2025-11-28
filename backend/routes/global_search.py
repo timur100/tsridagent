@@ -194,7 +194,7 @@ async def global_search(
                 "data": vehicle
             })
         
-        # 4. Search ID-Checks
+        # 4. Search ID-Checks - Search ALL fields
         id_checks_query = {
             "$or": [
                 {"id": search_regex},
@@ -202,7 +202,13 @@ async def global_search(
                 {"extracted_data.name": search_regex},
                 {"extracted_data.surname": search_regex},
                 {"extracted_data.document_number": search_regex},
-                {"extracted_data.document_type": search_regex}
+                {"extracted_data.document_type": search_regex},
+                {"extracted_data.nationality": search_regex},
+                {"extracted_data.address": search_regex},
+                {"extracted_data.city": search_regex},
+                {"extracted_data.country": search_regex},
+                {"status": search_regex},
+                {"location_code": search_regex}
             ]
         }
         
