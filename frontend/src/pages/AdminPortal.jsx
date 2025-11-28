@@ -1650,10 +1650,10 @@ const AdminPortalContent = () => {
               
               {/* Main Content */}
               <div className="flex-1 overflow-y-auto">
-                <div className="p-6 w-full">
+                <div className="p-4 sm:p-6 w-full">
                   {/* Facematch */}
                     {rndTab === 'facematch' && (
-                      <div>
+                      <div className="max-w-5xl mx-auto">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             Facematch - Biometrische Gesichtserkennung
