@@ -433,6 +433,219 @@ class FahrzeugverwaltungTester:
             )
             return False
 
+    def test_get_vehicle_stats_api(self):
+        """Test GET /api/vehicles/stats/summary - Fahrzeugstatistiken abrufen"""
+        try:
+            response = self.session.get(f"{API_BASE}/vehicles/stats/summary")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Vehicle Stats API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Vehicle Stats API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Vehicle Stats API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            stats_data = data["data"]
+            
+            # Verify required stats fields
+            required_fields = ["total", "active", "maintenance", "inactive"]
+            for field in required_fields:
+                if field not in stats_data:
+                    self.log_result(
+                        "GET Vehicle Stats API",
+                        False,
+                        f"Missing required stats field: {field}",
+                        data
+                    )
+                    return False
+                
+                # Verify field is a number
+                if not isinstance(stats_data[field], int):
+                    self.log_result(
+                        "GET Vehicle Stats API",
+                        False,
+                        f"Stats field {field} should be integer, got {type(stats_data[field])}",
+                        data
+                    )
+                    return False
+            
+            self.log_result(
+                "GET Vehicle Stats API",
+                True,
+                f"Successfully retrieved vehicle statistics: total={stats_data['total']}, active={stats_data['active']}, maintenance={stats_data['maintenance']}, inactive={stats_data['inactive']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Vehicle Stats API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_filter_vehicles_api(self):
+        """Test GET /api/vehicles?brand=Volkswagen&status=active - Fahrzeuge filtern"""
+        try:
+            # Test filtering by brand and status
+            params = {
+                "brand": "Volkswagen",
+                "status": "active"
+            }
+            
+            response = self.session.get(f"{API_BASE}/vehicles", params=params)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Filter Vehicles API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Filter Vehicles API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data or "vehicles" not in data["data"]:
+                self.log_result(
+                    "GET Filter Vehicles API",
+                    False,
+                    "Missing 'data.vehicles' field in response",
+                    data
+                )
+                return False
+            
+            vehicles_list = data["data"]["vehicles"]
+            
+            # Verify filtering worked (if there are vehicles)
+            for vehicle in vehicles_list:
+                if vehicle.get("brand") and "Volkswagen" not in vehicle["brand"]:
+                    self.log_result(
+                        "GET Filter Vehicles API",
+                        False,
+                        f"Filter failed: found vehicle with brand '{vehicle['brand']}' instead of 'Volkswagen'",
+                        vehicle
+                    )
+                    return False
+                
+                if vehicle.get("status") != "active":
+                    self.log_result(
+                        "GET Filter Vehicles API",
+                        False,
+                        f"Filter failed: found vehicle with status '{vehicle['status']}' instead of 'active'",
+                        vehicle
+                    )
+                    return False
+            
+            self.log_result(
+                "GET Filter Vehicles API",
+                True,
+                f"Successfully filtered vehicles: found {len(vehicles_list)} Volkswagen vehicles with active status"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Filter Vehicles API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_delete_vehicle_api(self):
+        """Test DELETE /api/vehicles/{vehicle_id} - Fahrzeug löschen"""
+        try:
+            if not self.test_vehicle_id:
+                self.log_result(
+                    "DELETE Vehicle API",
+                    False,
+                    "No test vehicle ID available"
+                )
+                return False
+            
+            response = self.session.delete(f"{API_BASE}/vehicles/{self.test_vehicle_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "DELETE Vehicle API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "DELETE Vehicle API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check for expected message
+            if data.get("message") != "Vehicle deleted successfully":
+                self.log_result(
+                    "DELETE Vehicle API",
+                    False,
+                    f"Unexpected message: {data.get('message')}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "DELETE Vehicle API",
+                True,
+                f"Successfully deleted vehicle with ID: {self.test_vehicle_id}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "DELETE Vehicle API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def test_create_test_ticket(self):
         """Create a test ticket for SLA and assignment testing"""
         try:
