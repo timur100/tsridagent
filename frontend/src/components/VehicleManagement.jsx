@@ -11,14 +11,14 @@ import {
 import toast from 'react-hot-toast';
 import VehicleDetail from './VehicleDetail';
 
-const VehicleManagement = () => {
+const VehicleManagement = ({ initialVehicleId }) => {
   const navigate = useNavigate();
   const { apiCall } = useAuth();
   const { theme } = useTheme();
   
   // State for showing detail view
-  const [selectedVehicleId, setSelectedVehicleId] = useState(null);
-  const [showDetailView, setShowDetailView] = useState(false);
+  const [selectedVehicleId, setSelectedVehicleId] = useState(initialVehicleId || null);
+  const [showDetailView, setShowDetailView] = useState(!!initialVehicleId);
   
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(false);
