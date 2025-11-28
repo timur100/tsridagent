@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - PHASE 1 TICKETING SYSTEM RE-TESTING
-Tests Phase 1 Ticketing System APIs after MongoDB AsyncIOMotorCursor bug fix:
-- Staff Management APIs (GET /api/staff, POST /api/staff, GET /api/staff/tickets/by-staff)
-- SLA Warnings API (GET /api/sla/warnings)
-- Integration Test (Create Staff → Create Ticket → Assign → Verify Capacity)
-- Verify no AsyncIOMotorCursor errors
+Backend API Testing Suite - FAHRZEUGVERWALTUNG (VEHICLE MANAGEMENT) TESTING
+Tests Vehicle Management Backend API with all CRUD operations:
+- GET /api/vehicles - retrieve vehicles
+- POST /api/vehicles - create new vehicle  
+- GET /api/vehicles/{vehicle_id} - get vehicle by ID
+- PUT /api/vehicles/{vehicle_id} - update vehicle
+- GET /api/vehicles/stats/summary - get vehicle statistics
+- GET /api/vehicles?brand=Volkswagen&status=active - filter vehicles
+- DELETE /api/vehicles/{vehicle_id} - delete vehicle
 """
 
 import requests
