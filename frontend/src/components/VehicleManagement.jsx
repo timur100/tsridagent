@@ -512,8 +512,9 @@ const VehicleManagement = () => {
                   <tr 
                     key={vehicle.id} 
                     onClick={() => {
-                      // Navigate but stay in the same R&D context
-                      navigate(`/portal/admin/vehicles/${vehicle.id}`, { replace: false });
+                      // Show detail view in the same component
+                      setSelectedVehicleId(vehicle.id);
+                      setShowDetailView(true);
                     }}
                     className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}
                   >
