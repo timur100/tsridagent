@@ -1823,7 +1823,10 @@ const AdminPortalContent = () => {
                           </p>
                         </div>
                         
-                        <VehicleManagement />
+                        <VehicleManagement 
+                          initialVehicleId={selectedVehicleId}
+                          key={selectedVehicleId} // Force re-render when vehicle changes
+                        />
                       </div>
                     )}
                     
