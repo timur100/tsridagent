@@ -160,52 +160,69 @@ const CameraGrid = () => {
 
   return (
     <div>
-      {/* Grid Size Selector */}
-      <div className="mb-4 flex gap-2">
+      {/* Grid Size Selector & Webcam Toggle */}
+      <div className="mb-4 flex justify-between items-center">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setGridSize('2x2')}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              gridSize === '2x2'
+                ? 'bg-blue-600 text-white'
+                : theme === 'dark'
+                ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Grid2x2 className="h-4 w-4" />
+            2x2
+          </button>
+          <button
+            onClick={() => setGridSize('3x3')}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              gridSize === '3x3'
+                ? 'bg-blue-600 text-white'
+                : theme === 'dark'
+                ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Grid3x3 className="h-4 w-4" />
+            3x3
+          </button>
+          <button
+            onClick={() => setGridSize('4x4')}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              gridSize === '4x4'
+                ? 'bg-blue-600 text-white'
+                : theme === 'dark'
+                ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <LayoutGrid className="h-4 w-4" />
+            4x4
+          </button>
+        </div>
+
+        {/* Webcam Toggle */}
         <button
-          onClick={() => setGridSize('2x2')}
-          className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-            gridSize === '2x2'
-              ? 'bg-blue-600 text-white'
+          onClick={() => setShowWebcam(!showWebcam)}
+          className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-colors ${
+            showWebcam
+              ? 'bg-green-600 text-white hover:bg-green-700'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
         >
-          <Grid2x2 className="h-4 w-4" />
-          2x2
-        </button>
-        <button
-          onClick={() => setGridSize('3x3')}
-          className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-            gridSize === '3x3'
-              ? 'bg-blue-600 text-white'
-              : theme === 'dark'
-              ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <Grid3x3 className="h-4 w-4" />
-          3x3
-        </button>
-        <button
-          onClick={() => setGridSize('4x4')}
-          className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
-            gridSize === '4x4'
-              ? 'bg-blue-600 text-white'
-              : theme === 'dark'
-              ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-        >
-          <LayoutGrid className="h-4 w-4" />
-          4x4
+          <Webcam className="h-5 w-5" />
+          {showWebcam ? 'Webcam: EIN' : 'Lokale Webcam anzeigen'}
         </button>
       </div>
 
       {/* Camera Grid */}
       <div className={`grid ${getGridClass()} gap-4`}>
-        {cameras.map((camera) => (
+        {displayItems.map((camera, index) => (
           <Card
             key={camera.id}
             className={`relative overflow-hidden cursor-pointer group ${
