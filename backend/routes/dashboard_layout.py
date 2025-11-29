@@ -94,18 +94,23 @@ async def save_dashboard_layout(
         "message": "Dashboard layout saved successfully"
     }
 
-@router.post("/api/dashboard/layout/reset")
-async def reset_dashboard_layout(current_user: dict = Depends(get_current_user)):
+@router.post("/layout/reset")
+async def reset_dashboard_layout(authorization: Optional[str] = Header(None)):
     """Reset dashboard layout to default"""
+    # Verify authentication
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = verify_token(authorization.replace("Bearer ", ""))
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Only admins can reset global layout
-    if current_user.get("email") != "admin@tsrid.com" and current_user.get("user_type") != "super_admin":
+    if user.get("email") != "admin@tsrid.com" and user.get("user_type") != "super_admin":
         raise HTTPException(status_code=403, detail="Only super admins can reset global layout")
     
-    db = await get_database()
-    
     # Delete the global layout to reset to default
-    await db.dashboard_layouts.delete_one({"type": "global"})
+    db.dashboard_layouts.delete_one({"type": "global"})
     
     return {
         "success": True,
