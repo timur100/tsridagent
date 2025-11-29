@@ -189,11 +189,15 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
       });
       
       console.log('[OCR] Recognizing processed image...');
+      const startTime = performance.now();
       const { data: { text, confidence, words } } = await worker.recognize(processedImage);
+      const endTime = performance.now();
+      const processingTime = ((endTime - startTime) / 1000).toFixed(2);
       
       console.log('[OCR] Raw text:', text);
       console.log('[OCR] Confidence:', confidence);
       console.log('[OCR] Words:', words);
+      console.log('[OCR] Processing time:', processingTime + 's');
       
       await worker.terminate();
       
