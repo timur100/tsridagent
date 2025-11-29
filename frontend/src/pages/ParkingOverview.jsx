@@ -23,6 +23,9 @@ const ParkingOverview = () => {
   const [config, setConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [webcamStream, setWebcamStream] = useState(null);
+  const [webcamError, setWebcamError] = useState(null);
+  const videoRef = React.useRef(null);
 
   useEffect(() => {
     console.log('[ParkingOverview] Component mounted');
