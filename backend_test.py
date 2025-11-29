@@ -1,16 +1,33 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - DASHBOARD LAYOUT API TESTING
-Tests Dashboard Layout API endpoints for drag and drop functionality:
-- GET /api/dashboard/layout - Get the saved layout
-- POST /api/dashboard/layout - Save a new layout
-- POST /api/dashboard/layout/reset - Reset to default layout
+Backend API Testing Suite - PARKING MANAGEMENT SYSTEM TESTING
+Tests Parking Management System Backend APIs for automatic license plate recognition and violation tracking:
+
+Configuration API:
+- GET /api/parking/config - Get current configuration
+- PUT /api/parking/config - Update configuration (max duration, penalty rate)
+
+Entry/Exit APIs:
+- POST /api/parking/entry - Register vehicle entry
+- POST /api/parking/exit - Register vehicle exit and calculate penalties
+
+Monitoring APIs:
+- GET /api/parking/active - Get currently parked vehicles
+- GET /api/parking/sessions - Get parking history
+- GET /api/parking/violations - Get violations
+- GET /api/parking/stats - Get statistics
+
+Whitelist APIs:
+- GET /api/parking/whitelist - Get whitelist entries
+- POST /api/parking/whitelist - Add to whitelist
+- DELETE /api/parking/whitelist/{license_plate} - Remove from whitelist
 
 Test Scenarios:
-1. Get default layout (when no layout exists)
-2. Save a new layout with admin credentials (admin@tsrid.com / admin123)
-3. Retrieve saved layout
-4. Reset layout and verify it's empty/default
+1. Normal Parking (No Violation)
+2. Parking Overstay (Violation)
+3. Multiple Entry without Exit (Violation)
+4. Whitelisted Vehicle
+5. Statistics Verification
 """
 
 import requests
