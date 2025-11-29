@@ -57,7 +57,7 @@ export const fetchCategories = async () => {
   }
 
   // Neuen Request starten
-  categoriesPromise = fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://car-dashboard-13.preview.emergentagent.com'}/api/categories/list?active_only=true`)
+  categoriesPromise = fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://admin-portal-dash-1.preview.emergentagent.com'}/api/categories/list?active_only=true`)
     .then(response => response.json())
     .then(data => {
       if (data.success && data.categories) {

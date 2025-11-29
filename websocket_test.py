@@ -23,7 +23,7 @@ import jwt
 from datetime import datetime, timezone, timedelta
 
 # Backend URL from environment
-BACKEND_URL = "https://car-dashboard-13.preview.emergentagent.com"
+BACKEND_URL = "https://admin-portal-dash-1.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 

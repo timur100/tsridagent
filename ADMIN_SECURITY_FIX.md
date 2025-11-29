@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://car-dashboard-13.preview.emergentagent.com/portal/admin
+https://admin-portal-dash-1.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

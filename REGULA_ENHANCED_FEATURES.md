@@ -343,7 +343,7 @@ python test_regula_enhanced.py
 
 **Test 1: Nur Vorderseite**
 ```bash
-curl -X POST https://car-dashboard-13.preview.emergentagent.com/api/webhooks/regula-scan \
+curl -X POST https://admin-portal-dash-1.preview.emergentagent.com/api/webhooks/regula-scan \
   -H "X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg" \
   -H "Content-Type: application/json" \
   -d @front_side_data.json
@@ -351,7 +351,7 @@ curl -X POST https://car-dashboard-13.preview.emergentagent.com/api/webhooks/reg
 
 **Test 2: Rückseite hinzufügen**
 ```bash
-curl -X POST https://car-dashboard-13.preview.emergentagent.com/api/webhooks/regula-scan \
+curl -X POST https://admin-portal-dash-1.preview.emergentagent.com/api/webhooks/regula-scan \
   -H "X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg" \
   -H "Content-Type: application/json" \
   -d @back_side_data.json
@@ -359,7 +359,7 @@ curl -X POST https://car-dashboard-13.preview.emergentagent.com/api/webhooks/reg
 
 **Test 3: Kombiniert**
 ```bash
-curl -X POST https://car-dashboard-13.preview.emergentagent.com/api/webhooks/regula-scan \
+curl -X POST https://admin-portal-dash-1.preview.emergentagent.com/api/webhooks/regula-scan \
   -H "X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg" \
   -H "Content-Type: application/json" \
   -d @combined_data.json

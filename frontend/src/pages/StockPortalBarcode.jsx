@@ -47,7 +47,7 @@ const StockPortalBarcode = () => {
     setLoading(true);
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://car-dashboard-13.preview.emergentagent.com'}/api/fulfillment/auth/login?email=${loginForm.email}&password=${loginForm.password}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://admin-portal-dash-1.preview.emergentagent.com'}/api/fulfillment/auth/login?email=${loginForm.email}&password=${loginForm.password}`, {
         method: 'POST',
       });
 
@@ -77,7 +77,7 @@ const StockPortalBarcode = () => {
 
   const fetchOrders = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://car-dashboard-13.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://admin-portal-dash-1.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/fulfillment/orders/pending?status=reserved`);
       const data = await response.json();
       
@@ -159,7 +159,7 @@ const StockPortalBarcode = () => {
 
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://car-dashboard-13.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://admin-portal-dash-1.preview.emergentagent.com';
       const response = await fetch(
         `${backendUrl}/api/fulfillment/picking/complete?order_id=${selectedOrder.id}&eurobox_number=${euroboxNumber}`,
         {

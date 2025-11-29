@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://car-dashboard-13.preview.emergentagent.com/portal/admin
+https://admin-portal-dash-1.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://car-dashboard-13.preview.emergentagent.com/portal/admin
+**URL:** https://admin-portal-dash-1.preview.emergentagent.com/portal/admin
