@@ -228,14 +228,27 @@ const CameraGrid = () => {
             className={`relative overflow-hidden cursor-pointer group ${
               theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
             }`}
-            onClick={() => setFullscreenCamera(camera)}
+            onClick={() => !camera.isWebcam && setFullscreenCamera(camera)}
           >
             {/* Camera Preview */}
             <div className="aspect-video bg-gray-900 relative">
-              {/* Placeholder for camera stream */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Video className="h-12 w-12 text-gray-600" />
-              </div>
+              {camera.isWebcam ? (
+                /* Live Webcam Feed */
+                <video
+                  ref={(el) => {
+                    if (el) videoRefs.current[index] = el;
+                  }}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                /* Placeholder for IP camera stream */
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Video className="h-12 w-12 text-gray-600" />
+                </div>
+              )}
               
               {/* Status Badge */}
               <div className="absolute top-2 right-2">
@@ -250,10 +263,22 @@ const CameraGrid = () => {
                 </span>
               </div>
 
-              {/* Fullscreen Icon on Hover */}
-              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <Maximize2 className="h-8 w-8 text-white" />
-              </div>
+              {/* Webcam Badge */}
+              {camera.isWebcam && (
+                <div className="absolute top-2 left-2">
+                  <span className="px-2 py-1 text-xs font-medium rounded bg-blue-500 text-white flex items-center gap-1">
+                    <Webcam className="h-3 w-3" />
+                    LIVE
+                  </span>
+                </div>
+              )}
+
+              {/* Fullscreen Icon on Hover (only for non-webcam) */}
+              {!camera.isWebcam && (
+                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <Maximize2 className="h-8 w-8 text-white" />
+                </div>
+              )}
             </div>
 
             {/* Camera Info */}
