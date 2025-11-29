@@ -937,13 +937,13 @@ class DashboardLayoutTester:
             return False
 
     async def run_all_tests(self):
-        """Run all Fahrzeugverwaltung (Vehicle Management) API tests"""
+        """Run all Dashboard Layout API tests"""
         print("=" * 80)
-        print("FAHRZEUGVERWALTUNG (VEHICLE MANAGEMENT) API TESTING")
+        print("DASHBOARD LAYOUT API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Vehicle CRUD Operations")
-        print(f"Database: tsrid_db.vehicles collection")
+        print(f"Testing APIs: Dashboard Layout Management")
+        print(f"Database: {os.environ.get('DB_NAME', 'test_database')}.dashboard_layouts collection")
         print("=" * 80)
         print()
         
@@ -954,37 +954,37 @@ class DashboardLayoutTester:
                 print("❌ Admin authentication failed. Stopping tests.")
                 return False
             
-            # Step 2: Test GET /api/vehicles
-            print("\n🔍 STEP 2: Testing GET /api/vehicles - Fahrzeuge abrufen...")
-            get_vehicles_ok = self.test_get_vehicles_api()
+            # Step 2: Test GET default layout
+            print("\n🔍 STEP 2: Testing GET /api/dashboard/layout - Get default layout...")
+            get_default_ok = self.test_get_default_layout_api()
             
-            # Step 3: Test POST /api/vehicles
-            print("\n🔍 STEP 3: Testing POST /api/vehicles - Neues Fahrzeug hinzufügen...")
-            create_vehicle_ok = self.test_create_vehicle_api()
+            # Step 3: Test POST save layout
+            print("\n🔍 STEP 3: Testing POST /api/dashboard/layout - Save new layout...")
+            save_layout_ok = self.test_save_layout_api()
             
-            # Step 4: Test GET /api/vehicles/{vehicle_id}
-            print("\n🔍 STEP 4: Testing GET /api/vehicles/{vehicle_id} - Fahrzeug abrufen...")
-            get_vehicle_by_id_ok = self.test_get_vehicle_by_id_api()
+            # Step 4: Test GET saved layout
+            print("\n🔍 STEP 4: Testing GET /api/dashboard/layout - Retrieve saved layout...")
+            get_saved_ok = self.test_retrieve_saved_layout_api()
             
-            # Step 5: Test PUT /api/vehicles/{vehicle_id}
-            print("\n🔍 STEP 5: Testing PUT /api/vehicles/{vehicle_id} - Fahrzeug aktualisieren...")
-            update_vehicle_ok = self.test_update_vehicle_api()
+            # Step 5: Test POST reset layout
+            print("\n🔍 STEP 5: Testing POST /api/dashboard/layout/reset - Reset layout...")
+            reset_layout_ok = self.test_reset_layout_api()
             
-            # Step 6: Test GET /api/vehicles/stats/summary
-            print("\n🔍 STEP 6: Testing GET /api/vehicles/stats/summary - Fahrzeugstatistiken...")
-            get_stats_ok = self.test_get_vehicle_stats_api()
+            # Step 6: Test GET after reset
+            print("\n🔍 STEP 6: Testing GET /api/dashboard/layout - Verify reset worked...")
+            verify_reset_ok = self.test_verify_reset_layout_api()
             
-            # Step 7: Test GET /api/vehicles with filters
-            print("\n🔍 STEP 7: Testing GET /api/vehicles?brand=Volkswagen&status=active - Fahrzeuge filtern...")
-            filter_vehicles_ok = self.test_filter_vehicles_api()
+            # Step 7: Test MongoDB persistence
+            print("\n🔍 STEP 7: Testing MongoDB persistence verification...")
+            mongodb_ok = self.test_mongodb_persistence_verification()
             
-            # Step 8: Test DELETE /api/vehicles/{vehicle_id}
-            print("\n🔍 STEP 8: Testing DELETE /api/vehicles/{vehicle_id} - Fahrzeug löschen...")
-            delete_vehicle_ok = self.test_delete_vehicle_api()
+            # Step 8: Test authentication enforcement
+            print("\n🔍 STEP 8: Testing authentication enforcement...")
+            auth_ok = self.test_authentication_enforcement()
             
             # Summary
             print("\n" + "=" * 80)
-            print("FAHRZEUGVERWALTUNG API TESTING SUMMARY")
+            print("DASHBOARD LAYOUT API TESTING SUMMARY")
             print("=" * 80)
             
             passed = sum(1 for r in self.results if r['success'])
@@ -994,13 +994,13 @@ class DashboardLayoutTester:
             
             # Print critical functionality results
             print("\n🔍 CRITICAL API FUNCTIONALITY:")
-            print(f"   • GET /api/vehicles: {'✅ WORKING' if get_vehicles_ok else '❌ FAILED'}")
-            print(f"   • POST /api/vehicles: {'✅ WORKING' if create_vehicle_ok else '❌ FAILED'}")
-            print(f"   • GET /api/vehicles/{{id}}: {'✅ WORKING' if get_vehicle_by_id_ok else '❌ FAILED'}")
-            print(f"   • PUT /api/vehicles/{{id}}: {'✅ WORKING' if update_vehicle_ok else '❌ FAILED'}")
-            print(f"   • GET /api/vehicles/stats/summary: {'✅ WORKING' if get_stats_ok else '❌ FAILED'}")
-            print(f"   • GET /api/vehicles (filtered): {'✅ WORKING' if filter_vehicles_ok else '❌ FAILED'}")
-            print(f"   • DELETE /api/vehicles/{{id}}: {'✅ WORKING' if delete_vehicle_ok else '❌ FAILED'}")
+            print(f"   • GET /api/dashboard/layout (default): {'✅ WORKING' if get_default_ok else '❌ FAILED'}")
+            print(f"   • POST /api/dashboard/layout (save): {'✅ WORKING' if save_layout_ok else '❌ FAILED'}")
+            print(f"   • GET /api/dashboard/layout (retrieve): {'✅ WORKING' if get_saved_ok else '❌ FAILED'}")
+            print(f"   • POST /api/dashboard/layout/reset: {'✅ WORKING' if reset_layout_ok else '❌ FAILED'}")
+            print(f"   • GET /api/dashboard/layout (verify reset): {'✅ WORKING' if verify_reset_ok else '❌ FAILED'}")
+            print(f"   • MongoDB Persistence: {'✅ WORKING' if mongodb_ok else '❌ FAILED'}")
+            print(f"   • Authentication Enforcement: {'✅ WORKING' if auth_ok else '❌ FAILED'}")
             
             # Print failed tests
             failed_tests = [r for r in self.results if not r['success']]
