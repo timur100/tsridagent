@@ -994,9 +994,7 @@ const AdminPortalContent = () => {
                 </h2>
               )}
               
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                {/* Row 1: Kunden, Geräte, Standorte, Mitarbeiter */}
-                
+              <DashboardGrid>
                 {/* Total Customers - nur anzeigen wenn "Alle Kunden" */}
                 {(selectedCustomer === 'all' && !isTenantAdmin) && (
                   <Card 
