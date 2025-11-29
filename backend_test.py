@@ -149,17 +149,14 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_get_default_layout_api(self):
-        """Test GET /api/dashboard/layout - Get default layout when none exists"""
+    def test_get_parking_config_api(self):
+        """Test GET /api/parking/config - Get current configuration"""
         try:
-            # First, ensure no layout exists by resetting
-            self.session.post(f"{API_BASE}/dashboard/layout/reset")
-            
-            response = self.session.get(f"{API_BASE}/dashboard/layout")
+            response = self.session.get(f"{API_BASE}/parking/config")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Default Layout API",
+                    "GET Parking Config API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -171,7 +168,7 @@ class ParkingManagementTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Default Layout API",
+                    "GET Parking Config API",
                     False,
                     "Response indicates failure",
                     data
@@ -181,45 +178,64 @@ class ParkingManagementTester:
             # Check data structure
             if "data" not in data:
                 self.log_result(
-                    "GET Default Layout API",
+                    "GET Parking Config API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            layout_data = data["data"]
-            if "layout" not in layout_data:
+            config_data = data["data"]
+            required_fields = ["max_free_duration_minutes", "penalty_per_hour", "enabled"]
+            
+            for field in required_fields:
+                if field not in config_data:
+                    self.log_result(
+                        "GET Parking Config API",
+                        False,
+                        f"Missing required field in config: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify field types
+            if not isinstance(config_data["max_free_duration_minutes"], int):
                 self.log_result(
-                    "GET Default Layout API",
+                    "GET Parking Config API",
                     False,
-                    "Missing 'layout' field in data",
+                    f"max_free_duration_minutes should be int, got {type(config_data['max_free_duration_minutes'])}",
                     data
                 )
                 return False
             
-            layout_array = layout_data["layout"]
-            
-            # Default layout should be empty array
-            if not isinstance(layout_array, list):
+            if not isinstance(config_data["penalty_per_hour"], (int, float)):
                 self.log_result(
-                    "GET Default Layout API",
+                    "GET Parking Config API",
                     False,
-                    f"Layout should be an array, got {type(layout_array)}",
+                    f"penalty_per_hour should be number, got {type(config_data['penalty_per_hour'])}",
+                    data
+                )
+                return False
+            
+            if not isinstance(config_data["enabled"], bool):
+                self.log_result(
+                    "GET Parking Config API",
+                    False,
+                    f"enabled should be bool, got {type(config_data['enabled'])}",
                     data
                 )
                 return False
             
             self.log_result(
-                "GET Default Layout API",
+                "GET Parking Config API",
                 True,
-                f"Successfully retrieved default layout: {len(layout_array)} items (empty means default positions)"
+                f"Successfully retrieved parking config: max_duration={config_data['max_free_duration_minutes']}min, penalty={config_data['penalty_per_hour']}€/h, enabled={config_data['enabled']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Default Layout API",
+                "GET Parking Config API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
