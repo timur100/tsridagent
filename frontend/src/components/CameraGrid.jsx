@@ -124,16 +124,36 @@ const CameraGrid = () => {
     );
   }
 
-  if (cameras.length === 0) {
+  if (cameras.length === 0 && !showWebcam) {
     return (
-      <div className="text-center p-12">
-        <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-        <p className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Keine Kameras vorhanden
-        </p>
-        <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Fügen Sie Kameras über den "Kameras" Tab hinzu
-        </p>
+      <div>
+        {/* Webcam Toggle when no cameras */}
+        <div className="mb-6 flex justify-between items-center">
+          <div></div>
+          <button
+            onClick={() => setShowWebcam(!showWebcam)}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+              showWebcam
+                ? 'bg-green-600 text-white'
+                : theme === 'dark'
+                ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#3a3a3a]'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <Webcam className="h-5 w-5" />
+            {showWebcam ? 'Webcam aktiv' : 'Lokale Webcam anzeigen'}
+          </button>
+        </div>
+
+        <div className="text-center p-12">
+          <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+          <p className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Keine Kameras vorhanden
+          </p>
+          <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Fügen Sie Kameras über den "Kameras" Tab hinzu oder aktivieren Sie die Webcam
+          </p>
+        </div>
       </div>
     );
   }
