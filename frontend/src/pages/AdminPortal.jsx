@@ -2229,43 +2229,77 @@ const AdminPortalContent = () => {
                     {/* Parkhaus-Bezahlsystem */}
                     {rndTab === 'parking-payment' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Parkhaus-Bezahlsystem
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Automatisiertes Bezahlsystem für Parkgebühren
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
-                              <CreditCard className="h-8 w-8 text-green-500" />
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'transactions', label: 'Transaktionen', icon: CreditCard },
+                            { id: 'pricing', label: 'Preisgestaltung', icon: DollarSign },
+                            { id: 'reports', label: 'Berichte', icon: FileText }
+                          ]}
+                          activeTab={parkingPaymentSubTab}
+                          onTabChange={setParkingPaymentSubTab}
+                        />
+
+                        {parkingPaymentSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Parkhaus-Bezahlsystem
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Automatisiertes Bezahlsystem für Parkgebühren
+                              </p>
                             </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Zahlungsmethoden
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
+                                  <CreditCard className="h-8 w-8 text-green-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Zahlungsmethoden
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Kennzeichen-basierte Abrechnung</li>
+                                    <li>✓ Kreditkarten-Integration</li>
+                                    <li>✓ Mobile Payment (Apple Pay, Google Pay)</li>
+                                    <li>✓ Monatskarten & Abonnements</li>
+                                    <li>✓ Automatische Rechnungsstellung</li>
+                                    <li>✓ Integration mit Buchhaltungssystemen</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Entwicklung
                               </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Kennzeichen-basierte Abrechnung</li>
-                                <li>✓ Kreditkarten-Integration</li>
-                                <li>✓ Mobile Payment (Apple Pay, Google Pay)</li>
-                                <li>✓ Monatskarten & Abonnements</li>
-                                <li>✓ Automatische Rechnungsstellung</li>
-                                <li>✓ Integration mit Buchhaltungssystemen</li>
-                              </ul>
-                            </div>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Bezahlsystem-Integration wird vorbereitet
+                              </p>
+                            </Card>
                           </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Bezahlsystem-Integration wird vorbereitet
-                          </p>
-                        </Card>
+                        )}
+
+                        {parkingPaymentSubTab === 'transactions' && (
+                          <div className="text-center p-12">
+                            <CreditCard className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Transaktionen - In Entwicklung</p>
+                          </div>
+                        )}
+                        {parkingPaymentSubTab === 'pricing' && (
+                          <div className="text-center p-12">
+                            <DollarSign className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Preisgestaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {parkingPaymentSubTab === 'reports' && (
+                          <div className="text-center p-12">
+                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Berichte - In Entwicklung</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     
