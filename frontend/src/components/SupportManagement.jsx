@@ -624,7 +624,7 @@ const SupportManagement = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-700">
                 {filteredTickets.map((ticket) => (
                   <tr
                     key={ticket.id}
@@ -632,16 +632,12 @@ const SupportManagement = () => {
                       setSelectedTicket(ticket);
                       setShowDetailModal(true);
                     }}
-                    className={`border-b cursor-pointer ${
-                      theme === 'dark'
-                        ? 'border-gray-700 hover:bg-[#3a3a3a]'
-                        : 'border-gray-100 hover:bg-gray-50'
-                    }`}
+                    className={`cursor-pointer ${theme === 'dark' ? 'hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'}`}
                   >
-                    <td className={`py-3 px-4 font-mono text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {ticket.ticket_number}
                     </td>
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div>
                         <p className="font-medium">{ticket.title}</p>
                         {(ticket.location_name || ticket.device_name) && (
