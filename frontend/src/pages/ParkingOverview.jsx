@@ -513,6 +513,12 @@ const ParkingOverview = () => {
             </div>
           </div>
         </Card>
+
+        {/* Entry/Exit Form */}
+        <ParkingEntryForm 
+          videoRef={videoRef} 
+          onEntrySuccess={() => loadData(true)}
+        />
       </div>
     </div>
   );
