@@ -76,14 +76,14 @@ async def save_dashboard_layout(
         raise HTTPException(status_code=403, detail="Only super admins can modify global layout")
     
     # Save or update global layout
-    result = await db.dashboard_layouts.update_one(
+    result = db.dashboard_layouts.update_one(
         {"type": "global"},
         {
             "$set": {
                 "type": "global",
                 "layout": [item.dict() for item in layout_data.layout],
                 "updated_at": datetime.utcnow().isoformat(),
-                "updated_by": current_user.get("email")
+                "updated_by": user.get("email")
             }
         },
         upsert=True
