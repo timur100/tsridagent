@@ -241,23 +241,21 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_save_layout_api(self):
-        """Test POST /api/dashboard/layout - Save a new layout"""
+    def test_update_parking_config_api(self):
+        """Test PUT /api/parking/config - Update configuration"""
         try:
-            # Sample layout data as specified in the review request
-            layout_data = {
-                "layout": [
-                    {"i": "card-0", "x": 0, "y": 0, "w": 1, "h": 1},
-                    {"i": "card-1", "x": 1, "y": 0, "w": 1, "h": 1},
-                    {"i": "card-2", "x": 2, "y": 0, "w": 1, "h": 1}
-                ]
+            # Test configuration for overstay scenario
+            config_data = {
+                "max_free_duration_minutes": 1,  # 1 minute for testing
+                "penalty_per_hour": 20.0,
+                "enabled": True
             }
             
-            response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
+            response = self.session.put(f"{API_BASE}/parking/config", json=config_data)
             
             if response.status_code not in [200, 201]:
                 self.log_result(
-                    "POST Save Layout API",
+                    "PUT Update Config API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -269,36 +267,47 @@ class ParkingManagementTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Save Layout API",
+                    "PUT Update Config API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check for expected message
-            if data.get("message") != "Dashboard layout saved successfully":
+            # Verify config was updated by getting it again
+            get_response = self.session.get(f"{API_BASE}/parking/config")
+            if get_response.status_code == 200:
+                get_data = get_response.json()
+                updated_config = get_data.get("data", {})
+                
+                if (updated_config.get("max_free_duration_minutes") == 1 and 
+                    updated_config.get("penalty_per_hour") == 20.0 and 
+                    updated_config.get("enabled") == True):
+                    
+                    self.log_result(
+                        "PUT Update Config API",
+                        True,
+                        f"Successfully updated parking config: max_duration=1min, penalty=20€/h, enabled=True"
+                    )
+                    return True
+                else:
+                    self.log_result(
+                        "PUT Update Config API",
+                        False,
+                        f"Config not updated correctly: {updated_config}"
+                    )
+                    return False
+            else:
                 self.log_result(
-                    "POST Save Layout API",
+                    "PUT Update Config API",
                     False,
-                    f"Unexpected message: {data.get('message')}",
-                    data
+                    f"Could not verify config update: GET returned {get_response.status_code}"
                 )
                 return False
             
-            # Store saved layout for verification
-            self.saved_layout = layout_data["layout"]
-            
-            self.log_result(
-                "POST Save Layout API",
-                True,
-                f"Successfully saved layout with {len(layout_data['layout'])} cards"
-            )
-            return True
-            
         except Exception as e:
             self.log_result(
-                "POST Save Layout API",
+                "PUT Update Config API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
