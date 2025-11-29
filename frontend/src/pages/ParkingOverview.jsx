@@ -25,14 +25,19 @@ const ParkingOverview = () => {
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
+    console.log('[ParkingOverview] Component mounted');
     loadData();
     
-    // Auto-refresh every 10 seconds
+    // Auto-refresh every 30 seconds (reduced from 10)
     const interval = setInterval(() => {
       loadData(true);
-    }, 10000);
+    }, 30000);
     
-    return () => clearInterval(interval);
+    return () => {
+      console.log('[ParkingOverview] Component unmounting');
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadData = async (silent = false) => {
