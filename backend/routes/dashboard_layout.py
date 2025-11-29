@@ -57,6 +57,12 @@ async def save_dashboard_layout(
 ):
     """Save the global dashboard layout configuration"""
     
+    # Debug logging
+    print(f"[Dashboard Layout] Received layout data: {layout_data}")
+    print(f"[Dashboard Layout] Layout items count: {len(layout_data.layout)}")
+    for i, item in enumerate(layout_data.layout):
+        print(f"[Dashboard Layout] Item {i}: i='{item.i}', x={item.x}, y={item.y}, w={item.w}, h={item.h}")
+    
     # Only admins can save global layout
     if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Only admins can modify global layout")
