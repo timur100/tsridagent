@@ -26,7 +26,7 @@ const DashboardGridSimple = ({ children }) => {
       
       console.log('[DashboardGrid] API result:', result);
       
-      if (result.success && result.data.layout && result.data.layout.length > 0) {
+      if (result.success && result.data.data && result.data.data.layout && result.data.data.layout.length > 0) {
         // Sort by position (y then x)
         const sortedLayout = [...result.data.layout].sort((a, b) => {
           if (a.y === b.y) return a.x - b.x;
