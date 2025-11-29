@@ -201,7 +201,7 @@ const DashboardGrid = ({ children }) => {
       {/* Grid Layout */}
       <ResponsiveGridLayout
         className="layout"
-        layouts={{ lg: layout }}
+        layouts={{ lg: layout, md: layout, sm: layout, xs: layout, xxs: layout }}
         breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
         cols={{ lg: 4, md: 4, sm: 2, xs: 1, xxs: 1 }}
         rowHeight={150}
