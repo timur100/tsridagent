@@ -219,11 +219,15 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
         // Pattern: 1-3 letters, 1-2 letters, 1-4 digits
         // Example: B-AB-1234 or HH-XX-9999
         
-        return cleanedText;
+        return {
+          plate: cleanedText,
+          confidence: Math.round(confidence),
+          processingTime: parseFloat(processingTime)
+        };
       } else {
         console.log('[OCR] Text too short, ignoring');
         toast.error('Kennzeichen zu kurz oder nicht lesbar', { id: 'ocr-process' });
-        return '';
+        return null;
       }
     } catch (error) {
       console.error('[OCR] Error:', error);
