@@ -2022,7 +2022,107 @@ const AdminPortalContent = () => {
                     
                     {/* Parkzeitüberschreitung */}
                     {rndTab === 'parking-overstay' && (
-                      <ParkingOverview />
+                      <div>
+                        {/* Parking Sub-Navigation */}
+                        <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
+                          <div className="flex gap-2 overflow-x-auto">
+                            <button
+                              onClick={() => setParkingSubTab('overview')}
+                              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                parkingSubTab === 'overview'
+                                  ? 'bg-[#c00000] text-white'
+                                  : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <TrendingUp className="h-5 w-5" />
+                              Übersicht
+                            </button>
+                            <button
+                              onClick={() => setParkingSubTab('history')}
+                              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                parkingSubTab === 'history'
+                                  ? 'bg-[#c00000] text-white'
+                                  : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <Clock className="h-5 w-5" />
+                              Historie
+                            </button>
+                            <button
+                              onClick={() => setParkingSubTab('violations')}
+                              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                parkingSubTab === 'violations'
+                                  ? 'bg-[#c00000] text-white'
+                                  : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <AlertTriangle className="h-5 w-5" />
+                              Verstöße
+                            </button>
+                            <button
+                              onClick={() => setParkingSubTab('config')}
+                              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                parkingSubTab === 'config'
+                                  ? 'bg-[#c00000] text-white'
+                                  : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <Settings className="h-5 w-5" />
+                              Konfiguration
+                            </button>
+                            <button
+                              onClick={() => setParkingSubTab('whitelist')}
+                              className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
+                                parkingSubTab === 'whitelist'
+                                  ? 'bg-[#c00000] text-white'
+                                  : theme === 'dark'
+                                  ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                                  : 'text-gray-700 hover:bg-gray-100'
+                              }`}
+                            >
+                              <Shield className="h-5 w-5" />
+                              Whitelist
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Render appropriate component based on sub-tab */}
+                        {parkingSubTab === 'overview' && (
+                          <ParkingOverview />
+                        )}
+                        {parkingSubTab === 'history' && (
+                          <div className="text-center p-12">
+                            <Clock className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Historie-Ansicht - In Entwicklung</p>
+                          </div>
+                        )}
+                        {parkingSubTab === 'violations' && (
+                          <div className="text-center p-12">
+                            <AlertTriangle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Verstöße-Ansicht - In Entwicklung</p>
+                          </div>
+                        )}
+                        {parkingSubTab === 'config' && (
+                          <div className="text-center p-12">
+                            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Konfiguration - In Entwicklung</p>
+                          </div>
+                        )}
+                        {parkingSubTab === 'whitelist' && (
+                          <div className="text-center p-12">
+                            <Shield className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Whitelist-Verwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {/* Zutrittssysteme */}
