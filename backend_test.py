@@ -1648,13 +1648,13 @@ class ParkingManagementTester:
             return False
 
     async def run_all_tests(self):
-        """Run all Dashboard Layout API tests"""
+        """Run all Parking Management System API tests"""
         print("=" * 80)
-        print("DASHBOARD LAYOUT API TESTING")
+        print("PARKING MANAGEMENT SYSTEM API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Dashboard Layout Management")
-        print(f"Database: {os.environ.get('DB_NAME', 'verification_db')}.dashboard_layouts collection")
+        print(f"Testing APIs: Parking Management with License Plate Recognition")
+        print(f"Database: {os.environ.get('DB_NAME', 'verification_db')} collections: parking_sessions, parking_violations, parking_config, parking_whitelist")
         print("=" * 80)
         print()
         
@@ -1665,37 +1665,66 @@ class ParkingManagementTester:
                 print("❌ Admin authentication failed. Stopping tests.")
                 return False
             
-            # Step 2: Test GET default layout
-            print("\n🔍 STEP 2: Testing GET /api/dashboard/layout - Get default layout...")
-            get_default_ok = self.test_get_default_layout_api()
+            # Step 2: Test configuration APIs
+            print("\n🔍 STEP 2: Testing GET /api/parking/config - Get parking configuration...")
+            get_config_ok = self.test_get_parking_config_api()
             
-            # Step 3: Test POST save layout
-            print("\n🔍 STEP 3: Testing POST /api/dashboard/layout - Save new layout...")
-            save_layout_ok = self.test_save_layout_api()
+            print("\n🔍 STEP 3: Testing PUT /api/parking/config - Update parking configuration...")
+            update_config_ok = self.test_update_parking_config_api()
             
-            # Step 4: Test GET saved layout
-            print("\n🔍 STEP 4: Testing GET /api/dashboard/layout - Retrieve saved layout...")
-            get_saved_ok = self.test_retrieve_saved_layout_api()
+            # Step 4: Test normal parking scenario
+            print("\n🔍 STEP 4: Testing Normal Parking Scenario (No Violation)...")
+            print("   • Registering vehicle entry for TEST-001...")
+            entry_normal_ok = self.test_vehicle_entry_normal_api()
             
-            # Step 5: Test MongoDB persistence (right after save, before reset)
-            print("\n🔍 STEP 5: Testing MongoDB persistence verification...")
-            mongodb_ok = self.test_mongodb_persistence_verification()
+            print("   • Registering vehicle exit for TEST-001 (should have no penalty)...")
+            exit_normal_ok = self.test_vehicle_exit_normal_api()
             
-            # Step 6: Test POST reset layout
-            print("\n🔍 STEP 6: Testing POST /api/dashboard/layout/reset - Reset layout...")
-            reset_layout_ok = self.test_reset_layout_api()
+            # Step 5: Test overstay scenario
+            print("\n🔍 STEP 5: Testing Parking Overstay Scenario (Violation Expected)...")
+            overstay_ok = self.test_vehicle_overstay_scenario_api()
             
-            # Step 7: Test GET after reset
-            print("\n🔍 STEP 7: Testing GET /api/dashboard/layout - Verify reset worked...")
-            verify_reset_ok = self.test_verify_reset_layout_api()
+            # Step 6: Test multiple entry scenario
+            print("\n🔍 STEP 6: Testing Multiple Entry Scenario (Violation Expected)...")
+            multiple_entry_ok = self.test_multiple_entry_scenario_api()
             
-            # Step 8: Test authentication enforcement
-            print("\n🔍 STEP 8: Testing authentication enforcement...")
+            # Step 7: Test whitelisted vehicle scenario
+            print("\n🔍 STEP 7: Testing Whitelisted Vehicle Scenario (No Penalty Expected)...")
+            whitelist_ok = self.test_whitelist_scenario_api()
+            
+            # Step 8: Test monitoring APIs
+            print("\n🔍 STEP 8: Testing Monitoring APIs...")
+            print("   • Testing GET /api/parking/active - Active sessions...")
+            active_ok = self.test_get_active_sessions_api()
+            
+            print("   • Testing GET /api/parking/sessions - Parking history...")
+            sessions_ok = self.test_get_parking_sessions_api()
+            
+            print("   • Testing GET /api/parking/violations - Violations...")
+            violations_ok = self.test_get_violations_api()
+            
+            print("   • Testing GET /api/parking/stats - Statistics...")
+            stats_ok = self.test_get_parking_stats_api()
+            
+            print("   • Testing GET /api/parking/whitelist - Whitelist entries...")
+            whitelist_get_ok = self.test_get_whitelist_api()
+            
+            # Step 9: Test authentication enforcement
+            print("\n🔍 STEP 9: Testing authentication enforcement...")
             auth_ok = self.test_authentication_enforcement()
+            
+            # Cleanup: Remove test whitelist entries
+            print("\n🔍 CLEANUP: Removing test whitelist entries...")
+            for license_plate in self.whitelist_entries:
+                try:
+                    self.session.delete(f"{API_BASE}/parking/whitelist/{license_plate}")
+                    print(f"   • Removed {license_plate} from whitelist")
+                except:
+                    print(f"   • Failed to remove {license_plate} from whitelist")
             
             # Summary
             print("\n" + "=" * 80)
-            print("DASHBOARD LAYOUT API TESTING SUMMARY")
+            print("PARKING MANAGEMENT SYSTEM API TESTING SUMMARY")
             print("=" * 80)
             
             passed = sum(1 for r in self.results if r['success'])
@@ -1705,13 +1734,27 @@ class ParkingManagementTester:
             
             # Print critical functionality results
             print("\n🔍 CRITICAL API FUNCTIONALITY:")
-            print(f"   • GET /api/dashboard/layout (default): {'✅ WORKING' if get_default_ok else '❌ FAILED'}")
-            print(f"   • POST /api/dashboard/layout (save): {'✅ WORKING' if save_layout_ok else '❌ FAILED'}")
-            print(f"   • GET /api/dashboard/layout (retrieve): {'✅ WORKING' if get_saved_ok else '❌ FAILED'}")
-            print(f"   • POST /api/dashboard/layout/reset: {'✅ WORKING' if reset_layout_ok else '❌ FAILED'}")
-            print(f"   • GET /api/dashboard/layout (verify reset): {'✅ WORKING' if verify_reset_ok else '❌ FAILED'}")
-            print(f"   • MongoDB Persistence: {'✅ WORKING' if mongodb_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/config: {'✅ WORKING' if get_config_ok else '❌ FAILED'}")
+            print(f"   • PUT /api/parking/config: {'✅ WORKING' if update_config_ok else '❌ FAILED'}")
+            print(f"   • POST /api/parking/entry (normal): {'✅ WORKING' if entry_normal_ok else '❌ FAILED'}")
+            print(f"   • POST /api/parking/exit (normal): {'✅ WORKING' if exit_normal_ok else '❌ FAILED'}")
+            print(f"   • Overstay Violation Detection: {'✅ WORKING' if overstay_ok else '❌ FAILED'}")
+            print(f"   • Multiple Entry Violation Detection: {'✅ WORKING' if multiple_entry_ok else '❌ FAILED'}")
+            print(f"   • Whitelisted Vehicle Handling: {'✅ WORKING' if whitelist_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/active: {'✅ WORKING' if active_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/sessions: {'✅ WORKING' if sessions_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/violations: {'✅ WORKING' if violations_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/stats: {'✅ WORKING' if stats_ok else '❌ FAILED'}")
+            print(f"   • GET /api/parking/whitelist: {'✅ WORKING' if whitelist_get_ok else '❌ FAILED'}")
             print(f"   • Authentication Enforcement: {'✅ WORKING' if auth_ok else '❌ FAILED'}")
+            
+            # Print test scenarios results
+            print("\n🔍 TEST SCENARIOS:")
+            print(f"   • Scenario 1 - Normal Parking (No Violation): {'✅ PASSED' if (entry_normal_ok and exit_normal_ok) else '❌ FAILED'}")
+            print(f"   • Scenario 2 - Parking Overstay (Violation): {'✅ PASSED' if overstay_ok else '❌ FAILED'}")
+            print(f"   • Scenario 3 - Multiple Entry (Violation): {'✅ PASSED' if multiple_entry_ok else '❌ FAILED'}")
+            print(f"   • Scenario 4 - Whitelisted Vehicle: {'✅ PASSED' if whitelist_ok else '❌ FAILED'}")
+            print(f"   • Scenario 5 - Statistics Verification: {'✅ PASSED' if stats_ok else '❌ FAILED'}")
             
             # Print failed tests
             failed_tests = [r for r in self.results if not r['success']]
