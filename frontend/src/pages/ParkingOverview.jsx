@@ -521,7 +521,7 @@ const ParkingOverview = () => {
                     Erkennungsgenauigkeit
                   </p>
                   <p className="text-2xl font-bold text-green-600 mt-1">
-                    99.2%
+                    {recognitionAccuracy}%
                   </p>
                 </div>
                 <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
@@ -529,7 +529,7 @@ const ParkingOverview = () => {
                     Verarbeitungszeit
                   </p>
                   <p className="text-2xl font-bold text-blue-600 mt-1">
-                    0.3s
+                    {processingTime}s
                   </p>
                 </div>
               </div>
