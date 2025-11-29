@@ -2661,6 +2661,18 @@ test_plan:
 user_problem_statement: "Globale Tenant-Filterung: 1) Wenn im Tenant-Menü Europcar gewählt wird, dann muss oben im Tenant Switcher auch Europcar aktiv sein, 2) Wenn im Tenant Switcher Europcar gewählt wird, dann werden im Header Menü nur Daten von Europcar angezeigt, 3) Ändert man den Tenant Switcher auf Puma, dann sollen alle Europcar-Daten verschwinden und nur Puma-Daten angezeigt werden, 4) Wählt man 'Alle Kunden', dann werden überall alle Daten von allen Tenants angezeigt (nur für Superadmin admin@tsrid.com)"
 
 frontend:
+  - task: "Dashboard Drag and Drop CSS Grid Implementation"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/DashboardGridSimple.jsx, frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🔧 SIMPLIFIED DASHBOARD DRAG AND DROP WITH CSS GRID IMPLEMENTED: Replaced complex react-grid-layout with simple CSS Grid implementation using grid-cols-4 gap-6 for identical spacing to other dashboard cards (24px gaps). DashboardGridSimple.jsx created with: 1) Simple CSS Grid (grid grid-cols-1 md:grid-cols-4 gap-6), 2) HTML5 Drag and Drop API instead of react-grid-layout, 3) Same edit mode controls (Bearbeiten/Speichern/Zurücksetzen buttons), 4) Drag handles with GripVertical icon, 5) Card order state management with array reordering, 6) Layout conversion to/from backend format, 7) Identical spacing to Scan Statistics cards below (gap-6 = 24px). AdminPortal.jsx updated to use DashboardGridSimple instead of DashboardGrid. This ensures uniform spacing both horizontally and vertically across all dashboard elements."
+
   - task: "TenantContext - Globales State-Management"
     implemented: true
     working: "NA"
