@@ -30,6 +30,7 @@ const ParkingOverview = () => {
   useEffect(() => {
     console.log('[ParkingOverview] Component mounted');
     loadData();
+    startWebcam();
     
     // Auto-refresh every 30 seconds (reduced from 10)
     const interval = setInterval(() => {
@@ -39,9 +40,44 @@ const ParkingOverview = () => {
     return () => {
       console.log('[ParkingOverview] Component unmounting');
       clearInterval(interval);
+      stopWebcam();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const startWebcam = async () => {
+    try {
+      console.log('[ParkingOverview] Starting webcam...');
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          facingMode: 'environment'
+        },
+        audio: false
+      });
+      
+      setWebcamStream(stream);
+      
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+        console.log('[ParkingOverview] Webcam started successfully');
+      }
+    } catch (error) {
+      console.error('[ParkingOverview] Webcam error:', error);
+      setWebcamError(error.message || 'Kamera-Zugriff verweigert');
+      toast.error('Kamera konnte nicht gestartet werden. Bitte Berechtigungen prüfen.');
+    }
+  };
+
+  const stopWebcam = () => {
+    if (webcamStream) {
+      console.log('[ParkingOverview] Stopping webcam...');
+      webcamStream.getTracks().forEach(track => track.stop());
+      setWebcamStream(null);
+    }
+  };
 
   const loadData = async (silent = false) => {
     if (!silent) setLoading(true);
