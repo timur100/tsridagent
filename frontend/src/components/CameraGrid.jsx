@@ -113,6 +113,12 @@ const CameraGrid = () => {
       }))
     : cameras;
 
+  // Debug logging
+  console.log('[CameraGrid] Grid Size:', gridSize);
+  console.log('[CameraGrid] Show Webcam:', showWebcam);
+  console.log('[CameraGrid] Display Items Count:', displayItems.length);
+  console.log('[CameraGrid] Grid Count:', getGridCount());
+
   if (loading) {
     return (
       <div className="text-center p-12">
