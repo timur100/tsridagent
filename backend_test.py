@@ -700,8 +700,147 @@ class ParkingManagementTester:
             )
             return False
 
+    def test_whitelist_scenario_api(self):
+        """Test whitelisted vehicle scenario - should not create violation even with overstay"""
+        try:
+            # Step 1: Add TEST-004 to whitelist
+            whitelist_data = {
+                "license_plate": "TEST-004",
+                "reason": "Test vehicle for whitelist scenario",
+                "valid_until": None  # Permanent whitelist
+            }
+            
+            whitelist_response = self.session.post(f"{API_BASE}/parking/whitelist", json=whitelist_data)
+            
+            if whitelist_response.status_code not in [200, 201]:
+                self.log_result(
+                    "Whitelist Scenario - Add to Whitelist",
+                    False,
+                    f"Whitelist addition failed. Status: {whitelist_response.status_code}",
+                    whitelist_response.text
+                )
+                return False
+            
+            whitelist_response_data = whitelist_response.json()
+            if not whitelist_response_data.get("success"):
+                self.log_result(
+                    "Whitelist Scenario - Add to Whitelist",
+                    False,
+                    "Whitelist addition response indicates failure",
+                    whitelist_response_data
+                )
+                return False
+            
+            # Store whitelist entry for cleanup
+            self.whitelist_entries.append("TEST-004")
+            
+            # Step 2: Register entry for whitelisted vehicle
+            entry_data = {
+                "license_plate": "TEST-004",
+                "zone": "default",
+                "notes": "Test entry for whitelisted vehicle"
+            }
+            
+            entry_response = self.session.post(f"{API_BASE}/parking/entry", json=entry_data)
+            
+            if entry_response.status_code not in [200, 201]:
+                self.log_result(
+                    "Whitelist Scenario - Entry",
+                    False,
+                    f"Entry failed. Status: {entry_response.status_code}",
+                    entry_response.text
+                )
+                return False
+            
+            entry_data_response = entry_response.json()
+            if not entry_data_response.get("success"):
+                self.log_result(
+                    "Whitelist Scenario - Entry",
+                    False,
+                    "Entry response indicates failure",
+                    entry_data_response
+                )
+                return False
+            
+            # Verify vehicle is marked as whitelisted
+            entry_info = entry_data_response["data"]
+            if not entry_info.get("is_whitelisted"):
+                self.log_result(
+                    "Whitelist Scenario - Whitelist Detection",
+                    False,
+                    f"Vehicle should be marked as whitelisted, got is_whitelisted: {entry_info.get('is_whitelisted')}",
+                    entry_data_response
+                )
+                return False
+            
+            # Step 3: Wait to simulate overstay
+            time.sleep(2)
+            
+            # Step 4: Register exit
+            exit_data = {
+                "license_plate": "TEST-004",
+                "notes": "Test exit for whitelisted vehicle with overstay"
+            }
+            
+            exit_response = self.session.post(f"{API_BASE}/parking/exit", json=exit_data)
+            
+            if exit_response.status_code not in [200, 201]:
+                self.log_result(
+                    "Whitelist Scenario - Exit",
+                    False,
+                    f"Exit failed. Status: {exit_response.status_code}",
+                    exit_response.text
+                )
+                return False
+            
+            exit_data_response = exit_response.json()
+            if not exit_data_response.get("success"):
+                self.log_result(
+                    "Whitelist Scenario - Exit",
+                    False,
+                    "Exit response indicates failure",
+                    exit_data_response
+                )
+                return False
+            
+            exit_info = exit_data_response["data"]
+            
+            # Step 5: Verify no penalty and no violation for whitelisted vehicle
+            if exit_info["penalty_amount"] != 0.0:
+                self.log_result(
+                    "Whitelist Scenario - No Penalty",
+                    False,
+                    f"Expected no penalty for whitelisted vehicle, got penalty: {exit_info['penalty_amount']}",
+                    exit_data_response
+                )
+                return False
+            
+            if exit_info["violation_created"] != False:
+                self.log_result(
+                    "Whitelist Scenario - No Violation",
+                    False,
+                    f"Expected no violation for whitelisted vehicle, but violation_created: {exit_info['violation_created']}",
+                    exit_data_response
+                )
+                return False
+            
+            self.log_result(
+                "Whitelist Scenario",
+                True,
+                f"Successfully tested whitelisted vehicle: {exit_info['license_plate']}, duration: {exit_info['duration_minutes']}min, penalty: €{exit_info['penalty_amount']}, no violation created"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Whitelist Scenario",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def test_mongodb_persistence_verification(self):
-        """Test MongoDB persistence - Verify layout is stored in dashboard_layouts collection"""
+        """Test MongoDB persistence - Verify parking data is stored correctly"""
         try:
             # Check MongoDB directly for the layout that was just saved
             from pymongo import MongoClient
