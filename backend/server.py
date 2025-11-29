@@ -279,6 +279,18 @@ app.include_router(test_webhook_router, prefix="/api")
 from routes.cameras import router as cameras_router
 app.include_router(cameras_router, prefix="/api")
 
+# Include Europcar routers (PKW-Vermietungssystem)
+from routes.europcar_vehicles import router as europcar_vehicles_router
+from routes.europcar_reservations import router as europcar_reservations_router
+from routes.europcar_customers import router as europcar_customers_router
+from routes.europcar_contracts import router as europcar_contracts_router
+from routes.europcar_returns import router as europcar_returns_router
+app.include_router(europcar_vehicles_router)
+app.include_router(europcar_reservations_router)
+app.include_router(europcar_customers_router)
+app.include_router(europcar_contracts_router)
+app.include_router(europcar_returns_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
