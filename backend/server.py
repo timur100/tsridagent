@@ -259,6 +259,10 @@ app.include_router(ideas_router)
 # Include facematch router
 app.include_router(facematch_router)
 
+# Include dashboard layout router
+from routes.dashboard_layout import router as dashboard_layout_router
+app.include_router(dashboard_layout_router)
+
 # Include Webhooks router (for external integrations)
 from routes.webhooks import router as webhooks_router
 app.include_router(webhooks_router, prefix="/api")
