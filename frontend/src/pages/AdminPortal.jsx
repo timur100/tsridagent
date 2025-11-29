@@ -1781,24 +1781,58 @@ const AdminPortalContent = () => {
                     {/* Fingerprint - Placeholder */}
                     {rndTab === 'fingerprint' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Fingerprint - Fingerabdruck-Erkennung
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Biometrische Authentifizierung via Fingerabdruck
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <Fingerprint className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Dieses Feature wird derzeit entwickelt und steht bald zur Verfügung.
-                          </p>
-                        </Card>
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'scan', label: 'Scannen', icon: Fingerprint },
+                            { id: 'history', label: 'Historie', icon: Clock },
+                            { id: 'settings', label: 'Einstellungen', icon: Settings }
+                          ]}
+                          activeTab={fingerprintSubTab}
+                          onTabChange={setFingerprintSubTab}
+                        />
+
+                        {fingerprintSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Fingerprint - Fingerabdruck-Erkennung
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Biometrische Authentifizierung via Fingerabdruck
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <Fingerprint className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Entwicklung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Dieses Feature wird derzeit entwickelt und steht bald zur Verfügung.
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {fingerprintSubTab === 'scan' && (
+                          <div className="text-center p-12">
+                            <Fingerprint className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Scan-Funktion - In Entwicklung</p>
+                          </div>
+                        )}
+                        {fingerprintSubTab === 'history' && (
+                          <div className="text-center p-12">
+                            <Clock className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Historie - In Entwicklung</p>
+                          </div>
+                        )}
+                        {fingerprintSubTab === 'settings' && (
+                          <div className="text-center p-12">
+                            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Einstellungen - In Entwicklung</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     
