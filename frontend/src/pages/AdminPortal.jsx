@@ -58,6 +58,7 @@ import ParkingOverview from './ParkingOverview';
 import SubTabNavigation from '../components/SubTabNavigation';
 import CameraGrid from '../components/CameraGrid';
 import CameraManagement from '../components/CameraManagement';
+import EuropcarManagement from '../components/EuropcarManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
