@@ -418,12 +418,31 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
 
         {/* Captured Image Preview */}
         {capturedImage && (
-          <div className="relative">
-            <img
-              src={capturedImage}
-              alt="Erfasstes Bild"
-              className="w-full rounded-lg"
-            />
+          <div className="space-y-2">
+            <p className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              Erfasstes Bild:
+            </p>
+            <div className="relative">
+              <img
+                src={capturedImage}
+                alt="Erfasstes Bild"
+                className="w-full rounded-lg"
+              />
+            </div>
+            
+            {/* Processed Image for OCR Debug */}
+            {processedImage && (
+              <div className="space-y-1">
+                <p className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Vorverarbeitetes Bild (für OCR):
+                </p>
+                <img
+                  src={processedImage}
+                  alt="Vorverarbeitet"
+                  className="w-full rounded-lg opacity-75"
+                />
+              </div>
+            )}
           </div>
         )}
 
