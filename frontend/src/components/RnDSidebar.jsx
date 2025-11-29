@@ -3,7 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { 
   ChevronRight, ChevronDown, FlaskConical, UserCheck, Fingerprint, 
   Search, Menu, X, Brain, Camera, Zap, Car, ParkingCircle, 
-  Clock, Shield, CreditCard, Truck
+  Clock, Shield, CreditCard, Truck, Radio, Video
 } from 'lucide-react';
 
 const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
