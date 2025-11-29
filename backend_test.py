@@ -493,73 +493,110 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_verify_reset_layout_api(self):
-        """Test GET /api/dashboard/layout - Verify layout is empty after reset"""
+    def test_vehicle_overstay_scenario_api(self):
+        """Test overstay scenario - Entry, wait 2 seconds (simulate 2 minutes), Exit with violation"""
         try:
-            response = self.session.get(f"{API_BASE}/dashboard/layout")
+            # Step 1: Register entry for TEST-002
+            entry_data = {
+                "license_plate": "TEST-002",
+                "zone": "default",
+                "notes": "Test entry for overstay scenario"
+            }
             
-            if response.status_code != 200:
+            entry_response = self.session.post(f"{API_BASE}/parking/entry", json=entry_data)
+            
+            if entry_response.status_code not in [200, 201]:
                 self.log_result(
-                    "GET Verify Reset Layout API",
+                    "Vehicle Overstay Scenario - Entry",
                     False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    f"Entry failed. Status: {entry_response.status_code}",
+                    entry_response.text
                 )
                 return False
             
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
+            entry_data_response = entry_response.json()
+            if not entry_data_response.get("success"):
                 self.log_result(
-                    "GET Verify Reset Layout API",
+                    "Vehicle Overstay Scenario - Entry",
                     False,
-                    "Response indicates failure",
-                    data
+                    "Entry response indicates failure",
+                    entry_data_response
                 )
                 return False
             
-            # Check data structure
-            if "data" not in data or "layout" not in data["data"]:
+            # Step 2: Wait 2 seconds to simulate overstay (with 1 minute limit, this should trigger violation)
+            time.sleep(2)
+            
+            # Step 3: Register exit
+            exit_data = {
+                "license_plate": "TEST-002",
+                "notes": "Test exit for overstay scenario"
+            }
+            
+            exit_response = self.session.post(f"{API_BASE}/parking/exit", json=exit_data)
+            
+            if exit_response.status_code not in [200, 201]:
                 self.log_result(
-                    "GET Verify Reset Layout API",
+                    "Vehicle Overstay Scenario - Exit",
                     False,
-                    "Missing 'data.layout' field in response",
-                    data
+                    f"Exit failed. Status: {exit_response.status_code}",
+                    exit_response.text
                 )
                 return False
             
-            layout_array = data["data"]["layout"]
+            exit_data_response = exit_response.json()
             
-            # After reset, layout should be empty
-            if not isinstance(layout_array, list):
+            if not exit_data_response.get("success"):
                 self.log_result(
-                    "GET Verify Reset Layout API",
+                    "Vehicle Overstay Scenario - Exit",
                     False,
-                    f"Layout should be an array, got {type(layout_array)}",
-                    data
+                    "Exit response indicates failure",
+                    exit_data_response
                 )
                 return False
             
-            if len(layout_array) != 0:
+            exit_info = exit_data_response["data"]
+            
+            # Step 4: Verify violation was created and penalty calculated
+            if exit_info["penalty_amount"] <= 0:
                 self.log_result(
-                    "GET Verify Reset Layout API",
+                    "Vehicle Overstay Scenario - Penalty",
                     False,
-                    f"Layout should be empty after reset, but has {len(layout_array)} items",
-                    data
+                    f"Expected penalty for overstay, got penalty: {exit_info['penalty_amount']}",
+                    exit_data_response
+                )
+                return False
+            
+            if exit_info["violation_created"] != True:
+                self.log_result(
+                    "Vehicle Overstay Scenario - Violation",
+                    False,
+                    f"Expected violation to be created, but violation_created: {exit_info['violation_created']}",
+                    exit_data_response
+                )
+                return False
+            
+            # Expected penalty: 1 hour rounded up = 20€
+            expected_penalty = 20.0
+            if exit_info["penalty_amount"] != expected_penalty:
+                self.log_result(
+                    "Vehicle Overstay Scenario - Penalty Amount",
+                    False,
+                    f"Expected penalty €{expected_penalty}, got €{exit_info['penalty_amount']}",
+                    exit_data_response
                 )
                 return False
             
             self.log_result(
-                "GET Verify Reset Layout API",
+                "Vehicle Overstay Scenario",
                 True,
-                "Successfully verified layout is empty after reset (default positions will be used)"
+                f"Successfully tested overstay scenario: {exit_info['license_plate']}, duration: {exit_info['duration_minutes']}min, penalty: €{exit_info['penalty_amount']}, violation created: {exit_info['violation_created']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Verify Reset Layout API",
+                "Vehicle Overstay Scenario",
                 False,
                 f"Exception occurred: {str(e)}"
             )
