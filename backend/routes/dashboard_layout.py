@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-DB_NAME = os.environ.get('DB_NAME', 'test_database')
+DB_NAME = os.environ.get('DB_NAME', 'verification_db')
 client = MongoClient(MONGO_URL)
 db = client[DB_NAME]
 
