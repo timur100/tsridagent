@@ -399,15 +399,49 @@ const ParkingOverview = () => {
               </div>
             )}
             
-            {/* Overlay with camera info */}
-            <div className="absolute top-4 left-4 bg-black/60 px-3 py-2 rounded-lg">
-              <p className="text-white text-sm font-mono">
-                📹 CAM-01 • Einfahrt Süd
-              </p>
-              <p className="text-gray-300 text-xs font-mono">
-                {new Date().toLocaleString('de-DE')}
-              </p>
+            {/* Top Overlay - Camera Info (Always visible) */}
+            <div className="absolute top-0 left-0 right-0 bg-gradient-to-b from-black/80 to-transparent p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-white text-lg font-bold font-mono">
+                    📹 CAM-01 • Einfahrt Süd
+                  </p>
+                  <p className="text-gray-300 text-sm font-mono">
+                    {new Date().toLocaleString('de-DE', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    })}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-white text-sm font-mono">
+                    Standort: {activeSessions.length > 0 ? 'Zone A' : 'Standard'}
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* Bottom Overlay - License Plate Info (When detected) */}
+            {activeSessions.length > 0 && (
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-3xl font-bold font-mono">
+                      KFZ: {activeSessions[0].license_plate}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-green-400 text-2xl font-bold">
+                      ✓ ERKANNT
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="mt-4 flex items-center justify-between">
