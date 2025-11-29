@@ -46,7 +46,6 @@ const ParkingOverview = () => {
       clearInterval(interval);
       stopWebcam();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const startWebcam = async () => {
