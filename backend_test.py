@@ -602,6 +602,104 @@ class ParkingManagementTester:
             )
             return False
 
+    def test_multiple_entry_scenario_api(self):
+        """Test multiple entry without exit scenario - should create violation"""
+        try:
+            # Step 1: Register first entry for TEST-003
+            entry_data = {
+                "license_plate": "TEST-003",
+                "zone": "default",
+                "notes": "First entry for multiple entry test"
+            }
+            
+            first_entry_response = self.session.post(f"{API_BASE}/parking/entry", json=entry_data)
+            
+            if first_entry_response.status_code not in [200, 201]:
+                self.log_result(
+                    "Multiple Entry Scenario - First Entry",
+                    False,
+                    f"First entry failed. Status: {first_entry_response.status_code}",
+                    first_entry_response.text
+                )
+                return False
+            
+            first_entry_data = first_entry_response.json()
+            if not first_entry_data.get("success"):
+                self.log_result(
+                    "Multiple Entry Scenario - First Entry",
+                    False,
+                    "First entry response indicates failure",
+                    first_entry_data
+                )
+                return False
+            
+            # Step 2: Register second entry for same license plate (without exit)
+            entry_data["notes"] = "Second entry for multiple entry test (should create violation)"
+            
+            second_entry_response = self.session.post(f"{API_BASE}/parking/entry", json=entry_data)
+            
+            if second_entry_response.status_code not in [200, 201]:
+                self.log_result(
+                    "Multiple Entry Scenario - Second Entry",
+                    False,
+                    f"Second entry failed. Status: {second_entry_response.status_code}",
+                    second_entry_response.text
+                )
+                return False
+            
+            second_entry_data = second_entry_response.json()
+            
+            # Step 3: Verify violation was created (success should be False for violation)
+            if second_entry_data.get("success") != False:
+                self.log_result(
+                    "Multiple Entry Scenario - Violation Detection",
+                    False,
+                    f"Expected violation detection (success=False), got success: {second_entry_data.get('success')}",
+                    second_entry_data
+                )
+                return False
+            
+            # Check violation details
+            if "violation" not in second_entry_data:
+                self.log_result(
+                    "Multiple Entry Scenario - Violation Details",
+                    False,
+                    "Missing violation details in response",
+                    second_entry_data
+                )
+                return False
+            
+            violation_info = second_entry_data["violation"]
+            
+            # Verify violation penalty (should be 50€ for multiple entry)
+            expected_penalty = 50.0
+            if violation_info.get("penalty_amount") != expected_penalty:
+                self.log_result(
+                    "Multiple Entry Scenario - Penalty Amount",
+                    False,
+                    f"Expected penalty €{expected_penalty}, got €{violation_info.get('penalty_amount')}",
+                    second_entry_data
+                )
+                return False
+            
+            # Store violation for later verification
+            self.test_violations.append(violation_info)
+            
+            self.log_result(
+                "Multiple Entry Scenario",
+                True,
+                f"Successfully detected multiple entry violation: {entry_data['license_plate']}, penalty: €{violation_info['penalty_amount']}, violation_id: {violation_info['violation_id']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Multiple Entry Scenario",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
     def test_mongodb_persistence_verification(self):
         """Test MongoDB persistence - Verify layout is stored in dashboard_layouts collection"""
         try:
