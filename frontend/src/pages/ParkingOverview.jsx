@@ -8,6 +8,7 @@ import {
   FileText, Shield, TrendingUp, RefreshCw 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ParkingEntryForm from '../components/ParkingEntryForm';
 
 const ParkingOverview = () => {
   const { apiCall } = useAuth();
