@@ -327,12 +327,17 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
       const processed = await preprocessImage(imageData);
       setProcessedImage(processed);
       
-      const plate = await performOCR(imageData);
+      const result = await performOCR(imageData);
       
-      if (plate) {
-        setRecognizedPlate(plate);
-        setFormData(prev => ({ ...prev, license_plate: plate }));
-        toast.success(`Erkannt: ${plate}`, { id: 'ocr-process', duration: 3000 });
+      if (result && result.plate) {
+        setRecognizedPlate(result.plate);
+        setFormData(prev => ({ ...prev, license_plate: result.plate }));
+        toast.success(`Erkannt: ${result.plate} (${result.confidence}%)`, { id: 'ocr-process', duration: 3000 });
+        
+        // Update parent component with recognized plate
+        if (onPlateRecognized) {
+          onPlateRecognized(result.plate, result.confidence, result.processingTime);
+        }
       } else {
         toast.error('Kennzeichen nicht erkannt. Bitte manuell eingeben.', { id: 'ocr-process' });
       }
