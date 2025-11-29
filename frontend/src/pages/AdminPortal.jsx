@@ -2075,43 +2075,77 @@ const AdminPortalContent = () => {
                     {/* Europcar Integration */}
                     {rndTab === 'europcar-integration' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Europcar PKW-Vermietung
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Automatisierte Fahrzeugvermietung nach ID-Verifizierung
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-yellow-500 bg-opacity-10 rounded-lg">
-                              <Key className="h-8 w-8 text-yellow-500" />
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'rentals', label: 'Vermietungen', icon: Key },
+                            { id: 'returns', label: 'Rückgaben', icon: CheckCircle },
+                            { id: 'reports', label: 'Berichte', icon: FileText }
+                          ]}
+                          activeTab={europcarSubTab}
+                          onTabChange={setEuropcarSubTab}
+                        />
+
+                        {europcarSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Europcar PKW-Vermietung
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Automatisierte Fahrzeugvermietung nach ID-Verifizierung
+                              </p>
                             </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Workflow
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-yellow-500 bg-opacity-10 rounded-lg">
+                                  <Key className="h-8 w-8 text-yellow-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Workflow
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Automatischer ID-Check bei Fahrzeugübergabe</li>
+                                    <li>✓ Biometrische Verifizierung (Facematch)</li>
+                                    <li>✓ Digitale Vertragsunterzeichnung</li>
+                                    <li>✓ Fahrzeugzustandsdokumentation</li>
+                                    <li>✓ Automatische Schlüsselübergabe</li>
+                                    <li>✓ Integration mit Europcar-Systemen</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Entwicklung
                               </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Automatischer ID-Check bei Fahrzeugübergabe</li>
-                                <li>✓ Biometrische Verifizierung (Facematch)</li>
-                                <li>✓ Digitale Vertragsunterzeichnung</li>
-                                <li>✓ Fahrzeugzustandsdokumentation</li>
-                                <li>✓ Automatische Schlüsselübergabe</li>
-                                <li>✓ Integration mit Europcar-Systemen</li>
-                              </ul>
-                            </div>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Europcar-Workflow wird implementiert
+                              </p>
+                            </Card>
                           </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Europcar-Workflow wird implementiert
-                          </p>
-                        </Card>
+                        )}
+
+                        {europcarSubTab === 'rentals' && (
+                          <div className="text-center p-12">
+                            <Key className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Vermietungen - In Entwicklung</p>
+                          </div>
+                        )}
+                        {europcarSubTab === 'returns' && (
+                          <div className="text-center p-12">
+                            <CheckCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Rückgaben - In Entwicklung</p>
+                          </div>
+                        )}
+                        {europcarSubTab === 'reports' && (
+                          <div className="text-center p-12">
+                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Berichte - In Entwicklung</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     
