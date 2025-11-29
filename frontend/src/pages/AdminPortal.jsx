@@ -95,7 +95,7 @@ const AdminPortalContent = () => {
   const [irisSubTab, setIrisSubTab] = useState('overview'); // overview, scan, history, settings
   const [licensePlateSubTab, setLicensePlateSubTab] = useState('overview'); // overview, recognition, history, settings
   const [fleetSubTab, setFleetSubTab] = useState('overview'); // overview, vehicles, drivers, maintenance, reports
-  const [europcarSubTab, setEuropcarSubTab] = useState('overview'); // overview, rentals, returns, reports
+  const [europcarSubTab, setEuropcarSubTab] = useState('vehicles'); // vehicles, reservations, customers, contracts, returns, reports
   const [parkingSystemSubTab, setParkingSystemSubTab] = useState('overview'); // overview, access, monitoring, reports
   const [parkingPaymentSubTab, setParkingPaymentSubTab] = useState('overview'); // overview, transactions, pricing, reports
   const [accessControlSubTab, setAccessControlSubTab] = useState('overview'); // overview, access, visitors, logs
