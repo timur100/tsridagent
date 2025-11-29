@@ -2731,50 +2731,19 @@ const AdminPortalContent = () => {
                           <div>
                             <div className="mb-6">
                               <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Surveillance - Überwachungssysteme
+                                Surveillance - IP-Kamera Überwachung
                               </h2>
                               <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Professionelle Video-Überwachung und Sicherheitsmonitoring
+                                Live-Ansicht aller registrierten Kameras im Raster
                               </p>
                             </div>
                             
-                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                              <div className="flex items-start gap-4">
-                                <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
-                                  <Video className="h-8 w-8 text-orange-500" />
-                                </div>
-                                <div className="flex-1">
-                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                    Features
-                                  </h3>
-                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    <li>✓ HD/4K-Videoüberwachung</li>
-                                    <li>✓ KI-basierte Bewegungserkennung</li>
-                                    <li>✓ Personen- und Objekterkennung</li>
-                                    <li>✓ Alarm-Management</li>
-                                    <li>✓ Cloud-Aufzeichnung</li>
-                                    <li>✓ Live-Monitoring Dashboard</li>
-                                    <li>✓ Mobile App Zugriff</li>
-                                  </ul>
-                                </div>
-                              </div>
-                            </Card>
-                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                In Planung
-                              </h3>
-                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                Überwachungssystem wird entwickelt
-                              </p>
-                            </Card>
+                            <CameraGrid />
                           </div>
                         )}
 
                         {surveillanceSubTab === 'cameras' && (
-                          <div className="text-center p-12">
-                            <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Kameraverwaltung - In Entwicklung</p>
-                          </div>
+                          <CameraManagement />
                         )}
                         {surveillanceSubTab === 'monitoring' && (
                           <div className="text-center p-12">
