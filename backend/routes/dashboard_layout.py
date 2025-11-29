@@ -1,11 +1,18 @@
-from fastapi import APIRouter, HTTPException, Depends
-from typing import List, Dict, Any
+from fastapi import APIRouter, HTTPException, Depends, Header
+from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from datetime import datetime
-from auth import get_current_user
-from database import get_database
+from routes.portal_auth import verify_token
+import os
+from pymongo import MongoClient
 
-router = APIRouter()
+router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
+
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+DB_NAME = os.environ.get('DB_NAME', 'test_database')
+client = MongoClient(MONGO_URL)
+db = client[DB_NAME]
 
 class LayoutItem(BaseModel):
     i: str  # Unique identifier for the grid item
@@ -17,8 +24,8 @@ class LayoutItem(BaseModel):
 class DashboardLayout(BaseModel):
     layout: List[LayoutItem]
 
-@router.get("/api/dashboard/layout")
-async def get_dashboard_layout(current_user: dict = Depends(get_current_user)):
+@router.get("/layout")
+async def get_dashboard_layout(authorization: Optional[str] = Header(None)):
     """Get the global dashboard layout configuration"""
     db = await get_database()
     
