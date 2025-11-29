@@ -27,7 +27,6 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
 
   useEffect(() => {
     loadLocations();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadLocations = async () => {
