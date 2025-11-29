@@ -206,31 +206,23 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_create_vehicle_api(self):
-        """Test POST /api/vehicles - Neues Fahrzeug hinzufügen"""
+    def test_save_layout_api(self):
+        """Test POST /api/dashboard/layout - Save a new layout"""
         try:
-            # Generate random license plate to avoid duplicates
-            import random
-            random_suffix = random.randint(10000, 99999)
-            license_plate = f"FINAL-TEST-{random_suffix}"
-            
-            vehicle_data = {
-                "license_plate": license_plate,
-                "tenant_id": "europcar",
-                "brand": "Volkswagen",
-                "model": "Golf",
-                "year": 2024,
-                "mileage": 100,
-                "color": "Blau",
-                "fuel_type": "Benzin",
-                "status": "active"
+            # Sample layout data as specified in the review request
+            layout_data = {
+                "layout": [
+                    {"i": "card-0", "x": 0, "y": 0, "w": 1, "h": 1},
+                    {"i": "card-1", "x": 1, "y": 0, "w": 1, "h": 1},
+                    {"i": "card-2", "x": 2, "y": 0, "w": 1, "h": 1}
+                ]
             }
             
-            response = self.session.post(f"{API_BASE}/vehicles", json=vehicle_data)
+            response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
             
             if response.status_code not in [200, 201]:
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Save Layout API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -242,7 +234,7 @@ class DashboardLayoutTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Save Layout API",
                     False,
                     "Response indicates failure",
                     data
@@ -250,30 +242,28 @@ class DashboardLayoutTester:
                 return False
             
             # Check for expected message
-            if data.get("message") != "Vehicle created successfully":
+            if data.get("message") != "Dashboard layout saved successfully":
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Save Layout API",
                     False,
                     f"Unexpected message: {data.get('message')}",
                     data
                 )
                 return False
             
-            # Store test vehicle data for later use
-            if "data" in data and "id" in data["data"]:
-                self.test_vehicle_id = data["data"]["id"]
-                self.test_license_plate = license_plate
+            # Store saved layout for verification
+            self.saved_layout = layout_data["layout"]
             
             self.log_result(
-                "POST Create Vehicle API",
+                "POST Save Layout API",
                 True,
-                f"Successfully created vehicle: {license_plate} with ID: {self.test_vehicle_id}"
+                f"Successfully saved layout with {len(layout_data['layout'])} cards"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Create Vehicle API",
+                "POST Save Layout API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
