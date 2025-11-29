@@ -30,16 +30,29 @@ const DashboardGridSimple = ({ children }) => {
           if (a.y === b.y) return a.x - b.x;
           return a.y - b.y;
         });
-        const order = sortedLayout.map(item => parseInt(item.i.replace('card-', '')));
+        
+        // Separate real cards and dummy cards
+        const realCards = sortedLayout.filter(item => !item.i.startsWith('dummy-'));
+        const dummyCardItems = sortedLayout.filter(item => item.i.startsWith('dummy-'));
+        
+        const order = realCards.map(item => parseInt(item.i.replace('card-', '')));
+        const dummies = dummyCardItems.map(item => ({
+          id: item.i,
+          position: sortedLayout.indexOf(item)
+        }));
+        
         setCardOrder(order);
+        setDummyCards(dummies);
       } else {
         // Default order
         setCardOrder(Array.from({ length: childrenCount }, (_, i) => i));
+        setDummyCards([]);
       }
     } catch (error) {
       console.error('Error loading layout:', error);
       const childrenCount = React.Children.count(children);
       setCardOrder(Array.from({ length: childrenCount }, (_, i) => i));
+      setDummyCards([]);
     }
   };
 
