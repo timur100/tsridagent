@@ -27,10 +27,16 @@ class DashboardLayout(BaseModel):
 @router.get("/layout")
 async def get_dashboard_layout(authorization: Optional[str] = Header(None)):
     """Get the global dashboard layout configuration"""
-    db = await get_database()
+    # Verify authentication
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = verify_token(authorization.replace("Bearer ", ""))
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Get global layout (not user-specific)
-    layout_doc = await db.dashboard_layouts.find_one(
+    layout_doc = db.dashboard_layouts.find_one(
         {"type": "global"},
         {"_id": 0}
     )
