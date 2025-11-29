@@ -2856,7 +2856,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SubTabNavigation Component Testing for 3 New R&D Sections: Zeiterfassung, Steuerung, Surveillance"
+    - "IP Camera Surveillance System Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
