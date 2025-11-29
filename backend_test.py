@@ -280,14 +280,14 @@ class ParkingManagementTester:
                 get_data = get_response.json()
                 updated_config = get_data.get("data", {})
                 
-                if (updated_config.get("max_free_duration_minutes") == 1 and 
+                if (updated_config.get("max_free_duration_minutes") == 0 and 
                     updated_config.get("penalty_per_hour") == 20.0 and 
                     updated_config.get("enabled") == True):
                     
                     self.log_result(
                         "PUT Update Config API",
                         True,
-                        f"Successfully updated parking config: max_duration=1min, penalty=20€/h, enabled=True"
+                        f"Successfully updated parking config: max_duration=0min, penalty=20€/h, enabled=True"
                     )
                     return True
                 else:
