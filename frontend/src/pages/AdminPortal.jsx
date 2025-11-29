@@ -2130,27 +2130,6 @@ const AdminPortalContent = () => {
                         setActiveSubTab={setEuropcarSubTab}
                       />
                     )}
-
-                        {europcarSubTab === 'rentals' && (
-                          <div className="text-center p-12">
-                            <Key className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Vermietungen - In Entwicklung</p>
-                          </div>
-                        )}
-                        {europcarSubTab === 'returns' && (
-                          <div className="text-center p-12">
-                            <CheckCircle className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Rückgaben - In Entwicklung</p>
-                          </div>
-                        )}
-                        {europcarSubTab === 'reports' && (
-                          <div className="text-center p-12">
-                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Berichte - In Entwicklung</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
                     
                     {/* Parkhaussystem */}
                     {rndTab === 'parking-system' && (
