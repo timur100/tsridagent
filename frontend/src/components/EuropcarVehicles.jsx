@@ -1,0 +1,271 @@
+import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, MapPin, Fuel, Gauge } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const EuropcarVehicles = () => {
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
+  const [vehicles, setVehicles] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  const loadVehicles = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/europcar/vehicles/list');
+      if (result.success) {
+        setVehicles(result.data.vehicles || []);
+      }
+    } catch (error) {
+      console.error('Error loading vehicles:', error);
+      toast.error('Fehler beim Laden der Fahrzeuge');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    const statusConfig = {
+      available: { label: 'Verfügbar', color: 'green' },
+      rented: { label: 'Vermietet', color: 'blue' },
+      maintenance: { label: 'Wartung', color: 'yellow' },
+      damaged: { label: 'Beschädigt', color: 'red' },
+      reserved: { label: 'Reserviert', color: 'purple' }
+    };
+    const config = statusConfig[status] || { label: status, color: 'gray' };
+    return (
+      <span className={`px-2 py-1 text-xs font-semibold rounded-full bg-${config.color}-100 text-${config.color}-800`}>
+        {config.label}
+      </span>
+    );
+  };
+
+  const filteredVehicles = vehicles.filter(v => {
+    const matchesSearch = 
+      v.marke?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.modell?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      v.kennzeichen?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || v.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  const stats = {
+    total: vehicles.length,
+    available: vehicles.filter(v => v.status === 'available').length,
+    rented: vehicles.filter(v => v.status === 'rented').length,
+    maintenance: vehicles.filter(v => v.status === 'maintenance').length,
+    damaged: vehicles.filter(v => v.status === 'damaged').length
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <div className="text-center">
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Gesamt
+            </p>
+            <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {stats.total}
+            </p>
+          </div>
+        </Card>
+        <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border-green-500/30`}>
+          <div className="text-center">
+            <p className={`text-sm text-green-600`}>Verfügbar</p>
+            <p className={`text-2xl font-bold text-green-600`}>{stats.available}</p>
+          </div>
+        </Card>
+        <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border-blue-500/30`}>
+          <div className="text-center">
+            <p className={`text-sm text-blue-600`}>Vermietet</p>
+            <p className={`text-2xl font-bold text-blue-600`}>{stats.rented}</p>
+          </div>
+        </Card>
+        <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border-yellow-500/30`}>
+          <div className="text-center">
+            <p className={`text-sm text-yellow-600`}>Wartung</p>
+            <p className={`text-2xl font-bold text-yellow-600`}>{stats.maintenance}</p>
+          </div>
+        </Card>
+        <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border-red-500/30`}>
+          <div className="text-center">
+            <p className={`text-sm text-red-600`}>Beschädigt</p>
+            <p className={`text-2xl font-bold text-red-600`}>{stats.damaged}</p>
+          </div>
+        </Card>
+      </div>
+
+      {/* Search and Filter */}
+      <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Suche nach Marke, Modell oder Kennzeichen..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                theme === 'dark'
+                  ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                  : 'bg-white border-gray-300 text-gray-900'
+              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            />
+          </div>
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className={`px-4 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          >
+            <option value="all">Alle Status</option>
+            <option value="available">Verfügbar</option>
+            <option value="rented">Vermietet</option>
+            <option value="maintenance">Wartung</option>
+            <option value="damaged">Beschädigt</option>
+            <option value="reserved">Reserviert</option>
+          </select>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Fahrzeug hinzufügen
+          </Button>
+        </div>
+      </Card>
+
+      {/* Vehicles Grid */}
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full mx-auto"></div>
+        </div>
+      ) : filteredVehicles.length === 0 ? (
+        <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <Car className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Keine Fahrzeuge gefunden
+          </h3>
+          <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Fügen Sie Ihr erstes Fahrzeug zur Flotte hinzu
+          </p>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Fahrzeug hinzufügen
+          </Button>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredVehicles.map((vehicle) => (
+            <Card key={vehicle.id} className={`p-6 hover:shadow-lg transition-shadow ${
+              theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+            }`}>
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {vehicle.marke} {vehicle.modell}
+                  </h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {vehicle.baujahr} • {vehicle.kennzeichen}
+                  </p>
+                </div>
+                {getStatusBadge(vehicle.status)}
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2 text-sm">
+                  <Fuel className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    {vehicle.kraftstoff} • {vehicle.getriebe}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Gauge className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    {vehicle.kilometerstand?.toLocaleString()} km
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Fuel className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    Tank: {vehicle.tankstand}%
+                  </span>
+                </div>
+              </div>
+
+              {vehicle.schaeden && vehicle.schaeden.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 text-sm text-yellow-600">
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>{vehicle.schaeden.length} Schaden/Schäden</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => console.log('Edit vehicle:', vehicle.id)}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  Bearbeiten
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => console.log('Maintenance:', vehicle.id)}
+                >
+                  <Wrench className="h-4 w-4 mr-1" />
+                  Wartung
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Add Vehicle Modal - TODO: Implement in next iteration */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <Card className={`p-6 max-w-2xl w-full mx-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+            <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Fahrzeug hinzufügen
+            </h3>
+            <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Formular wird in der nächsten Iteration implementiert
+            </p>
+            <Button
+              onClick={() => setShowAddModal(false)}
+              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            >
+              Schließen
+            </Button>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EuropcarVehicles;
