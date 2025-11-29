@@ -3183,7 +3183,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Fullscreen Functionality for Webcam Feeds in Surveillance Overview"
+    - "SubTabNavigation Component Testing for 3 New Services R&D Sections"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
