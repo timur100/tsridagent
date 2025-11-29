@@ -1883,11 +1883,13 @@ const AdminPortalContent = () => {
                         )}
                         
                         {vehicleSubTab === 'overview' && (
-                        
-                        <VehicleManagement 
-                          initialVehicleId={selectedVehicleId}
-                          key={selectedVehicleId} // Force re-render when vehicle changes
-                        />
+                          <>
+                            <VehicleManagement 
+                              initialVehicleId={selectedVehicleId}
+                              key={selectedVehicleId} // Force re-render when vehicle changes
+                            />
+                          </>
+                        )}
                       </div>
                     )}
                     
