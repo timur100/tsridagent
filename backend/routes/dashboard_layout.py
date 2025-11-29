@@ -1,5 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, Header
-from typing import List, Dict, Any, Optional
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Dict, Any
 from pydantic import BaseModel
 from datetime import datetime
 from routes.portal_auth import verify_token
