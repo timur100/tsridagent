@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - GLOBAL SEARCH EXTENDED FIELD TESTING
-Tests Global Search functionality with extended field search as requested in German review:
-- Test Manager search (finds devices/locations with Manager field)
-- Test Status search (finds devices with status "online")
-- Test City search (finds devices/locations/vehicles in Berlin)
-- Test Color search (finds vehicles with color "Schwarz")
-- Test TeamViewer ID search (finds device AAHC01-01 with TeamViewer ID 949746162)
-- Verify all entities are searched (Devices, Locations, Vehicles, ID-Checks)
+Backend API Testing Suite - DASHBOARD LAYOUT API TESTING
+Tests Dashboard Layout API endpoints for drag and drop functionality:
+- GET /api/dashboard/layout - Get the saved layout
+- POST /api/dashboard/layout - Save a new layout
+- POST /api/dashboard/layout/reset - Reset to default layout
+
+Test Scenarios:
+1. Get default layout (when no layout exists)
+2. Save a new layout with admin credentials (admin@tsrid.com / admin123)
+3. Retrieve saved layout
+4. Reset layout and verify it's empty/default
 """
 
 import requests
