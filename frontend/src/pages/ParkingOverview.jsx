@@ -201,7 +201,7 @@ const ParkingOverview = () => {
                 Strafbetrag
               </p>
               <p className="text-3xl font-bold text-purple-600 mt-2">
-                €{stats.total_penalty_amount.toFixed(2)}
+                €{(stats.total_penalty_amount || 0).toFixed(2)}
               </p>
             </div>
             <TrendingUp className="h-12 w-12 text-purple-600" />
