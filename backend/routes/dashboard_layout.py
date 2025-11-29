@@ -58,7 +58,7 @@ async def save_dashboard_layout(
     """Save the global dashboard layout configuration"""
     
     # Only admins can save global layout
-    if user.get("email") != "admin@tsrid.com" and user.get("role") != "admin":
+    if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Only admins can modify global layout")
     
     # Save or update global layout
