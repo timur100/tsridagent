@@ -275,6 +275,10 @@ app.include_router(webhooks_router, prefix="/api")
 from routes.test_webhook import router as test_webhook_router
 app.include_router(test_webhook_router, prefix="/api")
 
+# Include Cameras router (for IP camera management)
+from routes.cameras import router as cameras_router
+app.include_router(cameras_router, prefix="/api")
+
 # Include the router in the main app
 app.include_router(api_router)
 
