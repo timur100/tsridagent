@@ -64,7 +64,9 @@ class ParkingManagementTester:
         })
         self.results = []
         self.admin_token = None
-        self.saved_layout = None
+        self.test_sessions = []
+        self.test_violations = []
+        self.whitelist_entries = []
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
