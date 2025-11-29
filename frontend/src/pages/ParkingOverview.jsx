@@ -559,6 +559,11 @@ const ParkingOverview = () => {
         <ParkingEntryForm 
           videoRef={videoRef} 
           onEntrySuccess={() => loadData(true)}
+          onPlateRecognized={(plate, accuracy, time) => {
+            setLastRecognizedPlate(plate);
+            setRecognitionAccuracy(accuracy);
+            setProcessingTime(time);
+          }}
         />
       </div>
     </div>
