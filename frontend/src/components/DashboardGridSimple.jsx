@@ -170,11 +170,41 @@ const DashboardGridSimple = ({ children }) => {
     e.preventDefault();
     
     if (draggedIndex !== index) {
-      const newOrder = [...cardOrder];
-      const draggedItem = newOrder[draggedIndex];
-      newOrder.splice(draggedIndex, 1);
-      newOrder.splice(index, 0, draggedItem);
-      setCardOrder(newOrder);
+      // Get all items (cards + dummies)
+      const allItems = [];
+      let cardIdx = 0;
+      let dummyIdx = 0;
+      const totalItems = cardOrder.length + dummyCards.length;
+      
+      for (let i = 0; i < totalItems; i++) {
+        const dummy = dummyCards.find(d => d.position === i);
+        if (dummy) {
+          allItems.push({ type: 'dummy', id: dummy.id, originalIndex: i });
+        } else if (cardIdx < cardOrder.length) {
+          allItems.push({ type: 'card', cardIndex: cardOrder[cardIdx], originalIndex: i });
+          cardIdx++;
+        }
+      }
+      
+      // Swap items
+      const draggedItem = allItems[draggedIndex];
+      allItems.splice(draggedIndex, 1);
+      allItems.splice(index, 0, draggedItem);
+      
+      // Reconstruct cardOrder and dummyCards
+      const newCardOrder = [];
+      const newDummyCards = [];
+      
+      allItems.forEach((item, pos) => {
+        if (item.type === 'card') {
+          newCardOrder.push(item.cardIndex);
+        } else {
+          newDummyCards.push({ id: item.id, position: pos });
+        }
+      });
+      
+      setCardOrder(newCardOrder);
+      setDummyCards(newDummyCards);
       setDraggedIndex(index);
       setHasChanges(true);
     }
