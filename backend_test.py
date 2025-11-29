@@ -8521,14 +8521,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run Dashboard Layout API Testing (as requested in review)
-    print("🔍 Starting Dashboard Layout API Testing...")
-    dashboard_tester = DashboardLayoutTester()
-    dashboard_success = asyncio.run(dashboard_tester.run_all_tests())
+    # Run Parking Management System API Testing (as requested in review)
+    print("🔍 Starting Parking Management System API Testing...")
+    parking_tester = ParkingManagementTester()
+    parking_success = asyncio.run(parking_tester.run_all_tests())
     
-    if dashboard_success:
-        print("\n🎉 Dashboard Layout API test passed!")
+    if parking_success:
+        print("\n🎉 Parking Management System API test passed!")
         sys.exit(0)
     else:
-        print("\n💥 Dashboard Layout API test failed!")
+        print("\n💥 Parking Management System API test failed!")
         sys.exit(1)
