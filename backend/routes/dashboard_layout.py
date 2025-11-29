@@ -85,7 +85,7 @@ async def reset_dashboard_layout(user: dict = Depends(verify_token)):
     """Reset dashboard layout to default"""
     
     # Only admins can reset global layout
-    if user.get("email") != "admin@tsrid.com" and user.get("role") != "admin":
+    if user.get("role") != "admin":
         raise HTTPException(status_code=403, detail="Only admins can reset global layout")
     
     # Delete the global layout to reset to default
