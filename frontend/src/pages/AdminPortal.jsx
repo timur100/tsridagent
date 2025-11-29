@@ -92,6 +92,7 @@ const AdminPortalContent = () => {
   const [standorteSearchTerm, setStandorteSearchTerm] = useState('');
   const [devicesSearchTerm, setDevicesSearchTerm] = useState('');
   const [deviceListKey, setDeviceListKey] = useState(0); // Key to force re-render of DeviceManagement
+  const [deviceStatusFilter, setDeviceStatusFilter] = useState(null); // For filtering devices by status (online/offline)
   const [showAddStandortModal, setShowAddStandortModal] = useState(false);
   const [isSavingStandort, setIsSavingStandort] = useState(false);
   
