@@ -1689,14 +1689,47 @@ const AdminPortalContent = () => {
                   {/* Facematch */}
                     {rndTab === 'facematch' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Facematch - Biometrische Gesichtserkennung
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
-                          </p>
-                        </div>
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'compare', label: 'Vergleichen', icon: Users },
+                            { id: 'history', label: 'Historie', icon: Clock },
+                            { id: 'settings', label: 'Einstellungen', icon: Settings }
+                          ]}
+                          activeTab={facematchSubTab}
+                          onTabChange={setFacematchSubTab}
+                        />
+
+                        {facematchSubTab === 'overview' && (
+                          <div className="mb-6">
+                            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              Facematch - Biometrische Gesichtserkennung
+                            </h2>
+                            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                              KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
+                            </p>
+                          </div>
+                        )}
+                        {facematchSubTab === 'compare' && (
+                          <div className="text-center p-12">
+                            <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Gesichtsvergleich - In Entwicklung</p>
+                          </div>
+                        )}
+                        {facematchSubTab === 'history' && (
+                          <div className="text-center p-12">
+                            <Clock className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Historie - In Entwicklung</p>
+                          </div>
+                        )}
+                        {facematchSubTab === 'settings' && (
+                          <div className="text-center p-12">
+                            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Einstellungen - In Entwicklung</p>
+                          </div>
+                        )}
+                        
+                        {facematchSubTab === 'overview' && (
                         
                         <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
                           <div className="flex items-start gap-4">
