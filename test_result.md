@@ -2870,12 +2870,15 @@ metadata:
   run_ui: true
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Webcam Toggle Feature in Surveillance Overview Tab"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+    - agent: "testing"
+      message: "Starting comprehensive testing of newly added Webcam Toggle feature in Surveillance Overview tab. Will test all phases: navigation, UI elements, webcam functionality, grid size changes, and disable functionality as specified in review request."
     - agent: "testing"
       message: "✅ DASHBOARD CARD SIZE VERIFICATION COMPLETED SUCCESSFULLY: Comprehensive testing of dashboard card sizing completed with all success criteria met. Verified that draggable dashboard cards in DashboardGridSimple now have the same natural height as other cards on the page, without fixed min-height. All 16 draggable cards have perfectly equal height (138px) across all 4 rows with 0px height difference. No fixed 180px min-height found anywhere - all cards use min-height: auto (natural sizing). CSS Grid uses auto-rows: minmax(0px, 1fr) ensuring equal height cards in same row. Gap spacing is exactly 24px as expected. Cards adjust naturally to content without fixed constraints. Visual consistency achieved with identical dimensions (446px width x 138px height) and perfect alignment across all rows. Dashboard card sizing now matches the expected behavior perfectly."
     - agent: "testing"
