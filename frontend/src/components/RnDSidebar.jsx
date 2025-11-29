@@ -80,6 +80,22 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
         { id: 'batch-processing', label: 'Stapelverarbeitung', emoji: '📦' },
         { id: 'api-testing', label: 'API Testing', emoji: '🔧' }
       ]
+    },
+    {
+      id: 'control',
+      label: 'Steuerung',
+      icon: Radio,
+      items: [
+        { id: 'control-system', label: 'Steuerungssysteme', emoji: '🎛️' }
+      ]
+    },
+    {
+      id: 'surveillance',
+      label: 'Surveillance',
+      icon: Video,
+      items: [
+        { id: 'surveillance-system', label: 'Überwachungssysteme', emoji: '📹' }
+      ]
     }
   ];
 
