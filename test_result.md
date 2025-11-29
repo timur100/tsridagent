@@ -2775,12 +2775,14 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dashboard Drag and Drop CSS Grid Implementation"
+    - "Dashboard Card Size Verification - DashboardGridSimple Equal Height"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
 agent_communication:
+    - agent: "testing"
+      message: "✅ DASHBOARD CARD SIZE VERIFICATION COMPLETED SUCCESSFULLY: Comprehensive testing of dashboard card sizing completed with all success criteria met. Verified that draggable dashboard cards in DashboardGridSimple now have the same natural height as other cards on the page, without fixed min-height. All 16 draggable cards have perfectly equal height (138px) across all 4 rows with 0px height difference. No fixed 180px min-height found anywhere - all cards use min-height: auto (natural sizing). CSS Grid uses auto-rows: minmax(0px, 1fr) ensuring equal height cards in same row. Gap spacing is exactly 24px as expected. Cards adjust naturally to content without fixed constraints. Visual consistency achieved with identical dimensions (446px width x 138px height) and perfect alignment across all rows. Dashboard card sizing now matches the expected behavior perfectly."
     - agent: "main"
       message: "🔧 DASHBOARD DRAG AND DROP FEATURE IMPLEMENTED: Complete drag-and-drop system for dashboard cards implemented. Users can click 'Bearbeiten' button to enter edit mode, drag cards to reorder them, and save the new layout. FRONTEND COMPONENTS: 1) DashboardGrid.jsx - Main grid component with drag-and-drop logic using react-grid-layout, edit mode controls (Bearbeiten/Beenden buttons), save/reset functionality, drag handles with dotted grid icons, blue info banner in edit mode, toast notifications for save/reset actions. 2) AdminPortal.jsx - Dashboard page that uses DashboardGrid component, wraps dashboard cards in DashboardGrid for drag-and-drop functionality. BACKEND API: 1) dashboard_layout.py - GET /api/dashboard/layout (load saved layout), POST /api/dashboard/layout (save layout, admin only), POST /api/dashboard/layout/reset (reset to default, admin only). FEATURES: Edit mode toggle with confirmation for unsaved changes, drag handles only visible in edit mode, save button enabled only when changes detected, reset with confirmation dialog, layout persistence in MongoDB, responsive grid layout (4 columns on desktop, fewer on mobile). Ready for comprehensive testing."
     - agent: "testing"
