@@ -356,6 +356,18 @@ backend:
           comment: "❌ CHAT/MESSAGES FRONTEND E2E TESTING BLOCKED BY PORTAL ACCESS ISSUE: Comprehensive testing attempted but unable to access portal login due to critical routing issue. FINDINGS: 1) PORTAL ROUTING ISSUE: External URL https://car-dashboard-13.preview.emergentagent.com/portal/login serves iframe loading system instead of React portal app, iframe loads from https://app.emergent.sh/loading-preview which shows document scanner interface instead of portal login. 2) FRONTEND SERVICE VERIFICATION: ✅ Frontend service running correctly (RUNNING pid 1697), ✅ React app builds successfully (webpack compiled successfully), ✅ Local frontend serves portal correctly (http://localhost:3000/portal/login returns proper React HTML), ✅ All Chat/Messages components implemented and present in codebase. 3) COMPONENT IMPLEMENTATION VERIFIED: ✅ ChatBox.jsx - Complete chat interface with WebSocket integration, message sending, file upload, emoji picker, audio recording, typing indicators, ✅ SupportSettings.jsx - Full settings configuration with all required sections (Chat-Einstellungen, Datei-Upload, Audio-Nachrichten, Archivierung, Benachrichtigungen), ✅ TicketDetailModal.jsx - Dual tab system (Kommentare/Live Chat) with integrated ChatBox, ✅ MessageItem.jsx - Message actions (edit/delete), read receipts, attachments support. 4) BACKEND INTEGRATION READY: All Chat/Messages backend APIs tested and working, WebSocket broadcasting functional, file upload endpoints operational. CRITICAL BLOCKER: Portal access blocked by preview system routing - external URL redirects to document scanner instead of portal login. Frontend components are fully implemented but cannot be tested due to infrastructure routing issue. RECOMMENDATION: Fix portal routing configuration to serve React app directly instead of through preview iframe system."
 
 frontend:
+  - task: "Dashboard Drag and Drop Feature"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/DashboardGrid.jsx, frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🔧 DASHBOARD DRAG AND DROP FEATURE IMPLEMENTED: Complete drag-and-drop system for dashboard cards implemented. Users can click 'Bearbeiten' button to enter edit mode, drag cards to reorder them, and save the new layout. FRONTEND COMPONENTS: 1) DashboardGrid.jsx - Main grid component with drag-and-drop logic using react-grid-layout, edit mode controls (Bearbeiten/Beenden buttons), save/reset functionality, drag handles with dotted grid icons, blue info banner in edit mode, toast notifications for save/reset actions. 2) AdminPortal.jsx - Dashboard page that uses DashboardGrid component, wraps dashboard cards in DashboardGrid for drag-and-drop functionality. BACKEND API: 1) dashboard_layout.py - GET /api/dashboard/layout (load saved layout), POST /api/dashboard/layout (save layout, admin only), POST /api/dashboard/layout/reset (reset to default, admin only). FEATURES: Edit mode toggle with confirmation for unsaved changes, drag handles only visible in edit mode, save button enabled only when changes detected, reset with confirmation dialog, layout persistence in MongoDB, responsive grid layout (4 columns on desktop, fewer on mobile). Ready for comprehensive testing."
+
   - task: "Globale Suche - Fahrzeug-Kennzeichen Funktionalität"
     implemented: true
     working: true
