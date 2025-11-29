@@ -85,6 +85,15 @@ const AdminPortalContent = () => {
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
   const [parkingSubTab, setParkingSubTab] = useState('overview'); // overview, history, violations, config, whitelist
+  const [vehicleSubTab, setVehicleSubTab] = useState('overview'); // overview, list, add, reports
+  const [facematchSubTab, setFacematchSubTab] = useState('overview'); // overview, compare, history, settings
+  const [fingerprintSubTab, setFingerprintSubTab] = useState('overview'); // overview, scan, history, settings
+  const [irisSubTab, setIrisSubTab] = useState('overview'); // overview, scan, history, settings
+  const [licensePlateSubTab, setLicensePlateSubTab] = useState('overview'); // overview, recognition, history, settings
+  const [fleetSubTab, setFleetSubTab] = useState('overview'); // overview, vehicles, drivers, maintenance, reports
+  const [europcarSubTab, setEuropcarSubTab] = useState('overview'); // overview, rentals, returns, reports
+  const [parkingSystemSubTab, setParkingSystemSubTab] = useState('overview'); // overview, access, monitoring, reports
+  const [parkingPaymentSubTab, setParkingPaymentSubTab] = useState('overview'); // overview, transactions, pricing, reports
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [customers, setCustomersState] = useState([]);
