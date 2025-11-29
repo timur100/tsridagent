@@ -53,7 +53,7 @@ import TenantsPage from './TenantsPage';
 import TenantDetailPage from './TenantDetailPage';
 import SubscriptionPlans from './SubscriptionPlans';
 import UsersRolesPage from './UsersRolesPage';
-import DashboardGrid from '../components/DashboardGrid';
+import DashboardGridSimple from '../components/DashboardGridSimple';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
