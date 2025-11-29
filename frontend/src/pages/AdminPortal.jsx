@@ -1100,7 +1100,13 @@ const AdminPortalContent = () => {
                 </Card>
 
                 {/* Offline Devices */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                <Card 
+                  onClick={() => {
+                    setActiveTab('devices');
+                    setDeviceStatusFilter('offline');
+                    setDeviceListKey(prev => prev + 1);
+                  }}
+                  className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
                     ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                     : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
