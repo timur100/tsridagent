@@ -503,7 +503,9 @@ const ParkingOverview = () => {
                   
                   {/* License Plate Text */}
                   <div className="font-mono text-6xl font-black tracking-wider text-gray-900">
-                    {activeSessions.length > 0 ? (
+                    {lastRecognizedPlate ? (
+                      lastRecognizedPlate
+                    ) : activeSessions.length > 0 ? (
                       activeSessions[0].license_plate
                     ) : (
                       <span className="text-gray-400">-- -- ----</span>
