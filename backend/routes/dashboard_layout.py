@@ -53,16 +53,9 @@ async def get_dashboard_layout(user: dict = Depends(verify_token)):
 @router.post("/layout")
 async def save_dashboard_layout(
     layout_data: DashboardLayout,
-    authorization: Optional[str] = Header(None)
+    user: dict = Depends(verify_token)
 ):
     """Save the global dashboard layout configuration"""
-    # Verify authentication
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    user = verify_token(authorization.replace("Bearer ", ""))
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Only admins can save global layout
     if user.get("email") != "admin@tsrid.com" and user.get("user_type") != "super_admin":
