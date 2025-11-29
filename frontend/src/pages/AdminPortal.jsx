@@ -1472,6 +1472,7 @@ const AdminPortalContent = () => {
               key={deviceListKey}
               searchTerm={devicesSearchTerm}
               onSearchChange={setDevicesSearchTerm}
+              initialStatusFilter={deviceStatusFilter}
             />
           </div>
         )}
