@@ -478,23 +478,38 @@ class DashboardLayoutTester:
     def test_mongodb_persistence_verification(self):
         """Test MongoDB persistence - Verify layout is stored in dashboard_layouts collection"""
         try:
-            # First save a layout
-            layout_data = {
-                "layout": [
-                    {"i": "test-card", "x": 0, "y": 0, "w": 2, "h": 2}
-                ]
-            }
-            
-            response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "MongoDB Persistence Verification",
-                    False,
-                    f"Failed to save layout for MongoDB test. Status: {response.status_code}",
-                    response.text
-                )
-                return False
+            # Check if there's already a saved layout from previous tests
+            # If not, save a new one
+            try:
+                from pymongo import MongoClient
+                import os
+                
+                mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+                db_name = os.environ.get('DB_NAME', 'test_database')
+                client = MongoClient(mongo_url)
+                db = client[db_name]
+                
+                # Check if layout already exists
+                existing_layout = db.dashboard_layouts.find_one({"type": "global"})
+                
+                if not existing_layout:
+                    # Save a layout first
+                    layout_data = {
+                        "layout": [
+                            {"i": "test-card", "x": 0, "y": 0, "w": 2, "h": 2}
+                        ]
+                    }
+                    
+                    response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
+                    
+                    if response.status_code != 200:
+                        self.log_result(
+                            "MongoDB Persistence Verification",
+                            False,
+                            f"Failed to save layout for MongoDB test. Status: {response.status_code}",
+                            response.text
+                        )
+                        return False
             
             # Check MongoDB directly
             try:
