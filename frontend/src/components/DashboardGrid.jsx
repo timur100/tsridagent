@@ -47,6 +47,12 @@ const DashboardGrid = ({ children }) => {
     }
   };
 
+  // Load layout from backend
+  useEffect(() => {
+    loadLayout();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const saveLayout = async () => {
     try {
       const result = await apiCall('/api/dashboard/layout', {
