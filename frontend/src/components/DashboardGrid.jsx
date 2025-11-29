@@ -235,7 +235,7 @@ const DashboardGrid = ({ children }) => {
       </ResponsiveGridLayout>
 
       {/* Custom CSS for grid items */}
-      <style jsx>{`
+      <style>{`
         .react-grid-item {
           transition: all 200ms ease;
           transition-property: left, top;
