@@ -371,6 +371,18 @@ backend:
           agent: "testing"
           comment: "❌ CHAT/MESSAGES FRONTEND E2E TESTING BLOCKED BY PORTAL ACCESS ISSUE: Comprehensive testing attempted but unable to access portal login due to critical routing issue. FINDINGS: 1) PORTAL ROUTING ISSUE: External URL https://car-dashboard-13.preview.emergentagent.com/portal/login serves iframe loading system instead of React portal app, iframe loads from https://app.emergent.sh/loading-preview which shows document scanner interface instead of portal login. 2) FRONTEND SERVICE VERIFICATION: ✅ Frontend service running correctly (RUNNING pid 1697), ✅ React app builds successfully (webpack compiled successfully), ✅ Local frontend serves portal correctly (http://localhost:3000/portal/login returns proper React HTML), ✅ All Chat/Messages components implemented and present in codebase. 3) COMPONENT IMPLEMENTATION VERIFIED: ✅ ChatBox.jsx - Complete chat interface with WebSocket integration, message sending, file upload, emoji picker, audio recording, typing indicators, ✅ SupportSettings.jsx - Full settings configuration with all required sections (Chat-Einstellungen, Datei-Upload, Audio-Nachrichten, Archivierung, Benachrichtigungen), ✅ TicketDetailModal.jsx - Dual tab system (Kommentare/Live Chat) with integrated ChatBox, ✅ MessageItem.jsx - Message actions (edit/delete), read receipts, attachments support. 4) BACKEND INTEGRATION READY: All Chat/Messages backend APIs tested and working, WebSocket broadcasting functional, file upload endpoints operational. CRITICAL BLOCKER: Portal access blocked by preview system routing - external URL redirects to document scanner instead of portal login. Frontend components are fully implemented but cannot be tested due to infrastructure routing issue. RECOMMENDATION: Fix portal routing configuration to serve React app directly instead of through preview iframe system."
 
+  - task: "Parking Entry/Exit Form with Webcam Capture and OCR"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/ParkingEntryForm.jsx, frontend/src/pages/ParkingOverview.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🅿️ PARKING ENTRY/EXIT FORM WITH WEBCAM CAPTURE AND OCR IMPLEMENTED: Complete parking registration system with live camera feed, OCR functionality, and form submission. FEATURES IMPLEMENTED: 1) 3-Column Layout: Live Camera Feed (left), License Plate Recognition OCR (center), Entry/Exit Form (right). 2) Entry/Exit Form: Title 'Ein-/Ausfahrt Registrieren', Type buttons (Einfahrt/green, Ausfahrt/red), Location dropdown populated with tenant locations, Two capture buttons: 'Bild Erfassen' (blue) and 'Erfassen & Erkennen' (purple OCR), License plate input (uppercase, mono font), Notes textarea (optional), Submit button (green for entry, red for exit). 3) Image Capture: Captures frame from webcam with overlays (top: camera info, location, timestamp; bottom: license plate, status), Shows preview below buttons. 4) OCR Integration: Uses Tesseract.js for license plate recognition, Shows loading toast 'Erkenne Kennzeichen...', Auto-fills license plate field, Shows success/error messages. 5) Form Submission: Sends POST to /api/parking/entry or /api/parking/exit, Shows success toast, Resets form after submission, Refreshes statistics. 6) Exit with Penalty: Calculates duration and penalty for overstay, Displays penalty in toast message. Ready for comprehensive testing of all form functionality and image capture with overlays."
+
 frontend:
   - task: "Dashboard Drag and Drop Feature"
     implemented: true
