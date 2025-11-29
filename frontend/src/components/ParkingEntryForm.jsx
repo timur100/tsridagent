@@ -19,8 +19,10 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
     notes: ''
   });
   const [capturedImage, setCapturedImage] = useState(null);
+  const [processedImage, setProcessedImage] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [recognizedPlate, setRecognizedPlate] = useState('');
+  const [ocrConfidence, setOcrConfidence] = useState(0);
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
