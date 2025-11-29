@@ -96,6 +96,7 @@ const AdminPortalContent = () => {
   const [parkingSystemSubTab, setParkingSystemSubTab] = useState('overview'); // overview, access, monitoring, reports
   const [parkingPaymentSubTab, setParkingPaymentSubTab] = useState('overview'); // overview, transactions, pricing, reports
   const [accessControlSubTab, setAccessControlSubTab] = useState('overview'); // overview, access, visitors, logs
+  const [timeTrackingSubTab, setTimeTrackingSubTab] = useState('overview'); // overview, terminal, reports, settings
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [customers, setCustomersState] = useState([]);
