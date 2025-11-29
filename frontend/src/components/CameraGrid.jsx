@@ -332,6 +332,16 @@ const CameraGrid = () => {
                     <Video className="h-24 w-24 text-gray-600" />
                   </div>
                 )}
+                
+                {/* Webcam LIVE Badge in Fullscreen */}
+                {fullscreenCamera.isWebcam && (
+                  <div className="absolute top-4 left-4">
+                    <span className="px-4 py-2 text-base font-medium rounded bg-blue-500 text-white flex items-center gap-2">
+                      <Webcam className="h-5 w-5" />
+                      LIVE
+                    </span>
+                  </div>
+                )}
               </div>
               
               {/* Camera Info */}
