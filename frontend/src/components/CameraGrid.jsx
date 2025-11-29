@@ -42,6 +42,39 @@ const CameraGrid = () => {
     }
   };
 
+  const startWebcam = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1920, height: 1080 }
+      });
+      setWebcamStream(stream);
+      
+      // Assign stream to all video elements
+      setTimeout(() => {
+        videoRefs.current.forEach((video) => {
+          if (video && stream) {
+            video.srcObject = stream;
+          }
+        });
+      }, 100);
+    } catch (error) {
+      console.error('Error starting webcam:', error);
+      alert('Fehler beim Zugriff auf die Webcam. Bitte Berechtigungen prüfen.');
+    }
+  };
+
+  const stopWebcam = () => {
+    if (webcamStream) {
+      webcamStream.getTracks().forEach(track => track.stop());
+      setWebcamStream(null);
+    }
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.srcObject = null;
+      }
+    });
+  };
+
   const getGridClass = () => {
     switch (gridSize) {
       case '2x2':
@@ -54,6 +87,31 @@ const CameraGrid = () => {
         return 'grid-cols-2';
     }
   };
+
+  const getGridCount = () => {
+    switch (gridSize) {
+      case '2x2':
+        return 4;
+      case '3x3':
+        return 9;
+      case '4x4':
+        return 16;
+      default:
+        return 4;
+    }
+  };
+
+  const displayItems = showWebcam 
+    ? Array(getGridCount()).fill(null).map((_, idx) => ({
+        id: `webcam-${idx}`,
+        name: `Live Webcam ${idx + 1}`,
+        location: 'Lokale Kamera',
+        resolution: '1920x1080',
+        fps: 30,
+        status: 'online',
+        isWebcam: true
+      }))
+    : cameras;
 
   if (loading) {
     return (
