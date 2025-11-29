@@ -104,6 +104,16 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
     }
   }, []);
 
+  // Update filter when initialStatusFilter changes
+  useEffect(() => {
+    if (initialStatusFilter && initialStatusFilter !== 'all') {
+      setFilters(prev => ({
+        ...prev,
+        status: initialStatusFilter
+      }));
+    }
+  }, [initialStatusFilter]);
+
   useEffect(() => {
     filterDevices();
   }, [searchTerm, filters, devices, stations, sortConfig]);
