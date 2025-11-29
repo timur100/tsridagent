@@ -773,7 +773,7 @@ class ParkingManagementTester:
                 )
                 return False
             
-            # Step 3: Wait to simulate overstay
+            # Step 3: Wait to simulate overstay (should not create violation due to whitelist)
             time.sleep(2)
             
             # Step 4: Register exit
