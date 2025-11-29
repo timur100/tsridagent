@@ -1160,7 +1160,7 @@ const AdminPortalContent = () => {
                     <Key className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
-              </div>
+              </DashboardGrid>
             </div>
 
             {/* Row 3: Neue Bestellungen, Neue Tickets, Change Requests - 4 columns like other cards */}
