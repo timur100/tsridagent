@@ -28,7 +28,7 @@ const DashboardGridSimple = ({ children }) => {
       
       if (result.success && result.data.data && result.data.data.layout && result.data.data.layout.length > 0) {
         // Sort by position (y then x)
-        const sortedLayout = [...result.data.layout].sort((a, b) => {
+        const sortedLayout = [...result.data.data.layout].sort((a, b) => {
           if (a.y === b.y) return a.x - b.x;
           return a.y - b.y;
         });
