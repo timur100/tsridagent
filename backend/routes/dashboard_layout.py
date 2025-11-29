@@ -29,21 +29,33 @@ class DashboardLayout(BaseModel):
 async def get_dashboard_layout(user: dict = Depends(verify_token)):
     """Get the global dashboard layout configuration"""
     
+    print(f"[Dashboard Layout GET] User: {user.get('email')}")
+    
     # Get global layout (not user-specific)
     layout_doc = db.dashboard_layouts.find_one(
         {"type": "global"},
         {"_id": 0}
     )
     
+    print(f"[Dashboard Layout GET] Found layout doc: {layout_doc is not None}")
+    
     if layout_doc:
+        layout_items = layout_doc.get("layout", [])
+        print(f"[Dashboard Layout GET] Layout items count: {len(layout_items)}")
+        dummy_items = [item for item in layout_items if item.get('i', '').startswith('dummy-')]
+        print(f"[Dashboard Layout GET] Dummy items count: {len(dummy_items)}")
+        for dummy in dummy_items:
+            print(f"[Dashboard Layout GET] Dummy item: {dummy.get('i')}")
+        
         return {
             "success": True,
             "data": {
-                "layout": layout_doc.get("layout", [])
+                "layout": layout_items
             }
         }
     
     # Return default layout if none exists
+    print("[Dashboard Layout GET] No layout found, returning empty")
     return {
         "success": True,
         "data": {
