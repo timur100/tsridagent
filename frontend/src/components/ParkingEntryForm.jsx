@@ -7,7 +7,7 @@ import { Camera, LogIn, LogOut, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createWorker } from 'tesseract.js';
 
-const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
+const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
   const { apiCall } = useAuth();
   const { theme } = useTheme();
   const canvasRef = useRef(null);
