@@ -10,6 +10,7 @@ const DashboardGridSimple = ({ children }) => {
   const { theme } = useTheme();
   const [isEditMode, setIsEditMode] = useState(false);
   const [cardOrder, setCardOrder] = useState([]);
+  const [dummyCards, setDummyCards] = useState([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
