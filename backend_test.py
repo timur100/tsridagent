@@ -475,80 +475,99 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_filter_vehicles_api(self):
-        """Test GET /api/vehicles?brand=Volkswagen&status=active - Fahrzeuge filtern"""
+    def test_mongodb_persistence_verification(self):
+        """Test MongoDB persistence - Verify layout is stored in dashboard_layouts collection"""
         try:
-            # Test filtering by brand and status
-            params = {
-                "brand": "Volkswagen",
-                "status": "active"
+            # First save a layout
+            layout_data = {
+                "layout": [
+                    {"i": "test-card", "x": 0, "y": 0, "w": 2, "h": 2}
+                ]
             }
             
-            response = self.session.get(f"{API_BASE}/vehicles", params=params)
+            response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Filter Vehicles API",
+                    "MongoDB Persistence Verification",
                     False,
-                    f"Request failed. Status: {response.status_code}",
+                    f"Failed to save layout for MongoDB test. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Filter Vehicles API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "data" not in data or "vehicles" not in data["data"]:
-                self.log_result(
-                    "GET Filter Vehicles API",
-                    False,
-                    "Missing 'data.vehicles' field in response",
-                    data
-                )
-                return False
-            
-            vehicles_list = data["data"]["vehicles"]
-            
-            # Verify filtering worked (if there are vehicles)
-            for vehicle in vehicles_list:
-                if vehicle.get("brand") and "Volkswagen" not in vehicle["brand"]:
+            # Check MongoDB directly
+            try:
+                # Use the same database as the API
+                from pymongo import MongoClient
+                import os
+                
+                mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+                db_name = os.environ.get('DB_NAME', 'test_database')
+                client = MongoClient(mongo_url)
+                db = client[db_name]
+                
+                # Find the global layout document
+                layout_doc = db.dashboard_layouts.find_one({"type": "global"})
+                
+                if not layout_doc:
                     self.log_result(
-                        "GET Filter Vehicles API",
+                        "MongoDB Persistence Verification",
                         False,
-                        f"Filter failed: found vehicle with brand '{vehicle['brand']}' instead of 'Volkswagen'",
-                        vehicle
+                        "Layout document not found in dashboard_layouts collection"
                     )
                     return False
                 
-                if vehicle.get("status") != "active":
+                # Verify layout data
+                if "layout" not in layout_doc:
                     self.log_result(
-                        "GET Filter Vehicles API",
+                        "MongoDB Persistence Verification",
                         False,
-                        f"Filter failed: found vehicle with status '{vehicle['status']}' instead of 'active'",
-                        vehicle
+                        "Layout field missing in MongoDB document",
+                        layout_doc
                     )
                     return False
-            
-            self.log_result(
-                "GET Filter Vehicles API",
-                True,
-                f"Successfully filtered vehicles: found {len(vehicles_list)} Volkswagen vehicles with active status"
-            )
-            return True
+                
+                stored_layout = layout_doc["layout"]
+                if len(stored_layout) != 1 or stored_layout[0]["i"] != "test-card":
+                    self.log_result(
+                        "MongoDB Persistence Verification",
+                        False,
+                        "Stored layout doesn't match saved data",
+                        stored_layout
+                    )
+                    return False
+                
+                # Verify metadata fields
+                required_fields = ["type", "updated_at", "updated_by"]
+                for field in required_fields:
+                    if field not in layout_doc:
+                        self.log_result(
+                            "MongoDB Persistence Verification",
+                            False,
+                            f"Missing metadata field in MongoDB: {field}",
+                            layout_doc
+                        )
+                        return False
+                
+                self.log_result(
+                    "MongoDB Persistence Verification",
+                    True,
+                    f"Successfully verified layout persistence in MongoDB collection 'dashboard_layouts' with metadata (type={layout_doc['type']}, updated_by={layout_doc['updated_by']})"
+                )
+                return True
+                
+            except Exception as mongo_error:
+                self.log_result(
+                    "MongoDB Persistence Verification",
+                    False,
+                    f"MongoDB connection error: {str(mongo_error)}"
+                )
+                return False
             
         except Exception as e:
             self.log_result(
-                "GET Filter Vehicles API",
+                "MongoDB Persistence Verification",
                 False,
                 f"Exception occurred: {str(e)}"
             )
