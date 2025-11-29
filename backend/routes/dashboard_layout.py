@@ -57,18 +57,23 @@ async def get_dashboard_layout(authorization: Optional[str] = Header(None)):
         }
     }
 
-@router.post("/api/dashboard/layout")
+@router.post("/layout")
 async def save_dashboard_layout(
     layout_data: DashboardLayout,
-    current_user: dict = Depends(get_current_user)
+    authorization: Optional[str] = Header(None)
 ):
     """Save the global dashboard layout configuration"""
+    # Verify authentication
+    if not authorization:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    user = verify_token(authorization.replace("Bearer ", ""))
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Only admins can save global layout
-    if current_user.get("email") != "admin@tsrid.com" and current_user.get("user_type") != "super_admin":
+    if user.get("email") != "admin@tsrid.com" and user.get("user_type") != "super_admin":
         raise HTTPException(status_code=403, detail="Only super admins can modify global layout")
-    
-    db = await get_database()
     
     # Save or update global layout
     result = await db.dashboard_layouts.update_one(
