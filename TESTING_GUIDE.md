@@ -70,7 +70,7 @@ mongosh mongodb://localhost:27017/main_db --quiet --eval "
 ## 📝 **Webhook-Endpunkt**
 
 ```
-POST https://admin-portal-dash-1.preview.emergentagent.com/api/webhooks/regula-scan
+POST https://smart-dashboard-ui.preview.emergentagent.com/api/webhooks/regula-scan
 Header: X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
 ```
 

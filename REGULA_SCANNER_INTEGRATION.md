@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://admin-portal-dash-1.preview.emergentagent.com/portal/admin/id-checks
+   https://smart-dashboard-ui.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from environment
-BACKEND_URL = "https://admin-portal-dash-1.preview.emergentagent.com"
+BACKEND_URL = "https://smart-dashboard-ui.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class Phase1TicketingReTest:
