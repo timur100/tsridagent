@@ -2453,44 +2453,78 @@ const AdminPortalContent = () => {
                     {/* Zutrittssysteme */}
                     {rndTab === 'access-control' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Zutrittssysteme
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Intelligente Zutrittskontrolle und Sicherheitssysteme
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-red-500 bg-opacity-10 rounded-lg">
-                              <Shield className="h-8 w-8 text-red-500" />
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'access', label: 'Zutrittsverwaltung', icon: Shield },
+                            { id: 'visitors', label: 'Besucher', icon: Users },
+                            { id: 'logs', label: 'Protokolle', icon: FileText }
+                          ]}
+                          activeTab={accessControlSubTab}
+                          onTabChange={setAccessControlSubTab}
+                        />
+
+                        {accessControlSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Zutrittssysteme
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Intelligente Zutrittskontrolle und Sicherheitssysteme
+                              </p>
                             </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Zutrittsmethoden
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-red-500 bg-opacity-10 rounded-lg">
+                                  <Shield className="h-8 w-8 text-red-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Zutrittsmethoden
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Biometrische Authentifizierung (Gesicht, Fingerabdruck)</li>
+                                    <li>✓ RFID-Karten & Transponder</li>
+                                    <li>✓ Mobile Access (Smartphone)</li>
+                                    <li>✓ PIN-Code Eingabe</li>
+                                    <li>✓ QR-Code Scanning</li>
+                                    <li>✓ Zeitbasierte Zugangsrechte</li>
+                                    <li>✓ Besuchermanagement</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Entwicklung
                               </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Biometrische Authentifizierung (Gesicht, Fingerabdruck)</li>
-                                <li>✓ RFID-Karten & Transponder</li>
-                                <li>✓ Mobile Access (Smartphone)</li>
-                                <li>✓ PIN-Code Eingabe</li>
-                                <li>✓ QR-Code Scanning</li>
-                                <li>✓ Zeitbasierte Zugangsrechte</li>
-                                <li>✓ Besuchermanagement</li>
-                              </ul>
-                            </div>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Zutrittskontrollsystem wird implementiert
+                              </p>
+                            </Card>
                           </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Zutrittskontrollsystem wird implementiert
-                          </p>
-                        </Card>
+                        )}
+
+                        {accessControlSubTab === 'access' && (
+                          <div className="text-center p-12">
+                            <Shield className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Zutrittsverwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {accessControlSubTab === 'visitors' && (
+                          <div className="text-center p-12">
+                            <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Besucherverwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {accessControlSubTab === 'logs' && (
+                          <div className="text-center p-12">
+                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Protokolle - In Entwicklung</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     
