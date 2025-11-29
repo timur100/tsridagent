@@ -658,18 +658,18 @@ const SupportManagement = () => {
                         )}
                       </div>
                     </td>
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
                       <div>
                         <p className="font-medium">{ticket.customer_name}</p>
                         <p className="text-xs text-gray-500">{ticket.customer_company}</p>
                       </div>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-white ${getStatusColor(ticket.status)}`}>
                         {getStatusLabel(ticket.status)}
                       </span>
                     </td>
-                    <td className="py-3 px-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {ticket.device_id && (() => {
                         const deviceStatus = getDeviceStatus(ticket.device_id);
                         if (deviceStatus) {
