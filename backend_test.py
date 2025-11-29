@@ -606,6 +606,12 @@ class ParkingManagementTester:
     def test_multiple_entry_scenario_api(self):
         """Test multiple entry without exit scenario - should create violation"""
         try:
+            # Step 0: Clean up any existing sessions for TEST-003 (in case of previous test runs)
+            try:
+                self.session.post(f"{API_BASE}/parking/exit", json={"license_plate": "TEST-003"})
+            except:
+                pass  # Ignore if no active session exists
+            
             # Step 1: Register first entry for TEST-003
             entry_data = {
                 "license_plate": "TEST-003",
