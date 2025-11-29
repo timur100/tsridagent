@@ -981,17 +981,17 @@ class DashboardLayoutTester:
             print("\n🔍 STEP 4: Testing GET /api/dashboard/layout - Retrieve saved layout...")
             get_saved_ok = self.test_retrieve_saved_layout_api()
             
-            # Step 5: Test POST reset layout
-            print("\n🔍 STEP 5: Testing POST /api/dashboard/layout/reset - Reset layout...")
+            # Step 5: Test MongoDB persistence (right after save, before reset)
+            print("\n🔍 STEP 5: Testing MongoDB persistence verification...")
+            mongodb_ok = self.test_mongodb_persistence_verification()
+            
+            # Step 6: Test POST reset layout
+            print("\n🔍 STEP 6: Testing POST /api/dashboard/layout/reset - Reset layout...")
             reset_layout_ok = self.test_reset_layout_api()
             
-            # Step 6: Test GET after reset
-            print("\n🔍 STEP 6: Testing GET /api/dashboard/layout - Verify reset worked...")
+            # Step 7: Test GET after reset
+            print("\n🔍 STEP 7: Testing GET /api/dashboard/layout - Verify reset worked...")
             verify_reset_ok = self.test_verify_reset_layout_api()
-            
-            # Step 7: Test MongoDB persistence
-            print("\n🔍 STEP 7: Testing MongoDB persistence verification...")
-            mongodb_ok = self.test_mongodb_persistence_verification()
             
             # Step 8: Test authentication enforcement
             print("\n🔍 STEP 8: Testing authentication enforcement...")
