@@ -1231,11 +1231,7 @@ const AdminPortalContent = () => {
                     <FileText className={`h-12 w-12 ${theme === 'dark' ? 'text-purple-400' : 'text-purple-600'} ${newChangeRequestsCount > 0 ? 'animate-bounce' : ''}`} />
                   </div>
                 </Card>
-              </div>
-            )}
-
-            {/* Row 4: Scan Statistics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                
               {/* Total Scans */}
               <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 theme === 'dark' 
