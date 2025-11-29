@@ -313,9 +313,25 @@ const CameraGrid = () => {
             {/* Fullscreen Camera View */}
             <div className="bg-gray-900 rounded-lg overflow-hidden">
               <div className="aspect-video relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Video className="h-24 w-24 text-gray-600" />
-                </div>
+                {fullscreenCamera.isWebcam && webcamStream ? (
+                  /* Live Webcam Feed in Fullscreen */
+                  <video
+                    autoPlay
+                    playsInline
+                    muted
+                    ref={(el) => {
+                      if (el && webcamStream) {
+                        el.srcObject = webcamStream;
+                      }
+                    }}
+                    className="absolute inset-0 w-full h-full object-cover"
+                  />
+                ) : (
+                  /* Placeholder for IP camera stream */
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Video className="h-24 w-24 text-gray-600" />
+                  </div>
+                )}
               </div>
               
               {/* Camera Info */}
