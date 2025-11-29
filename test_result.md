@@ -2794,7 +2794,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Dashboard Card Size Verification - DashboardGridSimple Equal Height"
+    - "Parking Entry/Exit Form with Webcam Capture and OCR"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
