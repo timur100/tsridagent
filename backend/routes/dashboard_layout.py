@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from typing import List, Dict, Any
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 from datetime import datetime
 from routes.portal_auth import verify_token
 import os
+import json
 from pymongo import MongoClient
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
