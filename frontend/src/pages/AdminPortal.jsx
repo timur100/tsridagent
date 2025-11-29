@@ -101,6 +101,9 @@ const AdminPortalContent = () => {
   const [timeTrackingSubTab, setTimeTrackingSubTab] = useState('overview'); // overview, terminal, reports, settings
   const [controlSubTab, setControlSubTab] = useState('overview'); // overview, devices, automation, settings
   const [surveillanceSubTab, setSurveillanceSubTab] = useState('overview'); // overview, cameras, monitoring, alerts
+  const [fastfoodSubTab, setFastfoodSubTab] = useState('overview'); // overview, menu, orders, analytics
+  const [deliverySubTab, setDeliverySubTab] = useState('overview'); // overview, orders, drivers, tracking
+  const [mobilitySubTab, setMobilitySubTab] = useState('overview'); // overview, vehicles, bookings, routes
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [customers, setCustomersState] = useState([]);
