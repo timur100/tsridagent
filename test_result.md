@@ -2842,9 +2842,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Flottenmanagement and Zutrittskontrolle Tab Navigation Testing"
-  stuck_tasks:
-    - "Flottenmanagement and Zutrittskontrolle Tab Navigation Testing"
+    - "SubTabNavigation Component Testing for 3 New R&D Sections: Zeiterfassung, Steuerung, Surveillance"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
