@@ -96,6 +96,16 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       items: [
         { id: 'surveillance-system', label: 'Überwachungssysteme', emoji: '📹' }
       ]
+    },
+    {
+      id: 'services',
+      label: 'Services',
+      icon: Truck,
+      items: [
+        { id: 'fastfood-system', label: 'Fastfood Bestellsystem', emoji: '🍔' },
+        { id: 'delivery-service', label: 'Lieferservice', emoji: '📦' },
+        { id: 'mobility-services', label: 'Mobility Services', emoji: '🚗' }
+      ]
     }
   ];
 
