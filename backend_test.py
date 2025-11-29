@@ -352,27 +352,14 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_update_vehicle_api(self):
-        """Test PUT /api/vehicles/{vehicle_id} - Fahrzeug aktualisieren"""
+    def test_reset_layout_api(self):
+        """Test POST /api/dashboard/layout/reset - Reset layout to default"""
         try:
-            if not self.test_vehicle_id:
-                self.log_result(
-                    "PUT Update Vehicle API",
-                    False,
-                    "No test vehicle ID available"
-                )
-                return False
-            
-            update_data = {
-                "mileage": 2000,
-                "color": "Rot"
-            }
-            
-            response = self.session.put(f"{API_BASE}/vehicles/{self.test_vehicle_id}", json=update_data)
+            response = self.session.post(f"{API_BASE}/dashboard/layout/reset")
             
             if response.status_code != 200:
                 self.log_result(
-                    "PUT Update Vehicle API",
+                    "POST Reset Layout API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -384,7 +371,7 @@ class DashboardLayoutTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "PUT Update Vehicle API",
+                    "POST Reset Layout API",
                     False,
                     "Response indicates failure",
                     data
@@ -392,56 +379,25 @@ class DashboardLayoutTester:
                 return False
             
             # Check for expected message
-            if data.get("message") != "Vehicle updated successfully":
+            if data.get("message") != "Dashboard layout reset to default":
                 self.log_result(
-                    "PUT Update Vehicle API",
+                    "POST Reset Layout API",
                     False,
                     f"Unexpected message: {data.get('message')}",
                     data
                 )
                 return False
             
-            # Check updated data
-            if "data" not in data:
-                self.log_result(
-                    "PUT Update Vehicle API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            updated_vehicle = data["data"]
-            
-            # Verify updates were applied
-            if updated_vehicle.get("mileage") != 2000:
-                self.log_result(
-                    "PUT Update Vehicle API",
-                    False,
-                    f"Mileage not updated correctly. Expected: 2000, Got: {updated_vehicle.get('mileage')}",
-                    data
-                )
-                return False
-            
-            if updated_vehicle.get("color") != "Rot":
-                self.log_result(
-                    "PUT Update Vehicle API",
-                    False,
-                    f"Color not updated correctly. Expected: Rot, Got: {updated_vehicle.get('color')}",
-                    data
-                )
-                return False
-            
             self.log_result(
-                "PUT Update Vehicle API",
+                "POST Reset Layout API",
                 True,
-                f"Successfully updated vehicle: mileage={updated_vehicle.get('mileage')}, color={updated_vehicle.get('color')}"
+                "Successfully reset dashboard layout to default"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "PUT Update Vehicle API",
+                "POST Reset Layout API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
