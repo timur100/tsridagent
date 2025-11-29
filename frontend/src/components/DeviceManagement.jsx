@@ -18,7 +18,7 @@ import {
   SPECIAL_PLACE_TAGS 
 } from '../utils/geoFilters';
 
-const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) => {
+const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, initialStatusFilter }) => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { apiCall, user } = useAuth();
@@ -32,7 +32,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange }) =>
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [filters, setFilters] = useState({
-    status: 'all',
+    status: initialStatusFilter || 'all',
     kontinent: 'all',
     land: 'all',
     bundesland: 'all',
