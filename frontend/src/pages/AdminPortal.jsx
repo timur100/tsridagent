@@ -56,6 +56,8 @@ import UsersRolesPage from './UsersRolesPage';
 import DashboardGridSimple from '../components/DashboardGridSimple';
 import ParkingOverview from './ParkingOverview';
 import SubTabNavigation from '../components/SubTabNavigation';
+import CameraGrid from '../components/CameraGrid';
+import CameraManagement from '../components/CameraManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
