@@ -396,6 +396,17 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
           </select>
         </div>
 
+        {/* Info Box for OCR */}
+        <div className={`p-3 rounded-lg text-sm ${theme === 'dark' ? 'bg-blue-900/20 border border-blue-500/30 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-800'}`}>
+          <p className="font-semibold mb-1">💡 Tipps für bessere Erkennung:</p>
+          <ul className="text-xs space-y-1 ml-4 list-disc">
+            <li>Kennzeichen groß und gut sichtbar vor die Kamera halten</li>
+            <li>Schwarze Schrift auf weißem Papier verwenden</li>
+            <li>Auf gute Beleuchtung achten</li>
+            <li>Kennzeichen im Format "B-AB-1234" schreiben</li>
+          </ul>
+        </div>
+
         {/* Capture Button */}
         <div className="flex gap-2">
           <Button
