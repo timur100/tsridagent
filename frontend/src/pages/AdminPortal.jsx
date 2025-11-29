@@ -1902,42 +1902,76 @@ const AdminPortalContent = () => {
                     {/* Kennzeichenerkennung */}
                     {rndTab === 'license-plate-recognition' && (
                       <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Kennzeichenerkennung (LPR)
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Automatische Erkennung und Verarbeitung von Fahrzeugkennzeichen
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
-                              <Car className="h-8 w-8 text-blue-500" />
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'recognition', label: 'Erkennung', icon: Car },
+                            { id: 'history', label: 'Historie', icon: Clock },
+                            { id: 'settings', label: 'Einstellungen', icon: Settings }
+                          ]}
+                          activeTab={licensePlateSubTab}
+                          onTabChange={setLicensePlateSubTab}
+                        />
+
+                        {licensePlateSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Kennzeichenerkennung (LPR)
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Automatische Erkennung und Verarbeitung von Fahrzeugkennzeichen
+                              </p>
                             </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Hauptfunktionen
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                                  <Car className="h-8 w-8 text-blue-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Hauptfunktionen
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Echtzeit-Kennzeichenerkennung mit KI</li>
+                                    <li>✓ Unterstützung für EU-Kennzeichen</li>
+                                    <li>✓ Integration mit Fahrzeugdatenbanken</li>
+                                    <li>✓ Automatische Zufahrtskontrolle</li>
+                                    <li>✓ Videostream-Verarbeitung</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
                               </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Echtzeit-Kennzeichenerkennung mit KI</li>
-                                <li>✓ Unterstützung für EU-Kennzeichen</li>
-                                <li>✓ Integration mit Fahrzeugdatenbanken</li>
-                                <li>✓ Automatische Zufahrtskontrolle</li>
-                                <li>✓ Videostream-Verarbeitung</li>
-                              </ul>
-                            </div>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                KI-basierte Kennzeichenerkennung wird entwickelt
+                              </p>
+                            </Card>
                           </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Planung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            KI-basierte Kennzeichenerkennung wird entwickelt
-                          </p>
-                        </Card>
+                        )}
+
+                        {licensePlateSubTab === 'recognition' && (
+                          <div className="text-center p-12">
+                            <Car className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Erkennungs-Funktion - In Entwicklung</p>
+                          </div>
+                        )}
+                        {licensePlateSubTab === 'history' && (
+                          <div className="text-center p-12">
+                            <Clock className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Historie - In Entwicklung</p>
+                          </div>
+                        )}
+                        {licensePlateSubTab === 'settings' && (
+                          <div className="text-center p-12">
+                            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Einstellungen - In Entwicklung</p>
+                          </div>
+                        )}
                       </div>
                     )}
                     
