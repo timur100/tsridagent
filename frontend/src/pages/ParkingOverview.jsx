@@ -546,7 +546,7 @@ const ParkingOverview = () => {
                 </p>
                 <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-green-300' : 'text-green-700'}`}>
                   Automatische Kennzeichenerkennung aktiv • 
-                  Letzte Erkennung: {activeSessions.length > 0 ? 'vor 2 Sekunden' : 'Warte auf Fahrzeug...'}
+                  Letzte Erkennung: {lastRecognizedPlate ? 'vor 2 Sekunden' : activeSessions.length > 0 ? 'vor 2 Sekunden' : 'Warte auf Fahrzeug...'}
                 </p>
               </div>
             </div>
