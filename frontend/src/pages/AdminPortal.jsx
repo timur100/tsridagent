@@ -2634,10 +2634,165 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
+                    {/* Steuerung */}
+                    {rndTab === 'control-system' && (
+                      <div className="w-full">
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'devices', label: 'Geräte', icon: Radio },
+                            { id: 'automation', label: 'Automatisierung', icon: Zap },
+                            { id: 'settings', label: 'Einstellungen', icon: Settings }
+                          ]}
+                          activeTab={controlSubTab}
+                          onTabChange={setControlSubTab}
+                        />
+
+                        {controlSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Steuerungssysteme
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Zentrale Steuerung und Verwaltung von IoT-Geräten
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-cyan-500 bg-opacity-10 rounded-lg">
+                                  <Radio className="h-8 w-8 text-cyan-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Zentrale Gerätesteuerung</li>
+                                    <li>✓ IoT-Integration</li>
+                                    <li>✓ Automatische Regelungen</li>
+                                    <li>✓ Szenarien-Management</li>
+                                    <li>✓ Remote-Zugriff</li>
+                                    <li>✓ Echtzeit-Monitoring</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Steuerungssystem wird konzipiert
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {controlSubTab === 'devices' && (
+                          <div className="text-center p-12">
+                            <Radio className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Geräteverwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {controlSubTab === 'automation' && (
+                          <div className="text-center p-12">
+                            <Zap className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Automatisierung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {controlSubTab === 'settings' && (
+                          <div className="text-center p-12">
+                            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Einstellungen - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Surveillance */}
+                    {rndTab === 'surveillance-system' && (
+                      <div className="w-full">
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'cameras', label: 'Kameras', icon: Video },
+                            { id: 'monitoring', label: 'Monitoring', icon: Activity },
+                            { id: 'alerts', label: 'Alarme', icon: Bell }
+                          ]}
+                          activeTab={surveillanceSubTab}
+                          onTabChange={setSurveillanceSubTab}
+                        />
+
+                        {surveillanceSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Surveillance - Überwachungssysteme
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Professionelle Video-Überwachung und Sicherheitsmonitoring
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
+                                  <Video className="h-8 w-8 text-orange-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ HD/4K-Videoüberwachung</li>
+                                    <li>✓ KI-basierte Bewegungserkennung</li>
+                                    <li>✓ Personen- und Objekterkennung</li>
+                                    <li>✓ Alarm-Management</li>
+                                    <li>✓ Cloud-Aufzeichnung</li>
+                                    <li>✓ Live-Monitoring Dashboard</li>
+                                    <li>✓ Mobile App Zugriff</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Überwachungssystem wird entwickelt
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {surveillanceSubTab === 'cameras' && (
+                          <div className="text-center p-12">
+                            <Video className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Kameraverwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {surveillanceSubTab === 'monitoring' && (
+                          <div className="text-center p-12">
+                            <Activity className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Live-Monitoring - In Entwicklung</p>
+                          </div>
+                        )}
+                        {surveillanceSubTab === 'alerts' && (
+                          <div className="text-center p-12">
+                            <Bell className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Alarm-System - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Default Placeholder für alle anderen Tabs */}
                     {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
-                        'parking-payment', 'parking-overstay', 'access-control', 'time-tracking'].includes(rndTab) && (
+                        'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system'].includes(rndTab) && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
