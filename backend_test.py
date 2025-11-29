@@ -403,14 +403,14 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_get_vehicle_stats_api(self):
-        """Test GET /api/vehicles/stats/summary - Fahrzeugstatistiken abrufen"""
+    def test_verify_reset_layout_api(self):
+        """Test GET /api/dashboard/layout - Verify layout is empty after reset"""
         try:
-            response = self.session.get(f"{API_BASE}/vehicles/stats/summary")
+            response = self.session.get(f"{API_BASE}/dashboard/layout")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicle Stats API",
+                    "GET Verify Reset Layout API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -422,7 +422,7 @@ class DashboardLayoutTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicle Stats API",
+                    "GET Verify Reset Layout API",
                     False,
                     "Response indicates failure",
                     data
@@ -430,49 +430,46 @@ class DashboardLayoutTester:
                 return False
             
             # Check data structure
-            if "data" not in data:
+            if "data" not in data or "layout" not in data["data"]:
                 self.log_result(
-                    "GET Vehicle Stats API",
+                    "GET Verify Reset Layout API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'data.layout' field in response",
                     data
                 )
                 return False
             
-            stats_data = data["data"]
+            layout_array = data["data"]["layout"]
             
-            # Verify required stats fields
-            required_fields = ["total", "active", "maintenance", "inactive"]
-            for field in required_fields:
-                if field not in stats_data:
-                    self.log_result(
-                        "GET Vehicle Stats API",
-                        False,
-                        f"Missing required stats field: {field}",
-                        data
-                    )
-                    return False
-                
-                # Verify field is a number
-                if not isinstance(stats_data[field], int):
-                    self.log_result(
-                        "GET Vehicle Stats API",
-                        False,
-                        f"Stats field {field} should be integer, got {type(stats_data[field])}",
-                        data
-                    )
-                    return False
+            # After reset, layout should be empty
+            if not isinstance(layout_array, list):
+                self.log_result(
+                    "GET Verify Reset Layout API",
+                    False,
+                    f"Layout should be an array, got {type(layout_array)}",
+                    data
+                )
+                return False
+            
+            if len(layout_array) != 0:
+                self.log_result(
+                    "GET Verify Reset Layout API",
+                    False,
+                    f"Layout should be empty after reset, but has {len(layout_array)} items",
+                    data
+                )
+                return False
             
             self.log_result(
-                "GET Vehicle Stats API",
+                "GET Verify Reset Layout API",
                 True,
-                f"Successfully retrieved vehicle statistics: total={stats_data['total']}, active={stats_data['active']}, maintenance={stats_data['maintenance']}, inactive={stats_data['inactive']}"
+                "Successfully verified layout is empty after reset (default positions will be used)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicle Stats API",
+                "GET Verify Reset Layout API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
