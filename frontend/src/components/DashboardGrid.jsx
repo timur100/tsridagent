@@ -210,7 +210,7 @@ const DashboardGrid = ({ children }) => {
         onLayoutChange={handleLayoutChange}
         draggableHandle=".drag-handle"
         containerPadding={[0, 0]}
-        margin={[24, 24]}
+        margin={[12, 12]}
       >
         {React.Children.map(children, (child, index) => (
           <div key={`card-${index}`} className="relative">
