@@ -2021,45 +2021,7 @@ const AdminPortalContent = () => {
                     
                     {/* Parkzeitüberschreitung */}
                     {rndTab === 'parking-overstay' && (
-                      <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Parkzeitüberschreitung
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Automatische Erkennung und Verwaltung von Parkzeitüberschreitungen
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
-                              <Clock className="h-8 w-8 text-orange-500" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Funktionen
-                              </h3>
-                              <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                <li>✓ Automatische Zeitüberwachung</li>
-                                <li>✓ Push-Benachrichtigungen vor Ablauf</li>
-                                <li>✓ Strafzettel-Management</li>
-                                <li>✓ Eskalationsprozesse</li>
-                                <li>✓ Reporting & Statistiken</li>
-                                <li>✓ Integration mit Ordnungsamt</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </Card>
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Planung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Parkzeitüberwachung wird konzipiert
-                          </p>
-                        </Card>
-                      </div>
+                      <ParkingOverview />
                     )}
                     
                     {/* Zutrittssysteme */}
