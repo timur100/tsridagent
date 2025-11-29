@@ -55,12 +55,21 @@ const DashboardGrid = ({ children }) => {
 
   const saveLayout = async () => {
     try {
+      // Filter layout to only include required fields for backend
+      const cleanLayout = layout.map(item => ({
+        i: item.i,
+        x: item.x,
+        y: item.y,
+        w: item.w,
+        h: item.h
+      }));
+
       const result = await apiCall('/api/dashboard/layout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ layout }),
+        body: JSON.stringify({ layout: cleanLayout }),
       });
 
       if (result.success) {
