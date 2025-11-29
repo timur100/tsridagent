@@ -303,11 +303,11 @@ backend:
 
   - task: "SubTabNavigation Component Testing for 3 New Services R&D Sections"
     implemented: true
-    working: "NA"
+    working: false
     file: "frontend/src/components/SubTabNavigation.jsx, frontend/src/pages/AdminPortal.jsx, frontend/src/components/RnDSidebar.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
