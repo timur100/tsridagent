@@ -269,22 +269,22 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_get_vehicle_by_id_api(self):
-        """Test GET /api/vehicles/{vehicle_id} - Fahrzeug abrufen"""
+    def test_retrieve_saved_layout_api(self):
+        """Test GET /api/dashboard/layout - Retrieve the saved layout"""
         try:
-            if not self.test_vehicle_id:
+            if not self.saved_layout:
                 self.log_result(
-                    "GET Vehicle By ID API",
+                    "GET Saved Layout API",
                     False,
-                    "No test vehicle ID available"
+                    "No saved layout available for verification"
                 )
                 return False
             
-            response = self.session.get(f"{API_BASE}/vehicles/{self.test_vehicle_id}")
+            response = self.session.get(f"{API_BASE}/dashboard/layout")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicle By ID API",
+                    "GET Saved Layout API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -296,7 +296,7 @@ class DashboardLayoutTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicle By ID API",
+                    "GET Saved Layout API",
                     False,
                     "Response indicates failure",
                     data
@@ -304,39 +304,49 @@ class DashboardLayoutTester:
                 return False
             
             # Check data structure
-            if "data" not in data:
+            if "data" not in data or "layout" not in data["data"]:
                 self.log_result(
-                    "GET Vehicle By ID API",
+                    "GET Saved Layout API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'data.layout' field in response",
                     data
                 )
                 return False
             
-            vehicle_data = data["data"]
+            retrieved_layout = data["data"]["layout"]
             
-            # Verify vehicle has expected fields
-            required_fields = ["id", "license_plate", "brand", "model", "year"]
-            for field in required_fields:
-                if field not in vehicle_data:
-                    self.log_result(
-                        "GET Vehicle By ID API",
-                        False,
-                        f"Missing required field: {field}",
-                        data
-                    )
-                    return False
+            # Verify layout matches what we saved
+            if len(retrieved_layout) != len(self.saved_layout):
+                self.log_result(
+                    "GET Saved Layout API",
+                    False,
+                    f"Layout length mismatch: expected {len(self.saved_layout)}, got {len(retrieved_layout)}",
+                    data
+                )
+                return False
+            
+            # Verify each layout item
+            for i, (saved_item, retrieved_item) in enumerate(zip(self.saved_layout, retrieved_layout)):
+                for key in ["i", "x", "y", "w", "h"]:
+                    if saved_item[key] != retrieved_item[key]:
+                        self.log_result(
+                            "GET Saved Layout API",
+                            False,
+                            f"Layout item {i} field '{key}' mismatch: expected {saved_item[key]}, got {retrieved_item[key]}",
+                            data
+                        )
+                        return False
             
             self.log_result(
-                "GET Vehicle By ID API",
+                "GET Saved Layout API",
                 True,
-                f"Successfully retrieved vehicle: {vehicle_data.get('license_plate')} ({vehicle_data.get('brand')} {vehicle_data.get('model')})"
+                f"Successfully retrieved saved layout with {len(retrieved_layout)} cards matching saved data"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicle By ID API",
+                "GET Saved Layout API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
