@@ -53,16 +53,33 @@ async def get_dashboard_layout(user: dict = Depends(verify_token)):
 
 @router.post("/layout")
 async def save_dashboard_layout(
-    layout_data: DashboardLayout,
+    request: Request,
     user: dict = Depends(verify_token)
 ):
     """Save the global dashboard layout configuration"""
     
-    # Debug logging
-    print(f"[Dashboard Layout] Received layout data: {layout_data}")
-    print(f"[Dashboard Layout] Layout items count: {len(layout_data.layout)}")
-    for i, item in enumerate(layout_data.layout):
-        print(f"[Dashboard Layout] Item {i}: i='{item.i}', x={item.x}, y={item.y}, w={item.w}, h={item.h}")
+    try:
+        # Get raw request body for debugging
+        raw_body = await request.body()
+        print(f"[Dashboard Layout] Raw request body: {raw_body.decode()}")
+        
+        # Parse JSON manually
+        request_data = json.loads(raw_body.decode())
+        print(f"[Dashboard Layout] Parsed JSON: {request_data}")
+        
+        # Validate the data
+        layout_data = DashboardLayout(**request_data)
+        print(f"[Dashboard Layout] Validated layout data: {layout_data}")
+        print(f"[Dashboard Layout] Layout items count: {len(layout_data.layout)}")
+        for i, item in enumerate(layout_data.layout):
+            print(f"[Dashboard Layout] Item {i}: i='{item.i}', x={item.x}, y={item.y}, w={item.w}, h={item.h}")
+        
+    except ValidationError as e:
+        print(f"[Dashboard Layout] Validation error: {e}")
+        raise HTTPException(status_code=422, detail=f"Validation error: {str(e)}")
+    except Exception as e:
+        print(f"[Dashboard Layout] General error: {e}")
+        raise HTTPException(status_code=400, detail=f"Error processing request: {str(e)}")
     
     # Only admins can save global layout
     if user.get("role") != "admin":
