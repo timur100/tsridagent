@@ -1842,14 +1842,47 @@ const AdminPortalContent = () => {
                     {/* Fahrzeugverwaltung */}
                     {rndTab === 'vehicle-management' && (
                       <div>
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            Fahrzeugverwaltung
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Zentrale Verwaltung aller Fahrzeuge und Fahrzeugdaten
-                          </p>
-                        </div>
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'list', label: 'Fahrzeugliste', icon: Car },
+                            { id: 'add', label: 'Hinzufügen', icon: Plus },
+                            { id: 'reports', label: 'Berichte', icon: FileText }
+                          ]}
+                          activeTab={vehicleSubTab}
+                          onTabChange={setVehicleSubTab}
+                        />
+
+                        {vehicleSubTab === 'overview' && (
+                          <div className="mb-6">
+                            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              Fahrzeugverwaltung
+                            </h2>
+                            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                              Zentrale Verwaltung aller Fahrzeuge und Fahrzeugdaten
+                            </p>
+                          </div>
+                        )}
+                        {vehicleSubTab === 'list' && (
+                          <div className="text-center p-12">
+                            <Car className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Fahrzeugliste - In Entwicklung</p>
+                          </div>
+                        )}
+                        {vehicleSubTab === 'add' && (
+                          <div className="text-center p-12">
+                            <Plus className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Fahrzeug hinzufügen - In Entwicklung</p>
+                          </div>
+                        )}
+                        {vehicleSubTab === 'reports' && (
+                          <div className="text-center p-12">
+                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Berichte - In Entwicklung</p>
+                          </div>
+                        )}
+                        
+                        {vehicleSubTab === 'overview' && (
                         
                         <VehicleManagement 
                           initialVehicleId={selectedVehicleId}
