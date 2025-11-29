@@ -24,32 +24,58 @@ const DashboardGridSimple = ({ children }) => {
       const result = await apiCall('/api/dashboard/layout');
       const childrenCount = React.Children.count(children);
       
+      console.log('[DashboardGrid] API result:', result);
+      
       if (result.success && result.data.layout && result.data.layout.length > 0) {
-        // Convert layout to order array
+        // Sort by position (y then x)
         const sortedLayout = [...result.data.layout].sort((a, b) => {
           if (a.y === b.y) return a.x - b.x;
           return a.y - b.y;
         });
         
+        console.log('[DashboardGrid] Sorted layout:', sortedLayout);
+        
         // Separate real cards and dummy cards
-        const realCards = sortedLayout.filter(item => !item.i.startsWith('dummy-'));
-        const dummyCardItems = sortedLayout.filter(item => item.i.startsWith('dummy-'));
+        const realCards = [];
+        const dummyCardItems = [];
         
-        const order = realCards.map(item => parseInt(item.i.replace('card-', '')));
-        const dummies = dummyCardItems.map(item => ({
-          id: item.i,
-          position: sortedLayout.indexOf(item)
-        }));
+        sortedLayout.forEach((item, index) => {
+          if (item.i.startsWith('dummy-')) {
+            dummyCardItems.push({
+              id: item.i,
+              position: index  // Position in the merged list
+            });
+          } else {
+            realCards.push({
+              cardIndex: parseInt(item.i.replace('card-', '')),
+              position: index
+            });
+          }
+        });
         
-        setCardOrder(order);
-        setDummyCards(dummies);
+        console.log('[DashboardGrid] Real cards:', realCards);
+        console.log('[DashboardGrid] Dummy cards:', dummyCardItems);
+        
+        // Reconstruct order maintaining positions
+        const newCardOrder = [];
+        let realCardIdx = 0;
+        
+        for (let i = 0; i < sortedLayout.length; i++) {
+          if (!sortedLayout[i].i.startsWith('dummy-')) {
+            newCardOrder.push(parseInt(sortedLayout[i].i.replace('card-', '')));
+          }
+        }
+        
+        setCardOrder(newCardOrder);
+        setDummyCards(dummyCardItems);
       } else {
         // Default order
+        console.log('[DashboardGrid] Using default layout');
         setCardOrder(Array.from({ length: childrenCount }, (_, i) => i));
         setDummyCards([]);
       }
     } catch (error) {
-      console.error('Error loading layout:', error);
+      console.error('[DashboardGrid] Error loading layout:', error);
       const childrenCount = React.Children.count(children);
       setCardOrder(Array.from({ length: childrenCount }, (_, i) => i));
       setDummyCards([]);
