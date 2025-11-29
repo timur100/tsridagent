@@ -33,11 +33,6 @@ const DashboardGrid = ({ children }) => {
     }));
   };
 
-  // Load layout from backend
-  useEffect(() => {
-    loadLayout();
-  }, []);
-
   const loadLayout = async () => {
     try {
       const result = await apiCall('/api/dashboard/layout');
