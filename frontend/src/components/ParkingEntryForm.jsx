@@ -417,7 +417,7 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
             <li>Kennzeichen groß und gut sichtbar vor die Kamera halten</li>
             <li>Schwarze Schrift auf weißem Papier verwenden</li>
             <li>Auf gute Beleuchtung achten</li>
-            <li>Kennzeichen im Format "B-AB-1234" schreiben</li>
+            <li>Kennzeichen im Format &quot;B-AB-1234&quot; schreiben</li>
           </ul>
         </div>
 
