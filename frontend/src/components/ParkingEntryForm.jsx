@@ -116,59 +116,112 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
     }
   };
 
+  const preprocessImage = (imageData) => {
+    // Create a temporary canvas for image preprocessing
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    const img = new Image();
+    img.src = imageData;
+    
+    return new Promise((resolve) => {
+      img.onload = () => {
+        tempCanvas.width = img.width;
+        tempCanvas.height = img.height;
+        
+        // Draw original image
+        tempCtx.drawImage(img, 0, 0);
+        
+        // Get image data
+        const imageDataObj = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+        const data = imageDataObj.data;
+        
+        // Convert to grayscale and increase contrast
+        for (let i = 0; i < data.length; i += 4) {
+          // Grayscale conversion
+          const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114;
+          
+          // Increase contrast (simple threshold)
+          const threshold = 128;
+          const value = gray > threshold ? 255 : 0;
+          
+          data[i] = value;     // Red
+          data[i + 1] = value; // Green
+          data[i + 2] = value; // Blue
+        }
+        
+        tempCtx.putImageData(imageDataObj, 0, 0);
+        
+        // Return processed image
+        resolve(tempCanvas.toDataURL('image/png'));
+      };
+    });
+  };
+
   const performOCR = async (imageData) => {
     try {
-      console.log('[OCR] Initializing Tesseract worker...');
+      console.log('[OCR] Starting OCR process...');
+      toast.loading('Bild wird vorverarbeitet...', { id: 'ocr-process' });
       
-      // Create worker with German language support
-      const worker = await createWorker('deu', 1, {
-        logger: m => console.log('[OCR]', m.status, m.progress)
+      // Preprocess image for better OCR
+      const processedImage = await preprocessImage(imageData);
+      console.log('[OCR] Image preprocessed');
+      
+      toast.loading('Initialisiere OCR-Engine...', { id: 'ocr-process' });
+      
+      // Create worker with English (better for alphanumeric)
+      const worker = await createWorker('eng', 1, {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            const progress = Math.round(m.progress * 100);
+            toast.loading(`Erkenne Text... ${progress}%`, { id: 'ocr-process' });
+          }
+        }
       });
       
-      // Configure for better handwritten text recognition
+      // Configure for license plate recognition
       await worker.setParameters({
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü0123456789- ',
-        tessedit_pageseg_mode: '6', // Assume a single uniform block of text
-        preserve_interword_spaces: '1',
-        // Better for handwriting
-        tessedit_ocr_engine_mode: '1', // Use LSTM OCR Engine Mode (better for handwriting)
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789- ',
+        tessedit_pageseg_mode: '8', // Treat the image as a single word
+        tessedit_ocr_engine_mode: '1', // LSTM only
       });
       
-      console.log('[OCR] Recognizing text...');
-      const { data: { text, confidence } } = await worker.recognize(imageData);
+      console.log('[OCR] Recognizing processed image...');
+      const { data: { text, confidence, words } } = await worker.recognize(processedImage);
       
       console.log('[OCR] Raw text:', text);
       console.log('[OCR] Confidence:', confidence);
+      console.log('[OCR] Words:', words);
       
       await worker.terminate();
+      
+      // Show what was detected
+      toast.loading(`Erkannt: "${text}" (${Math.round(confidence)}%)`, { id: 'ocr-process', duration: 2000 });
       
       // Clean up the recognized text
       let cleanedText = text
         .toUpperCase()
-        .replace(/\n/g, ' ') // Remove newlines
-        .replace(/[^A-ZÄÖÜ0-9-\s]/g, '') // Keep only valid characters
-        .replace(/\s+/g, ' ') // Normalize spaces
+        .replace(/\n/g, '') // Remove newlines
+        .replace(/[^A-Z0-9-]/g, '') // Keep only valid characters
         .trim();
       
-      // Try to format as license plate (e.g., "B AB 1234" -> "B-AB-1234")
-      cleanedText = cleanedText.replace(/\s+/g, '-');
-      
-      // Remove consecutive dashes
-      cleanedText = cleanedText.replace(/-+/g, '-');
-      
       console.log('[OCR] Cleaned text:', cleanedText);
-      console.log('[OCR] Confidence:', Math.round(confidence) + '%');
       
-      // Only return if confidence is reasonable
-      if (confidence > 30 && cleanedText.length >= 3) {
+      // Very lenient acceptance - even low confidence
+      if (cleanedText.length >= 2) {
+        // Try to format as German license plate
+        // Pattern: 1-3 letters, 1-2 letters, 1-4 digits
+        // Example: B-AB-1234 or HH-XX-9999
+        
         return cleanedText;
       } else {
-        console.log('[OCR] Low confidence or too short, ignoring result');
+        console.log('[OCR] Text too short, ignoring');
+        toast.error('Kennzeichen zu kurz oder nicht lesbar', { id: 'ocr-process' });
         return '';
       }
     } catch (error) {
       console.error('[OCR] Error:', error);
-      toast.error('OCR-Fehler: ' + error.message);
+      toast.error('OCR-Fehler: ' + error.message, { id: 'ocr-process' });
       return '';
     }
   };
