@@ -118,16 +118,33 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
 
   const performOCR = async (imageData) => {
     try {
-      // Simulated OCR - In production, use Tesseract.js
-      // For now, return empty to allow manual input
-      console.log('[OCR] Processing image...');
+      console.log('[OCR] Initializing Tesseract worker...');
       
-      // TODO: Integrate Tesseract.js here
-      // const result = await Tesseract.recognize(imageData, 'deu', {
-      //   tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-',
-      // });
+      const worker = await createWorker('deu', 1, {
+        logger: m => console.log('[OCR]', m)
+      });
       
-      return '';
+      // Configure for license plate recognition
+      await worker.setParameters({
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789- ',
+        tessedit_pageseg_mode: '7', // Treat image as a single text line
+      });
+      
+      console.log('[OCR] Recognizing text...');
+      const { data: { text } } = await worker.recognize(imageData);
+      
+      await worker.terminate();
+      
+      // Clean up the recognized text
+      let cleanedText = text
+        .toUpperCase()
+        .replace(/[^A-Z0-9-\s]/g, '')
+        .replace(/\s+/g, '-')
+        .trim();
+      
+      console.log('[OCR] Recognized:', cleanedText);
+      
+      return cleanedText;
     } catch (error) {
       console.error('[OCR] Error:', error);
       return '';
