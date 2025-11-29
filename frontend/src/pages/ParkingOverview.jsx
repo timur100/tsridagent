@@ -40,25 +40,31 @@ const ParkingOverview = () => {
     else setRefreshing(true);
     
     try {
+      console.log('[ParkingOverview] Loading data...');
+      
       const [statsResult, sessionsResult, configResult] = await Promise.all([
         apiCall('/api/parking/stats'),
         apiCall('/api/parking/active'),
         apiCall('/api/parking/config')
       ]);
 
-      if (statsResult.success) {
+      console.log('[ParkingOverview] Stats result:', statsResult);
+      console.log('[ParkingOverview] Sessions result:', sessionsResult);
+      console.log('[ParkingOverview] Config result:', configResult);
+
+      if (statsResult && statsResult.success) {
         setStats(statsResult.data);
       }
 
-      if (sessionsResult.success) {
-        setActiveSessions(sessionsResult.data.sessions);
+      if (sessionsResult && sessionsResult.success) {
+        setActiveSessions(sessionsResult.data.sessions || []);
       }
 
-      if (configResult.success) {
+      if (configResult && configResult.success) {
         setConfig(configResult.data);
       }
     } catch (error) {
-      console.error('Error loading parking data:', error);
+      console.error('[ParkingOverview] Error loading parking data:', error);
       if (!silent) {
         toast.error('Fehler beim Laden der Parkdaten');
       }
