@@ -2763,10 +2763,245 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
+                    {/* Fastfood Bestellsystem */}
+                    {rndTab === 'fastfood-system' && (
+                      <div className="w-full">
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'menu', label: 'Menü-Verwaltung', icon: UtensilsCrossed },
+                            { id: 'orders', label: 'Bestellungen', icon: ShoppingCart },
+                            { id: 'analytics', label: 'Analysen', icon: FileText }
+                          ]}
+                          activeTab={fastfoodSubTab}
+                          onTabChange={setFastfoodSubTab}
+                        />
+
+                        {fastfoodSubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Fastfood Bestellsystem
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Digitales Bestell- und Verwaltungssystem für Fastfood-Restaurants
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-orange-500 bg-opacity-10 rounded-lg">
+                                  <UtensilsCrossed className="h-8 w-8 text-orange-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Digitale Menü-Karten mit Bildern</li>
+                                    <li>✓ Self-Service Kiosk-System</li>
+                                    <li>✓ Mobile App Bestellung</li>
+                                    <li>✓ Echtzeit-Küchen-Display</li>
+                                    <li>✓ Zahlungsintegration (Karte, Cash, Mobile)</li>
+                                    <li>✓ Gutschein & Rabatt-System</li>
+                                    <li>✓ Umsatz & Verkaufsanalysen</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Fastfood Bestellsystem wird konzipiert
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {fastfoodSubTab === 'menu' && (
+                          <div className="text-center p-12">
+                            <UtensilsCrossed className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Menü-Verwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {fastfoodSubTab === 'orders' && (
+                          <div className="text-center p-12">
+                            <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Bestellungen - In Entwicklung</p>
+                          </div>
+                        )}
+                        {fastfoodSubTab === 'analytics' && (
+                          <div className="text-center p-12">
+                            <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Analysen - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Lieferservice */}
+                    {rndTab === 'delivery-service' && (
+                      <div className="w-full">
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'orders', label: 'Aufträge', icon: Package },
+                            { id: 'drivers', label: 'Fahrer', icon: Users },
+                            { id: 'tracking', label: 'Live-Tracking', icon: Navigation }
+                          ]}
+                          activeTab={deliverySubTab}
+                          onTabChange={setDeliverySubTab}
+                        />
+
+                        {deliverySubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Lieferservice Management
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Vollständige Lösung für Lieferdienst-Verwaltung und Logistik
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                                  <Truck className="h-8 w-8 text-blue-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ Auftrags-Management System</li>
+                                    <li>✓ Echtzeit GPS-Tracking</li>
+                                    <li>✓ Fahrer-App mit Navigation</li>
+                                    <li>✓ Automatische Routenoptimierung</li>
+                                    <li>✓ Kunden-Benachrichtigungen (SMS/Push)</li>
+                                    <li>✓ Liefer-Zeitfenster-Planung</li>
+                                    <li>✓ Proof of Delivery (Foto/Signatur)</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Lieferservice-System wird entwickelt
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {deliverySubTab === 'orders' && (
+                          <div className="text-center p-12">
+                            <Package className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Auftrags-Verwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {deliverySubTab === 'drivers' && (
+                          <div className="text-center p-12">
+                            <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Fahrer-Management - In Entwicklung</p>
+                          </div>
+                        )}
+                        {deliverySubTab === 'tracking' && (
+                          <div className="text-center p-12">
+                            <Navigation className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Live-Tracking - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Mobility Services */}
+                    {rndTab === 'mobility-services' && (
+                      <div className="w-full">
+                        <SubTabNavigation
+                          tabs={[
+                            { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+                            { id: 'vehicles', label: 'Fahrzeuge', icon: Car },
+                            { id: 'bookings', label: 'Buchungen', icon: Calendar },
+                            { id: 'routes', label: 'Routen', icon: Navigation }
+                          ]}
+                          activeTab={mobilitySubTab}
+                          onTabChange={setMobilitySubTab}
+                        />
+
+                        {mobilitySubTab === 'overview' && (
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Mobility Services
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Shared Mobility, Carsharing und Mikromobilität-Lösungen
+                              </p>
+                            </div>
+                            
+                            <Card className={`p-6 mb-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-green-500 bg-opacity-10 rounded-lg">
+                                  <Bike className="h-8 w-8 text-green-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <ul className={`space-y-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <li>✓ E-Scooter & E-Bike Sharing</li>
+                                    <li>✓ Carsharing-Platform</li>
+                                    <li>✓ Mobile App mit GPS-Suche</li>
+                                    <li>✓ Flexibles Preismodell (Minuten/Stunden/Tage)</li>
+                                    <li>✓ IoT-Integration (Smart Locks)</li>
+                                    <li>✓ Wartungs- & Batterie-Management</li>
+                                    <li>✓ Multimodal Routing</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </Card>
+                            <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                In Planung
+                              </h3>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                Mobility Services-Platform wird konzipiert
+                              </p>
+                            </Card>
+                          </div>
+                        )}
+
+                        {mobilitySubTab === 'vehicles' && (
+                          <div className="text-center p-12">
+                            <Car className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Fahrzeug-Verwaltung - In Entwicklung</p>
+                          </div>
+                        )}
+                        {mobilitySubTab === 'bookings' && (
+                          <div className="text-center p-12">
+                            <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Buchungs-System - In Entwicklung</p>
+                          </div>
+                        )}
+                        {mobilitySubTab === 'routes' && (
+                          <div className="text-center p-12">
+                            <Navigation className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+                            <p className="text-gray-500">Routen-Planung - In Entwicklung</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     {/* Default Placeholder für alle anderen Tabs */}
                     {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
-                        'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system'].includes(rndTab) && (
+                        'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system',
+                        'fastfood-system', 'delivery-service', 'mobility-services'].includes(rndTab) && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
