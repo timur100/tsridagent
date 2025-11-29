@@ -400,7 +400,7 @@ async def get_parking_stats(user: dict = Depends(verify_token)):
         {"$group": {"_id": None, "total": {"$sum": "$penalty_amount"}}}
     ]
     penalty_result = list(db.parking_violations.aggregate(pipeline))
-    total_penalty_amount = penalty_result[0]["total"] if penalty_result else 0
+    total_penalty_amount = penalty_result[0]["total"] if penalty_result and penalty_result[0]["total"] is not None else 0.0
     
     return {
         "success": True,
