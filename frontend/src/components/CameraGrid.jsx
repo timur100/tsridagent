@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Video, Maximize2, X, Grid3x3, Grid2x2, LayoutGrid } from 'lucide-react';
+import { Video, Maximize2, X, Grid3x3, Grid2x2, LayoutGrid, Webcam } from 'lucide-react';
 import { Card } from './ui/card';
 
 const CameraGrid = () => {
@@ -11,10 +11,22 @@ const CameraGrid = () => {
   const [loading, setLoading] = useState(true);
   const [fullscreenCamera, setFullscreenCamera] = useState(null);
   const [gridSize, setGridSize] = useState('2x2'); // 2x2, 3x3, 4x4
+  const [showWebcam, setShowWebcam] = useState(false);
+  const [webcamStream, setWebcamStream] = useState(null);
+  const videoRefs = useRef([]);
 
   useEffect(() => {
     loadCameras();
   }, []);
+
+  useEffect(() => {
+    if (showWebcam) {
+      startWebcam();
+    } else {
+      stopWebcam();
+    }
+    return () => stopWebcam();
+  }, [showWebcam]);
 
   const loadCameras = async () => {
     try {
