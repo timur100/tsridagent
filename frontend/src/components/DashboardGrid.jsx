@@ -251,7 +251,12 @@ const DashboardGrid = ({ children }) => {
             </div>
           </div>
         ))}
-      </ResponsiveGridLayout>
+        </ResponsiveGridLayout>
+      ) : (
+        <div className="text-center p-8">
+          <p className="text-gray-500">Loading dashboard layout...</p>
+        </div>
+      )}
 
       {/* Custom CSS for grid items */}
       <style>{`
