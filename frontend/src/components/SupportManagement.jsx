@@ -580,30 +580,46 @@ const SupportManagement = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead>
-                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Ticket-Nr.
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Titel
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Kunde
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Status
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Online
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Priorität
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Erstellt
                   </th>
-                  <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`}>
                     Zuordnung
                   </th>
                 </tr>
