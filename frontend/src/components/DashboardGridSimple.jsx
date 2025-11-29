@@ -58,21 +58,43 @@ const DashboardGridSimple = ({ children }) => {
 
   const saveLayout = async () => {
     try {
-      // Convert order to layout format
-      const layout = cardOrder.map((cardIndex, position) => ({
-        i: `card-${cardIndex}`,
-        x: position % 4,
-        y: Math.floor(position / 4),
-        w: 1,
-        h: 1
-      }));
+      // Merge real cards and dummy cards
+      const allItems = [];
+      const totalItems = cardOrder.length + dummyCards.length;
+      
+      let cardIdx = 0;
+      let dummyIdx = 0;
+      
+      for (let i = 0; i < totalItems; i++) {
+        const isDummy = dummyCards.some(d => d.position === i);
+        if (isDummy) {
+          const dummy = dummyCards.find(d => d.position === i);
+          allItems.push({
+            i: dummy.id,
+            x: i % 4,
+            y: Math.floor(i / 4),
+            w: 1,
+            h: 1
+          });
+          dummyIdx++;
+        } else if (cardIdx < cardOrder.length) {
+          allItems.push({
+            i: `card-${cardOrder[cardIdx]}`,
+            x: i % 4,
+            y: Math.floor(i / 4),
+            w: 1,
+            h: 1
+          });
+          cardIdx++;
+        }
+      }
 
       const result = await apiCall('/api/dashboard/layout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ layout }),
+        body: JSON.stringify({ layout: allItems }),
       });
 
       if (result.success) {
