@@ -839,83 +839,446 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_mongodb_persistence_verification(self):
-        """Test MongoDB persistence - Verify parking data is stored correctly"""
+    def test_get_active_sessions_api(self):
+        """Test GET /api/parking/active - Get currently active parking sessions"""
         try:
-            # Check MongoDB directly for the layout that was just saved
-            from pymongo import MongoClient
-            import os
+            response = self.session.get(f"{API_BASE}/parking/active")
             
-            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-            db_name = os.environ.get('DB_NAME', 'verification_db')
-            client = MongoClient(mongo_url)
-            db = client[db_name]
-            
-            # Find the global layout document
-            layout_doc = db.dashboard_layouts.find_one({"type": "global"})
-            
-            if not layout_doc:
+            if response.status_code != 200:
                 self.log_result(
-                    "MongoDB Persistence Verification",
+                    "GET Active Sessions API",
                     False,
-                    "Layout document not found in dashboard_layouts collection"
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
                 )
                 return False
             
-            # Verify layout data exists
-            if "layout" not in layout_doc:
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
                 self.log_result(
-                    "MongoDB Persistence Verification",
+                    "GET Active Sessions API",
                     False,
-                    "Layout field missing in MongoDB document",
-                    layout_doc
+                    "Response indicates failure",
+                    data
                 )
                 return False
             
-            stored_layout = layout_doc["layout"]
-            
-            # Verify the layout matches what we saved (should have 3 cards from the save test)
-            if not isinstance(stored_layout, list) or len(stored_layout) != 3:
+            # Check data structure
+            if "data" not in data:
                 self.log_result(
-                    "MongoDB Persistence Verification",
+                    "GET Active Sessions API",
                     False,
-                    f"Stored layout should have 3 cards, got {len(stored_layout) if isinstance(stored_layout, list) else 'non-list'}",
-                    stored_layout
+                    "Missing 'data' field in response",
+                    data
                 )
                 return False
             
-            # Verify metadata fields
-            required_fields = ["type", "updated_at", "updated_by"]
+            active_data = data["data"]
+            required_fields = ["active_count", "sessions"]
+            
             for field in required_fields:
-                if field not in layout_doc:
+                if field not in active_data:
                     self.log_result(
-                        "MongoDB Persistence Verification",
+                        "GET Active Sessions API",
                         False,
-                        f"Missing metadata field in MongoDB: {field}",
-                        layout_doc
+                        f"Missing required field in data: {field}",
+                        data
                     )
                     return False
             
-            # Verify the type is global
-            if layout_doc["type"] != "global":
+            # Verify sessions is a list
+            if not isinstance(active_data["sessions"], list):
                 self.log_result(
-                    "MongoDB Persistence Verification",
+                    "GET Active Sessions API",
                     False,
-                    f"Layout type should be 'global', got '{layout_doc['type']}'",
-                    layout_doc
+                    f"Sessions should be a list, got {type(active_data['sessions'])}",
+                    data
+                )
+                return False
+            
+            # Verify count matches array length
+            if active_data["active_count"] != len(active_data["sessions"]):
+                self.log_result(
+                    "GET Active Sessions API",
+                    False,
+                    f"Active count mismatch: count={active_data['active_count']}, array length={len(active_data['sessions'])}",
+                    data
                 )
                 return False
             
             self.log_result(
-                "MongoDB Persistence Verification",
+                "GET Active Sessions API",
                 True,
-                f"Successfully verified layout persistence in MongoDB collection 'dashboard_layouts' with {len(stored_layout)} cards (type={layout_doc['type']}, updated_by={layout_doc['updated_by']})"
+                f"Successfully retrieved active sessions: {active_data['active_count']} active sessions"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "MongoDB Persistence Verification",
+                "GET Active Sessions API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_parking_sessions_api(self):
+        """Test GET /api/parking/sessions - Get parking history"""
+        try:
+            response = self.session.get(f"{API_BASE}/parking/sessions?limit=50")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Parking Sessions API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Parking Sessions API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Parking Sessions API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            sessions_data = data["data"]
+            required_fields = ["total", "sessions"]
+            
+            for field in required_fields:
+                if field not in sessions_data:
+                    self.log_result(
+                        "GET Parking Sessions API",
+                        False,
+                        f"Missing required field in data: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify sessions is a list
+            if not isinstance(sessions_data["sessions"], list):
+                self.log_result(
+                    "GET Parking Sessions API",
+                    False,
+                    f"Sessions should be a list, got {type(sessions_data['sessions'])}",
+                    data
+                )
+                return False
+            
+            # Should have at least our test sessions
+            if len(sessions_data["sessions"]) < 3:  # We created at least 3 test sessions
+                self.log_result(
+                    "GET Parking Sessions API",
+                    False,
+                    f"Expected at least 3 sessions from our tests, got {len(sessions_data['sessions'])}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "GET Parking Sessions API",
+                True,
+                f"Successfully retrieved parking sessions: {len(sessions_data['sessions'])} sessions, total: {sessions_data['total']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Parking Sessions API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_violations_api(self):
+        """Test GET /api/parking/violations - Get parking violations"""
+        try:
+            response = self.session.get(f"{API_BASE}/parking/violations?limit=50")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Violations API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Violations API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Violations API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            violations_data = data["data"]
+            required_fields = ["total", "violations"]
+            
+            for field in required_fields:
+                if field not in violations_data:
+                    self.log_result(
+                        "GET Violations API",
+                        False,
+                        f"Missing required field in data: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify violations is a list
+            if not isinstance(violations_data["violations"], list):
+                self.log_result(
+                    "GET Violations API",
+                    False,
+                    f"Violations should be a list, got {type(violations_data['violations'])}",
+                    data
+                )
+                return False
+            
+            # Should have at least 2 violations from our tests (overstay + multiple entry)
+            if len(violations_data["violations"]) < 2:
+                self.log_result(
+                    "GET Violations API",
+                    False,
+                    f"Expected at least 2 violations from our tests, got {len(violations_data['violations'])}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "GET Violations API",
+                True,
+                f"Successfully retrieved violations: {len(violations_data['violations'])} violations, total: {violations_data['total']}"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Violations API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_parking_stats_api(self):
+        """Test GET /api/parking/stats - Get parking statistics"""
+        try:
+            response = self.session.get(f"{API_BASE}/parking/stats")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Parking Stats API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Parking Stats API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Parking Stats API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            stats_data = data["data"]
+            required_fields = ["active_sessions", "sessions_today", "total_violations", 
+                             "pending_violations", "total_penalty_amount"]
+            
+            for field in required_fields:
+                if field not in stats_data:
+                    self.log_result(
+                        "GET Parking Stats API",
+                        False,
+                        f"Missing required field in stats: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify field types
+            for field in required_fields:
+                if not isinstance(stats_data[field], (int, float)):
+                    self.log_result(
+                        "GET Parking Stats API",
+                        False,
+                        f"Stats field {field} should be number, got {type(stats_data[field])}",
+                        data
+                    )
+                    return False
+            
+            # Verify we have some violations and penalty amount from our tests
+            if stats_data["total_violations"] < 2:
+                self.log_result(
+                    "GET Parking Stats API",
+                    False,
+                    f"Expected at least 2 total violations from our tests, got {stats_data['total_violations']}",
+                    data
+                )
+                return False
+            
+            if stats_data["total_penalty_amount"] < 70.0:  # 20€ + 50€ from our tests
+                self.log_result(
+                    "GET Parking Stats API",
+                    False,
+                    f"Expected at least €70 total penalty from our tests, got €{stats_data['total_penalty_amount']}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "GET Parking Stats API",
+                True,
+                f"Successfully retrieved parking stats: {stats_data['active_sessions']} active, {stats_data['total_violations']} violations, €{stats_data['total_penalty_amount']} total penalties"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Parking Stats API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_whitelist_api(self):
+        """Test GET /api/parking/whitelist - Get whitelist entries"""
+        try:
+            response = self.session.get(f"{API_BASE}/parking/whitelist")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check data structure
+            if "data" not in data:
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            whitelist_data = data["data"]
+            
+            if "entries" not in whitelist_data:
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    "Missing 'entries' field in data",
+                    data
+                )
+                return False
+            
+            # Verify entries is a list
+            if not isinstance(whitelist_data["entries"], list):
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    f"Entries should be a list, got {type(whitelist_data['entries'])}",
+                    data
+                )
+                return False
+            
+            # Should have at least our test entry
+            if len(whitelist_data["entries"]) < 1:
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    f"Expected at least 1 whitelist entry from our test, got {len(whitelist_data['entries'])}",
+                    data
+                )
+                return False
+            
+            # Verify our test entry exists
+            test_entry_found = False
+            for entry in whitelist_data["entries"]:
+                if entry.get("license_plate") == "TEST-004":
+                    test_entry_found = True
+                    break
+            
+            if not test_entry_found:
+                self.log_result(
+                    "GET Whitelist API",
+                    False,
+                    "Test whitelist entry TEST-004 not found in response",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "GET Whitelist API",
+                True,
+                f"Successfully retrieved whitelist: {len(whitelist_data['entries'])} entries, including our test entry TEST-004"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "GET Whitelist API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
