@@ -390,6 +390,28 @@ const DashboardGridSimple = ({ children }) => {
           });
         })()}
       </div>
+
+      {/* Custom CSS for equal height cards */}
+      <style>{`
+        /* Ensure all cards have the same height */
+        .grid > div {
+          display: flex;
+          flex-direction: column;
+        }
+        
+        .grid > div > div:last-child {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+        }
+        
+        /* Make all Card components fill their container */
+        .grid > div > div:last-child > * {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+        }
+      `}</style>
     </div>
   );
 };
