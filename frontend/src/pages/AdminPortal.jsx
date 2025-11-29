@@ -994,7 +994,7 @@ const AdminPortalContent = () => {
                 </h2>
               )}
               
-              <DashboardGrid>
+              <DashboardGridSimple>
                 {/* Total Customers - nur anzeigen wenn "Alle Kunden" */}
                 {(selectedCustomer === 'all' && !isTenantAdmin) && (
                   <Card 
