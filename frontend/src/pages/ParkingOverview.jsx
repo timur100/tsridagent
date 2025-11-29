@@ -349,8 +349,8 @@ const ParkingOverview = () => {
         </Card>
       )}
 
-      {/* Live Video Feed, License Plate Recognition, and Entry Form */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      {/* Live Video Feed and License Plate Recognition */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Live Camera Feed */}
         <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
           <div className="flex items-center justify-between mb-4">
