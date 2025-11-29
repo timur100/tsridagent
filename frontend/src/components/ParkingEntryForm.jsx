@@ -120,33 +120,55 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
     try {
       console.log('[OCR] Initializing Tesseract worker...');
       
+      // Create worker with German language support
       const worker = await createWorker('deu', 1, {
-        logger: m => console.log('[OCR]', m)
+        logger: m => console.log('[OCR]', m.status, m.progress)
       });
       
-      // Configure for license plate recognition
+      // Configure for better handwritten text recognition
       await worker.setParameters({
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜ0123456789- ',
-        tessedit_pageseg_mode: '7', // Treat image as a single text line
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜabcdefghijklmnopqrstuvwxyzäöü0123456789- ',
+        tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+        preserve_interword_spaces: '1',
+        // Better for handwriting
+        tessedit_ocr_engine_mode: '1', // Use LSTM OCR Engine Mode (better for handwriting)
       });
       
       console.log('[OCR] Recognizing text...');
-      const { data: { text } } = await worker.recognize(imageData);
+      const { data: { text, confidence } } = await worker.recognize(imageData);
+      
+      console.log('[OCR] Raw text:', text);
+      console.log('[OCR] Confidence:', confidence);
       
       await worker.terminate();
       
       // Clean up the recognized text
       let cleanedText = text
         .toUpperCase()
-        .replace(/[^A-Z0-9-\s]/g, '')
-        .replace(/\s+/g, '-')
+        .replace(/\n/g, ' ') // Remove newlines
+        .replace(/[^A-ZÄÖÜ0-9-\s]/g, '') // Keep only valid characters
+        .replace(/\s+/g, ' ') // Normalize spaces
         .trim();
       
-      console.log('[OCR] Recognized:', cleanedText);
+      // Try to format as license plate (e.g., "B AB 1234" -> "B-AB-1234")
+      cleanedText = cleanedText.replace(/\s+/g, '-');
       
-      return cleanedText;
+      // Remove consecutive dashes
+      cleanedText = cleanedText.replace(/-+/g, '-');
+      
+      console.log('[OCR] Cleaned text:', cleanedText);
+      console.log('[OCR] Confidence:', Math.round(confidence) + '%');
+      
+      // Only return if confidence is reasonable
+      if (confidence > 30 && cleanedText.length >= 3) {
+        return cleanedText;
+      } else {
+        console.log('[OCR] Low confidence or too short, ignoring result');
+        return '';
+      }
     } catch (error) {
       console.error('[OCR] Error:', error);
+      toast.error('OCR-Fehler: ' + error.message);
       return '';
     }
   };
