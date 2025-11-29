@@ -228,7 +228,7 @@ const CameraGrid = () => {
             className={`relative overflow-hidden cursor-pointer group ${
               theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
             }`}
-            onClick={() => !camera.isWebcam && setFullscreenCamera(camera)}
+            onClick={() => setFullscreenCamera(camera)}
           >
             {/* Camera Preview */}
             <div className="aspect-video bg-gray-900 relative">
