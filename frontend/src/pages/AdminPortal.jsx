@@ -1701,15 +1701,62 @@ const AdminPortalContent = () => {
                         />
 
                         {facematchSubTab === 'overview' && (
-                          <div className="mb-6">
-                            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                              Facematch - Biometrische Gesichtserkennung
-                            </h2>
-                            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                              KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
-                            </p>
+                          <div>
+                            <div className="mb-6">
+                              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                Facematch - Biometrische Gesichtserkennung
+                              </h2>
+                              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                KI-gestützte Gesichtserkennung mit 468 Landmarks, Iris-Tracking und automatischer Hintergrund-Entfernung
+                              </p>
+                            </div>
+
+                            <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                              <div className="flex items-start gap-4">
+                                <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
+                                  <UserCheck className="h-8 w-8 text-blue-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    Features
+                                  </h3>
+                                  <div className="flex flex-wrap gap-2 mb-6">
+                                    <span className="px-3 py-1.5 text-sm font-medium bg-green-500 bg-opacity-10 text-green-500 rounded-lg">
+                                      ✓ MediaPipe Face Mesh
+                                    </span>
+                                    <span className="px-3 py-1.5 text-sm font-medium bg-blue-500 bg-opacity-10 text-blue-500 rounded-lg">
+                                      ✓ Iris Tracking
+                                    </span>
+                                    <span className="px-3 py-1.5 text-sm font-medium bg-purple-500 bg-opacity-10 text-purple-500 rounded-lg">
+                                      ✓ Auto-Capture
+                                    </span>
+                                    <span className="px-3 py-1.5 text-sm font-medium bg-orange-500 bg-opacity-10 text-orange-500 rounded-lg">
+                                      ✓ Background Removal
+                                    </span>
+                                  </div>
+                                  
+                                  <div className={`mb-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
+                                    <h4 className={`font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                      Beschreibung
+                                    </h4>
+                                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                      Hochpräzise Gesichtserkennung für biometrische Authentifizierung. Das System nutzt Google MediaPipe für 
+                                      Echtzeit-Gesichtsmesh-Erkennung mit 468 Landmarks und automatischer Position-Optimierung.
+                                    </p>
+                                  </div>
+                                  
+                                  <button
+                                    onClick={() => navigate('/portal/admin/id-checks/facematch')}
+                                    className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                                  >
+                                    Facematch starten →
+                                  </button>
+                                </div>
+                              </div>
+                            </Card>
                           </div>
                         )}
+                        
                         {facematchSubTab === 'compare' && (
                           <div className="text-center p-12">
                             <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
@@ -1728,52 +1775,6 @@ const AdminPortalContent = () => {
                             <p className="text-gray-500">Einstellungen - In Entwicklung</p>
                           </div>
                         )}
-                        
-                        {facematchSubTab === 'overview' && (
-                        
-                        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <div className="flex items-start gap-4">
-                            <div className="p-3 bg-blue-500 bg-opacity-10 rounded-lg">
-                              <UserCheck className="h-8 w-8 text-blue-500" />
-                            </div>
-                            <div className="flex-1">
-                              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                Features
-                              </h3>
-                              <div className="flex flex-wrap gap-2 mb-6">
-                                <span className="px-3 py-1.5 text-sm font-medium bg-green-500 bg-opacity-10 text-green-500 rounded-lg">
-                                  ✓ MediaPipe Face Mesh
-                                </span>
-                                <span className="px-3 py-1.5 text-sm font-medium bg-blue-500 bg-opacity-10 text-blue-500 rounded-lg">
-                                  ✓ Iris Tracking
-                                </span>
-                                <span className="px-3 py-1.5 text-sm font-medium bg-purple-500 bg-opacity-10 text-purple-500 rounded-lg">
-                                  ✓ Auto-Capture
-                                </span>
-                                <span className="px-3 py-1.5 text-sm font-medium bg-orange-500 bg-opacity-10 text-orange-500 rounded-lg">
-                                  ✓ Background Removal
-                                </span>
-                              </div>
-                              
-                              <div className={`mb-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'}`}>
-                                <h4 className={`font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                  Beschreibung
-                                </h4>
-                                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  Hochpräzise Gesichtserkennung für biometrische Authentifizierung. Das System nutzt Google MediaPipe für 
-                                  Echtzeit-Gesichtsmesh-Erkennung mit 468 Landmarks und automatischer Position-Optimierung.
-                                </p>
-                              </div>
-                              
-                              <button
-                                onClick={() => navigate('/portal/admin/id-checks/facematch')}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                              >
-                                Facematch starten →
-                              </button>
-                            </div>
-                          </div>
-                        </Card>
                       </div>
                     )}
                     
