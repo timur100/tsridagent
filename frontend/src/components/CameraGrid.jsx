@@ -273,12 +273,10 @@ const CameraGrid = () => {
                 </div>
               )}
 
-              {/* Fullscreen Icon on Hover (only for non-webcam) */}
-              {!camera.isWebcam && (
-                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                  <Maximize2 className="h-8 w-8 text-white" />
-                </div>
-              )}
+              {/* Fullscreen Icon on Hover */}
+              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                <Maximize2 className="h-8 w-8 text-white" />
+              </div>
             </div>
 
             {/* Camera Info */}
