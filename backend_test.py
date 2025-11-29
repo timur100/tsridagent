@@ -1285,7 +1285,7 @@ class ParkingManagementTester:
             return False
 
     def test_authentication_enforcement(self):
-        """Test that endpoints require proper authentication"""
+        """Test that parking endpoints require proper authentication"""
         try:
             # Store current auth header
             current_auth = self.session.headers.get('Authorization')
@@ -1294,9 +1294,16 @@ class ParkingManagementTester:
             self.session.headers.pop('Authorization', None)
             
             endpoints_to_test = [
-                ("GET", f"{API_BASE}/dashboard/layout"),
-                ("POST", f"{API_BASE}/dashboard/layout"),
-                ("POST", f"{API_BASE}/dashboard/layout/reset")
+                ("GET", f"{API_BASE}/parking/config"),
+                ("PUT", f"{API_BASE}/parking/config"),
+                ("POST", f"{API_BASE}/parking/entry"),
+                ("POST", f"{API_BASE}/parking/exit"),
+                ("GET", f"{API_BASE}/parking/active"),
+                ("GET", f"{API_BASE}/parking/sessions"),
+                ("GET", f"{API_BASE}/parking/violations"),
+                ("GET", f"{API_BASE}/parking/stats"),
+                ("GET", f"{API_BASE}/parking/whitelist"),
+                ("POST", f"{API_BASE}/parking/whitelist")
             ]
             
             auth_failures = []
@@ -1306,7 +1313,9 @@ class ParkingManagementTester:
                     if method == "GET":
                         response = self.session.get(url)
                     elif method == "POST":
-                        response = self.session.post(url, json={"layout": []})
+                        response = self.session.post(url, json={"license_plate": "TEST"})
+                    elif method == "PUT":
+                        response = self.session.put(url, json={"max_free_duration_minutes": 120})
                     
                     if response.status_code == 200:
                         auth_failures.append(f"{method} {url} -> should require auth but returned 200")
@@ -1331,7 +1340,7 @@ class ParkingManagementTester:
             self.log_result(
                 "Authentication Enforcement",
                 True,
-                "All endpoints properly enforce authentication (return 401/403 without valid token)"
+                "All parking endpoints properly enforce authentication (return 401/403 without valid token)"
             )
             return True
             
