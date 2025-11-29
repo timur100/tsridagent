@@ -35,15 +35,24 @@ const DashboardGrid = ({ children }) => {
 
   const loadLayout = async () => {
     try {
+      const defaultLayout = getDefaultLayout();
+      console.log('[DashboardGrid] Default layout generated:', defaultLayout);
+      
       const result = await apiCall('/api/dashboard/layout');
+      console.log('[DashboardGrid] API response:', result);
+      
       if (result.success && result.data.layout && result.data.layout.length > 0) {
+        console.log('[DashboardGrid] Using saved layout:', result.data.layout);
         setLayout(result.data.layout);
       } else {
-        setLayout(getDefaultLayout());
+        console.log('[DashboardGrid] Using default layout');
+        setLayout(defaultLayout);
       }
     } catch (error) {
-      console.error('Error loading layout:', error);
-      setLayout(getDefaultLayout());
+      console.error('[DashboardGrid] Error loading layout:', error);
+      const defaultLayout = getDefaultLayout();
+      console.log('[DashboardGrid] Fallback to default layout:', defaultLayout);
+      setLayout(defaultLayout);
     }
   };
 
