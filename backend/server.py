@@ -263,6 +263,10 @@ app.include_router(facematch_router)
 from routes.dashboard_layout import router as dashboard_layout_router
 app.include_router(dashboard_layout_router)
 
+# Include parking management router
+from routes.parking import router as parking_router
+app.include_router(parking_router)
+
 # Include Webhooks router (for external integrations)
 from routes.webhooks import router as webhooks_router
 app.include_router(webhooks_router, prefix="/api")
