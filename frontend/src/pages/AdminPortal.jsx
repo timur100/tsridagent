@@ -84,6 +84,7 @@ const AdminPortalContent = () => {
   const [activeTab, setActiveTab] = useState(getInitialTab());
   const [selectedTenantIdForDetail, setSelectedTenantIdForDetail] = useState(null); // For TenantDetailPage navigation
   const [licenseSubTab, setLicenseSubTab] = useState('hardware'); // hardware or software
+  const [parkingSubTab, setParkingSubTab] = useState('overview'); // overview, history, violations, config, whitelist
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [customers, setCustomersState] = useState([]);
