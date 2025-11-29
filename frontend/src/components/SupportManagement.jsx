@@ -580,7 +580,7 @@ const SupportManagement = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+              <thead className={theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}>
                 <tr>
                   <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
