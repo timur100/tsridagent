@@ -25,15 +25,8 @@ class DashboardLayout(BaseModel):
     layout: List[LayoutItem]
 
 @router.get("/layout")
-async def get_dashboard_layout(authorization: Optional[str] = Header(None)):
+async def get_dashboard_layout(user: dict = Depends(verify_token)):
     """Get the global dashboard layout configuration"""
-    # Verify authentication
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    user = verify_token(authorization.replace("Bearer ", ""))
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Get global layout (not user-specific)
     layout_doc = db.dashboard_layouts.find_one(
