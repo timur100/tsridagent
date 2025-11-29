@@ -524,8 +524,9 @@ class ParkingManagementTester:
                 )
                 return False
             
-            # Step 2: Wait 2 seconds to simulate overstay (with 0 minute limit, any parking will trigger violation)
-            time.sleep(2)
+            # Step 2: Wait 61 seconds to simulate overstay (need at least 1 minute for duration calculation)
+            print("   • Waiting 61 seconds to simulate parking overstay...")
+            time.sleep(61)
             
             # Step 3: Register exit
             exit_data = {
