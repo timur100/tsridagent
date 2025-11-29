@@ -2831,7 +2831,8 @@ metadata:
 test_plan:
   current_focus:
     - "Flottenmanagement and Zutrittskontrolle Tab Navigation Testing"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Flottenmanagement and Zutrittskontrolle Tab Navigation Testing"
   test_all: false
   test_priority: "high_first"
 
