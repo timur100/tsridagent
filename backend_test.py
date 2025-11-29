@@ -246,7 +246,7 @@ class ParkingManagementTester:
         try:
             # Test configuration for overstay scenario
             config_data = {
-                "max_free_duration_minutes": 1,  # 1 minute for testing
+                "max_free_duration_minutes": 0,  # 0 minutes for testing - any parking will be overstay
                 "penalty_per_hour": 20.0,
                 "enabled": True
             }
