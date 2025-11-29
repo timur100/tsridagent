@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://auto-admin-portal-2.preview.emergentagent.com/portal/admin/id-checks
+   https://car-dashboard-13.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
