@@ -478,107 +478,76 @@ class DashboardLayoutTester:
     def test_mongodb_persistence_verification(self):
         """Test MongoDB persistence - Verify layout is stored in dashboard_layouts collection"""
         try:
-            # Check if there's already a saved layout from previous tests
-            # If not, save a new one
-            try:
-                from pymongo import MongoClient
-                import os
-                
-                mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-                db_name = os.environ.get('DB_NAME', 'test_database')
-                client = MongoClient(mongo_url)
-                db = client[db_name]
-                
-                # Check if layout already exists
-                existing_layout = db.dashboard_layouts.find_one({"type": "global"})
-                
-                if not existing_layout:
-                    # Save a layout first
-                    layout_data = {
-                        "layout": [
-                            {"i": "test-card", "x": 0, "y": 0, "w": 2, "h": 2}
-                        ]
-                    }
-                    
-                    response = self.session.post(f"{API_BASE}/dashboard/layout", json=layout_data)
-                    
-                    if response.status_code != 200:
-                        self.log_result(
-                            "MongoDB Persistence Verification",
-                            False,
-                            f"Failed to save layout for MongoDB test. Status: {response.status_code}",
-                            response.text
-                        )
-                        return False
+            # Check MongoDB directly for the layout that was just saved
+            from pymongo import MongoClient
+            import os
             
-            # Check MongoDB directly
-            try:
-                # Use the same database as the API
-                from pymongo import MongoClient
-                import os
-                
-                mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-                db_name = os.environ.get('DB_NAME', 'test_database')
-                client = MongoClient(mongo_url)
-                db = client[db_name]
-                
-                # Find the global layout document
-                layout_doc = db.dashboard_layouts.find_one({"type": "global"})
-                
-                if not layout_doc:
-                    self.log_result(
-                        "MongoDB Persistence Verification",
-                        False,
-                        "Layout document not found in dashboard_layouts collection"
-                    )
-                    return False
-                
-                # Verify layout data
-                if "layout" not in layout_doc:
-                    self.log_result(
-                        "MongoDB Persistence Verification",
-                        False,
-                        "Layout field missing in MongoDB document",
-                        layout_doc
-                    )
-                    return False
-                
-                stored_layout = layout_doc["layout"]
-                if len(stored_layout) != 1 or stored_layout[0]["i"] != "test-card":
-                    self.log_result(
-                        "MongoDB Persistence Verification",
-                        False,
-                        "Stored layout doesn't match saved data",
-                        stored_layout
-                    )
-                    return False
-                
-                # Verify metadata fields
-                required_fields = ["type", "updated_at", "updated_by"]
-                for field in required_fields:
-                    if field not in layout_doc:
-                        self.log_result(
-                            "MongoDB Persistence Verification",
-                            False,
-                            f"Missing metadata field in MongoDB: {field}",
-                            layout_doc
-                        )
-                        return False
-                
-                self.log_result(
-                    "MongoDB Persistence Verification",
-                    True,
-                    f"Successfully verified layout persistence in MongoDB collection 'dashboard_layouts' with metadata (type={layout_doc['type']}, updated_by={layout_doc['updated_by']})"
-                )
-                return True
-                
-            except Exception as mongo_error:
+            mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+            db_name = os.environ.get('DB_NAME', 'test_database')
+            client = MongoClient(mongo_url)
+            db = client[db_name]
+            
+            # Find the global layout document
+            layout_doc = db.dashboard_layouts.find_one({"type": "global"})
+            
+            if not layout_doc:
                 self.log_result(
                     "MongoDB Persistence Verification",
                     False,
-                    f"MongoDB connection error: {str(mongo_error)}"
+                    "Layout document not found in dashboard_layouts collection"
                 )
                 return False
+            
+            # Verify layout data exists
+            if "layout" not in layout_doc:
+                self.log_result(
+                    "MongoDB Persistence Verification",
+                    False,
+                    "Layout field missing in MongoDB document",
+                    layout_doc
+                )
+                return False
+            
+            stored_layout = layout_doc["layout"]
+            
+            # Verify the layout matches what we saved (should have 3 cards from the save test)
+            if not isinstance(stored_layout, list) or len(stored_layout) != 3:
+                self.log_result(
+                    "MongoDB Persistence Verification",
+                    False,
+                    f"Stored layout should have 3 cards, got {len(stored_layout) if isinstance(stored_layout, list) else 'non-list'}",
+                    stored_layout
+                )
+                return False
+            
+            # Verify metadata fields
+            required_fields = ["type", "updated_at", "updated_by"]
+            for field in required_fields:
+                if field not in layout_doc:
+                    self.log_result(
+                        "MongoDB Persistence Verification",
+                        False,
+                        f"Missing metadata field in MongoDB: {field}",
+                        layout_doc
+                    )
+                    return False
+            
+            # Verify the type is global
+            if layout_doc["type"] != "global":
+                self.log_result(
+                    "MongoDB Persistence Verification",
+                    False,
+                    f"Layout type should be 'global', got '{layout_doc['type']}'",
+                    layout_doc
+                )
+                return False
+            
+            self.log_result(
+                "MongoDB Persistence Verification",
+                True,
+                f"Successfully verified layout persistence in MongoDB collection 'dashboard_layouts' with {len(stored_layout)} cards (type={layout_doc['type']}, updated_by={layout_doc['updated_by']})"
+            )
+            return True
             
         except Exception as e:
             self.log_result(
