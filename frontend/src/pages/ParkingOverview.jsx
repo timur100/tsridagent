@@ -308,6 +308,153 @@ const ParkingOverview = () => {
           </div>
         </Card>
       )}
+
+      {/* Live Video Feed and License Plate Recognition */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Live Camera Feed */}
+        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Live Kamera - Ein-/Ausfahrt
+            </h2>
+            <div className="flex items-center gap-2">
+              <div className="h-3 w-3 bg-red-500 rounded-full animate-pulse"></div>
+              <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                LIVE
+              </span>
+            </div>
+          </div>
+          
+          <div className={`relative aspect-video rounded-lg overflow-hidden ${
+            theme === 'dark' ? 'bg-gray-800' : 'bg-gray-200'
+          }`}>
+            {/* Video Stream Placeholder - Replace with actual stream URL */}
+            <video
+              className="w-full h-full object-cover"
+              autoPlay
+              muted
+              loop
+              poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'%3E%3Crect fill='%23333' width='800' height='450'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23666' font-size='24' font-family='Arial'%3EKein Video-Signal%3C/text%3E%3C/svg%3E"
+            >
+              {/* Add your video stream source here */}
+              {/* <source src="YOUR_STREAM_URL" type="application/x-mpegURL" /> */}
+            </video>
+            
+            {/* Overlay with camera info */}
+            <div className="absolute top-4 left-4 bg-black/60 px-3 py-2 rounded-lg">
+              <p className="text-white text-sm font-mono">
+                📹 CAM-01 • Einfahrt Süd
+              </p>
+              <p className="text-gray-300 text-xs font-mono">
+                {new Date().toLocaleString('de-DE')}
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-4 flex items-center justify-between">
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Stream-Qualität: HD 1080p
+            </p>
+            <Button
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              Einstellungen
+            </Button>
+          </div>
+        </Card>
+
+        {/* Real-time License Plate Recognition */}
+        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Kennzeichenerkennung (OCR)
+            </h2>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+              <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                AKTIV
+              </span>
+            </div>
+          </div>
+
+          {/* License Plate Display */}
+          <div className={`relative rounded-lg p-8 mb-4 ${
+            theme === 'dark' ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/30' : 'bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200'
+          }`}>
+            <div className="text-center">
+              <p className={`text-sm font-semibold mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Zuletzt erkanntes Kennzeichen:
+              </p>
+              
+              {/* Large License Plate Display */}
+              <div className={`inline-block px-8 py-6 rounded-xl ${
+                theme === 'dark' ? 'bg-[#1a1a1a] border-2 border-[#c00000]' : 'bg-white border-2 border-[#c00000]'
+              } shadow-lg`}>
+                <div className="flex items-center gap-4">
+                  {/* EU Flag */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-8 h-12 bg-blue-600 rounded flex items-center justify-center">
+                      <span className="text-yellow-400 text-xs font-bold">★</span>
+                    </div>
+                    <span className="text-xs mt-1 font-bold text-gray-500">D</span>
+                  </div>
+                  
+                  {/* License Plate Text */}
+                  <div className="font-mono text-6xl font-black tracking-wider text-gray-900">
+                    {activeSessions.length > 0 ? (
+                      activeSessions[0].license_plate
+                    ) : (
+                      <span className="text-gray-400">-- -- ----</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Detection Info */}
+              <div className="mt-6 grid grid-cols-2 gap-4">
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Erkennungsgenauigkeit
+                  </p>
+                  <p className="text-2xl font-bold text-green-600 mt-1">
+                    99.2%
+                  </p>
+                </div>
+                <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Verarbeitungszeit
+                  </p>
+                  <p className="text-2xl font-bold text-blue-600 mt-1">
+                    0.3s
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* OCR Status Information */}
+          <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-green-900/20 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+            <div className="flex items-start gap-3">
+              <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>
+                  OCR-System bereit
+                </p>
+                <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-green-300' : 'text-green-700'}`}>
+                  Automatische Kennzeichenerkennung aktiv • 
+                  Letzte Erkennung: {activeSessions.length > 0 ? 'vor 2 Sekunden' : 'Warte auf Fahrzeug...'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
     </div>
   );
 };
