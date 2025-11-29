@@ -2827,7 +2827,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SubTabNavigation Component Testing for 6 R&D Sections"
+    - "Flottenmanagement and Zutrittskontrolle Tab Navigation Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
