@@ -57,7 +57,7 @@ const DashboardGrid = ({ children }) => {
     try {
       // Filter layout to only include required fields for backend
       const cleanLayout = layout.map(item => ({
-        i: item.i,
+        i: item.i.split('/')[0], // Remove React key suffix (e.g., "card-0/.0" -> "card-0")
         x: item.x,
         y: item.y,
         w: item.w,
