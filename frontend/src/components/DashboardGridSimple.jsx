@@ -355,10 +355,9 @@ const DashboardGridSimple = ({ children }) => {
                   onDragStart={(e) => handleDragStart(e, item.position)}
                   onDragOver={(e) => handleDragOver(e, item.position)}
                   onDragEnd={handleDragEnd}
-                  className={`relative transition-all duration-200 ${
+                  className={`relative transition-all duration-200 h-full ${
                     isEditMode ? 'cursor-move' : ''
                   } ${draggedIndex === item.position ? 'opacity-50' : ''}`}
-                  style={{ minHeight: '180px' }}
                 >
                   <div className={`h-full rounded-xl border-2 border-dashed flex items-center justify-center ${
                     theme === 'dark'
@@ -391,10 +390,9 @@ const DashboardGridSimple = ({ children }) => {
                   onDragStart={(e) => handleDragStart(e, item.position)}
                   onDragOver={(e) => handleDragOver(e, item.position)}
                   onDragEnd={handleDragEnd}
-                  className={`relative transition-all duration-200 ${
+                  className={`relative transition-all duration-200 h-full ${
                     isEditMode ? 'cursor-move' : ''
                   } ${draggedIndex === item.position ? 'opacity-50' : ''}`}
-                  style={{ minHeight: '180px' }}
                 >
                   {/* Drag Handle */}
                   {isEditMode && (
