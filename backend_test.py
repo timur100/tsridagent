@@ -573,60 +573,64 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_delete_vehicle_api(self):
-        """Test DELETE /api/vehicles/{vehicle_id} - Fahrzeug löschen"""
+    def test_authentication_enforcement(self):
+        """Test that endpoints require proper authentication"""
         try:
-            if not self.test_vehicle_id:
+            # Store current auth header
+            current_auth = self.session.headers.get('Authorization')
+            
+            # Test without authentication
+            self.session.headers.pop('Authorization', None)
+            
+            endpoints_to_test = [
+                ("GET", f"{API_BASE}/dashboard/layout"),
+                ("POST", f"{API_BASE}/dashboard/layout"),
+                ("POST", f"{API_BASE}/dashboard/layout/reset")
+            ]
+            
+            auth_failures = []
+            
+            for method, url in endpoints_to_test:
+                try:
+                    if method == "GET":
+                        response = self.session.get(url)
+                    elif method == "POST":
+                        response = self.session.post(url, json={"layout": []})
+                    
+                    if response.status_code == 200:
+                        auth_failures.append(f"{method} {url} -> should require auth but returned 200")
+                    elif response.status_code not in [401, 403]:
+                        auth_failures.append(f"{method} {url} -> unexpected status {response.status_code}")
+                        
+                except Exception as e:
+                    auth_failures.append(f"{method} {url} -> exception: {str(e)}")
+            
+            # Restore authentication
+            if current_auth:
+                self.session.headers['Authorization'] = current_auth
+            
+            if auth_failures:
                 self.log_result(
-                    "DELETE Vehicle API",
+                    "Authentication Enforcement",
                     False,
-                    "No test vehicle ID available"
-                )
-                return False
-            
-            response = self.session.delete(f"{API_BASE}/vehicles/{self.test_vehicle_id}")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "DELETE Vehicle API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "DELETE Vehicle API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check for expected message
-            if data.get("message") != "Vehicle deleted successfully":
-                self.log_result(
-                    "DELETE Vehicle API",
-                    False,
-                    f"Unexpected message: {data.get('message')}",
-                    data
+                    f"Authentication issues found: {auth_failures}"
                 )
                 return False
             
             self.log_result(
-                "DELETE Vehicle API",
+                "Authentication Enforcement",
                 True,
-                f"Successfully deleted vehicle with ID: {self.test_vehicle_id}"
+                "All endpoints properly enforce authentication (return 401/403 without valid token)"
             )
             return True
             
         except Exception as e:
+            # Restore authentication in case of exception
+            if current_auth:
+                self.session.headers['Authorization'] = current_auth
+            
             self.log_result(
-                "DELETE Vehicle API",
+                "Authentication Enforcement",
                 False,
                 f"Exception occurred: {str(e)}"
             )
