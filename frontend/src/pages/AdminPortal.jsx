@@ -1160,12 +1160,7 @@ const AdminPortalContent = () => {
                     <Key className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
-              </DashboardGridSimple>
-            </div>
-
-            {/* Row 3: Neue Bestellungen, Neue Tickets, Change Requests - 4 columns like other cards */}
-            {(newOrdersCount > 0 || newTicketsCount > 0) && (
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+                
                 {/* Neue Bestellungen */}
                 {newOrdersCount > 0 && (
                   <Card 
