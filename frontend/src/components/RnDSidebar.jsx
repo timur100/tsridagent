@@ -8,7 +8,7 @@ import {
 
 const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
   const { theme } = useTheme();
-  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'vehicles']);
+  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'vehicles', 'services']);
 
   const menuStructure = [
     {
