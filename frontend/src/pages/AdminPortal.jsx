@@ -433,6 +433,10 @@ const AdminPortalContent = () => {
     if (activeTab === 'support') {
       setNewTicketsCount(0);
     }
+    // Reset device status filter when leaving devices tab
+    if (activeTab !== 'devices') {
+      setDeviceStatusFilter(null);
+    }
   }, [activeTab]);
 
   const loadData = async () => {
