@@ -400,14 +400,22 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_reset_layout_api(self):
-        """Test POST /api/dashboard/layout/reset - Reset layout to default"""
+    def test_vehicle_exit_normal_api(self):
+        """Test POST /api/parking/exit - Register vehicle exit (Normal scenario - no violation)"""
         try:
-            response = self.session.post(f"{API_BASE}/dashboard/layout/reset")
+            # Wait 1 second to simulate parking time
+            time.sleep(1)
             
-            if response.status_code != 200:
+            exit_data = {
+                "license_plate": "TEST-001",
+                "notes": "Test exit for normal parking scenario"
+            }
+            
+            response = self.session.post(f"{API_BASE}/parking/exit", json=exit_data)
+            
+            if response.status_code not in [200, 201]:
                 self.log_result(
-                    "POST Reset Layout API",
+                    "POST Vehicle Exit Normal API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -416,36 +424,70 @@ class ParkingManagementTester:
             
             data = response.json()
             
-            # Verify response structure
+            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Reset Layout API",
+                    "POST Vehicle Exit Normal API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check for expected message
-            if data.get("message") != "Dashboard layout reset to default":
+            # Check response structure
+            if "data" not in data:
                 self.log_result(
-                    "POST Reset Layout API",
+                    "POST Vehicle Exit Normal API",
                     False,
-                    f"Unexpected message: {data.get('message')}",
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            exit_response = data["data"]
+            required_fields = ["session_id", "license_plate", "entry_time", "exit_time", 
+                             "duration_minutes", "penalty_amount", "violation_created"]
+            
+            for field in required_fields:
+                if field not in exit_response:
+                    self.log_result(
+                        "POST Vehicle Exit Normal API",
+                        False,
+                        f"Missing required field in response: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify no penalty for normal parking (under 1 minute with current config)
+            if exit_response["penalty_amount"] != 0.0:
+                self.log_result(
+                    "POST Vehicle Exit Normal API",
+                    False,
+                    f"Expected no penalty for normal parking, got penalty: {exit_response['penalty_amount']}",
+                    data
+                )
+                return False
+            
+            # Verify no violation created
+            if exit_response["violation_created"] != False:
+                self.log_result(
+                    "POST Vehicle Exit Normal API",
+                    False,
+                    f"Expected no violation for normal parking, but violation_created: {exit_response['violation_created']}",
                     data
                 )
                 return False
             
             self.log_result(
-                "POST Reset Layout API",
+                "POST Vehicle Exit Normal API",
                 True,
-                "Successfully reset dashboard layout to default"
+                f"Successfully registered vehicle exit: {exit_response['license_plate']}, duration: {exit_response['duration_minutes']}min, penalty: €{exit_response['penalty_amount']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Reset Layout API",
+                "POST Vehicle Exit Normal API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
