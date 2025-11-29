@@ -58,6 +58,8 @@ const ParkingOverview = () => {
       console.log('[ParkingOverview] Config result:', configResult);
 
       if (statsResult && statsResult.success) {
+        console.log('[ParkingOverview] Stats data:', statsResult.data);
+        console.log('[ParkingOverview] total_penalty_amount:', statsResult.data?.total_penalty_amount);
         setStats(statsResult.data);
       }
 
