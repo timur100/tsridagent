@@ -2737,10 +2737,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Chat/Messages Frontend E2E Testing"
+    - "Dashboard Drag and Drop Feature"
   stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
