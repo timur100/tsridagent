@@ -313,22 +313,20 @@ class ParkingManagementTester:
             )
             return False
 
-    def test_retrieve_saved_layout_api(self):
-        """Test GET /api/dashboard/layout - Retrieve the saved layout"""
+    def test_vehicle_entry_normal_api(self):
+        """Test POST /api/parking/entry - Register vehicle entry (Normal scenario)"""
         try:
-            if not self.saved_layout:
-                self.log_result(
-                    "GET Saved Layout API",
-                    False,
-                    "No saved layout available for verification"
-                )
-                return False
+            entry_data = {
+                "license_plate": "TEST-001",
+                "zone": "default",
+                "notes": "Test entry for normal parking scenario"
+            }
             
-            response = self.session.get(f"{API_BASE}/dashboard/layout")
+            response = self.session.post(f"{API_BASE}/parking/entry", json=entry_data)
             
-            if response.status_code != 200:
+            if response.status_code not in [200, 201]:
                 self.log_result(
-                    "GET Saved Layout API",
+                    "POST Vehicle Entry Normal API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -337,60 +335,66 @@ class ParkingManagementTester:
             
             data = response.json()
             
-            # Verify response structure
+            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Saved Layout API",
+                    "POST Vehicle Entry Normal API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check data structure
-            if "data" not in data or "layout" not in data["data"]:
+            # Check response structure
+            if "data" not in data:
                 self.log_result(
-                    "GET Saved Layout API",
+                    "POST Vehicle Entry Normal API",
                     False,
-                    "Missing 'data.layout' field in response",
+                    "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            retrieved_layout = data["data"]["layout"]
+            entry_response = data["data"]
+            required_fields = ["session_id", "license_plate", "entry_time", "is_whitelisted"]
             
-            # Verify layout matches what we saved
-            if len(retrieved_layout) != len(self.saved_layout):
+            for field in required_fields:
+                if field not in entry_response:
+                    self.log_result(
+                        "POST Vehicle Entry Normal API",
+                        False,
+                        f"Missing required field in response: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify license plate is normalized
+            if entry_response["license_plate"] != "TEST-001":
                 self.log_result(
-                    "GET Saved Layout API",
+                    "POST Vehicle Entry Normal API",
                     False,
-                    f"Layout length mismatch: expected {len(self.saved_layout)}, got {len(retrieved_layout)}",
+                    f"License plate not normalized correctly: expected 'TEST-001', got '{entry_response['license_plate']}'",
                     data
                 )
                 return False
             
-            # Verify each layout item
-            for i, (saved_item, retrieved_item) in enumerate(zip(self.saved_layout, retrieved_layout)):
-                for key in ["i", "x", "y", "w", "h"]:
-                    if saved_item[key] != retrieved_item[key]:
-                        self.log_result(
-                            "GET Saved Layout API",
-                            False,
-                            f"Layout item {i} field '{key}' mismatch: expected {saved_item[key]}, got {retrieved_item[key]}",
-                            data
-                        )
-                        return False
+            # Store session for later tests
+            self.test_sessions.append({
+                "session_id": entry_response["session_id"],
+                "license_plate": entry_response["license_plate"],
+                "entry_time": entry_response["entry_time"]
+            })
             
             self.log_result(
-                "GET Saved Layout API",
+                "POST Vehicle Entry Normal API",
                 True,
-                f"Successfully retrieved saved layout with {len(retrieved_layout)} cards matching saved data"
+                f"Successfully registered vehicle entry: {entry_response['license_plate']} at {entry_response['entry_time']}, session_id: {entry_response['session_id']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Saved Layout API",
+                "POST Vehicle Entry Normal API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
