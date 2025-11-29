@@ -130,14 +130,17 @@ class DashboardLayoutTester:
             )
             return False
 
-    def test_get_vehicles_api(self):
-        """Test GET /api/vehicles - Fahrzeuge abrufen"""
+    def test_get_default_layout_api(self):
+        """Test GET /api/dashboard/layout - Get default layout when none exists"""
         try:
-            response = self.session.get(f"{API_BASE}/vehicles")
+            # First, ensure no layout exists by resetting
+            self.session.post(f"{API_BASE}/dashboard/layout/reset")
+            
+            response = self.session.get(f"{API_BASE}/dashboard/layout")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicles API",
+                    "GET Default Layout API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -149,7 +152,7 @@ class DashboardLayoutTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicles API",
+                    "GET Default Layout API",
                     False,
                     "Response indicates failure",
                     data
@@ -159,35 +162,45 @@ class DashboardLayoutTester:
             # Check data structure
             if "data" not in data:
                 self.log_result(
-                    "GET Vehicles API",
+                    "GET Default Layout API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            vehicles_data = data["data"]
-            if "vehicles" not in vehicles_data:
+            layout_data = data["data"]
+            if "layout" not in layout_data:
                 self.log_result(
-                    "GET Vehicles API",
+                    "GET Default Layout API",
                     False,
-                    "Missing 'vehicles' field in data",
+                    "Missing 'layout' field in data",
                     data
                 )
                 return False
             
-            vehicles_list = vehicles_data["vehicles"]
+            layout_array = layout_data["layout"]
+            
+            # Default layout should be empty array
+            if not isinstance(layout_array, list):
+                self.log_result(
+                    "GET Default Layout API",
+                    False,
+                    f"Layout should be an array, got {type(layout_array)}",
+                    data
+                )
+                return False
             
             self.log_result(
-                "GET Vehicles API",
+                "GET Default Layout API",
                 True,
-                f"Successfully retrieved vehicles list with {len(vehicles_list)} vehicles"
+                f"Successfully retrieved default layout: {len(layout_array)} items (empty means default positions)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicles API",
+                "GET Default Layout API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
