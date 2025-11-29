@@ -314,16 +314,19 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess }) => {
     const imageData = captureFrame();
     if (imageData) {
       setCapturedImage(imageData);
-      toast.loading('Erkenne Kennzeichen...', { id: 'ocr' });
+      
+      // Show processed image for debugging
+      const processed = await preprocessImage(imageData);
+      setProcessedImage(processed);
       
       const plate = await performOCR(imageData);
       
       if (plate) {
         setRecognizedPlate(plate);
         setFormData(prev => ({ ...prev, license_plate: plate }));
-        toast.success('Kennzeichen erkannt!', { id: 'ocr' });
+        toast.success(`Erkannt: ${plate}`, { id: 'ocr-process', duration: 3000 });
       } else {
-        toast.error('Kennzeichen nicht erkannt. Bitte manuell eingeben.', { id: 'ocr' });
+        toast.error('Kennzeichen nicht erkannt. Bitte manuell eingeben.', { id: 'ocr-process' });
       }
     }
   };
