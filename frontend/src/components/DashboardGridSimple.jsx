@@ -303,40 +303,92 @@ const DashboardGridSimple = ({ children }) => {
         </div>
       )}
 
-      {/* Simple CSS Grid */}
+      {/* Simple CSS Grid with equal height cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {cardOrder.map((cardIndex, position) => {
-          const child = childrenArray[cardIndex];
-          if (!child) return null;
-
-          return (
-            <div
-              key={`card-${cardIndex}`}
-              draggable={isEditMode}
-              onDragStart={(e) => handleDragStart(e, position)}
-              onDragOver={(e) => handleDragOver(e, position)}
-              onDragEnd={handleDragEnd}
-              className={`relative transition-all duration-200 ${
-                isEditMode ? 'cursor-move' : ''
-              } ${draggedIndex === position ? 'opacity-50' : ''}`}
-            >
-              {/* Drag Handle */}
-              {isEditMode && (
-                <div className={`absolute top-2 left-2 z-10 p-2 rounded ${
-                  theme === 'dark'
-                    ? 'bg-gray-700/80 hover:bg-gray-600/80'
-                    : 'bg-gray-200/80 hover:bg-gray-300/80'
-                }`}>
-                  <GripVertical className="h-4 w-4 text-gray-500" />
+        {(() => {
+          const allItems = [];
+          let cardIdx = 0;
+          const totalItems = cardOrder.length + dummyCards.length;
+          
+          for (let i = 0; i < totalItems; i++) {
+            const dummy = dummyCards.find(d => d.position === i);
+            if (dummy) {
+              allItems.push({ type: 'dummy', id: dummy.id, position: i });
+            } else if (cardIdx < cardOrder.length) {
+              allItems.push({ type: 'card', cardIndex: cardOrder[cardIdx], position: i });
+              cardIdx++;
+            }
+          }
+          
+          return allItems.map((item) => {
+            if (item.type === 'dummy') {
+              return (
+                <div
+                  key={item.id}
+                  draggable={isEditMode}
+                  onDragStart={(e) => handleDragStart(e, item.position)}
+                  onDragOver={(e) => handleDragOver(e, item.position)}
+                  onDragEnd={handleDragEnd}
+                  className={`relative transition-all duration-200 ${
+                    isEditMode ? 'cursor-move' : ''
+                  } ${draggedIndex === item.position ? 'opacity-50' : ''}`}
+                  style={{ minHeight: '180px' }}
+                >
+                  <div className={`h-full rounded-xl border-2 border-dashed flex items-center justify-center ${
+                    theme === 'dark'
+                      ? 'bg-gray-800/30 border-gray-600'
+                      : 'bg-gray-100/50 border-gray-300'
+                  }`}>
+                    {isEditMode && (
+                      <div className="flex flex-col items-center gap-2">
+                        <GripVertical className="h-6 w-6 text-gray-400" />
+                        <span className="text-sm text-gray-400">Dummy</span>
+                        <button
+                          onClick={() => removeDummyCard(item.id)}
+                          className="mt-2 px-2 py-1 text-xs bg-red-500 text-white rounded hover:bg-red-600"
+                        >
+                          Entfernen
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
-              {/* Card Content */}
-              <div className={isEditMode ? 'pointer-events-none' : ''}>
-                {child}
-              </div>
-            </div>
-          );
-        })}
+              );
+            } else {
+              const child = childrenArray[item.cardIndex];
+              if (!child) return null;
+
+              return (
+                <div
+                  key={`card-${item.cardIndex}`}
+                  draggable={isEditMode}
+                  onDragStart={(e) => handleDragStart(e, item.position)}
+                  onDragOver={(e) => handleDragOver(e, item.position)}
+                  onDragEnd={handleDragEnd}
+                  className={`relative transition-all duration-200 ${
+                    isEditMode ? 'cursor-move' : ''
+                  } ${draggedIndex === item.position ? 'opacity-50' : ''}`}
+                  style={{ minHeight: '180px' }}
+                >
+                  {/* Drag Handle */}
+                  {isEditMode && (
+                    <div className={`absolute top-2 left-2 z-10 p-2 rounded ${
+                      theme === 'dark'
+                        ? 'bg-gray-700/80 hover:bg-gray-600/80'
+                        : 'bg-gray-200/80 hover:bg-gray-300/80'
+                    }`}>
+                      <GripVertical className="h-4 w-4 text-gray-500" />
+                    </div>
+                  )}
+                  {/* Card Content - with equal height */}
+                  <div className={`h-full ${isEditMode ? 'pointer-events-none' : ''}`}>
+                    {child}
+                  </div>
+                </div>
+              );
+            }
+          });
+        })()}
       </div>
     </div>
   );
