@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Dashboard Card Size Verification: Verify dashboard cards now match the size of other cards on the page. Check if the draggable dashboard cards (in DashboardGridSimple) now have the same natural height as the other cards on the page, without fixed min-height. Expected: Cards in same row should have equal height (CSS Grid auto behavior), different rows may have different heights based on content, no fixed 180px min-height anymore, cards should look natural and match visual style of other cards, 24px gap spacing maintained."
+user_problem_statement: "Live Video and License Plate Recognition Display Verification: Verify Live Video and License Plate Recognition display on Parkzeitüberwachung page. Test the newly added Live Video Feed and Real-time License Plate Recognition section below the statistics cards. Navigate to R&D → Parksysteme → Parkzeitüberschreitung and verify two-column layout with Live Camera Feed (left) and License Plate Recognition OCR (right) sections with all specified UI elements."
 
 frontend:
   - task: "Dashboard Card Size Verification - DashboardGridSimple Equal Height"
