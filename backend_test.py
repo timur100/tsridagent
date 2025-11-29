@@ -927,7 +927,7 @@ class DashboardLayoutTester:
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
         print(f"Testing APIs: Dashboard Layout Management")
-        print(f"Database: {os.environ.get('DB_NAME', 'test_database')}.dashboard_layouts collection")
+        print(f"Database: {os.environ.get('DB_NAME', 'verification_db')}.dashboard_layouts collection")
         print("=" * 80)
         print()
         
