@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Live Video and License Plate Recognition Display Verification: Verify Live Video and License Plate Recognition display on Parkzeitüberwachung page. Test the newly added Live Video Feed and Real-time License Plate Recognition section below the statistics cards. Navigate to R&D → Parksysteme → Parkzeitüberschreitung and verify two-column layout with Live Camera Feed (left) and License Plate Recognition OCR (right) sections with all specified UI elements."
+user_problem_statement: "SubTabNavigation Component Testing: Test the newly implemented tab navigation in all R&D sections. Verify SubTabNavigation component for 6 R&D sections: 1) Fingerprint (tabs: Übersicht, Scannen, Historie, Einstellungen), 2) Iris Scan (tabs: Übersicht, Scannen, Historie, Einstellungen), 3) Kennzeichenerkennung/LPR (tabs: Übersicht, Erkennung, Historie, Einstellungen), 4) Europcar PKW-Vermietung (tabs: Übersicht, Vermietungen, Rückgaben, Berichte), 5) Parkhaussystem (tabs: Übersicht, Zufahrtskontrolle, Überwachung, Berichte), 6) Parkhaus-Bezahlsystem (tabs: Übersicht, Transaktionen, Preisgestaltung, Berichte). Login with admin@tsrid.com/admin123, navigate to R&D section, verify each section displays SubTabNavigation with correct tabs, verify tab functionality and active tab highlighting."
 
 frontend:
   - task: "Parkzeitüberwachung Updates: Layout, OCR Updates, and Tab Navigation"
