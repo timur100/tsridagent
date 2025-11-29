@@ -123,6 +123,7 @@ const DashboardGridSimple = ({ children }) => {
         toast.success('Layout zurückgesetzt!');
         const childrenCount = React.Children.count(children);
         setCardOrder(Array.from({ length: childrenCount }, (_, i) => i));
+        setDummyCards([]);
         setHasChanges(false);
       } else {
         toast.error('Fehler beim Zurücksetzen');
@@ -131,6 +132,19 @@ const DashboardGridSimple = ({ children }) => {
       console.error('Error resetting layout:', error);
       toast.error('Fehler beim Zurücksetzen');
     }
+  };
+
+  const addDummyCard = () => {
+    const newDummyId = `dummy-${Date.now()}`;
+    const newPosition = cardOrder.length + dummyCards.length;
+    setDummyCards([...dummyCards, { id: newDummyId, position: newPosition }]);
+    setHasChanges(true);
+    toast.success('Dummy-Kachel hinzugefügt');
+  };
+
+  const removeDummyCard = (dummyId) => {
+    setDummyCards(dummyCards.filter(d => d.id !== dummyId));
+    setHasChanges(true);
   };
 
   const toggleEditMode = () => {
