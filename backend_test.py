@@ -7767,14 +7767,14 @@ class TicketCreationVerificationTester:
 if __name__ == "__main__":
     import asyncio
     
-    # Run Global Search Extended Field Testing (as requested in German review)
-    print("🔍 Starting Global Search Extended Field Testing...")
-    global_search_tester = GlobalSearchTester()
-    global_search_success = asyncio.run(global_search_tester.run_all_tests())
+    # Run Dashboard Layout API Testing (as requested in review)
+    print("🔍 Starting Dashboard Layout API Testing...")
+    dashboard_tester = DashboardLayoutTester()
+    dashboard_success = asyncio.run(dashboard_tester.run_all_tests())
     
-    if global_search_success:
-        print("\n🎉 Global Search Extended Field test passed!")
+    if dashboard_success:
+        print("\n🎉 Dashboard Layout API test passed!")
         sys.exit(0)
     else:
-        print("\n💥 Global Search Extended Field test failed!")
+        print("\n💥 Dashboard Layout API test failed!")
         sys.exit(1)
