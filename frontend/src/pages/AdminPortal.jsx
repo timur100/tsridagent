@@ -1313,6 +1313,7 @@ const AdminPortalContent = () => {
                   </div>
                 </div>
               </Card>
+              </DashboardGridSimple>
             </div>
 
             {/* Sync Status Card */}
