@@ -81,15 +81,8 @@ async def save_dashboard_layout(
     }
 
 @router.post("/layout/reset")
-async def reset_dashboard_layout(authorization: Optional[str] = Header(None)):
+async def reset_dashboard_layout(user: dict = Depends(verify_token)):
     """Reset dashboard layout to default"""
-    # Verify authentication
-    if not authorization:
-        raise HTTPException(status_code=401, detail="Not authenticated")
-    
-    user = verify_token(authorization.replace("Bearer ", ""))
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid token")
     
     # Only admins can reset global layout
     if user.get("email") != "admin@tsrid.com" and user.get("user_type") != "super_admin":
