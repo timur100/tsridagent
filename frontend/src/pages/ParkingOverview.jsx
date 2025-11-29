@@ -26,6 +26,9 @@ const ParkingOverview = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [webcamStream, setWebcamStream] = useState(null);
   const [webcamError, setWebcamError] = useState(null);
+  const [lastRecognizedPlate, setLastRecognizedPlate] = useState('');
+  const [recognitionAccuracy, setRecognitionAccuracy] = useState(99.2);
+  const [processingTime, setProcessingTime] = useState(0.3);
   const videoRef = React.useRef(null);
 
   useEffect(() => {
