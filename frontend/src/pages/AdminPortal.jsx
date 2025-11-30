@@ -2852,6 +2852,13 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
+                    {/* Quick Menu Management */}
+                    {rndTab === 'quick-menu' && (
+                      <div className="w-full">
+                        <QuickMenuManagement theme={theme} />
+                      </div>
+                    )}
+
                     {/* Mobility Services */}
                     {rndTab === 'mobility-services' && (
                       <div className="w-full">
