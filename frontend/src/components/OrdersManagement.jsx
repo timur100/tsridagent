@@ -435,12 +435,12 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+            <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
               {filteredOrders.map((order) => (
                 <tr 
                   key={order.id} 
                   onClick={() => handleViewOrder(order)}
-                  className={`cursor-pointer ${theme === 'dark' ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-50'}`}
+                  className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
                 >
                   <td className="px-6 py-4">
                     <div className={`text-sm font-mono font-bold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
