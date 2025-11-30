@@ -481,7 +481,7 @@ const HardwareLicenseManagement = () => {
                             {license.status}
                           </span>
                         </td>
-                        <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <td className={`py-3 px-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           {expiryDate ? (
                             <div>
                               <div>{expiryDate.toLocaleDateString('de-DE')}</div>
