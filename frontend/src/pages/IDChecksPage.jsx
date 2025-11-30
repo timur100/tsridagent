@@ -556,8 +556,7 @@ const IDChecksPage = () => {
                 ))
               )}
             </tbody>
-          </table>
-        </div>
+        </table>
       </div>
 
       {/* Pagination */}
