@@ -54,7 +54,7 @@ const QuickMenuManagement = ({ theme }) => {
   const loadTenants = async () => {
     try {
       console.log('🔍 Loading tenants from API...');
-      const response = await apiCall('/api/quick-menu/tenants/list', 'GET');
+      const response = await apiCall('/api/quick-menu/tenants/list', { method: 'GET' });
       console.log('📦 API Response:', response);
       
       // apiCall wraps response in {success, data, status}
@@ -90,7 +90,7 @@ const QuickMenuManagement = ({ theme }) => {
       // Load tiles
       const tilesResponse = await apiCall(
         `/api/quick-menu/tiles/tenant/${selectedTenant.id}`,
-        'GET'
+        { method: 'GET' }
       );
       const tilesData = tilesResponse.data || tilesResponse;
       const tilesList = tilesData.tiles || [];
@@ -100,7 +100,7 @@ const QuickMenuManagement = ({ theme }) => {
       // Load config
       const configResponse = await apiCall(
         `/api/quick-menu/config/tenant/${selectedTenant.id}`,
-        'GET'
+        { method: 'GET' }
       );
       const configData = configResponse.data || configResponse;
       const configObj = configData.config || null;
