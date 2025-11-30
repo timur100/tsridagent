@@ -1385,7 +1385,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                           <tbody>
                             {securityUsers.map((user) => (
                               <tr key={user.id} className="border-b border-border/50">
-                                <td className="p-3 text-foreground font-mono">{user.employeeNumber}</td>
+                                <td className="p-3 text-foreground text-sm font-semibold">{user.employeeNumber}</td>
                                 <td className="p-3 text-foreground">{user.name}</td>
                                 <td className="p-3 text-muted-foreground">{user.role}</td>
                                 <td className="p-3">
