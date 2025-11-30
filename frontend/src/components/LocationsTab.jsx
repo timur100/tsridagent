@@ -176,47 +176,47 @@ const LocationsTab = ({
                     }`}>
                       {location.station_name}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.street || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.postal_code || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.city || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.state || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone_internal || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.email || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.main_type || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.manager || '-'}
@@ -226,17 +226,17 @@ const LocationsTab = ({
                     }`}>
                       {location.id_checker || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_pc || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_sc || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.tv_id || '-'}
