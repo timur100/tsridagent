@@ -627,7 +627,7 @@ const SupportManagement = () => {
                       setSelectedTicket(ticket);
                       setShowDetailModal(true);
                     }}
-                    className={`cursor-pointer ${theme === 'dark' ? 'hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'}`}
+                    className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}
                   >
                     <td className={`px-6 py-4 whitespace-nowrap font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {ticket.ticket_number}
