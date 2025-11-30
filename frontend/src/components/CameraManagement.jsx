@@ -169,32 +169,31 @@ const CameraManagement = () => {
       </div>
 
       {/* Camera Table */}
-      <Card className={`${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className={`${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-              <tr>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  Name
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  Standort
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  IP-Adresse
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  Auflösung
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  Status
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'} uppercase tracking-wider`}>
-                  Aktionen
-                </th>
-              </tr>
-            </thead>
-            <tbody className={`${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'} divide-y`}>
+      <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <table className="w-full">
+          <thead className={`${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+            <tr>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                Name
+              </th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                Standort
+              </th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                IP-Adresse
+              </th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                Auflösung
+              </th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                Status
+              </th>
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase tracking-wider`}>
+                Aktionen
+              </th>
+            </tr>
+          </thead>
+          <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
               {cameras.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
