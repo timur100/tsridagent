@@ -1,34 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { TrendingUp, DollarSign, Car, Users, AlertTriangle, Activity } from 'lucide-react';
-import toast from 'react-hot-toast';
+
+// MOCK DEMO DATA - Direkt in der Komponente eingebaut
+const MOCK_DASHBOARD_DATA = {
+  vehicles: {
+    total: 10,
+    available: 4,
+    rented: 3,
+    maintenance: 1,
+    damaged: 1,
+    reserved: 1,
+    utilization_rate: 60
+  },
+  reservations: {
+    total: 45,
+    active: 8,
+    pending: 3,
+    completed: 34
+  },
+  revenue: {
+    last_30_days: 28500,
+    last_7_days: 7200,
+    today: 950
+  },
+  damages: {
+    total: 12,
+    pending_repairs: 3,
+    in_progress: 2,
+    completed: 7
+  },
+  customers: {
+    total: 87,
+    verified: 72,
+    active: 23
+  }
+};
 
 const EuropcarAnalytics = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadDashboard();
-  }, []);
-
-  const loadDashboard = async () => {
-    setLoading(true);
-    try {
-      const result = await apiCall('/api/europcar/analytics/dashboard');
-      if (result.success) {
-        setDashboardData(result.data);
-      }
-    } catch (error) {
-      console.error('Error loading dashboard:', error);
-      toast.error('Fehler beim Laden der Analytics');
-    } finally {
+    // Simuliere Laden der Daten
+    setTimeout(() => {
+      setDashboardData(MOCK_DASHBOARD_DATA);
       setLoading(false);
-    }
-  };
+    }, 500);
+  }, []);
 
   if (loading) {
     return (

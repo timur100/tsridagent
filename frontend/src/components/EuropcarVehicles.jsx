@@ -1,38 +1,171 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, MapPin, Fuel, Gauge } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// MOCK DEMO DATA - Direkt in der Komponente eingebaut
+const MOCK_VEHICLES = [
+  {
+    id: 'v1',
+    marke: 'BMW',
+    modell: '3er',
+    baujahr: 2023,
+    vin: 'WBAXG51050CN12345',
+    kennzeichen: 'B-EC 2023',
+    status: 'available',
+    kraftstoff: 'Diesel',
+    getriebe: 'Automatik',
+    kilometerstand: 12500,
+    tankstand: 85,
+    schaeden: []
+  },
+  {
+    id: 'v2',
+    marke: 'Mercedes',
+    modell: 'C-Klasse',
+    baujahr: 2022,
+    vin: 'WDD2050761F123456',
+    kennzeichen: 'M-EC 5678',
+    status: 'rented',
+    kraftstoff: 'Benzin',
+    getriebe: 'Automatik',
+    kilometerstand: 28000,
+    tankstand: 60,
+    schaeden: []
+  },
+  {
+    id: 'v3',
+    marke: 'Audi',
+    modell: 'A4',
+    baujahr: 2023,
+    vin: 'WAUZZZ8V8KA123789',
+    kennzeichen: 'F-EC 9012',
+    status: 'available',
+    kraftstoff: 'Diesel',
+    getriebe: 'Automatik',
+    kilometerstand: 8500,
+    tankstand: 95,
+    schaeden: []
+  },
+  {
+    id: 'v4',
+    marke: 'VW',
+    modell: 'Passat',
+    baujahr: 2021,
+    vin: 'WVWZZZ3CZMB123456',
+    kennzeichen: 'HH-EC 3456',
+    status: 'maintenance',
+    kraftstoff: 'Diesel',
+    getriebe: 'Manuell',
+    kilometerstand: 45000,
+    tankstand: 40,
+    schaeden: []
+  },
+  {
+    id: 'v5',
+    marke: 'BMW',
+    modell: '5er',
+    baujahr: 2022,
+    vin: 'WBAXG71090CD98765',
+    kennzeichen: 'B-EC 7890',
+    status: 'rented',
+    kraftstoff: 'Benzin',
+    getriebe: 'Automatik',
+    kilometerstand: 22000,
+    tankstand: 70,
+    schaeden: []
+  },
+  {
+    id: 'v6',
+    marke: 'Mercedes',
+    modell: 'E-Klasse',
+    baujahr: 2023,
+    vin: 'WDD2130451A234567',
+    kennzeichen: 'M-EC 1234',
+    status: 'available',
+    kraftstoff: 'Benzin',
+    getriebe: 'Automatik',
+    kilometerstand: 5000,
+    tankstand: 100,
+    schaeden: []
+  },
+  {
+    id: 'v7',
+    marke: 'Audi',
+    modell: 'A6',
+    baujahr: 2021,
+    vin: 'WAUZZZ4G2EN123456',
+    kennzeichen: 'F-EC 5678',
+    status: 'damaged',
+    kraftstoff: 'Diesel',
+    getriebe: 'Automatik',
+    kilometerstand: 38000,
+    tankstand: 55,
+    schaeden: [
+      { typ: 'Kratzer', beschreibung: 'Kratzer an der Tür rechts' }
+    ]
+  },
+  {
+    id: 'v8',
+    marke: 'VW',
+    modell: 'Golf',
+    baujahr: 2023,
+    vin: 'WVWZZZ1KZEW123456',
+    kennzeichen: 'HH-EC 9012',
+    status: 'reserved',
+    kraftstoff: 'Benzin',
+    getriebe: 'Manuell',
+    kilometerstand: 2000,
+    tankstand: 90,
+    schaeden: []
+  },
+  {
+    id: 'v9',
+    marke: 'BMW',
+    modell: 'X5',
+    baujahr: 2022,
+    vin: 'WBAXG91060CN56789',
+    kennzeichen: 'B-EC 3456',
+    status: 'available',
+    kraftstoff: 'Diesel',
+    getriebe: 'Automatik',
+    kilometerstand: 31000,
+    tankstand: 75,
+    schaeden: []
+  },
+  {
+    id: 'v10',
+    marke: 'Mercedes',
+    modell: 'GLC',
+    baujahr: 2023,
+    vin: 'WDD2530131F234567',
+    kennzeichen: 'M-EC 7890',
+    status: 'rented',
+    kraftstoff: 'Benzin',
+    getriebe: 'Automatik',
+    kilometerstand: 15000,
+    tankstand: 65,
+    schaeden: []
+  }
+];
+
 const EuropcarVehicles = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
   const [vehicles, setVehicles] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
 
   useEffect(() => {
-    loadVehicles();
-  }, []);
-
-  const loadVehicles = async () => {
-    setLoading(true);
-    try {
-      const result = await apiCall('/api/europcar/vehicles/list');
-      if (result.success) {
-        setVehicles(result.data.vehicles || []);
-      }
-    } catch (error) {
-      console.error('Error loading vehicles:', error);
-      toast.error('Fehler beim Laden der Fahrzeuge');
-    } finally {
+    // Simuliere Laden der Daten
+    setTimeout(() => {
+      setVehicles(MOCK_VEHICLES);
       setLoading(false);
-    }
-  };
+    }, 500);
+  }, []);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -162,15 +295,8 @@ const EuropcarVehicles = () => {
             Keine Fahrzeuge gefunden
           </h3>
           <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Fügen Sie Ihr erstes Fahrzeug zur Flotte hinzu
+            Ändern Sie Ihre Suchkriterien oder Filter
           </p>
-          <Button
-            onClick={() => setShowAddModal(true)}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Fahrzeug hinzufügen
-          </Button>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,7 +351,7 @@ const EuropcarVehicles = () => {
                   size="sm"
                   variant="outline"
                   className="flex-1"
-                  onClick={() => console.log('Edit vehicle:', vehicle.id)}
+                  onClick={() => toast.info('CRUD-Funktionalität kommt in der nächsten Phase')}
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Bearbeiten
@@ -234,7 +360,7 @@ const EuropcarVehicles = () => {
                   size="sm"
                   variant="outline"
                   className="flex-1"
-                  onClick={() => console.log('Maintenance:', vehicle.id)}
+                  onClick={() => toast.info('Wartungs-Funktionalität kommt in der nächsten Phase')}
                 >
                   <Wrench className="h-4 w-4 mr-1" />
                   Wartung
@@ -245,7 +371,7 @@ const EuropcarVehicles = () => {
         </div>
       )}
 
-      {/* Add Vehicle Modal - TODO: Implement in next iteration */}
+      {/* Add Vehicle Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <Card className={`p-6 max-w-2xl w-full mx-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
@@ -253,7 +379,7 @@ const EuropcarVehicles = () => {
               Fahrzeug hinzufügen
             </h3>
             <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Formular wird in der nächsten Iteration implementiert
+              CRUD-Formular wird in der nächsten Phase implementiert
             </p>
             <Button
               onClick={() => setShowAddModal(false)}

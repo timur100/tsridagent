@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Upload, Brain, Shield, DollarSign, CheckCircle, Camera } from 'lucide-react';
@@ -8,7 +7,6 @@ import toast from 'react-hot-toast';
 
 const EuropcarAI = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
   const [selectedFeature, setSelectedFeature] = useState('damage');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
@@ -53,35 +51,22 @@ const EuropcarAI = () => {
     if (!file) return;
 
     setLoading(true);
-    try {
-      // Convert to base64
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result.split(',')[1];
-        
-        // Call damage detection API
-        const response = await apiCall('/api/europcar/ai/damage-detection', {
-          method: 'POST',
-          body: JSON.stringify({
-            image_base64: base64,
-            vehicle_id: 'demo-vehicle-id'
-          })
-        });
-
-        if (response.success) {
-          setResult(response.data.analysis);
-          toast.success('Schadenanalyse erfolgreich!');
-        } else {
-          toast.error(response.message || 'Fehler bei Analyse');
-        }
+    
+    // MOCK: Simuliere KI-Analyse mit Demo-Ergebnis
+    setTimeout(() => {
+      const mockResult = {
+        damage_type: 'Kratzer',
+        severity: 'Mittel',
+        location: 'Rechte Tür, unterer Bereich',
+        estimated_cost_min: 250,
+        estimated_cost_max: 400,
+        description: 'Oberflächlicher Kratzer an der Beifahrertür. Lackschaden ca. 15cm lang. Empfehlung: Smart Repair möglich.'
       };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error('Fehler beim Upload');
-    } finally {
+      
+      setResult(mockResult);
       setLoading(false);
-    }
+      toast.success('KI-Analyse erfolgreich! (Demo-Modus)');
+    }, 2000);
   };
 
   const selectedFeatureData = features.find(f => f.id === selectedFeature);
@@ -94,7 +79,7 @@ const EuropcarAI = () => {
           🤖 KI-Premium-Features
         </h2>
         <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Powered by OpenAI GPT-5 & Gemini Vision
+          Powered by OpenAI GPT-5 & Gemini Vision (Demo-Modus)
         </p>
       </div>
 
@@ -223,9 +208,9 @@ const EuropcarAI = () => {
         {selectedFeature !== 'damage' && (
           <div className="text-center py-12">
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Diese Funktion ist verfügbar über die API.
+              Diese Funktion ist über die Backend-API verfügbar.
               <br />
-              Demo-UI wird in Kürze implementiert.
+              Frontend-Demo wird in der nächsten Phase implementiert.
             </p>
           </div>
         )}
