@@ -983,7 +983,7 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
                       {reg.role}
                     </span>
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {new Date(reg.created_at).toLocaleDateString('de-DE', { 
                       year: 'numeric', 
                       month: 'short', 
