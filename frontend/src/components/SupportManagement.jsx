@@ -707,13 +707,13 @@ const SupportManagement = () => {
                       })()}
                       {!ticket.device_id && <span className="text-xs text-gray-500">-</span>}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap font-semibold ${getPriorityColor(ticket.priority)}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-semibold ${getPriorityColor(ticket.priority)}`}>
                       {getPriorityLabel(ticket.priority)}
                     </td>
                     <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {new Date(ticket.created_at).toLocaleString('de-DE')}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {ticket.device_id && (
                         <div className="flex items-center gap-2 text-xs">
                           <Monitor className="h-3 w-3" />
