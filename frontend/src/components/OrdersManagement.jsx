@@ -394,11 +394,10 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
       </Card>
 
       {/* Orders Table */}
-      <Card className={`${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+      <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <table className="w-full">
+          <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+            <tr>
                 <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
