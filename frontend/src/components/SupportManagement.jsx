@@ -627,14 +627,14 @@ const SupportManagement = () => {
                       setSelectedTicket(ticket);
                       setShowDetailModal(true);
                     }}
-                    className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}
+                    className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div>
-                        <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{ticket.ticket_number}</div>
+                        <div className="font-semibold">{ticket.ticket_number}</div>
                       </div>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       <div>
                         <div className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{ticket.title}</div>
                         {(ticket.location_name || ticket.device_name) && (
