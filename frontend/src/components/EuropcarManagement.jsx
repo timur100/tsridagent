@@ -19,7 +19,10 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
     { id: 'customers', label: 'Kunden', icon: Users },
     { id: 'contracts', label: 'Verträge', icon: FileText },
     { id: 'returns', label: 'Rückgaben', icon: RotateCcw },
-    { id: 'reports', label: 'Berichte', icon: TrendingUp }
+    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+    { id: 'stations', label: 'Stationen', icon: Users },
+    { id: 'damage', label: 'Schäden', icon: Users },
+    { id: 'ai', label: 'KI-Features', icon: Users }
   ];
 
   return (
