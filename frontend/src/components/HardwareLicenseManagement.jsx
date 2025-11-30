@@ -462,7 +462,7 @@ const HardwareLicenseManagement = () => {
                             {license.scanner_type}
                           </span>
                         </td>
-                        <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <td className={`py-3 px-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           {license.device_id ? (
                             <div>
                               <div>{license.station_name}</div>
