@@ -662,7 +662,7 @@ const SupportManagement = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-white ${getStatusColor(ticket.status)}`}>
+                      <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${getStatusColor(ticket.status)}`}>
                         {getStatusLabel(ticket.status)}
                       </span>
                     </td>
