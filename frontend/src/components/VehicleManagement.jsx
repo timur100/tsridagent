@@ -575,9 +575,8 @@ const VehicleManagement = ({ initialVehicleId }) => {
                 ))
               )}
             </tbody>
-          </table>
-        </div>
-      </Card>
+        </table>
+      </div>
 
       {/* Add/Edit Modal */}
       {(showAddModal || showEditModal) && (
