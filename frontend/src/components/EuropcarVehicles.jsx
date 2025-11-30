@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, Fuel, Gauge, X } from 'lucide-react';
