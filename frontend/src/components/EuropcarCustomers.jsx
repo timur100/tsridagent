@@ -1,37 +1,114 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Plus, Search, Users, Mail, Phone, Building, UserCheck, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
+// MOCK DEMO DATA
+const MOCK_CUSTOMERS = [
+  {
+    id: 'c1',
+    vorname: 'Max',
+    nachname: 'Mustermann',
+    email: 'max.mustermann@email.de',
+    telefon: '+49 170 1234567',
+    customer_type: 'private',
+    kundengruppe: 'Standard',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: true,
+    blacklist: false
+  },
+  {
+    id: 'c2',
+    vorname: 'Anna',
+    nachname: 'Schmidt',
+    email: 'anna.schmidt@email.de',
+    telefon: '+49 171 2345678',
+    customer_type: 'private',
+    kundengruppe: 'Premium',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: true,
+    blacklist: false
+  },
+  {
+    id: 'c3',
+    vorname: 'Thomas',
+    nachname: 'Müller',
+    email: 'thomas.mueller@firma.de',
+    telefon: '+49 172 3456789',
+    firma: 'Tech Solutions GmbH',
+    customer_type: 'business',
+    kundengruppe: 'Corporate',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: true,
+    blacklist: false
+  },
+  {
+    id: 'c4',
+    vorname: 'Julia',
+    nachname: 'Weber',
+    email: 'julia.weber@email.de',
+    telefon: '+49 173 4567890',
+    customer_type: 'private',
+    kundengruppe: 'Standard',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: false,
+    blacklist: false
+  },
+  {
+    id: 'c5',
+    vorname: 'Peter',
+    nachname: 'Schneider',
+    email: 'p.schneider@consulting.de',
+    telefon: '+49 174 5678901',
+    firma: 'Schneider Consulting',
+    customer_type: 'business',
+    kundengruppe: 'Corporate',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: true,
+    blacklist: false
+  },
+  {
+    id: 'c6',
+    vorname: 'Lisa',
+    nachname: 'Becker',
+    email: 'lisa.becker@email.de',
+    telefon: '+49 175 6789012',
+    customer_type: 'private',
+    kundengruppe: 'Standard',
+    ausweis_verifiziert: false,
+    fuehrerschein_verifiziert: false,
+    blacklist: false
+  },
+  {
+    id: 'c7',
+    vorname: 'Michael',
+    nachname: 'Fischer',
+    email: 'michael.fischer@email.de',
+    telefon: '+49 176 7890123',
+    customer_type: 'private',
+    kundengruppe: 'Standard',
+    ausweis_verifiziert: true,
+    fuehrerschein_verifiziert: true,
+    blacklist: true
+  }
+];
+
 const EuropcarCustomers = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
   const [customers, setCustomers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
-    loadCustomers();
-  }, []);
-
-  const loadCustomers = async () => {
-    setLoading(true);
-    try {
-      const result = await apiCall('/api/europcar/customers/list');
-      if (result.success) {
-        setCustomers(result.data.customers || []);
-      }
-    } catch (error) {
-      console.error('Error loading customers:', error);
-      toast.error('Fehler beim Laden der Kunden');
-    } finally {
+    // Simuliere Laden der Daten
+    setTimeout(() => {
+      setCustomers(MOCK_CUSTOMERS);
       setLoading(false);
-    }
-  };
+    }, 500);
+  }, []);
 
   const filteredCustomers = customers.filter(c => {
     const matchesSearch = 
@@ -117,7 +194,10 @@ const EuropcarCustomers = () => {
             <option value="private">Privatkunden</option>
             <option value="business">Geschäftskunden</option>
           </select>
-          <Button className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2">
+          <Button 
+            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            onClick={() => toast.info('CRUD-Funktionalität wird implementiert')}
+          >
             <Plus className="h-4 w-4" />
             Kunde hinzufügen
           </Button>
@@ -136,7 +216,7 @@ const EuropcarCustomers = () => {
             Keine Kunden gefunden
           </h3>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Fügen Sie Ihren ersten Kunden hinzu
+            Ändern Sie Ihre Suchkriterien
           </p>
         </Card>
       ) : (
