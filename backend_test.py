@@ -1,33 +1,32 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - PARKING MANAGEMENT SYSTEM TESTING
-Tests Parking Management System Backend APIs for automatic license plate recognition and violation tracking:
+Backend API Testing Suite - EUROPCAR PKW-VERMIETUNGSSYSTEM TESTING
+Tests Europcar PKW-Vermietungssystem Backend APIs for car rental management:
 
-Configuration API:
-- GET /api/parking/config - Get current configuration
-- PUT /api/parking/config - Update configuration (max duration, penalty rate)
+Fahrzeugverwaltung APIs:
+- GET /api/europcar/vehicles/list - List all vehicles (should show 8 vehicles)
+- GET /api/europcar/vehicles/availability/check - Check vehicle availability
 
-Entry/Exit APIs:
-- POST /api/parking/entry - Register vehicle entry
-- POST /api/parking/exit - Register vehicle exit and calculate penalties
+Reservierungen APIs:
+- GET /api/europcar/reservations/list - List all reservations (should show 10 reservations)
 
-Monitoring APIs:
-- GET /api/parking/active - Get currently parked vehicles
-- GET /api/parking/sessions - Get parking history
-- GET /api/parking/violations - Get violations
-- GET /api/parking/stats - Get statistics
+Kunden APIs:
+- GET /api/europcar/customers/list - List all customers (should show 5 customers)
 
-Whitelist APIs:
-- GET /api/parking/whitelist - Get whitelist entries
-- POST /api/parking/whitelist - Add to whitelist
-- DELETE /api/parking/whitelist/{license_plate} - Remove from whitelist
+Analytics APIs:
+- GET /api/europcar/analytics/dashboard - Dashboard statistics
 
-Test Scenarios:
-1. Normal Parking (No Violation)
-2. Parking Overstay (Violation)
-3. Multiple Entry without Exit (Violation)
-4. Whitelisted Vehicle
-5. Statistics Verification
+Stationen APIs:
+- GET /api/europcar/stations/list - List all stations (should show 1 station)
+
+Schadenmanagement APIs:
+- GET /api/europcar/damage/reports/list - List damage reports (should show 3 reports)
+
+Preisberechnung APIs:
+- POST /api/europcar/pricing/calculate - Calculate pricing for rental
+
+Expected Demo Data:
+- 8 Fahrzeuge, 5 Kunden, 10 Reservierungen, 3 Schäden, 1 Station
 """
 
 import requests
