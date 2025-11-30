@@ -215,12 +215,12 @@ const EuropcarCustomers = () => {
             <table className="w-full">
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontakt</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Typ</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gruppe</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontakt</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Typ</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gruppe</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</th>
+                  <th className={`px-6 py-4 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
                 </tr>
               </thead>
               <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
@@ -234,9 +234,9 @@ const EuropcarCustomers = () => {
                 ) : (
                   filteredCustomers.map((customer) => (
                     <tr key={customer.id} className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         <div>
-                          <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          <div className="font-semibold">
                             {customer.vorname} {customer.nachname}
                           </div>
                           {customer.firma && (
@@ -246,14 +246,14 @@ const EuropcarCustomers = () => {
                           )}
                         </div>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <div>
                           <div>{customer.email}</div>
-                          <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>{customer.telefon}</div>
+                          <div className="text-xs">{customer.telefon}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${
+                        <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full border ${
                           customer.customer_type === 'business'
                             ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
                             : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
@@ -261,25 +261,25 @@ const EuropcarCustomers = () => {
                           {customer.customer_type === 'business' ? 'Business' : 'Privat'}
                         </span>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {customer.kundengruppe}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {customer.blacklist ? (
-                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-red-500/20 text-red-400 border-red-500/30">
+                          <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full border bg-red-500/20 text-red-400 border-red-500/30">
                             Blacklist
                           </span>
                         ) : customer.ausweis_verifiziert ? (
-                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
+                          <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
                             Verifiziert
                           </span>
                         ) : (
-                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                          <span className="px-3 py-1 inline-flex text-xs font-semibold rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
                             Ungeprüft
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <button 
                           className="text-[#c00000] hover:text-[#a00000] transition-colors"
                           onClick={() => toast.info('Details für ' + customer.vorname + ' ' + customer.nachname)}
