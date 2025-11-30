@@ -515,18 +515,18 @@ const VehicleManagement = ({ initialVehicleId }) => {
                       setSelectedVehicleId(vehicle.id);
                       setShowDetailView(true);
                     }}
-                    className={`${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'} transition-colors cursor-pointer`}
+                    className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
                   >
-                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div className="flex items-center">
                         <Car className="h-4 w-4 mr-2 text-blue-500" />
                         <span className="font-semibold">{vehicle.license_plate}</span>
                       </div>
                     </td>
-                    <td className={`hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden md:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {vehicle.tenant_name || vehicle.tenant_id}
                     </td>
-                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       <div className="flex flex-col">
                         <span className="font-medium">{vehicle.brand}</span>
                         <span className="text-xs">{vehicle.model}</span>
