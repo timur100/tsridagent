@@ -252,9 +252,8 @@ const CameraManagement = () => {
                 ))
               )}
             </tbody>
-          </table>
-        </div>
-      </Card>
+        </table>
+      </div>
 
       {/* Add/Edit Camera Modal */}
       {showAddModal && (
