@@ -78,7 +78,8 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       items: [
         { id: 'workflow-builder', label: 'Workflow Builder', emoji: '⚙️' },
         { id: 'batch-processing', label: 'Stapelverarbeitung', emoji: '📦' },
-        { id: 'api-testing', label: 'API Testing', emoji: '🔧' }
+        { id: 'api-testing', label: 'API Testing', emoji: '🔧' },
+        { id: 'quick-menu', label: 'Schnellmenü', emoji: '⚡' }
       ]
     },
     {
