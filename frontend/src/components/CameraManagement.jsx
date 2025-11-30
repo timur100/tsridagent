@@ -205,20 +205,20 @@ const CameraManagement = () => {
                 </tr>
               ) : (
                 cameras.map((camera) => (
-                  <tr key={camera.id} className={`${theme === 'dark' ? 'hover:bg-[#3a3a3a]' : 'hover:bg-gray-50'}`}>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <tr key={camera.id} className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div className="flex items-center gap-2">
                         <Video className="h-5 w-5 text-blue-500" />
-                        {camera.name}
+                        <span className="font-semibold">{camera.name}</span>
                       </div>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {camera.location}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {camera.ip_address}:{camera.port}
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {camera.resolution} @ {camera.fps}fps
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
