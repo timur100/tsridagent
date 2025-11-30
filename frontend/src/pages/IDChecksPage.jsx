@@ -403,10 +403,9 @@ const IDChecksPage = () => {
       )}
 
       {/* Table */}
-      <div className={`rounded-lg overflow-hidden ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-200'}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+      <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <table className="w-full">
+          <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
               <tr>
                 {visibleColumns.timestamp && (
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
