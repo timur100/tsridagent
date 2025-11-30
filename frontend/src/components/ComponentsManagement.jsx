@@ -358,20 +358,20 @@ const ComponentsManagement = () => {
                       return (
                         <tr
                           key={component.id}
-                          className={`border-b ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800' : 'border-gray-200 hover:bg-gray-50'}`}
+                          className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
                         >
                           <td className="p-4">
                             <div className="flex items-center gap-2">
                               <Icon className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
-                              <span className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              <span className={`text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                 {getTypeLabel(component.component_type)}
                               </span>
                             </div>
                           </td>
-                          <td className={`p-4 text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          <td className={`p-4 text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             {component.name}
                           </td>
-                          <td className={`p-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <td className={`p-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             <div>
                               <span className="font-mono text-xs">{component.identification_type}</span>
                               <div className="font-mono">{component.identification_value}</div>
