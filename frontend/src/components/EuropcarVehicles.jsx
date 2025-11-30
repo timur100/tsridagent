@@ -6,8 +6,7 @@ import { Button } from './ui/button';
 import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, Fuel, Gauge, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-// MOCK DEMO DATA
-const INITIAL_VEHICLES = [
+const EuropcarVehicles = () => {
   {
     id: 'v1',
     marke: 'BMW',
