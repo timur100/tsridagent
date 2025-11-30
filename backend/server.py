@@ -214,6 +214,9 @@ api_router.include_router(customers_router, prefix="/customers", tags=["customer
 # Vehicles (R&D - Fahrzeugverwaltung)
 api_router.include_router(vehicles_router, tags=["vehicles"])
 
+# Quick Menu (R&D - Schnellmenü)
+api_router.include_router(quick_menu_router, prefix="/quick-menu", tags=["quick-menu"])
+
 # Services Configuration (Microservices Management)
 app.include_router(services_config_router)
 
