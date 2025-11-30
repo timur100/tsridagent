@@ -460,9 +460,8 @@ const ComponentsManagement = () => {
                     })
                   )}
                 </tbody>
-              </table>
-            </div>
-          </Card>
+            </table>
+          </div>
         </div>
       )}
 
