@@ -199,27 +199,51 @@ const QuickMenuManagement = ({ theme }) => {
 
       {/* Tenant Selector */}
       <div className={`p-4 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-        <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-          Tenant auswählen
-        </label>
-        <select
-          value={selectedTenant?.id || ''}
-          onChange={(e) => {
-            const tenant = tenants.find(t => t.id === e.target.value);
-            setSelectedTenant(tenant);
-          }}
-          className={`w-full px-4 py-2 rounded-lg border ${
-            theme === 'dark'
-              ? 'bg-[#1a1a1a] border-gray-700 text-white'
-              : 'bg-white border-gray-300 text-gray-900'
-          }`}
-        >
-          {tenants.map((tenant) => (
-            <option key={tenant.id} value={tenant.id}>
-              {tenant.name}
-            </option>
-          ))}
-        </select>
+        <div className="flex items-center justify-between mb-2">
+          <label className={`block text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            Tenant auswählen
+          </label>
+          <button
+            onClick={loadTenants}
+            className={`text-xs px-3 py-1 rounded-lg transition-colors ${
+              theme === 'dark'
+                ? 'bg-[#1a1a1a] text-gray-400 hover:bg-[#333333]'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            🔄 Neu laden
+          </button>
+        </div>
+        {tenants.length === 0 ? (
+          <div className={`text-center py-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className="text-sm mb-2">Keine Tenants gefunden</p>
+            <button
+              onClick={loadTenants}
+              className="text-sm text-[#c00000] hover:text-[#a00000] font-semibold"
+            >
+              Erneut versuchen
+            </button>
+          </div>
+        ) : (
+          <select
+            value={selectedTenant?.id || ''}
+            onChange={(e) => {
+              const tenant = tenants.find(t => t.id === e.target.value);
+              setSelectedTenant(tenant);
+            }}
+            className={`w-full px-4 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            {tenants.map((tenant) => (
+              <option key={tenant.id} value={tenant.id}>
+                {tenant.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Tabs */}
