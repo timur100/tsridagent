@@ -174,6 +174,7 @@ const INITIAL_VEHICLES = [
 
 const EuropcarVehicles = () => {
   const { theme } = useTheme();
+  const { apiCall } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -198,11 +199,25 @@ const EuropcarVehicles = () => {
   });
 
   useEffect(() => {
-    setTimeout(() => {
-      setVehicles(INITIAL_VEHICLES);
-      setLoading(false);
-    }, 500);
+    loadVehicles();
   }, []);
+
+  const loadVehicles = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/europcar/vehicles/list');
+      if (result.success) {
+        setVehicles(result.data.vehicles || []);
+      } else {
+        toast.error('Fehler beim Laden der Fahrzeuge');
+      }
+    } catch (error) {
+      console.error('Error loading vehicles:', error);
+      toast.error('Fehler beim Laden der Fahrzeuge');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getStatusBadge = (status) => {
     const statusConfig = {
