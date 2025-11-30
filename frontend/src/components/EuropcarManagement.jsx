@@ -52,23 +52,8 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
         {activeSubTab === 'customers' && <EuropcarCustomers />}
         {activeSubTab === 'contracts' && <EuropcarContracts />}
         {activeSubTab === 'returns' && <EuropcarReturns />}
-        {activeSubTab === 'reports' && (
-          <div className={`p-8 rounded-xl text-center ${
-            theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
-          } border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <TrendingUp className={`h-16 w-16 mx-auto mb-4 ${
-              theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-            }`} />
-            <h3 className={`text-xl font-semibold mb-2 ${
-              theme === 'dark' ? 'text-white' : 'text-gray-900'
-            }`}>
-              Berichte & Analytics
-            </h3>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Wird in Phase 2 implementiert (Modul 11)
-            </p>
-          </div>
-        )}
+        {activeSubTab === 'analytics' && <EuropcarAnalytics />}
+        {activeSubTab === 'ai' && <EuropcarAI />}
       </div>
     </div>
   );
