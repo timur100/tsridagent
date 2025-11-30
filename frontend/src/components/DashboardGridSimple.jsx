@@ -393,6 +393,7 @@ const DashboardGridSimple = ({ children }) => {
                   className={`relative transition-all duration-200 h-full ${
                     isEditMode ? 'cursor-move' : ''
                   } ${draggedIndex === item.position ? 'opacity-50' : ''}`}
+                  style={{ overflow: 'visible' }}
                 >
                   {/* Drag Handle */}
                   {isEditMode && (
@@ -404,8 +405,8 @@ const DashboardGridSimple = ({ children }) => {
                       <GripVertical className="h-4 w-4 text-gray-500" />
                     </div>
                   )}
-                  {/* Card Content - with equal height */}
-                  <div className={`h-full ${isEditMode ? 'pointer-events-none' : ''}`}>
+                  {/* Card Content - with equal height and visible overflow for shadows */}
+                  <div className={`h-full ${isEditMode ? 'pointer-events-none' : ''}`} style={{ overflow: 'visible' }}>
                     {child}
                   </div>
                 </div>
