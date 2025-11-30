@@ -215,7 +215,7 @@ const EuropcarCustomers = () => {
           <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${
             theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'
           }`}>
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className={`min-w-full ${theme === 'dark' ? 'divide-y divide-gray-800' : 'divide-y divide-gray-200'}`}>
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
                   <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
