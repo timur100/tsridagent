@@ -562,13 +562,9 @@ const SupportManagement = () => {
       </Card>
 
       {/* Tickets Table */}
-      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-        <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          Support Tickets
-        </h3>
-
+      <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'}`}>
         {loading ? (
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p className={`text-sm p-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Lade Tickets...
           </p>
         ) : filteredTickets.length === 0 ? (
@@ -578,53 +574,52 @@ const SupportManagement = () => {
             <p className="text-sm mt-2">Erstellen Sie ein neues Ticket, um zu beginnen</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className={theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}>
-                <tr>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Ticket-Nr.
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Titel
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Kunde
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Status
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Online
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Priorität
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Erstellt
-                  </th>
-                  <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Zuordnung
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-700">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+              <tr>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Ticket-Nr.
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Titel
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Kunde
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Status
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Online
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Priorität
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Erstellt
+                </th>
+                <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}>
+                  Zuordnung
+                </th>
+              </tr>
+            </thead>
+            <tbody className={`divide-y ${theme === 'dark' ? 'bg-[#2a2a2a] divide-gray-800' : 'bg-white divide-gray-100'}`}>
                 {filteredTickets.map((ticket) => (
                   <tr
                     key={ticket.id}
