@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Plus, Search, Users, Mail, Phone, Building, UserCheck, AlertTriangle, Edit } from 'lucide-react';
+import { Plus, Search, Users, Mail, Phone, Building, UserCheck, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // MOCK DEMO DATA
@@ -103,7 +103,6 @@ const EuropcarCustomers = () => {
   const [filterType, setFilterType] = useState('all');
 
   useEffect(() => {
-    // Simuliere Laden der Daten
     setTimeout(() => {
       setCustomers(MOCK_CUSTOMERS);
       setLoading(false);
@@ -204,7 +203,7 @@ const EuropcarCustomers = () => {
         </div>
       </Card>
 
-      {/* Customers Table */}
+      {/* Customers Table - EXACT COPY OF DEVICES TABLE DESIGN */}
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full mx-auto"></div>
@@ -212,30 +211,16 @@ const EuropcarCustomers = () => {
       ) : (
         <div>
           <h3 className={`text-xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Alle Kunden</h3>
-          <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${
-            theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'
-          }`}>
-            <table className={`min-w-full ${theme === 'dark' ? 'divide-y divide-gray-800' : 'divide-y divide-gray-200'}`}>
+          <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'}`}>
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Kunde
-                  </th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Kontakt
-                  </th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Typ
-                  </th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Gruppe
-                  </th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Status
-                  </th>
-                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Aktionen
-                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontakt</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Typ</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gruppe</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status</th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
                 </tr>
               </thead>
               <tbody className={`divide-y ${theme === 'dark' ? 'bg-[#2a2a2a] divide-gray-800' : 'bg-white divide-gray-100'}`}>
@@ -250,74 +235,55 @@ const EuropcarCustomers = () => {
                   filteredCustomers.map((customer) => (
                     <tr key={customer.id} className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-3">
-                          <div>
-                            <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                              {customer.vorname} {customer.nachname}
-                            </div>
-                            {customer.firma && (
-                              <div className={`text-xs flex items-center gap-1 mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                                <Building className="h-3 w-3" />
-                                {customer.firma}
-                              </div>
-                            )}
+                        <div>
+                          <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {customer.vorname} {customer.nachname}
                           </div>
+                          {customer.firma && (
+                            <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                              {customer.firma}
+                            </div>
+                          )}
                         </div>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <Mail className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs">{customer.email}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-3 w-3 text-gray-400" />
-                            <span className="text-xs">{customer.telefon}</span>
-                          </div>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                        <div>
+                          <div>{customer.email}</div>
+                          <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>{customer.telefon}</div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {customer.customer_type === 'business' ? (
-                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-purple-500/20 text-purple-400 border-purple-500/30">
-                            <Building className="h-3 w-3 mr-1" />
-                            Business
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-blue-500/20 text-blue-400 border-blue-500/30">
-                            Privat
-                          </span>
-                        )}
+                        <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${
+                          customer.customer_type === 'business'
+                            ? 'bg-purple-500/20 text-purple-400 border-purple-500/30'
+                            : 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                        }`}>
+                          {customer.customer_type === 'business' ? 'Business' : 'Privat'}
+                        </span>
                       </td>
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {customer.kundengruppe}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          {customer.ausweis_verifiziert && (
-                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
-                              <UserCheck className="h-3 w-3 mr-1" />
-                              Verifiziert
-                            </span>
-                          )}
-                          {customer.blacklist && (
-                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-red-500/20 text-red-400 border-red-500/30">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              Blacklist
-                            </span>
-                          )}
-                          {!customer.ausweis_verifiziert && !customer.blacklist && (
-                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                              Ungeprüft
-                            </span>
-                          )}
-                        </div>
+                        {customer.blacklist ? (
+                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-red-500/20 text-red-400 border-red-500/30">
+                            Blacklist
+                          </span>
+                        ) : customer.ausweis_verifiziert ? (
+                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
+                            Verifiziert
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                            Ungeprüft
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
                         <button 
-                          className="text-[#c00000] hover:text-[#a00000] transition-colors flex items-center gap-1"
+                          className="text-[#c00000] hover:text-[#a00000] transition-colors"
                           onClick={() => toast.info('Details für ' + customer.vorname + ' ' + customer.nachname)}
                         >
-                          <Edit className="h-4 w-4" />
                           Details
                         </button>
                       </td>
