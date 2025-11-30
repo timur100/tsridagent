@@ -54,7 +54,7 @@ ticketing_db = mongo_client['ticketing_db']
 portal_db = mongo_client['portal_db']
 event_log_collection = portal_db['event_log']
 
-class ParkingManagementTester:
+class EuropcarSystemTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
