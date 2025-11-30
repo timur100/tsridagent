@@ -62,17 +62,17 @@ const LocationsTab = ({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
             <table className="w-full">
-              <thead>
-                <tr className={theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Status
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Code
                   </th>
