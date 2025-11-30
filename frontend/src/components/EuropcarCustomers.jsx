@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Plus, Search, Users, Mail, Phone, Building, UserCheck, AlertTriangle } from 'lucide-react';
+import { Plus, Search, Users, Mail, Phone, Building, UserCheck, AlertTriangle, Edit } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 // MOCK DEMO DATA
@@ -204,85 +204,129 @@ const EuropcarCustomers = () => {
         </div>
       </Card>
 
-      {/* Customers Grid */}
+      {/* Customers Table */}
       {loading ? (
         <div className="text-center py-12">
           <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full mx-auto"></div>
         </div>
-      ) : filteredCustomers.length === 0 ? (
-        <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-          <Users className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-          <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Keine Kunden gefunden
-          </h3>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Ändern Sie Ihre Suchkriterien
-          </p>
-        </Card>
       ) : (
-        <div className="space-y-4">
-          {filteredCustomers.map((customer) => (
-            <Card key={customer.id} className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} ${
-              customer.blacklist ? 'border-2 border-red-500' : ''
-            }`}>
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {customer.vorname} {customer.nachname}
-                    </h3>
-                    {customer.customer_type === 'business' && (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                        <Building className="h-3 w-3 inline mr-1" />
-                        Business
-                      </span>
-                    )}
-                    {customer.ausweis_verifiziert && (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                        <UserCheck className="h-3 w-3 inline mr-1" />
-                        Verifiziert
-                      </span>
-                    )}
-                    {customer.blacklist && (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                        <AlertTriangle className="h-3 w-3 inline mr-1" />
-                        Blacklist
-                      </span>
-                    )}
-                  </div>
-                  {customer.firma && (
-                    <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {customer.firma}
-                    </p>
-                  )}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Mail className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
-                        {customer.email}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
-                        {customer.telefon}
-                      </span>
-                    </div>
-                    <div>
-                      <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Kundengruppe: {customer.kundengruppe}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline">
-                    Details
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+        <div>
+          <h3 className={`text-xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Alle Kunden</h3>
+          <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${
+            theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'
+          }`}>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Kunde
+                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Kontakt
+                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Typ
+                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Gruppe
+                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Status
+                  </th>
+                  <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Aktionen
+                  </th>
+                </tr>
+              </thead>
+              <tbody className={`divide-y ${theme === 'dark' ? 'bg-[#2a2a2a] divide-gray-800' : 'bg-white divide-gray-100'}`}>
+                {filteredCustomers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className={`px-6 py-12 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <Users className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-700' : 'text-gray-300'}`} />
+                      <p className="font-semibold">Keine Kunden gefunden</p>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredCustomers.map((customer) => (
+                    <tr key={customer.id} className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              {customer.vorname} {customer.nachname}
+                            </div>
+                            {customer.firma && (
+                              <div className={`text-xs flex items-center gap-1 mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                                <Building className="h-3 w-3" />
+                                {customer.firma}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <Mail className="h-3 w-3 text-gray-400" />
+                            <span className="text-xs">{customer.email}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3 w-3 text-gray-400" />
+                            <span className="text-xs">{customer.telefon}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {customer.customer_type === 'business' ? (
+                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            <Building className="h-3 w-3 mr-1" />
+                            Business
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 inline-flex text-xs font-bold rounded-full border bg-blue-500/20 text-blue-400 border-blue-500/30">
+                            Privat
+                          </span>
+                        )}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                        {customer.kundengruppe}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {customer.ausweis_verifiziert && (
+                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-green-500/20 text-green-400 border-green-500/30">
+                              <UserCheck className="h-3 w-3 mr-1" />
+                              Verifiziert
+                            </span>
+                          )}
+                          {customer.blacklist && (
+                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-red-500/20 text-red-400 border-red-500/30">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              Blacklist
+                            </span>
+                          )}
+                          {!customer.ausweis_verifiziert && !customer.blacklist && (
+                            <span className="px-2 py-1 inline-flex text-xs font-bold rounded-full border bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                              Ungeprüft
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                        <button 
+                          className="text-[#c00000] hover:text-[#a00000] transition-colors flex items-center gap-1"
+                          onClick={() => toast.info('Details für ' + customer.vorname + ' ' + customer.nachname)}
+                        >
+                          <Edit className="h-4 w-4" />
+                          Details
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>
