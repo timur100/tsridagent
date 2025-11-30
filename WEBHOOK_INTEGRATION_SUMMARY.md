@@ -220,7 +220,7 @@ X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
 
 1. **Health Check:** ✅ PASS
    ```bash
-   curl https://auto-booking-16.preview.emergentagent.com/api/webhooks/health
+   curl https://quicktiles-dash.preview.emergentagent.com/api/webhooks/health
    # {"success": true, "service": "Webhook Service", "status": "operational"}
    ```
 
@@ -256,8 +256,8 @@ Nach Implementierung im scan-verify-hub:
 2. **.env updaten**:
    ```env
    WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-   ID_CHECK_WEBHOOK_URL=https://auto-booking-16.preview.emergentagent.com/api/webhooks/scan-completed
-   ID_CHECK_IMAGE_UPLOAD_URL=https://auto-booking-16.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+   ID_CHECK_WEBHOOK_URL=https://quicktiles-dash.preview.emergentagent.com/api/webhooks/scan-completed
+   ID_CHECK_IMAGE_UPLOAD_URL=https://quicktiles-dash.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
    ```
 
 3. **Dependencies installieren**:

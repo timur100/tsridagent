@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://auto-booking-16.preview.emergentagent.com/portal/admin
+https://quicktiles-dash.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

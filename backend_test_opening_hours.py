@@ -11,7 +11,7 @@ import re
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://auto-booking-16.preview.emergentagent.com"
+BACKEND_URL = "https://quicktiles-dash.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OpeningHoursTester:
