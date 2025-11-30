@@ -484,18 +484,17 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                 </tr>
               ))}
             </tbody>
-          </table>
+        </table>
 
-          {filteredOrders.length === 0 && (
-            <div className="text-center py-12">
-              <ShoppingCart className="mx-auto h-12 w-12 text-gray-400" />
-              <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                Keine Bestellungen gefunden
-              </p>
-            </div>
-          )}
-        </div>
-      </Card>
+        {filteredOrders.length === 0 && (
+          <div className="text-center py-12">
+            <ShoppingCart className="mx-auto h-12 w-12 text-gray-400" />
+            <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              Keine Bestellungen gefunden
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Order Detail Modal */}
       {showDetailModal && selectedOrder && (
