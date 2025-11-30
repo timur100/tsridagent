@@ -130,7 +130,11 @@ const EuropcarAI = () => {
               <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 {feature.description}
               </p>
-              <span className={`text-xs px-2 py-1 rounded-full bg-${feature.color}-100 text-${feature.color}-700`}>
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                feature.color === 'blue' ? 'bg-blue-100 text-blue-700' :
+                feature.color === 'green' ? 'bg-green-100 text-green-700' :
+                feature.color === 'red' ? 'bg-red-100 text-red-700' : 'bg-purple-100 text-purple-700'
+              }`}>
                 {feature.model}
               </span>
             </Card>
