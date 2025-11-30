@@ -148,14 +148,14 @@ class EuropcarSystemTester:
             )
             return False
 
-    def test_get_parking_config_api(self):
-        """Test GET /api/parking/config - Get current configuration"""
+    def test_vehicles_list_api(self):
+        """Test GET /api/europcar/vehicles/list - Should show 8 vehicles"""
         try:
-            response = self.session.get(f"{API_BASE}/parking/config")
+            response = self.session.get(f"{API_BASE}/europcar/vehicles/list")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -167,7 +167,7 @@ class EuropcarSystemTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
                     "Response indicates failure",
                     data
@@ -177,64 +177,72 @@ class EuropcarSystemTester:
             # Check data structure
             if "data" not in data:
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            config_data = data["data"]
-            required_fields = ["max_free_duration_minutes", "penalty_per_hour", "enabled"]
-            
-            for field in required_fields:
-                if field not in config_data:
-                    self.log_result(
-                        "GET Parking Config API",
-                        False,
-                        f"Missing required field in config: {field}",
-                        data
-                    )
-                    return False
-            
-            # Verify field types
-            if not isinstance(config_data["max_free_duration_minutes"], int):
+            vehicles_data = data["data"]
+            if "vehicles" not in vehicles_data:
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
-                    f"max_free_duration_minutes should be int, got {type(config_data['max_free_duration_minutes'])}",
+                    "Missing 'vehicles' field in data",
                     data
                 )
                 return False
             
-            if not isinstance(config_data["penalty_per_hour"], (int, float)):
+            vehicles = vehicles_data["vehicles"]
+            
+            # Verify vehicles is a list
+            if not isinstance(vehicles, list):
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
-                    f"penalty_per_hour should be number, got {type(config_data['penalty_per_hour'])}",
+                    f"Vehicles should be a list, got {type(vehicles)}",
                     data
                 )
                 return False
             
-            if not isinstance(config_data["enabled"], bool):
+            # Check expected count (should be 8 vehicles)
+            expected_count = 8
+            actual_count = len(vehicles)
+            
+            if actual_count != expected_count:
                 self.log_result(
-                    "GET Parking Config API",
+                    "GET Vehicles List API",
                     False,
-                    f"enabled should be bool, got {type(config_data['enabled'])}",
+                    f"Expected {expected_count} vehicles, got {actual_count}",
                     data
                 )
                 return False
+            
+            # Verify vehicle structure
+            if vehicles:
+                vehicle = vehicles[0]
+                required_fields = ["id", "marke", "modell", "kennzeichen", "status"]
+                for field in required_fields:
+                    if field not in vehicle:
+                        self.log_result(
+                            "GET Vehicles List API",
+                            False,
+                            f"Missing required field in vehicle: {field}",
+                            data
+                        )
+                        return False
             
             self.log_result(
-                "GET Parking Config API",
+                "GET Vehicles List API",
                 True,
-                f"Successfully retrieved parking config: max_duration={config_data['max_free_duration_minutes']}min, penalty={config_data['penalty_per_hour']}€/h, enabled={config_data['enabled']}"
+                f"Successfully retrieved {actual_count} vehicles (expected {expected_count})"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Parking Config API",
+                "GET Vehicles List API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
