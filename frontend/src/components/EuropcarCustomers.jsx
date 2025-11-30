@@ -211,8 +211,8 @@ const EuropcarCustomers = () => {
       ) : (
         <div>
           <h3 className={`text-xl font-bold mb-6 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Alle Kunden</h3>
-          <div className={`rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] transition-all duration-300 cursor-pointer hover:-translate-y-1 overflow-hidden ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white border border-gray-100'}`}>
-            <table className="min-w-full divide-y divide-gray-200">
+          <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <table className="w-full">
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
                   <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunde</th>
@@ -223,7 +223,7 @@ const EuropcarCustomers = () => {
                   <th className={`px-6 py-4 text-left text-xs font-bold uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
                 </tr>
               </thead>
-              <tbody className={`divide-y ${theme === 'dark' ? 'bg-[#2a2a2a] divide-gray-800' : 'bg-white divide-gray-100'}`}>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {filteredCustomers.length === 0 ? (
                   <tr>
                     <td colSpan="6" className={`px-6 py-12 text-center ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -233,7 +233,7 @@ const EuropcarCustomers = () => {
                   </tr>
                 ) : (
                   filteredCustomers.map((customer) => (
-                    <tr key={customer.id} className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}>
+                    <tr key={customer.id} className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
