@@ -817,31 +817,31 @@ const RolesTable = ({ roles, theme, onEdit, onDelete, tenants }) => {
         ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
         : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
     }`}>
-      <div className="overflow-x-auto">
+      <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
         <table className="w-full">
-          <thead className={theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}>
+          <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Rolle</th>
-              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Beschreibung</th>
-              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Tenant</th>
-              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Berechtigungen</th>
-              <th className={`px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Typ</th>
-              <th className={`px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider ${
+              <th className={`px-6 py-3 text-right text-xs font-semibold font-mono uppercase tracking-wider ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}>Aktionen</th>
             </tr>
           </thead>
-          <tbody className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+          <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
             {roles.length === 0 ? (
               <tr>
                 <td colSpan="6" className="px-6 py-8 text-center">
