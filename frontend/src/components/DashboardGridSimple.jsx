@@ -330,7 +330,7 @@ const DashboardGridSimple = ({ children }) => {
       )}
 
       {/* Simple CSS Grid with fixed equal height cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6" style={{ gridAutoRows: '160px' }}>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 p-1" style={{ gridAutoRows: '160px', overflow: 'visible' }}>
         {(() => {
           const allItems = [];
           let cardIdx = 0;
