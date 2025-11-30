@@ -796,10 +796,10 @@ const LicenseManagement = () => {
                         </div>
                       </div>
                     </td>
-                    <td className={`py-3 px-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {license.location_code || '-'}
                     </td>
-                    <td className={`py-3 px-4 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`py-3 px-4 text-xs font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {license.features?.slice(0, 2).join(', ')}
                       {license.features?.length > 2 && ' ...'}
                     </td>
