@@ -772,20 +772,20 @@ const LicenseManagement = () => {
                   )}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {overview.assigned_licenses.map(license => (
                   <tr
                     key={license.license_key}
-                    className={`border-b ${
+                    className={`border-t cursor-pointer transition-colors ${
                       theme === 'dark'
-                        ? 'border-gray-700 hover:bg-[#3a3a3a]'
-                        : 'border-gray-100 hover:bg-gray-50'
+                        ? 'border-gray-700 hover:bg-[#1a1a1a]'
+                        : 'border-gray-200 hover:bg-gray-50'
                     }`}
                   >
-                    <td className={`py-3 px-4 font-mono text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`py-3 px-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {license.license_key}
                     </td>
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`py-3 px-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       <div className="flex items-center gap-2">
                         <Monitor className="h-4 w-4" />
                         <div>
