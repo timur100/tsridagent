@@ -966,16 +966,16 @@ const RegistrationsTable = ({ registrations, theme, onApprove, onReject }) => {
               </tr>
             ) : (
               registrations.map(reg => (
-                <tr key={reg.registration_id} className={`${
-                  theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
-                } transition-colors`}>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <div className="font-medium">{reg.name}</div>
+                <tr key={reg.registration_id} className={`border-t cursor-pointer transition-colors ${
+                  theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
+                }`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="font-semibold">{reg.name}</div>
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {reg.email}
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {reg.company || '-'}
                   </td>
                   <td className={`px-6 py-4`}>
