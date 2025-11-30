@@ -63,6 +63,7 @@ from routes.id_scans import router as id_scans_router
 from routes.ideas import router as ideas_router
 from routes.facematch import router as facematch_router
 from routes.vehicles import router as vehicles_router
+from routes.quick_menu import router as quick_menu_router
 
 
 ROOT_DIR = Path(__file__).parent
