@@ -324,21 +324,20 @@ const ComponentsManagement = () => {
           </div>
 
           {/* Components Table */}
-          <Card className={theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Typ</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Name</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Identifikation</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Hersteller</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Modell</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Bestand</th>
-                    <th className={`text-left p-4 font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
-                  </tr>
-                </thead>
-                <tbody>
+          <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <table className="w-full">
+              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Typ</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Name</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Identifikation</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Hersteller</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Modell</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Bestand</th>
+                  <th className={`text-left p-4 font-semibold font-mono text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} uppercase`}>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                   {loading ? (
                     <tr>
                       <td colSpan="7" className="text-center p-8">
