@@ -249,20 +249,19 @@ class EuropcarSystemTester:
             return False
 
     def test_vehicles_availability_check_api(self):
-        """Test PUT /api/parking/config - Update configuration"""
+        """Test GET /api/europcar/vehicles/availability/check - Check vehicle availability"""
         try:
-            # Test configuration for overstay scenario
-            config_data = {
-                "max_free_duration_minutes": 0,  # 0 minutes for testing - any parking will be overstay
-                "penalty_per_hour": 20.0,
-                "enabled": True
+            # Test with specific date range
+            params = {
+                "start_date": "2024-12-01",
+                "end_date": "2024-12-07"
             }
             
-            response = self.session.put(f"{API_BASE}/parking/config", json=config_data)
+            response = self.session.get(f"{API_BASE}/europcar/vehicles/availability/check", params=params)
             
-            if response.status_code not in [200, 201]:
+            if response.status_code != 200:
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Vehicle Availability API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -274,47 +273,66 @@ class EuropcarSystemTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Vehicle Availability API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Verify config was updated by getting it again
-            get_response = self.session.get(f"{API_BASE}/parking/config")
-            if get_response.status_code == 200:
-                get_data = get_response.json()
-                updated_config = get_data.get("data", {})
-                
-                if (updated_config.get("max_free_duration_minutes") == 0 and 
-                    updated_config.get("penalty_per_hour") == 20.0 and 
-                    updated_config.get("enabled") == True):
-                    
-                    self.log_result(
-                        "PUT Update Config API",
-                        True,
-                        f"Successfully updated parking config: max_duration=0min, penalty=20€/h, enabled=True"
-                    )
-                    return True
-                else:
-                    self.log_result(
-                        "PUT Update Config API",
-                        False,
-                        f"Config not updated correctly: {updated_config}"
-                    )
-                    return False
-            else:
+            # Check data structure
+            if "data" not in data:
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Vehicle Availability API",
                     False,
-                    f"Could not verify config update: GET returned {get_response.status_code}"
+                    "Missing 'data' field in response",
+                    data
                 )
                 return False
             
+            availability_data = data["data"]
+            required_fields = ["available_vehicles", "count"]
+            
+            for field in required_fields:
+                if field not in availability_data:
+                    self.log_result(
+                        "GET Vehicle Availability API",
+                        False,
+                        f"Missing required field in data: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify available_vehicles is a list
+            if not isinstance(availability_data["available_vehicles"], list):
+                self.log_result(
+                    "GET Vehicle Availability API",
+                    False,
+                    f"Available vehicles should be a list, got {type(availability_data['available_vehicles'])}",
+                    data
+                )
+                return False
+            
+            # Verify count matches array length
+            if availability_data["count"] != len(availability_data["available_vehicles"]):
+                self.log_result(
+                    "GET Vehicle Availability API",
+                    False,
+                    f"Count mismatch: count={availability_data['count']}, array length={len(availability_data['available_vehicles'])}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "GET Vehicle Availability API",
+                True,
+                f"Successfully checked availability for 2024-12-01 to 2024-12-07: {availability_data['count']} vehicles available"
+            )
+            return True
+            
         except Exception as e:
             self.log_result(
-                "PUT Update Config API",
+                "GET Vehicle Availability API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
