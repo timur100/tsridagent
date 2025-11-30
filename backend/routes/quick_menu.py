@@ -281,6 +281,39 @@ async def update_config(tenant_id: str, config_update: ConfigUpdate):
 
 # ==================== UTILITY ENDPOINTS ====================
 
+@router.get("/tenants/list")
+async def get_available_tenants():
+    """Get list of all tenants for quick menu configuration"""
+    try:
+        # Get all customers/tenants from MongoDB
+        tenants = await db.customers.find(
+            {"active": True},
+            {"_id": 0, "id": 1, "name": 1, "domain": 1}
+        ).to_list(1000)
+        
+        # If no customers found, return a default tenant
+        if not tenants:
+            tenants = [{
+                "id": "default",
+                "name": "Standard Tenant",
+                "domain": "default"
+            }]
+        
+        return {
+            "success": True,
+            "tenants": tenants
+        }
+    except Exception as e:
+        # Return default tenant on error
+        return {
+            "success": True,
+            "tenants": [{
+                "id": "default",
+                "name": "Standard Tenant",
+                "domain": "default"
+            }]
+        }
+
 @router.get("/preview/{tenant_id}")
 async def get_quick_menu_preview(tenant_id: str):
     """Get complete quick menu data (config + tiles) for preview/display"""
