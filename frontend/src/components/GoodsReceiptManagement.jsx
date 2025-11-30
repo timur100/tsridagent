@@ -401,25 +401,25 @@ const GoodsReceiptManagement = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {receipts.map((receipt) => (
                   <tr 
                     key={receipt.id}
-                    className={`border-b ${theme === 'dark' ? 'border-gray-700 hover:bg-[#3a3a3a]' : 'border-gray-100 hover:bg-gray-50'}`}
+                    className={`border-t transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
                   >
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {new Date(receipt.received_at).toLocaleString('de-DE')}
                     </td>
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {receipt.item_name}
                     </td>
-                    <td className={`py-3 px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       <span className="font-semibold text-green-600">+{receipt.quantity}</span>
                     </td>
-                    <td className={`py-3 px-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {receipt.old_stock} → {receipt.new_stock}
                     </td>
-                    <td className={`py-3 px-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {receipt.notes || '-'}
                     </td>
                   </tr>
