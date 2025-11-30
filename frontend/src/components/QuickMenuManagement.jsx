@@ -53,46 +53,17 @@ const QuickMenuManagement = ({ theme }) => {
 
   const loadTenants = async () => {
     try {
-      // Try customers API first
-      let response = await apiCall('/api/customers/list', 'GET');
+      const response = await apiCall('/api/quick-menu/tenants/list', 'GET');
       
-      // If that fails, try tenants proxy
-      if (!response || !response.customers) {
-        try {
-          response = await apiCall('/api/tenants', 'GET');
-          if (response && Array.isArray(response)) {
-            response = { customers: response };
-          }
-        } catch (err) {
-          console.error('Tenants API also failed:', err);
-        }
-      }
-      
-      if (response && response.customers && response.customers.length > 0) {
-        setTenants(response.customers);
-        setSelectedTenant(response.customers[0]);
+      if (response && response.tenants && response.tenants.length > 0) {
+        setTenants(response.tenants);
+        setSelectedTenant(response.tenants[0]);
       } else {
-        // Fallback: Create a dummy tenant for testing
-        const dummyTenant = {
-          id: 'default',
-          name: 'Standard Tenant',
-          domain: 'default'
-        };
-        setTenants([dummyTenant]);
-        setSelectedTenant(dummyTenant);
-        toast.info('Verwende Standard-Tenant für Demo');
+        toast.error('Keine Tenants gefunden');
       }
     } catch (error) {
       console.error('Error loading tenants:', error);
-      // Create fallback tenant
-      const dummyTenant = {
-        id: 'default',
-        name: 'Standard Tenant',
-        domain: 'default'
-      };
-      setTenants([dummyTenant]);
-      setSelectedTenant(dummyTenant);
-      toast.info('Verwende Standard-Tenant');
+      toast.error('Fehler beim Laden der Tenants');
     } finally {
       setLoading(false);
     }
