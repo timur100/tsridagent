@@ -459,7 +459,7 @@ const IDChecksPage = () => {
                 )}
               </tr>
             </thead>
-            <tbody className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+            <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
               {filteredScans.length === 0 ? (
                 <tr>
                   <td colSpan="10" className="px-4 py-8 text-center">
