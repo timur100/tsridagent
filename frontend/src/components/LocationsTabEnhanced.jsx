@@ -456,7 +456,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('location_code')}
                   >
@@ -472,7 +472,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('station_name')}
                   >
@@ -483,7 +483,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('street')}
                   >
@@ -494,7 +494,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('postal_code')}
                   >
@@ -505,7 +505,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('city')}
                   >
@@ -516,7 +516,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('state')}
                   >
@@ -527,7 +527,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('manager')}
                   >
@@ -538,7 +538,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('country')}
                   >
@@ -549,7 +549,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('continent')}
                   >
@@ -560,7 +560,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('phone')}
                   >
@@ -571,7 +571,7 @@ const LocationsTabEnhanced = ({
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-300 hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-100'
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
                     }`}
                     onClick={() => handleSort('email')}
                   >
