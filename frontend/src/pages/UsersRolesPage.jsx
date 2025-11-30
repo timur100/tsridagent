@@ -852,16 +852,16 @@ const RolesTable = ({ roles, theme, onEdit, onDelete, tenants }) => {
               </tr>
             ) : (
               roles.map(role => (
-                <tr key={role.role_id} className={`${
-                  theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
-                } transition-colors`}>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <div className="font-medium">{role.name}</div>
+                <tr key={role.role_id} className={`border-t cursor-pointer transition-colors ${
+                  theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
+                }`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="font-semibold">{role.name}</div>
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <div className="text-sm">{role.description || '-'}</div>
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {getTenantName(role.tenant_id)}
                   </td>
                   <td className={`px-6 py-4`}>
