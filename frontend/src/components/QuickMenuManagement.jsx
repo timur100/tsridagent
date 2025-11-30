@@ -57,11 +57,17 @@ const QuickMenuManagement = ({ theme }) => {
       const response = await apiCall('/api/quick-menu/tenants/list', 'GET');
       console.log('📦 API Response:', response);
       
-      if (response && response.tenants && response.tenants.length > 0) {
-        console.log('✅ Found', response.tenants.length, 'tenants');
-        setTenants(response.tenants);
-        setSelectedTenant(response.tenants[0]);
-        toast.success(`${response.tenants.length} Tenants geladen`);
+      // apiCall wraps response in {success, data, status}
+      const tenantData = response.data || response;
+      const tenantsList = tenantData.tenants || [];
+      
+      console.log('📋 Tenants list:', tenantsList);
+      
+      if (tenantsList && tenantsList.length > 0) {
+        console.log('✅ Found', tenantsList.length, 'tenants');
+        setTenants(tenantsList);
+        setSelectedTenant(tenantsList[0]);
+        toast.success(`${tenantsList.length} Tenants geladen`);
       } else {
         console.error('❌ No tenants in response:', response);
         toast.error('Keine Tenants gefunden');
