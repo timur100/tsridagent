@@ -804,13 +804,13 @@ const LicenseManagement = () => {
                       {license.features?.length > 2 && ' ...'}
                     </td>
                     <td className="py-3 px-4">
-                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-white ${
-                        license.is_active ? 'bg-green-500' : 'bg-red-500'
+                      <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold border ${
+                        license.is_active ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'
                       }`}>
                         {license.is_active ? 'Aktiv' : 'Inaktiv'}
                       </span>
                     </td>
-                    <td className={`py-3 px-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <td className={`py-3 px-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {new Date(license.expires_at).toLocaleDateString('de-DE')}
                     </td>
                     {user?.role === 'admin' && (
