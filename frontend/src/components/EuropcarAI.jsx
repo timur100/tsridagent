@@ -113,8 +113,16 @@ const EuropcarAI = () => {
                 isSelected ? 'border-2 border-blue-500 shadow-lg' : 'hover:shadow-md'
               }`}
             >
-              <div className={`p-3 bg-${feature.color}-100 rounded-full w-fit mb-3`}>
-                <Icon className={`h-6 w-6 text-${feature.color}-600`} />
+              <div className={`p-3 rounded-full w-fit mb-3 ${
+                feature.color === 'blue' ? 'bg-blue-100' :
+                feature.color === 'green' ? 'bg-green-100' :
+                feature.color === 'red' ? 'bg-red-100' : 'bg-purple-100'
+              }`}>
+                <Icon className={`h-6 w-6 ${
+                  feature.color === 'blue' ? 'text-blue-600' :
+                  feature.color === 'green' ? 'text-green-600' :
+                  feature.color === 'red' ? 'text-red-600' : 'text-purple-600'
+                }`} />
               </div>
               <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 {feature.title}
