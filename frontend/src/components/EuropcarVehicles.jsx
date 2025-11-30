@@ -310,33 +310,64 @@ const EuropcarVehicles = () => {
     return true;
   };
 
-  const saveVehicle = () => {
+  const saveVehicle = async () => {
     if (!validateForm()) return;
 
-    if (showAddModal) {
-      const newVehicle = {
-        ...formData,
-        id: 'v' + (vehicles.length + 1),
-        schaeden: []
-      };
-      setVehicles([...vehicles, newVehicle]);
-      toast.success('Fahrzeug erfolgreich hinzugefügt!');
-      setShowAddModal(false);
-    } else if (showEditModal) {
-      setVehicles(vehicles.map(v => 
-        v.id === selectedVehicle.id ? { ...v, ...formData } : v
-      ));
-      toast.success('Fahrzeug erfolgreich aktualisiert!');
-      setShowEditModal(false);
+    try {
+      if (showAddModal) {
+        // Create new vehicle via API
+        const result = await apiCall('/api/europcar/vehicles/create', {
+          method: 'POST',
+          body: JSON.stringify(formData)
+        });
+        
+        if (result.success) {
+          toast.success('Fahrzeug erfolgreich hinzugefügt!');
+          setShowAddModal(false);
+          await loadVehicles(); // Reload list
+        } else {
+          toast.error(result.message || 'Fehler beim Hinzufügen');
+        }
+      } else if (showEditModal) {
+        // Update vehicle via API
+        const result = await apiCall(`/api/europcar/vehicles/${selectedVehicle.id}`, {
+          method: 'PUT',
+          body: JSON.stringify(formData)
+        });
+        
+        if (result.success) {
+          toast.success('Fahrzeug erfolgreich aktualisiert!');
+          setShowEditModal(false);
+          await loadVehicles(); // Reload list
+        } else {
+          toast.error(result.message || 'Fehler beim Aktualisieren');
+        }
+      }
+      resetForm();
+    } catch (error) {
+      console.error('Error saving vehicle:', error);
+      toast.error('Fehler beim Speichern des Fahrzeugs');
     }
-    resetForm();
   };
 
-  const confirmDelete = () => {
-    setVehicles(vehicles.filter(v => v.id !== selectedVehicle.id));
-    toast.success('Fahrzeug erfolgreich gelöscht!');
-    setShowDeleteModal(false);
-    setSelectedVehicle(null);
+  const confirmDelete = async () => {
+    try {
+      const result = await apiCall(`/api/europcar/vehicles/${selectedVehicle.id}`, {
+        method: 'DELETE'
+      });
+      
+      if (result.success) {
+        toast.success('Fahrzeug erfolgreich gelöscht!');
+        setShowDeleteModal(false);
+        setSelectedVehicle(null);
+        await loadVehicles(); // Reload list
+      } else {
+        toast.error(result.message || 'Fehler beim Löschen');
+      }
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      toast.error('Fehler beim Löschen des Fahrzeugs');
+    }
   };
 
   const VehicleFormModal = ({ isEdit }) => (
