@@ -1,37 +1,100 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Plus, Search, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, Calendar, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+// MOCK DEMO DATA
+const MOCK_RESERVATIONS = [
+  {
+    id: 'res-001',
+    vehicle_id: 'v1',
+    customer_id: 'c1',
+    customer_name: 'Max Mustermann',
+    start_date: '2024-12-05T10:00:00',
+    end_date: '2024-12-10T18:00:00',
+    status: 'confirmed',
+    buchungstyp: 'Online-Buchung',
+    total_price: 425.00,
+    extras: ['GPS', 'Kindersitz']
+  },
+  {
+    id: 'res-002',
+    vehicle_id: 'v3',
+    customer_id: 'c2',
+    customer_name: 'Anna Schmidt',
+    start_date: '2024-12-01T09:00:00',
+    end_date: '2024-12-03T17:00:00',
+    status: 'active',
+    buchungstyp: 'Telefonische Buchung',
+    total_price: 180.00,
+    extras: []
+  },
+  {
+    id: 'res-003',
+    vehicle_id: 'v6',
+    customer_id: 'c3',
+    customer_name: 'Thomas Müller',
+    start_date: '2024-12-15T14:00:00',
+    end_date: '2024-12-20T10:00:00',
+    status: 'pending',
+    buchungstyp: 'Online-Buchung',
+    total_price: 650.00,
+    extras: ['Vollkasko', 'Zusatzfahrer']
+  },
+  {
+    id: 'res-004',
+    vehicle_id: 'v9',
+    customer_id: 'c4',
+    customer_name: 'Julia Weber',
+    start_date: '2024-11-20T08:00:00',
+    end_date: '2024-11-25T20:00:00',
+    status: 'completed',
+    buchungstyp: 'Walk-in',
+    total_price: 580.00,
+    extras: ['GPS']
+  },
+  {
+    id: 'res-005',
+    vehicle_id: 'v4',
+    customer_id: 'c5',
+    customer_name: 'Peter Schneider',
+    start_date: '2024-12-22T12:00:00',
+    end_date: '2024-12-27T12:00:00',
+    status: 'confirmed',
+    buchungstyp: 'Online-Buchung',
+    total_price: 495.00,
+    extras: ['Winterreifen']
+  },
+  {
+    id: 'res-006',
+    vehicle_id: 'v8',
+    customer_id: 'c6',
+    customer_name: 'Lisa Becker',
+    start_date: '2024-12-08T10:00:00',
+    end_date: '2024-12-09T18:00:00',
+    status: 'cancelled',
+    buchungstyp: 'Online-Buchung',
+    total_price: 95.00,
+    extras: []
+  }
+];
 
 const EuropcarReservations = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
   const [reservations, setReservations] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
-    loadReservations();
-  }, []);
-
-  const loadReservations = async () => {
-    setLoading(true);
-    try {
-      const result = await apiCall('/api/europcar/reservations/list');
-      if (result.success) {
-        setReservations(result.data.reservations || []);
-      }
-    } catch (error) {
-      console.error('Error loading reservations:', error);
-      toast.error('Fehler beim Laden der Reservierungen');
-    } finally {
+    // Simuliere Laden der Daten
+    setTimeout(() => {
+      setReservations(MOCK_RESERVATIONS);
       setLoading(false);
-    }
-  };
+    }, 500);
+  }, []);
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -53,7 +116,7 @@ const EuropcarReservations = () => {
   const filteredReservations = reservations.filter(r => {
     const matchesSearch = 
       r.id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.customer_id?.toLowerCase().includes(searchTerm.toLowerCase());
+      r.customer_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -109,7 +172,7 @@ const EuropcarReservations = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Suche nach Reservierungs-ID oder Kunden-ID..."
+              placeholder="Suche nach Reservierungs-ID oder Kunde..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
@@ -135,7 +198,10 @@ const EuropcarReservations = () => {
             <option value="completed">Abgeschlossen</option>
             <option value="cancelled">Storniert</option>
           </select>
-          <Button className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2">
+          <Button 
+            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            onClick={() => toast.info('CRUD-Funktionalität wird implementiert')}
+          >
             <Plus className="h-4 w-4" />
             Neue Reservierung
           </Button>
@@ -154,7 +220,7 @@ const EuropcarReservations = () => {
             Keine Reservierungen gefunden
           </h3>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Erstellen Sie eine neue Reservierung
+            Ändern Sie Ihre Suchkriterien
           </p>
         </Card>
       ) : (
@@ -165,10 +231,13 @@ const EuropcarReservations = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Reservierung #{reservation.id.substring(0, 8)}
+                      {reservation.customer_name}
                     </h3>
                     {getStatusBadge(reservation.status)}
                   </div>
+                  <p className={`text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Reservierung #{reservation.id}
+                  </p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                     <div>
                       <p className={`font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Zeitraum</p>
@@ -189,6 +258,13 @@ const EuropcarReservations = () => {
                       </p>
                     </div>
                   </div>
+                  {reservation.extras && reservation.extras.length > 0 && (
+                    <div className="mt-3">
+                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Extras: {reservation.extras.join(', ')}
+                      </p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   {reservation.status === 'pending' && (
