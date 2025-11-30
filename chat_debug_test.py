@@ -22,7 +22,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://smart-dashboard-ui.preview.emergentagent.com"
+BACKEND_URL = "https://europcar-rental.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification
