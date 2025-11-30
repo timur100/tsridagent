@@ -177,7 +177,7 @@ const QuickMenuManagement = ({ theme }) => {
     if (!window.confirm('Kachel wirklich löschen?')) return;
     
     try {
-      await apiCall(`/api/quick-menu/tiles/delete/${tileId}`, 'DELETE');
+      await apiCall(`/api/quick-menu/tiles/delete/${tileId}`, { method: 'DELETE' });
       toast.success('Kachel gelöscht');
       loadTenantData();
     } catch (error) {
@@ -189,8 +189,7 @@ const QuickMenuManagement = ({ theme }) => {
     try {
       await apiCall(
         `/api/quick-menu/config/update/${selectedTenant.id}`,
-        'PUT',
-        configData
+        { method: 'PUT', body: configData }
       );
       toast.success('Konfiguration gespeichert');
       setShowConfigModal(false);
