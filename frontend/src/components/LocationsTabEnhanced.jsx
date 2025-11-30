@@ -589,16 +589,16 @@ const LocationsTabEnhanced = ({
                   )}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {sortedLocations.map((location) => (
                   <tr
                     key={location.location_id}
                     onClick={() => handleRowClick(location)}
-                    className={`border-t cursor-pointer ${
+                    className={`border-t cursor-pointer transition-colors ${
                       theme === 'dark' 
-                        ? 'border-gray-700 hover:bg-[#333]' 
-                        : 'border-gray-100 hover:bg-gray-50'
-                    } transition-colors`}
+                        ? 'border-gray-700 hover:bg-[#1a1a1a]' 
+                        : 'border-gray-200 hover:bg-gray-50'
+                    }`}
                   >
                     <td className="px-4 py-3 text-center">
                       <div className="flex items-center justify-center">
