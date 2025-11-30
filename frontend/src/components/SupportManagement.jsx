@@ -629,12 +629,14 @@ const SupportManagement = () => {
                     }}
                     className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}
                   >
-                    <td className={`px-6 py-4 whitespace-nowrap font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {ticket.ticket_number}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {ticket.ticket_number}
+                      </div>
                     </td>
                     <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       <div>
-                        <p className="font-medium">{ticket.title}</p>
+                        <p className="text-sm font-semibold">{ticket.title}</p>
                         {(ticket.location_name || ticket.device_name) && (
                           <div className="flex items-center gap-3 mt-1 text-xs">
                             {ticket.location_name && (
