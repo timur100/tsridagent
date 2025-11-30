@@ -248,7 +248,7 @@ class EuropcarSystemTester:
             )
             return False
 
-    def test_update_parking_config_api(self):
+    def test_vehicles_availability_check_api(self):
         """Test PUT /api/parking/config - Update configuration"""
         try:
             # Test configuration for overstay scenario
