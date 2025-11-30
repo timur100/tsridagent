@@ -655,11 +655,11 @@ const SupportManagement = () => {
                         )}
                       </div>
                     </td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {ticket.customer_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${getStatusColor(ticket.status)}`}>
+                      <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full border ${getStatusColor(ticket.status)}`}>
                         {getStatusLabel(ticket.status)}
                       </span>
                     </td>
