@@ -649,52 +649,52 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                     <td className="px-4 py-3">
                       {getStatusBadge(location)}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.tenant_name || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm font-medium ${
+                    <td className={`px-4 py-3 text-sm font-mono font-semibold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
                       {location.location_code}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.station_name}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.street || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.postal_code || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.city || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.state ? getStateName(location.state) : '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.manager || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_pc || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_sc || '-'}
