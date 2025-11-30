@@ -77,77 +77,77 @@ const LocationsTab = ({
                     Code
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Stationsname
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Straße
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     PLZ
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Stadt
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Bundesland
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Telefon
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Telefon Intern
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     E-Mail
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Main Typ
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Manager
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Anzahl ID
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     SN-PC
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     SN-SC
                   </th>
                   <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     TV-ID
                   </th>
                   <th className={`px-4 py-3 text-right text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Aktionen
                   </th>
@@ -172,72 +172,72 @@ const LocationsTab = ({
                       {location.location_code}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.station_name}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.street || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.postal_code || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.city || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.state || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone_internal || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.email || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.main_type || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.manager || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm text-center ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.id_checker || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_pc || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.sn_sc || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.tv_id || '-'}
                     </td>
