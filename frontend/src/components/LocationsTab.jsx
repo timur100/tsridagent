@@ -146,7 +146,7 @@ const LocationsTab = ({
                   }`}>
                     TV-ID
                   </th>
-                  <th className={`px-4 py-3 text-right text-xs font-semibold ${
+                  <th className={`px-4 py-3 text-right text-xs font-semibold font-mono uppercase ${
                     theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Aktionen
