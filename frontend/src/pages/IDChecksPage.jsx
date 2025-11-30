@@ -474,7 +474,7 @@ const IDChecksPage = () => {
                     key={scan.id}
                     onClick={() => navigate(`/portal/admin/id-checks/${scan.id}`)}
                     className={`border-t cursor-pointer transition-colors ${
-                      theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'
+                      theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
                     }`}
                   >
                     {visibleColumns.timestamp && (
