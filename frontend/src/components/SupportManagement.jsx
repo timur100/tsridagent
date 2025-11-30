@@ -735,9 +735,8 @@ const SupportManagement = () => {
                 ))}
               </tbody>
             </table>
-          </div>
         )}
-      </Card>
+      </div>
 
       {/* Ticket Detail Modal */}
       {showDetailModal && selectedTicket && (
