@@ -153,25 +153,25 @@ const LocationsTab = ({
                   </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {locations.map((location, index) => (
                   <tr
                     key={location.location_id}
-                    className={`border-t ${
+                    className={`border-t cursor-pointer transition-colors ${
                       theme === 'dark' 
-                        ? 'border-gray-700 hover:bg-[#333]' 
-                        : 'border-gray-100 hover:bg-gray-50'
-                    } transition-colors`}
+                        ? 'border-gray-700 hover:bg-[#1a1a1a]' 
+                        : 'border-gray-200 hover:bg-gray-50'
+                    }`}
                   >
                     <td className="px-4 py-3">
                       {getStatusBadge(location)}
                     </td>
-                    <td className={`px-4 py-3 text-sm font-medium ${
+                    <td className={`px-4 py-3 text-sm font-mono font-semibold ${
                       theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}>
                       {location.location_code}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.station_name}
