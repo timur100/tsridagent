@@ -145,7 +145,11 @@ const EuropcarAI = () => {
       {/* Demo Area */}
       <Card className={`p-8 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
         <div className="flex items-center gap-3 mb-6">
-          <Brain className={`h-6 w-6 text-${selectedFeatureData.color}-600`} />
+          <Brain className={`h-6 w-6 ${
+            selectedFeatureData.color === 'blue' ? 'text-blue-600' :
+            selectedFeatureData.color === 'green' ? 'text-green-600' :
+            selectedFeatureData.color === 'red' ? 'text-red-600' : 'text-purple-600'
+          }`} />
           <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {selectedFeatureData.title}
           </h3>
