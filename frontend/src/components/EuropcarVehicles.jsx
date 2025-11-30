@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, MapPin, Fuel, Gauge } from 'lucide-react';
+import { Plus, Search, Car, Edit, Trash2, Wrench, AlertTriangle, Fuel, Gauge, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-// MOCK DEMO DATA - Direkt in der Komponente eingebaut
-const MOCK_VEHICLES = [
+// MOCK DEMO DATA
+const INITIAL_VEHICLES = [
   {
     id: 'v1',
     marke: 'BMW',
@@ -19,6 +19,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 12500,
     tankstand: 85,
+    farbe: 'Schwarz',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -33,6 +35,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 28000,
     tankstand: 60,
+    farbe: 'Silber',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -47,6 +51,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 8500,
     tankstand: 95,
+    farbe: 'Blau',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -61,6 +67,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Manuell',
     kilometerstand: 45000,
     tankstand: 40,
+    farbe: 'Grau',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -75,6 +83,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 22000,
     tankstand: 70,
+    farbe: 'Weiß',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -89,6 +99,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 5000,
     tankstand: 100,
+    farbe: 'Schwarz',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -103,6 +115,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 38000,
     tankstand: 55,
+    farbe: 'Grau',
+    sitzplaetze: 5,
     schaeden: [
       { typ: 'Kratzer', beschreibung: 'Kratzer an der Tür rechts' }
     ]
@@ -119,6 +133,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Manuell',
     kilometerstand: 2000,
     tankstand: 90,
+    farbe: 'Rot',
+    sitzplaetze: 5,
     schaeden: []
   },
   {
@@ -133,6 +149,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 31000,
     tankstand: 75,
+    farbe: 'Schwarz',
+    sitzplaetze: 7,
     schaeden: []
   },
   {
@@ -147,6 +165,8 @@ const MOCK_VEHICLES = [
     getriebe: 'Automatik',
     kilometerstand: 15000,
     tankstand: 65,
+    farbe: 'Blau',
+    sitzplaetze: 5,
     schaeden: []
   }
 ];
@@ -158,11 +178,27 @@ const EuropcarVehicles = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [formData, setFormData] = useState({
+    marke: '',
+    modell: '',
+    baujahr: new Date().getFullYear(),
+    vin: '',
+    kennzeichen: '',
+    status: 'available',
+    kraftstoff: 'Benzin',
+    getriebe: 'Automatik',
+    kilometerstand: 0,
+    tankstand: 100,
+    farbe: '',
+    sitzplaetze: 5
+  });
 
   useEffect(() => {
-    // Simuliere Laden der Daten
     setTimeout(() => {
-      setVehicles(MOCK_VEHICLES);
+      setVehicles(INITIAL_VEHICLES);
       setLoading(false);
     }, 500);
   }, []);
@@ -199,6 +235,304 @@ const EuropcarVehicles = () => {
     maintenance: vehicles.filter(v => v.status === 'maintenance').length,
     damaged: vehicles.filter(v => v.status === 'damaged').length
   };
+
+  const resetForm = () => {
+    setFormData({
+      marke: '',
+      modell: '',
+      baujahr: new Date().getFullYear(),
+      vin: '',
+      kennzeichen: '',
+      status: 'available',
+      kraftstoff: 'Benzin',
+      getriebe: 'Automatik',
+      kilometerstand: 0,
+      tankstand: 100,
+      farbe: '',
+      sitzplaetze: 5
+    });
+  };
+
+  const handleAdd = () => {
+    resetForm();
+    setShowAddModal(true);
+  };
+
+  const handleEdit = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setFormData({
+      marke: vehicle.marke,
+      modell: vehicle.modell,
+      baujahr: vehicle.baujahr,
+      vin: vehicle.vin,
+      kennzeichen: vehicle.kennzeichen,
+      status: vehicle.status,
+      kraftstoff: vehicle.kraftstoff,
+      getriebe: vehicle.getriebe,
+      kilometerstand: vehicle.kilometerstand,
+      tankstand: vehicle.tankstand,
+      farbe: vehicle.farbe || '',
+      sitzplaetze: vehicle.sitzplaetze || 5
+    });
+    setShowEditModal(true);
+  };
+
+  const handleDelete = (vehicle) => {
+    setSelectedVehicle(vehicle);
+    setShowDeleteModal(true);
+  };
+
+  const validateForm = () => {
+    if (!formData.marke || !formData.modell || !formData.kennzeichen) {
+      toast.error('Bitte füllen Sie alle Pflichtfelder aus');
+      return false;
+    }
+    if (formData.baujahr < 1900 || formData.baujahr > new Date().getFullYear() + 1) {
+      toast.error('Ungültiges Baujahr');
+      return false;
+    }
+    return true;
+  };
+
+  const saveVehicle = () => {
+    if (!validateForm()) return;
+
+    if (showAddModal) {
+      const newVehicle = {
+        ...formData,
+        id: 'v' + (vehicles.length + 1),
+        schaeden: []
+      };
+      setVehicles([...vehicles, newVehicle]);
+      toast.success('Fahrzeug erfolgreich hinzugefügt!');
+      setShowAddModal(false);
+    } else if (showEditModal) {
+      setVehicles(vehicles.map(v => 
+        v.id === selectedVehicle.id ? { ...v, ...formData } : v
+      ));
+      toast.success('Fahrzeug erfolgreich aktualisiert!');
+      setShowEditModal(false);
+    }
+    resetForm();
+  };
+
+  const confirmDelete = () => {
+    setVehicles(vehicles.filter(v => v.id !== selectedVehicle.id));
+    toast.success('Fahrzeug erfolgreich gelöscht!');
+    setShowDeleteModal(false);
+    setSelectedVehicle(null);
+  };
+
+  const VehicleFormModal = ({ isEdit }) => (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <Card className={`w-full max-w-3xl max-h-[90vh] overflow-y-auto ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <div className="p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {isEdit ? 'Fahrzeug bearbeiten' : 'Neues Fahrzeug hinzufügen'}
+            </h3>
+            <button
+              onClick={() => {
+                isEdit ? setShowEditModal(false) : setShowAddModal(false);
+                resetForm();
+              }}
+              className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Marke *
+              </label>
+              <input
+                type="text"
+                value={formData.marke}
+                onChange={(e) => setFormData({...formData, marke: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                placeholder="z.B. BMW"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Modell *
+              </label>
+              <input
+                type="text"
+                value={formData.modell}
+                onChange={(e) => setFormData({...formData, modell: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                placeholder="z.B. 3er"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Baujahr
+              </label>
+              <input
+                type="number"
+                value={formData.baujahr}
+                onChange={(e) => setFormData({...formData, baujahr: parseInt(e.target.value)})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                min="2000"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Kennzeichen *
+              </label>
+              <input
+                type="text"
+                value={formData.kennzeichen}
+                onChange={(e) => setFormData({...formData, kennzeichen: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                placeholder="z.B. B-EC 1234"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                VIN
+              </label>
+              <input
+                type="text"
+                value={formData.vin}
+                onChange={(e) => setFormData({...formData, vin: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                placeholder="Fahrzeugidentnummer"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Farbe
+              </label>
+              <input
+                type="text"
+                value={formData.farbe}
+                onChange={(e) => setFormData({...formData, farbe: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                placeholder="z.B. Schwarz"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Status
+              </label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+              >
+                <option value="available">Verfügbar</option>
+                <option value="rented">Vermietet</option>
+                <option value="maintenance">Wartung</option>
+                <option value="damaged">Beschädigt</option>
+                <option value="reserved">Reserviert</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Kraftstoff
+              </label>
+              <select
+                value={formData.kraftstoff}
+                onChange={(e) => setFormData({...formData, kraftstoff: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+              >
+                <option value="Benzin">Benzin</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Elektro">Elektro</option>
+                <option value="Hybrid">Hybrid</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Getriebe
+              </label>
+              <select
+                value={formData.getriebe}
+                onChange={(e) => setFormData({...formData, getriebe: e.target.value})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+              >
+                <option value="Automatik">Automatik</option>
+                <option value="Manuell">Manuell</option>
+              </select>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Sitzplätze
+              </label>
+              <input
+                type="number"
+                value={formData.sitzplaetze}
+                onChange={(e) => setFormData({...formData, sitzplaetze: parseInt(e.target.value)})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                min="2"
+                max="9"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Kilometerstand
+              </label>
+              <input
+                type="number"
+                value={formData.kilometerstand}
+                onChange={(e) => setFormData({...formData, kilometerstand: parseInt(e.target.value)})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Tankstand (%)
+              </label>
+              <input
+                type="number"
+                value={formData.tankstand}
+                onChange={(e) => setFormData({...formData, tankstand: parseInt(e.target.value)})}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                min="0"
+                max="100"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <Button
+              onClick={saveVehicle}
+              className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+            >
+              {isEdit ? 'Aktualisieren' : 'Hinzufügen'}
+            </Button>
+            <Button
+              onClick={() => {
+                isEdit ? setShowEditModal(false) : setShowAddModal(false);
+                resetForm();
+              }}
+              variant="outline"
+              className="flex-1"
+            >
+              Abbrechen
+            </Button>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -274,7 +608,7 @@ const EuropcarVehicles = () => {
             <option value="reserved">Reserviert</option>
           </select>
           <Button
-            onClick={() => setShowAddModal(true)}
+            onClick={handleAdd}
             className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
@@ -351,7 +685,7 @@ const EuropcarVehicles = () => {
                   size="sm"
                   variant="outline"
                   className="flex-1"
-                  onClick={() => toast.info('CRUD-Funktionalität kommt in der nächsten Phase')}
+                  onClick={() => handleEdit(vehicle)}
                 >
                   <Edit className="h-4 w-4 mr-1" />
                   Bearbeiten
@@ -359,11 +693,10 @@ const EuropcarVehicles = () => {
                 <Button
                   size="sm"
                   variant="outline"
-                  className="flex-1"
-                  onClick={() => toast.info('Wartungs-Funktionalität kommt in der nächsten Phase')}
+                  className="text-red-600 hover:bg-red-50"
+                  onClick={() => handleDelete(vehicle)}
                 >
-                  <Wrench className="h-4 w-4 mr-1" />
-                  Wartung
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </Card>
@@ -371,22 +704,40 @@ const EuropcarVehicles = () => {
         </div>
       )}
 
-      {/* Add Vehicle Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <Card className={`p-6 max-w-2xl w-full mx-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-            <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Fahrzeug hinzufügen
-            </h3>
-            <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              CRUD-Formular wird in der nächsten Phase implementiert
-            </p>
-            <Button
-              onClick={() => setShowAddModal(false)}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
-            >
-              Schließen
-            </Button>
+      {/* Modals */}
+      {showAddModal && <VehicleFormModal isEdit={false} />}
+      {showEditModal && <VehicleFormModal isEdit={true} />}
+      
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedVehicle && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <Card className={`w-full max-w-md ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+            <div className="p-6">
+              <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Fahrzeug löschen?
+              </h3>
+              <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Möchten Sie wirklich das Fahrzeug <strong>{selectedVehicle.marke} {selectedVehicle.modell}</strong> ({selectedVehicle.kennzeichen}) löschen? Diese Aktion kann nicht rückgängig gemacht werden.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  onClick={confirmDelete}
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Löschen
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setSelectedVehicle(null);
+                  }}
+                  variant="outline"
+                  className="flex-1"
+                >
+                  Abbrechen
+                </Button>
+              </div>
+            </div>
           </Card>
         </div>
       )}
