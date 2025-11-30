@@ -452,41 +452,40 @@ const VehicleManagement = ({ initialVehicleId }) => {
       </Card>
 
       {/* Vehicles Table */}
-      <Card className={`${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead className={`${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-              <tr>
-                <th className={`px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Kennzeichen
-                </th>
-                <th className={`hidden md:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Tenant
-                </th>
-                <th className={`px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Marke / Modell
-                </th>
-                <th className={`hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Baujahr
-                </th>
-                <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  KM-Stand
-                </th>
-                <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Farbe
-                </th>
-                <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Kraftstoff
-                </th>
-                <th className={`px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Status
-                </th>
-                <th className={`px-4 lg:px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Aktionen
-                </th>
-              </tr>
-            </thead>
-            <tbody className={`divide-y ${theme === 'dark' ? 'divide-gray-700' : 'divide-gray-200'}`}>
+      <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <table className="w-full">
+          <thead className={`${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+            <tr>
+              <th className={`px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Kennzeichen
+              </th>
+              <th className={`hidden md:table-cell px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Tenant
+              </th>
+              <th className={`px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Marke / Modell
+              </th>
+              <th className={`hidden lg:table-cell px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Baujahr
+              </th>
+              <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                KM-Stand
+              </th>
+              <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Farbe
+              </th>
+              <th className={`hidden xl:table-cell px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Kraftstoff
+              </th>
+              <th className={`px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Status
+              </th>
+              <th className={`px-4 lg:px-6 py-3 text-left text-xs font-semibold font-mono uppercase tracking-wider ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Aktionen
+              </th>
+            </tr>
+          </thead>
+          <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
               {loading ? (
                 <tr>
                   <td colSpan="9" className="px-6 py-12 text-center">
