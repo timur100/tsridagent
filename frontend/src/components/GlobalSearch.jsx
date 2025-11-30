@@ -22,8 +22,22 @@ const GlobalSearch = ({ onResultSelect }) => {
     }
 
     const handleKeyDown = (e) => {
-      // Focus search on Ctrl+K or /
-      if ((e.ctrlKey && e.key === 'k') || e.key === '/') {
+      // Don't trigger if user is typing in an input field
+      const activeElement = document.activeElement;
+      const isTyping = activeElement && (
+        activeElement.tagName === 'INPUT' ||
+        activeElement.tagName === 'TEXTAREA' ||
+        activeElement.isContentEditable
+      );
+      
+      // Focus search on Ctrl+K (always) or Ctrl+/ (safer shortcut)
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      
+      // Only trigger "/" shortcut if NOT typing in another input
+      if (e.key === '/' && !isTyping && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         searchInputRef.current?.focus();
       }
