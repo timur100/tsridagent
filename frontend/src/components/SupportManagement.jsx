@@ -655,10 +655,10 @@ const SupportManagement = () => {
                         )}
                       </div>
                     </td>
-                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
                       <div>
-                        <p className="font-medium">{ticket.customer_name}</p>
-                        <p className="text-xs text-gray-500">{ticket.customer_company}</p>
+                        <p className="font-semibold">{ticket.customer_name}</p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>{ticket.customer_company}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
