@@ -425,7 +425,7 @@ const HardwareLicenseManagement = () => {
                   <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {hardwareLicenses
                   .filter(license => {
                     // Apply filter
@@ -449,8 +449,8 @@ const HardwareLicenseManagement = () => {
                     const daysUntilExpiry = expiryDate ? Math.floor((expiryDate - new Date()) / (1000 * 60 * 60 * 24)) : null;
                     
                     return (
-                      <tr key={license.license_id} className={theme === 'dark' ? 'border-b border-gray-700' : 'border-b border-gray-200'}>
-                        <td className={`py-3 px-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      <tr key={license.license_id} className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}>
+                        <td className={`py-3 px-4 font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                           {license.serial_number}
                         </td>
                         <td className="py-3 px-4">
