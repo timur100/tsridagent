@@ -1399,7 +1399,7 @@ const AdminPortalContent = () => {
                           {device.location_name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${
+                          <span className={`px-3 py-1 inline-flex text-xs font-semibold rounded-full border ${
                             device.status === 'online'
                               ? 'bg-green-500/20 text-green-400 border-green-500/30'
                               : 'bg-red-500/20 text-red-400 border-red-500/30'
@@ -1407,13 +1407,13 @@ const AdminPortalContent = () => {
                             {device.status === 'online' ? 'Online' : 'Offline'}
                           </span>
                         </td>
-                        <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           {device.ip_address || 'N/A'}
                         </td>
-                        <td className={`px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           {device.last_seen ? new Date(device.last_seen).toLocaleString('de-DE') : 'Nie'}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-mono font-semibold">
                           <button className="text-[#c00000] hover:text-[#a00000] transition-colors">Bearbeiten</button>
                         </td>
                       </tr>
