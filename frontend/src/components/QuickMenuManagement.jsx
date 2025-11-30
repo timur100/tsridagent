@@ -85,20 +85,29 @@ const QuickMenuManagement = ({ theme }) => {
     
     setLoading(true);
     try {
+      console.log('📂 Loading data for tenant:', selectedTenant.id);
+      
       // Load tiles
       const tilesResponse = await apiCall(
         `/api/quick-menu/tiles/tenant/${selectedTenant.id}`,
         'GET'
       );
-      setTiles(tilesResponse.tiles || []);
+      const tilesData = tilesResponse.data || tilesResponse;
+      const tilesList = tilesData.tiles || [];
+      console.log('📋 Loaded tiles:', tilesList.length);
+      setTiles(tilesList);
 
       // Load config
       const configResponse = await apiCall(
         `/api/quick-menu/config/tenant/${selectedTenant.id}`,
         'GET'
       );
-      setConfig(configResponse.config || null);
+      const configData = configResponse.data || configResponse;
+      const configObj = configData.config || null;
+      console.log('⚙️ Loaded config:', configObj);
+      setConfig(configObj);
     } catch (error) {
+      console.error('❌ Error loading tenant data:', error);
       toast.error('Fehler beim Laden der Daten');
     } finally {
       setLoading(false);
