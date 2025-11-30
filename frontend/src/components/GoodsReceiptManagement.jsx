@@ -380,10 +380,10 @@ const GoodsReceiptManagement = () => {
             Noch keine Wareneingänge vorhanden
           </p>
         ) : (
-          <div className="overflow-x-auto">
+          <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
             <table className="w-full">
-              <thead>
-                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
                   <th className={`text-left py-3 px-4 text-xs font-semibold font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Datum
                   </th>
