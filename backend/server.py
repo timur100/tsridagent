@@ -279,7 +279,7 @@ app.include_router(test_webhook_router, prefix="/api")
 from routes.cameras import router as cameras_router
 app.include_router(cameras_router, prefix="/api")
 
-# Include Europcar routers (PKW-Vermietungssystem - Phase 1 & 2)
+# Include Europcar routers (PKW-Vermietungssystem - Alle 3 Phasen)
 from routes.europcar_vehicles import router as europcar_vehicles_router
 from routes.europcar_reservations import router as europcar_reservations_router
 from routes.europcar_customers import router as europcar_customers_router
@@ -290,6 +290,9 @@ from routes.europcar_pricing import router as europcar_pricing_router
 from routes.europcar_payments import router as europcar_payments_router
 from routes.europcar_damage import router as europcar_damage_router
 from routes.europcar_tracking import router as europcar_tracking_router
+from routes.europcar_analytics import router as europcar_analytics_router
+from routes.europcar_automation import router as europcar_automation_router
+from routes.europcar_ai import router as europcar_ai_router
 app.include_router(europcar_vehicles_router)
 app.include_router(europcar_reservations_router)
 app.include_router(europcar_customers_router)
@@ -300,6 +303,9 @@ app.include_router(europcar_pricing_router)
 app.include_router(europcar_payments_router)
 app.include_router(europcar_damage_router)
 app.include_router(europcar_tracking_router)
+app.include_router(europcar_analytics_router)
+app.include_router(europcar_automation_router)
+app.include_router(europcar_ai_router)
 
 # Include the router in the main app
 app.include_router(api_router)
