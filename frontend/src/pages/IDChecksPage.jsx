@@ -473,17 +473,17 @@ const IDChecksPage = () => {
                   <tr
                     key={scan.id}
                     onClick={() => navigate(`/portal/admin/id-checks/${scan.id}`)}
-                    className={`cursor-pointer transition-colors ${
-                      theme === 'dark' ? 'hover:bg-[#3a3a3a]' : 'hover:bg-gray-50'
+                    className={`border-t cursor-pointer transition-colors ${
+                      theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'
                     }`}
                   >
                     {visibleColumns.timestamp && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {formatDate(scan.scan_timestamp)}
                       </td>
                     )}
                     {visibleColumns.tenant && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <div className="flex items-center gap-2">
                           <Building className="h-4 w-4 text-gray-500" />
                           {scan.tenant_name}
@@ -491,7 +491,7 @@ const IDChecksPage = () => {
                       </td>
                     )}
                     {visibleColumns.location && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <div className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-gray-500" />
                           {scan.location_name || '-'}
@@ -499,7 +499,7 @@ const IDChecksPage = () => {
                       </td>
                     )}
                     {visibleColumns.device && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <div className="flex items-center gap-2">
                           <Monitor className="h-4 w-4 text-gray-500" />
                           {scan.device_name || '-'}
@@ -507,7 +507,7 @@ const IDChecksPage = () => {
                       </td>
                     )}
                     {visibleColumns.document_type && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {scan.extracted_data?.document_type || scan.document_type || '-'}
                       </td>
                     )}
@@ -517,17 +517,17 @@ const IDChecksPage = () => {
                       </td>
                     )}
                     {visibleColumns.name && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {scan.extracted_data?.full_name || scan.extracted_data?.first_name + ' ' + scan.extracted_data?.last_name || '-'}
                       </td>
                     )}
                     {visibleColumns.document_number && (
-                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         {scan.extracted_data?.document_number || '-'}
                       </td>
                     )}
                     {visibleColumns.scanned_by && (
-                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <td className={`px-4 py-3 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-gray-500" />
                           {scan.scanned_by || '-'}
