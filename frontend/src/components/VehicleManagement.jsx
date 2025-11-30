@@ -532,16 +532,16 @@ const VehicleManagement = ({ initialVehicleId }) => {
                         <span className="text-xs">{vehicle.model}</span>
                       </div>
                     </td>
-                    <td className={`hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden lg:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {vehicle.year}
                     </td>
-                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {vehicle.mileage.toLocaleString()} km
                     </td>
-                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {vehicle.color || '-'}
                     </td>
-                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <td className={`hidden xl:table-cell px-4 lg:px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                       {vehicle.fuel_type || '-'}
                     </td>
                     <td className="px-4 lg:px-6 py-4 whitespace-nowrap">
