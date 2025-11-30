@@ -937,18 +937,17 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                 </tr>
               ))}
             </tbody>
-          </table>
-          
-          {filteredItems.length === 0 && (
-            <div className="text-center py-12">
-              <Package className="mx-auto h-12 w-12 text-gray-400" />
-              <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                Keine Artikel gefunden
-              </p>
-            </div>
-          )}
-        </div>
-      </Card>
+        </table>
+        
+        {filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+              Keine Artikel gefunden
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Category Modal */}
       {showCategoryModal && (
