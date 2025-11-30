@@ -377,10 +377,10 @@ const ComponentsManagement = () => {
                               <div className="font-mono">{component.identification_value}</div>
                             </div>
                           </td>
-                          <td className={`p-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <td className={`p-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             {component.manufacturer || '-'}
                           </td>
-                          <td className={`p-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <td className={`p-4 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             {component.model || '-'}
                           </td>
                           <td className="p-4">
