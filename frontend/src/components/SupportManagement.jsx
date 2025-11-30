@@ -162,13 +162,13 @@ const SupportManagement = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      open: 'bg-blue-600',
-      in_progress: 'bg-yellow-600',
-      waiting: 'bg-orange-600',
-      resolved: 'bg-green-600',
-      closed: 'bg-gray-600'
+      open: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+      in_progress: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+      waiting: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+      resolved: 'bg-green-500/20 text-green-400 border-green-500/30',
+      closed: 'bg-gray-500/20 text-gray-400 border-gray-500/30'
     };
-    return colors[status] || 'bg-gray-600';
+    return colors[status] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
   };
 
   const getPriorityColor = (priority) => {
