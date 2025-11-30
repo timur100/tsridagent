@@ -110,7 +110,7 @@ const EuropcarAI = () => {
               className={`p-6 cursor-pointer transition-all ${
                 theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
               } ${
-                isSelected ? `border-2 border-${feature.color}-500 shadow-lg` : 'hover:shadow-md'
+                isSelected ? 'border-2 border-blue-500 shadow-lg' : 'hover:shadow-md'
               }`}
             >
               <div className={`p-3 bg-${feature.color}-100 rounded-full w-fit mb-3`}>
