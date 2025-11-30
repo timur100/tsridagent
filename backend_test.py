@@ -43,7 +43,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://europcar-rental.preview.emergentagent.com"
+BACKEND_URL = "https://auto-booking-16.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 
