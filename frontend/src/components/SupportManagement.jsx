@@ -630,13 +630,13 @@ const SupportManagement = () => {
                     className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {ticket.ticket_number}
+                      <div>
+                        <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{ticket.ticket_number}</div>
                       </div>
                     </td>
-                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
                       <div>
-                        <p className="text-sm font-semibold">{ticket.title}</p>
+                        <div className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{ticket.title}</div>
                         {(ticket.location_name || ticket.device_name) && (
                           <div className="flex items-center gap-3 mt-1 text-xs">
                             {ticket.location_name && (
@@ -656,10 +656,7 @@ const SupportManagement = () => {
                       </div>
                     </td>
                     <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                      <div>
-                        <p className="font-semibold">{ticket.customer_name}</p>
-                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>{ticket.customer_company}</p>
-                      </div>
+                      {ticket.customer_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-3 py-1 inline-flex text-xs font-bold rounded-full border ${getStatusColor(ticket.status)}`}>
