@@ -1285,10 +1285,10 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                         <table className="w-full">
                           <thead>
                             <tr className="border-b border-border">
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Name</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Rolle</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Letzter Login</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Aktionen</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Name</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Rolle</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Letzter Login</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Aktionen</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -1376,10 +1376,10 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                         <table className="w-full">
                           <thead>
                             <tr className="border-b border-border">
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Mitarbeiter-Nr.</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Name</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Rolle</th>
-                              <th className="text-left p-3 text-xs font-semibold font-mono text-foreground">Aktionen</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Mitarbeiter-Nr.</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Name</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Rolle</th>
+                              <th className="text-left p-3 text-xs font-bold uppercase tracking-wider text-foreground">Aktionen</th>
                             </tr>
                           </thead>
                           <tbody>

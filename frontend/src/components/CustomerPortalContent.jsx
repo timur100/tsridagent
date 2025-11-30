@@ -1017,22 +1017,22 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
               <table className="w-full">
                 <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                   <tr>
-                    <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Gerät
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Standort
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Status
                     </th>
-                    <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+                    <th className={`px-6 py-3 text-left text-xs font-bold uppercase tracking-wider ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Zuletzt gesehen
@@ -1372,7 +1372,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                 <tr>
                   <th 
                     onClick={() => handleDeviceSort('device_id')}
-                    className={`w-28 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-28 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Device-ID
@@ -1383,7 +1383,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('locationcode')}
-                    className={`w-20 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-20 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Location
@@ -1394,7 +1394,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('street')}
-                    className={`w-48 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-48 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Straße
@@ -1405,7 +1405,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('postal_code')}
-                    className={`w-16 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-16 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       PLZ
@@ -1416,7 +1416,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('city')}
-                    className={`w-32 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-32 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Stadt
@@ -1427,7 +1427,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('country')}
-                    className={`w-20 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-20 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Land
@@ -1438,7 +1438,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('sn_pc')}
-                    className={`w-24 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-24 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       SN-PC
@@ -1449,7 +1449,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('sn_sc')}
-                    className={`w-24 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-24 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       SN-SC
@@ -1460,7 +1460,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('tvid')}
-                    className={`w-20 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-20 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       TVID
@@ -1471,7 +1471,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('ip_address')}
-                    className={`w-24 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-24 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       IP
@@ -1482,7 +1482,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('sw_version')}
-                    className={`w-20 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-20 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       SW Vers.
@@ -1493,7 +1493,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('status')}
-                    className={`w-20 px-2 py-3 text-center text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-20 px-2 py-3 text-center text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center justify-center gap-1">
                       Status
@@ -1504,7 +1504,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   </th>
                   <th 
                     onClick={() => handleDeviceSort('hardware_model')}
-                    className={`w-28 px-2 py-3 text-left text-xs font-mono font-semibold cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                    className={`w-28 px-2 py-3 text-left text-xs font-bold uppercase tracking-wider cursor-pointer hover:bg-gray-700/50 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
                   >
                     <div className="flex items-center gap-1">
                       Hardware
