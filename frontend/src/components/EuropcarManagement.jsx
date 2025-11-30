@@ -7,7 +7,9 @@ import EuropcarReservations from './EuropcarReservations';
 import EuropcarCustomers from './EuropcarCustomers';
 import EuropcarContracts from './EuropcarContracts';
 import EuropcarReturns from './EuropcarReturns';
-import { Car, Calendar, Users, FileText, RotateCcw, TrendingUp } from 'lucide-react';
+import EuropcarAnalytics from './EuropcarAnalytics';
+import EuropcarAI from './EuropcarAI';
+import { Car, Calendar, Users, FileText, RotateCcw, TrendingUp, MapPin, AlertTriangle, Brain } from 'lucide-react';
 
 const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
   const { theme } = useTheme();
