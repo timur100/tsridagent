@@ -751,10 +751,10 @@ const UsersTable = ({ users, theme, onEdit, onDelete, getStatusBadge, tenants })
                       </div>
                     </div>
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {user.email}
                   </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     <div className="text-sm">{getTenantNames(user.tenant_ids)}</div>
                   </td>
                   <td className={`px-6 py-4`}>
