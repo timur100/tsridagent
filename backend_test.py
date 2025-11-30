@@ -848,9 +848,33 @@ class EuropcarSystemTester:
     def test_pricing_calculate_api(self):
         """Test POST /api/europcar/pricing/calculate - Calculate pricing for rental"""
         try:
-            # Test pricing calculation with specific data
+            # First get a real vehicle ID
+            vehicles_response = self.session.get(f"{API_BASE}/europcar/vehicles/list")
+            if vehicles_response.status_code != 200:
+                self.log_result(
+                    "POST Pricing Calculate API",
+                    False,
+                    "Could not get vehicles list to find valid vehicle ID",
+                    vehicles_response.text
+                )
+                return False
+            
+            vehicles_data = vehicles_response.json()
+            if not vehicles_data.get("success") or not vehicles_data.get("data", {}).get("vehicles"):
+                self.log_result(
+                    "POST Pricing Calculate API",
+                    False,
+                    "No vehicles available for pricing test",
+                    vehicles_data
+                )
+                return False
+            
+            # Use the first available vehicle
+            vehicle_id = vehicles_data["data"]["vehicles"][0]["id"]
+            
+            # Test pricing calculation with real vehicle ID
             pricing_data = {
-                "vehicle_id": "test",
+                "vehicle_id": vehicle_id,
                 "start_date": "2024-12-01",
                 "end_date": "2024-12-07"
             }
