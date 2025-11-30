@@ -726,10 +726,10 @@ const UsersTable = ({ users, theme, onEdit, onDelete, getStatusBadge, tenants })
               </tr>
             ) : (
               users.map(user => (
-                <tr key={user.user_id} className={`${
-                  theme === 'dark' ? 'hover:bg-[#1f1f1f]' : 'hover:bg-gray-50'
-                } transition-colors`}>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <tr key={user.user_id} className={`border-t cursor-pointer transition-colors ${
+                  theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
+                }`}>
+                  <td className={`px-6 py-4 font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     <div className="flex items-center gap-3">
                       {/* Status LED */}
                       <div className="flex-shrink-0">
