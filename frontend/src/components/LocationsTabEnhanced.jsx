@@ -443,14 +443,14 @@ const LocationsTabEnhanced = ({
               <thead>
                 <tr className={theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}>
                   <th 
-                    className={`px-4 py-3 text-center text-xs font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    className={`px-4 py-3 text-center text-xs font-semibold font-mono uppercase ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}
                   >
                     Online
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Status
                   </th>
@@ -465,8 +465,8 @@ const LocationsTabEnhanced = ({
                       {getSortIcon('location_code')}
                     </div>
                   </th>
-                  <th className={`px-4 py-3 text-center text-xs font-semibold ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                  <th className={`px-4 py-3 text-center text-xs font-semibold font-mono uppercase ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                   }`}>
                     Typ
                   </th>
@@ -581,8 +581,8 @@ const LocationsTabEnhanced = ({
                     </div>
                   </th>
                   {!isCustomerPortal && (
-                    <th className={`px-4 py-3 text-right text-xs font-semibold ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                    <th className={`px-4 py-3 text-right text-xs font-semibold font-mono uppercase ${
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       Aktionen
                     </th>
@@ -657,52 +657,52 @@ const LocationsTabEnhanced = ({
                       </div>
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.station_name}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.street || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.postal_code || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.city || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.state ? getStateName(location.state) : '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.manager || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.country || 'Deutschland'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.continent || 'Europa'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone || '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm ${
-                      theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.email || '-'}
                     </td>
