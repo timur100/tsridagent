@@ -409,52 +409,52 @@ const IDChecksPage = () => {
             <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
               <tr>
                 {visibleColumns.timestamp && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Zeitstempel
                   </th>
                 )}
                 {visibleColumns.tenant && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Kunde
                   </th>
                 )}
                 {visibleColumns.location && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Standort
                   </th>
                 )}
                 {visibleColumns.device && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Gerät
                   </th>
                 )}
                 {visibleColumns.document_type && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Dokumenttyp
                   </th>
                 )}
                 {visibleColumns.status && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Status
                   </th>
                 )}
                 {visibleColumns.name && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Name
                   </th>
                 )}
                 {visibleColumns.document_number && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Dokumentennummer
                   </th>
                 )}
                 {visibleColumns.scanned_by && (
-                  <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Gescannt von
                   </th>
                 )}
                 {visibleColumns.actions && (
-                  <th className={`px-4 py-3 text-right text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <th className={`px-4 py-3 text-right text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Aktionen
                   </th>
                 )}
