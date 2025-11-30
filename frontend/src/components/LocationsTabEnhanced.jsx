@@ -656,52 +656,52 @@ const LocationsTabEnhanced = ({
                         })()}
                       </div>
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.station_name}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.street || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.postal_code || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.city || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.state ? getStateName(location.state) : '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.manager || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.country || 'Deutschland'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.continent || 'Europa'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone || '-'}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${
+                    <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.email || '-'}
