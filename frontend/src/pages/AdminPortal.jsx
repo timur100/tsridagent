@@ -1388,14 +1388,14 @@ const AdminPortalContent = () => {
                   </thead>
                   <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                     {filteredDevices.map((device) => (
-                      <tr key={device.device_id} className={`transition-colors ${theme === 'dark' ? 'hover:bg-[#333333]' : 'hover:bg-gray-50'}`}>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                      <tr key={device.device_id} className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}>
+                        <td className="px-6 py-4 whitespace-nowrap font-mono">
                           <div>
                             <div className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{device.device_id}</div>
                             <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>{device.station_name}</div>
                           </div>
                         </td>
-                        <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                        <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           {device.location_name}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
