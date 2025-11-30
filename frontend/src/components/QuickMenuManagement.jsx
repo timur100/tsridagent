@@ -125,27 +125,40 @@ const QuickMenuManagement = ({ theme }) => {
 
   const handleSaveTile = async (tileData) => {
     try {
+      console.log('💾 Saving tile:', tileData);
+      
+      let response;
       if (tileData.tile_id) {
         // Update existing
-        await apiCall(
+        console.log('📝 Updating tile:', tileData.tile_id);
+        response = await apiCall(
           `/api/quick-menu/tiles/update/${tileData.tile_id}`,
           'PUT',
           tileData
         );
-        toast.success('Kachel aktualisiert');
       } else {
         // Create new
-        await apiCall('/api/quick-menu/tiles/create', 'POST', {
+        console.log('➕ Creating new tile for tenant:', selectedTenant.id);
+        response = await apiCall('/api/quick-menu/tiles/create', 'POST', {
           ...tileData,
           tenant_id: selectedTenant.id
         });
-        toast.success('Kachel erstellt');
       }
-      setShowTileModal(false);
-      setEditingTile(null);
-      loadTenantData();
+      
+      console.log('✅ Save response:', response);
+      
+      const success = response?.success || response?.data?.success;
+      if (success) {
+        toast.success(tileData.tile_id ? 'Kachel aktualisiert' : 'Kachel erstellt');
+        setShowTileModal(false);
+        setEditingTile(null);
+        await loadTenantData();
+      } else {
+        throw new Error('Server returned unsuccessful response');
+      }
     } catch (error) {
-      toast.error('Fehler beim Speichern');
+      console.error('❌ Error saving tile:', error);
+      toast.error('Fehler beim Speichern: ' + (error.message || 'Unbekannter Fehler'));
     }
   };
 
