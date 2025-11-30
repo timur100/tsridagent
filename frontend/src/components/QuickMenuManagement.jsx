@@ -142,15 +142,17 @@ const QuickMenuManagement = ({ theme }) => {
         console.log('📝 Updating tile:', tileData.tile_id);
         response = await apiCall(
           `/api/quick-menu/tiles/update/${tileData.tile_id}`,
-          'PUT',
-          tileData
+          { method: 'PUT', body: tileData }
         );
       } else {
         // Create new
         console.log('➕ Creating new tile for tenant:', selectedTenant.id);
-        response = await apiCall('/api/quick-menu/tiles/create', 'POST', {
-          ...tileData,
-          tenant_id: selectedTenant.id
+        response = await apiCall('/api/quick-menu/tiles/create', {
+          method: 'POST',
+          body: {
+            ...tileData,
+            tenant_id: selectedTenant.id
+          }
         });
       }
       
