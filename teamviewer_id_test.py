@@ -21,7 +21,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://keyautomat.preview.emergentagent.com"
+BACKEND_URL = "https://kiosk-manager-8.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification
