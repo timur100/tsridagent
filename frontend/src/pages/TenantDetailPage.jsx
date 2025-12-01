@@ -2344,6 +2344,104 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 </Card>
               </div>
 
+              {/* Kiosksysteme Table */}
+              <div className={`rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                <div className="flex justify-between items-center p-4 border-b" style={{ borderColor: theme === 'dark' ? '#3a3a3a' : '#e5e7eb' }}>
+                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Kiosksysteme in {selectedLocation}
+                  </h4>
+                  <button
+                    onClick={() => setShowKioskModal(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Neues Kiosksystem
+                  </button>
+                </div>
+
+                {kiosks.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'}>
+                        <tr>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Online</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Code</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Stadt</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Hausnr.</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>GPS</th>
+                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {kiosks.map((kiosk, index) => (
+                          <tr 
+                            key={kiosk.id}
+                            className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-[#2a2a2a]' : 'border-gray-200 hover:bg-gray-50'} cursor-pointer`}
+                            onClick={() => setSelectedKiosk(kiosk)}
+                          >
+                            <td className="px-4 py-3">
+                              <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                                kiosk.online 
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-red-100 text-red-800'
+                              }`}>
+                                {kiosk.online ? 'Online' : 'Offline'}
+                              </span>
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.code}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.continent}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.country}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.city}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.street}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.houseNumber}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.zipCode}
+                            </td>
+                            <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                              {kiosk.gps}
+                            </td>
+                            <td className="px-4 py-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedKiosk(kiosk);
+                                }}
+                                className="text-[#c00000] hover:text-[#a00000] text-sm font-medium"
+                              >
+                                Details
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="p-12 text-center">
+                    <Settings className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Noch keine Kiosksysteme in {selectedLocation} vorhanden.
+                    </p>
+                  </div>
+                )}
+              </div>
+
                     {/* Quick Actions */}
                     <div>
                       <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
