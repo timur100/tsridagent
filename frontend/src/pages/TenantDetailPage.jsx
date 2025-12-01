@@ -2528,7 +2528,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                           Registrieren Sie Ihren ersten Key-Dispenser für diesen Standort.
                         </p>
-                        <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <button 
+                          onClick={() => setShowDispenserModal(true)}
+                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                        >
                           Key-Dispenser registrieren
                         </button>
                       </div>
