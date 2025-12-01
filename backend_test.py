@@ -239,20 +239,26 @@ class QuickMenuTester:
             )
             return False
 
-    def test_vehicles_availability_check_api(self):
-        """Test GET /api/europcar/vehicles/availability/check - Check vehicle availability"""
+    def test_create_tile_api(self):
+        """Test POST /api/quick-menu/tiles/create - Create a new tile"""
         try:
-            # Test with specific date range
-            params = {
-                "start_date": "2024-12-01",
-                "end_date": "2024-12-07"
+            # Create tile data as specified in review request
+            tile_data = {
+                "tenant_id": "tenant-europcar",
+                "title": "Reservierungsverwaltung",
+                "description": "Alle Reservierungen verwalten",
+                "icon": "Calendar",
+                "color": "#00aa00",
+                "target_url": "/portal/admin/europcar/reservations",
+                "target_type": "internal",
+                "order": 1
             }
             
-            response = self.session.get(f"{API_BASE}/europcar/vehicles/availability/check", params=params)
+            response = self.session.post(f"{API_BASE}/quick-menu/tiles/create", json=tile_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicle Availability API",
+                    "POST Create Tile API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -264,66 +270,69 @@ class QuickMenuTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicle Availability API",
+                    "POST Create Tile API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check data structure
-            if "data" not in data:
+            # Check response structure
+            if "tile" not in data:
                 self.log_result(
-                    "GET Vehicle Availability API",
+                    "POST Create Tile API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'tile' field in response",
                     data
                 )
                 return False
             
-            availability_data = data["data"]
-            required_fields = ["available_vehicles", "count"]
+            tile = data["tile"]
             
+            # Verify tile structure and data
+            required_fields = ["tile_id", "tenant_id", "title", "description", "icon", "color", "target_url", "target_type", "order", "created_at", "updated_at"]
             for field in required_fields:
-                if field not in availability_data:
+                if field not in tile:
                     self.log_result(
-                        "GET Vehicle Availability API",
+                        "POST Create Tile API",
                         False,
-                        f"Missing required field in data: {field}",
+                        f"Missing required field in tile: {field}",
                         data
                     )
                     return False
             
-            # Verify available_vehicles is a list
-            if not isinstance(availability_data["available_vehicles"], list):
+            # Verify the data matches what we sent
+            if tile["tenant_id"] != tile_data["tenant_id"]:
                 self.log_result(
-                    "GET Vehicle Availability API",
+                    "POST Create Tile API",
                     False,
-                    f"Available vehicles should be a list, got {type(availability_data['available_vehicles'])}",
+                    f"Tenant ID mismatch: expected {tile_data['tenant_id']}, got {tile['tenant_id']}",
                     data
                 )
                 return False
             
-            # Verify count matches array length
-            if availability_data["count"] != len(availability_data["available_vehicles"]):
+            if tile["title"] != tile_data["title"]:
                 self.log_result(
-                    "GET Vehicle Availability API",
+                    "POST Create Tile API",
                     False,
-                    f"Count mismatch: count={availability_data['count']}, array length={len(availability_data['available_vehicles'])}",
+                    f"Title mismatch: expected {tile_data['title']}, got {tile['title']}",
                     data
                 )
                 return False
+            
+            # Store tile_id for later tests
+            self.created_tile_id = tile["tile_id"]
             
             self.log_result(
-                "GET Vehicle Availability API",
+                "POST Create Tile API",
                 True,
-                f"Successfully checked availability for 2024-12-01 to 2024-12-07: {availability_data['count']} vehicles available"
+                f"Successfully created tile '{tile['title']}' with ID {tile['tile_id']} for tenant {tile['tenant_id']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicle Availability API",
+                "POST Create Tile API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
