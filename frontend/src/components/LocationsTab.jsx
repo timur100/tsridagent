@@ -1,279 +1,87 @@
 import React from 'react';
-import { Plus, Edit, Trash2, MapPin, Circle } from 'lucide-react';
-import { Card } from './ui/card';
+import { Plus, Edit, Trash2, Globe, MapPin } from 'lucide-react';
 
-const LocationsTab = ({
-  theme,
-  locations,
-  loadingLocations,
-  onAddLocation,
-  onEditLocation,
-  onDeleteLocation
-}) => {
-  const getStatusBadge = (location) => {
-    // Mock status - in real app would come from data
-    const isOnline = location.id_checker !== null;
-    return (
-      <div className="flex items-center gap-1">
-        <Circle 
-          className={`w-2 h-2 ${isOnline ? 'fill-green-500 text-green-500' : 'fill-gray-400 text-gray-400'}`} 
-        />
-        <span className={`text-xs ${isOnline ? 'text-green-500' : 'text-gray-400'}`}>
-          {isOnline ? 'Online' : 'Offline'}
-        </span>
-      </div>
-    );
-  };
-
+const LocationsTab = ({ theme, locations, onEdit, onDelete, onCreate }) => {
   return (
-    <div className="space-y-6">
-      {/* Header with Add Button */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Standorte
-          </h3>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            {locations.length} {locations.length === 1 ? 'Standort' : 'Standorte'}
-          </p>
-        </div>
+    <div className="space-y-4">
+      <div className="flex justify-end">
         <button
-          onClick={onAddLocation}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+          onClick={onCreate}
+          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
         >
-          <Plus className="w-4 h-4" />
-          Standort hinzufügen
+          <Plus className="h-4 w-4" />
+          Neuer Standort
         </button>
       </div>
 
-      {/* Locations Table */}
-      <Card className={`rounded-xl overflow-hidden ${
-        theme === 'dark' ? 'bg-[#2a2a2a] border-none' : 'bg-white border border-gray-100'
-      }`}>
-        {loadingLocations ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
-          </div>
-        ) : locations.length === 0 ? (
-          <div className="p-12 text-center">
-            <MapPin className={`w-12 h-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {locations.length === 0 ? (
+          <div className={`col-span-full text-center py-12 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+            <Globe className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
+            <p className={`font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               Keine Standorte vorhanden
             </p>
           </div>
         ) : (
-          <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-            <table className="w-full">
-              <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
-                <tr>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Status
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Code
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Stationsname
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Straße
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    PLZ
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Stadt
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Bundesland
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Telefon
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Telefon Intern
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    E-Mail
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Main Typ
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Manager
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Anzahl ID
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    SN-PC
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    SN-SC
-                  </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    TV-ID
-                  </th>
-                  <th className={`px-4 py-3 text-right text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Aktionen
-                  </th>
-                </tr>
-              </thead>
-              <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-                {locations.map((location, index) => (
-                  <tr
-                    key={location.location_id}
-                    className={`border-t cursor-pointer transition-colors ${
-                      theme === 'dark' 
-                        ? 'border-gray-700 hover:bg-[#1a1a1a]' 
-                        : 'border-gray-200 hover:bg-gray-50'
+          locations.map((location) => (
+            <div
+              key={location.location_id}
+              className={`p-6 rounded-xl border transition-all ${
+                theme === 'dark'
+                  ? 'bg-[#2a2a2a] border-gray-700 hover:border-gray-600'
+                  : 'bg-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <MapPin className="h-6 w-6 text-[#c00000]" />
+                  <div>
+                    <h3 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {location.name}
+                    </h3>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {location.city}, {location.country}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onEdit(location)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      theme === 'dark'
+                        ? 'hover:bg-[#1a1a1a] text-gray-400'
+                        : 'hover:bg-gray-100 text-gray-600'
                     }`}
                   >
-                    <td className="px-4 py-3">
-                      {getStatusBadge(location)}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono font-semibold ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {location.location_code}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.station_name}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.street || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.postal_code || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.city || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.state || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.phone || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.phone_internal || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.email || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.main_type || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.manager || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm text-center ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.id_checker || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.sn_pc || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.sn_sc || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.tv_id || '-'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => onEditLocation(location)}
-                          className={`p-2 rounded-lg transition-all ${
-                            theme === 'dark'
-                              ? 'hover:bg-[#1f1f1f] text-gray-400 hover:text-white'
-                              : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
-                          }`}
-                          title="Bearbeiten"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => onDeleteLocation(location.location_id)}
-                          className={`p-2 rounded-lg transition-all ${
-                            theme === 'dark'
-                              ? 'hover:bg-red-900/20 text-gray-400 hover:text-red-400'
-                              : 'hover:bg-red-50 text-gray-600 hover:text-red-600'
-                          }`}
-                          title="Löschen"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(location.location_id)}
+                    className={`p-2 rounded-lg transition-colors ${
+                      theme === 'dark'
+                        ? 'hover:bg-[#1a1a1a] text-red-400'
+                        : 'hover:bg-gray-100 text-red-600'
+                    }`}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-2 text-sm">
+                <div className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  <strong>Adresse:</strong> {location.address}
+                </div>
+                {location.latitude && location.longitude && (
+                  <div className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <strong>GPS:</strong> {location.latitude.toFixed(6)}, {location.longitude.toFixed(6)}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
         )}
-      </Card>
+      </div>
     </div>
   );
 };
