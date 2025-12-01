@@ -2262,7 +2262,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       <>
 
               {/* Statistics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {/* Kiosksysteme Card */}
                 <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
