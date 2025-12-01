@@ -3,12 +3,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { 
   ChevronRight, ChevronDown, FlaskConical, UserCheck, Fingerprint, 
   Search, Menu, X, Brain, Camera, Zap, Car, ParkingCircle, 
-  Clock, Shield, CreditCard, Truck, Radio, Video, UtensilsCrossed, Bike
+  Clock, Shield, CreditCard, Truck, Radio, Video, UtensilsCrossed, Bike, Monitor
 } from 'lucide-react';
 
 const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
   const { theme } = useTheme();
-  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'vehicles', 'services', 'automation']);
+  const [expandedCategories, setExpandedCategories] = useState(['biometrics', 'vehicles', 'services', 'automation', 'kiosk']);
 
   const menuStructure = [
     {
@@ -69,6 +69,16 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
         { id: 'background-removal', label: 'Hintergrund-Entfernung', emoji: '🖼️' },
         { id: 'image-enhancement', label: 'Bildverbesserung', emoji: '✨' },
         { id: 'ocr-advanced', label: 'Erweiterte OCR', emoji: '📝' }
+      ]
+    },
+    {
+      id: 'kiosk',
+      label: 'Kiosksysteme',
+      icon: Monitor,
+      items: [
+        { id: 'kiosk-management', label: 'Kiosk-Verwaltung', emoji: '🖥️' },
+        { id: 'kiosk-configuration', label: 'Kiosk-Konfiguration', emoji: '⚙️' },
+        { id: 'kiosk-monitoring', label: 'Kiosk-Monitoring', emoji: '📊' }
       ]
     },
     {
