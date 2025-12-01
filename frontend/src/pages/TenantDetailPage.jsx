@@ -2548,6 +2548,124 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </div>
                 )}
 
+                {/* Standorte Tab */}
+                {kioskSubTab === 'locations' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Kiosk-Standorte für {tenant?.display_name}
+                      </h4>
+                      <button
+                        onClick={() => {
+                          setEditingLocation(null);
+                          setShowLocationModal(true);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                      >
+                        <Plus className="h-4 w-4" />
+                        Neuer Standort
+                      </button>
+                    </div>
+
+                    {kioskLocations.length > 0 ? (
+                      <div className={`rounded-lg overflow-hidden ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                        <table className="w-full">
+                          <thead className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'}>
+                            <tr>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Stadt</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Hausnr.</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>GPS</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kiosks</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {kioskLocations.map((location) => (
+                              <tr
+                                key={location.id}
+                                className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-[#2a2a2a]' : 'border-gray-200 hover:bg-gray-50'}`}
+                              >
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.continent}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.country}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.city}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.street}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.houseNumber}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.zipCode}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  {location.gps}
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {location.kioskCount || 0} Kiosks
+                                  </span>
+                                </td>
+                                <td className="px-4 py-3">
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => {
+                                        setEditingLocation(location);
+                                        setShowLocationModal(true);
+                                      }}
+                                      className="text-[#c00000] hover:text-[#a00000] text-sm font-medium"
+                                    >
+                                      Bearbeiten
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (window.confirm(`Möchten Sie den Standort "${location.city}" wirklich löschen?`)) {
+                                          setKioskLocations(kioskLocations.filter(l => l.id !== location.id));
+                                        }
+                                      }}
+                                      className="text-red-600 hover:text-red-700 text-sm font-medium"
+                                    >
+                                      Löschen
+                                    </button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className={`p-12 text-center rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                        <MapPin className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Keine Standorte vorhanden
+                        </p>
+                        <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Erstellen Sie Ihren ersten Kiosk-Standort für {tenant?.display_name}.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setEditingLocation(null);
+                            setShowLocationModal(true);
+                          }}
+                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                        >
+                          Standort erstellen
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Kiosksysteme Tab */}
                 {kioskSubTab === 'kiosks' && (
                   <div className="space-y-4">
