@@ -2388,21 +2388,33 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       </div>
                     </div>
 
-                    {/* Info Box */}
-                    <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
-                      theme === 'dark' 
-                        ? 'border-gray-700 bg-[#1f1f1f]' 
-                        : 'border-gray-300 bg-gray-50'
-                    }`}>
-                      <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                      <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Kiosk & Key-Dispenser Management
-                      </p>
-                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                        Vollständige Verwaltung von Kiosksystemen, Standorten, Key-Dispensern und Schlüsseln für diesen Tenant.
-                        <br />Nutzen Sie die Schnellzugriff-Buttons oder wechseln Sie zu den entsprechenden Tabs.
-                      </p>
-                    </div>
+                        {/* Info Box */}
+                        <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
+                          theme === 'dark' 
+                            ? 'border-gray-700 bg-[#1f1f1f]' 
+                            : 'border-gray-300 bg-gray-50'
+                        }`}>
+                          <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            Kiosk & Key-Dispenser Management
+                          </p>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                            Vollständige Verwaltung von Kiosksystemen, Key-Dispensern und Schlüsseln für {selectedLocation}.
+                            <br />Nutzen Sie die Schnellzugriff-Buttons oder wechseln Sie zu den entsprechenden Tabs.
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      <div className={`p-12 text-center rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                        <MapPin className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Bitte wählen Sie einen Standort
+                        </p>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Wählen Sie Kontinent, Land und Stadt aus, um die Kiosk-Systeme für diesen Standort zu verwalten.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
