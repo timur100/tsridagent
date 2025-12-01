@@ -2863,6 +2863,27 @@ const AdminPortalContent = () => {
                       </div>
                     )}
 
+                    {/* Kiosk Management */}
+                    {rndTab === 'kiosk-management' && (
+                      <div className="w-full">
+                        <KioskManagement theme={theme} />
+                      </div>
+                    )}
+
+                    {/* Kiosk Configuration */}
+                    {rndTab === 'kiosk-configuration' && (
+                      <div className="w-full">
+                        <KioskConfiguration theme={theme} />
+                      </div>
+                    )}
+
+                    {/* Kiosk Monitoring */}
+                    {rndTab === 'kiosk-monitoring' && (
+                      <div className="w-full">
+                        <KioskMonitoring theme={theme} />
+                      </div>
+                    )}
+
                     {/* Mobility Services */}
                     {rndTab === 'mobility-services' && (
                       <div className="w-full">
