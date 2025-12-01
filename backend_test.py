@@ -786,14 +786,14 @@ class QuickMenuTester:
             return False
 
     async def run_all_tests(self):
-        """Run all Europcar PKW-Vermietungssystem API tests"""
+        """Run all Quick Menu Feature API tests"""
         print("=" * 80)
-        print("EUROPCAR PKW-VERMIETUNGSSYSTEM API TESTING")
+        print("QUICK MENU FEATURE API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Europcar Car Rental Management System")
-        print(f"Database: tsrid_db collections: europcar_vehicles, europcar_customers, europcar_reservations, etc.")
-        print("Expected Demo Data: 8 Fahrzeuge, 5 Kunden, 10 Reservierungen, 3 Schäden, 1 Station")
+        print(f"Testing APIs: Quick Menu Backend APIs for tenant-specific customizable tiles")
+        print(f"Database: tsrid collections: quick_menu_tiles, quick_menu_configs, customers")
+        print("Test Data: tenant-europcar (Europcar Deutschland), tenant-tsrid (TSRID GmbH)")
         print("=" * 80)
         print()
         
@@ -805,40 +805,35 @@ class QuickMenuTester:
                 return
             print()
             
-            # Step 2: Test Fahrzeugverwaltung APIs
-            print("🚗 STEP 2: Fahrzeugverwaltung APIs")
-            self.test_vehicles_list_api()
-            self.test_vehicles_availability_check_api()
+            # Step 2: Test Utility APIs
+            print("🏢 STEP 2: Utility APIs")
+            self.test_get_tenants_list_api()
             print()
             
-            # Step 3: Test Reservierungen APIs
-            print("📋 STEP 3: Reservierungen APIs")
-            self.test_reservations_list_api()
+            # Step 3: Test Tile Creation
+            print("➕ STEP 3: Tile Creation APIs")
+            self.test_create_tile_api()
             print()
             
-            # Step 4: Test Kunden APIs
-            print("👥 STEP 4: Kunden APIs")
-            self.test_customers_list_api()
+            # Step 4: Test Tile Retrieval
+            print("📋 STEP 4: Tile Retrieval APIs")
+            self.test_get_tiles_for_tenant_api()
             print()
             
-            # Step 5: Test Analytics APIs
-            print("📊 STEP 5: Analytics Dashboard APIs")
-            self.test_analytics_dashboard_api()
+            # Step 5: Test Tile Updates
+            print("✏️ STEP 5: Tile Update APIs")
+            self.test_update_tile_api()
             print()
             
-            # Step 6: Test Stationen APIs
-            print("🏢 STEP 6: Stationen APIs")
-            self.test_stations_list_api()
+            # Step 6: Test Config APIs
+            print("⚙️ STEP 6: Configuration APIs")
+            self.test_get_tenant_config_api()
+            self.test_update_tenant_config_api()
             print()
             
-            # Step 7: Test Schadenmanagement APIs
-            print("🔧 STEP 7: Schadenmanagement APIs")
-            self.test_damage_reports_list_api()
-            print()
-            
-            # Step 8: Test Preisberechnung APIs
-            print("💰 STEP 8: Preisberechnung APIs")
-            self.test_pricing_calculate_api()
+            # Step 7: Test Tile Deletion
+            print("🗑️ STEP 7: Tile Deletion APIs")
+            self.test_delete_tile_api()
             print()
             
         except Exception as e:
