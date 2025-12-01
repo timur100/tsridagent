@@ -88,6 +88,11 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedLocation, setSelectedLocation] = useState('');
   const [tenantLocations, setTenantLocations] = useState([]);
+  
+  // Kiosk Creation Modals
+  const [showKioskModal, setShowKioskModal] = useState(false);
+  const [showDispenserModal, setShowDispenserModal] = useState(false);
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
   // Update activeTab when initialTab changes (from AdminPortal navigation)
   useEffect(() => {
