@@ -445,457 +445,33 @@ class QuickMenuTester:
             )
             return False
 
-    def test_customers_list_api(self):
-        """Test GET /api/europcar/customers/list - Should show 5 customers"""
+    def test_update_tile_api(self):
+        """Test PUT /api/quick-menu/tiles/update/{tile_id} - Update a tile"""
         try:
-            response = self.session.get(f"{API_BASE}/europcar/customers/list")
-            
-            if response.status_code != 200:
+            # Use the tile_id from the create test
+            if not hasattr(self, 'created_tile_id'):
                 self.log_result(
-                    "GET Customers List API",
+                    "PUT Update Tile API",
                     False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    "No tile_id available from create test. Run create test first.",
+                    None
                 )
                 return False
             
-            data = response.json()
+            tile_id = self.created_tile_id
             
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Customers List API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "data" not in data:
-                self.log_result(
-                    "GET Customers List API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            customers_data = data["data"]
-            if "customers" not in customers_data:
-                self.log_result(
-                    "GET Customers List API",
-                    False,
-                    "Missing 'customers' field in data",
-                    data
-                )
-                return False
-            
-            customers = customers_data["customers"]
-            
-            # Verify customers is a list
-            if not isinstance(customers, list):
-                self.log_result(
-                    "GET Customers List API",
-                    False,
-                    f"Customers should be a list, got {type(customers)}",
-                    data
-                )
-                return False
-            
-            # Check expected count (should be 5 customers)
-            expected_count = 5
-            actual_count = len(customers)
-            
-            if actual_count != expected_count:
-                self.log_result(
-                    "GET Customers List API",
-                    False,
-                    f"Expected {expected_count} customers, got {actual_count}",
-                    data
-                )
-                return False
-            
-            # Verify customer structure
-            if customers:
-                customer = customers[0]
-                required_fields = ["id", "vorname", "nachname", "email", "customer_type"]
-                for field in required_fields:
-                    if field not in customer:
-                        self.log_result(
-                            "GET Customers List API",
-                            False,
-                            f"Missing required field in customer: {field}",
-                            data
-                        )
-                        return False
-            
-            self.log_result(
-                "GET Customers List API",
-                True,
-                f"Successfully retrieved {actual_count} customers (expected {expected_count})"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "GET Customers List API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_analytics_dashboard_api(self):
-        """Test GET /api/europcar/analytics/dashboard - Dashboard statistics"""
-        try:
-            response = self.session.get(f"{API_BASE}/europcar/analytics/dashboard")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "data" not in data:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            dashboard_data = data["data"]
-            required_sections = ["vehicles", "customers", "reservations", "damages"]
-            
-            for section in required_sections:
-                if section not in dashboard_data:
-                    self.log_result(
-                        "GET Analytics Dashboard API",
-                        False,
-                        f"Missing required section in dashboard: {section}",
-                        data
-                    )
-                    return False
-            
-            # Verify expected values
-            vehicles = dashboard_data["vehicles"]
-            customers = dashboard_data["customers"]
-            reservations = dashboard_data["reservations"]
-            damages = dashboard_data["damages"]
-            
-            # Check expected counts
-            expected_vehicles = 8
-            expected_customers = 5
-            expected_reservations = 10
-            expected_damages = 3
-            
-            if vehicles.get("total") != expected_vehicles:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    f"Expected {expected_vehicles} total vehicles, got {vehicles.get('total')}",
-                    data
-                )
-                return False
-            
-            if customers.get("total") != expected_customers:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    f"Expected {expected_customers} total customers, got {customers.get('total')}",
-                    data
-                )
-                return False
-            
-            if reservations.get("total") != expected_reservations:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    f"Expected {expected_reservations} total reservations, got {reservations.get('total')}",
-                    data
-                )
-                return False
-            
-            if damages.get("total") != expected_damages:
-                self.log_result(
-                    "GET Analytics Dashboard API",
-                    False,
-                    f"Expected {expected_damages} total damages, got {damages.get('total')}",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "GET Analytics Dashboard API",
-                True,
-                f"Successfully retrieved dashboard statistics: vehicles={vehicles.get('total')}, customers={customers.get('total')}, reservations={reservations.get('total')}, damages={damages.get('total')}"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "GET Analytics Dashboard API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_stations_list_api(self):
-        """Test GET /api/europcar/stations/list - Should show 1 station"""
-        try:
-            response = self.session.get(f"{API_BASE}/europcar/stations/list")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "data" not in data:
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            stations_data = data["data"]
-            if "stations" not in stations_data:
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    "Missing 'stations' field in data",
-                    data
-                )
-                return False
-            
-            stations = stations_data["stations"]
-            
-            # Verify stations is a list
-            if not isinstance(stations, list):
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    f"Stations should be a list, got {type(stations)}",
-                    data
-                )
-                return False
-            
-            # Check expected count (should be 1 station)
-            expected_count = 1
-            actual_count = len(stations)
-            
-            if actual_count != expected_count:
-                self.log_result(
-                    "GET Stations List API",
-                    False,
-                    f"Expected {expected_count} station, got {actual_count}",
-                    data
-                )
-                return False
-            
-            # Verify station structure
-            if stations:
-                station = stations[0]
-                required_fields = ["id", "name", "adresse", "stadt", "status"]
-                for field in required_fields:
-                    if field not in station:
-                        self.log_result(
-                            "GET Stations List API",
-                            False,
-                            f"Missing required field in station: {field}",
-                            data
-                        )
-                        return False
-            
-            self.log_result(
-                "GET Stations List API",
-                True,
-                f"Successfully retrieved {actual_count} station (expected {expected_count})"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "GET Stations List API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_damage_reports_list_api(self):
-        """Test GET /api/europcar/damage/reports/list - Should show 3 damage reports"""
-        try:
-            response = self.session.get(f"{API_BASE}/europcar/damage/reports/list")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "data" not in data:
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            reports_data = data["data"]
-            if "reports" not in reports_data:
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    "Missing 'reports' field in data",
-                    data
-                )
-                return False
-            
-            reports = reports_data["reports"]
-            
-            # Verify reports is a list
-            if not isinstance(reports, list):
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    f"Reports should be a list, got {type(reports)}",
-                    data
-                )
-                return False
-            
-            # Check expected count (should be 3 damage reports)
-            expected_count = 3
-            actual_count = len(reports)
-            
-            if actual_count != expected_count:
-                self.log_result(
-                    "GET Damage Reports List API",
-                    False,
-                    f"Expected {expected_count} damage reports, got {actual_count}",
-                    data
-                )
-                return False
-            
-            # Verify report structure
-            if reports:
-                report = reports[0]
-                required_fields = ["id", "vehicle_id", "damage_type", "severity", "repair_status"]
-                for field in required_fields:
-                    if field not in report:
-                        self.log_result(
-                            "GET Damage Reports List API",
-                            False,
-                            f"Missing required field in report: {field}",
-                            data
-                        )
-                        return False
-            
-            self.log_result(
-                "GET Damage Reports List API",
-                True,
-                f"Successfully retrieved {actual_count} damage reports (expected {expected_count})"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "GET Damage Reports List API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_pricing_calculate_api(self):
-        """Test POST /api/europcar/pricing/calculate - Calculate pricing for rental"""
-        try:
-            # First get a real vehicle ID
-            vehicles_response = self.session.get(f"{API_BASE}/europcar/vehicles/list")
-            if vehicles_response.status_code != 200:
-                self.log_result(
-                    "POST Pricing Calculate API",
-                    False,
-                    "Could not get vehicles list to find valid vehicle ID",
-                    vehicles_response.text
-                )
-                return False
-            
-            vehicles_data = vehicles_response.json()
-            if not vehicles_data.get("success") or not vehicles_data.get("data", {}).get("vehicles"):
-                self.log_result(
-                    "POST Pricing Calculate API",
-                    False,
-                    "No vehicles available for pricing test",
-                    vehicles_data
-                )
-                return False
-            
-            # Use the first available vehicle
-            vehicle_id = vehicles_data["data"]["vehicles"][0]["id"]
-            
-            # Test pricing calculation with real vehicle ID
-            pricing_data = {
-                "vehicle_id": vehicle_id,
-                "start_date": "2024-12-01",
-                "end_date": "2024-12-07"
+            # Update tile data
+            update_data = {
+                "title": "Fahrzeuge & Flotte",
+                "color": "#ff6600",  # Orange color
+                "description": "Fahrzeugverwaltung und Flottenübersicht"
             }
             
-            response = self.session.post(f"{API_BASE}/europcar/pricing/calculate", json=pricing_data)
+            response = self.session.put(f"{API_BASE}/quick-menu/tiles/update/{tile_id}", json=update_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Pricing Calculate API",
+                    "PUT Update Tile API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -907,7 +483,90 @@ class QuickMenuTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Pricing Calculate API",
+                    "PUT Update Tile API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check response structure
+            if "tile" not in data:
+                self.log_result(
+                    "PUT Update Tile API",
+                    False,
+                    "Missing 'tile' field in response",
+                    data
+                )
+                return False
+            
+            tile = data["tile"]
+            
+            # Verify the updates were applied
+            if tile["title"] != update_data["title"]:
+                self.log_result(
+                    "PUT Update Tile API",
+                    False,
+                    f"Title not updated: expected {update_data['title']}, got {tile['title']}",
+                    data
+                )
+                return False
+            
+            if tile["color"] != update_data["color"]:
+                self.log_result(
+                    "PUT Update Tile API",
+                    False,
+                    f"Color not updated: expected {update_data['color']}, got {tile['color']}",
+                    data
+                )
+                return False
+            
+            # Verify updated_at timestamp changed
+            if "updated_at" not in tile:
+                self.log_result(
+                    "PUT Update Tile API",
+                    False,
+                    "Missing updated_at field in response",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "PUT Update Tile API",
+                True,
+                f"Successfully updated tile {tile_id}: title='{tile['title']}', color='{tile['color']}'"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "PUT Update Tile API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_tenant_config_api(self):
+        """Test GET /api/quick-menu/config/tenant/{tenant_id} - Get config for a tenant"""
+        try:
+            tenant_id = "tenant-europcar"
+            response = self.session.get(f"{API_BASE}/quick-menu/config/tenant/{tenant_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Tenant Config API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Verify response structure
+            if not data.get("success"):
+                self.log_result(
+                    "GET Tenant Config API",
                     False,
                     "Response indicates failure",
                     data
@@ -915,69 +574,211 @@ class QuickMenuTester:
                 return False
             
             # Check data structure
-            if "data" not in data:
+            if "config" not in data:
                 self.log_result(
-                    "POST Pricing Calculate API",
+                    "GET Tenant Config API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'config' field in response",
                     data
                 )
                 return False
             
-            pricing_result = data["data"]
-            required_fields = ["base_price", "final_price", "days", "daily_rate"]
+            config = data["config"]
             
+            # Verify config structure (should return default config or existing config)
+            required_fields = ["tenant_id", "title", "is_active"]
             for field in required_fields:
-                if field not in pricing_result:
+                if field not in config:
                     self.log_result(
-                        "POST Pricing Calculate API",
+                        "GET Tenant Config API",
                         False,
-                        f"Missing required field in pricing result: {field}",
+                        f"Missing required field in config: {field}",
                         data
                     )
                     return False
             
-            # Verify field types
-            for field in ["base_price", "final_price", "daily_rate"]:
-                if not isinstance(pricing_result[field], (int, float)):
-                    self.log_result(
-                        "POST Pricing Calculate API",
-                        False,
-                        f"Pricing field {field} should be number, got {type(pricing_result[field])}",
-                        data
-                    )
-                    return False
-            
-            if not isinstance(pricing_result["days"], int):
+            # Verify tenant_id matches
+            if config["tenant_id"] != tenant_id:
                 self.log_result(
-                    "POST Pricing Calculate API",
+                    "GET Tenant Config API",
                     False,
-                    f"Days should be int, got {type(pricing_result['days'])}",
-                    data
-                )
-                return False
-            
-            # Verify calculation makes sense (7 days from 2024-12-01 to 2024-12-07)
-            expected_days = 7
-            if pricing_result["days"] != expected_days:
-                self.log_result(
-                    "POST Pricing Calculate API",
-                    False,
-                    f"Expected {expected_days} days, got {pricing_result['days']}",
+                    f"Tenant ID mismatch: expected {tenant_id}, got {config['tenant_id']}",
                     data
                 )
                 return False
             
             self.log_result(
-                "POST Pricing Calculate API",
+                "GET Tenant Config API",
                 True,
-                f"Successfully calculated pricing: {pricing_result['days']} days, €{pricing_result['final_price']} total (€{pricing_result['daily_rate']}/day)"
+                f"Successfully retrieved config for tenant {tenant_id}: title='{config['title']}', active={config['is_active']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Pricing Calculate API",
+                "GET Tenant Config API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_update_tenant_config_api(self):
+        """Test PUT /api/quick-menu/config/update/{tenant_id} - Update config for a tenant"""
+        try:
+            tenant_id = "tenant-europcar"
+            
+            # Update config data as specified in review request
+            config_data = {
+                "title": "Europcar Schnellmenü",
+                "subtitle": "Schnellzugriff auf wichtige Funktionen",
+                "is_active": True
+            }
+            
+            response = self.session.put(f"{API_BASE}/quick-menu/config/update/{tenant_id}", json=config_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Check if response indicates success
+            if not data.get("success"):
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check response structure
+            if "config" not in data:
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    "Missing 'config' field in response",
+                    data
+                )
+                return False
+            
+            config = data["config"]
+            
+            # Verify the updates were applied
+            if config["title"] != config_data["title"]:
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    f"Title not updated: expected {config_data['title']}, got {config['title']}",
+                    data
+                )
+                return False
+            
+            if config["subtitle"] != config_data["subtitle"]:
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    f"Subtitle not updated: expected {config_data['subtitle']}, got {config['subtitle']}",
+                    data
+                )
+                return False
+            
+            if config["is_active"] != config_data["is_active"]:
+                self.log_result(
+                    "PUT Update Config API",
+                    False,
+                    f"is_active not updated: expected {config_data['is_active']}, got {config['is_active']}",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "PUT Update Config API",
+                True,
+                f"Successfully updated config for tenant {tenant_id}: title='{config['title']}', subtitle='{config['subtitle']}'"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "PUT Update Config API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_delete_tile_api(self):
+        """Test DELETE /api/quick-menu/tiles/delete/{tile_id} - Delete a tile"""
+        try:
+            # Use the tile_id from the create test
+            if not hasattr(self, 'created_tile_id'):
+                self.log_result(
+                    "DELETE Tile API",
+                    False,
+                    "No tile_id available from create test. Run create test first.",
+                    None
+                )
+                return False
+            
+            tile_id = self.created_tile_id
+            
+            response = self.session.delete(f"{API_BASE}/quick-menu/tiles/delete/{tile_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "DELETE Tile API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Check if response indicates success
+            if not data.get("success"):
+                self.log_result(
+                    "DELETE Tile API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify the tile is actually deleted by trying to get tiles for tenant
+            tenant_id = "tenant-europcar"
+            verify_response = self.session.get(f"{API_BASE}/quick-menu/tiles/tenant/{tenant_id}")
+            
+            if verify_response.status_code == 200:
+                verify_data = verify_response.json()
+                if verify_data.get("success"):
+                    tiles = verify_data.get("tiles", [])
+                    # Check that our deleted tile is not in the list
+                    for tile in tiles:
+                        if tile.get("tile_id") == tile_id:
+                            self.log_result(
+                                "DELETE Tile API",
+                                False,
+                                f"Tile {tile_id} still exists after deletion",
+                                verify_data
+                            )
+                            return False
+            
+            self.log_result(
+                "DELETE Tile API",
+                True,
+                f"Successfully deleted tile {tile_id} and verified removal from tenant tiles list"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "DELETE Tile API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
