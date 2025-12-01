@@ -2592,7 +2592,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                           Fügen Sie Ihren ersten Schlüssel für diesen Standort hinzu.
                         </p>
-                        <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <button 
+                          onClick={() => setShowKeyModal(true)}
+                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                        >
                           Schlüssel hinzufügen
                         </button>
                       </div>
