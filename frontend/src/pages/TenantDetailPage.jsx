@@ -2731,7 +2731,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowKioskModal(false)}>
             <div 
               onClick={(e) => e.stopPropagation()}
-              className={`w-full max-w-2xl mx-4 p-6 rounded-xl ${
+              className={`w-full max-w-3xl mx-4 p-6 rounded-xl max-h-[90vh] overflow-y-auto ${
                 theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
               }`}
             >
@@ -2739,13 +2739,37 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 Neues Kiosksystem erstellen
               </h3>
               
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const newKiosk = {
+                  id: Date.now(),
+                  code: `KIOSK-${Date.now().toString().slice(-6)}`,
+                  name: formData.get('name'),
+                  continent: selectedContinent,
+                  country: selectedCountry,
+                  city: selectedLocation,
+                  street: formData.get('street'),
+                  houseNumber: formData.get('houseNumber'),
+                  zipCode: formData.get('zipCode'),
+                  gps: formData.get('gps'),
+                  ipAddress: formData.get('ipAddress'),
+                  description: formData.get('description'),
+                  online: Math.random() > 0.5,
+                  createdAt: new Date().toISOString()
+                };
+                setKiosks([...kiosks, newKiosk]);
+                setShowKioskModal(false);
+                e.target.reset();
+              }}>
                 <div>
                   <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Name *
                   </label>
                   <input
+                    name="name"
                     type="text"
+                    required
                     placeholder="z.B. Kiosk Berlin Hauptbahnhof"
                     className={`w-full px-3 py-2 rounded-lg border ${
                       theme === 'dark'
@@ -2755,20 +2779,121 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   />
                 </div>
 
-                <div>
-                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Standort
-                  </label>
-                  <input
-                    type="text"
-                    value={selectedLocation}
-                    disabled
-                    className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
-                      theme === 'dark'
-                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
-                  />
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Kontinent
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedContinent}
+                      disabled
+                      className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Land
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedCountry}
+                      disabled
+                      className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Stadt
+                    </label>
+                    <input
+                      type="text"
+                      value={selectedLocation}
+                      disabled
+                      className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Straße *
+                    </label>
+                    <input
+                      name="street"
+                      type="text"
+                      required
+                      placeholder="z.B. Hauptstraße"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Hausnummer *
+                    </label>
+                    <input
+                      name="houseNumber"
+                      type="text"
+                      required
+                      placeholder="123"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      PLZ *
+                    </label>
+                    <input
+                      name="zipCode"
+                      type="text"
+                      required
+                      placeholder="10115"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      GPS-Koordinaten
+                    </label>
+                    <input
+                      name="gps"
+                      type="text"
+                      placeholder="52.5200, 13.4050"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
                 </div>
 
                 <div>
@@ -2776,6 +2901,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     IP-Adresse
                   </label>
                   <input
+                    name="ipAddress"
                     type="text"
                     placeholder="z.B. 192.168.1.100"
                     className={`w-full px-3 py-2 rounded-lg border ${
@@ -2791,6 +2917,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     Beschreibung
                   </label>
                   <textarea
+                    name="description"
                     rows="3"
                     placeholder="Zusätzliche Informationen..."
                     className={`w-full px-3 py-2 rounded-lg border ${
