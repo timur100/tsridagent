@@ -2102,6 +2102,18 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     Übersicht
                   </button>
                   <button
+                    onClick={() => setKioskSubTab('locations')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
+                      kioskSubTab === 'locations'
+                        ? 'bg-[#c00000] text-white'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    Standorte
+                  </button>
+                  <button
                     onClick={() => setKioskSubTab('kiosks')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'kiosks'
