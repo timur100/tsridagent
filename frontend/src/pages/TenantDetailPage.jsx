@@ -2261,24 +2261,117 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       </div>
                     </div>
 
-              {/* Info Box */}
-              <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
-                theme === 'dark' 
-                  ? 'border-gray-700 bg-[#1f1f1f]' 
-                  : 'border-gray-300 bg-gray-50'
-              }`}>
-                <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Kiosk & Key-Dispenser Management
-                </p>
-                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Vollständige Verwaltung von Kiosksystemen, Standorten, Key-Dispensern und Schlüsseln für diesen Tenant.
-                  <br />Nutzen Sie die Schnellzugriff-Buttons, um mit der Konfiguration zu beginnen.
-                </p>
+                    {/* Info Box */}
+                    <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
+                      theme === 'dark' 
+                        ? 'border-gray-700 bg-[#1f1f1f]' 
+                        : 'border-gray-300 bg-gray-50'
+                    }`}>
+                      <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Kiosk & Key-Dispenser Management
+                      </p>
+                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                        Vollständige Verwaltung von Kiosksystemen, Standorten, Key-Dispensern und Schlüsseln für diesen Tenant.
+                        <br />Nutzen Sie die Schnellzugriff-Buttons oder wechseln Sie zu den entsprechenden Tabs.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Kiosksysteme Tab */}
+                {kioskSubTab === 'kiosks' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Kiosksysteme
+                      </h4>
+                      <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <Plus className="h-4 w-4" />
+                        Neues Kiosksystem
+                      </button>
+                    </div>
+                    
+                    <div className={`p-12 text-center rounded-lg ${
+                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                    }`}>
+                      <Settings className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Keine Kiosksysteme vorhanden
+                      </p>
+                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                        Erstellen Sie Ihr erstes Kiosksystem für {tenant?.display_name || 'diesen Tenant'}.
+                      </p>
+                      <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        Kiosksystem erstellen
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Key-Dispenser Tab */}
+                {kioskSubTab === 'dispensers' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Key-Dispenser
+                      </h4>
+                      <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <Plus className="h-4 w-4" />
+                        Neuer Key-Dispenser
+                      </button>
+                    </div>
+                    
+                    <div className={`p-12 text-center rounded-lg ${
+                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                    }`}>
+                      <Server className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Keine Key-Dispenser vorhanden
+                      </p>
+                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                        Registrieren Sie Ihren ersten Key-Dispenser für {tenant?.display_name || 'diesen Tenant'}.
+                      </p>
+                      <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        Key-Dispenser registrieren
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Schlüssel Tab */}
+                {kioskSubTab === 'keys' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        Schlüssel
+                      </h4>
+                      <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <Plus className="h-4 w-4" />
+                        Neuer Schlüssel
+                      </button>
+                    </div>
+                    
+                    <div className={`p-12 text-center rounded-lg ${
+                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                    }`}>
+                      <HardDrive className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Keine Schlüssel vorhanden
+                      </p>
+                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                        Fügen Sie Ihren ersten Schlüssel hinzu für {tenant?.display_name || 'diesen Tenant'}.
+                      </p>
+                      <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        Schlüssel hinzufügen
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
-            </div>
-          </Card>
-        )}
+            </Card>
+          );
+        })()}
 
         {activeTab === 'branding' && (
           <Card className={`p-12 text-center rounded-xl ${
