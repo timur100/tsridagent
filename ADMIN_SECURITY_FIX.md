@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://quicktiles-dash.preview.emergentagent.com/portal/admin
+https://keyautomat.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
