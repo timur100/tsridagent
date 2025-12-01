@@ -2202,55 +2202,64 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 </Card>
               </div>
 
-              {/* Quick Actions */}
-              <div>
-                <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Schnellzugriff
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <button className={`p-4 rounded-lg text-left transition-all ${
-                    theme === 'dark'
-                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                  }`}>
-                    <Settings className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Kiosksysteme verwalten
-                    </h5>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Kiosks hinzufügen, bearbeiten und konfigurieren
-                    </p>
-                  </button>
+                    {/* Quick Actions */}
+                    <div>
+                      <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Schnellzugriff
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <button 
+                          onClick={() => setKioskSubTab('kiosks')}
+                          className={`p-4 rounded-lg text-left transition-all ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          <Settings className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                          <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Kiosksysteme verwalten
+                          </h5>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                            Kiosks hinzufügen, bearbeiten und konfigurieren
+                          </p>
+                        </button>
 
-                  <button className={`p-4 rounded-lg text-left transition-all ${
-                    theme === 'dark'
-                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                  }`}>
-                    <Server className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Key-Dispenser verwalten
-                    </h5>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Dispenser hinzufügen, bearbeiten und einrichten
-                    </p>
-                  </button>
+                        <button 
+                          onClick={() => setKioskSubTab('dispensers')}
+                          className={`p-4 rounded-lg text-left transition-all ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          <Server className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                          <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Key-Dispenser verwalten
+                          </h5>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                            Dispenser hinzufügen, bearbeiten und einrichten
+                          </p>
+                        </button>
 
-                  <button className={`p-4 rounded-lg text-left transition-all ${
-                    theme === 'dark'
-                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
-                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                  }`}>
-                    <HardDrive className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Schlüssel verwalten
-                    </h5>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Schlüssel hinzufügen, zuweisen und organisieren
-                    </p>
-                  </button>
-                </div>
-              </div>
+                        <button 
+                          onClick={() => setKioskSubTab('keys')}
+                          className={`p-4 rounded-lg text-left transition-all ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                              : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                          }`}
+                        >
+                          <HardDrive className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                          <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            Schlüssel verwalten
+                          </h5>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                            Schlüssel hinzufügen, zuweisen und organisieren
+                          </p>
+                        </button>
+                      </div>
+                    </div>
 
               {/* Info Box */}
               <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
