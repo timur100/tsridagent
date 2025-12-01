@@ -866,7 +866,7 @@ class QuickMenuTester:
 
 def main():
     """Main function to run the tests"""
-    tester = EuropcarSystemTester()
+    tester = QuickMenuTester()
     
     # Run tests
     import asyncio
