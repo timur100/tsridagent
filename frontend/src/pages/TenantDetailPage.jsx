@@ -2122,6 +2122,129 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {/* Overview Tab Content */}
                 {kioskSubTab === 'overview' && (
                   <div className="space-y-6">
+                    {/* Location Selection */}
+                    <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                      <h4 className={`text-sm font-semibold mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Standortauswahl
+                      </h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {/* Continent Dropdown */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Kontinent
+                          </label>
+                          <select
+                            value={selectedContinent}
+                            onChange={(e) => {
+                              setSelectedContinent(e.target.value);
+                              setSelectedCountry('');
+                              setSelectedLocation('');
+                            }}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          >
+                            <option value="">Kontinent wählen...</option>
+                            <option value="europe">Europa</option>
+                            <option value="north-america">Nordamerika</option>
+                            <option value="asia">Asien</option>
+                            <option value="africa">Afrika</option>
+                            <option value="oceania">Ozeanien</option>
+                            <option value="south-america">Südamerika</option>
+                          </select>
+                        </div>
+
+                        {/* Country Dropdown */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Land
+                          </label>
+                          <select
+                            value={selectedCountry}
+                            onChange={(e) => {
+                              setSelectedCountry(e.target.value);
+                              setSelectedLocation('');
+                            }}
+                            disabled={!selectedContinent}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            } ${!selectedContinent ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <option value="">Land wählen...</option>
+                            {selectedContinent === 'europe' && (
+                              <>
+                                <option value="germany">Deutschland</option>
+                                <option value="france">Frankreich</option>
+                                <option value="italy">Italien</option>
+                                <option value="spain">Spanien</option>
+                                <option value="uk">Großbritannien</option>
+                              </>
+                            )}
+                            {selectedContinent === 'north-america' && (
+                              <>
+                                <option value="usa">USA</option>
+                                <option value="canada">Kanada</option>
+                                <option value="mexico">Mexiko</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+
+                        {/* City/Location Dropdown */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Stadt / Standort
+                          </label>
+                          <select
+                            value={selectedLocation}
+                            onChange={(e) => setSelectedLocation(e.target.value)}
+                            disabled={!selectedCountry}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            } ${!selectedCountry ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          >
+                            <option value="">Stadt wählen...</option>
+                            {selectedCountry === 'germany' && (
+                              <>
+                                <option value="berlin">Berlin</option>
+                                <option value="munich">München</option>
+                                <option value="hamburg">Hamburg</option>
+                                <option value="frankfurt">Frankfurt</option>
+                                <option value="cologne">Köln</option>
+                              </>
+                            )}
+                            {selectedCountry === 'france' && (
+                              <>
+                                <option value="paris">Paris</option>
+                                <option value="lyon">Lyon</option>
+                                <option value="marseille">Marseille</option>
+                              </>
+                            )}
+                          </select>
+                        </div>
+                      </div>
+
+                      {/* New Location Button */}
+                      {selectedCountry && !selectedLocation && (
+                        <div className="mt-4">
+                          <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                            <Plus className="h-4 w-4" />
+                            Neuen Standort anlegen
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Show content only if location is selected */}
+                    {selectedLocation ? (
+                      <>
 
               {/* Statistics Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
