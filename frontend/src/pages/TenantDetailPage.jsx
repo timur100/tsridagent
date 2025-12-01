@@ -253,7 +253,6 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // Location states
   const [locations, setLocations] = useState([]);
   const [loadingLocations, setLoadingLocations] = useState(false);
-  const [editingLocation, setEditingLocation] = useState(null);
   const [locationStatusFilter, setLocationStatusFilter] = useState('all'); // Filter for locations
   const [locationFormData, setLocationFormData] = useState({
     location_code: '',
