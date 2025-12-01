@@ -1,32 +1,24 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - EUROPCAR PKW-VERMIETUNGSSYSTEM TESTING
-Tests Europcar PKW-Vermietungssystem Backend APIs for car rental management:
+Backend API Testing Suite - QUICK MENU FEATURE TESTING
+Tests Quick Menu Backend APIs for tenant-specific customizable tiles (shortcuts):
 
-Fahrzeugverwaltung APIs:
-- GET /api/europcar/vehicles/list - List all vehicles (should show 8 vehicles)
-- GET /api/europcar/vehicles/availability/check - Check vehicle availability
+Tiles Endpoints:
+- POST /api/quick-menu/tiles/create - Create a new tile
+- GET /api/quick-menu/tiles/tenant/{tenant_id} - Get all tiles for a tenant  
+- PUT /api/quick-menu/tiles/update/{tile_id} - Update a tile
+- DELETE /api/quick-menu/tiles/delete/{tile_id} - Delete a tile
 
-Reservierungen APIs:
-- GET /api/europcar/reservations/list - List all reservations (should show 10 reservations)
+Config Endpoints:
+- GET /api/quick-menu/config/tenant/{tenant_id} - Get config for a tenant
+- PUT /api/quick-menu/config/update/{tenant_id} - Update config for a tenant
 
-Kunden APIs:
-- GET /api/europcar/customers/list - List all customers (should show 5 customers)
+Utility Endpoints:
+- GET /api/quick-menu/tenants/list - Get list of all tenants
 
-Analytics APIs:
-- GET /api/europcar/analytics/dashboard - Dashboard statistics
-
-Stationen APIs:
-- GET /api/europcar/stations/list - List all stations (should show 1 station)
-
-Schadenmanagement APIs:
-- GET /api/europcar/damage/reports/list - List damage reports (should show 3 reports)
-
-Preisberechnung APIs:
-- POST /api/europcar/pricing/calculate - Calculate pricing for rental
-
-Expected Demo Data:
-- 8 Fahrzeuge, 5 Kunden, 10 Reservierungen, 3 Schäden, 1 Station
+Test Data:
+- Tenant ID: tenant-europcar (Europcar Deutschland)
+- Alternative tenant: tenant-tsrid (TSRID GmbH)
 """
 
 import requests
