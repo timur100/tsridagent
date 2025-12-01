@@ -2160,251 +2160,244 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {/* Overview Tab Content */}
                 {kioskSubTab === 'overview' && (
                   <div className="space-y-6">
-                    {/* Location Selection */}
+                    {/* Filter Section */}
                     <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
                       <h4 className={`text-sm font-semibold mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Standortauswahl
+                        Filter
                       </h4>
                       
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Continent Dropdown */}
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {/* Kontinent Filter */}
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             Kontinent
                           </label>
                           <select
-                            value={selectedContinent}
-                            onChange={(e) => {
-                              setSelectedContinent(e.target.value);
-                              setSelectedCountry('');
-                              setSelectedLocation('');
-                            }}
+                            value={filterContinent}
+                            onChange={(e) => setFilterContinent(e.target.value)}
                             className={`w-full px-3 py-2 rounded-lg border ${
                               theme === 'dark'
                                 ? 'bg-[#2a2a2a] border-gray-600 text-white'
                                 : 'bg-white border-gray-300 text-gray-900'
                             }`}
                           >
-                            <option value="">Kontinent wählen...</option>
-                            <option value="europe">Europa</option>
-                            <option value="north-america">Nordamerika</option>
-                            <option value="asia">Asien</option>
-                            <option value="africa">Afrika</option>
-                            <option value="oceania">Ozeanien</option>
-                            <option value="south-america">Südamerika</option>
+                            <option value="">Alle</option>
+                            <option value="Europa">Europa</option>
+                            <option value="Nordamerika">Nordamerika</option>
+                            <option value="Asien">Asien</option>
                           </select>
                         </div>
 
-                        {/* Country Dropdown */}
+                        {/* Land Filter */}
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             Land
                           </label>
                           <select
-                            value={selectedCountry}
-                            onChange={(e) => {
-                              setSelectedCountry(e.target.value);
-                              setSelectedLocation('');
-                            }}
-                            disabled={!selectedContinent}
+                            value={filterCountry}
+                            onChange={(e) => setFilterCountry(e.target.value)}
                             className={`w-full px-3 py-2 rounded-lg border ${
                               theme === 'dark'
                                 ? 'bg-[#2a2a2a] border-gray-600 text-white'
                                 : 'bg-white border-gray-300 text-gray-900'
-                            } ${!selectedContinent ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            }`}
                           >
-                            <option value="">Land wählen...</option>
-                            {selectedContinent === 'europe' && (
-                              <>
-                                <option value="germany">Deutschland</option>
-                                <option value="france">Frankreich</option>
-                                <option value="italy">Italien</option>
-                                <option value="spain">Spanien</option>
-                                <option value="uk">Großbritannien</option>
-                              </>
-                            )}
-                            {selectedContinent === 'north-america' && (
-                              <>
-                                <option value="usa">USA</option>
-                                <option value="canada">Kanada</option>
-                                <option value="mexico">Mexiko</option>
-                              </>
-                            )}
+                            <option value="">Alle</option>
+                            <option value="Deutschland">Deutschland</option>
+                            <option value="Frankreich">Frankreich</option>
+                            <option value="USA">USA</option>
                           </select>
                         </div>
 
-                        {/* City/Location Dropdown */}
+                        {/* Stadt Filter */}
                         <div>
                           <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Stadt / Standort
+                            Stadt
                           </label>
                           <select
-                            value={selectedLocation}
-                            onChange={(e) => setSelectedLocation(e.target.value)}
-                            disabled={!selectedCountry}
+                            value={filterCity}
+                            onChange={(e) => setFilterCity(e.target.value)}
                             className={`w-full px-3 py-2 rounded-lg border ${
                               theme === 'dark'
                                 ? 'bg-[#2a2a2a] border-gray-600 text-white'
                                 : 'bg-white border-gray-300 text-gray-900'
-                            } ${!selectedCountry ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            }`}
                           >
-                            <option value="">Stadt wählen...</option>
-                            {selectedCountry === 'germany' && (
-                              <>
-                                <option value="berlin">Berlin</option>
-                                <option value="munich">München</option>
-                                <option value="hamburg">Hamburg</option>
-                                <option value="frankfurt">Frankfurt</option>
-                                <option value="cologne">Köln</option>
-                              </>
-                            )}
-                            {selectedCountry === 'france' && (
-                              <>
-                                <option value="paris">Paris</option>
-                                <option value="lyon">Lyon</option>
-                                <option value="marseille">Marseille</option>
-                              </>
-                            )}
+                            <option value="">Alle</option>
+                            <option value="Berlin">Berlin</option>
+                            <option value="München">München</option>
+                            <option value="Paris">Paris</option>
+                          </select>
+                        </div>
+
+                        {/* Kiosksystem Filter */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Kiosksystem
+                          </label>
+                          <select
+                            value={filterKiosk}
+                            onChange={(e) => setFilterKiosk(e.target.value)}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          >
+                            <option value="">Alle</option>
+                            <option value="KIOSK-001">KIOSK-001</option>
+                            <option value="KIOSK-002">KIOSK-002</option>
+                          </select>
+                        </div>
+
+                        {/* Key-Dispenser Filter */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Key-Dispenser
+                          </label>
+                          <select
+                            value={filterDispenser}
+                            onChange={(e) => setFilterDispenser(e.target.value)}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          >
+                            <option value="">Alle</option>
+                            <option value="KD-A01">KD-A01</option>
+                            <option value="KD-A02">KD-A02</option>
+                          </select>
+                        </div>
+
+                        {/* Schlüssel Filter */}
+                        <div>
+                          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Schlüssel
+                          </label>
+                          <select
+                            value={filterKey}
+                            onChange={(e) => setFilterKey(e.target.value)}
+                            className={`w-full px-3 py-2 rounded-lg border ${
+                              theme === 'dark'
+                                ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                                : 'bg-white border-gray-300 text-gray-900'
+                            }`}
+                          >
+                            <option value="">Alle</option>
+                            <option value="Auto">Auto</option>
+                            <option value="Büro">Büro</option>
+                            <option value="Hotel">Hotel</option>
                           </select>
                         </div>
                       </div>
-
-                      {/* New Location Button */}
-                      {selectedCountry && !selectedLocation && (
-                        <div className="mt-4">
-                          <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
-                            <Plus className="h-4 w-4" />
-                            Neuen Standort anlegen
-                          </button>
-                        </div>
-                      )}
                     </div>
 
-                    {/* Show content only if location is selected */}
-                    {selectedLocation ? (
-                      <>
+                    {/* Comprehensive Data Table */}
+                    <div className={`rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+                      <div className="overflow-x-auto">
+                        <table className="w-full font-mono">
+                          <thead>
+                            <tr className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Kontinent</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Land</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Stadt</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Straße</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>PLZ</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Kiosksystem</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Status</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Key-Dispenser</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Schlüssel-Typ</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Schlüssel-Nr</th>
+                              <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>Verfügbar</th>
+                            </tr>
+                          </thead>
+                          <tbody className="font-mono">
+                            {/* Mock Data Rows */}
+                            {[
+                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Auto', keyNr: 'KEY-001', available: 'Ja' },
+                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Büro', keyNr: 'KEY-002', available: 'Nein' },
+                              { continent: 'Europa', country: 'Deutschland', city: 'München', street: 'Marienplatz 5', zip: '80331', kiosk: 'KIOSK-002', status: 'Online', dispenser: 'KD-A02', keyType: 'Auto', keyNr: 'KEY-003', available: 'Ja' },
+                              { continent: 'Europa', country: 'Frankreich', city: 'Paris', street: 'Rue de Rivoli 12', zip: '75001', kiosk: 'KIOSK-003', status: 'Offline', dispenser: 'KD-A03', keyType: 'Hotel', keyNr: 'KEY-004', available: 'Ja' },
+                              { continent: 'Nordamerika', country: 'USA', city: 'New York', street: '5th Avenue 123', zip: '10001', kiosk: 'KIOSK-004', status: 'Online', dispenser: 'KD-A04', keyType: 'Auto', keyNr: 'KEY-005', available: 'Nein' },
+                            ].filter(row => {
+                              if (filterContinent && row.continent !== filterContinent) return false;
+                              if (filterCountry && row.country !== filterCountry) return false;
+                              if (filterCity && row.city !== filterCity) return false;
+                              if (filterKiosk && row.kiosk !== filterKiosk) return false;
+                              if (filterDispenser && row.dispenser !== filterDispenser) return false;
+                              if (filterKey && row.keyType !== filterKey) return false;
+                              return true;
+                            }).map((row, index) => (
+                              <tr 
+                                key={index}
+                                className={`border-t border-gray-700 transition-colors ${
+                                  theme === 'dark'
+                                    ? 'hover:bg-[#2a2a2a]'
+                                    : 'hover:bg-gray-50'
+                                }`}
+                              >
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.continent}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.country}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.city}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.street}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.zip}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.kiosk}</td>
+                                <td className="px-4 py-3 text-sm">
+                                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                    row.status === 'Online' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {row.status}
+                                  </span>
+                                </td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.dispenser}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.keyType}</td>
+                                <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{row.keyNr}</td>
+                                <td className="px-4 py-3 text-sm">
+                                  <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                    row.available === 'Ja' 
+                                      ? 'bg-blue-100 text-blue-800' 
+                                      : 'bg-gray-100 text-gray-800'
+                                  }`}>
+                                    {row.available}
+                                  </span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
 
-              {/* Statistics Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                {/* Kiosksysteme Card */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <Settings className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    {/* Empty State */}
+                    {[].filter(row => {
+                      if (filterContinent && row.continent !== filterContinent) return false;
+                      if (filterCountry && row.country !== filterCountry) return false;
+                      if (filterCity && row.city !== filterCity) return false;
+                      if (filterKiosk && row.kiosk !== filterKiosk) return false;
+                      if (filterDispenser && row.dispenser !== filterDispenser) return false;
+                      if (filterKey && row.keyType !== filterKey) return false;
+                      return true;
+                    }).length === 0 && filterContinent && (
+                      <div className={`p-12 text-center rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                        <MapPin className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Keine Daten gefunden
+                        </p>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Keine Einträge entsprechen den ausgewählten Filtern.
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Kiosksysteme
-                  </h4>
-                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    0
-                  </p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Aktive Kiosks
-                  </p>
-                </Card>
+                )}
 
-                {/* Standorte Card */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <MapPin className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                  </div>
-                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Standorte
-                  </h4>
-                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    0
-                  </p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Mit Key-Dispenser
-                  </p>
-                </Card>
-
-                {/* Key-Dispenser Card */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <Server className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                  </div>
-                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Key-Dispenser
-                  </h4>
-                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    0
-                  </p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Gesamt
-                  </p>
-                </Card>
-
-                {/* Verfügbare Schlüssel Card */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <CheckCircle className={`h-10 w-10 ${theme === 'dark' ? 'text-green-500' : 'text-green-600'}`} />
-                  </div>
-                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Verfügbare Schlüssel
-                  </h4>
-                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    0
-                  </p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Von 0 gesamt
-                  </p>
-                </Card>
-              </div>
-
-              {/* Kiosksysteme Table */}
-              <div className={`rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
-                <div className="flex justify-between items-center p-4 border-b" style={{ borderColor: theme === 'dark' ? '#3a3a3a' : '#e5e7eb' }}>
-                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Kiosksysteme in {selectedLocation}
-                  </h4>
-                  <button
-                    onClick={() => setShowKioskModal(true)}
-                    className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
-                  >
-                    <Plus className="h-4 w-4" />
-                    Neues Kiosksystem
-                  </button>
-                </div>
-
-                {kiosks.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'}>
-                        <tr>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Online</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Code</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kontinent</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Land</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Stadt</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Straße</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Hausnr.</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>PLZ</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>GPS</th>
-                          <th className={`px-4 py-3 text-left text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {kiosks.map((kiosk, index) => (
-                          <tr 
-                            key={kiosk.id}
-                            className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-[#2a2a2a]' : 'border-gray-200 hover:bg-gray-50'} cursor-pointer`}
-                            onClick={() => setSelectedKiosk(kiosk)}
+                {/* Standorte Tab */}
+                {kioskSubTab === 'locations' && (
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
                           >
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
