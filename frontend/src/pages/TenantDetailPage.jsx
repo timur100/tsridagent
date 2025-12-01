@@ -2170,10 +2170,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   }`}>
                     <Server className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
                     <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Automaten einrichten
+                      Key-Dispenser einrichten
                     </h5>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Neue Schlüsselautomaten registrieren
+                      Neue Key-Dispenser registrieren
                     </p>
                   </button>
 
