@@ -200,8 +200,10 @@ async def get_tickets(
         
         return {
             "success": True,
-            "count": len(tickets),
-            "tickets": tickets
+            "data": {
+                "count": len(tickets),
+                "tickets": tickets
+            }
         }
     
     except HTTPException:
