@@ -79,7 +79,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
         { id: 'kiosk-management', label: 'Kiosk-Verwaltung', emoji: '🖥️' },
         { id: 'kiosk-configuration', label: 'Kiosk-Konfiguration', emoji: '⚙️' },
         { id: 'kiosk-monitoring', label: 'Kiosk-Monitoring', emoji: '📊' },
-        { id: 'key-automat', label: 'Schlüsselautomat', emoji: '🔑' }
+        { id: 'key-automat', label: 'Schlüsselautomat', emoji: '🔐' }
       ]
     },
     {
