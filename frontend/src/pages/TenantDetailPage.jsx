@@ -2053,10 +2053,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             <div className="space-y-6">
               <div>
                 <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  🔐 Kiosk & Schlüsselautomat-Verwaltung
+                  🔐 Kiosk & Key-Dispenser-Verwaltung
                 </h3>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Verwalten Sie Kiosksysteme, Schlüsselautomaten, Standorte und Schlüssel für {tenant?.display_name || 'diesen Tenant'}.
+                  Verwalten Sie Kiosksysteme, Key-Dispenser, Standorte und Schlüssel für {tenant?.display_name || 'diesen Tenant'}.
                 </p>
               </div>
 
