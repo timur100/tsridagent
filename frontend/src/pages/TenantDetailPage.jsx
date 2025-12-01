@@ -2044,6 +2044,102 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           />
         )}
 
+        {activeTab === 'kiosk' && (
+          <Card className={`p-8 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
+            <div className="space-y-6">
+              <div>
+                <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Kiosk-Verwaltung
+                </h3>
+                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Verwalten Sie Kiosksysteme und Schlüsselautomaten für {tenant?.display_name || 'diesen Tenant'}.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Kiosksysteme Card */}
+                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <Settings className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  </div>
+                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Kiosksysteme
+                  </h4>
+                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    0
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Aktive Kiosks
+                  </p>
+                </Card>
+
+                {/* Schlüsselautomaten Card */}
+                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <HardDrive className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  </div>
+                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Schlüsselautomaten
+                  </h4>
+                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    0
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Aktive Automaten
+                  </p>
+                </Card>
+
+                {/* Schlüssel Card */}
+                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <MapPin className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  </div>
+                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Verfügbare Schlüssel
+                  </h4>
+                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    0
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Von 0 gesamt
+                  </p>
+                </Card>
+              </div>
+
+              {/* Placeholder for future functionality */}
+              <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
+                theme === 'dark' 
+                  ? 'border-gray-700 bg-[#1f1f1f]' 
+                  : 'border-gray-300 bg-gray-50'
+              }`}>
+                <Settings className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Kiosk-Funktionalität in Entwicklung
+                </p>
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                  Hier können Sie bald Kiosksysteme und Schlüsselautomaten konfigurieren und verwalten.
+                </p>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {activeTab === 'branding' && (
           <Card className={`p-12 text-center rounded-xl ${
             theme === 'dark' 
