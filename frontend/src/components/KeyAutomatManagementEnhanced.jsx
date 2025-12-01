@@ -11,7 +11,7 @@ import KeyEditorModal from './KeyEditorModal';
 import LocationEditorModal from './LocationEditorModal';
 import AutomatEditorModal from './AutomatEditorModal';
 
-const KeyAutomatManagementEnhanced = ({ theme }) => {
+const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, kioskId }) => {
   const { apiCall } = useAuth();
   const [activeTab, setActiveTab] = useState('keys'); // keys, automats, locations, rentals, history
   const [keys, setKeys] = useState([]);
@@ -61,9 +61,20 @@ const KeyAutomatManagementEnhanced = ({ theme }) => {
   const loadKeys = async () => {
     try {
       setLoading(true);
-      const response = await apiCall('/api/key-automat/keys/list', { method: 'GET' });
+      let url = '/api/key-automat/keys/list?';
+      if (tenantId) url += `tenant_id=${tenantId}&`;
+      if (locationId) url += `location_id=${locationId}&`;
+      
+      const response = await apiCall(url, { method: 'GET' });
       if (response.success) {
-        setKeys(response.keys || []);
+        let filteredKeys = response.keys || [];
+        
+        // Additional filtering by automat if specified
+        if (automatId) {
+          filteredKeys = filteredKeys.filter(k => k.automat_id === automatId);
+        }
+        
+        setKeys(filteredKeys);
       }
     } catch (error) {
       console.error('Error loading keys:', error);
@@ -75,7 +86,11 @@ const KeyAutomatManagementEnhanced = ({ theme }) => {
 
   const loadAutomats = async () => {
     try {
-      const response = await apiCall('/api/key-automat/automats/list', { method: 'GET' });
+      let url = '/api/key-automat/automats/list?';
+      if (tenantId) url += `tenant_id=${tenantId}&`;
+      if (locationId) url += `location_id=${locationId}&`;
+      
+      const response = await apiCall(url, { method: 'GET' });
       if (response.success) {
         setAutomats(response.automats || []);
       }
@@ -86,7 +101,10 @@ const KeyAutomatManagementEnhanced = ({ theme }) => {
 
   const loadLocations = async () => {
     try {
-      const response = await apiCall('/api/key-automat/locations/list', { method: 'GET' });
+      let url = '/api/key-automat/locations/list?';
+      if (tenantId) url += `tenant_id=${tenantId}&`;
+      
+      const response = await apiCall(url, { method: 'GET' });
       if (response.success) {
         setLocations(response.locations || []);
       }
@@ -97,7 +115,10 @@ const KeyAutomatManagementEnhanced = ({ theme }) => {
 
   const loadRentals = async () => {
     try {
-      const response = await apiCall('/api/key-automat/rentals/active', { method: 'GET' });
+      let url = '/api/key-automat/rentals/active?';
+      if (tenantId) url += `tenant_id=${tenantId}&`;
+      
+      const response = await apiCall(url, { method: 'GET' });
       if (response.success) {
         setRentals(response.rentals || []);
       }
