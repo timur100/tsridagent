@@ -2368,8 +2368,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 )}
               </div>
             </Card>
-          );
-        })()}
+        )}
 
         {activeTab === 'branding' && (
           <Card className={`p-12 text-center rounded-xl ${
