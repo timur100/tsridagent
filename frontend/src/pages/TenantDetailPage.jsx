@@ -2053,14 +2053,15 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             <div className="space-y-6">
               <div>
                 <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  Kiosk-Verwaltung
+                  🔐 Kiosk & Schlüsselautomat-Verwaltung
                 </h3>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Verwalten Sie Kiosksysteme und Schlüsselautomaten für {tenant?.display_name || 'diesen Tenant'}.
+                  Verwalten Sie Kiosksysteme, Schlüsselautomaten, Standorte und Schlüssel für {tenant?.display_name || 'diesen Tenant'}.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Statistics Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Kiosksysteme Card */}
                 <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
@@ -2081,27 +2082,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </p>
                 </Card>
 
-                {/* Schlüsselautomaten Card */}
-                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-                  theme === 'dark' 
-                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-                }`}>
-                  <div className="flex items-center justify-between mb-4">
-                    <HardDrive className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
-                  </div>
-                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Schlüsselautomaten
-                  </h4>
-                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    0
-                  </p>
-                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Aktive Automaten
-                  </p>
-                </Card>
-
-                {/* Schlüssel Card */}
+                {/* Standorte Card */}
                 <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
                     ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
@@ -2109,6 +2090,46 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 }`}>
                   <div className="flex items-center justify-between mb-4">
                     <MapPin className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  </div>
+                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Standorte
+                  </h4>
+                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    0
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Mit Automaten
+                  </p>
+                </Card>
+
+                {/* Schlüsselautomaten Card */}
+                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <Server className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  </div>
+                  <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Automaten
+                  </h4>
+                  <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    0
+                  </p>
+                  <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Gesamt
+                  </p>
+                </Card>
+
+                {/* Verfügbare Schlüssel Card */}
+                <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                  theme === 'dark' 
+                    ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-gray-50 border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                }`}>
+                  <div className="flex items-center justify-between mb-4">
+                    <CheckCircle className={`h-10 w-10 ${theme === 'dark' ? 'text-green-500' : 'text-green-600'}`} />
                   </div>
                   <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     Verfügbare Schlüssel
@@ -2122,18 +2143,69 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 </Card>
               </div>
 
-              {/* Placeholder for future functionality */}
+              {/* Quick Actions */}
+              <div>
+                <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Schnellzugriff
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <button className={`p-4 rounded-lg text-left transition-all ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                  }`}>
+                    <MapPin className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      Standorte verwalten
+                    </h5>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Neue Standorte hinzufügen und konfigurieren
+                    </p>
+                  </button>
+
+                  <button className={`p-4 rounded-lg text-left transition-all ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                  }`}>
+                    <Server className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      Automaten einrichten
+                    </h5>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Neue Schlüsselautomaten registrieren
+                    </p>
+                  </button>
+
+                  <button className={`p-4 rounded-lg text-left transition-all ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
+                      : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
+                  }`}>
+                    <Plus className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      Schlüssel hinzufügen
+                    </h5>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      Neue Schlüssel in Automaten registrieren
+                    </p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Info Box */}
               <div className={`p-6 rounded-lg border-2 border-dashed text-center ${
                 theme === 'dark' 
                   ? 'border-gray-700 bg-[#1f1f1f]' 
                   : 'border-gray-300 bg-gray-50'
               }`}>
-                <Settings className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
                 <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Kiosk-Funktionalität in Entwicklung
+                  Kiosk & Schlüsselautomat Management
                 </p>
                 <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Hier können Sie bald Kiosksysteme und Schlüsselautomaten konfigurieren und verwalten.
+                  Vollständige Verwaltung von Kiosksystemen, Standorten, Automaten und Schlüsseln für diesen Tenant.
+                  <br />Nutzen Sie die Schnellzugriff-Buttons, um mit der Konfiguration zu beginnen.
                 </p>
               </div>
             </div>
