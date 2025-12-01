@@ -66,6 +66,7 @@ from routes.vehicles import router as vehicles_router
 from routes.quick_menu import router as quick_menu_router
 from routes.key_automat import router as key_automat_router
 from routes.kiosk_verification import router as kiosk_verification_router
+from routes.receipts import router as receipts_router
 
 
 ROOT_DIR = Path(__file__).parent
@@ -224,6 +225,9 @@ api_router.include_router(key_automat_router, prefix="/key-automat", tags=["key-
 
 # Kiosk Verification (TSRID Integration for Kiosks)
 api_router.include_router(kiosk_verification_router, prefix="/kiosk-verification", tags=["kiosk-verification"])
+
+# Receipts (Digital & Printed Receipts)
+api_router.include_router(receipts_router, prefix="/receipts", tags=["receipts"])
 
 # Services Configuration (Microservices Management)
 app.include_router(services_config_router)
