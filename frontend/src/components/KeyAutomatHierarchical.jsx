@@ -137,6 +137,48 @@ const KeyAutomatHierarchical = ({ theme }) => {
     }
   };
 
+  const handleSaveLocation = async (locationData) => {
+    try {
+      setLoading(true);
+      
+      if (locationData.location_id) {
+        // Update existing location
+        const response = await apiCall(`/api/key-automat/locations/update/${locationData.location_id}`, {
+          method: 'PUT',
+          body: JSON.stringify(locationData)
+        });
+        
+        if (response.success) {
+          toast.success('Standort aktualisiert');
+          loadLocationsForTenant(selectedTenant?.tenant_id || selectedTenant?.id);
+        } else {
+          toast.error('Fehler beim Aktualisieren des Standorts');
+        }
+      } else {
+        // Create new location
+        const response = await apiCall('/api/key-automat/locations/create', {
+          method: 'POST',
+          body: JSON.stringify(locationData)
+        });
+        
+        if (response.success) {
+          toast.success('Standort erfolgreich erstellt');
+          loadLocationsForTenant(selectedTenant?.tenant_id || selectedTenant?.id);
+        } else {
+          toast.error('Fehler beim Erstellen des Standorts');
+        }
+      }
+      
+      setShowLocationModal(false);
+      setEditingLocation(null);
+    } catch (error) {
+      console.error('Error saving location:', error);
+      toast.error('Fehler beim Speichern des Standorts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderBreadcrumb = () => {
     const items = [];
     
