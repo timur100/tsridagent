@@ -108,6 +108,14 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // Location Management States
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [editingLocation, setEditingLocation] = useState(null);
+  
+  // Kiosk Overview Filter States
+  const [filterContinent, setFilterContinent] = useState('');
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterCity, setFilterCity] = useState('');
+  const [filterKiosk, setFilterKiosk] = useState('');
+  const [filterDispenser, setFilterDispenser] = useState('');
+  const [filterKey, setFilterKey] = useState('');
 
   // Update activeTab when initialTab changes (from AdminPortal navigation)
   useEffect(() => {
