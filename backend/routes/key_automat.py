@@ -305,7 +305,9 @@ async def create_key(key_data: dict):
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await db.keys.insert_one(key)
+        result = await db.keys.insert_one(key)
+        # Remove _id from the response to avoid serialization issues
+        key.pop('_id', None)
         
         # Update automat occupied slots
         if key["status"] != "available":
