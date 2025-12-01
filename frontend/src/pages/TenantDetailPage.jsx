@@ -3187,6 +3187,227 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           </div>
         )}
 
+        {/* Location Creation/Edit Modal */}
+        {showLocationModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowLocationModal(false)}>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-3xl mx-4 p-6 rounded-xl max-h-[90vh] overflow-y-auto ${
+                theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+              }`}
+            >
+              <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {editingLocation ? 'Standort bearbeiten' : 'Neuen Standort erstellen'}
+              </h3>
+              
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const locationData = {
+                  id: editingLocation?.id || Date.now(),
+                  continent: formData.get('continent'),
+                  country: formData.get('country'),
+                  city: formData.get('city'),
+                  street: formData.get('street'),
+                  houseNumber: formData.get('houseNumber'),
+                  zipCode: formData.get('zipCode'),
+                  gps: formData.get('gps'),
+                  description: formData.get('description'),
+                  kioskCount: editingLocation?.kioskCount || 0,
+                  createdAt: editingLocation?.createdAt || new Date().toISOString()
+                };
+
+                if (editingLocation) {
+                  // Update existing
+                  setKioskLocations(kioskLocations.map(l => l.id === editingLocation.id ? locationData : l));
+                } else {
+                  // Create new
+                  setKioskLocations([...kioskLocations, locationData]);
+                }
+                
+                setShowLocationModal(false);
+                setEditingLocation(null);
+                e.target.reset();
+              }}>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Kontinent *
+                    </label>
+                    <select
+                      name="continent"
+                      required
+                      defaultValue={editingLocation?.continent || ''}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option value="">Wählen...</option>
+                      <option value="Europe">Europa</option>
+                      <option value="North America">Nordamerika</option>
+                      <option value="Asia">Asien</option>
+                      <option value="Africa">Afrika</option>
+                      <option value="Oceania">Ozeanien</option>
+                      <option value="South America">Südamerika</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Land *
+                    </label>
+                    <input
+                      name="country"
+                      type="text"
+                      required
+                      defaultValue={editingLocation?.country || ''}
+                      placeholder="z.B. Deutschland"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Stadt *
+                    </label>
+                    <input
+                      name="city"
+                      type="text"
+                      required
+                      defaultValue={editingLocation?.city || ''}
+                      placeholder="z.B. Berlin"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Straße *
+                    </label>
+                    <input
+                      name="street"
+                      type="text"
+                      required
+                      defaultValue={editingLocation?.street || ''}
+                      placeholder="z.B. Hauptstraße"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Hausnummer *
+                    </label>
+                    <input
+                      name="houseNumber"
+                      type="text"
+                      required
+                      defaultValue={editingLocation?.houseNumber || ''}
+                      placeholder="123"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      PLZ *
+                    </label>
+                    <input
+                      name="zipCode"
+                      type="text"
+                      required
+                      defaultValue={editingLocation?.zipCode || ''}
+                      placeholder="10115"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      GPS-Koordinaten
+                    </label>
+                    <input
+                      name="gps"
+                      type="text"
+                      defaultValue={editingLocation?.gps || ''}
+                      placeholder="52.5200, 13.4050"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Beschreibung
+                  </label>
+                  <textarea
+                    name="description"
+                    rows="3"
+                    defaultValue={editingLocation?.description || ''}
+                    placeholder="Zusätzliche Informationen zum Standort..."
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowLocationModal(false);
+                      setEditingLocation(null);
+                    }}
+                    className={`px-4 py-2 rounded-lg ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                  >
+                    {editingLocation ? 'Aktualisieren' : 'Erstellen'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Key Creation Modal */}
         {showKeyModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowKeyModal(false)}>
