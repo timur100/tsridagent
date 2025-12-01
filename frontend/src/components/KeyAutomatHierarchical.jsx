@@ -280,8 +280,14 @@ const KeyAutomatHierarchical = ({ theme }) => {
             </div>
             <button
               onClick={() => {
-                // TODO: Open create location modal
-                toast.info('Standort erstellen - wird implementiert');
+                setEditingLocation({
+                  name: '',
+                  address: '',
+                  city: '',
+                  country: 'Deutschland',
+                  tenant_id: selectedTenant?.tenant_id || selectedTenant?.id
+                });
+                setShowLocationModal(true);
               }}
               className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors text-sm"
             >
