@@ -2398,8 +2398,6 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {kioskSubTab === 'locations' && (
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                          >
-                            <td className="px-4 py-3">
                               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                 kiosk.online 
                                   ? 'bg-green-100 text-green-800' 
