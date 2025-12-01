@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Key, Plus, Edit, Trash2, Lock, Unlock, User, Building, Clock, AlertCircle, CheckCircle, Search, Filter, Calendar, MapPin, RefreshCw, Car, Hotel, Briefcase, Globe, Settings } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import KeysTab from './KeysTab';
+import LocationsTab from './LocationsTab';
+import AutomatsTab from './AutomatsTab';
+import RentalsTab from './RentalsTab';
+import HistoryTab from './HistoryTab';
+import KeyEditorModal from './KeyEditorModal';
+import LocationEditorModal from './LocationEditorModal';
+import AutomatEditorModal from './AutomatEditorModal';
 
 const KeyAutomatManagementEnhanced = ({ theme }) => {
   const { apiCall } = useAuth();
