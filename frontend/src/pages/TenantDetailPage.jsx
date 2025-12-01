@@ -2571,7 +2571,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         Schlüssel {selectedLocation && `- ${selectedLocation}`}
                       </h4>
                       {selectedLocation && (
-                        <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                        <button 
+                          onClick={() => setShowKeyModal(true)}
+                          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                        >
                           <Plus className="h-4 w-4" />
                           Neuer Schlüssel
                         </button>
