@@ -212,7 +212,9 @@ async def create_automat(automat_data: dict):
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await db.key_automats.insert_one(automat)
+        result = await db.key_automats.insert_one(automat)
+        # Remove _id from the response to avoid serialization issues
+        automat.pop('_id', None)
         
         return {
             "success": True,
