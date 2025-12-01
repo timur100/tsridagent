@@ -263,6 +263,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     { id: 'subscription', label: 'Vertrag & Subscription' },
     { id: 'locations', label: 'Standorte' },
     { id: 'devices', label: 'Geräte' },
+    { id: 'kiosk', label: 'Kiosk' },
     { id: 'branding', label: 'Branding' },
     { id: 'statistics', label: 'Statistik' },
     { id: 'billing', label: 'Abrechnung' }
