@@ -135,14 +135,14 @@ class QuickMenuTester:
             )
             return False
 
-    def test_vehicles_list_api(self):
-        """Test GET /api/europcar/vehicles/list - Should show 8 vehicles"""
+    def test_get_tenants_list_api(self):
+        """Test GET /api/quick-menu/tenants/list - Should return 3 tenants: europcar, tsrid, demo"""
         try:
-            response = self.session.get(f"{API_BASE}/europcar/vehicles/list")
+            response = self.session.get(f"{API_BASE}/quick-menu/tenants/list")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicles List API",
+                    "GET Tenants List API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -154,7 +154,7 @@ class QuickMenuTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicles List API",
+                    "GET Tenants List API",
                     False,
                     "Response indicates failure",
                     data
@@ -162,74 +162,78 @@ class QuickMenuTester:
                 return False
             
             # Check data structure
-            if "data" not in data:
+            if "tenants" not in data:
                 self.log_result(
-                    "GET Vehicles List API",
+                    "GET Tenants List API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'tenants' field in response",
                     data
                 )
                 return False
             
-            vehicles_data = data["data"]
-            if "vehicles" not in vehicles_data:
+            tenants = data["tenants"]
+            
+            # Verify tenants is a list
+            if not isinstance(tenants, list):
                 self.log_result(
-                    "GET Vehicles List API",
+                    "GET Tenants List API",
                     False,
-                    "Missing 'vehicles' field in data",
+                    f"Tenants should be a list, got {type(tenants)}",
                     data
                 )
                 return False
             
-            vehicles = vehicles_data["vehicles"]
-            
-            # Verify vehicles is a list
-            if not isinstance(vehicles, list):
-                self.log_result(
-                    "GET Vehicles List API",
-                    False,
-                    f"Vehicles should be a list, got {type(vehicles)}",
-                    data
-                )
-                return False
-            
-            # Check expected count (should be 8 vehicles)
-            expected_count = 8
-            actual_count = len(vehicles)
+            # Check expected count (should be 3 tenants)
+            expected_count = 3
+            actual_count = len(tenants)
             
             if actual_count != expected_count:
                 self.log_result(
-                    "GET Vehicles List API",
+                    "GET Tenants List API",
                     False,
-                    f"Expected {expected_count} vehicles, got {actual_count}",
+                    f"Expected {expected_count} tenants, got {actual_count}",
                     data
                 )
                 return False
             
-            # Verify vehicle structure
-            if vehicles:
-                vehicle = vehicles[0]
-                required_fields = ["id", "marke", "modell", "kennzeichen", "status"]
+            # Verify tenant structure and expected tenants
+            expected_tenant_ids = ["tenant-europcar", "tenant-tsrid", "tenant-demo"]
+            found_tenant_ids = []
+            
+            for tenant in tenants:
+                required_fields = ["id", "name", "domain"]
                 for field in required_fields:
-                    if field not in vehicle:
+                    if field not in tenant:
                         self.log_result(
-                            "GET Vehicles List API",
+                            "GET Tenants List API",
                             False,
-                            f"Missing required field in vehicle: {field}",
+                            f"Missing required field in tenant: {field}",
                             data
                         )
                         return False
+                found_tenant_ids.append(tenant["id"])
+            
+            # Check if all expected tenants are present
+            for expected_id in expected_tenant_ids:
+                if expected_id not in found_tenant_ids:
+                    self.log_result(
+                        "GET Tenants List API",
+                        False,
+                        f"Expected tenant '{expected_id}' not found in response",
+                        data
+                    )
+                    return False
             
             self.log_result(
-                "GET Vehicles List API",
+                "GET Tenants List API",
                 True,
-                f"Successfully retrieved {actual_count} vehicles (expected {expected_count})"
+                f"Successfully retrieved {actual_count} tenants: {', '.join(found_tenant_ids)}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicles List API",
+                "GET Tenants List API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
