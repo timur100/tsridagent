@@ -2618,6 +2618,307 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             </Card>
         )}
 
+        {/* Kiosk Creation Modal */}
+        {showKioskModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowKioskModal(false)}>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-2xl mx-4 p-6 rounded-xl ${
+                theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+              }`}
+            >
+              <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Neues Kiosksystem erstellen
+              </h3>
+              
+              <form className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. Kiosk Berlin Hauptbahnhof"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Standort
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedLocation}
+                    disabled
+                    className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    IP-Adresse
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. 192.168.1.100"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Beschreibung
+                  </label>
+                  <textarea
+                    rows="3"
+                    placeholder="Zusätzliche Informationen..."
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowKioskModal(false)}
+                    className={`px-4 py-2 rounded-lg ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                  >
+                    Kiosksystem erstellen
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Key-Dispenser Creation Modal */}
+        {showDispenserModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDispenserModal(false)}>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-2xl mx-4 p-6 rounded-xl ${
+                theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+              }`}
+            >
+              <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Neuen Key-Dispenser registrieren
+              </h3>
+              
+              <form className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. Dispenser A1"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Standort
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedLocation}
+                    disabled
+                    className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Kapazität (Schlüssel)
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="50"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      IP-Adresse
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="192.168.1.101"
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowDispenserModal(false)}
+                    className={`px-4 py-2 rounded-lg ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                  >
+                    Key-Dispenser registrieren
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Key Creation Modal */}
+        {showKeyModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowKeyModal(false)}>
+            <div 
+              onClick={(e) => e.stopPropagation()}
+              className={`w-full max-w-2xl mx-4 p-6 rounded-xl ${
+                theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
+              }`}
+            >
+              <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Neuen Schlüssel hinzufügen
+              </h3>
+              
+              <form className="space-y-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Schlüsselnummer *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. KEY-001"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Schlüsseltyp *
+                  </label>
+                  <select
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    <option value="car">Fahrzeugschlüssel</option>
+                    <option value="office">Büroschlüssel</option>
+                    <option value="hotel">Hotelschlüssel</option>
+                    <option value="locker">Schließfachschlüssel</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Standort
+                  </label>
+                  <input
+                    type="text"
+                    value={selectedLocation}
+                    disabled
+                    className={`w-full px-3 py-2 rounded-lg border opacity-50 ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Beschreibung
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. BMW 320d - B-XX 1234"
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                <div className="flex gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setShowKeyModal(false)}
+                    className={`px-4 py-2 rounded-lg ${
+                      theme === 'dark'
+                        ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                  >
+                    Schlüssel hinzufügen
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {activeTab === 'branding' && (
           <Card className={`p-12 text-center rounded-xl ${
             theme === 'dark' 
