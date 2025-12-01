@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import { toast } from 'react-hot-toast';
 import KeyAutomatManagementEnhanced from './KeyAutomatManagementEnhanced';
+import LocationEditorModal from './LocationEditorModal';
+import AutomatEditorModal from './AutomatEditorModal';
 
 const KeyAutomatHierarchical = ({ theme }) => {
   const { apiCall, user } = useAuth();
