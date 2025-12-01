@@ -2102,7 +2102,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </p>
                 </Card>
 
-                {/* Schlüsselautomaten Card */}
+                {/* Key-Dispenser Card */}
                 <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                   theme === 'dark' 
                     ? 'bg-[#1f1f1f] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
@@ -2112,7 +2112,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     <Server className={`h-10 w-10 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
                   </div>
                   <h4 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Automaten
+                    Key-Dispenser
                   </h4>
                   <p className={`text-2xl font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     0
