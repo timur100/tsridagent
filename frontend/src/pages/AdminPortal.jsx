@@ -52,6 +52,7 @@ import ServicesConfiguration from '../components/ServicesConfiguration';
 import KioskManagement from '../components/KioskManagement';
 import KioskConfiguration from '../components/KioskConfiguration';
 import KioskMonitoring from '../components/KioskMonitoring';
+import KeyAutomatManagement from '../components/KeyAutomatManagement';
 import ScannerPinSettings from '../components/ScannerPinSettings';
 import TenantsPage from './TenantsPage';
 import TenantDetailPage from './TenantDetailPage';
@@ -2881,6 +2882,13 @@ const AdminPortalContent = () => {
                     {rndTab === 'kiosk-monitoring' && (
                       <div className="w-full">
                         <KioskMonitoring theme={theme} />
+                      </div>
+                    )}
+
+                    {/* Key Automat */}
+                    {rndTab === 'key-automat' && (
+                      <div className="w-full">
+                        <KeyAutomatManagement theme={theme} />
                       </div>
                     )}
 
