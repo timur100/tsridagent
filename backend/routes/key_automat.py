@@ -127,7 +127,9 @@ async def create_location(location_data: dict):
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await db.key_locations.insert_one(location)
+        result = await db.key_locations.insert_one(location)
+        # Remove _id from the response to avoid serialization issues
+        location.pop('_id', None)
         
         return {
             "success": True,
