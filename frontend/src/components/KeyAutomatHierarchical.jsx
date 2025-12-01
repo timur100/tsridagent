@@ -21,6 +21,13 @@ const KeyAutomatHierarchical = ({ theme }) => {
   const [kiosks, setKiosks] = useState([]);
   const [automats, setAutomats] = useState([]);
   const [loading, setLoading] = useState(false);
+  
+  // Modal states
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showAutomatModal, setShowAutomatModal] = useState(false);
+  const [showKioskModal, setShowKioskModal] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
+  const [editingAutomat, setEditingAutomat] = useState(null);
 
   useEffect(() => {
     // Check if user is super admin
