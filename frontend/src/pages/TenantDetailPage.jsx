@@ -2044,21 +2044,80 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           />
         )}
 
-        {activeTab === 'kiosk' && (
-          <Card className={`p-8 rounded-xl ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-          }`}>
-            <div className="space-y-6">
-              <div>
-                <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  🔐 Kiosk & Key-Dispenser-Verwaltung
-                </h3>
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Verwalten Sie Kiosksysteme, Key-Dispenser, Standorte und Schlüssel für {tenant?.display_name || 'diesen Tenant'}.
-                </p>
-              </div>
+        {activeTab === 'kiosk' && (() => {
+          const [kioskSubTab, setKioskSubTab] = React.useState('overview');
+          
+          return (
+            <Card className={`p-8 rounded-xl ${
+              theme === 'dark' 
+                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+            }`}>
+              <div className="space-y-6">
+                <div>
+                  <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    🔐 Kiosk & Key-Dispenser-Verwaltung
+                  </h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Verwalten Sie Kiosksysteme, Key-Dispenser, Standorte und Schlüssel für {tenant?.display_name || 'diesen Tenant'}.
+                  </p>
+                </div>
+
+                {/* Sub-Tabs */}
+                <div className="flex gap-2 border-b pb-2" style={{ borderColor: theme === 'dark' ? '#3a3a3a' : '#e5e7eb' }}>
+                  <button
+                    onClick={() => setKioskSubTab('overview')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
+                      kioskSubTab === 'overview'
+                        ? 'bg-[#c00000] text-white'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    Übersicht
+                  </button>
+                  <button
+                    onClick={() => setKioskSubTab('kiosks')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
+                      kioskSubTab === 'kiosks'
+                        ? 'bg-[#c00000] text-white'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    Kiosksysteme
+                  </button>
+                  <button
+                    onClick={() => setKioskSubTab('dispensers')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
+                      kioskSubTab === 'dispensers'
+                        ? 'bg-[#c00000] text-white'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    Key-Dispenser
+                  </button>
+                  <button
+                    onClick={() => setKioskSubTab('keys')}
+                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
+                      kioskSubTab === 'keys'
+                        ? 'bg-[#c00000] text-white'
+                        : theme === 'dark'
+                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                    }`}
+                  >
+                    Schlüssel
+                  </button>
+                </div>
+
+                {/* Overview Tab Content */}
+                {kioskSubTab === 'overview' && (
+                  <div className="space-y-6">
 
               {/* Statistics Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
