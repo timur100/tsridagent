@@ -446,7 +446,9 @@ async def create_rental(rental_data: dict):
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        await db.rentals.insert_one(rental)
+        result = await db.rentals.insert_one(rental)
+        # Remove _id from the response to avoid serialization issues
+        rental.pop('_id', None)
         
         # Update key status
         await db.keys.update_one(
