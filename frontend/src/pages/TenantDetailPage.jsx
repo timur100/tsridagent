@@ -98,11 +98,16 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const [kiosks, setKiosks] = useState([]);
   const [dispensers, setDispensers] = useState([]);
   const [keys, setKeys] = useState([]);
+  const [kioskLocations, setKioskLocations] = useState([]);
   
   // Detail View States
   const [selectedKiosk, setSelectedKiosk] = useState(null);
   const [selectedDispenser, setSelectedDispenser] = useState(null);
   const [selectedKey, setSelectedKey] = useState(null);
+  
+  // Location Management States
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
 
   // Update activeTab when initialTab changes (from AdminPortal navigation)
   useEffect(() => {
