@@ -52,7 +52,7 @@ import ServicesConfiguration from '../components/ServicesConfiguration';
 import KioskManagement from '../components/KioskManagement';
 import KioskConfiguration from '../components/KioskConfiguration';
 import KioskMonitoring from '../components/KioskMonitoring';
-import KeyAutomatManagement from '../components/KeyAutomatManagement';
+import KeyAutomatManagement from '../components/KeyAutomatManagement';\nimport KeyAutomatManagementEnhanced from '../components/KeyAutomatManagementEnhanced';
 import ScannerPinSettings from '../components/ScannerPinSettings';
 import TenantsPage from './TenantsPage';
 import TenantDetailPage from './TenantDetailPage';
