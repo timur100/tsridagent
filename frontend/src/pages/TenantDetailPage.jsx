@@ -2154,12 +2154,12 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
                       : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
                   }`}>
-                    <MapPin className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    <Settings className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
                     <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Standorte verwalten
+                      Kiosksysteme verwalten
                     </h5>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Neue Standorte hinzufügen und konfigurieren
+                      Kiosks hinzufügen, bearbeiten und konfigurieren
                     </p>
                   </button>
 
@@ -2170,10 +2170,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   }`}>
                     <Server className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
                     <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Key-Dispenser einrichten
+                      Key-Dispenser verwalten
                     </h5>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Neue Key-Dispenser registrieren
+                      Dispenser hinzufügen, bearbeiten und einrichten
                     </p>
                   </button>
 
@@ -2182,12 +2182,12 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       ? 'bg-[#1f1f1f] hover:bg-[#2a2a2a] text-gray-300'
                       : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
                   }`}>
-                    <Plus className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                    <HardDrive className={`h-6 w-6 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
                     <h5 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      Schlüssel hinzufügen
+                      Schlüssel verwalten
                     </h5>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Neue Schlüssel in Automaten registrieren
+                      Schlüssel hinzufügen, zuweisen und organisieren
                     </p>
                   </button>
                 </div>
