@@ -525,6 +525,19 @@ const KeyAutomatHierarchical = ({ theme }) => {
           kioskId={selectedSystem.type === 'kiosk' ? selectedSystem.kiosk_id : null}
         />
       )}
+
+      {/* Location Editor Modal */}
+      {showLocationModal && editingLocation && (
+        <LocationEditorModal
+          theme={theme}
+          locationData={editingLocation}
+          onSave={handleSaveLocation}
+          onClose={() => {
+            setShowLocationModal(false);
+            setEditingLocation(null);
+          }}
+        />
+      )}
     </div>
   );
 };
