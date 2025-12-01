@@ -2045,15 +2045,12 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           />
         )}
 
-        {activeTab === 'kiosk' && (() => {
-          const [kioskSubTab, setKioskSubTab] = React.useState('overview');
-          
-          return (
-            <Card className={`p-8 rounded-xl ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-            }`}>
+        {activeTab === 'kiosk' && (
+          <Card className={`p-8 rounded-xl ${
+            theme === 'dark' 
+              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
+              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
+          }`}>
               <div className="space-y-6">
                 <div>
                   <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
