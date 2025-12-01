@@ -2098,7 +2098,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     0
                   </p>
                   <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                    Mit Automaten
+                    Mit Key-Dispenser
                   </p>
                 </Card>
 
