@@ -338,14 +338,15 @@ class QuickMenuTester:
             )
             return False
 
-    def test_reservations_list_api(self):
-        """Test GET /api/europcar/reservations/list - Should show 10 reservations"""
+    def test_get_tiles_for_tenant_api(self):
+        """Test GET /api/quick-menu/tiles/tenant/{tenant_id} - Get all tiles for a tenant"""
         try:
-            response = self.session.get(f"{API_BASE}/europcar/reservations/list")
+            tenant_id = "tenant-europcar"
+            response = self.session.get(f"{API_BASE}/quick-menu/tiles/tenant/{tenant_id}")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -357,7 +358,7 @@ class QuickMenuTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
                     "Response indicates failure",
                     data
@@ -365,74 +366,80 @@ class QuickMenuTester:
                 return False
             
             # Check data structure
-            if "data" not in data:
+            if "tiles" not in data:
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
-                    "Missing 'data' field in response",
+                    "Missing 'tiles' field in response",
                     data
                 )
                 return False
             
-            reservations_data = data["data"]
-            if "reservations" not in reservations_data:
+            if "count" not in data:
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
-                    "Missing 'reservations' field in data",
+                    "Missing 'count' field in response",
                     data
                 )
                 return False
             
-            reservations = reservations_data["reservations"]
+            tiles = data["tiles"]
             
-            # Verify reservations is a list
-            if not isinstance(reservations, list):
+            # Verify tiles is a list
+            if not isinstance(tiles, list):
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
-                    f"Reservations should be a list, got {type(reservations)}",
+                    f"Tiles should be a list, got {type(tiles)}",
                     data
                 )
                 return False
             
-            # Check expected count (should be 10 reservations)
-            expected_count = 10
-            actual_count = len(reservations)
-            
-            if actual_count != expected_count:
+            # Verify count matches array length
+            if data["count"] != len(tiles):
                 self.log_result(
-                    "GET Reservations List API",
+                    "GET Tiles for Tenant API",
                     False,
-                    f"Expected {expected_count} reservations, got {actual_count}",
+                    f"Count mismatch: count={data['count']}, array length={len(tiles)}",
                     data
                 )
                 return False
             
-            # Verify reservation structure
-            if reservations:
-                reservation = reservations[0]
-                required_fields = ["id", "customer_id", "vehicle_id", "start_date", "end_date", "status"]
+            # Should have at least 1 tile (the one we created)
+            if len(tiles) < 1:
+                self.log_result(
+                    "GET Tiles for Tenant API",
+                    False,
+                    f"Expected at least 1 tile for tenant {tenant_id}, got {len(tiles)}",
+                    data
+                )
+                return False
+            
+            # Verify tile structure
+            if tiles:
+                tile = tiles[0]
+                required_fields = ["tile_id", "tenant_id", "title", "description", "icon", "color", "target_url", "target_type", "order"]
                 for field in required_fields:
-                    if field not in reservation:
+                    if field not in tile:
                         self.log_result(
-                            "GET Reservations List API",
+                            "GET Tiles for Tenant API",
                             False,
-                            f"Missing required field in reservation: {field}",
+                            f"Missing required field in tile: {field}",
                             data
                         )
                         return False
             
             self.log_result(
-                "GET Reservations List API",
+                "GET Tiles for Tenant API",
                 True,
-                f"Successfully retrieved {actual_count} reservations (expected {expected_count})"
+                f"Successfully retrieved {len(tiles)} tiles for tenant {tenant_id}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Reservations List API",
+                "GET Tiles for Tenant API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
