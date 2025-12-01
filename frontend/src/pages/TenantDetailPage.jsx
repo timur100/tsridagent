@@ -2421,30 +2421,58 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {/* Kiosksysteme Tab */}
                 {kioskSubTab === 'kiosks' && (
                   <div className="space-y-4">
+                    {/* Location Badge */}
+                    {selectedLocation && (
+                      <div className={`flex items-center gap-2 px-4 py-2 rounded-lg w-fit ${
+                        theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-100'
+                      }`}>
+                        <MapPin className="h-4 w-4 text-[#c00000]" />
+                        <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Standort: {selectedLocation}
+                        </span>
+                      </div>
+                    )}
+
                     <div className="flex justify-between items-center">
                       <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Kiosksysteme
+                        Kiosksysteme {selectedLocation && `- ${selectedLocation}`}
                       </h4>
-                      <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
-                        <Plus className="h-4 w-4" />
-                        Neues Kiosksystem
-                      </button>
+                      {selectedLocation && (
+                        <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                          <Plus className="h-4 w-4" />
+                          Neues Kiosksystem
+                        </button>
+                      )}
                     </div>
                     
-                    <div className={`p-12 text-center rounded-lg ${
-                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
-                    }`}>
-                      <Settings className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                      <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Keine Kiosksysteme vorhanden
-                      </p>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                        Erstellen Sie Ihr erstes Kiosksystem für {tenant?.display_name || 'diesen Tenant'}.
-                      </p>
-                      <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
-                        Kiosksystem erstellen
-                      </button>
-                    </div>
+                    {selectedLocation ? (
+                      <div className={`p-12 text-center rounded-lg ${
+                        theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                      }`}>
+                        <Settings className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Keine Kiosksysteme in {selectedLocation}
+                        </p>
+                        <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Erstellen Sie Ihr erstes Kiosksystem für diesen Standort.
+                        </p>
+                        <button className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                          Kiosksystem erstellen
+                        </button>
+                      </div>
+                    ) : (
+                      <div className={`p-12 text-center rounded-lg ${
+                        theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                      }`}>
+                        <MapPin className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Kein Standort ausgewählt
+                        </p>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                          Bitte wählen Sie zuerst einen Standort im Übersicht-Tab aus.
+                        </p>
+                      </div>
+                    )}
                   </div>
                 )}
 
