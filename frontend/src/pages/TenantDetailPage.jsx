@@ -2201,10 +2201,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               }`}>
                 <HardDrive className={`h-12 w-12 mx-auto mb-3 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
                 <p className={`text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Kiosk & Schlüsselautomat Management
+                  Kiosk & Key-Dispenser Management
                 </p>
                 <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Vollständige Verwaltung von Kiosksystemen, Standorten, Automaten und Schlüsseln für diesen Tenant.
+                  Vollständige Verwaltung von Kiosksystemen, Standorten, Key-Dispensern und Schlüsseln für diesen Tenant.
                   <br />Nutzen Sie die Schnellzugriff-Buttons, um mit der Konfiguration zu beginnen.
                 </p>
               </div>
