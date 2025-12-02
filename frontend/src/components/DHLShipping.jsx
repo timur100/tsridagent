@@ -1189,17 +1189,470 @@ const DHLShipping = () => {
             </p>
           </div>
 
-          <div className={`p-8 text-center rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
-            <div className="inline-block p-4 bg-blue-500 bg-opacity-10 rounded-full mb-4">
-              <Plus className="h-16 w-16 text-blue-500" />
+          {/* Success Message */}
+          {createSuccess && (
+            <div className={`mb-6 p-4 rounded-lg border ${theme === 'dark' ? 'bg-green-900/20 border-green-500' : 'bg-green-50 border-green-500'}`}>
+              <div className="flex items-start gap-3">
+                <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className={`font-semibold ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>
+                    Sendung erfolgreich erstellt!
+                  </p>
+                  <p className={`text-sm mt-1 font-mono ${theme === 'dark' ? 'text-green-300' : 'text-green-700'}`}>
+                    Sendungsnummer: {createSuccess.shipmentNumber}
+                  </p>
+                  {createSuccess.trackingUrl && (
+                    <a
+                      href={createSuccess.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-blue-500 hover:text-blue-600 mt-2 inline-block"
+                    >
+                      → Sendung verfolgen
+                    </a>
+                  )}
+                </div>
+                <button
+                  onClick={() => setCreateSuccess(null)}
+                  className={`text-gray-400 hover:text-gray-600`}
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
             </div>
-            <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              In Entwicklung
-            </h3>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Sendungserstellung wird implementiert
-            </p>
-          </div>
+          )}
+
+          {/* Error Message */}
+          {createError && (
+            <div className={`mb-6 p-4 rounded-lg border ${theme === 'dark' ? 'bg-red-900/20 border-red-500' : 'bg-red-50 border-red-500'}`}>
+              <div className="flex items-start gap-3">
+                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className={`font-semibold ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>
+                    Fehler beim Erstellen der Sendung
+                  </p>
+                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-red-300' : 'text-red-700'}`}>
+                    {createError}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setCreateError(null)}
+                  className={`text-gray-400 hover:text-gray-600`}
+                >
+                  <XCircle className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={createShipment} className="space-y-6">
+            {/* Sender Information */}
+            <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <User className="h-5 w-5 text-[#c00000]" />
+                Absender
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Firmenname *
+                  </label>
+                  <input
+                    type="text"
+                    name="senderName"
+                    value={formData.senderName}
+                    onChange={handleInputChange}
+                    required
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Straße *
+                  </label>
+                  <input
+                    type="text"
+                    name="senderStreet"
+                    value={formData.senderStreet}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. Musterstraße"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Hausnummer *
+                  </label>
+                  <input
+                    type="text"
+                    name="senderHouseNumber"
+                    value={formData.senderHouseNumber}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. 123"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    PLZ *
+                  </label>
+                  <input
+                    type="text"
+                    name="senderPostalCode"
+                    value={formData.senderPostalCode}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. 10115"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Stadt *
+                  </label>
+                  <input
+                    type="text"
+                    name="senderCity"
+                    value={formData.senderCity}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. Berlin"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    E-Mail *
+                  </label>
+                  <input
+                    type="email"
+                    name="senderEmail"
+                    value={formData.senderEmail}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="info@example.com"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Telefon *
+                  </label>
+                  <input
+                    type="tel"
+                    name="senderPhone"
+                    value={formData.senderPhone}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="+49 30 12345678"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Receiver Information */}
+            <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <MapPin className="h-5 w-5 text-[#c00000]" />
+                Empfänger
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="receiverName"
+                    value={formData.receiverName}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. Max Mustermann"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Straße *
+                  </label>
+                  <input
+                    type="text"
+                    name="receiverStreet"
+                    value={formData.receiverStreet}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. Hauptstraße"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Hausnummer *
+                  </label>
+                  <input
+                    type="text"
+                    name="receiverHouseNumber"
+                    value={formData.receiverHouseNumber}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. 45"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    PLZ *
+                  </label>
+                  <input
+                    type="text"
+                    name="receiverPostalCode"
+                    value={formData.receiverPostalCode}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. 80331"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Stadt *
+                  </label>
+                  <input
+                    type="text"
+                    name="receiverCity"
+                    value={formData.receiverCity}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="z.B. München"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    E-Mail *
+                  </label>
+                  <input
+                    type="email"
+                    name="receiverEmail"
+                    value={formData.receiverEmail}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="empfaenger@example.com"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Package Information */}
+            <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <Package className="h-5 w-5 text-[#c00000]" />
+                Paketinformationen
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Gewicht (kg) *
+                  </label>
+                  <input
+                    type="number"
+                    name="weight"
+                    value={formData.weight}
+                    onChange={handleInputChange}
+                    required
+                    min="0.1"
+                    step="0.1"
+                    placeholder="z.B. 2.5"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Länge (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    name="length"
+                    value={formData.length}
+                    onChange={handleInputChange}
+                    required
+                    min="1"
+                    placeholder="z.B. 30"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Breite (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    name="width"
+                    value={formData.width}
+                    onChange={handleInputChange}
+                    required
+                    min="1"
+                    placeholder="z.B. 20"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Höhe (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    name="height"
+                    value={formData.height}
+                    onChange={handleInputChange}
+                    required
+                    min="1"
+                    placeholder="z.B. 15"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+                
+                <div className="md:col-span-4">
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Beschreibung (optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    placeholder="z.B. Elektronikkomponenten"
+                    className={`w-full px-4 py-2 rounded border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => setActiveTab('overview')}
+                className={`px-6 py-3 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'border-gray-600 text-gray-300 hover:bg-gray-800'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                } transition-colors`}
+              >
+                Abbrechen
+              </button>
+              <button
+                type="submit"
+                disabled={createLoading}
+                className="px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {createLoading ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    Erstelle Sendung...
+                  </>
+                ) : (
+                  <>
+                    <Package className="h-4 w-4" />
+                    Sendung erstellen
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
