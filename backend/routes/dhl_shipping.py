@@ -370,6 +370,123 @@ async def get_shipment_tracking(shipment_number: str):
             detail=f"Failed to fetch tracking information: {str(e)}"
         )
 
+@router.get("/shipments")
+async def get_all_shipments(limit: int = 100, skip: int = 0, status_filter: Optional[str] = None):
+    """
+    Get all shipments from database with pagination
+    
+    Query parameters:
+    - limit: Maximum number of shipments to return (default: 100)
+    - skip: Number of shipments to skip for pagination (default: 0)
+    - status_filter: Filter by status (created, failed, delivered, in_transit, etc.)
+    """
+    try:
+        # Build query
+        query = {}
+        if status_filter:
+            query["status"] = status_filter
+        
+        # Get total count
+        total = await db.dhl_shipments.count_documents(query)
+        
+        # Get shipments with pagination
+        cursor = db.dhl_shipments.find(query, {"_id": 0, "dhl_response": 0}).sort("created_at", DESCENDING).skip(skip).limit(limit)
+        shipments = await cursor.to_list(length=limit)
+        
+        # Format dates as strings
+        for shipment in shipments:
+            if "created_at" in shipment and shipment["created_at"]:
+                shipment["created_at"] = shipment["created_at"].isoformat()
+            if "estimated_delivery" in shipment and shipment["estimated_delivery"]:
+                shipment["estimated_delivery"] = shipment["estimated_delivery"].isoformat()
+        
+        return {
+            "success": True,
+            "total": total,
+            "count": len(shipments),
+            "shipments": shipments,
+            "pagination": {
+                "limit": limit,
+                "skip": skip,
+                "has_more": (skip + len(shipments)) < total
+            }
+        }
+    
+    except Exception as e:
+        logger.error(f"Error fetching shipments: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch shipments: {str(e)}"
+        )
+
+@router.get("/shipments/{shipment_number}")
+async def get_shipment_details(shipment_number: str):
+    """
+    Get detailed information about a specific shipment
+    """
+    try:
+        shipment = await db.dhl_shipments.find_one(
+            {"shipment_number": shipment_number},
+            {"_id": 0}
+        )
+        
+        if not shipment:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Shipment {shipment_number} not found in database"
+            )
+        
+        # Format dates
+        if "created_at" in shipment and shipment["created_at"]:
+            shipment["created_at"] = shipment["created_at"].isoformat()
+        if "estimated_delivery" in shipment and shipment["estimated_delivery"]:
+            shipment["estimated_delivery"] = shipment["estimated_delivery"].isoformat()
+        
+        return {
+            "success": True,
+            "shipment": shipment
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching shipment details: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch shipment details: {str(e)}"
+        )
+
+@router.get("/shipments/stats/summary")
+async def get_shipment_statistics():
+    """
+    Get statistics about all shipments
+    """
+    try:
+        total = await db.dhl_shipments.count_documents({})
+        created = await db.dhl_shipments.count_documents({"status": "created"})
+        failed = await db.dhl_shipments.count_documents({"status": "failed"})
+        in_transit = await db.dhl_shipments.count_documents({"status": "in_transit"})
+        delivered = await db.dhl_shipments.count_documents({"status": "delivered"})
+        
+        return {
+            "success": True,
+            "statistics": {
+                "total": total,
+                "created": created,
+                "failed": failed,
+                "in_transit": in_transit,
+                "delivered": delivered,
+                "pending": total - delivered - failed
+            }
+        }
+    
+    except Exception as e:
+        logger.error(f"Error fetching statistics: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch statistics: {str(e)}"
+        )
+
 @router.get("/health")
 async def health_check():
     """Check DHL API connection health"""
