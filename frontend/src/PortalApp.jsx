@@ -152,15 +152,6 @@ const PortalRoutes = () => {
       />
       
       <Route
-        path="/menue"
-        element={
-          <ProtectedRoute>
-            <EuropcarMenuPage />
-          </ProtectedRoute>
-        }
-      />
-      
-      <Route
         path="/"
         element={
           isAuthenticated ? (
