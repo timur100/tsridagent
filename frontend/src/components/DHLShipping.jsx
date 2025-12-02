@@ -239,29 +239,101 @@ const DHLShipping = () => {
 
       {/* Tracking Tab */}
       {activeTab === 'tracking' && (
-        <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
-          <div className="max-w-2xl mx-auto">
-            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        <div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Sendungsverfolgung
-            </h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                placeholder="Sendungsnummer eingeben..."
-                className={`flex-1 px-4 py-2 rounded-lg border ${
-                  theme === 'dark'
-                    ? 'bg-[#1f1f1f] border-gray-600 text-white'
-                    : 'bg-white border-gray-300 text-gray-900'
-                }`}
-              />
-              <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
-                <Search className="h-4 w-4" />
-                Verfolgen
-              </button>
-            </div>
-            <p className={`mt-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Geben Sie Ihre DHL-Sendungsnummer ein, um den aktuellen Status Ihrer Sendung zu verfolgen.
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Verfolgen Sie den Status Ihrer DHL-Sendungen in Echtzeit
             </p>
+          </div>
+
+          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+            <div className="max-w-2xl mx-auto">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Sendungsnummer eingeben..."
+                  className={`flex-1 px-4 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                />
+                <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+                  <Search className="h-4 w-4" />
+                  Verfolgen
+                </button>
+              </div>
+              <p className={`mt-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Geben Sie Ihre DHL-Sendungsnummer ein, um den aktuellen Status Ihrer Sendung zu verfolgen.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Shipment Tab */}
+      {activeTab === 'create' && (
+        <div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Neue Sendung erstellen
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Erstellen Sie einen neuen DHL-Versandauftrag
+            </p>
+          </div>
+
+          <div className={`p-8 text-center rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+            <div className="inline-block p-4 bg-blue-500 bg-opacity-10 rounded-full mb-4">
+              <Plus className="h-16 w-16 text-blue-500" />
+            </div>
+            <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              In Entwicklung
+            </h3>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Sendungserstellung wird implementiert
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* History Tab */}
+      {activeTab === 'history' && (
+        <div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Sendungshistorie
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Übersicht aller vergangenen Sendungen
+            </p>
+          </div>
+
+          <div className="text-center p-12">
+            <Clock className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500">Historie - In Entwicklung</p>
+          </div>
+        </div>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              DHL Einstellungen
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Konfigurieren Sie Ihre DHL-Integration
+            </p>
+          </div>
+
+          <div className="text-center p-12">
+            <Settings className="h-16 w-16 mx-auto mb-4 text-gray-400" />
+            <p className="text-gray-500">Einstellungen - In Entwicklung</p>
           </div>
         </div>
       )}
