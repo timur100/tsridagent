@@ -27,6 +27,12 @@ const DHLShipping = () => {
   // Modal state
   const [selectedShipment, setSelectedShipment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Tracking state
+  const [trackingNumber, setTrackingNumber] = useState('');
+  const [trackingData, setTrackingData] = useState(null);
+  const [trackingLoading, setTrackingLoading] = useState(false);
+  const [trackingError, setTrackingError] = useState(null);
 
   // Format date with leading zeros
   const formatDate = (dateString) => {
