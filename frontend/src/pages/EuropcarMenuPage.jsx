@@ -130,19 +130,20 @@ const EuropcarMenuPage = () => {
         ) : (
           <div className={`grid ${gridClass} gap-6`}>
             {tiles
-              .sort((a, b) => a.position - b.position)
+              .filter(tile => tile.is_active)
+              .sort((a, b) => a.order - b.order)
               .map((tile) => {
                 const IconComponent = getIconComponent(tile.icon);
                 return (
                   <button
-                    key={tile.id}
+                    key={tile.tile_id}
                     onClick={() => handleTileClick(tile)}
-                    disabled={!tile.link}
+                    disabled={!tile.target_url}
                     className={`p-8 rounded-xl border-2 transition-all duration-200 ${
                       theme === 'dark'
                         ? 'bg-[#1a1a1a] border-gray-800 hover:border-gray-700 hover:bg-[#222222]'
                         : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-lg'
-                    } ${tile.link ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                    } ${tile.target_url ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
                     style={{
                       borderColor: tile.color,
                       borderWidth: '2px'
