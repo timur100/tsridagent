@@ -128,6 +128,8 @@ async def update_idea(
             update_dict['title'] = update_data.title
         if update_data.description is not None:
             update_dict['description'] = update_data.description
+        if update_data.menu_item is not None:
+            update_dict['menu_item'] = update_data.menu_item
         if update_data.status is not None:
             update_dict['status'] = update_data.status
         
