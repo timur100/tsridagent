@@ -1,0 +1,312 @@
+from fastapi import APIRouter, HTTPException, status, Depends
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+import httpx
+import base64
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/dhl", tags=["DHL Shipping"])
+
+# Configuration
+DHL_API_KEY = os.environ.get('DHL_API_KEY')
+DHL_API_SECRET = os.environ.get('DHL_API_SECRET')
+DHL_SANDBOX_BASE_URL = os.environ.get('DHL_SANDBOX_BASE_URL')
+DHL_AUTH_API_URL = os.environ.get('DHL_AUTH_API_URL')
+
+if not all([DHL_API_KEY, DHL_API_SECRET, DHL_SANDBOX_BASE_URL, DHL_AUTH_API_URL]):
+    logger.warning("DHL credentials not fully configured. Some endpoints may not work.")
+
+# Token cache
+token_cache = {
+    'access_token': None,
+    'expires_at': None
+}
+
+# Pydantic Models
+class Contact(BaseModel):
+    name: str
+    phone: str
+    email: str
+
+class Address(BaseModel):
+    street: str
+    house_number: str
+    postal_code: str
+    city: str
+    country_code: str = "DE"
+
+class CreateShipmentRequest(BaseModel):
+    reference_id: str = Field(..., description="Your internal reference ID")
+    sender_name: str
+    sender_phone: str
+    sender_email: str
+    sender_street: str
+    sender_house_number: str
+    sender_postal_code: str
+    sender_city: str
+    receiver_name: str
+    receiver_phone: str
+    receiver_email: str
+    receiver_street: str
+    receiver_house_number: str
+    receiver_postal_code: str
+    receiver_city: str
+    receiver_country_code: str = "DE"
+    package_weight_grams: int
+    package_length_cm: int
+    package_width_cm: int
+    package_height_cm: int
+    package_description: str
+    service_type: str = "V01PAK"
+    insurance_value_eur: Optional[float] = None
+
+class ShipmentResponse(BaseModel):
+    success: bool
+    shipment_number: Optional[str] = None
+    tracking_url: Optional[str] = None
+    label_url: Optional[str] = None
+    reference_id: str
+    status: str
+    created_at: datetime
+    message: Optional[str] = None
+
+# Helper Functions
+def create_basic_auth_header() -> str:
+    """Create Basic Authentication header from API Key and Secret"""
+    credentials = f"{DHL_API_KEY}:{DHL_API_SECRET}"
+    encoded = base64.b64encode(credentials.encode()).decode()
+    return f"Basic {encoded}"
+
+async def get_access_token() -> str:
+    """
+    Obtain a valid access token from DHL API
+    Returns cached token if still valid, otherwise requests new token
+    """
+    import time
+    
+    # Check if token is still valid (with 5-minute buffer)
+    if token_cache['access_token'] and token_cache['expires_at']:
+        if time.time() < token_cache['expires_at'] - 300:  # 5-minute buffer
+            logger.info("Using cached DHL access token")
+            return token_cache['access_token']
+
+    logger.info("Requesting new DHL access token")
+    
+    headers = {
+        "Authorization": create_basic_auth_header(),
+        "Content-Type": "application/json"
+    }
+
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        try:
+            response = await client.post(
+                DHL_AUTH_API_URL,
+                headers=headers
+            )
+            response.raise_for_status()
+            
+            data = response.json()
+            token_cache['access_token'] = data.get("accessToken")
+            
+            # Calculate expiry
+            expires_in = data.get("expiresIn", 3600)
+            token_cache['expires_at'] = time.time() + expires_in
+            
+            logger.info(f"Successfully obtained DHL token, expires in {expires_in}s")
+            return token_cache['access_token']
+            
+        except httpx.HTTPError as e:
+            logger.error(f"Failed to obtain DHL access token: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"DHL authentication failed: {str(e)}"
+            )
+
+async def get_auth_headers() -> dict:
+    """Get headers for DHL API requests with valid access token"""
+    token = await get_access_token()
+    return {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+def build_shipment_payload(shipment: CreateShipmentRequest) -> Dict[str, Any]:
+    """
+    Build the DHL API request payload from shipment data
+    Following DHL Parcel DE Shipping API v2 schema
+    """
+    total_weight = shipment.package_weight_grams / 1000  # Convert to kg
+
+    payload = {
+        "shipments": [
+            {
+                "profile": "STANDARD",
+                "shipper": {
+                    "name1": shipment.sender_name,
+                    "streetAddress": shipment.sender_street,
+                    "houseNumber": shipment.sender_house_number,
+                    "postalCode": shipment.sender_postal_code,
+                    "city": shipment.sender_city,
+                    "countryCode": "DE",
+                    "phone": shipment.sender_phone,
+                    "email": shipment.sender_email,
+                },
+                "consignee": {
+                    "name1": shipment.receiver_name,
+                    "streetAddress": shipment.receiver_street,
+                    "houseNumber": shipment.receiver_house_number,
+                    "postalCode": shipment.receiver_postal_code,
+                    "city": shipment.receiver_city,
+                    "countryCode": shipment.receiver_country_code,
+                    "phone": shipment.receiver_phone,
+                    "email": shipment.receiver_email,
+                },
+                "details": {
+                    "serviceType": shipment.service_type,
+                    "weight": total_weight,
+                    "contents": shipment.package_description,
+                },
+                "references": [
+                    {
+                        "referenceNo": shipment.reference_id,
+                        "referenceType": "CUSTOMER_REFERENCE"
+                    }
+                ]
+            }
+        ]
+    }
+
+    if shipment.insurance_value_eur:
+        payload["shipments"][0]["details"]["insuranceAmount"] = shipment.insurance_value_eur
+
+    return payload
+
+# API Endpoints
+@router.post("/shipments", response_model=ShipmentResponse, status_code=status.HTTP_201_CREATED)
+async def create_shipment(request: CreateShipmentRequest):
+    """
+    Create a new DHL shipment
+    
+    This endpoint validates the shipment request, creates it via the DHL API,
+    and returns shipment information including tracking number and label.
+    """
+    try:
+        logger.info(f"Creating shipment for reference: {request.reference_id}")
+
+        # Build DHL API payload
+        payload = build_shipment_payload(request)
+        headers = await get_auth_headers()
+
+        # Create shipment via DHL API
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"{DHL_SANDBOX_BASE_URL}/shipments",
+                json=payload,
+                headers=headers
+            )
+
+            if response.status_code not in [200, 201]:
+                logger.error(f"DHL shipment creation failed: {response.text}")
+                return ShipmentResponse(
+                    success=False,
+                    reference_id=request.reference_id,
+                    status="failed",
+                    created_at=datetime.utcnow(),
+                    message=f"DHL API error: {response.text[:200]}"
+                )
+
+            shipment_data = response.json()
+            logger.info(f"Successfully created DHL shipment: {shipment_data}")
+
+            # Extract shipment number
+            shipment_number = None
+            if "shipments" in shipment_data and len(shipment_data["shipments"]) > 0:
+                shipment_number = shipment_data["shipments"][0].get("shipmentNumber")
+            elif "shipmentNumber" in shipment_data:
+                shipment_number = shipment_data["shipmentNumber"]
+
+            label_url = None
+            if "shipments" in shipment_data and len(shipment_data["shipments"]) > 0:
+                label_url = shipment_data["shipments"][0].get("labelUrl")
+
+            return ShipmentResponse(
+                success=True,
+                shipment_number=shipment_number,
+                tracking_url=f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}" if shipment_number else None,
+                label_url=label_url,
+                reference_id=request.reference_id,
+                status="created",
+                created_at=datetime.utcnow(),
+                message="Shipment created successfully"
+            )
+
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error during shipment creation: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create DHL shipment: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Unexpected error creating shipment: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"An unexpected error occurred: {str(e)}"
+        )
+
+@router.get("/shipments/{shipment_number}/tracking")
+async def get_shipment_tracking(shipment_number: str):
+    """
+    Retrieve real-time tracking information for a shipment
+    """
+    try:
+        logger.info(f"Fetching tracking for shipment: {shipment_number}")
+        headers = await get_auth_headers()
+
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{DHL_SANDBOX_BASE_URL}/shipments/{shipment_number}/tracking",
+                headers=headers
+            )
+
+            if response.status_code == 404:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Shipment {shipment_number} not found"
+                )
+
+            response.raise_for_status()
+            return {
+                "success": True,
+                "shipment_number": shipment_number,
+                "tracking_data": response.json()
+            }
+
+    except HTTPException:
+        raise
+    except httpx.HTTPError as e:
+        logger.error(f"Error fetching tracking information: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch tracking information: {str(e)}"
+        )
+
+@router.get("/health")
+async def health_check():
+    """Check DHL API connection health"""
+    try:
+        # Try to get a token to verify credentials
+        token = await get_access_token()
+        return {
+            "success": True,
+            "message": "DHL API connection healthy",
+            "has_token": bool(token)
+        }
+    except Exception as e:
+        logger.error(f"DHL API health check failed: {str(e)}")
+        return {
+            "success": False,
+            "message": f"DHL API connection failed: {str(e)}"
+        }
