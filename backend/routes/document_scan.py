@@ -95,7 +95,7 @@ async def process_document(image: UploadFile = File(...)):
         )
 
 
-def parse_regula_response(response) -> dict:
+def parse_regula_response_http(regula_data: dict) -> dict:
     """
     Parse Regula Document Reader API response into simplified format
     """
