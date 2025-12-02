@@ -202,15 +202,24 @@ const EuropcarMenuPage = () => {
       {/* Footer with TSRID Logo */}
       <footer className={`py-6 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col items-center justify-center gap-2">
-            <img 
-              src="https://customer-assets.emergentagent.com/job_kiosk-manager-8/artifacts/vlxjqru2_Zeichenfl%C3%A4che%201.png" 
-              alt="TSRID Logo" 
-              className="h-12 w-auto opacity-80"
-            />
-            <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-              Powered by TSRID Forensic Solutions
-            </p>
+          <div className="flex flex-col items-center justify-center gap-3">
+            {/* TSRID Fingerprint Logo SVG */}
+            <div className="opacity-70">
+              <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                {/* Red fingerprint icon */}
+                <path d="M50 10C30 10 15 25 15 45C15 65 30 80 50 80C70 80 85 65 85 45C85 25 70 10 50 10Z" stroke="#c00000" strokeWidth="3" fill="none"/>
+                <path d="M50 20C35 20 25 30 25 45C25 60 35 70 50 70" stroke="#c00000" strokeWidth="3" fill="none"/>
+                <path d="M50 30C40 30 35 35 35 45C35 55 40 60 50 60" stroke="#c00000" strokeWidth="3" fill="none"/>
+                <path d="M45 45C45 42 47 40 50 40C53 40 55 42 55 45C55 48 53 50 50 50" stroke="#c00000" strokeWidth="3" fill="none"/>
+                {/* Frame/border */}
+                <rect x="10" y="10" width="35" height="35" stroke="#c00000" strokeWidth="4" fill="none" rx="3"/>
+              </svg>
+            </div>
+            <div className="text-center">
+              <p className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                Powered by TSRID Forensic Solutions
+              </p>
+            </div>
           </div>
         </div>
       </footer>
