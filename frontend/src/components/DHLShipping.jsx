@@ -824,28 +824,220 @@ const DHLShipping = () => {
             </p>
           </div>
 
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+          {/* Search Input */}
+          <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
             <div className="max-w-2xl mx-auto">
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Sendungsnummer
+              </label>
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="Sendungsnummer eingeben..."
-                  className={`flex-1 px-4 py-2 rounded-lg border ${
+                  placeholder="z.B. 00340434161094015902"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && trackShipment()}
+                  disabled={trackingLoading}
+                  className={`flex-1 px-4 py-3 rounded-lg border font-mono ${
                     theme === 'dark'
-                      ? 'bg-[#1f1f1f] border-gray-600 text-white'
-                      : 'bg-white border-gray-300 text-gray-900'
-                  }`}
+                      ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
+                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000] disabled:opacity-50`}
                 />
-                <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
-                  <Search className="h-4 w-4" />
-                  Verfolgen
+                <button 
+                  onClick={trackShipment}
+                  disabled={trackingLoading || !trackingNumber.trim()}
+                  className="flex items-center gap-2 px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {trackingLoading ? (
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Search className="h-4 w-4" />
+                  )}
+                  {trackingLoading ? 'Lädt...' : 'Verfolgen'}
                 </button>
               </div>
-              <p className={`mt-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Geben Sie Ihre DHL-Sendungsnummer ein, um den aktuellen Status Ihrer Sendung zu verfolgen.
+              <p className={`mt-3 text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                💡 Geben Sie Ihre DHL-Sendungsnummer ein, um den aktuellen Status zu verfolgen
               </p>
             </div>
           </div>
+
+          {/* Error Message */}
+          {trackingError && (
+            <div className="mt-6 p-4 rounded-lg bg-red-500/10 border border-red-500/50">
+              <div className="flex items-center gap-3">
+                <XCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                <p className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                  {trackingError}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Tracking Results */}
+          {trackingData && (
+            <div className="mt-6 space-y-4">
+              {/* Shipment Overview */}
+              <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Sendungsnummer
+                    </p>
+                    <p className={`text-2xl font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {trackingData.shipment_number}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {getStatusIcon(trackingData.status)}
+                    <span className={`px-4 py-2 rounded text-sm font-medium ${getStatusColor(trackingData.status)}`}>
+                      {getStatusLabel(trackingData.status)}
+                    </span>
+                  </div>
+                </div>
+
+                {trackingData.tracking_url && (
+                  <a
+                    href={trackingData.tracking_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#c00000] hover:text-[#a00000] transition-colors text-sm"
+                  >
+                    <MapPin className="h-4 w-4" />
+                    DHL Tracking öffnen
+                  </a>
+                )}
+              </div>
+
+              {/* Sender & Receiver Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Sender */}
+                {trackingData.sender_name && (
+                  <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      <User className="h-4 w-4 text-[#c00000]" />
+                      Absender
+                    </h4>
+                    <div className={`space-y-1 text-sm font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <p className="font-semibold">{trackingData.sender_name}</p>
+                      {trackingData.sender_street && (
+                        <p>{trackingData.sender_street} {trackingData.sender_house_number}</p>
+                      )}
+                      {trackingData.sender_city && (
+                        <p>{trackingData.sender_postal_code} {trackingData.sender_city}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Receiver */}
+                {trackingData.receiver_name && (
+                  <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+                    <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      <MapPin className="h-4 w-4 text-[#c00000]" />
+                      Empfänger
+                    </h4>
+                    <div className={`space-y-1 text-sm font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <p className="font-semibold">{trackingData.receiver_name}</p>
+                      {trackingData.receiver_street && (
+                        <p>{trackingData.receiver_street} {trackingData.receiver_house_number}</p>
+                      )}
+                      {trackingData.receiver_city && (
+                        <p>{trackingData.receiver_postal_code} {trackingData.receiver_city}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Package Info */}
+              {trackingData.package_weight_grams && (
+                <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+                  <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <Package className="h-4 w-4 text-[#c00000]" />
+                    Paketinformationen
+                  </h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-mono">
+                    <div>
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gewicht</p>
+                      <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {(trackingData.package_weight_grams / 1000).toFixed(1)} kg
+                      </p>
+                    </div>
+                    {trackingData.package_length_cm && (
+                      <div>
+                        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Maße (LxBxH)</p>
+                        <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {trackingData.package_length_cm}×{trackingData.package_width_cm}×{trackingData.package_height_cm} cm
+                        </p>
+                      </div>
+                    )}
+                    {trackingData.service_type && (
+                      <div>
+                        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Service</p>
+                        <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {trackingData.service_type === 'V01PAK' ? 'DHL Paket' : trackingData.service_type}
+                        </p>
+                      </div>
+                    )}
+                    {trackingData.reference_id && (
+                      <div>
+                        <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Referenz</p>
+                        <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {trackingData.reference_id}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Dates */}
+              <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <Calendar className="h-4 w-4 text-[#c00000]" />
+                  Zeitangaben
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
+                  {trackingData.created_at && (
+                    <div>
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Erstellt</p>
+                      <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {formatDate(trackingData.created_at)}
+                      </p>
+                    </div>
+                  )}
+                  {trackingData.delivered_at && (
+                    <div>
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Zugestellt</p>
+                      <p className="font-bold text-green-500">
+                        {formatDate(trackingData.delivered_at)}
+                      </p>
+                    </div>
+                  )}
+                  {!trackingData.delivered_at && trackingData.estimated_delivery && (
+                    <div>
+                      <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Voraussichtlich</p>
+                      <p className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {formatDate(trackingData.estimated_delivery)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* No Results Yet */}
+          {!trackingData && !trackingError && !trackingLoading && (
+            <div className={`mt-6 p-12 text-center rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+              <Package className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Geben Sie eine Sendungsnummer ein, um die Verfolgung zu starten
+              </p>
+            </div>
+          )}
         </div>
       )}
 
