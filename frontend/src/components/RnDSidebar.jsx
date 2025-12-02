@@ -18,7 +18,8 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       items: [
         { id: 'facematch', label: 'Facematch', emoji: '👤' },
         { id: 'fingerprint', label: 'Fingerprint', emoji: '👆' },
-        { id: 'iris-scan', label: 'Iris Scan', emoji: '👁️' }
+        { id: 'iris-scan', label: 'Iris Scan', emoji: '👁️' },
+        { id: 'document-scan', label: 'Dokumentenscan', emoji: '📄' }
       ]
     },
     {
