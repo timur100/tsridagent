@@ -204,6 +204,122 @@ const DHLShipping = () => {
             </button>
           </div>
 
+          {/* Search and Filters */}
+          <div className={`mb-6 p-4 rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              {/* Search Field */}
+              <div className="md:col-span-2">
+                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <Search className="inline h-4 w-4 mr-2" />
+                  Suche
+                </label>
+                <input
+                  type="text"
+                  placeholder="Sendungsnummer, Empfänger, Stadt..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full px-4 py-2 rounded border border-gray-700 font-mono ${
+                    theme === 'dark'
+                      ? 'bg-[#2a2a2a] text-gray-300 placeholder-gray-500'
+                      : 'bg-white text-gray-900 placeholder-gray-400'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Status
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className={`w-full px-4 py-2 rounded border border-gray-700 font-mono ${
+                    theme === 'dark'
+                      ? 'bg-[#2a2a2a] text-gray-300'
+                      : 'bg-white text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                >
+                  <option value="all">Alle Status</option>
+                  <option value="delivered">Zugestellt</option>
+                  <option value="in_transit">Unterwegs</option>
+                  <option value="created">Erstellt</option>
+                  <option value="imported">Importiert</option>
+                  <option value="failed">Fehlgeschlagen</option>
+                </select>
+              </div>
+
+              {/* City Filter */}
+              <div>
+                <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Stadt
+                </label>
+                <select
+                  value={cityFilter}
+                  onChange={(e) => setCityFilter(e.target.value)}
+                  className={`w-full px-4 py-2 rounded border border-gray-700 font-mono ${
+                    theme === 'dark'
+                      ? 'bg-[#2a2a2a] text-gray-300'
+                      : 'bg-white text-gray-900'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                >
+                  <option value="all">Alle Städte</option>
+                  {uniqueCities.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Active Filters Display */}
+            {(searchTerm || statusFilter !== 'all' || cityFilter !== 'all') && (
+              <div className="mt-4 flex items-center gap-2 flex-wrap">
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Aktive Filter:
+                </span>
+                {searchTerm && (
+                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                    Suche: "{searchTerm}"
+                    <button onClick={() => setSearchTerm('')} className="hover:text-gray-200">
+                      ×
+                    </button>
+                  </span>
+                )}
+                {statusFilter !== 'all' && (
+                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                    Status: {statusFilter}
+                    <button onClick={() => setStatusFilter('all')} className="hover:text-gray-200">
+                      ×
+                    </button>
+                  </span>
+                )}
+                {cityFilter !== 'all' && (
+                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                    Stadt: {cityFilter}
+                    <button onClick={() => setCityFilter('all')} className="hover:text-gray-200">
+                      ×
+                    </button>
+                  </span>
+                )}
+                <button
+                  onClick={() => {
+                    setSearchTerm('');
+                    setStatusFilter('all');
+                    setCityFilter('all');
+                  }}
+                  className={`text-sm ${theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+                >
+                  Alle Filter zurücksetzen
+                </button>
+              </div>
+            )}
+
+            {/* Results Count */}
+            <div className={`mt-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              {shipments.length} von {allShipments.length} Sendungen
+            </div>
+          </div>
+
           {/* Info Banner */}
           {statistics.total > 0 && (
             <div className={`mb-4 p-4 rounded-lg border-l-4 ${
