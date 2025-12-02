@@ -309,7 +309,8 @@ const DHLShipping = () => {
                         : '-'}
                     </td>
                   </tr>
-                ))}
+                ))
+                )}
               </tbody>
               </table>
             </div>
