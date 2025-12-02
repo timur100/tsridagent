@@ -436,7 +436,7 @@ const DHLShipping = () => {
               <tbody className="font-mono">
                 {loading ? (
                   <tr>
-                    <td colSpan="7" className="px-4 py-8 text-center">
+                    <td colSpan="9" className="px-4 py-8 text-center">
                       <div className="flex items-center justify-center gap-2">
                         <RefreshCw className="h-5 w-5 animate-spin" />
                         <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
