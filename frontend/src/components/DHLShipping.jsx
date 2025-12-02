@@ -143,17 +143,8 @@ const DHLShipping = () => {
       {/* Overview Tab */}
       {activeTab === 'overview' && (
         <div>
-          <div className="mb-6">
-            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              📦 DHL Paketversand
-            </h2>
-            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Verwalten Sie Ihre DHL-Sendungen und erstellen Sie neue Versandaufträge
-            </p>
-          </div>
-
           {/* Header with Refresh Button */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 📦 DHL Paketversand
