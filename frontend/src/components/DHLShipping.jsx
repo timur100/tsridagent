@@ -85,24 +85,30 @@ const DHLShipping = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+    <div className="w-full">
+      <SubTabNavigation
+        tabs={[
+          { id: 'overview', label: 'Übersicht', icon: TrendingUp },
+          { id: 'tracking', label: 'Sendungsverfolgung', icon: Search },
+          { id: 'create', label: 'Neue Sendung', icon: Plus },
+          { id: 'history', label: 'Historie', icon: Clock },
+          { id: 'settings', label: 'Einstellungen', icon: Settings }
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
         <div>
-          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            📦 DHL Paketversand
-          </h2>
-          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Verwalten Sie Ihre DHL-Sendungen und erstellen Sie neue Versandaufträge
-          </p>
-        </div>
-        <button
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
-        >
-          <Package className="h-4 w-4" />
-          Neue Sendung
-        </button>
-      </div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              📦 DHL Paketversand
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Verwalten Sie Ihre DHL-Sendungen und erstellen Sie neue Versandaufträge
+            </p>
+          </div>
 
       {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
