@@ -114,6 +114,7 @@ const TimeTrackingPage = () => {
         tabs={[
           { id: 'tracking', label: 'Zeiterfassung', icon: Clock },
           { id: 'entries', label: 'Einträge', icon: Calendar },
+          { id: 'schedule', label: 'Dienstplan', icon: CalendarDays },
           { id: 'reports', label: 'Berichte', icon: TrendingUp },
           { id: 'team', label: 'Team', icon: Users }
         ]}
