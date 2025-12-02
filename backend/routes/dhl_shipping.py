@@ -293,7 +293,7 @@ async def get_shipment_tracking(shipment_number: str):
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             response = await client.get(
-                f"{DHL_SANDBOX_BASE_URL}/shipments/{shipment_number}/tracking",
+                f"{DHL_BASE_URL}/shipments/{shipment_number}/tracking",
                 headers=headers
             )
 
