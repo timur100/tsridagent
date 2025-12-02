@@ -67,6 +67,7 @@ import CameraGrid from '../components/CameraGrid';
 import CameraManagement from '../components/CameraManagement';
 import EuropcarManagement from '../components/EuropcarManagement';
 import DHLShipping from '../components/DHLShipping';
+import DocumentScanPage from '../components/DocumentScanPage';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
