@@ -104,17 +104,17 @@ async def get_access_token() -> str:
             logger.info("Using cached DHL access token")
             return token_cache['access_token']
 
-    logger.info("Requesting new DHL access token via OAuth2")
+    logger.info(f"Requesting new DHL access token via OAuth2 for user: {DHL_GKP_USERNAME}")
     
     # OAuth2 ROPC (Resource Owner Password Credentials) flow
-    # Using sandbox credentials
+    # Using customer GKP credentials
     auth_url = "https://api-sandbox.dhl.com/parcel/de/account/auth/ropc/v1/token"
     
     # Form data for OAuth2 token request
     form_data = {
         "grant_type": "password",
-        "username": "user-valid",  # Sandbox username
-        "password": "SandboxPasswort2023!",  # Sandbox password
+        "username": DHL_GKP_USERNAME,
+        "password": DHL_GKP_PASSWORD,
         "client_id": DHL_API_KEY,
         "client_secret": DHL_API_SECRET
     }
