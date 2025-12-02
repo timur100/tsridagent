@@ -111,7 +111,7 @@ const DHLShipping = () => {
           </div>
 
           {/* Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
           <div className="flex items-center justify-between mb-2">
             <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
