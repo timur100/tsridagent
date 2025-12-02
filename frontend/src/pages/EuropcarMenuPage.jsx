@@ -22,7 +22,16 @@ const EuropcarMenuPage = () => {
       setLoading(true);
       
       // Fetch Europcar tenant ID
-      const tenantsResponse = await apiCall('/api/tenants');
+      const tenantsResult = await apiCall('/api/tenants');
+      console.log('Tenants API result:', tenantsResult);
+      
+      if (!tenantsResult.success || !tenantsResult.data) {
+        console.error('Failed to fetch tenants:', tenantsResult.error);
+        setLoading(false);
+        return;
+      }
+      
+      const tenantsResponse = tenantsResult.data;
       const europcar = tenantsResponse.find(t => t.name === 'Europcar');
       
       if (!europcar) {
@@ -34,14 +43,26 @@ const EuropcarMenuPage = () => {
       console.log('Europcar tenant:', europcar);
 
       // Fetch quick menu tiles for Europcar
-      const tilesResponse = await apiCall(`/api/quick-menu/tiles/tenant/${europcar.tenant_id}`);
-      console.log('Tiles response:', tilesResponse);
-      setTiles(tilesResponse?.tiles || []);
+      const tilesResult = await apiCall(`/api/quick-menu/tiles/tenant/${europcar.tenant_id}`);
+      console.log('Tiles API result:', tilesResult);
+      
+      if (tilesResult.success && tilesResult.data) {
+        setTiles(tilesResult.data.tiles || []);
+      } else {
+        console.error('Failed to fetch tiles:', tilesResult.error);
+        setTiles([]);
+      }
 
       // Fetch quick menu config for Europcar
-      const configResponse = await apiCall(`/api/quick-menu/config/tenant/${europcar.tenant_id}`);
-      console.log('Config response:', configResponse);
-      setConfig(configResponse?.config || null);
+      const configResult = await apiCall(`/api/quick-menu/config/tenant/${europcar.tenant_id}`);
+      console.log('Config API result:', configResult);
+      
+      if (configResult.success && configResult.data) {
+        setConfig(configResult.data.config || null);
+      } else {
+        console.error('Failed to fetch config:', configResult.error);
+        setConfig(null);
+      }
 
       setLoading(false);
     } catch (error) {
