@@ -229,7 +229,7 @@ async def create_shipment(request: CreateShipmentRequest):
         # Create shipment via DHL API
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
-                f"{DHL_SANDBOX_BASE_URL}/shipments",
+                f"{DHL_BASE_URL}/shipments",
                 json=payload,
                 headers=headers
             )
