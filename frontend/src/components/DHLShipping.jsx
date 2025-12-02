@@ -117,6 +117,114 @@ const DHLShipping = () => {
     }
   };
 
+  // Create shipment
+  const createShipment = async (e) => {
+    e.preventDefault();
+    
+    // Validate required fields
+    const requiredFields = [
+      'receiverName', 'receiverStreet', 'receiverHouseNumber', 
+      'receiverPostalCode', 'receiverCity', 'receiverEmail',
+      'senderStreet', 'senderHouseNumber', 'senderPostalCode', 
+      'senderCity', 'senderEmail', 'senderPhone',
+      'weight', 'length', 'width', 'height'
+    ];
+    
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setCreateError(`Bitte füllen Sie alle Pflichtfelder aus`);
+        return;
+      }
+    }
+    
+    try {
+      setCreateLoading(true);
+      setCreateError(null);
+      setCreateSuccess(null);
+      
+      const payload = {
+        reference_id: `ORDER-${Date.now()}`,
+        sender_name: formData.senderName,
+        sender_phone: formData.senderPhone,
+        sender_email: formData.senderEmail,
+        sender_street: formData.senderStreet,
+        sender_house_number: formData.senderHouseNumber,
+        sender_postal_code: formData.senderPostalCode,
+        sender_city: formData.senderCity,
+        receiver_name: formData.receiverName,
+        receiver_phone: formData.receiverEmail, // Use email as phone placeholder
+        receiver_email: formData.receiverEmail,
+        receiver_street: formData.receiverStreet,
+        receiver_house_number: formData.receiverHouseNumber,
+        receiver_postal_code: formData.receiverPostalCode,
+        receiver_city: formData.receiverCity,
+        receiver_country_code: 'DE',
+        package_weight_grams: parseInt(formData.weight) * 1000,
+        package_length_cm: parseInt(formData.length),
+        package_width_cm: parseInt(formData.width),
+        package_height_cm: parseInt(formData.height),
+        package_description: formData.description || 'Paket'
+      };
+      
+      console.log('[DHL] Creating shipment with payload:', payload);
+      
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await response.json();
+      console.log('[DHL] Create shipment response:', data);
+      
+      if (data.success) {
+        setCreateSuccess({
+          shipmentNumber: data.shipment_number,
+          trackingUrl: data.tracking_url,
+          labelUrl: data.label_url
+        });
+        
+        // Reset form
+        setFormData({
+          ...formData,
+          receiverName: '',
+          receiverStreet: '',
+          receiverHouseNumber: '',
+          receiverPostalCode: '',
+          receiverCity: '',
+          receiverEmail: '',
+          weight: '',
+          length: '',
+          width: '',
+          height: '',
+          description: ''
+        });
+        
+        // Refresh shipments list
+        fetchShipments();
+        fetchStatistics();
+      } else {
+        setCreateError(data.message || 'Fehler beim Erstellen der Sendung');
+      }
+    } catch (err) {
+      console.error('[DHL] Error creating shipment:', err);
+      setCreateError('Verbindungsfehler zum Server');
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+  
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
   // Fetch shipments from backend
   const fetchShipments = async () => {
     try {
