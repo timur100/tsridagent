@@ -2978,9 +2978,14 @@ const AdminPortalContent = () => {
                     {rndTab === 'dhl-shipping' && (
                       <DHLShipping />
                     )}
+
+                    {/* Document Scan */}
+                    {rndTab === 'document-scan' && (
+                      <DocumentScanPage />
+                    )}
                     
                     {/* Default Placeholder für alle anderen Tabs */}
-                    {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
+                    {!['facematch', 'fingerprint', 'iris-scan', 'document-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
                         'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system',
                         'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping'].includes(rndTab) && (
