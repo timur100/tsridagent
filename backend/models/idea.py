@@ -12,7 +12,7 @@ class Idea(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str = Field(..., min_length=1, max_length=200, description="Idea title/theme")
     description: str = Field(..., min_length=1, description="Detailed description")
-    menu_item: str = Field(..., min_length=1, max_length=200, description="Menu item/category")
+    menu_item: str = Field(default="Allgemein", min_length=1, max_length=200, description="Menu item/category")
     status: Literal['neu', 'in_entwicklung', 'erledigt'] = Field(default='neu', description="Idea status")
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat(), description="Creation timestamp")
     updated_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat(), description="Last update timestamp")
