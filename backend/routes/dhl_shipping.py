@@ -32,13 +32,15 @@ is_sandbox = "sandbox" in DHL_BASE_URL if DHL_BASE_URL else False
 if is_sandbox:
     DHL_GKP_USERNAME = 'user-valid'
     DHL_GKP_PASSWORD = 'SandboxPasswort2023!'
-    logger.info("Using Sandbox demo credentials")
+    # Sandbox uses demo billing numbers
+    DHL_EKP_NUMBER = '3333333333'
+    DHL_BILLING_NUMBER = '333333333301'
+    logger.info("Using Sandbox demo credentials and billing numbers")
 else:
     DHL_GKP_USERNAME = os.environ.get('DHL_GKP_USERNAME', 'user-valid')
     DHL_GKP_PASSWORD = os.environ.get('DHL_GKP_PASSWORD', 'SandboxPasswort2023!')
-    
-DHL_EKP_NUMBER = os.environ.get('DHL_EKP_NUMBER')
-DHL_BILLING_NUMBER = os.environ.get('DHL_BILLING_NUMBER')
+    DHL_EKP_NUMBER = os.environ.get('DHL_EKP_NUMBER')
+    DHL_BILLING_NUMBER = os.environ.get('DHL_BILLING_NUMBER')
 
 if not all([DHL_API_KEY, DHL_API_SECRET, DHL_BASE_URL, DHL_AUTH_API_URL]):
     logger.warning("DHL credentials not fully configured. Some endpoints may not work.")
