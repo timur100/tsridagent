@@ -139,13 +139,44 @@ const DHLShipping = () => {
             </p>
           </div>
 
+          {/* Header with Refresh Button */}
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                📦 DHL Paketversand
+              </h2>
+              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Verwalten Sie Ihre DHL-Sendungen und erstellen Sie neue Versandaufträge
+              </p>
+            </div>
+            <button
+              onClick={() => { fetchShipments(); fetchStatistics(); }}
+              disabled={loading}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
+                theme === 'dark' 
+                  ? 'bg-[#c00000] hover:bg-[#a00000] text-white' 
+                  : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+              } transition-colors disabled:opacity-50`}
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Aktualisieren
+            </button>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+              {error}
+            </div>
+          )}
+
           {/* Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
           <div className="flex items-center justify-between mb-2">
             <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {shipments.length}
+              {statistics.total}
             </span>
           </div>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -157,7 +188,7 @@ const DHLShipping = () => {
           <div className="flex items-center justify-between mb-2">
             <Truck className="h-5 w-5 text-blue-600" />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {shipments.filter(s => s.status === 'in_transit').length}
+              {statistics.in_transit}
             </span>
           </div>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -169,7 +200,7 @@ const DHLShipping = () => {
           <div className="flex items-center justify-between mb-2">
             <CheckCircle className="h-5 w-5 text-green-600" />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {shipments.filter(s => s.status === 'delivered').length}
+              {statistics.delivered}
             </span>
           </div>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -181,7 +212,7 @@ const DHLShipping = () => {
           <div className="flex items-center justify-between mb-2">
             <Clock className="h-5 w-5 text-yellow-600" />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {shipments.filter(s => s.status === 'pending').length}
+              {statistics.pending}
             </span>
           </div>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
