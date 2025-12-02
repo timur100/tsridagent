@@ -487,6 +487,141 @@ async def get_shipment_statistics():
             detail=f"Failed to fetch statistics: {str(e)}"
         )
 
+@router.post("/shipments/import")
+async def import_shipments_from_dhl(days_back: int = 30):
+    """
+    Import existing shipments from DHL API
+    
+    This endpoint retrieves shipments that were created via DHL (e.g., through GKP portal)
+    and imports them into our database.
+    
+    Query parameters:
+    - days_back: Number of days to look back for shipments (default: 30)
+    """
+    try:
+        logger.info(f"Starting import of DHL shipments from last {days_back} days")
+        
+        headers = await get_auth_headers()
+        imported_count = 0
+        skipped_count = 0
+        error_count = 0
+        
+        # DHL API doesn't have a direct "list all shipments" endpoint
+        # Instead, we need to use the manifest or tracking API
+        # For now, return a message explaining the limitation
+        
+        return {
+            "success": True,
+            "message": "DHL API-Import ist derzeit begrenzt",
+            "explanation": {
+                "limitation": "Die DHL Parcel DE Shipping API v2 bietet keinen direkten 'list all shipments' Endpoint.",
+                "alternatives": [
+                    "Sendungen können über GET /orders/{shipmentNumber} einzeln abgerufen werden",
+                    "Manifest-Berichte (GET /manifests) zeigen Sendungen eines Tagesabschlusses",
+                    "Tracking-API kann verwendet werden, wenn Sendungsnummern bekannt sind"
+                ],
+                "recommendation": "Wenn Sie Sendungsnummern haben, können Sie diese einzeln importieren"
+            },
+            "imported": 0,
+            "skipped": 0,
+            "errors": 0
+        }
+        
+    except Exception as e:
+        logger.error(f"Error during import: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Import failed: {str(e)}"
+        )
+
+@router.post("/shipments/import/{shipment_number}")
+async def import_single_shipment(shipment_number: str):
+    """
+    Import a specific shipment by shipment number from DHL API
+    
+    This retrieves the shipment details from DHL and saves it to our database.
+    """
+    try:
+        logger.info(f"Importing shipment: {shipment_number}")
+        
+        # Check if already in database
+        existing = await db.dhl_shipments.find_one({"shipment_number": shipment_number})
+        if existing:
+            return {
+                "success": True,
+                "message": f"Sendung {shipment_number} existiert bereits in der Datenbank",
+                "already_exists": True
+            }
+        
+        headers = await get_auth_headers()
+        
+        # Get shipment details from DHL
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(
+                f"{DHL_BASE_URL}/orders/{shipment_number}",
+                headers=headers
+            )
+            
+            if response.status_code == 404:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=f"Sendung {shipment_number} nicht bei DHL gefunden"
+                )
+            
+            response.raise_for_status()
+            shipment_data = response.json()
+            
+            # Extract relevant information
+            shipment_record = {
+                "shipment_number": shipment_number,
+                "reference_id": shipment_data.get("referenceNo", shipment_number),
+                "status": "imported",
+                "sender_name": shipment_data.get("shipper", {}).get("name1", "Unbekannt"),
+                "sender_city": shipment_data.get("shipper", {}).get("city", ""),
+                "sender_postal_code": shipment_data.get("shipper", {}).get("postalCode", ""),
+                "receiver_name": shipment_data.get("consignee", {}).get("name1", "Unbekannt"),
+                "receiver_city": shipment_data.get("consignee", {}).get("city", ""),
+                "receiver_postal_code": shipment_data.get("consignee", {}).get("postalCode", ""),
+                "receiver_country": shipment_data.get("consignee", {}).get("countryCode", "DE"),
+                "package_weight_grams": int(shipment_data.get("details", {}).get("weight", 0) * 1000),
+                "service_type": shipment_data.get("details", {}).get("serviceType", "V01PAK"),
+                "package_description": shipment_data.get("details", {}).get("contents", ""),
+                "tracking_url": f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}",
+                "created_at": datetime.now(timezone.utc),
+                "imported_at": datetime.now(timezone.utc),
+                "dhl_response": shipment_data,
+            }
+            
+            # Save to database
+            await db.dhl_shipments.insert_one(shipment_record)
+            logger.info(f"Successfully imported shipment: {shipment_number}")
+            
+            return {
+                "success": True,
+                "message": f"Sendung {shipment_number} erfolgreich importiert",
+                "shipment": {
+                    "shipment_number": shipment_number,
+                    "receiver_name": shipment_record["receiver_name"],
+                    "receiver_city": shipment_record["receiver_city"],
+                    "status": shipment_record["status"]
+                }
+            }
+    
+    except HTTPException:
+        raise
+    except httpx.HTTPError as e:
+        logger.error(f"HTTP error during import: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Fehler beim Abrufen von DHL: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Error importing shipment: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Import fehlgeschlagen: {str(e)}"
+        )
+
 @router.get("/health")
 async def health_check():
     """Check DHL API connection health"""
