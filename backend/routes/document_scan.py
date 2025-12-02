@@ -97,7 +97,7 @@ async def process_document(image: UploadFile = File(...)):
 
 def parse_regula_response_http(regula_data: dict) -> dict:
     """
-    Parse Regula Document Reader API response into simplified format
+    Parse Regula Document Reader API HTTP response into simplified format
     """
     try:
         text_fields = {}
@@ -105,38 +105,40 @@ def parse_regula_response_http(regula_data: dict) -> dict:
         doc_type = "Unknown"
         
         # Extract overall status
-        if hasattr(response, 'status') and response.status:
-            overall_status = response.status.overall_status if hasattr(response.status, 'overall_status') else "ERROR"
+        status = regula_data.get("status", {})
+        overall_status = status.get("overallStatus", "ERROR")
         
         # Extract document type
-        if hasattr(response, 'document_type'):
-            if isinstance(response.document_type, list) and len(response.document_type) > 0:
-                doc_type = response.document_type[0].document_name if hasattr(response.document_type[0], 'document_name') else "Unknown"
+        doc_type_list = regula_data.get("documentType", [])
+        if doc_type_list and len(doc_type_list) > 0:
+            doc_type = doc_type_list[0].get("documentName", "Unknown")
         
         # Extract text fields
-        if hasattr(response, 'text') and response.text:
-            if hasattr(response.text, 'field_list') and response.text.field_list:
-                for field in response.text.field_list:
-                    field_type = field.field_type if hasattr(field, 'field_type') else None
-                    value = field.value if hasattr(field, 'value') else None
-                    
-                    # Map field types to readable names
-                    if field_type == 0:  # Document Number
-                        text_fields['document_number'] = value
-                        text_fields['document_number_valid'] = hasattr(field, 'validity') and field.validity == 0
-                    elif field_type == 1:  # Surname
-                        text_fields['last_name'] = value
-                    elif field_type == 2:  # Given Names
-                        text_fields['first_name'] = value
-                    elif field_type == 5:  # Date of Birth
-                        text_fields['birth_date'] = value
-                    elif field_type == 3:  # Sex
-                        text_fields['sex'] = value
-                    elif field_type == 4:  # Nationality
-                        text_fields['nationality'] = value
-                    elif field_type == 6:  # Date of Expiry
-                        text_fields['expiry_date'] = value
-                        text_fields['expiry_date_valid'] = hasattr(field, 'validity') and field.validity == 0
+        text = regula_data.get("text", {})
+        field_list = text.get("fieldList", [])
+        
+        for field in field_list:
+            field_type = field.get("fieldType")
+            value = field.get("value")
+            validity = field.get("validity", {}).get("status") == 0
+            
+            # Map field types to readable names (Regula field type codes)
+            if field_type == 0:  # Document Number
+                text_fields['document_number'] = value
+                text_fields['document_number_valid'] = validity
+            elif field_type == 1:  # Surname
+                text_fields['last_name'] = value
+            elif field_type == 2:  # Given Names
+                text_fields['first_name'] = value
+            elif field_type == 5:  # Date of Birth
+                text_fields['birth_date'] = value
+            elif field_type == 3:  # Sex
+                text_fields['sex'] = value
+            elif field_type == 4:  # Nationality
+                text_fields['nationality'] = value
+            elif field_type == 6:  # Date of Expiry
+                text_fields['expiry_date'] = value
+                text_fields['expiry_date_valid'] = validity
         
         return {
             "overall_status": overall_status,
