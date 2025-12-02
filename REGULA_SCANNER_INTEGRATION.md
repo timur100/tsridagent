@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://quickmenu-app-2.preview.emergentagent.com/portal/admin/id-checks
+   https://timeflow-portal-1.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

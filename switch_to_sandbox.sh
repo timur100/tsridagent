@@ -21,5 +21,5 @@ sleep 5
 
 echo ""
 echo "Test mit Sandbox..."
-curl -s "https://quickmenu-app-2.preview.emergentagent.com/api/dhl/health" | jq '.'
+curl -s "https://timeflow-portal-1.preview.emergentagent.com/api/dhl/health" | jq '.'
 
