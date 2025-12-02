@@ -530,6 +530,227 @@ const DHLShipping = () => {
             </div>
           </div>
         </div>
+
+        {/* Shipment Details Modal */}
+        {isModalOpen && selectedShipment && (
+          <div className="fixed inset-0 z-50 overflow-y-auto" onClick={closeModal}>
+            <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+              {/* Background overlay */}
+              <div className="fixed inset-0 bg-black bg-opacity-75 transition-opacity"></div>
+
+              {/* Modal panel */}
+              <div 
+                className="relative inline-block align-bottom bg-[#1f1f1f] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border border-gray-700"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="bg-[#2a2a2a] px-6 py-4 border-b border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold text-white font-mono flex items-center gap-3">
+                      <Package className="h-6 w-6 text-[#c00000]" />
+                      Sendungsdetails
+                    </h3>
+                    <button
+                      onClick={closeModal}
+                      className="text-gray-400 hover:text-white transition-colors"
+                    >
+                      <XCircle className="h-6 w-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="px-6 py-6 max-h-[70vh] overflow-y-auto">
+                  {/* Sendungsnummer & Status */}
+                  <div className="mb-6 pb-6 border-b border-gray-700">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Sendungsnummer</p>
+                        <p className="text-2xl font-mono font-bold text-white">
+                          {selectedShipment.shipment_number}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {getStatusIcon(selectedShipment.status)}
+                        <span className={`px-4 py-2 rounded text-sm font-medium ${getStatusColor(selectedShipment.status)}`}>
+                          {getStatusLabel(selectedShipment.status)}
+                        </span>
+                      </div>
+                    </div>
+                    {selectedShipment.tracking_url && (
+                      <a
+                        href={selectedShipment.tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-[#c00000] hover:text-[#a00000] transition-colors"
+                      >
+                        <MapPin className="h-4 w-4" />
+                        <span className="text-sm">Sendung verfolgen</span>
+                      </a>
+                    )}
+                  </div>
+
+                  {/* Two Column Layout */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Absender */}
+                    <div className="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
+                      <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <User className="h-5 w-5 text-[#c00000]" />
+                        Absender
+                      </h4>
+                      <div className="space-y-3 font-mono text-sm">
+                        <div>
+                          <p className="text-gray-400">Name</p>
+                          <p className="text-gray-200">{selectedShipment.sender_name || '-'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Adresse</p>
+                          <p className="text-gray-200">
+                            {selectedShipment.sender_street && selectedShipment.sender_house_number
+                              ? `${selectedShipment.sender_street} ${selectedShipment.sender_house_number}`
+                              : selectedShipment.sender_street || '-'}
+                          </p>
+                          <p className="text-gray-200">
+                            {selectedShipment.sender_postal_code} {selectedShipment.sender_city}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Empfänger */}
+                    <div className="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
+                      <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                        <MapPin className="h-5 w-5 text-[#c00000]" />
+                        Empfänger
+                      </h4>
+                      <div className="space-y-3 font-mono text-sm">
+                        <div>
+                          <p className="text-gray-400">Name</p>
+                          <p className="text-gray-200">{selectedShipment.receiver_name || '-'}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Adresse</p>
+                          <p className="text-gray-200">
+                            {selectedShipment.receiver_street && selectedShipment.receiver_house_number
+                              ? `${selectedShipment.receiver_street} ${selectedShipment.receiver_house_number}`
+                              : selectedShipment.receiver_street || '-'}
+                          </p>
+                          <p className="text-gray-200">
+                            {selectedShipment.receiver_postal_code} {selectedShipment.receiver_city}
+                          </p>
+                          <p className="text-gray-200">{selectedShipment.receiver_country || 'DEU'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Paket Details */}
+                  <div className="mt-6 bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
+                    <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <Package className="h-5 w-5 text-[#c00000]" />
+                      Paketinformationen
+                    </h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-sm">
+                      <div>
+                        <p className="text-gray-400">Gewicht</p>
+                        <p className="text-gray-200 text-lg font-bold">
+                          {(selectedShipment.package_weight_grams / 1000).toFixed(1)} kg
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Maße (LxBxH)</p>
+                        <p className="text-gray-200 text-lg font-bold">
+                          {selectedShipment.package_length_cm && selectedShipment.package_width_cm && selectedShipment.package_height_cm
+                            ? `${selectedShipment.package_length_cm}×${selectedShipment.package_width_cm}×${selectedShipment.package_height_cm} cm`
+                            : '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Service</p>
+                        <p className="text-gray-200 text-lg">
+                          {selectedShipment.service_type === 'V01PAK' ? 'DHL Paket' : selectedShipment.service_type}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Referenz-ID</p>
+                        <p className="text-gray-200 text-lg">
+                          {selectedShipment.reference_id || '-'}
+                        </p>
+                      </div>
+                    </div>
+                    {selectedShipment.package_description && (
+                      <div className="mt-4">
+                        <p className="text-gray-400 text-sm">Beschreibung</p>
+                        <p className="text-gray-200">{selectedShipment.package_description}</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Zeitangaben */}
+                  <div className="mt-6 bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
+                    <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-[#c00000]" />
+                      Zeitangaben
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-sm">
+                      <div>
+                        <p className="text-gray-400">Erstellt am</p>
+                        <p className="text-gray-200 text-lg">
+                          {formatDate(selectedShipment.created_at)}
+                        </p>
+                      </div>
+                      {selectedShipment.delivered_at && (
+                        <div>
+                          <p className="text-gray-400">Zugestellt am</p>
+                          <p className="text-gray-200 text-lg text-green-400">
+                            {formatDate(selectedShipment.delivered_at)}
+                          </p>
+                        </div>
+                      )}
+                      {!selectedShipment.delivered_at && selectedShipment.estimated_delivery && (
+                        <div>
+                          <p className="text-gray-400">Voraussichtliche Zustellung</p>
+                          <p className="text-gray-200 text-lg">
+                            {formatDate(selectedShipment.estimated_delivery)}
+                          </p>
+                        </div>
+                      )}
+                      {selectedShipment.imported_at && (
+                        <div>
+                          <p className="text-gray-400">Importiert am</p>
+                          <p className="text-gray-200 text-lg">
+                            {formatDate(selectedShipment.imported_at)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="bg-[#2a2a2a] px-6 py-4 border-t border-gray-700 flex justify-end gap-3">
+                  <button
+                    onClick={closeModal}
+                    className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                  >
+                    Schließen
+                  </button>
+                  {selectedShipment.tracking_url && (
+                    <a
+                      href={selectedShipment.tracking_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded transition-colors inline-flex items-center gap-2"
+                    >
+                      <MapPin className="h-4 w-4" />
+                      Tracking öffnen
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       )}
 
       {/* Tracking Tab */}
