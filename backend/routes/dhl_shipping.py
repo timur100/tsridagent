@@ -183,50 +183,53 @@ def build_shipment_payload(shipment: CreateShipmentRequest) -> Dict[str, Any]:
     Build the DHL API request payload from shipment data
     Following DHL Parcel DE Shipping API v2 schema
     """
-    total_weight = shipment.package_weight_grams / 1000  # Convert to kg
+    from datetime import datetime, timedelta
+    
+    # Calculate ship date (tomorrow)
+    ship_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
 
     payload = {
+        "profile": "STANDARD_GRUPPENPROFIL",
         "shipments": [
             {
-                "profile": "STANDARD",
+                "product": "V01PAK",
+                "billingNumber": DHL_BILLING_NUMBER,
+                "refNo": shipment.reference_id,
+                "shipDate": ship_date,
                 "shipper": {
                     "name1": shipment.sender_name,
-                    "streetAddress": shipment.sender_street,
-                    "houseNumber": shipment.sender_house_number,
+                    "addressStreet": shipment.sender_street,
+                    "addressHouse": shipment.sender_house_number,
                     "postalCode": shipment.sender_postal_code,
                     "city": shipment.sender_city,
-                    "countryCode": "DE",
-                    "phone": shipment.sender_phone,
+                    "country": "DEU",
                     "email": shipment.sender_email,
+                    "phone": shipment.sender_phone
                 },
                 "consignee": {
                     "name1": shipment.receiver_name,
-                    "streetAddress": shipment.receiver_street,
-                    "houseNumber": shipment.receiver_house_number,
+                    "addressStreet": shipment.receiver_street,
+                    "addressHouse": shipment.receiver_house_number,
                     "postalCode": shipment.receiver_postal_code,
                     "city": shipment.receiver_city,
-                    "countryCode": shipment.receiver_country_code,
-                    "phone": shipment.receiver_phone,
-                    "email": shipment.receiver_email,
+                    "country": "DEU",
+                    "email": shipment.receiver_email
                 },
                 "details": {
-                    "serviceType": shipment.service_type,
-                    "weight": total_weight,
-                    "contents": shipment.package_description,
-                    "billingNumber": DHL_BILLING_NUMBER,
-                },
-                "references": [
-                    {
-                        "referenceNo": shipment.reference_id,
-                        "referenceType": "CUSTOMER_REFERENCE"
+                    "weight": {
+                        "uom": "g",
+                        "value": shipment.package_weight_grams
+                    },
+                    "dim": {
+                        "uom": "cm",
+                        "height": shipment.package_height_cm,
+                        "length": shipment.package_length_cm,
+                        "width": shipment.package_width_cm
                     }
-                ]
+                }
             }
         ]
     }
-
-    if shipment.insurance_value_eur:
-        payload["shipments"][0]["details"]["insuranceAmount"] = shipment.insurance_value_eur
 
     return payload
 
