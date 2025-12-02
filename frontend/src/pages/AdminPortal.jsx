@@ -68,6 +68,7 @@ import CameraManagement from '../components/CameraManagement';
 import EuropcarManagement from '../components/EuropcarManagement';
 import DHLShipping from '../components/DHLShipping';
 import DocumentScanPage from '../components/DocumentScanPage';
+import TimeTrackingPage from '../components/TimeTrackingPage';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
