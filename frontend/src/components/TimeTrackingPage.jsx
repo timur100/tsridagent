@@ -170,6 +170,193 @@ const TimeTrackingPage = () => {
         onTabChange={setActiveTab}
       />
 
+      {/* Terminal Tab */}
+      {activeTab === 'terminal' && (
+        <div>
+          <div className="mb-6">
+            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              🖐️ Zeiterfassungs-Terminal
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Fingerabdruck-Registrierung für Kommen, Pause und Gehen
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            {/* Terminal Action Selection */}
+            <div className="grid grid-cols-3 gap-4 mb-8">
+              <button
+                onClick={() => setTerminalMode('checkin')}
+                className={`p-8 rounded-xl border-2 transition-all ${
+                  terminalMode === 'checkin'
+                    ? 'border-green-600 bg-green-600/20'
+                    : theme === 'dark'
+                    ? 'border-gray-700 hover:border-green-600/50'
+                    : 'border-gray-300 hover:border-green-600/50'
+                }`}
+              >
+                <div className="text-center">
+                  <div className={`text-6xl mb-4 ${terminalMode === 'checkin' ? 'text-green-500' : 'text-gray-500'}`}>
+                    ✅
+                  </div>
+                  <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    KOMMT
+                  </h3>
+                  <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Arbeitsbeginn
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setTerminalMode('break')}
+                className={`p-8 rounded-xl border-2 transition-all ${
+                  terminalMode === 'break'
+                    ? 'border-yellow-600 bg-yellow-600/20'
+                    : theme === 'dark'
+                    ? 'border-gray-700 hover:border-yellow-600/50'
+                    : 'border-gray-300 hover:border-yellow-600/50'
+                }`}
+              >
+                <div className="text-center">
+                  <div className={`text-6xl mb-4 ${terminalMode === 'break' ? 'text-yellow-500' : 'text-gray-500'}`}>
+                    ⏸️
+                  </div>
+                  <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    PAUSE
+                  </h3>
+                  <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Pausenbeginn/-ende
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setTerminalMode('checkout')}
+                className={`p-8 rounded-xl border-2 transition-all ${
+                  terminalMode === 'checkout'
+                    ? 'border-red-600 bg-red-600/20'
+                    : theme === 'dark'
+                    ? 'border-gray-700 hover:border-red-600/50'
+                    : 'border-gray-300 hover:border-red-600/50'
+                }`}
+              >
+                <div className="text-center">
+                  <div className={`text-6xl mb-4 ${terminalMode === 'checkout' ? 'text-red-500' : 'text-gray-500'}`}>
+                    🚪
+                  </div>
+                  <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    GEHT
+                  </h3>
+                  <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Arbeitsende
+                  </p>
+                </div>
+              </button>
+            </div>
+
+            {/* Fingerprint Scanner */}
+            <div className={`p-12 rounded-xl border-2 ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+              <div className="text-center">
+                {!fingerprintScanning ? (
+                  <>
+                    <div className={`inline-block p-8 rounded-full mb-6 ${
+                      terminalMode === 'checkin' ? 'bg-green-600/20' :
+                      terminalMode === 'break' ? 'bg-yellow-600/20' :
+                      'bg-red-600/20'
+                    }`}>
+                      <svg className={`h-32 w-32 ${
+                        terminalMode === 'checkin' ? 'text-green-500' :
+                        terminalMode === 'break' ? 'text-yellow-500' :
+                        'text-red-500'
+                      }`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                      </svg>
+                    </div>
+                    <h3 className={`text-3xl font-bold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      Finger auflegen
+                    </h3>
+                    <p className={`text-lg mb-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Bitte legen Sie Ihren Finger auf den Scanner
+                    </p>
+                    <button
+                      onClick={() => {
+                        setFingerprintScanning(true);
+                        setTimeout(() => {
+                          setFingerprintScanning(false);
+                          // Simulate recognition
+                          setSelectedTerminalEmployee(employees[0]);
+                        }, 2000);
+                      }}
+                      className={`px-8 py-4 text-xl font-semibold rounded-lg transition-all ${
+                        terminalMode === 'checkin' ? 'bg-green-600 hover:bg-green-700' :
+                        terminalMode === 'break' ? 'bg-yellow-600 hover:bg-yellow-700' :
+                        'bg-red-600 hover:bg-red-700'
+                      } text-white`}
+                    >
+                      Scanner aktivieren
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="inline-block p-8 rounded-full mb-6 bg-blue-600/20">
+                      <svg className="h-32 w-32 text-blue-500 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                      </svg>
+                    </div>
+                    <h3 className="text-3xl font-bold mb-3 text-blue-500">
+                      Scanning...
+                    </h3>
+                    <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Fingerabdruck wird erkannt
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Success Message */}
+            {selectedTerminalEmployee && !fingerprintScanning && (
+              <div className={`mt-6 p-6 rounded-xl border-2 ${
+                terminalMode === 'checkin' ? 'border-green-600 bg-green-600/10' :
+                terminalMode === 'break' ? 'border-yellow-600 bg-yellow-600/10' :
+                'border-red-600 bg-red-600/10'
+              }`}>
+                <div className="text-center">
+                  <div className={`text-6xl mb-4 ${
+                    terminalMode === 'checkin' ? 'text-green-500' :
+                    terminalMode === 'break' ? 'text-yellow-500' :
+                    'text-red-500'
+                  }`}>
+                    ✓
+                  </div>
+                  <h3 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {selectedTerminalEmployee.name}
+                  </h3>
+                  <p className={`text-lg mb-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {terminalMode === 'checkin' && 'Arbeitsbeginn erfasst'}
+                    {terminalMode === 'break' && 'Pause erfasst'}
+                    {terminalMode === 'checkout' && 'Arbeitsende erfasst'}
+                  </p>
+                  <p className={`text-3xl font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Current Location Display */}
+            <div className={`mt-6 p-4 rounded-lg text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
+              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Standort: <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  {locations[0].name}
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Tracking Tab */}
       {activeTab === 'tracking' && (
         <div>
