@@ -29,67 +29,66 @@ async def process_document(image: UploadFile = File(...)):
         # Read the uploaded file
         contents = await image.read()
         
-        # For now, return mock data since Regula service might not be running
-        # In production, you would make actual API call to Regula
-        
-        # Mock response simulating successful document scan
-        mock_result = {
-            "success": True,
-            "data": {
-                "overall_status": "OK",
-                "document_type": "Deutscher Reisepass",
-                "text_fields": {
-                    "document_number": "C01X00T47",
-                    "document_number_valid": True,
-                    "first_name": "MAX",
-                    "last_name": "MUSTERMANN",
-                    "birth_date": "12.08.1990",
-                    "sex": "M",
-                    "nationality": "DEUTSCH",
-                    "expiry_date": "01.08.2030",
-                    "expiry_date_valid": True
-                },
-                "scanned_at": datetime.now().isoformat()
-            }
-        }
-        
-        return JSONResponse(content=mock_result)
-        
-        # REAL IMPLEMENTATION (uncomment when Regula service is available):
-        """
-        import httpx
-        
-        # Prepare the request to Regula API
-        files = {"image": (image.filename, contents, image.content_type)}
-        
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.post(
-                f"{REGULA_API_URL}/api/process",
-                files=files,
-                json={
-                    "processParam": {
-                        "scenario": "FullProcess",
-                        "resultTypeOutput": ["status", "text", "images"]
-                    }
+        # Check if Regula API is available
+        if not REGULA_AVAILABLE:
+            # Return mock data if Regula service is not running
+            mock_result = {
+                "success": True,
+                "data": {
+                    "overall_status": "OK",
+                    "document_type": "Deutscher Reisepass (Mock)",
+                    "text_fields": {
+                        "document_number": "C01X00T47",
+                        "document_number_valid": True,
+                        "first_name": "MAX",
+                        "last_name": "MUSTERMANN",
+                        "birth_date": "12.08.1990",
+                        "sex": "M",
+                        "nationality": "DEUTSCH",
+                        "expiry_date": "01.08.2030",
+                        "expiry_date_valid": True
+                    },
+                    "scanned_at": datetime.now().isoformat(),
+                    "mock_mode": True
                 }
-            )
+            }
+            return JSONResponse(content=mock_result)
+        
+        # REAL REGULA API INTEGRATION
+        try:
+            # Convert image to base64
+            image_base64 = base64.b64encode(contents).decode('utf-8')
             
-            if response.status_code != 200:
-                raise HTTPException(
-                    status_code=500, 
-                    detail="Regula API error"
-                )
+            # Create process request
+            request = ProcessRequest()
+            request.process_param = ProcessParams()
+            request.process_param.scenario = Scenario.FULL_PROCESS
+            request.images = [image_base64]
             
-            regula_data = response.json()
+            # Process the document
+            response = regula_api.process(request)
             
-            # Parse Regula response
-            result = parse_regula_response(regula_data)
+            # Parse the response
+            result = parse_regula_response(response)
             
             return JSONResponse(content={
                 "success": True,
                 "data": result
             })
-        """
+            
+        except Exception as regula_error:
+            print(f"Regula API error: {regula_error}")
+            # Fallback to mock data on error
+            return JSONResponse(content={
+                "success": True,
+                "data": {
+                    "overall_status": "ERROR",
+                    "document_type": "Fehler beim Scannen",
+                    "text_fields": {},
+                    "error": str(regula_error),
+                    "mock_mode": True
+                }
+            })
         
     except Exception as e:
         return JSONResponse(
