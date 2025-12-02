@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DHL API Test</title>
+    <script>
+        async function testAPI() {
+            const url = 'https://timetrack-connect.preview.emergentagent.com/api/dhl/shipments';
+            
+            console.log('Fetching:', url);
+            document.getElementById('result').innerHTML = 'Loading...';
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                console.log('Response:', data);
+                document.getElementById('result').innerHTML = 
+                    '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+                
+                document.getElementById('stats').innerHTML = 
+                    `<h3>Statistiken:</h3>
+                    <p>Total: ${data.total}</p>
+                    <p>Count: ${data.count}</p>
+                    <p>Shipments: ${data.shipments.length}</p>`;
+                    
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 
+                    '<p style="color: red;">Error: ' + error.message + '</p>';
+            }
+        }
+        
+        window.onload = () => {
+            testAPI();
+        };
+    </script>
+</head>
+<body>
+    <h1>DHL API Frontend Test</h1>
+    <div id="stats"></div>
+    <div id="result"></div>
+</body>
+</html>
