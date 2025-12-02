@@ -4,11 +4,21 @@ import base64
 import os
 from datetime import datetime
 from typing import Optional
+import httpx
+from regula.documentreader.webclient import DocumentReaderApi, ProcessRequest, ProcessParams, Scenario
 
 router = APIRouter()
 
 # Regula API endpoint (should be configured via env variable)
 REGULA_API_URL = os.getenv('REGULA_API_URL', 'http://localhost:8080')
+
+# Initialize Regula Document Reader API
+try:
+    regula_api = DocumentReaderApi(REGULA_API_URL)
+    REGULA_AVAILABLE = True
+except Exception as e:
+    print(f"Warning: Regula API not available: {e}")
+    REGULA_AVAILABLE = False
 
 @router.post("/process")
 async def process_document(image: UploadFile = File(...)):
