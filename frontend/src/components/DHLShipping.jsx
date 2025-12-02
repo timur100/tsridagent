@@ -51,14 +51,19 @@ const DHLShipping = () => {
   // Fetch statistics
   const fetchStatistics = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/stats/summary`);
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/stats/summary`;
+      console.log('[DHL] Fetching statistics from:', url);
+      
+      const response = await fetch(url);
       const data = await response.json();
+      
+      console.log('[DHL] Statistics received:', data.statistics);
       
       if (data.success) {
         setStatistics(data.statistics);
       }
     } catch (err) {
-      console.error('Error fetching statistics:', err);
+      console.error('[DHL] Error fetching statistics:', err);
     }
   };
 
