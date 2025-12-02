@@ -82,8 +82,11 @@ def create_basic_auth_header() -> str:
 
 async def get_access_token() -> str:
     """
-    Obtain a valid access token from DHL API
+    Obtain a valid access token from DHL API using OAuth2 ROPC flow
     Returns cached token if still valid, otherwise requests new token
+    
+    Authentication follows DHL's OAuth2 Resource Owner Password Credentials flow:
+    https://developer.dhl.com/api-reference/authentication-api-post-parcel-germany
     """
     import time
     
@@ -93,33 +96,47 @@ async def get_access_token() -> str:
             logger.info("Using cached DHL access token")
             return token_cache['access_token']
 
-    logger.info("Requesting new DHL access token")
+    logger.info("Requesting new DHL access token via OAuth2")
+    
+    # OAuth2 ROPC (Resource Owner Password Credentials) flow
+    # Using sandbox credentials
+    auth_url = "https://api-sandbox.dhl.com/parcel/de/account/auth/ropc/v1/token"
+    
+    # Form data for OAuth2 token request
+    form_data = {
+        "grant_type": "password",
+        "username": "user-valid",  # Sandbox username
+        "password": "SandboxPasswort2023!",  # Sandbox password
+        "client_id": DHL_API_KEY,
+        "client_secret": DHL_API_SECRET
+    }
     
     headers = {
-        "Authorization": create_basic_auth_header(),
-        "Content-Type": "application/json"
+        "Content-Type": "application/x-www-form-urlencoded"
     }
 
     async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             response = await client.post(
-                DHL_AUTH_API_URL,
+                auth_url,
+                data=form_data,
                 headers=headers
             )
             response.raise_for_status()
             
             data = response.json()
-            token_cache['access_token'] = data.get("accessToken")
+            token_cache['access_token'] = data.get("access_token")
             
             # Calculate expiry
-            expires_in = data.get("expiresIn", 3600)
+            expires_in = data.get("expires_in", 3600)
             token_cache['expires_at'] = time.time() + expires_in
             
-            logger.info(f"Successfully obtained DHL token, expires in {expires_in}s")
+            logger.info(f"Successfully obtained DHL OAuth2 token, expires in {expires_in}s")
             return token_cache['access_token']
             
         except httpx.HTTPError as e:
             logger.error(f"Failed to obtain DHL access token: {str(e)}")
+            logger.error(f"Response: {e.response.text if hasattr(e, 'response') else 'No response'}")
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail=f"DHL authentication failed: {str(e)}"
