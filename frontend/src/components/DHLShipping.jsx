@@ -167,20 +167,20 @@ const DHLShipping = () => {
             </button>
           </div>
 
-          {/* Demo Data Banner */}
-          {shipments.length > 0 && (
+          {/* Info Banner */}
+          {statistics.total > 0 && (
             <div className={`mb-4 p-4 rounded-lg border-l-4 ${
               theme === 'dark' 
-                ? 'bg-blue-900/20 border-blue-500 text-blue-200' 
-                : 'bg-blue-50 border-blue-500 text-blue-800'
+                ? 'bg-green-900/20 border-green-500 text-green-200' 
+                : 'bg-green-50 border-green-500 text-green-800'
             }`}>
               <div className="flex items-start gap-3">
-                <span className="text-2xl">ℹ️</span>
+                <span className="text-2xl">✅</span>
                 <div>
-                  <p className="font-semibold">Demo-Daten zur Demonstration</p>
+                  <p className="font-semibold">{statistics.total} echte DHL-Sendungen importiert</p>
                   <p className="text-sm mt-1">
-                    Die angezeigten Sendungen sind Test-Daten. Sobald Sie echte Sendungen über die DHL API erstellen, 
-                    werden diese hier automatisch gespeichert und angezeigt.
+                    Ihre Sendungen aus diesem Jahr wurden erfolgreich importiert. 
+                    Neue Sendungen werden automatisch gespeichert und hier angezeigt.
                   </p>
                 </div>
               </div>
