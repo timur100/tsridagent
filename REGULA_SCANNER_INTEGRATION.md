@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://kiosk-manager-8.preview.emergentagent.com/portal/admin/id-checks
+   https://timetrack-connect.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

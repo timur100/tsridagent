@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://kiosk-manager-8.preview.emergentagent.com/portal/admin
+https://timetrack-connect.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
