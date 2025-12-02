@@ -287,16 +287,16 @@ async def create_shipment(request: CreateShipmentRequest):
             shipment_data = response.json()
             logger.info(f"Successfully created DHL shipment: {shipment_data}")
 
-            # Extract shipment number
+            # Extract shipment number from DHL v2 API response
+            # Response format: {"status": {...}, "items": [{"shipmentNo": "...", ...}]}
             shipment_number = None
-            if "shipments" in shipment_data and len(shipment_data["shipments"]) > 0:
-                shipment_number = shipment_data["shipments"][0].get("shipmentNumber")
-            elif "shipmentNumber" in shipment_data:
-                shipment_number = shipment_data["shipmentNumber"]
-
             label_url = None
-            if "shipments" in shipment_data and len(shipment_data["shipments"]) > 0:
-                label_url = shipment_data["shipments"][0].get("labelUrl")
+            
+            if "items" in shipment_data and len(shipment_data["items"]) > 0:
+                shipment_number = shipment_data["items"][0].get("shipmentNo")
+                label_data = shipment_data["items"][0].get("label")
+                if label_data:
+                    label_url = label_data.get("b64") or label_data.get("url")
 
             tracking_url = f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}" if shipment_number else None
             
