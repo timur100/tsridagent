@@ -194,9 +194,26 @@ const EuropcarMenuPage = () => {
                   </button>
                 );
               })}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
+
+      {/* Footer with TSRID Logo */}
+      <footer className={`py-6 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col items-center justify-center gap-2">
+            <img 
+              src="https://customer-assets.emergentagent.com/job_kiosk-manager-8/artifacts/vlxjqru2_Zeichenfl%C3%A4che%201.png" 
+              alt="TSRID Logo" 
+              className="h-12 w-auto opacity-80"
+            />
+            <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+              Powered by TSRID Forensic Solutions
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
