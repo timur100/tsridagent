@@ -48,6 +48,21 @@ const TimeTrackingPage = () => {
     }
   ]);
 
+  const [employees] = useState([
+    { id: 1, name: 'Max Mustermann', role: 'Entwickler', color: '#3b82f6' },
+    { id: 2, name: 'Anna Schmidt', role: 'Designer', color: '#10b981' },
+    { id: 3, name: 'Tom Weber', role: 'Projektmanager', color: '#f59e0b' },
+    { id: 4, name: 'Lisa Müller', role: 'Entwicklerin', color: '#8b5cf6' }
+  ]);
+
+  const [shifts, setShifts] = useState([
+    { id: 1, employee_id: 1, date: '2024-12-02', start: '09:00', end: '17:00', type: 'Büro' },
+    { id: 2, employee_id: 2, date: '2024-12-02', start: '10:00', end: '18:00', type: 'Büro' },
+    { id: 3, employee_id: 1, date: '2024-12-03', start: '09:00', end: '17:00', type: 'Büro' },
+    { id: 4, employee_id: 3, date: '2024-12-03', start: '08:00', end: '16:00', type: 'Büro' },
+    { id: 5, employee_id: 4, date: '2024-12-04', start: '14:00', end: '22:00', type: 'Spätschicht' }
+  ]);
+
   // Timer effect
   useEffect(() => {
     let interval;
