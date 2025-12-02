@@ -483,6 +483,7 @@ const DHLShipping = () => {
                   shipments.map((shipment) => (
                   <tr
                     key={shipment.shipment_number || shipment.reference_id}
+                    onClick={() => openShipmentDetails(shipment)}
                     className="border-t border-gray-700 hover:bg-[#2a2a2a] transition-colors duration-150 cursor-pointer"
                   >
                     <td className="px-4 py-3 text-sm text-gray-300">
