@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Clock, Play, Pause, Square, Calendar, TrendingUp, Users, Download, Filter, Plus, Edit, Trash2 } from 'lucide-react';
+import { Clock, Play, Pause, Square, Calendar, TrendingUp, Users, Download, Filter, Plus, Edit, Trash2, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 import SubTabNavigation from './SubTabNavigation';
 
 const TimeTrackingPage = () => {
