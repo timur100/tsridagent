@@ -40,6 +40,7 @@ const DHLShipping = () => {
       console.log('[DHL] Shipments count:', data.shipments?.length);
       
       if (data.success) {
+        setAllShipments(data.shipments || []);
         setShipments(data.shipments || []);
         console.log('[DHL] Shipments set to state:', data.shipments?.length);
       } else {
