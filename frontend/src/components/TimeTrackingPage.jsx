@@ -426,6 +426,310 @@ const TimeTrackingPage = () => {
         </div>
       )}
 
+      {/* Schedule Tab */}
+      {activeTab === 'schedule' && (
+        <div>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                📅 Dienstplan
+              </h2>
+              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Planen und verwalten Sie Mitarbeiter-Schichten
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  const newDate = new Date(currentWeek);
+                  newDate.setDate(newDate.getDate() - 7);
+                  setCurrentWeek(newDate);
+                }}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-gray-100'}`}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={() => setCurrentWeek(new Date())}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all"
+              >
+                Heute
+              </button>
+              <button
+                onClick={() => {
+                  const newDate = new Date(currentWeek);
+                  newDate.setDate(newDate.getDate() + 7);
+                  setCurrentWeek(newDate);
+                }}
+                className={`p-2 rounded-lg ${theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-gray-100'}`}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* Week Overview */}
+          <div className={`p-4 rounded-lg mb-6 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+            <div className="flex items-center justify-between">
+              <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Woche vom {new Date(currentWeek).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+              </h3>
+              <button
+                onClick={() => {
+                  setSelectedDate(new Date().toISOString().split('T')[0]);
+                  setShowShiftModal(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+              >
+                <Plus className="h-4 w-4" />
+                Schicht hinzufügen
+              </button>
+            </div>
+          </div>
+
+          {/* Schedule Grid */}
+          <div className={`rounded-lg border border-gray-700 overflow-hidden ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
+                  <tr>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 w-48 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Mitarbeiter
+                    </th>
+                    {[...Array(7)].map((_, i) => {
+                      const date = new Date(currentWeek);
+                      date.setDate(date.getDate() - date.getDay() + i + 1);
+                      const isToday = date.toDateString() === new Date().toDateString();
+                      return (
+                        <th
+                          key={i}
+                          className={`px-4 py-3 text-center text-xs font-semibold border-t border-gray-700 ${
+                            isToday ? 'bg-blue-900/20' : ''
+                          } ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                        >
+                          <div>{['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'][i]}</div>
+                          <div className="text-xs font-normal mt-1">
+                            {date.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}
+                          </div>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                </thead>
+                <tbody>
+                  {employees.map((employee) => (
+                    <tr
+                      key={employee.id}
+                      className={`border-t border-gray-700 ${theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-gray-50'}`}
+                    >
+                      <td className={`px-4 py-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: employee.color }}
+                          ></div>
+                          <div>
+                            <div className="font-medium">{employee.name}</div>
+                            <div className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                              {employee.role}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      {[...Array(7)].map((_, i) => {
+                        const date = new Date(currentWeek);
+                        date.setDate(date.getDate() - date.getDay() + i + 1);
+                        const dateStr = date.toISOString().split('T')[0];
+                        const dayShifts = shifts.filter(
+                          s => s.employee_id === employee.id && s.date === dateStr
+                        );
+                        const isToday = date.toDateString() === new Date().toDateString();
+
+                        return (
+                          <td
+                            key={i}
+                            className={`px-2 py-2 border-l border-gray-700 ${isToday ? 'bg-blue-900/20' : ''}`}
+                            onClick={() => {
+                              setSelectedDate(dateStr);
+                              setSelectedEmployee(employee.id);
+                              setShowShiftModal(true);
+                            }}
+                          >
+                            <div className="min-h-[60px] space-y-1 cursor-pointer">
+                              {dayShifts.map((shift) => (
+                                <div
+                                  key={shift.id}
+                                  className="p-2 rounded text-xs text-white"
+                                  style={{ backgroundColor: employee.color }}
+                                >
+                                  <div className="font-semibold">{shift.start} - {shift.end}</div>
+                                  <div className="text-xs opacity-90">{shift.type}</div>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Legend */}
+          <div className={`mt-6 p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+            <h4 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+              Schichttypen
+            </h4>
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Büro</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-purple-600 rounded"></div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Spätschicht</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-yellow-600 rounded"></div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Frühschicht</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-red-600 rounded"></div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Nachtschicht</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 bg-green-600 rounded"></div>
+                <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Home Office</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Shift Modal */}
+          {showShiftModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className={`w-full max-w-md p-6 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+                <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Schicht hinzufügen
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Mitarbeiter
+                    </label>
+                    <select
+                      value={selectedEmployee || ''}
+                      onChange={(e) => setSelectedEmployee(parseInt(e.target.value))}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option value="">Mitarbeiter wählen...</option>
+                      {employees.map(emp => (
+                        <option key={emp.id} value={emp.id}>{emp.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Datum
+                    </label>
+                    <input
+                      type="date"
+                      value={selectedDate || ''}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Start
+                      </label>
+                      <input
+                        type="time"
+                        defaultValue="09:00"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Ende
+                      </label>
+                      <input
+                        type="time"
+                        defaultValue="17:00"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Schichttyp
+                    </label>
+                    <select
+                      className={`w-full px-3 py-2 rounded-lg border ${
+                        theme === 'dark'
+                          ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                    >
+                      <option>Büro</option>
+                      <option>Frühschicht</option>
+                      <option>Spätschicht</option>
+                      <option>Nachtschicht</option>
+                      <option>Home Office</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => {
+                      setShowShiftModal(false);
+                      setSelectedEmployee(null);
+                      setSelectedDate(null);
+                    }}
+                    className={`flex-1 px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'border-gray-600 text-gray-300 hover:bg-[#2a2a2a]'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    onClick={() => {
+                      // Add shift logic here
+                      setShowShiftModal(false);
+                      setSelectedEmployee(null);
+                      setSelectedDate(null);
+                    }}
+                    className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                  >
+                    Speichern
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Reports Tab */}
       {activeTab === 'reports' && (
         <div>
