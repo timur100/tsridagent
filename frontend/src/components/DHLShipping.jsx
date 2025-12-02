@@ -466,7 +466,12 @@ const DHLShipping = () => {
                       {shipment.receiver_name}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
-                      {shipment.receiver_city}, {shipment.receiver_postal_code}
+                      {shipment.receiver_street && shipment.receiver_house_number 
+                        ? `${shipment.receiver_street} ${shipment.receiver_house_number}`
+                        : shipment.receiver_street || '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-300">
+                      {shipment.receiver_postal_code} {shipment.receiver_city}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
@@ -477,14 +482,23 @@ const DHLShipping = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
+                      {shipment.created_at
+                        ? new Date(shipment.created_at).toLocaleDateString('de-DE')
+                        : '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-300">
+                      {shipment.delivered_at
+                        ? new Date(shipment.delivered_at).toLocaleDateString('de-DE')
+                        : shipment.estimated_delivery
+                        ? new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')
+                        : '-'}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {(shipment.package_weight_grams / 1000).toFixed(1)} kg
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
-                      {shipment.service_type === 'V01PAK' ? 'DHL Paket' : shipment.service_type}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-300">
-                      {shipment.estimated_delivery
-                        ? new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')
+                      {shipment.package_length_cm && shipment.package_width_cm && shipment.package_height_cm
+                        ? `${shipment.package_length_cm}×${shipment.package_width_cm}×${shipment.package_height_cm}`
                         : '-'}
                     </td>
                   </tr>
