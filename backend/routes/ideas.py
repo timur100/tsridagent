@@ -88,6 +88,7 @@ async def create_idea(
         new_idea = Idea(
             title=idea_data.title,
             description=idea_data.description,
+            menu_item=idea_data.menu_item,
             created_by=user_email
         )
         
