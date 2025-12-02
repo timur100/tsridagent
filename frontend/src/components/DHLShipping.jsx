@@ -317,13 +317,13 @@ const DHLShipping = () => {
                         </span>
                       </div>
                     </td>
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {(shipment.package_weight_grams / 1000).toFixed(1)} kg
                     </td>
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {shipment.service_type === 'V01PAK' ? 'DHL Paket' : shipment.service_type}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {shipment.estimated_delivery
                         ? new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')
                         : '-'}
