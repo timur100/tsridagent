@@ -36,7 +36,7 @@ class IdeaCreate(BaseModel):
     """Create Idea Request"""
     title: str = Field(..., min_length=1, max_length=200)
     description: str = Field(..., min_length=1)
-    menu_item: str = Field(..., min_length=1, max_length=200)
+    menu_item: str = Field(default="Allgemein", min_length=1, max_length=200)
 
 
 class IdeaUpdate(BaseModel):
