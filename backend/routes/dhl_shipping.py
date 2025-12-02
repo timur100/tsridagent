@@ -16,8 +16,16 @@ DHL_API_SECRET = os.environ.get('DHL_API_SECRET')
 DHL_SANDBOX_BASE_URL = os.environ.get('DHL_SANDBOX_BASE_URL')
 DHL_AUTH_API_URL = os.environ.get('DHL_AUTH_API_URL')
 
+# GKP (Geschäftskundenportal) Credentials
+DHL_GKP_USERNAME = os.environ.get('DHL_GKP_USERNAME', 'user-valid')
+DHL_GKP_PASSWORD = os.environ.get('DHL_GKP_PASSWORD', 'SandboxPasswort2023!')
+DHL_EKP_NUMBER = os.environ.get('DHL_EKP_NUMBER')
+DHL_BILLING_NUMBER = os.environ.get('DHL_BILLING_NUMBER')
+
 if not all([DHL_API_KEY, DHL_API_SECRET, DHL_SANDBOX_BASE_URL, DHL_AUTH_API_URL]):
     logger.warning("DHL credentials not fully configured. Some endpoints may not work.")
+
+logger.info(f"DHL Config: Using GKP user '{DHL_GKP_USERNAME}' with EKP '{DHL_EKP_NUMBER}'")
 
 # Token cache
 token_cache = {
