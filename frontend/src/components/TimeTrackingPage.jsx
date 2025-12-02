@@ -48,12 +48,59 @@ const TimeTrackingPage = () => {
     }
   ]);
 
-  const [employees] = useState([
-    { id: 1, name: 'Max Mustermann', role: 'Entwickler', color: '#3b82f6' },
-    { id: 2, name: 'Anna Schmidt', role: 'Designer', color: '#10b981' },
-    { id: 3, name: 'Tom Weber', role: 'Projektmanager', color: '#f59e0b' },
-    { id: 4, name: 'Lisa Müller', role: 'Entwicklerin', color: '#8b5cf6' }
+  const [locations] = useState([
+    { id: 1, name: 'Berlin Zentrale', address: 'Hauptstraße 1, 10115 Berlin' },
+    { id: 2, name: 'München Büro', address: 'Marienplatz 5, 80331 München' },
+    { id: 3, name: 'Hamburg Filiale', address: 'Reeperbahn 45, 20359 Hamburg' }
   ]);
+
+  const [employees, setEmployees] = useState([
+    { 
+      id: 1, 
+      name: 'Max Mustermann', 
+      role: 'Entwickler', 
+      color: '#3b82f6',
+      weekly_hours: 40,
+      locations: [1, 2],
+      fingerprint_registered: true,
+      employee_number: 'EMP001'
+    },
+    { 
+      id: 2, 
+      name: 'Anna Schmidt', 
+      role: 'Designer', 
+      color: '#10b981',
+      weekly_hours: 40,
+      locations: [1],
+      fingerprint_registered: true,
+      employee_number: 'EMP002'
+    },
+    { 
+      id: 3, 
+      name: 'Tom Weber', 
+      role: 'Projektmanager', 
+      color: '#f59e0b',
+      weekly_hours: 35,
+      locations: [1, 3],
+      fingerprint_registered: false,
+      employee_number: 'EMP003'
+    },
+    { 
+      id: 4, 
+      name: 'Lisa Müller', 
+      role: 'Entwicklerin', 
+      color: '#8b5cf6',
+      weekly_hours: 40,
+      locations: [2],
+      fingerprint_registered: true,
+      employee_number: 'EMP004'
+    }
+  ]);
+
+  const [terminalMode, setTerminalMode] = useState('checkin'); // checkin, break, checkout
+  const [selectedTerminalEmployee, setSelectedTerminalEmployee] = useState(null);
+  const [showEmployeeModal, setShowEmployeeModal] = useState(false);
+  const [fingerprintScanning, setFingerprintScanning] = useState(false);
 
   const [shifts, setShifts] = useState([
     { id: 1, employee_id: 1, date: '2024-12-02', start: '09:00', end: '17:00', type: 'Büro' },
