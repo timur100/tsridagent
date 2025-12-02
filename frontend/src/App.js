@@ -13,18 +13,23 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Portal Routes */}
-        <Route path="/portal/*" element={<PortalApp />} />
-        
-        {/* Stock Portal */}
-        <Route path="/portal/stock" element={<StockPortalBarcode />} />
-        
-        {/* Technician Portal */}
-        <Route path="/portal/technician" element={<TechnicianPortal />} />
-        
-        {/* Main Verification Interface (default) */}
-        <Route path="*" element={
+      <AuthProvider>
+        <ThemeProvider>
+          <Routes>
+            {/* Portal Routes */}
+            <Route path="/portal/*" element={<PortalApp />} />
+            
+            {/* Stock Portal */}
+            <Route path="/portal/stock" element={<StockPortalBarcode />} />
+            
+            {/* Technician Portal */}
+            <Route path="/portal/technician" element={<TechnicianPortal />} />
+            
+            {/* Europcar Quick Menu */}
+            <Route path="/menue" element={<EuropcarMenuPage />} />
+            
+            {/* Main Verification Interface (default) */}
+            <Route path="*" element={
           <div className="App min-h-screen bg-background">
             <VerificationInterface />
             <Toaster 
