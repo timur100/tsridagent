@@ -133,19 +133,20 @@ const EuropcarMenuPage = () => {
       </div>
 
       {/* Menu Grid */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {tiles.length === 0 ? (
-          <div className="text-center py-12">
-            <Icons.Grid className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-700' : 'text-gray-400'}`} />
-            <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Keine Menüpunkte konfiguriert
-            </p>
-            <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-              Bitte konfigurieren Sie das Schnellmenü im Admin-Bereich
-            </p>
-          </div>
-        ) : (
-          <div className={`grid ${gridClass} gap-6`}>
+      <div className="max-w-7xl mx-auto px-6 py-8 min-h-[calc(100vh-200px)] flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          {tiles.length === 0 ? (
+            <div className="text-center py-12">
+              <Icons.Grid className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-700' : 'text-gray-400'}`} />
+              <p className={`text-lg font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Keine Menüpunkte konfiguriert
+              </p>
+              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                Bitte konfigurieren Sie das Schnellmenü im Admin-Bereich
+              </p>
+            </div>
+          ) : (
+            <div className={`grid ${gridClass} gap-6 justify-items-center w-full max-w-5xl mx-auto`}>
             {tiles
               .filter(tile => tile.is_active)
               .sort((a, b) => a.order - b.order)
