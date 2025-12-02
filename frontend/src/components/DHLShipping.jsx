@@ -88,6 +88,36 @@ const DHLShipping = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Apply filters
+  useEffect(() => {
+    let filtered = [...allShipments];
+    
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter(shipment => 
+        shipment.shipment_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        shipment.receiver_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        shipment.receiver_city?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        shipment.reference_id?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    
+    // Status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(shipment => shipment.status === statusFilter);
+    }
+    
+    // City filter
+    if (cityFilter !== 'all') {
+      filtered = filtered.filter(shipment => shipment.receiver_city === cityFilter);
+    }
+    
+    setShipments(filtered);
+  }, [searchTerm, statusFilter, cityFilter, allShipments]);
+
+  // Get unique cities for filter
+  const uniqueCities = [...new Set(allShipments.map(s => s.receiver_city).filter(Boolean))].sort();
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'delivered':
