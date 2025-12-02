@@ -51,11 +51,11 @@ const EuropcarMenuPage = () => {
   };
 
   const handleTileClick = (tile) => {
-    if (tile.link) {
-      if (tile.link.startsWith('http')) {
-        window.open(tile.link, '_blank');
+    if (tile.target_url) {
+      if (tile.target_type === 'external' || tile.target_url.startsWith('http')) {
+        window.open(tile.target_url, '_blank');
       } else {
-        navigate(tile.link);
+        navigate(tile.target_url);
       }
     }
   };
