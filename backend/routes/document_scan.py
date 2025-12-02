@@ -20,66 +20,70 @@ async def process_document(image: UploadFile = File(...)):
         # Read the uploaded file
         contents = await image.read()
         
-        # Check if Regula API is available
-        if not REGULA_AVAILABLE:
-            # Return mock data if Regula service is not running
-            mock_result = {
-                "success": True,
-                "data": {
-                    "overall_status": "OK",
-                    "document_type": "Deutscher Reisepass (Mock)",
-                    "text_fields": {
-                        "document_number": "C01X00T47",
-                        "document_number_valid": True,
-                        "first_name": "MAX",
-                        "last_name": "MUSTERMANN",
-                        "birth_date": "12.08.1990",
-                        "sex": "M",
-                        "nationality": "DEUTSCH",
-                        "expiry_date": "01.08.2030",
-                        "expiry_date_valid": True
-                    },
-                    "scanned_at": datetime.now().isoformat(),
-                    "mock_mode": True
-                }
-            }
-            return JSONResponse(content=mock_result)
-        
-        # REAL REGULA API INTEGRATION
+        # Try to connect to Regula API
         try:
-            # Convert image to base64
-            image_base64 = base64.b64encode(contents).decode('utf-8')
-            
-            # Create process request
-            request = ProcessRequest()
-            request.process_param = ProcessParams()
-            request.process_param.scenario = Scenario.FULL_PROCESS
-            request.images = [image_base64]
-            
-            # Process the document
-            response = regula_api.process(request)
-            
-            # Parse the response
-            result = parse_regula_response(response)
-            
-            return JSONResponse(content={
-                "success": True,
-                "data": result
-            })
-            
-        except Exception as regula_error:
-            print(f"Regula API error: {regula_error}")
-            # Fallback to mock data on error
-            return JSONResponse(content={
-                "success": True,
-                "data": {
-                    "overall_status": "ERROR",
-                    "document_type": "Fehler beim Scannen",
-                    "text_fields": {},
-                    "error": str(regula_error),
-                    "mock_mode": True
-                }
-            })
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                # Test if Regula service is available
+                health_check = await client.get(f"{REGULA_API_URL}/api/ping")
+                
+                if health_check.status_code == 200:
+                    # Regula is available, make actual API call
+                    image_base64 = base64.b64encode(contents).decode('utf-8')
+                    
+                    request_data = {
+                        "processParam": {
+                            "scenario": "FullProcess",
+                            "resultTypeOutput": ["status", "text", "images"]
+                        },
+                        "List": [
+                            {
+                                "ImageData": {
+                                    "image": image_base64
+                                }
+                            }
+                        ]
+                    }
+                    
+                    response = await client.post(
+                        f"{REGULA_API_URL}/api/process",
+                        json=request_data
+                    )
+                    
+                    if response.status_code == 200:
+                        regula_data = response.json()
+                        result = parse_regula_response_http(regula_data)
+                        
+                        return JSONResponse(content={
+                            "success": True,
+                            "data": result
+                        })
+        
+        except (httpx.ConnectError, httpx.TimeoutException) as e:
+            print(f"Regula service not available: {e}")
+        
+        # Fallback to mock data if Regula is not available
+        mock_result = {
+            "success": True,
+            "data": {
+                "overall_status": "OK",
+                "document_type": "Deutscher Reisepass (Mock)",
+                "text_fields": {
+                    "document_number": "C01X00T47",
+                    "document_number_valid": True,
+                    "first_name": "MAX",
+                    "last_name": "MUSTERMANN",
+                    "birth_date": "12.08.1990",
+                    "sex": "M",
+                    "nationality": "DEUTSCH",
+                    "expiry_date": "01.08.2030",
+                    "expiry_date_valid": True
+                },
+                "scanned_at": datetime.now().isoformat(),
+                "mock_mode": True,
+                "note": "Regula Service nicht verfügbar - Mock-Daten werden verwendet"
+            }
+        }
+        return JSONResponse(content=mock_result)
         
     except Exception as e:
         return JSONResponse(
