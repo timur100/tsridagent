@@ -167,6 +167,26 @@ const DHLShipping = () => {
             </button>
           </div>
 
+          {/* Demo Data Banner */}
+          {shipments.length > 0 && (
+            <div className={`mb-4 p-4 rounded-lg border-l-4 ${
+              theme === 'dark' 
+                ? 'bg-blue-900/20 border-blue-500 text-blue-200' 
+                : 'bg-blue-50 border-blue-500 text-blue-800'
+            }`}>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">ℹ️</span>
+                <div>
+                  <p className="font-semibold">Demo-Daten zur Demonstration</p>
+                  <p className="text-sm mt-1">
+                    Die angezeigten Sendungen sind Test-Daten. Sobald Sie echte Sendungen über die DHL API erstellen, 
+                    werden diese hier automatisch gespeichert und angezeigt.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Error Message */}
           {error && (
             <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
