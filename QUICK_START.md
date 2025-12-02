@@ -1,155 +1,166 @@
-# ⚡ Quick Start Guide
+# 🚀 DHL Sandbox - Schnellstart
 
-## 🎯 Zwei Nutzungsarten:
+## ✅ Sofort testbar (ohne zusätzliche Registrierung)
 
----
+### 1️⃣ API Health Check (zeigt, dass OAuth2 funktioniert)
+```bash
+curl "https://timetrack-connect.preview.emergentagent.com/api/dhl/health"
+```
 
-## 1️⃣ **Bei Emergent entwickeln** (Standard)
-
-### Einfach normal weiterarbeiten:
-- Code ändern bei Emergent.sh
-- Features hinzufügen
-- Im Browser testen
-- **Nichts Spezielles nötig!**
-
-### Banned Documents Check deaktivieren (für Testing):
-
-1. **App öffnen** bei Emergent
-2. **Admin-Panel** (⚙️ Zahnrad-Icon oben rechts)
-3. **Settings** → **Gesperrte Dokumente & Auto-Ban**
-4. **Toggle "🧪 Gesperrte Dokumente Prüfung" AUS**
-5. **Speichern**
-
-✅ Jetzt werden gesperrte Dokumente NICHT mehr blockiert!
+**Erwartetes Ergebnis**: `"mode": "live"` ✓
 
 ---
 
-## 2️⃣ **Electron-App erstellen** (für Download)
+### 2️⃣ Mock-Daten abrufen (zeigt Datenstruktur)
+```bash
+curl "https://timetrack-connect.preview.emergentagent.com/api/dhl/shipments/mock"
+```
 
-### Wenn Sie eine neue Windows-App brauchen:
+**Erwartetes Ergebnis**: 3 Test-Sendungen mit allen Details
+
+---
+
+### 3️⃣ Frontend-Test im Browser
+
+**URL öffnen**:
+```
+https://timetrack-connect.preview.emergentagent.com/portal/admin
+```
+
+**Login**:
+- Username: `admin@tsrid.com`
+- Password: `admin123`
+
+**Navigation**:
+1. Klicken Sie auf "R&D" Tab (oben)
+2. Scrollen Sie im Sidebar nach unten
+3. Finden Sie "Paketversand" Kategorie
+4. Klicken Sie auf "DHL" 📦
+
+**Was Sie sehen**:
+- ✅ Übersicht mit Statistiken (Gesamt, Unterwegs, Zugestellt, Ausstehend)
+- ✅ Tabs: Übersicht, Sendungsverfolgung, Neue Sendung, Historie, Einstellungen
+- ✅ Tabelle mit 3 Mock-Sendungen
+- ✅ Funktionen zum Erstellen neuer Sendungen
+
+---
+
+## 🎯 Was aktuell funktioniert
+
+### ✅ Backend (voll funktionsfähig):
+- OAuth2-Authentifizierung mit DHL Sandbox
+- Token-Management (automatische Erneuerung)
+- Health-Check-Endpoint
+- Mock-Daten-Endpoint
+- Shipment-Creation-Endpoint (bereit)
+
+### ✅ Frontend (voll funktionsfähig):
+- DHL-Seite mit vollem UI
+- Statistik-Dashboard
+- Sendungsverwaltung
+- Tabellen-Ansicht
+- Navigation & Routing
+
+---
+
+## 🔐 Für ECHTE Sendungen benötigen Sie:
+
+### Schritt 1: DHL Developer Account
+1. Gehen Sie zu https://developer.dhl.com
+2. Erstellen Sie kostenlosen Account
+3. Verifizieren Sie Ihre Email
+
+### Schritt 2: APP erstellen
+1. Im Developer Portal: "Create New APP"
+2. Fügen Sie "DHL Paket DE Versenden API" hinzu
+3. Wählen Sie "Customer (Integration) Testing" (Sandbox)
+
+### Schritt 3: Credentials erhalten
+Nach 1-3 Werktagen erhalten Sie:
+- Ihren API Key
+- Ihren API Secret
+- Zugang zu Sandbox mit echten Test-Abrechnungsnummern
+
+### Schritt 4: Credentials einsetzen
+Ersetzen Sie in `/app/backend/.env`:
+```env
+DHL_API_KEY=IHR_ECHTER_API_KEY
+DHL_API_SECRET=IHR_ECHTES_API_SECRET
+```
+
+Restart Backend:
+```bash
+sudo supervisorctl restart backend
+```
+
+### Schritt 5: Testen Sie echte Sendungen!
+Jetzt können Sie:
+- ✅ Echte Test-Sendungen erstellen
+- ✅ DHL-Labels generieren (PDF)
+- ✅ Tracking-Informationen abrufen
+- ✅ Alle DHL-Services testen
+
+---
+
+## 📊 Beispiel-Request für echte Sendung
 
 ```bash
-# 1. Electron-Build erstellen
-cd /app/electron-app
-bash build.sh
-
-# 2. Download-Paket erstellen
-cd /app
-bash create-electron-package.sh
-# Versionsnummer eingeben (z.B. "5")
-
-# 3. Fertig!
-# Datei: electron-scanner-package-v5.zip
-# Location: /app/frontend/public/
+curl -X POST "https://timetrack-connect.preview.emergentagent.com/api/dhl/shipments" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reference_id": "ORDER-12345",
+    "sender_name": "Ihre Firma GmbH",
+    "sender_phone": "+491234567890",
+    "sender_email": "versand@ihre-firma.de",
+    "sender_street": "Hauptstraße",
+    "sender_house_number": "10",
+    "sender_postal_code": "10115",
+    "sender_city": "Berlin",
+    "receiver_name": "Max Mustermann",
+    "receiver_phone": "+49987654321",
+    "receiver_email": "max@example.com",
+    "receiver_street": "Berliner Straße",
+    "receiver_house_number": "42",
+    "receiver_postal_code": "80331",
+    "receiver_city": "München",
+    "receiver_country_code": "DE",
+    "package_weight_grams": 1500,
+    "package_length_cm": 25,
+    "package_width_cm": 20,
+    "package_height_cm": 10,
+    "package_description": "Elektronik",
+    "service_type": "V01PAK"
+  }'
 ```
 
-### Download-Link teilen:
-```
-https://job-portal-harmony.emergentagent.com/electron-scanner-package-v5.zip
-```
+**Hinweis**: Dies funktioniert NUR mit gültigen Sandbox-Credentials!
 
 ---
 
-## 🧪 Testing Features:
+## 💡 Wichtige Links
 
-### **Feature: Banned Documents Check deaktivieren**
-
-**Wo finde ich das?**
-```
-Admin-Panel → Settings → Gesperrte Dokumente & Auto-Ban
-→ 🧪 Gesperrte Dokumente Prüfung [AN/AUS]
-```
-
-**Wofür?**
-- **AN:** Produktionsmodus - Gesperrte Dokumente werden blockiert
-- **AUS:** Test-Modus - Alle Dokumente werden durchgelassen
-
-**Console-Output:**
-- AN: `🚨 Banned check result: ...`
-- AUS: `ℹ️ Banned document check is DISABLED - skipping check`
+- **Developer Portal**: https://developer.dhl.com
+- **API-Dokumentation**: https://developer.dhl.com/api-reference/parcel-de-shipping-post-parcel-germany-v2
+- **Support**: https://support-developer.dhl.com
+- **Detaillierte Testing-Anleitung**: Siehe `/app/DHL_SANDBOX_TESTING.md`
 
 ---
 
-## 📁 Wichtige Dateien:
+## ✅ Zusammenfassung
 
-```
-/app/
-├── BUILD_GUIDE.md                ← Vollständige Build-Anleitung
-├── QUICK_START.md               ← Diese Datei
-├── create-electron-package.sh   ← Paket-Ersteller
-│
-├── frontend/                     ← Emergent-Entwicklung (HIER entwickeln!)
-│   └── src/
-│       └── components/
-│
-├── electron-app/                 ← Electron-Build (Auto-generiert)
-│   ├── build.sh
-│   ├── main.js
-│   └── renderer/                 ← NICHT hier entwickeln!
-│
-└── frontend/public/              ← Download-Pakete hier
-    └── electron-scanner-package-vX.zip
-```
+**Was läuft JETZT**:
+- ✓ Backend mit DHL OAuth2 verbunden
+- ✓ Frontend-UI vollständig funktionsfähig
+- ✓ Mock-Daten für Entwicklung verfügbar
+- ✓ Infrastruktur bereit für echte Sendungen
 
----
+**Was Sie für echte Tests brauchen**:
+- DHL Developer Account (kostenlos!)
+- APP-Registrierung (5 Minuten)
+- Freigabe abwarten (1-3 Werktage)
+- Credentials einsetzen (30 Sekunden)
 
-## ✅ Checkliste: Neues Feature deployen
-
-### **Emergent (Browser):**
-- [ ] Feature entwickeln
-- [ ] Testen im Browser
-- [ ] Fertig! ✅
-
-### **Electron-App:**
-- [ ] Feature entwickeln (wie oben)
-- [ ] `cd /app/electron-app && bash build.sh`
-- [ ] `cd /app && bash create-electron-package.sh`
-- [ ] Version erhöhen (z.B. v4 → v5)
-- [ ] Download-Link teilen
-
----
-
-## 🚨 Troubleshooting:
-
-### **Problem: Banned Check greift immer**
-**Lösung:** Admin-Panel → Settings → Toggle ausschalten
-
-### **Problem: Electron-App zeigt alte Version**
-**Lösung:** 
-```bash
-cd C:\scanner
-rmdir /s /q node_modules renderer
-npm install
-build-on-windows-npm.bat
-```
-
-### **Problem: Build schlägt fehl**
-**Lösung:**
-```bash
-cd /app/frontend
-yarn build  # Manuell bauen
-cd /app/electron-app
-bash build.sh
-```
-
----
-
-## 💡 Best Practices:
-
-1. **Entwickeln:** Immer in `/app/frontend/src/`
-2. **Testen:** Erst Browser, dann Electron
-3. **Builden:** Nur wenn Electron-App nötig
-4. **Versionieren:** Jedes Release neue Version (v4, v5, ...)
-
----
-
-## 🎉 Das war's!
-
-**Normal entwickeln bei Emergent = Electron-App bleibt unberührt ✅**
-
-Wenn Electron-App nötig:
-```bash
-bash /app/create-electron-package.sh
-```
-
-**Fertig!** 🚀
+**Dann können Sie**:
+- Echte Test-Labels erstellen
+- Sendungen tracken
+- Vollständige DHL-Integration testen
