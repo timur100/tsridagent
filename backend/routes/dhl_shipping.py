@@ -193,6 +193,7 @@ def build_shipment_payload(shipment: CreateShipmentRequest) -> Dict[str, Any]:
                     "serviceType": shipment.service_type,
                     "weight": total_weight,
                     "contents": shipment.package_description,
+                    "billingNumber": DHL_BILLING_NUMBER,
                 },
                 "references": [
                     {
