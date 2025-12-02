@@ -2972,12 +2972,17 @@ const AdminPortalContent = () => {
                         )}
                       </div>
                     )}
+
+                    {/* DHL Shipping */}
+                    {rndTab === 'dhl-shipping' && (
+                      <DHLShipping />
+                    )}
                     
                     {/* Default Placeholder für alle anderen Tabs */}
                     {!['facematch', 'fingerprint', 'iris-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
                         'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system',
-                        'fastfood-system', 'delivery-service', 'mobility-services'].includes(rndTab) && (
+                        'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping'].includes(rndTab) && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
