@@ -518,6 +518,8 @@ async def get_shipment_statistics():
         failed = await db.dhl_shipments.count_documents({"status": "failed"})
         in_transit = await db.dhl_shipments.count_documents({"status": "in_transit"})
         delivered = await db.dhl_shipments.count_documents({"status": "delivered"})
+        imported = await db.dhl_shipments.count_documents({"status": "imported"})
+        pending = await db.dhl_shipments.count_documents({"status": "pending"})
         
         return {
             "success": True,
@@ -527,7 +529,8 @@ async def get_shipment_statistics():
                 "failed": failed,
                 "in_transit": in_transit,
                 "delivered": delivered,
-                "pending": total - delivered - failed
+                "imported": imported,
+                "pending": pending
             }
         }
     
