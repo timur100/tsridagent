@@ -348,82 +348,91 @@ async def create_shipment(request: CreateShipmentRequest):
 @router.get("/shipments/{shipment_number}/tracking")
 async def get_shipment_tracking(shipment_number: str):
     """
-    Retrieve real-time tracking information for a shipment from DHL
-    and update the status in our database
+    Retrieve tracking information for a shipment.
+    First checks our database, then optionally fetches live data from DHL API.
     """
     try:
         logger.info(f"Fetching tracking for shipment: {shipment_number}")
         
-        # Try DHL Tracking API (public, no auth needed)
-        tracking_url = f"https://api-eu.dhl.com/track/shipments"
+        # First, try to get shipment from our database
+        shipment = await db.shipments.find_one(
+            {"shipment_number": shipment_number},
+            {"_id": 0}
+        )
         
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            try:
-                # DHL Tracking API uses different authentication
-                headers = {
-                    "DHL-API-Key": DHL_API_KEY
-                }
-                
-                response = await client.get(
-                    tracking_url,
-                    params={"trackingNumber": shipment_number},
-                    headers=headers
-                )
-                
-                if response.status_code == 200:
-                    tracking_data = response.json()
-                    
-                    # Extract status from tracking data
-                    status_desc = "imported"
-                    delivered_at = None
-                    
-                    if "shipments" in tracking_data and len(tracking_data["shipments"]) > 0:
-                        shipment_info = tracking_data["shipments"][0]
-                        status_code = shipment_info.get("status", {}).get("statusCode", "")
-                        
-                        # Map DHL status codes to our status
-                        if status_code in ["delivered", "DELIVERED"]:
-                            status_desc = "delivered"
-                            # Try to extract delivery timestamp
-                            events = shipment_info.get("events", [])
-                            for event in events:
-                                if event.get("statusCode") in ["delivered", "DELIVERED"]:
-                                    delivered_at = event.get("timestamp")
-                                    break
-                        elif status_code in ["transit", "TRANSIT"]:
-                            status_desc = "in_transit"
-                        elif status_code in ["failure", "FAILURE"]:
-                            status_desc = "failed"
-                    
-                    # Update database
-                    update_data = {"status": status_desc}
-                    if delivered_at:
-                        update_data["delivered_at"] = datetime.fromisoformat(delivered_at.replace('Z', '+00:00'))
-                    
-                    await db.dhl_shipments.update_one(
-                        {"shipment_number": shipment_number},
-                        {"$set": update_data}
-                    )
-                    
-                    logger.info(f"Updated shipment {shipment_number} status to: {status_desc}")
-                    
-                    return {
-                        "success": True,
-                        "shipment_number": shipment_number,
-                        "status": status_desc,
-                        "tracking_data": tracking_data,
-                        "message": "Status aktualisiert"
+        if not shipment:
+            logger.warning(f"Shipment {shipment_number} not found in database")
+            return {
+                "success": False,
+                "message": "Sendung nicht gefunden"
+            }
+        
+        # Try to fetch live tracking from DHL API (if credentials available)
+        if DHL_API_KEY:
+            tracking_url = f"https://api-eu.dhl.com/track/shipments"
+            
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                try:
+                    headers = {
+                        "DHL-API-Key": DHL_API_KEY
                     }
                     
-            except Exception as e:
-                logger.warning(f"DHL Tracking API not available: {str(e)}")
+                    response = await client.get(
+                        tracking_url,
+                        params={"trackingNumber": shipment_number},
+                        headers=headers
+                    )
+                    
+                    if response.status_code == 200:
+                        tracking_data = response.json()
+                        
+                        # Extract status from tracking data
+                        status_desc = shipment["status"]
+                        delivered_at = shipment.get("delivered_at")
+                        
+                        if "shipments" in tracking_data and len(tracking_data["shipments"]) > 0:
+                            shipment_info = tracking_data["shipments"][0]
+                            status_code = shipment_info.get("status", {}).get("statusCode", "")
+                            
+                            # Map DHL status codes to our status
+                            if status_code in ["delivered", "DELIVERED"]:
+                                status_desc = "delivered"
+                                # Try to extract delivery timestamp
+                                events = shipment_info.get("events", [])
+                                for event in events:
+                                    if event.get("statusCode") in ["delivered", "DELIVERED"]:
+                                        delivered_at = event.get("timestamp")
+                                        break
+                            elif status_code in ["transit", "TRANSIT"]:
+                                status_desc = "in_transit"
+                            elif status_code in ["failure", "FAILURE"]:
+                                status_desc = "failed"
+                        
+                        # Update database with live data
+                        update_data = {"status": status_desc}
+                        if delivered_at and isinstance(delivered_at, str):
+                            update_data["delivered_at"] = datetime.fromisoformat(delivered_at.replace('Z', '+00:00'))
+                        
+                        await db.shipments.update_one(
+                            {"shipment_number": shipment_number},
+                            {"$set": update_data}
+                        )
+                        
+                        # Update shipment dict with new data
+                        shipment["status"] = status_desc
+                        if delivered_at:
+                            shipment["delivered_at"] = delivered_at
+                        
+                        logger.info(f"Updated shipment {shipment_number} with live tracking data")
+                        
+                except Exception as e:
+                    logger.warning(f"DHL Tracking API not available: {str(e)}")
         
-        # Fallback: Return info that tracking is not available
+        # Return shipment data from database (with or without live update)
         return {
-            "success": False,
-            "shipment_number": shipment_number,
-            "message": "Tracking-Informationen nicht verfügbar. DHL Tracking API benötigt separate Freigabe.",
-            "tracking_url": f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}"
+            "success": True,
+            "tracking": shipment,
+            "message": "Sendungsinformationen abgerufen"
         }
 
     except Exception as e:
