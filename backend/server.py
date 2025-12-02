@@ -325,6 +325,7 @@ app.include_router(europcar_tracking_router)
 app.include_router(europcar_analytics_router)
 app.include_router(europcar_automation_router)
 app.include_router(europcar_ai_router)
+app.include_router(dhl_shipping_router)
 
 # Include the router in the main app
 app.include_router(api_router)
