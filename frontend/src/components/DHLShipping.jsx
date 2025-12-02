@@ -158,39 +158,10 @@ const DHLShipping = () => {
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Ausstehend
           </p>
-        </div>
-      </div>
+          </div>
+          </div>
 
-      {/* Tabs */}
-      <div className="flex gap-2 border-b" style={{ borderColor: theme === 'dark' ? '#3a3a3a' : '#e5e7eb' }}>
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-            activeTab === 'overview'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          Übersicht
-        </button>
-        <button
-          onClick={() => setActiveTab('tracking')}
-          className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-            activeTab === 'tracking'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-          }`}
-        >
-          Sendungsverfolgung
-        </button>
-      </div>
-
-      {/* Shipments Table */}
-      {activeTab === 'overview' && (
+          {/* Shipments Table */}
         <div className={`rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
           <div className="overflow-x-auto">
             <table className="w-full font-mono">
