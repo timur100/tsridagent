@@ -21,9 +21,9 @@ const EuropcarMenuPage = () => {
     try {
       setLoading(true);
       
-      // Fetch Europcar tenant ID
-      const tenantsResult = await apiCall('/api/tenants');
-      console.log('Tenants API result:', tenantsResult);
+      // Fetch available tenants from Quick Menu API
+      const tenantsResult = await apiCall('/api/quick-menu/tenants/list');
+      console.log('Quick Menu Tenants API result:', tenantsResult);
       
       if (!tenantsResult.success || !tenantsResult.data) {
         console.error('Failed to fetch tenants:', tenantsResult.error);
@@ -31,36 +31,36 @@ const EuropcarMenuPage = () => {
         return;
       }
       
-      const tenantsResponse = tenantsResult.data;
-      const europcar = tenantsResponse.find(t => t.name === 'Europcar');
+      const tenantsData = tenantsResult.data;
+      const tenantsList = tenantsData.tenants || [];
+      console.log('Available tenants:', tenantsList);
+      
+      // Find Europcar tenant (search by name)
+      const europcar = tenantsList.find(t => 
+        t.name && t.name.toLowerCase().includes('europcar')
+      );
       
       if (!europcar) {
-        console.error('Europcar tenant not found');
+        console.error('Europcar tenant not found in quick menu tenants');
         setLoading(false);
         return;
       }
 
-      console.log('Europcar tenant:', europcar);
+      console.log('Europcar tenant found:', europcar);
 
-      // Fetch quick menu tiles for Europcar
-      const tilesResult = await apiCall(`/api/quick-menu/tiles/tenant/${europcar.tenant_id}`);
-      console.log('Tiles API result:', tilesResult);
+      // Use preview endpoint to get both config and tiles
+      const previewResult = await apiCall(`/api/quick-menu/preview/${europcar.id}`);
+      console.log('Preview API result:', previewResult);
       
-      if (tilesResult.success && tilesResult.data) {
-        setTiles(tilesResult.data.tiles || []);
+      if (previewResult.success && previewResult.data) {
+        const previewData = previewResult.data;
+        setTiles(previewData.tiles || []);
+        setConfig(previewData.config || null);
+        console.log('Loaded tiles:', previewData.tiles?.length || 0);
+        console.log('Loaded config:', previewData.config);
       } else {
-        console.error('Failed to fetch tiles:', tilesResult.error);
+        console.error('Failed to fetch preview:', previewResult.error);
         setTiles([]);
-      }
-
-      // Fetch quick menu config for Europcar
-      const configResult = await apiCall(`/api/quick-menu/config/tenant/${europcar.tenant_id}`);
-      console.log('Config API result:', configResult);
-      
-      if (configResult.success && configResult.data) {
-        setConfig(configResult.data.config || null);
-      } else {
-        console.error('Failed to fetch config:', configResult.error);
         setConfig(null);
       }
 
