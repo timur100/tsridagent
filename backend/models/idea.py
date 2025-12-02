@@ -43,4 +43,5 @@ class IdeaUpdate(BaseModel):
     """Update Idea Request"""
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = None
+    menu_item: Optional[str] = Field(None, min_length=1, max_length=200)
     status: Optional[Literal['neu', 'in_entwicklung', 'erledigt']] = None
