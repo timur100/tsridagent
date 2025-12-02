@@ -298,19 +298,15 @@ const DHLShipping = () => {
                   shipments.map((shipment) => (
                   <tr
                     key={shipment.shipment_number || shipment.reference_id}
-                    className={`border-t border-gray-700 transition-colors ${
-                      theme === 'dark'
-                        ? 'hover:bg-[#2a2a2a]'
-                        : 'hover:bg-gray-50'
-                    }`}
+                    className="border-t border-gray-700 hover:bg-[#2a2a2a] transition-colors duration-150 cursor-pointer"
                   >
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {shipment.shipment_number || shipment.reference_id}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {shipment.receiver_name}
                     </td>
-                    <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <td className="px-4 py-3 text-sm text-gray-300">
                       {shipment.receiver_city}, {shipment.receiver_postal_code}
                     </td>
                     <td className="px-4 py-3 text-sm">
