@@ -1,43 +1,72 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Package, Truck, MapPin, User, Mail, Phone, Home, Calendar, Clock, CheckCircle, XCircle, Search, TrendingUp, Settings, Plus, FileText } from 'lucide-react';
+import { Package, Truck, MapPin, User, Mail, Phone, Home, Calendar, Clock, CheckCircle, XCircle, Search, TrendingUp, Settings, Plus, FileText, RefreshCw } from 'lucide-react';
 import SubTabNavigation from './SubTabNavigation';
 
 const DHLShipping = () => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
-  const [shipments, setShipments] = useState([
-    {
-      id: 'DHL001234567',
-      recipient: 'Max Mustermann',
-      address: 'Hauptstraße 123, 10115 Berlin',
-      status: 'in_transit',
-      created: '2024-12-01T10:30:00',
-      estimated_delivery: '2024-12-03T16:00:00',
-      weight: '2.5 kg',
-      service: 'DHL Paket'
-    },
-    {
-      id: 'DHL001234568',
-      recipient: 'Anna Schmidt',
-      address: 'Marienplatz 5, 80331 München',
-      status: 'delivered',
-      created: '2024-11-30T14:20:00',
-      delivered: '2024-12-01T11:45:00',
-      weight: '1.2 kg',
-      service: 'DHL Express'
-    },
-    {
-      id: 'DHL001234569',
-      recipient: 'Thomas Weber',
-      address: 'Reeperbahn 45, 20359 Hamburg',
-      status: 'pending',
-      created: '2024-12-01T15:00:00',
-      estimated_delivery: '2024-12-04T14:00:00',
-      weight: '0.8 kg',
-      service: 'DHL Paket'
+  const [shipments, setShipments] = useState([]);
+  const [statistics, setStatistics] = useState({
+    total: 0,
+    created: 0,
+    failed: 0,
+    in_transit: 0,
+    delivered: 0,
+    pending: 0
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch shipments from backend
+  const fetchShipments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setShipments(data.shipments || []);
+      } else {
+        setError('Fehler beim Laden der Sendungen');
+      }
+    } catch (err) {
+      console.error('Error fetching shipments:', err);
+      setError('Verbindungsfehler zum Server');
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  // Fetch statistics
+  const fetchStatistics = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/stats/summary`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setStatistics(data.statistics);
+      }
+    } catch (err) {
+      console.error('Error fetching statistics:', err);
+    }
+  };
+
+  // Load data on component mount
+  useEffect(() => {
+    fetchShipments();
+    fetchStatistics();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(() => {
+      fetchShipments();
+      fetchStatistics();
+    }, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {
