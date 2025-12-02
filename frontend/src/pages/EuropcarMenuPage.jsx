@@ -31,13 +31,17 @@ const EuropcarMenuPage = () => {
         return;
       }
 
+      console.log('Europcar tenant:', europcar);
+
       // Fetch quick menu tiles for Europcar
-      const tilesResponse = await apiCall(`/api/quick-menu/${europcar.id}/tiles`);
-      setTiles(tilesResponse || []);
+      const tilesResponse = await apiCall(`/api/quick-menu/tiles/tenant/${europcar.tenant_id}`);
+      console.log('Tiles response:', tilesResponse);
+      setTiles(tilesResponse?.tiles || []);
 
       // Fetch quick menu config for Europcar
-      const configResponse = await apiCall(`/api/quick-menu/${europcar.id}/config`);
-      setConfig(configResponse);
+      const configResponse = await apiCall(`/api/quick-menu/config/tenant/${europcar.tenant_id}`);
+      console.log('Config response:', configResponse);
+      setConfig(configResponse?.config || null);
 
       setLoading(false);
     } catch (error) {
