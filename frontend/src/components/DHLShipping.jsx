@@ -162,7 +162,7 @@ const DHLShipping = () => {
           </div>
 
           {/* Shipments Table */}
-        <div className={`rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+          <div className={`rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
           <div className="overflow-x-auto">
             <table className="w-full font-mono">
               <thead>
