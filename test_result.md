@@ -355,7 +355,7 @@ backend:
     file: "frontend/src/components/DHLShipping.jsx, frontend/src/components/RnDSidebar.jsx, frontend/src/pages/AdminPortal.jsx"
     stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: false
           agent: "testing"
