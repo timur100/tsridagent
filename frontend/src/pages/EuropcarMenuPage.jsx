@@ -200,23 +200,45 @@ const EuropcarMenuPage = () => {
       </div>
 
       {/* Footer with TSRID Logo */}
-      <footer className={`py-6 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'}`}>
+      <footer className={`py-8 border-t ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-800' : 'bg-gray-50 border-gray-200'}`}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-col items-center justify-center gap-3">
-            {/* TSRID Fingerprint Logo SVG */}
-            <div className="opacity-70">
-              <svg width="48" height="48" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Red fingerprint icon */}
-                <path d="M50 10C30 10 15 25 15 45C15 65 30 80 50 80C70 80 85 65 85 45C85 25 70 10 50 10Z" stroke="#c00000" strokeWidth="3" fill="none"/>
-                <path d="M50 20C35 20 25 30 25 45C25 60 35 70 50 70" stroke="#c00000" strokeWidth="3" fill="none"/>
-                <path d="M50 30C40 30 35 35 35 45C35 55 40 60 50 60" stroke="#c00000" strokeWidth="3" fill="none"/>
-                <path d="M45 45C45 42 47 40 50 40C53 40 55 42 55 45C55 48 53 50 50 50" stroke="#c00000" strokeWidth="3" fill="none"/>
-                {/* Frame/border */}
-                <rect x="10" y="10" width="35" height="35" stroke="#c00000" strokeWidth="4" fill="none" rx="3"/>
-              </svg>
+            {/* TSRID Logo - Simple Text Version */}
+            <div className="flex items-center gap-2">
+              {/* Red fingerprint symbol */}
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                theme === 'dark' ? 'bg-[#c00000]/20' : 'bg-[#c00000]/10'
+              }`}>
+                <svg 
+                  width="24" 
+                  height="24" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="#c00000" 
+                  strokeWidth="2"
+                  strokeLinecap="round" 
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/>
+                  <path d="M14 13.12c0 2.38 0 6.38-1 8.88"/>
+                  <path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/>
+                  <path d="M2 12a10 10 0 0 1 18-6"/>
+                  <path d="M2 16h.01"/>
+                  <path d="M21.8 16c.2-2 .131-5.354 0-6"/>
+                  <path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/>
+                  <path d="M8.65 22c.21-.66.45-1.32.57-2"/>
+                  <path d="M9 6.8a6 6 0 0 1 9 5.2v2"/>
+                </svg>
+              </div>
+              {/* TSRID Text Logo */}
+              <div>
+                <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  TSRID
+                </span>
+              </div>
             </div>
             <div className="text-center">
-              <p className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+              <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                 Powered by TSRID Forensic Solutions
               </p>
             </div>
