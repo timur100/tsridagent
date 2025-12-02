@@ -11,6 +11,10 @@ const TimeTrackingPage = () => {
   const [isTracking, setIsTracking] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [currentProject, setCurrentProject] = useState(null);
+  const [currentWeek, setCurrentWeek] = useState(new Date());
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [timeEntries, setTimeEntries] = useState([
     {
       id: 1,
