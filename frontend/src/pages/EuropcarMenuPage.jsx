@@ -157,7 +157,7 @@ const EuropcarMenuPage = () => {
                     key={tile.tile_id}
                     onClick={() => handleTileClick(tile)}
                     disabled={!tile.target_url}
-                    className={`p-8 rounded-xl border-2 transition-all duration-200 ${
+                    className={`w-64 h-64 p-8 rounded-xl border-2 transition-all duration-200 ${
                       theme === 'dark'
                         ? 'bg-[#1a1a1a] border-gray-800 hover:border-gray-700 hover:bg-[#222222]'
                         : 'bg-white border-gray-200 hover:border-gray-300 hover:shadow-lg'
