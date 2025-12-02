@@ -23,6 +23,32 @@ const DHLShipping = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
+  
+  // Modal state
+  const [selectedShipment, setSelectedShipment] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Format date with leading zeros
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  };
+
+  // Open modal with shipment details
+  const openShipmentDetails = (shipment) => {
+    setSelectedShipment(shipment);
+    setIsModalOpen(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedShipment(null);
+  };
 
   // Fetch shipments from backend
   const fetchShipments = async () => {
