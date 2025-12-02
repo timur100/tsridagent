@@ -314,49 +314,49 @@ async def health_check():
             "mode": "mock"
         }
 
-@router.get(\"/shipments/mock\")
+@router.get("/shipments/mock")
 async def get_mock_shipments():
-    \"\"\"Get mocked shipment data for testing\"\"\"
+    """Get mocked shipment data for testing"""
     return {
-        \"success\": True,
-        \"shipments\": [
+        "success": True,
+        "shipments": [
             {
-                \"id\": \"MOCK001234567\",
-                \"shipment_number\": \"DHL001234567\",
-                \"reference_id\": \"REF-2024-001\",
-                \"recipient\": \"Max Mustermann\",
-                \"address\": \"Hauptstraße 123, 10115 Berlin\",
-                \"status\": \"in_transit\",
-                \"created\": \"2024-12-01T10:30:00\",
-                \"estimated_delivery\": \"2024-12-03T16:00:00\",
-                \"weight\": \"2.5 kg\",
-                \"service\": \"DHL Paket\"
+                "id": "MOCK001234567",
+                "shipment_number": "DHL001234567",
+                "reference_id": "REF-2024-001",
+                "recipient": "Max Mustermann",
+                "address": "Hauptstraße 123, 10115 Berlin",
+                "status": "in_transit",
+                "created": "2024-12-01T10:30:00",
+                "estimated_delivery": "2024-12-03T16:00:00",
+                "weight": "2.5 kg",
+                "service": "DHL Paket"
             },
             {
-                \"id\": \"MOCK001234568\",
-                \"shipment_number\": \"DHL001234568\",
-                \"reference_id\": \"REF-2024-002\",
-                \"recipient\": \"Anna Schmidt\",
-                \"address\": \"Marienplatz 5, 80331 München\",
-                \"status\": \"delivered\",
-                \"created\": \"2024-11-30T14:20:00\",
-                \"delivered\": \"2024-12-01T11:45:00\",
-                \"weight\": \"1.2 kg\",
-                \"service\": \"DHL Express\"
+                "id": "MOCK001234568",
+                "shipment_number": "DHL001234568",
+                "reference_id": "REF-2024-002",
+                "recipient": "Anna Schmidt",
+                "address": "Marienplatz 5, 80331 München",
+                "status": "delivered",
+                "created": "2024-11-30T14:20:00",
+                "delivered": "2024-12-01T11:45:00",
+                "weight": "1.2 kg",
+                "service": "DHL Express"
             },
             {
-                \"id\": \"MOCK001234569\",
-                \"shipment_number\": \"DHL001234569\",
-                \"reference_id\": \"REF-2024-003\",
-                \"recipient\": \"Thomas Weber\",
-                \"address\": \"Reeperbahn 45, 20359 Hamburg\",
-                \"status\": \"pending\",
-                \"created\": \"2024-12-01T15:00:00\",
-                \"estimated_delivery\": \"2024-12-04T14:00:00\",
-                \"weight\": \"0.8 kg\",
-                \"service\": \"DHL Paket\"
+                "id": "MOCK001234569",
+                "shipment_number": "DHL001234569",
+                "reference_id": "REF-2024-003",
+                "recipient": "Thomas Weber",
+                "address": "Reeperbahn 45, 20359 Hamburg",
+                "status": "pending",
+                "created": "2024-12-01T15:00:00",
+                "estimated_delivery": "2024-12-04T14:00:00",
+                "weight": "0.8 kg",
+                "service": "DHL Paket"
             }
         ],
-        \"total\": 3,
-        \"mode\": \"mock\"
+        "total": 3,
+        "mode": "mock"
     }
