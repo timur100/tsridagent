@@ -56,6 +56,39 @@ const DHLShipping = () => {
     setSelectedShipment(null);
   };
 
+  // Track shipment
+  const trackShipment = async () => {
+    if (!trackingNumber.trim()) {
+      setTrackingError('Bitte geben Sie eine Sendungsnummer ein');
+      return;
+    }
+
+    try {
+      setTrackingLoading(true);
+      setTrackingError(null);
+      setTrackingData(null);
+      
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/${trackingNumber.trim()}/track`;
+      console.log('[DHL] Tracking shipment:', trackingNumber, 'from:', url);
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      console.log('[DHL] Tracking response:', data);
+      
+      if (data.success) {
+        setTrackingData(data.tracking);
+      } else {
+        setTrackingError(data.message || 'Sendung nicht gefunden');
+      }
+    } catch (err) {
+      console.error('[DHL] Error tracking shipment:', err);
+      setTrackingError('Fehler bei der Sendungsverfolgung');
+    } finally {
+      setTrackingLoading(false);
+    }
+  };
+
   // Fetch shipments from backend
   const fetchShipments = async () => {
     try {
