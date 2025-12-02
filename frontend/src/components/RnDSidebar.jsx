@@ -118,6 +118,14 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
         { id: 'delivery-service', label: 'Lieferservice', emoji: '📦' },
         { id: 'mobility-services', label: 'Mobility Services', emoji: '🚗' }
       ]
+    },
+    {
+      id: 'shipping',
+      label: 'Paketversand',
+      icon: Package,
+      items: [
+        { id: 'dhl-shipping', label: 'DHL', emoji: '📦' }
+      ]
     }
   ];
 
