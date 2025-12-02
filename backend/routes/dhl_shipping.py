@@ -244,11 +244,28 @@ async def create_shipment(request: CreateShipmentRequest):
 
             if response.status_code not in [200, 201]:
                 logger.error(f"DHL shipment creation failed: {response.text}")
+                
+                # Save failed shipment to database
+                failed_shipment = {
+                    "reference_id": request.reference_id,
+                    "shipment_number": None,
+                    "status": "failed",
+                    "sender_name": request.sender_name,
+                    "receiver_name": request.receiver_name,
+                    "receiver_city": request.receiver_city,
+                    "receiver_postal_code": request.receiver_postal_code,
+                    "package_weight_grams": request.package_weight_grams,
+                    "service_type": request.service_type,
+                    "created_at": datetime.now(timezone.utc),
+                    "error_message": response.text[:500],
+                }
+                await db.dhl_shipments.insert_one(failed_shipment)
+                
                 return ShipmentResponse(
                     success=False,
                     reference_id=request.reference_id,
                     status="failed",
-                    created_at=datetime.utcnow(),
+                    created_at=datetime.now(timezone.utc),
                     message=f"DHL API error: {response.text[:200]}"
                 )
 
@@ -266,14 +283,40 @@ async def create_shipment(request: CreateShipmentRequest):
             if "shipments" in shipment_data and len(shipment_data["shipments"]) > 0:
                 label_url = shipment_data["shipments"][0].get("labelUrl")
 
+            tracking_url = f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}" if shipment_number else None
+            
+            # Save successful shipment to database
+            shipment_record = {
+                "reference_id": request.reference_id,
+                "shipment_number": shipment_number,
+                "tracking_url": tracking_url,
+                "label_url": label_url,
+                "status": "created",
+                "sender_name": request.sender_name,
+                "sender_city": request.sender_city,
+                "sender_postal_code": request.sender_postal_code,
+                "receiver_name": request.receiver_name,
+                "receiver_city": request.receiver_city,
+                "receiver_postal_code": request.receiver_postal_code,
+                "receiver_country": request.receiver_country_code,
+                "package_weight_grams": request.package_weight_grams,
+                "service_type": request.service_type,
+                "package_description": request.package_description,
+                "created_at": datetime.now(timezone.utc),
+                "estimated_delivery": None,
+                "dhl_response": shipment_data,
+            }
+            await db.dhl_shipments.insert_one(shipment_record)
+            logger.info(f"Saved shipment to database: {shipment_number}")
+
             return ShipmentResponse(
                 success=True,
                 shipment_number=shipment_number,
-                tracking_url=f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}" if shipment_number else None,
+                tracking_url=tracking_url,
                 label_url=label_url,
                 reference_id=request.reference_id,
                 status="created",
-                created_at=datetime.utcnow(),
+                created_at=datetime.now(timezone.utc),
                 message="Shipment created successfully"
             )
 
