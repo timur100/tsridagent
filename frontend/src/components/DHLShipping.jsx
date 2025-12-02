@@ -7,6 +7,7 @@ const DHLShipping = () => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
   const [shipments, setShipments] = useState([]);
+  const [allShipments, setAllShipments] = useState([]); // All unfiltered shipments
   const [statistics, setStatistics] = useState({
     total: 0,
     created: 0,
@@ -17,6 +18,11 @@ const DHLShipping = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [cityFilter, setCityFilter] = useState('all');
 
   // Fetch shipments from backend
   const fetchShipments = async () => {
