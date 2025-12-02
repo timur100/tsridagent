@@ -508,16 +508,10 @@ const DHLShipping = () => {
                       </div>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
-                      {shipment.created_at
-                        ? new Date(shipment.created_at).toLocaleDateString('de-DE')
-                        : '-'}
+                      {formatDate(shipment.created_at)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
-                      {shipment.delivered_at
-                        ? new Date(shipment.delivered_at).toLocaleDateString('de-DE')
-                        : shipment.estimated_delivery
-                        ? new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')
-                        : '-'}
+                      {formatDate(shipment.delivered_at || shipment.estimated_delivery)}
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-300">
                       {(shipment.package_weight_grams / 1000).toFixed(1)} kg
