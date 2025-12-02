@@ -421,9 +421,21 @@ const DHLShipping = () => {
 
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
           <div className="flex items-center justify-between mb-2">
+            <FileText className="h-5 w-5 text-purple-600" />
+            <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {statistics.imported || 0}
+            </span>
+          </div>
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Importiert
+          </p>
+        </div>
+
+        <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+          <div className="flex items-center justify-between mb-2">
             <Clock className="h-5 w-5 text-yellow-600" />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {statistics.pending}
+              {statistics.pending || 0}
             </span>
           </div>
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
