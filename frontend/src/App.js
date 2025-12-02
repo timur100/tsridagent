@@ -4,6 +4,9 @@ import VerificationInterface from './components/VerificationInterface';
 import PortalApp from './PortalApp';
 import StockPortalBarcode from './pages/StockPortalBarcode';
 import TechnicianPortal from './pages/TechnicianPortal';
+import EuropcarMenuPage from './pages/EuropcarMenuPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
 import './App.css';
 
