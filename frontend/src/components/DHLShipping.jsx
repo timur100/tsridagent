@@ -411,19 +411,25 @@ const DHLShipping = () => {
                     Empfänger
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
-                    Adresse
+                    Straße & Nr.
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
+                    PLZ & Ort
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Status
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
-                    Gewicht
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
-                    Service
+                    Versand
                   </th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Zustellung
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
+                    Gewicht
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
+                    Maße (LxBxH)
                   </th>
                 </tr>
               </thead>
