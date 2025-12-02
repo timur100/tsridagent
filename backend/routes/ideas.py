@@ -21,15 +21,18 @@ db = client['main_db']
 @router.get("/", response_model=List[Idea])
 async def get_all_ideas(
     status: Optional[str] = None,
+    menu_item: Optional[str] = None,
     token_data: dict = Depends(verify_token)
 ):
     """
-    Get all ideas, optionally filtered by status
+    Get all ideas, optionally filtered by status and/or menu_item
     """
     try:
         query = {}
         if status and status in ['neu', 'in_entwicklung', 'erledigt']:
             query['status'] = status
+        if menu_item:
+            query['menu_item'] = menu_item
         
         ideas = await db.ideas.find(query).sort('created_at', -1).to_list(length=None)
         
