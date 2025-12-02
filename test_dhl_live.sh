@@ -2,72 +2,78 @@
 
 API_URL="https://timetrack-connect.preview.emergentagent.com/api/dhl"
 
-echo "=== DHL Live Sandbox Test mit Ihren Credentials ==="
+echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""
 
-# 1. Health Check
-echo "1️⃣ Checking API Status..."
-curl -s "$API_URL/health" | jq -r '"Status: " + .mode + " | Message: " + .message'
+echo "1️⃣ API Status prüfen..."
+curl -s "$API_URL/health" | jq -r '"Mode: " + .mode + " | Token: " + (.has_token | tostring)'
 echo ""
 echo "---"
 echo ""
 
-# 2. Test mit echtem DHL API Format (Sandbox-Abrechnungsnummer)
-echo "2️⃣ Creating Test Shipment mit DHL Sandbox..."
-echo "   (Using billing number: 3333333333 01 - DHL Paket)"
+echo "2️⃣ Test-Sendung erstellen..."
 echo ""
 
 RESPONSE=$(curl -s -X POST "$API_URL/shipments" \
   -H "Content-Type: application/json" \
   -d '{
-    "reference_id": "TEST-DHL-001",
-    "sender_name": "Test Firma GmbH",
-    "sender_phone": "+491234567890",
-    "sender_email": "test@firma.de",
-    "sender_street": "Schildergasse",
-    "sender_house_number": "72",
-    "sender_postal_code": "50667",
-    "sender_city": "Köln",
+    "reference_id": "TEST-LIVE-001",
+    "sender_name": "TSR Technologies GmbH",
+    "sender_phone": "+4930123456",
+    "sender_email": "versand@tsr.de",
+    "sender_street": "Hauptstraße",
+    "sender_house_number": "10",
+    "sender_postal_code": "10115",
+    "sender_city": "Berlin",
     "receiver_name": "Max Mustermann",
     "receiver_phone": "+49987654321",
-    "receiver_email": "max.mustermann@example.com",
-    "receiver_street": "Hauptstraße",
-    "receiver_house_number": "123",
+    "receiver_email": "max@example.com",
+    "receiver_street": "Teststraße",
+    "receiver_house_number": "42",
     "receiver_postal_code": "80331",
     "receiver_city": "München",
     "receiver_country_code": "DE",
-    "package_weight_grams": 2500,
+    "package_weight_grams": 2000,
     "package_length_cm": 30,
     "package_width_cm": 20,
     "package_height_cm": 15,
-    "package_description": "Testpaket - Elektronik",
+    "package_description": "Test-Sendung",
     "service_type": "V01PAK"
   }')
 
 echo "$RESPONSE" | jq '.'
 echo ""
 
-# Check if successful
 SUCCESS=$(echo "$RESPONSE" | jq -r '.success')
 if [ "$SUCCESS" == "true" ]; then
-    echo "✅ SUCCESS: Sendung erfolgreich erstellt!"
+    echo "🎉 =========================================="
+    echo "✅ ERFOLG: Echte DHL-Sendung erstellt!"
+    echo "🎉 =========================================="
+    echo ""
     SHIPMENT_NO=$(echo "$RESPONSE" | jq -r '.shipment_number')
     TRACKING_URL=$(echo "$RESPONSE" | jq -r '.tracking_url')
-    echo ""
+    LABEL_URL=$(echo "$RESPONSE" | jq -r '.label_url')
+    
     echo "📦 Sendungsnummer: $SHIPMENT_NO"
-    echo "🔗 Tracking URL: $TRACKING_URL"
-else
-    echo "⚠️  Sendung konnte nicht erstellt werden"
-    MESSAGE=$(echo "$RESPONSE" | jq -r '.message')
-    echo "Grund: $MESSAGE"
+    echo "🔗 Tracking: $TRACKING_URL"
+    echo "🏷️  Label: $LABEL_URL"
     echo ""
-    echo "💡 Hinweis: Für echte Sendungserstellung benötigen Sie:"
-    echo "   - Einen registrierten DHL Developer Account"
-    echo "   - Zugewiesene Abrechnungsnummern (EKP)"
-    echo "   - GKP Benutzer-Zugangsdaten"
+    echo "⚠️  WICHTIG: Dies ist eine ECHTE Sendung!"
+    echo "   Sie wurde bei DHL registriert und in der Datenbank gespeichert."
+else
+    echo "❌ Sendung konnte nicht erstellt werden"
+    MESSAGE=$(echo "$RESPONSE" | jq -r '.message')
+    echo "Fehler: $MESSAGE"
+    echo ""
+    echo "Mögliche Gründe:"
+    echo "1. Production Access noch nicht freigegeben"
+    echo "2. Abrechnungsnummer nicht aktiviert"
+    echo "3. Zusätzliche Felder benötigt"
 fi
 
 echo ""
 echo "---"
 echo ""
-echo "📚 Weitere Informationen: /app/QUICK_START.md"
+echo "📊 Aktuelle Sendungen in Datenbank:"
+curl -s "$API_URL/shipments/stats/summary" | jq '.statistics'
+
