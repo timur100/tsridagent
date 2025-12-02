@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/dhl", tags=["DHL Shipping"])
 # Configuration
 DHL_API_KEY = os.environ.get('DHL_API_KEY')
 DHL_API_SECRET = os.environ.get('DHL_API_SECRET')
-DHL_SANDBOX_BASE_URL = os.environ.get('DHL_SANDBOX_BASE_URL')
+DHL_BASE_URL = os.environ.get('DHL_BASE_URL', os.environ.get('DHL_SANDBOX_BASE_URL'))
 DHL_AUTH_API_URL = os.environ.get('DHL_AUTH_API_URL')
 
 # GKP (Geschäftskundenportal) Credentials
