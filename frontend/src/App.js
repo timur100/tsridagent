@@ -56,7 +56,9 @@ function App() {
             />
           </div>
         } />
-      </Routes>
+          </Routes>
+        </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
