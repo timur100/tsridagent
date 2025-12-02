@@ -167,8 +167,12 @@ const DHLShipping = () => {
         return 'Unterwegs';
       case 'pending':
         return 'Ausstehend';
+      case 'created':
+        return 'Erstellt';
       case 'failed':
         return 'Fehlgeschlagen';
+      case 'imported':
+        return 'Importiert';
       default:
         return status;
     }
