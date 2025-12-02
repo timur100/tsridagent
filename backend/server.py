@@ -220,6 +220,7 @@ api_router.include_router(vehicles_router, tags=["vehicles"])
 
 # Quick Menu (R&D - Schnellmenü)
 api_router.include_router(quick_menu_router, prefix="/quick-menu", tags=["quick-menu"])
+api_router.include_router(document_scan_router, prefix="/document-scan", tags=["document-scan"])
 
 # Key Automat (R&D - Schlüsselautomat)
 api_router.include_router(key_automat_router, prefix="/key-automat", tags=["key-automat"])
