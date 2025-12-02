@@ -1028,22 +1028,257 @@ const TimeTrackingPage = () => {
         </div>
       )}
 
-      {/* Team Tab */}
+      {/* Team/Mitarbeiter Tab */}
       {activeTab === 'team' && (
         <div>
-          <div className="mb-6">
-            <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Team-Übersicht
-            </h2>
-            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              Zeiterfassung aller Team-Mitglieder
-            </p>
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                👥 Mitarbeiterverwaltung
+              </h2>
+              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                Verwalten Sie Mitarbeiter, Standorte und Wochenstunden
+              </p>
+            </div>
+            <button
+              onClick={() => setShowEmployeeModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+            >
+              <Plus className="h-4 w-4" />
+              Mitarbeiter hinzufügen
+            </button>
           </div>
 
-          <div className="text-center py-12">
-            <Users className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-            <p className="text-gray-500">Team-Übersicht - In Entwicklung</p>
+          {/* Employees Table */}
+          <div className={`rounded-lg border border-gray-700 mb-6 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
+                  <tr>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Mitarbeiter-Nr.
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Name
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Rolle
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Wochenstunden
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Standorte
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Fingerabdruck
+                    </th>
+                    <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Aktionen
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="font-mono">
+                  {employees.map((employee) => (
+                    <tr
+                      key={employee.id}
+                      className={`border-t border-gray-700 transition-colors ${
+                        theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-gray-50'
+                      }`}
+                    >
+                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {employee.employee_number}
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: employee.color }}
+                          ></div>
+                          {employee.name}
+                        </div>
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {employee.role}
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {employee.weekly_hours}h / Woche
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {employee.locations.map(locId => 
+                          locations.find(l => l.id === locId)?.name
+                        ).join(', ')}
+                      </td>
+                      <td className="px-4 py-3 text-sm">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          employee.fingerprint_registered
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {employee.fingerprint_registered ? '✓ Registriert' : '✗ Nicht registriert'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <button className="p-1 hover:bg-gray-600 rounded">
+                            <Edit className="h-4 w-4 text-blue-500" />
+                          </button>
+                          <button className="p-1 hover:bg-gray-600 rounded">
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {/* Standorte Overview */}
+          <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
+            <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Standorte
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {locations.map((location) => {
+                const employeeCount = employees.filter(emp => 
+                  emp.locations.includes(location.id)
+                ).length;
+                return (
+                  <div key={location.id} className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                    <h4 className={`font-semibold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {location.name}
+                    </h4>
+                    <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {location.address}
+                    </p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                      {employeeCount} Mitarbeiter
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Employee Modal */}
+          {showEmployeeModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className={`w-full max-w-2xl p-6 rounded-lg max-h-[90vh] overflow-y-auto ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+                <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Mitarbeiter hinzufügen
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Mitarbeiter-Nr.
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="EMP005"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Max Mustermann"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Rolle
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Entwickler"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Wochenstunden (Soll)
+                      </label>
+                      <input
+                        type="number"
+                        placeholder="40"
+                        min="0"
+                        max="60"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark'
+                            ? 'bg-[#2a2a2a] border-gray-600 text-white'
+                            : 'bg-white border-gray-300 text-gray-900'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Standorte (Mehrfachauswahl)
+                    </label>
+                    <div className="space-y-2">
+                      {locations.map(location => (
+                        <label key={location.id} className="flex items-center gap-2">
+                          <input type="checkbox" className="rounded" />
+                          <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                            {location.name}
+                          </span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Farbe
+                    </label>
+                    <input
+                      type="color"
+                      defaultValue="#3b82f6"
+                      className="w-full h-10 rounded-lg"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => setShowEmployeeModal(false)}
+                    className={`flex-1 px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'border-gray-600 text-gray-300 hover:bg-[#2a2a2a]'
+                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    Abbrechen
+                  </button>
+                  <button
+                    onClick={() => setShowEmployeeModal(false)}
+                    className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                  >
+                    Speichern
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
