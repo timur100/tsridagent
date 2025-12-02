@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://timetrack-connect.preview.emergentagent.com/api/dhl"
+API_URL="https://quickmenu-app-2.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

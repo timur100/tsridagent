@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://timetrack-connect.preview.emergentagent.com/portal/admin/id-checks
+   https://quickmenu-app-2.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

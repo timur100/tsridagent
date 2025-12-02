@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get backend URL from env
-BACKEND_URL = "https://timetrack-connect.preview.emergentagent.com"
+BACKEND_URL = "https://quickmenu-app-2.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 
 # API Key from backend/.env
