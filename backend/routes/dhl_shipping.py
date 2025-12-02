@@ -336,34 +336,85 @@ async def create_shipment(request: CreateShipmentRequest):
 @router.get("/shipments/{shipment_number}/tracking")
 async def get_shipment_tracking(shipment_number: str):
     """
-    Retrieve real-time tracking information for a shipment
+    Retrieve real-time tracking information for a shipment from DHL
+    and update the status in our database
     """
     try:
         logger.info(f"Fetching tracking for shipment: {shipment_number}")
-        headers = await get_auth_headers()
-
+        
+        # Try DHL Tracking API (public, no auth needed)
+        tracking_url = f"https://api-eu.dhl.com/track/shipments"
+        
         async with httpx.AsyncClient(timeout=10.0) as client:
-            response = await client.get(
-                f"{DHL_BASE_URL}/shipments/{shipment_number}/tracking",
-                headers=headers
-            )
-
-            if response.status_code == 404:
-                raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=f"Shipment {shipment_number} not found"
+            try:
+                # DHL Tracking API uses different authentication
+                headers = {
+                    "DHL-API-Key": DHL_API_KEY
+                }
+                
+                response = await client.get(
+                    tracking_url,
+                    params={"trackingNumber": shipment_number},
+                    headers=headers
                 )
+                
+                if response.status_code == 200:
+                    tracking_data = response.json()
+                    
+                    # Extract status from tracking data
+                    status_desc = "imported"
+                    delivered_at = None
+                    
+                    if "shipments" in tracking_data and len(tracking_data["shipments"]) > 0:
+                        shipment_info = tracking_data["shipments"][0]
+                        status_code = shipment_info.get("status", {}).get("statusCode", "")
+                        
+                        # Map DHL status codes to our status
+                        if status_code in ["delivered", "DELIVERED"]:
+                            status_desc = "delivered"
+                            # Try to extract delivery timestamp
+                            events = shipment_info.get("events", [])
+                            for event in events:
+                                if event.get("statusCode") in ["delivered", "DELIVERED"]:
+                                    delivered_at = event.get("timestamp")
+                                    break
+                        elif status_code in ["transit", "TRANSIT"]:
+                            status_desc = "in_transit"
+                        elif status_code in ["failure", "FAILURE"]:
+                            status_desc = "failed"
+                    
+                    # Update database
+                    update_data = {"status": status_desc}
+                    if delivered_at:
+                        update_data["delivered_at"] = datetime.fromisoformat(delivered_at.replace('Z', '+00:00'))
+                    
+                    await db.dhl_shipments.update_one(
+                        {"shipment_number": shipment_number},
+                        {"$set": update_data}
+                    )
+                    
+                    logger.info(f"Updated shipment {shipment_number} status to: {status_desc}")
+                    
+                    return {
+                        "success": True,
+                        "shipment_number": shipment_number,
+                        "status": status_desc,
+                        "tracking_data": tracking_data,
+                        "message": "Status aktualisiert"
+                    }
+                    
+            except Exception as e:
+                logger.warning(f"DHL Tracking API not available: {str(e)}")
+        
+        # Fallback: Return info that tracking is not available
+        return {
+            "success": False,
+            "shipment_number": shipment_number,
+            "message": "Tracking-Informationen nicht verfügbar. DHL Tracking API benötigt separate Freigabe.",
+            "tracking_url": f"https://www.dhl.de/de/privatkunden/pakete-empfangen/verfolgen.html?piececode={shipment_number}"
+        }
 
-            response.raise_for_status()
-            return {
-                "success": True,
-                "shipment_number": shipment_number,
-                "tracking_data": response.json()
-            }
-
-    except HTTPException:
-        raise
-    except httpx.HTTPError as e:
+    except Exception as e:
         logger.error(f"Error fetching tracking information: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
