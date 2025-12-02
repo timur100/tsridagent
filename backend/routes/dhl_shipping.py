@@ -1,14 +1,22 @@
 from fastapi import APIRouter, HTTPException, status, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
-from datetime import datetime
+from datetime import datetime, timezone
 import httpx
 import base64
 import logging
 import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import DESCENDING
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/dhl", tags=["DHL Shipping"])
+
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'verification_db')
+mongo_client = AsyncIOMotorClient(MONGO_URL)
+db = mongo_client[DB_NAME]
 
 # Configuration
 DHL_API_KEY = os.environ.get('DHL_API_KEY')
