@@ -447,7 +447,7 @@ const DHLShipping = () => {
                   </tr>
                 ) : shipments.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-4 py-8 text-center">
+                    <td colSpan="9" className="px-4 py-8 text-center">
                       <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                         Keine Sendungen vorhanden
                       </span>
