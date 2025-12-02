@@ -100,49 +100,55 @@ async def process_document(image: UploadFile = File(...)):
         )
 
 
-def parse_regula_response(regula_data: dict) -> dict:
+def parse_regula_response(response) -> dict:
     """
     Parse Regula Document Reader API response into simplified format
     """
     try:
-        # Extract status
-        status = regula_data.get("status", {})
-        overall_status = status.get("overallStatus", "ERROR")
-        
-        # Extract text fields
-        text = regula_data.get("text", {})
         text_fields = {}
+        overall_status = "ERROR"
+        doc_type = "Unknown"
         
-        # Map common field types
-        field_mapping = {
-            "Document Number": "document_number",
-            "Surname": "last_name",
-            "Given Names": "first_name",
-            "Date of Birth": "birth_date",
-            "Sex": "sex",
-            "Nationality": "nationality",
-            "Date of Expiry": "expiry_date"
-        }
-        
-        for field in text.get("fieldList", []):
-            field_type = field.get("fieldType")
-            field_name = field.get("fieldName")
-            value = field.get("value")
-            validity = field.get("validity", {}).get("status") == "valid"
-            
-            if field_name in field_mapping:
-                mapped_name = field_mapping[field_name]
-                text_fields[mapped_name] = value
-                text_fields[f"{mapped_name}_valid"] = validity
+        # Extract overall status
+        if hasattr(response, 'status') and response.status:
+            overall_status = response.status.overall_status if hasattr(response.status, 'overall_status') else "ERROR"
         
         # Extract document type
-        doc_type = regula_data.get("documentType", "Unknown")
+        if hasattr(response, 'document_type'):
+            if isinstance(response.document_type, list) and len(response.document_type) > 0:
+                doc_type = response.document_type[0].document_name if hasattr(response.document_type[0], 'document_name') else "Unknown"
+        
+        # Extract text fields
+        if hasattr(response, 'text') and response.text:
+            if hasattr(response.text, 'field_list') and response.text.field_list:
+                for field in response.text.field_list:
+                    field_type = field.field_type if hasattr(field, 'field_type') else None
+                    value = field.value if hasattr(field, 'value') else None
+                    
+                    # Map field types to readable names
+                    if field_type == 0:  # Document Number
+                        text_fields['document_number'] = value
+                        text_fields['document_number_valid'] = hasattr(field, 'validity') and field.validity == 0
+                    elif field_type == 1:  # Surname
+                        text_fields['last_name'] = value
+                    elif field_type == 2:  # Given Names
+                        text_fields['first_name'] = value
+                    elif field_type == 5:  # Date of Birth
+                        text_fields['birth_date'] = value
+                    elif field_type == 3:  # Sex
+                        text_fields['sex'] = value
+                    elif field_type == 4:  # Nationality
+                        text_fields['nationality'] = value
+                    elif field_type == 6:  # Date of Expiry
+                        text_fields['expiry_date'] = value
+                        text_fields['expiry_date_valid'] = hasattr(field, 'validity') and field.validity == 0
         
         return {
             "overall_status": overall_status,
             "document_type": doc_type,
             "text_fields": text_fields,
-            "scanned_at": datetime.now().isoformat()
+            "scanned_at": datetime.now().isoformat(),
+            "mock_mode": False
         }
         
     except Exception as e:
