@@ -207,7 +207,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
                   <button
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
-                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                    className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-colors ${
                       activeSection === item.id
                         ? theme === 'dark'
                           ? 'bg-[#c00000]/20 text-[#c00000] font-medium'
@@ -217,8 +217,8 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
                         : 'hover:bg-gray-200 text-gray-600'
                     }`}
                   >
-                    <span className="text-base">{item.emoji}</span>
-                    <span>{item.label}</span>
+                    <span className="text-base flex-shrink-0">{item.emoji}</span>
+                    <span className="truncate">{item.label}</span>
                   </button>
                 ))}
               </div>
