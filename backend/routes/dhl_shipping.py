@@ -108,7 +108,7 @@ async def get_access_token() -> str:
     
     # OAuth2 ROPC (Resource Owner Password Credentials) flow
     # Using customer GKP credentials
-    auth_url = "https://api-sandbox.dhl.com/parcel/de/account/auth/ropc/v1/token"
+    auth_url = DHL_AUTH_API_URL
     
     # Form data for OAuth2 token request
     form_data = {
