@@ -24,16 +24,24 @@ const DHLShipping = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments`);
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments`;
+      console.log('[DHL] Fetching shipments from:', url);
+      
+      const response = await fetch(url);
       const data = await response.json();
+      
+      console.log('[DHL] Received data:', data);
+      console.log('[DHL] Shipments count:', data.shipments?.length);
       
       if (data.success) {
         setShipments(data.shipments || []);
+        console.log('[DHL] Shipments set to state:', data.shipments?.length);
       } else {
         setError('Fehler beim Laden der Sendungen');
+        console.error('[DHL] API returned success:false');
       }
     } catch (err) {
-      console.error('Error fetching shipments:', err);
+      console.error('[DHL] Error fetching shipments:', err);
       setError('Verbindungsfehler zum Server');
     } finally {
       setLoading(false);
