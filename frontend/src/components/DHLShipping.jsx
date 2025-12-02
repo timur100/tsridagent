@@ -33,6 +33,34 @@ const DHLShipping = () => {
   const [trackingData, setTrackingData] = useState(null);
   const [trackingLoading, setTrackingLoading] = useState(false);
   const [trackingError, setTrackingError] = useState(null);
+  
+  // Create shipment state
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState(null);
+  const [createSuccess, setCreateSuccess] = useState(null);
+  const [formData, setFormData] = useState({
+    // Sender
+    senderName: 'TSR Technologies GmbH',
+    senderStreet: '',
+    senderHouseNumber: '',
+    senderPostalCode: '',
+    senderCity: '',
+    senderEmail: '',
+    senderPhone: '',
+    // Receiver
+    receiverName: '',
+    receiverStreet: '',
+    receiverHouseNumber: '',
+    receiverPostalCode: '',
+    receiverCity: '',
+    receiverEmail: '',
+    // Package
+    weight: '',
+    length: '',
+    width: '',
+    height: '',
+    description: ''
+  });
 
   // Format date with leading zeros
   const formatDate = (dateString) => {
