@@ -246,30 +246,30 @@ const DHLShipping = () => {
           </div>
 
           {/* Shipments Table */}
-          <div className={`rounded-lg border border-gray-700 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-white'}`}>
+          <div className="rounded-lg border border-gray-700 bg-[#1f1f1f]">
           <div className="overflow-x-auto">
             <table className="w-full font-mono">
               <thead>
-                <tr className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                <tr className="bg-[#1f1f1f] border-b border-gray-700">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Sendungs-ID
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Empfänger
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Adresse
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Status
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Gewicht
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Service
                   </th>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold border-t border-gray-700 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300">
                     Zustellung
                   </th>
                 </tr>
