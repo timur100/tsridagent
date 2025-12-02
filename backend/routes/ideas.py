@@ -204,3 +204,23 @@ async def get_ideas_stats(
     except Exception as e:
         print(f"[Ideas API] Error fetching stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/menu-items/list")
+async def get_menu_items(
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Get all unique menu items from existing ideas
+    """
+    try:
+        # Get distinct menu items
+        menu_items = await db.ideas.distinct('menu_item')
+        
+        # Sort alphabetically
+        menu_items.sort()
+        
+        return {"menu_items": menu_items}
+    except Exception as e:
+        print(f"[Ideas API] Error fetching menu items: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
