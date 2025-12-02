@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Lightbulb, Plus, Save, Trash2, Edit2, Clock, Tag } from 'lucide-react';
+import { X, Lightbulb, Plus, Save, Trash2, Edit2, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
@@ -10,80 +10,31 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
   const [showEditor, setShowEditor] = useState(false);
   const [currentIdea, setCurrentIdea] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterMenuItem, setFilterMenuItem] = useState('all');
-  const [availableMenuItems, setAvailableMenuItems] = useState([]);
   
   // Form state
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [menuItem, setMenuItem] = useState('');
-  const [customMenuItem, setCustomMenuItem] = useState('');
-
-  // Predefined R&D menu items
-  const predefinedMenuItems = [
-    'Schnellmenü',
-    'Paketversand',
-    'Dokumentenscan',
-    'Zeiterfassung',
-    'Kioskverwaltung',
-    'Facematch',
-    'Fingerprint',
-    'Iris Scan',
-    'Kennzeichenerkennung',
-    'Fahrzeugverwaltung',
-    'Flottenmanagement',
-    'Europcar PKW-Vermietung',
-    'Parkhaussystem',
-    'Parkhaus-Bezahlsystem',
-    'Parkzeitüberschreitung',
-    'Zutrittssysteme',
-    'KI-Suche',
-    'Dokumentenanalyse',
-    'Anomalieerkennung',
-    'Hintergrund-Entfernung',
-    'Bildverbesserung',
-    'Erweiterte OCR',
-    'Kiosk-Konfiguration',
-    'Kiosk-Monitoring',
-    'Schlüsselautomat',
-    'Workflow Builder',
-    'Stapelverarbeitung',
-    'API Testing',
-    'Steuerungssysteme',
-    'Überwachungssysteme',
-    'Fastfood Bestellsystem',
-    'Lieferservice',
-    'Mobility Services',
-    'DHL'
-  ];
 
   useEffect(() => {
     if (isOpen) {
       loadIdeas();
-      loadMenuItems();
     }
-  }, [isOpen, filterStatus, filterMenuItem]);
+  }, [isOpen, filterStatus]);
 
   const loadIdeas = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (filterStatus !== 'all') {
-        params.append('status', filterStatus);
-      }
-      if (filterMenuItem !== 'all') {
-        params.append('menu_item', filterMenuItem);
-      }
-      
-      const queryString = params.toString();
-      const result = await apiCall(`/api/ideas/${queryString ? '?' + queryString : ''}`);
+      const params = filterStatus !== 'all' ? `?status=${filterStatus}` : '';
+      const result = await apiCall(`/api/ideas/${params}`);
       
       console.log('[IdeasModal] API result:', result);
       
+      // apiCall returns an object with success, data, status
       if (result.success && Array.isArray(result.data)) {
         console.log('[IdeasModal] Setting ideas:', result.data.length, 'items');
         setIdeas(result.data);
       } else if (Array.isArray(result)) {
+        // Fallback if API returns array directly
         console.log('[IdeasModal] Setting ideas (direct array):', result.length, 'items');
         setIdeas(result);
       }
@@ -95,23 +46,10 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
     }
   };
 
-  const loadMenuItems = async () => {
-    try {
-      const result = await apiCall('/api/ideas/menu-items/list');
-      if (result.success && result.data.menu_items) {
-        setAvailableMenuItems(result.data.menu_items);
-      }
-    } catch (error) {
-      console.error('Error loading menu items:', error);
-    }
-  };
-
   const handleCreateNew = () => {
     setCurrentIdea(null);
     setTitle('');
     setDescription('');
-    setMenuItem('');
-    setCustomMenuItem('');
     setShowEditor(true);
   };
 
@@ -119,15 +57,6 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
     setCurrentIdea(idea);
     setTitle(idea.title);
     setDescription(idea.description);
-    
-    if (predefinedMenuItems.includes(idea.menu_item)) {
-      setMenuItem(idea.menu_item);
-      setCustomMenuItem('');
-    } else {
-      setMenuItem('custom');
-      setCustomMenuItem(idea.menu_item);
-    }
-    
     setShowEditor(true);
   };
 
@@ -137,31 +66,24 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
       return;
     }
 
-    const finalMenuItem = menuItem === 'custom' ? customMenuItem.trim() : menuItem;
-    
-    if (!finalMenuItem) {
-      toast.error('Bitte Menüpunkt auswählen oder eingeben');
-      return;
-    }
-
     try {
       if (currentIdea) {
+        // Update existing idea
         await apiCall(`/api/ideas/${currentIdea.id}`, {
           method: 'PUT',
           body: JSON.stringify({
             title: title.trim(),
-            description: description.trim(),
-            menu_item: finalMenuItem
+            description: description.trim()
           })
         });
         toast.success('Idee aktualisiert');
       } else {
+        // Create new idea
         await apiCall('/api/ideas/', {
           method: 'POST',
           body: JSON.stringify({
             title: title.trim(),
-            description: description.trim(),
-            menu_item: finalMenuItem
+            description: description.trim()
           })
         });
         toast.success('Idee gespeichert');
@@ -170,11 +92,8 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
       setShowEditor(false);
       setTitle('');
       setDescription('');
-      setMenuItem('');
-      setCustomMenuItem('');
       setCurrentIdea(null);
       loadIdeas();
-      loadMenuItems();
     } catch (error) {
       console.error('Error saving idea:', error);
       toast.error('Fehler beim Speichern');
@@ -206,7 +125,6 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
       });
       toast.success('Idee gelöscht');
       loadIdeas();
-      loadMenuItems();
     } catch (error) {
       console.error('Error deleting idea:', error);
       toast.error('Fehler beim Löschen');
@@ -224,13 +142,37 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
     });
   };
 
-  const allMenuItemOptions = [...new Set([...predefinedMenuItems, ...availableMenuItems])].sort();
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'neu':
+        return 'bg-blue-500';
+      case 'in_entwicklung':
+        return 'bg-yellow-500';
+      case 'erledigt':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-500';
+    }
+  };
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'neu':
+        return 'Neu';
+      case 'in_entwicklung':
+        return 'In Entwicklung';
+      case 'erledigt':
+        return 'Erledigt';
+      default:
+        return status;
+    }
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className={`w-full max-w-6xl max-h-[90vh] rounded-lg shadow-xl ${theme === 'dark' ? 'bg-[#2a2a2a] text-white' : 'bg-white text-gray-900'}`}>
+      <div className={`w-full max-w-4xl max-h-[90vh] rounded-lg shadow-xl ${theme === 'dark' ? 'bg-[#2a2a2a] text-white' : 'bg-white text-gray-900'}`}>
         {/* Header */}
         <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
           <div className="flex items-center gap-3">
@@ -250,97 +192,65 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
           {!showEditor ? (
             <>
               {/* Filter and New Button */}
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">Filter</h3>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex gap-2">
                   <button
-                    onClick={handleCreateNew}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                    onClick={() => setFilterStatus('all')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                      filterStatus === 'all'
+                        ? 'bg-blue-600 text-white'
+                        : theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
                   >
-                    <Plus className="h-4 w-4" />
-                    Neue Idee
+                    Alle
+                  </button>
+                  <button
+                    onClick={() => setFilterStatus('neu')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                      filterStatus === 'neu'
+                        ? 'bg-blue-600 text-white'
+                        : theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Neu
+                  </button>
+                  <button
+                    onClick={() => setFilterStatus('in_entwicklung')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                      filterStatus === 'in_entwicklung'
+                        ? 'bg-yellow-600 text-white'
+                        : theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    In Entwicklung
+                  </button>
+                  <button
+                    onClick={() => setFilterStatus('erledigt')}
+                    className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                      filterStatus === 'erledigt'
+                        ? 'bg-green-600 text-white'
+                        : theme === 'dark'
+                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                  >
+                    Erledigt
                   </button>
                 </div>
 
-                {/* Menu Item Filter */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Nach Menüpunkt
-                  </label>
-                  <select
-                    value={filterMenuItem}
-                    onChange={(e) => setFilterMenuItem(e.target.value)}
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      theme === 'dark'
-                        ? 'bg-[#1a1a1a] border-gray-700 text-white'
-                        : 'bg-white border-gray-300'
-                    }`}
-                  >
-                    <option value="all">Alle Menüpunkte</option>
-                    {allMenuItemOptions.map((item) => (
-                      <option key={item} value={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Status Filter */}
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Nach Status
-                  </label>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setFilterStatus('all')}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                        filterStatus === 'all'
-                          ? 'bg-blue-600 text-white'
-                          : theme === 'dark'
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      Alle
-                    </button>
-                    <button
-                      onClick={() => setFilterStatus('neu')}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                        filterStatus === 'neu'
-                          ? 'bg-blue-600 text-white'
-                          : theme === 'dark'
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      Neu
-                    </button>
-                    <button
-                      onClick={() => setFilterStatus('in_entwicklung')}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                        filterStatus === 'in_entwicklung'
-                          ? 'bg-yellow-600 text-white'
-                          : theme === 'dark'
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      In Entwicklung
-                    </button>
-                    <button
-                      onClick={() => setFilterStatus('erledigt')}
-                      className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                        filterStatus === 'erledigt'
-                          ? 'bg-green-600 text-white'
-                          : theme === 'dark'
-                          ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      Erledigt
-                    </button>
-                  </div>
-                </div>
+                <button
+                  onClick={handleCreateNew}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
+                >
+                  <Plus className="h-4 w-4" />
+                  Neue Idee
+                </button>
               </div>
 
               {/* Ideas List */}
@@ -364,14 +274,6 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
-                              theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-200 text-gray-700'
-                            }`}>
-                              <Tag className="h-3 w-3" />
-                              {idea.menu_item}
-                            </span>
-                          </div>
                           <h3 className="text-lg font-semibold mb-1">{idea.title}</h3>
                           <div className="flex items-center gap-2 text-sm text-gray-500 mb-2">
                             <Clock className="h-4 w-4" />
@@ -417,49 +319,6 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
           ) : (
             /* Editor View */
             <div className="space-y-4">
-              <div>
-                <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Menüpunkt *
-                </label>
-                <select
-                  value={menuItem}
-                  onChange={(e) => setMenuItem(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg border ${
-                    theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white'
-                      : 'bg-white border-gray-300'
-                  }`}
-                >
-                  <option value="">-- Menüpunkt auswählen --</option>
-                  {allMenuItemOptions.map((item) => (
-                    <option key={item} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                  <option value="custom">+ Neuer Menüpunkt</option>
-                </select>
-              </div>
-
-              {menuItem === 'custom' && (
-                <div>
-                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                    Neuer Menüpunkt eingeben *
-                  </label>
-                  <input
-                    type="text"
-                    value={customMenuItem}
-                    onChange={(e) => setCustomMenuItem(e.target.value)}
-                    placeholder="z.B. Neue Funktion"
-                    className={`w-full px-4 py-2 rounded-lg border ${
-                      theme === 'dark'
-                        ? 'bg-[#1a1a1a] border-gray-700 text-white'
-                        : 'bg-white border-gray-300'
-                    }`}
-                    maxLength={200}
-                  />
-                </div>
-              )}
-
               <div>
                 <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   Titel / Thema
@@ -508,8 +367,6 @@ const IdeasModal = ({ isOpen, onClose, theme }) => {
                     setShowEditor(false);
                     setTitle('');
                     setDescription('');
-                    setMenuItem('');
-                    setCustomMenuItem('');
                     setCurrentIdea(null);
                   }}
                   className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
