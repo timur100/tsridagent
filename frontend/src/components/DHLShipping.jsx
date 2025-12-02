@@ -251,9 +251,29 @@ const DHLShipping = () => {
                 </tr>
               </thead>
               <tbody className="font-mono">
-                {shipments.map((shipment) => (
+                {loading ? (
+                  <tr>
+                    <td colSpan="7" className="px-4 py-8 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <RefreshCw className="h-5 w-5 animate-spin" />
+                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                          Lade Sendungen...
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ) : shipments.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="px-4 py-8 text-center">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                        Keine Sendungen vorhanden
+                      </span>
+                    </td>
+                  </tr>
+                ) : (
+                  shipments.map((shipment) => (
                   <tr
-                    key={shipment.id}
+                    key={shipment.shipment_number || shipment.reference_id}
                     className={`border-t border-gray-700 transition-colors ${
                       theme === 'dark'
                         ? 'hover:bg-[#2a2a2a]'
@@ -261,13 +281,13 @@ const DHLShipping = () => {
                     }`}
                   >
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.id}
+                      {shipment.shipment_number || shipment.reference_id}
                     </td>
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.recipient}
+                      {shipment.receiver_name}
                     </td>
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.address}
+                      {shipment.receiver_city}, {shipment.receiver_postal_code}
                     </td>
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
@@ -278,15 +298,15 @@ const DHLShipping = () => {
                       </div>
                     </td>
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.weight}
+                      {(shipment.package_weight_grams / 1000).toFixed(1)} kg
                     </td>
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.service}
+                      {shipment.service_type === 'V01PAK' ? 'DHL Paket' : shipment.service_type}
                     </td>
                     <td className={`px-4 py-3 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {shipment.status === 'delivered'
-                        ? new Date(shipment.delivered).toLocaleDateString('de-DE')
-                        : new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')}
+                      {shipment.estimated_delivery
+                        ? new Date(shipment.estimated_delivery).toLocaleDateString('de-DE')
+                        : '-'}
                     </td>
                   </tr>
                 ))}
