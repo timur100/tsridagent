@@ -25,8 +25,18 @@ DHL_BASE_URL = os.environ.get('DHL_BASE_URL', os.environ.get('DHL_SANDBOX_BASE_U
 DHL_AUTH_API_URL = os.environ.get('DHL_AUTH_API_URL')
 
 # GKP (Geschäftskundenportal) Credentials
-DHL_GKP_USERNAME = os.environ.get('DHL_GKP_USERNAME', 'user-valid')
-DHL_GKP_PASSWORD = os.environ.get('DHL_GKP_PASSWORD', 'SandboxPasswort2023!')
+# Check if we're using sandbox or production
+is_sandbox = "sandbox" in DHL_SANDBOX_BASE_URL if DHL_SANDBOX_BASE_URL else False
+
+# Use sandbox credentials for sandbox, real credentials for production
+if is_sandbox:
+    DHL_GKP_USERNAME = 'user-valid'
+    DHL_GKP_PASSWORD = 'SandboxPasswort2023!'
+    logger.info("Using Sandbox demo credentials")
+else:
+    DHL_GKP_USERNAME = os.environ.get('DHL_GKP_USERNAME', 'user-valid')
+    DHL_GKP_PASSWORD = os.environ.get('DHL_GKP_PASSWORD', 'SandboxPasswort2023!')
+    
 DHL_EKP_NUMBER = os.environ.get('DHL_EKP_NUMBER')
 DHL_BILLING_NUMBER = os.environ.get('DHL_BILLING_NUMBER')
 
