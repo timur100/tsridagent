@@ -78,12 +78,8 @@ const EuropcarMenuPage = () => {
     );
   }
 
-  const gridCols = config?.grid_layout || '3x3';
-  const gridClass = {
-    '2x2': 'grid-cols-2',
-    '3x3': 'grid-cols-3',
-    '4x4': 'grid-cols-4'
-  }[gridCols] || 'grid-cols-3';
+  // Default to 3x3 grid layout
+  const gridClass = 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
