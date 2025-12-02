@@ -26,7 +26,7 @@ DHL_AUTH_API_URL = os.environ.get('DHL_AUTH_API_URL')
 
 # GKP (Geschäftskundenportal) Credentials
 # Check if we're using sandbox or production
-is_sandbox = "sandbox" in DHL_SANDBOX_BASE_URL if DHL_SANDBOX_BASE_URL else False
+is_sandbox = "sandbox" in DHL_BASE_URL if DHL_BASE_URL else False
 
 # Use sandbox credentials for sandbox, real credentials for production
 if is_sandbox:
