@@ -68,7 +68,7 @@ const DHLShipping = () => {
       setTrackingError(null);
       setTrackingData(null);
       
-      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/${trackingNumber.trim()}/track`;
+      const url = `${process.env.REACT_APP_BACKEND_URL}/api/dhl/shipments/${trackingNumber.trim()}/tracking`;
       console.log('[DHL] Tracking shipment:', trackingNumber, 'from:', url);
       
       const response = await fetch(url);
