@@ -295,8 +295,11 @@ async def create_device(
 ):
     """Create new hardware device"""
     try:
-        # Check if serial number already exists
-        existing = await db.hardware_devices.find_one({'serial_number': device_data.serial_number})
+        # Check if serial number already exists for this tenant
+        existing = await db.hardware_devices.find_one({
+            'tenant_id': device_data.tenant_id,
+            'serial_number': device_data.serial_number
+        })
         if existing:
             raise HTTPException(status_code=400, detail="Seriennummer bereits vorhanden")
         
@@ -304,6 +307,7 @@ async def create_device(
         barcode_data = generate_barcode(device_data.serial_number)
         
         new_device = HardwareDevice(
+            tenant_id=device_data.tenant_id,
             serial_number=device_data.serial_number,
             hardware_type=device_data.hardware_type,
             manufacturer=device_data.manufacturer,
