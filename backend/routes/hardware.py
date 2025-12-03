@@ -52,15 +52,17 @@ async def add_device_history(device_id: str, action_type: str, performed_by: str
 
 
 def generate_barcode(serial_number: str) -> str:
-    """Generate barcode as base64 string"""
+    """Generate barcode as SVG string"""
+    if not BARCODE_AVAILABLE:
+        return None
     try:
         code128 = barcode.get_barcode_class('code128')
-        barcode_instance = code128(serial_number, writer=ImageWriter())
+        barcode_instance = code128(serial_number, writer=SVGWriter())
         buffer = BytesIO()
         barcode_instance.write(buffer)
         buffer.seek(0)
-        barcode_base64 = base64.b64encode(buffer.read()).decode('utf-8')
-        return f"data:image/png;base64,{barcode_base64}"
+        svg_content = buffer.read().decode('utf-8')
+        return svg_content
     except Exception as e:
         print(f"[Hardware] Error generating barcode: {e}")
         return None
