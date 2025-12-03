@@ -133,6 +133,41 @@ const HardwareSetsManagement = ({ tenantId }) => {
     }
   };
 
+  const handleGlobalSearch = async (searchQuery) => {
+    if (!searchQuery || searchQuery.trim().length < 2) {
+      setGlobalSearchResults(null);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const result = await apiCall(`/api/hardware/search?query=${encodeURIComponent(searchQuery)}&tenant_id=${tenantId}`);
+      if (result.success) {
+        setGlobalSearchResults(result.data);
+      } else if (result.sets || result.devices || result.locations) {
+        setGlobalSearchResults(result);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      setGlobalSearchResults({ sets: [], devices: [], locations: [], total_results: 0 });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Debounce global search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (globalSearchQuery.trim().length >= 2) {
+        handleGlobalSearch(globalSearchQuery);
+      } else {
+        setGlobalSearchResults(null);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [globalSearchQuery]);
+
   const handleCreateSet = async (data) => {
     try {
       const result = await apiCall('/api/hardware/sets', {
