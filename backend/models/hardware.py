@@ -101,6 +101,7 @@ class HardwareSetUpdate(BaseModel):
 
 class HardwareDeviceCreate(BaseModel):
     """Create Hardware Device Request"""
+    tenant_id: str
     serial_number: str = Field(..., min_length=1, max_length=100)
     hardware_type: str = Field(..., min_length=1, max_length=100)
     manufacturer: Optional[str] = Field(None, max_length=100)
