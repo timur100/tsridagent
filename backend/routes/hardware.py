@@ -120,6 +120,7 @@ async def create_set(
     """Create new hardware set"""
     try:
         new_set = HardwareSet(
+            tenant_id=set_data.tenant_id,
             set_name=set_data.set_name,
             location_id=set_data.location_id,
             notes=set_data.notes
