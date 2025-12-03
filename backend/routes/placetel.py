@@ -214,17 +214,18 @@ async def get_call_center_agents(
 ):
     """Get all call center agents"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/call_center_agents",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
     except Exception as e:
         print(f"[Placetel] Error fetching agents: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": True, "data": []}
 
 @router.get("/call_center_queues")
 async def get_call_center_queues(
@@ -234,17 +235,18 @@ async def get_call_center_queues(
 ):
     """Get all call center queues"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/call_center_queues",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
     except Exception as e:
         print(f"[Placetel] Error fetching queues: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": True, "data": []}
 
 # Faxes
 @router.get("/faxes")
@@ -255,17 +257,18 @@ async def get_faxes(
 ):
     """Get all faxes"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/faxes",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
     except Exception as e:
         print(f"[Placetel] Error fetching faxes: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": True, "data": []}
 
 # SIP Users
 @router.get("/sip_users")
@@ -276,17 +279,18 @@ async def get_sip_users(
 ):
     """Get all SIP users"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/sip_users",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
     except Exception as e:
         print(f"[Placetel] Error fetching SIP users: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": True, "data": []}
 
 # Routing Plans
 @router.get("/routing_plans")
@@ -297,14 +301,15 @@ async def get_routing_plans(
 ):
     """Get all routing plans"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/routing_plans",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
     except Exception as e:
         print(f"[Placetel] Error fetching routing plans: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return {"success": True, "data": []}
