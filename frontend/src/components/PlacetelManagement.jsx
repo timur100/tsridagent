@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Card } from './ui/card';
-import { Phone, Users, PhoneCall, Settings } from 'lucide-react';
+import { Phone, Users, PhoneCall, Settings, Headphones, GitBranch, FileText, UserCircle } from 'lucide-react';
 
 const PlacetelManagement = () => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('numbers');
 
   const tabs = [
-    { id: 'numbers', label: 'Rufnummern', icon: Phone }
+    { id: 'numbers', label: 'Rufnummern', icon: Phone },
+    { id: 'calls', label: 'Anrufe', icon: PhoneCall },
+    { id: 'contacts', label: 'Kontakte', icon: Users },
+    { id: 'callcenter', label: 'Call Center', icon: Headphones },
+    { id: 'routing', label: 'Routing', icon: GitBranch },
+    { id: 'faxes', label: 'Faxe', icon: FileText },
+    { id: 'sipusers', label: 'SIP Users', icon: UserCircle },
+    { id: 'settings', label: 'Einstellungen', icon: Settings }
   ];
 
   return (
