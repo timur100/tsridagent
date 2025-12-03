@@ -7,6 +7,7 @@ import { Card } from '../components/ui/card';
 import LocationsTabEnhanced from '../components/LocationsTabEnhanced';
 import LocationModal from '../components/LocationModal';
 import TenantDevicesTab from '../components/TenantDevicesTab';
+import HardwareSetsManagement from '../components/HardwareSetsManagement';
 import { 
   ArrowLeft, 
   Users, 
