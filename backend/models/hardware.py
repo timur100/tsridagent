@@ -13,6 +13,9 @@ class HardwareSet(BaseModel):
     tenant_id: str = Field(..., description="Tenant ID")
     set_name: str = Field(..., min_length=1, max_length=200, description="Name of the hardware set")
     location_id: str = Field(..., description="Location/Standort ID")
+    location_code: Optional[str] = Field(None, max_length=50, description="Location code (e.g., MUCT01)")
+    device_number: Optional[str] = Field(None, max_length=10, description="Device/Set number (e.g., 01, 02, 03)")
+    full_code: Optional[str] = Field(None, max_length=50, description="Full code: location_code + device_number (e.g., MUCT01-01)")
     status: Literal['aktiv', 'archiviert', 'geschlossen'] = Field(default='aktiv')
     created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     closed_at: Optional[str] = None
