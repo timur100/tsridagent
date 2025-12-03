@@ -45,6 +45,10 @@ const HardwareSetsManagement = ({ tenantId }) => {
   
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Sorting for Sets table
+  const [sortField, setSortField] = useState('full_code');
+  const [sortDirection, setSortDirection] = useState('asc');
 
   useEffect(() => {
     loadData();
