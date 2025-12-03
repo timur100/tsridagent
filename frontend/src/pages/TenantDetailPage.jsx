@@ -2080,17 +2080,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         )}
 
         {activeTab === 'hardware-sets' && (
-          <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-            <h3 className={`text-xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              Hardware-Sets Verwaltung
-            </h3>
-            <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-              Hardware-Sets für Tenant {tenant?.name} werden hier angezeigt.
-            </p>
-            <p className="text-sm text-yellow-600 mt-2">
-              ⚠️ Frontend-Komponente wird gerade entwickelt...
-            </p>
-          </div>
+          <HardwareSetsManagement tenantId={tenantId} />
         )}
 
         {activeTab === 'kiosk' && (
