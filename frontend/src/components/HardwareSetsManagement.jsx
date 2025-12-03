@@ -9,6 +9,8 @@ import {
   MapPin, Calendar, TrendingUp, ArrowRight, X, Save
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import HardwareSetModal from './HardwareSetModal';
+import HardwareDeviceModal from './HardwareDeviceModal';
 
 const HardwareSetsManagement = ({ tenantId }) => {
   const { theme } = useTheme();
