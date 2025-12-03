@@ -208,6 +208,7 @@ async def delete_set(
 
 @router.get("/devices", response_model=List[HardwareDevice])
 async def get_all_devices(
+    tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     hardware_type: Optional[str] = None,
     set_id: Optional[str] = None,
@@ -217,6 +218,8 @@ async def get_all_devices(
     """Get all hardware devices with optional filters"""
     try:
         query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         if status:
             query['current_status'] = status
         if hardware_type:
