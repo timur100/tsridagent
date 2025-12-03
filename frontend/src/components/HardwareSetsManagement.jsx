@@ -106,9 +106,21 @@ const HardwareSetsManagement = ({ tenantId }) => {
 
   const loadLocations = async () => {
     try {
-      const result = await apiCall(`/api/tenant-locations/${tenantId}`);
+      // Load locations from hardware sets
+      const result = await apiCall(`/api/hardware/sets/${tenantId}`);
       if (result.success && Array.isArray(result.data)) {
-        setLocations(result.data);
+        // Extract unique locations from sets
+        const locationMap = new Map();
+        result.data.forEach(set => {
+          if (set.location_id && !locationMap.has(set.location_id)) {
+            locationMap.set(set.location_id, {
+              id: set.location_id,
+              name: set.set_name?.split(' - Set ')[0] || set.location_code,
+              location_code: set.location_code
+            });
+          }
+        });
+        setLocations(Array.from(locationMap.values()));
       }
     } catch (error) {
       console.error('Error loading locations:', error);
