@@ -331,7 +331,7 @@ app.include_router(europcar_ai_router)
 app.include_router(dhl_shipping_router)
 app.include_router(hardware_router)
 app.include_router(hardware_import_router)
-app.include_router(placetel_router)
+app.include_router(placetel_router, prefix="/api/placetel", tags=["placetel"])
 
 # Include the router in the main app
 app.include_router(api_router)
