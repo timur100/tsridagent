@@ -106,7 +106,14 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
             </label>
             <select
               value={formData.location_id}
-              onChange={(e) => setFormData({ ...formData, location_id: e.target.value })}
+              onChange={(e) => {
+                const selectedLocation = locations.find(l => l.id === e.target.value);
+                setFormData({ 
+                  ...formData, 
+                  location_id: e.target.value,
+                  location_code: selectedLocation?.code || ''
+                });
+              }}
               className={`w-full px-4 py-2 rounded-lg border ${
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] border-gray-700 text-white'
@@ -116,11 +123,59 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
               <option value="">-- Standort auswählen --</option>
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
-                  {location.name}
+                  {location.name} {location.code && `(${location.code})`}
                 </option>
               ))}
             </select>
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Location Code
+              </label>
+              <input
+                type="text"
+                value={formData.location_code}
+                onChange={(e) => setFormData({ ...formData, location_code: e.target.value.toUpperCase() })}
+                placeholder="z.B. MUCT01"
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                    : 'bg-white border-gray-300'
+                }`}
+                maxLength={50}
+              />
+              <p className="text-xs text-gray-500 mt-1">Wird automatisch vom Standort übernommen</p>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Gerätenummer / Label
+              </label>
+              <input
+                type="text"
+                value={formData.device_number}
+                onChange={(e) => setFormData({ ...formData, device_number: e.target.value })}
+                placeholder="z.B. 01, 02, 03"
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                    : 'bg-white border-gray-300'
+                }`}
+                maxLength={10}
+              />
+              <p className="text-xs text-gray-500 mt-1">Label auf dem Tablet (z.B. 01)</p>
+            </div>
+          </div>
+
+          {formData.location_code && formData.device_number && (
+            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-green-900/20 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+              <p className="text-sm font-semibold text-green-600">
+                Vollständiger Code: <span className="font-mono text-lg">{formData.location_code}-{formData.device_number}</span>
+              </p>
+            </div>
+          )}
 
           <div>
             <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
