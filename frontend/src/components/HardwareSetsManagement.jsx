@@ -898,6 +898,16 @@ const HardwareSetsManagement = ({ tenantId }) => {
         editing={editingDevice}
         tenantId={tenantId}
       />
+
+      <HardwareSetDetailModal
+        show={showSetDetail}
+        onClose={() => {
+          setShowSetDetail(false);
+          setSelectedSet(null);
+        }}
+        set={selectedSet}
+        onRefresh={loadData}
+      />
     </div>
   );
 };
