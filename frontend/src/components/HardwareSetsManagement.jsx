@@ -11,6 +11,7 @@ import {
 import toast from 'react-hot-toast';
 import HardwareSetModal from './HardwareSetModal';
 import HardwareDeviceModal from './HardwareDeviceModal';
+import HardwareSetDetailModal from './HardwareSetDetailModal';
 
 const HardwareSetsManagement = ({ tenantId }) => {
   const { theme } = useTheme();
