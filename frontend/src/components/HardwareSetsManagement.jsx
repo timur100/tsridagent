@@ -397,19 +397,6 @@ const HardwareSetsManagement = ({ tenantId }) => {
           <Warehouse className="h-4 w-4" />
           Lager ({warehouseDevices.length})
         </button>
-        <button
-          onClick={() => setActiveView('search')}
-          className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-            activeView === 'search'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'text-gray-400 hover:bg-gray-700'
-              : 'text-gray-700 hover:bg-gray-100'
-          }`}
-        >
-          <Search className="h-4 w-4" />
-          Suche
-        </button>
       </div>
 
       {/* Global Search Field */}
