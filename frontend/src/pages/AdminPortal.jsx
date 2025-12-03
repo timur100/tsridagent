@@ -145,7 +145,7 @@ const AdminPortalContent = () => {
   const [rndTab, setRndTab] = useState('facematch');
   const [rndSidebarCollapsed, setRndSidebarCollapsed] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState(null); // For opening vehicle detail from global search
-  const [inventoryTab, setInventoryTab] = useState('items'); // 'items', 'goods-receipt', or 'hardware-sets'
+  const [inventoryTab, setInventoryTab] = useState('items'); // 'items' or 'goods-receipt'
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
   
   // Reset selectedVehicleId when changing tabs
