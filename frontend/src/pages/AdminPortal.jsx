@@ -1604,19 +1604,6 @@ const AdminPortalContent = () => {
                   <PackageCheck className="h-5 w-5" />
                   Wareneingang
                 </button>
-                <button
-                  onClick={() => setInventoryTab('hardware-sets')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                    inventoryTab === 'hardware-sets'
-                      ? 'bg-[#c00000] text-white'
-                      : theme === 'dark'
-                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
-                      : 'text-gray-700 hover:bg-gray-100'
-                  }`}
-                >
-                  <Cpu className="h-5 w-5" />
-                  Hardware-Sets
-                </button>
               </div>
             </div>
 
