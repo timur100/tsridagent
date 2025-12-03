@@ -20,7 +20,9 @@ const IdeasPage = () => {
   const [filterMenuItem, setFilterMenuItem] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showEditor, setShowEditor] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [currentIdea, setCurrentIdea] = useState(null);
+  const [selectedIdea, setSelectedIdea] = useState(null);
   const [availableMenuItems, setAvailableMenuItems] = useState([]);
   
   // Form state
