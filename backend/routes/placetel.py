@@ -7,7 +7,7 @@ import httpx
 import os
 from datetime import datetime
 
-from auth import verify_token
+from routes.portal_auth import verify_token
 
 router = APIRouter()
 
