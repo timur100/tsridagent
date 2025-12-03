@@ -49,23 +49,8 @@ const PlacetelManagement = () => {
   const loadNumbers = async () => {
     setLoading(true);
     try {
-      console.log('[Placetel] Loading numbers...');
       const result = await apiCall('/api/placetel/numbers');
-      console.log('[Placetel] Full result:', JSON.stringify(result));
-      
-      // apiCall wraps response in {success, data, status}
-      // Backend returns {success: true, data: [...]}
-      // So result.data.data is the actual array
-      let numbersArray = [];
-      if (result && result.data) {
-        if (Array.isArray(result.data)) {
-          numbersArray = result.data;
-        } else if (result.data.data && Array.isArray(result.data.data)) {
-          numbersArray = result.data.data;
-        }
-      }
-      console.log('[Placetel] Setting numbers:', numbersArray.length);
-      setNumbers(numbersArray);
+      setNumbers(extractArrayData(result));
     } catch (error) {
       console.error('[Placetel] Error loading numbers:', error);
       toast.error('Fehler beim Laden der Rufnummern');
@@ -78,11 +63,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/calls');
-      if (result.success && result.data) {
-        setCalls(Array.isArray(result.data) ? result.data : []);
-      }
+      setCalls(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading calls:', error);
+      console.error('[Placetel] Error loading calls:', error);
       toast.error('Fehler beim Laden der Anrufe');
     } finally {
       setLoading(false);
@@ -93,11 +76,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/contacts');
-      if (result.success && result.data) {
-        setContacts(Array.isArray(result.data) ? result.data : []);
-      }
+      setContacts(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading contacts:', error);
+      console.error('[Placetel] Error loading contacts:', error);
       toast.error('Fehler beim Laden der Kontakte');
     } finally {
       setLoading(false);
@@ -108,11 +89,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/call_center_agents');
-      if (result.success && result.data) {
-        setAgents(Array.isArray(result.data) ? result.data : []);
-      }
+      setAgents(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading agents:', error);
+      console.error('[Placetel] Error loading agents:', error);
       toast.error('Fehler beim Laden der Agents');
     } finally {
       setLoading(false);
@@ -123,11 +102,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/call_center_queues');
-      if (result.success && result.data) {
-        setQueues(Array.isArray(result.data) ? result.data : []);
-      }
+      setQueues(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading queues:', error);
+      console.error('[Placetel] Error loading queues:', error);
       toast.error('Fehler beim Laden der Queues');
     } finally {
       setLoading(false);
@@ -138,11 +115,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/faxes');
-      if (result.success && result.data) {
-        setFaxes(Array.isArray(result.data) ? result.data : []);
-      }
+      setFaxes(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading faxes:', error);
+      console.error('[Placetel] Error loading faxes:', error);
       toast.error('Fehler beim Laden der Faxe');
     } finally {
       setLoading(false);
@@ -153,11 +128,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/sip_users');
-      if (result.success && result.data) {
-        setSipUsers(Array.isArray(result.data) ? result.data : []);
-      }
+      setSipUsers(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading SIP users:', error);
+      console.error('[Placetel] Error loading SIP users:', error);
       toast.error('Fehler beim Laden der SIP Users');
     } finally {
       setLoading(false);
@@ -168,11 +141,9 @@ const PlacetelManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/placetel/routing_plans');
-      if (result.success && result.data) {
-        setRoutingPlans(Array.isArray(result.data) ? result.data : []);
-      }
+      setRoutingPlans(extractArrayData(result));
     } catch (error) {
-      console.error('Error loading routing plans:', error);
+      console.error('[Placetel] Error loading routing plans:', error);
       toast.error('Fehler beim Laden der Routing-Pläne');
     } finally {
       setLoading(false);
