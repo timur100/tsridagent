@@ -872,27 +872,27 @@ const HardwareSetsManagement = ({ tenantId }) => {
               </p>
             </Card>
           ) : (
-            <Card className={theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}>
+            <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Seriennummer
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Typ
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Hersteller / Modell
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Status
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Standort
                       </th>
-                      <th className={`px-6 py-4 text-right text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Aktionen
                       </th>
                     </tr>
@@ -905,7 +905,11 @@ const HardwareSetsManagement = ({ tenantId }) => {
                       return (
                         <tr
                           key={device.id}
-                          className={`border-b ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}
+                          onClick={() => {
+                            setEditingDevice(device);
+                            setShowDeviceModal(true);
+                          }}
+                          className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                         >
                           <td className="px-6 py-4">
                             <span className="font-mono text-sm font-semibold">
@@ -913,12 +917,12 @@ const HardwareSetsManagement = ({ tenantId }) => {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-sm">{device.hardware_type}</span>
+                            <span className="font-mono text-sm">{device.hardware_type}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <div className="text-sm">
+                            <div className="font-mono text-sm">
                               {device.manufacturer && <div className="font-semibold">{device.manufacturer}</div>}
-                              {device.model && <div className="text-gray-500">{device.model}</div>}
+                              {device.model && <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{device.model}</div>}
                               {!device.manufacturer && !device.model && <span className="text-gray-400">-</span>}
                             </div>
                           </td>
@@ -930,24 +934,30 @@ const HardwareSetsManagement = ({ tenantId }) => {
                           </td>
                           <td className="px-6 py-4">
                             {location ? (
-                              <div className="flex items-center gap-1 text-sm">
+                              <div className="flex items-center gap-1 font-mono text-sm">
                                 <MapPin className="h-3 w-3 text-gray-500" />
                                 {location.name}
                               </div>
                             ) : (
-                              <span className="text-sm text-gray-400">Lager</span>
+                              <span className="font-mono text-sm text-gray-400">Lager</span>
                             )}
                           </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-                                title="Details"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingDevice(device);
+                                  setShowDeviceModal(true);
+                                }}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                                title="Details anzeigen"
                               >
                                 <Eye className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => {
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setEditingDevice(device);
                                   setShowDeviceModal(true);
                                 }}
