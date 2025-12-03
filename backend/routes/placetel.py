@@ -29,14 +29,19 @@ async def get_numbers(
 ):
     """Get all Placetel numbers"""
     try:
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/numbers",
                 headers=get_placetel_headers(),
                 params={"page": page, "per_page": per_page}
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            # Placetel returns array directly, not wrapped in object
+            return {"success": True, "data": data}
+    except httpx.HTTPStatusError as e:
+        print(f"[Placetel] HTTP Error fetching numbers: {e.response.status_code} - {e.response.text}")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         print(f"[Placetel] Error fetching numbers: {e}")
         raise HTTPException(status_code=500, detail=str(e))
