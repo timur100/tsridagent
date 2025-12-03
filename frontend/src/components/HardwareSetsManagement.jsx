@@ -994,39 +994,94 @@ const HardwareSetsManagement = ({ tenantId }) => {
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {warehouseDevices.map((device) => (
-                <Card
-                  key={device.id}
-                  className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}
-                >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <p className="text-sm text-gray-500 mb-1">{device.hardware_type}</p>
-                      <p className="font-mono text-sm font-bold">{device.serial_number}</p>
-                    </div>
-                    <Package className="h-6 w-6 text-green-500" />
-                  </div>
-
-                  {(device.manufacturer || device.model) && (
-                    <div className="mb-4">
-                      {device.manufacturer && <p className="text-sm font-semibold">{device.manufacturer}</p>}
-                      {device.model && <p className="text-sm text-gray-500">{device.model}</p>}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      Zu Set hinzufügen
-                    </Button>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Seriennummer
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Typ
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Hersteller / Modell
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Status
+                      </th>
+                      <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Aktionen
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {warehouseDevices.map((device) => {
+                      const statusBadge = getStatusBadge(device.current_status);
+                      
+                      return (
+                        <tr
+                          key={device.id}
+                          onClick={() => {
+                            setEditingDevice(device);
+                            setShowDeviceModal(true);
+                          }}
+                          className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                        >
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm font-semibold">
+                              {device.serial_number}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm">{device.hardware_type}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="font-mono text-sm">
+                              {device.manufacturer && <div className="font-semibold">{device.manufacturer}</div>}
+                              {device.model && <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{device.model}</div>}
+                              {!device.manufacturer && !device.model && <span className="text-gray-400">-</span>}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${statusBadge.bg}`}>
+                              {React.createElement(statusBadge.icon, { className: 'h-3 w-3' })}
+                              {statusBadge.text}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingDevice(device);
+                                  setShowDeviceModal(true);
+                                }}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                                title="Details anzeigen"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                }}
+                                className="text-xs"
+                              >
+                                Zu Set hinzufügen
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           )}
         </div>
       )}
