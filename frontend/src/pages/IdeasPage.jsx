@@ -284,6 +284,118 @@ const IdeasPage = () => {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'} p-6`}>
+      {/* Detail Modal */}
+      {showDetailModal && selectedIdea && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50" onClick={() => setShowDetailModal(false)}>
+          <div 
+            className={`w-full max-w-3xl max-h-[90vh] rounded-lg shadow-xl ${theme === 'dark' ? 'bg-[#2a2a2a] text-white' : 'bg-white text-gray-900'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div className="flex items-center gap-3">
+                <Lightbulb className="h-6 w-6 text-yellow-500" />
+                <h2 className="text-2xl font-bold">Ideen-Details</h2>
+              </div>
+              <button
+                onClick={() => setShowDetailModal(false)}
+                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-180px)]">
+              <div className="space-y-6">
+                {/* Menu Item */}
+                <div>
+                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Menüpunkt
+                  </label>
+                  <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold ${
+                    theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    <Tag className="h-4 w-4" />
+                    {selectedIdea.menu_item}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <div>
+                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Titel
+                  </label>
+                  <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {selectedIdea.title}
+                  </h3>
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Beschreibung
+                  </label>
+                  <p className={`text-base whitespace-pre-wrap ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {selectedIdea.description}
+                  </p>
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Status
+                  </label>
+                  <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold text-white ${getStatusBadge(selectedIdea.status).bg}`}>
+                    {React.createElement(getStatusBadge(selectedIdea.status).icon, { className: 'h-4 w-4' })}
+                    {getStatusBadge(selectedIdea.status).text}
+                  </span>
+                </div>
+
+                {/* Metadata */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Erstellt am
+                    </label>
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="h-4 w-4" />
+                      <span>{formatDate(selectedIdea.created_at)}</span>
+                    </div>
+                  </div>
+                  {selectedIdea.created_by && (
+                    <div>
+                      <label className={`block text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Erstellt von
+                      </label>
+                      <span className="text-sm">{selectedIdea.created_by}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className={`flex items-center justify-end gap-3 p-6 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <Button
+                onClick={handleEditFromDetail}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Edit2 className="h-4 w-4" />
+                Bearbeiten
+              </Button>
+              <Button
+                onClick={(e) => handleDelete(selectedIdea.id, e)}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white"
+              >
+                <Trash2 className="h-4 w-4" />
+                Löschen
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center justify-between">
