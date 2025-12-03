@@ -10,6 +10,7 @@ import uuid
 class HardwareSet(BaseModel):
     """Hardware Set Model - Group of devices at a location"""
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str = Field(..., description="Tenant ID")
     set_name: str = Field(..., min_length=1, max_length=200, description="Name of the hardware set")
     location_id: str = Field(..., description="Location/Standort ID")
     status: Literal['aktiv', 'archiviert', 'geschlossen'] = Field(default='aktiv')
