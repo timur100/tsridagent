@@ -20,12 +20,16 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       setFormData({
         set_name: editing.set_name || '',
         location_id: editing.location_id || '',
+        location_code: editing.location_code || '',
+        device_number: editing.device_number || '',
         notes: editing.notes || ''
       });
     } else {
       setFormData({
         set_name: '',
         location_id: '',
+        location_code: '',
+        device_number: '',
         notes: ''
       });
     }
