@@ -961,7 +961,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                                   setEditingDevice(device);
                                   setShowDeviceModal(true);
                                 }}
-                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
                                 title="Bearbeiten"
                               >
                                 <Edit2 className="h-4 w-4" />
