@@ -1,11 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
-import { Phone, Users, PhoneCall, Settings, Headphones, GitBranch, FileText, UserCircle } from 'lucide-react';
+import { Button } from './ui/button';
+import { Phone, Users, PhoneCall, Settings, Headphones, GitBranch, FileText, UserCircle, Plus, Edit2, Trash2, Eye, PhoneMissed, PhoneIncoming, PhoneOutgoing, Mail, MapPin, Building } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const PlacetelManagement = () => {
   const { theme } = useTheme();
+  const { apiCall } = useAuth();
   const [activeTab, setActiveTab] = useState('numbers');
+  const [loading, setLoading] = useState(false);
+
+  // Data states
+  const [numbers, setNumbers] = useState([]);
+  const [calls, setCalls] = useState([]);
+  const [contacts, setContacts] = useState([]);
+  const [agents, setAgents] = useState([]);
+  const [queues, setQueues] = useState([]);
+  const [faxes, setFaxes] = useState([]);
+  const [sipUsers, setSipUsers] = useState([]);
+  const [routingPlans, setRoutingPlans] = useState([]);
+
+  // Modal states
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [editingContact, setEditingContact] = useState(null);
 
   const tabs = [
     { id: 'numbers', label: 'Rufnummern', icon: Phone },
@@ -17,6 +36,182 @@ const PlacetelManagement = () => {
     { id: 'sipusers', label: 'SIP Users', icon: UserCircle },
     { id: 'settings', label: 'Einstellungen', icon: Settings }
   ];
+
+  // Load data functions
+  const loadNumbers = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/numbers');
+      if (result.success && result.data) {
+        setNumbers(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading numbers:', error);
+      toast.error('Fehler beim Laden der Rufnummern');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCalls = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/calls');
+      if (result.success && result.data) {
+        setCalls(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading calls:', error);
+      toast.error('Fehler beim Laden der Anrufe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadContacts = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/contacts');
+      if (result.success && result.data) {
+        setContacts(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading contacts:', error);
+      toast.error('Fehler beim Laden der Kontakte');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadAgents = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/call_center_agents');
+      if (result.success && result.data) {
+        setAgents(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading agents:', error);
+      toast.error('Fehler beim Laden der Agents');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadQueues = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/call_center_queues');
+      if (result.success && result.data) {
+        setQueues(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading queues:', error);
+      toast.error('Fehler beim Laden der Queues');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadFaxes = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/faxes');
+      if (result.success && result.data) {
+        setFaxes(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading faxes:', error);
+      toast.error('Fehler beim Laden der Faxe');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadSipUsers = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/sip_users');
+      if (result.success && result.data) {
+        setSipUsers(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading SIP users:', error);
+      toast.error('Fehler beim Laden der SIP Users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadRoutingPlans = async () => {
+    setLoading(true);
+    try {
+      const result = await apiCall('/api/placetel/routing_plans');
+      if (result.success && result.data) {
+        setRoutingPlans(result.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error loading routing plans:', error);
+      toast.error('Fehler beim Laden der Routing-Pläne');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load data when tab changes
+  useEffect(() => {
+    switch (activeTab) {
+      case 'numbers':
+        loadNumbers();
+        break;
+      case 'calls':
+        loadCalls();
+        break;
+      case 'contacts':
+        loadContacts();
+        break;
+      case 'callcenter':
+        loadAgents();
+        loadQueues();
+        break;
+      case 'routing':
+        loadRoutingPlans();
+        break;
+      case 'faxes':
+        loadFaxes();
+        break;
+      case 'sipusers':
+        loadSipUsers();
+        break;
+      default:
+        break;
+    }
+  }, [activeTab]);
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getCallIcon = (type) => {
+    switch (type) {
+      case 'incoming':
+        return <PhoneIncoming className="h-4 w-4 text-green-500" />;
+      case 'outgoing':
+        return <PhoneOutgoing className="h-4 w-4 text-blue-500" />;
+      case 'missed':
+        return <PhoneMissed className="h-4 w-4 text-red-500" />;
+      default:
+        return <PhoneCall className="h-4 w-4 text-gray-500" />;
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -54,148 +249,583 @@ const PlacetelManagement = () => {
 
       {/* Content */}
       {activeTab === 'numbers' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Rufnummern
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <Phone className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Rufnummernverwaltung
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Rufnummern auflisten, Profile erstellen/aktivieren, Rufnummern aktivieren/deaktivieren
-              </p>
-            </div>
+        <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Nummer
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Typ
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Land
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Status
+                  </th>
+                  <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Aktionen
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : numbers.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-12 text-center">
+                      <Phone className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Keine Rufnummern gefunden
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  numbers.map((number) => (
+                    <tr
+                      key={number.id}
+                      className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                    >
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm font-semibold">
+                          {number.number}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{number.type || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{number.country || 'DE'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
+                          number.active ? 'bg-green-500' : 'bg-gray-500'
+                        }`}>
+                          {number.active ? 'Aktiv' : 'Inaktiv'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                            title="Details"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
       )}
 
       {activeTab === 'calls' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Anrufe
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <PhoneCall className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Anrufliste & Voicemails
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Eingehende Anrufe, Voicemails, verpasste Anrufe, Anruf-Details mit Kontaktinformationen
-              </p>
-            </div>
+        <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Typ
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Von
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Zu
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Dauer
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Datum
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : calls.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="px-6 py-12 text-center">
+                      <PhoneCall className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Keine Anrufe gefunden
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  calls.map((call, index) => (
+                    <tr
+                      key={index}
+                      className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          {getCallIcon(call.type)}
+                          <span className="font-mono text-sm capitalize">{call.type || '-'}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{call.from_number || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{call.to_number || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{call.duration || '0'}s</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{formatDate(call.created_at)}</span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
       )}
 
       {activeTab === 'contacts' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Kontakte
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <Users className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Kontaktverwaltung
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Kontakte erstellen/bearbeiten/löschen, Speeddial-Nummern, Filter nach Name/Email/Telefon
-              </p>
-            </div>
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <Button
+              onClick={() => {
+                setEditingContact(null);
+                setShowContactModal(true);
+              }}
+              className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Kontakt hinzufügen
+            </Button>
           </div>
-        </Card>
+          <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                    <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Name
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Firma
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Telefon
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      E-Mail
+                    </th>
+                    <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Aktionen
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-12 text-center">
+                        <div className="flex items-center justify-center">
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        </div>
+                      </td>
+                    </tr>
+                  ) : contacts.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" className="px-6 py-12 text-center">
+                        <Users className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Keine Kontakte gefunden
+                        </p>
+                      </td>
+                    </tr>
+                  ) : (
+                    contacts.map((contact) => (
+                      <tr
+                        key={contact.id}
+                        className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="font-mono text-sm">
+                            <div className="font-semibold">{contact.first_name} {contact.last_name}</div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{contact.company || '-'}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{contact.phone || '-'}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{contact.email || '-'}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditingContact(contact);
+                                setShowContactModal(true);
+                              }}
+                              className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                              title="Bearbeiten"
+                            >
+                              <Edit2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
       )}
 
       {activeTab === 'callcenter' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Call Center
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <Headphones className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Call Center Management
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Agents verwalten, Warteschlangen (Queues), Call Center Anrufe, Anruf-Picking
-              </p>
-            </div>
+        <div className="space-y-6">
+          {/* Agents */}
+          <div>
+            <h3 className={`text-lg font-bold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Agents
+            </h3>
+            <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Name
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Status
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Queue
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="3" className="px-6 py-12 text-center">
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : agents.length === 0 ? (
+                      <tr>
+                        <td colSpan="3" className="px-6 py-12 text-center">
+                          <Headphones className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Keine Agents gefunden
+                          </p>
+                        </td>
+                      </tr>
+                    ) : (
+                      agents.map((agent) => (
+                        <tr
+                          key={agent.id}
+                          className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                        >
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm font-semibold">{agent.name}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
+                              agent.online ? 'bg-green-500' : 'bg-gray-500'
+                            }`}>
+                              {agent.online ? 'Online' : 'Offline'}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm">{agent.queue_name || '-'}</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           </div>
-        </Card>
+
+          {/* Queues */}
+          <div>
+            <h3 className={`text-lg font-bold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Warteschlangen
+            </h3>
+            <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Name
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Wartende Anrufe
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Verfügbare Agents
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr>
+                        <td colSpan="3" className="px-6 py-12 text-center">
+                          <div className="flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : queues.length === 0 ? (
+                      <tr>
+                        <td colSpan="3" className="px-6 py-12 text-center">
+                          <Headphones className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Keine Queues gefunden
+                          </p>
+                        </td>
+                      </tr>
+                    ) : (
+                      queues.map((queue) => (
+                        <tr
+                          key={queue.id}
+                          className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                        >
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm font-semibold">{queue.name}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm">{queue.waiting_calls || 0}</span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm">{queue.available_agents || 0}</span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          </div>
+        </div>
       )}
 
       {activeTab === 'routing' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Routing
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <GitBranch className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Routing-Pläne & IVR
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Routing-Pläne erstellen/verwalten, IVR (Interactive Voice Response), Ansagen
-              </p>
-            </div>
+        <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Name
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Typ
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : routingPlans.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-12 text-center">
+                      <GitBranch className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Keine Routing-Pläne gefunden
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  routingPlans.map((plan) => (
+                    <tr
+                      key={plan.id}
+                      className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                    >
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm font-semibold">{plan.name}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{plan.type || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
+                          plan.active ? 'bg-green-500' : 'bg-gray-500'
+                        }`}>
+                          {plan.active ? 'Aktiv' : 'Inaktiv'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
       )}
 
       {activeTab === 'faxes' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Faxe
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <FileText className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Fax-Ein- & Ausgang
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Eingehende/Ausgehende Faxe abrufen, Fax senden, Fax-Details
-              </p>
-            </div>
+        <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Richtung
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Von/Zu
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Seiten
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Datum
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : faxes.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="px-6 py-12 text-center">
+                      <FileText className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Keine Faxe gefunden
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  faxes.map((fax) => (
+                    <tr
+                      key={fax.id}
+                      className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                    >
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm capitalize">{fax.direction || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{fax.number || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{fax.pages || 0}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{formatDate(fax.created_at)}</span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
       )}
 
       {activeTab === 'sipusers' && (
-        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}>
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                SIP Users
-              </h2>
-            </div>
-            <div className="text-center py-12">
-              <UserCircle className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                SIP-Benutzerverwaltung
-              </p>
-              <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                SIP-Benutzer erstellen/verwalten, Short Codes (Kurzwahlen), Online-Status
-              </p>
-            </div>
+        <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Name
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    SIP ID
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-12 text-center">
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                      </div>
+                    </td>
+                  </tr>
+                ) : sipUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="px-6 py-12 text-center">
+                      <UserCircle className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        Keine SIP Users gefunden
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  sipUsers.map((user) => (
+                    <tr
+                      key={user.id}
+                      className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                    >
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm font-semibold">{user.name}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-sm">{user.sipuid || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
+                          user.online ? 'bg-green-500' : 'bg-gray-500'
+                        }`}>
+                          {user.online ? 'Online' : 'Offline'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </Card>
       )}
