@@ -398,6 +398,178 @@ const HardwareSetsManagement = ({ tenantId }) => {
         </button>
       </div>
 
+      {/* Global Search Field */}
+      <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+        <div className="relative">
+          <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
+          <input
+            type="text"
+            value={globalSearchQuery}
+            onChange={(e) => setGlobalSearchQuery(e.target.value)}
+            placeholder="Suche nach Sets, Geräten, Standorten, Seriennummern..."
+            className={`w-full pl-10 pr-10 py-2.5 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
+                : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+            } focus:outline-none focus:ring-2 focus:ring-[#c00000] focus:border-transparent`}
+          />
+          {globalSearchQuery && (
+            <button
+              onClick={() => {
+                setGlobalSearchQuery('');
+                setGlobalSearchResults(null);
+              }}
+              className={`absolute right-3 top-1/2 transform -translate-y-1/2 ${theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}`}
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+          {isSearching && (
+            <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#c00000]"></div>
+            </div>
+          )}
+        </div>
+
+        {/* Search Results */}
+        {globalSearchResults && globalSearchResults.total_results > 0 && (
+          <div className={`mt-4 pt-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+            <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              {globalSearchResults.total_results} Ergebnis{globalSearchResults.total_results !== 1 ? 'se' : ''} gefunden
+            </p>
+            
+            <div className="space-y-4">
+              {/* Sets Results */}
+              {globalSearchResults.sets && globalSearchResults.sets.length > 0 && (
+                <div>
+                  <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <Cpu className="h-4 w-4 text-[#c00000]" />
+                    Hardware-Sets ({globalSearchResults.sets.length})
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {globalSearchResults.sets.map((set) => (
+                      <button
+                        key={set.id}
+                        onClick={() => {
+                          setSelectedSet(set);
+                          setShowSetDetail(true);
+                          setGlobalSearchQuery('');
+                          setGlobalSearchResults(null);
+                        }}
+                        className={`p-3 rounded-lg text-left transition-colors ${
+                          theme === 'dark'
+                            ? 'bg-[#1f1f1f] hover:bg-[#333] border border-gray-700'
+                            : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {set.full_code && (
+                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold">
+                              {set.full_code}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {set.set_name}
+                        </p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                          {set.status}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Devices Results */}
+              {globalSearchResults.devices && globalSearchResults.devices.length > 0 && (
+                <div>
+                  <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <Package className="h-4 w-4 text-[#c00000]" />
+                    Geräte ({globalSearchResults.devices.length})
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {globalSearchResults.devices.map((device) => {
+                      const statusBadge = getStatusBadge(device.current_status);
+                      return (
+                        <button
+                          key={device.id}
+                          onClick={() => {
+                            setEditingDevice(device);
+                            setShowDeviceModal(true);
+                            setGlobalSearchQuery('');
+                            setGlobalSearchResults(null);
+                          }}
+                          className={`p-3 rounded-lg text-left transition-colors ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] hover:bg-[#333] border border-gray-700'
+                              : 'bg-gray-50 hover:bg-gray-100 border border-gray-200'
+                          }`}
+                        >
+                          <p className="text-xs text-gray-500 mb-1">{device.hardware_type}</p>
+                          <p className={`text-sm font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {device.serial_number}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold text-white ${statusBadge.bg}`}>
+                              {statusBadge.text}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Locations Results */}
+              {globalSearchResults.locations && globalSearchResults.locations.length > 0 && (
+                <div>
+                  <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <MapPin className="h-4 w-4 text-[#c00000]" />
+                    Standorte ({globalSearchResults.locations.length})
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {globalSearchResults.locations.map((location) => (
+                      <div
+                        key={location.id}
+                        className={`p-3 rounded-lg ${
+                          theme === 'dark'
+                            ? 'bg-[#1f1f1f] border border-gray-700'
+                            : 'bg-gray-50 border border-gray-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          {location.location_code && (
+                            <span className="px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-mono font-bold">
+                              {location.location_code}
+                            </span>
+                          )}
+                        </div>
+                        <p className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {location.station_name}
+                        </p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                          {location.city}, {location.postal_code}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {globalSearchResults && globalSearchResults.total_results === 0 && (
+          <div className={`mt-4 pt-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} text-center`}>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+              Keine Ergebnisse für "{globalSearchQuery}" gefunden
+            </p>
+          </div>
+        )}
+      </Card>
+
       {/* Dashboard View */}
       {activeView === 'dashboard' && (
         <div className="space-y-6">
