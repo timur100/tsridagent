@@ -325,6 +325,54 @@ const HardwareSetsManagement = ({ tenantId }) => {
     });
   };
 
+  // Sort handler for sets table
+  const handleSort = (field) => {
+    if (sortField === field) {
+      // Toggle direction if same field
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New field, default to ascending
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Sort sets based on current sort field and direction
+  const sortedSets = [...sets].sort((a, b) => {
+    let aVal = a[sortField];
+    let bVal = b[sortField];
+    
+    // Special handling for device count
+    if (sortField === 'device_count') {
+      const aDevices = devices.filter(d => d.current_set_id === a.id).length;
+      const bDevices = devices.filter(d => d.current_set_id === b.id).length;
+      aVal = aDevices;
+      bVal = bDevices;
+    }
+    
+    // Special handling for location name
+    if (sortField === 'location_name') {
+      const aLocation = locations.find(l => l.id === a.location_id);
+      const bLocation = locations.find(l => l.id === b.location_id);
+      aVal = aLocation?.name || '';
+      bVal = bLocation?.name || '';
+    }
+    
+    // Handle null/undefined values
+    if (!aVal) aVal = '';
+    if (!bVal) bVal = '';
+    
+    // String comparison
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return sortDirection === 'asc' 
+        ? aVal.localeCompare(bVal, 'de')
+        : bVal.localeCompare(aVal, 'de');
+    }
+    
+    // Number comparison
+    return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+  });
+
   // Filter devices by status
   const filteredDevices = devices.filter(device => {
     if (statusFilter === 'all') return true;
