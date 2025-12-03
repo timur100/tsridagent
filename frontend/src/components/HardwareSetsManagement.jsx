@@ -531,9 +531,16 @@ const HardwareSetsManagement = ({ tenantId }) => {
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <h3 className={`text-lg font-bold mb-1 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                          {set.set_name}
-                        </h3>
+                        <div className="flex items-center gap-2 mb-1">
+                          {set.full_code && (
+                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold">
+                              {set.full_code}
+                            </span>
+                          )}
+                          <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {set.set_name}
+                          </h3>
+                        </div>
                         {location && (
                           <div className="flex items-center gap-1 text-sm text-gray-500">
                             <MapPin className="h-3 w-3" />
