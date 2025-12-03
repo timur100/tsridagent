@@ -9,6 +9,8 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
   const [formData, setFormData] = useState({
     set_name: '',
     location_id: '',
+    location_code: '',
+    device_number: '',
     notes: ''
   });
   const [saving, setSaving] = useState(false);
