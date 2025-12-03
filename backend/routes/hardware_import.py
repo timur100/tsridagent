@@ -182,8 +182,8 @@ async def import_from_existing_data(
                         else:
                             skipped.append(f"Tablet {sn_pc} existiert bereits")
                     
-                    # Import Scanner (SN-SC)
-                    if sn_sc:
+                    # Import Scanner (SN-SC) - VERWENDE ECHTE SERIENNUMMER
+                    if sn_sc and sn_sc.strip():
                         existing_device = await main_db.hardware_devices.find_one({
                             'tenant_id': tenant_id,
                             'serial_number': sn_sc
@@ -193,7 +193,7 @@ async def import_from_existing_data(
                             scanner = {
                                 'id': str(uuid.uuid4()),
                                 'tenant_id': tenant_id,
-                                'serial_number': sn_sc,
+                                'serial_number': sn_sc,  # ECHTE Seriennummer aus SN-SC
                                 'hardware_type': 'Scanner',
                                 'manufacturer': None,
                                 'model': None,
@@ -203,7 +203,7 @@ async def import_from_existing_data(
                                 'current_status': 'aktiv',
                                 'current_location_id': location_id,
                                 'current_set_id': new_set['id'],
-                                'barcode': generate_barcode_svg(sn_sc),
+                                'barcode': await generate_barcode_svg(sn_sc),
                                 'notes': f"Importiert von Location {full_code}",
                                 'created_at': datetime.now(timezone.utc).isoformat(),
                                 'updated_at': datetime.now(timezone.utc).isoformat()
@@ -224,6 +224,53 @@ async def import_from_existing_data(
                             })
                             
                             imported_devices.append(f"Scanner: {sn_sc}")
+                        else:
+                            skipped.append(f"Scanner {sn_sc} existiert bereits")
+                    
+                    # Import Dockingstation (SN-DOCK) - VERWENDE ECHTE SERIENNUMMER
+                    if sn_dock and sn_dock.strip():
+                        existing_device = await main_db.hardware_devices.find_one({
+                            'tenant_id': tenant_id,
+                            'serial_number': sn_dock
+                        })
+                        
+                        if not existing_device:
+                            docking = {
+                                'id': str(uuid.uuid4()),
+                                'tenant_id': tenant_id,
+                                'serial_number': sn_dock,  # ECHTE Seriennummer aus SN-DOCK
+                                'hardware_type': 'Dockingstation',
+                                'manufacturer': None,
+                                'model': None,
+                                'purchase_date': None,
+                                'warranty_until': None,
+                                'warranty_reminder_days': 30,
+                                'current_status': 'aktiv',
+                                'current_location_id': location_id,
+                                'current_set_id': new_set['id'],
+                                'barcode': await generate_barcode_svg(sn_dock),
+                                'notes': f"Importiert von Location {full_code}",
+                                'created_at': datetime.now(timezone.utc).isoformat(),
+                                'updated_at': datetime.now(timezone.utc).isoformat()
+                            }
+                            
+                            await main_db.hardware_devices.insert_one(docking)
+                            
+                            # Add to set assignment
+                            await main_db.set_assignments.insert_one({
+                                'id': str(uuid.uuid4()),
+                                'device_id': docking['id'],
+                                'set_id': new_set['id'],
+                                'assigned_date': datetime.now(timezone.utc).isoformat(),
+                                'removed_date': None,
+                                'removal_reason': None,
+                                'assigned_by': token_data.get('email', 'system'),
+                                'active': True
+                            })
+                            
+                            imported_devices.append(f"Dockingstation: {sn_dock}")
+                        else:
+                            skipped.append(f"Dockingstation {sn_dock} existiert bereits")
                     
                     # Add device history entries
                     for device in [d async for d in main_db.hardware_devices.find({'current_set_id': new_set['id']})]:
