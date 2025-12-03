@@ -524,7 +524,10 @@ const HardwareSetsManagement = ({ tenantId }) => {
                     className={`p-6 cursor-pointer transition-all hover:scale-105 ${
                       theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 hover:bg-[#333]' : 'bg-white hover:shadow-lg'
                     }`}
-                    onClick={() => setSelectedSet(set)}
+                    onClick={() => {
+                      setSelectedSet(set);
+                      setShowSetDetail(true);
+                    }}
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
