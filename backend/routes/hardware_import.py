@@ -2,10 +2,11 @@
 Hardware Import from existing Tenant Devices and Locations
 """
 from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from typing import List, Dict
 from datetime import datetime, timezone
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
+import uuid
 
 from routes.portal_auth import verify_token
 from models.hardware import HardwareDevice, HardwareSet
@@ -15,7 +16,11 @@ router = APIRouter(prefix="/api/hardware/import", tags=["Hardware Import"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(MONGO_URL)
-db = client['main_db']
+
+# Connect to multiple databases
+main_db = client['main_db']
+portal_db = client['portal_db']
+multi_tenant_db = client['multi_tenant_admin']
 
 
 @router.post("/tenant/{tenant_id}/from-existing")
