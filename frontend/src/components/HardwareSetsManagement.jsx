@@ -29,6 +29,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
   // Modals
   const [showSetModal, setShowSetModal] = useState(false);
   const [showDeviceModal, setShowDeviceModal] = useState(false);
+  const [showSetDetail, setShowSetDetail] = useState(false);
   const [editingSet, setEditingSet] = useState(null);
   const [editingDevice, setEditingDevice] = useState(null);
   const [selectedSet, setSelectedSet] = useState(null);
