@@ -144,15 +144,31 @@ const HardwareSetDetailModal = ({ show, onClose, set, onRefresh }) => {
         {/* Header */}
         <div className={`flex items-center justify-between p-6 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} sticky top-0 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} z-10`}>
           <div>
-            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              {set.set_name}
-            </h2>
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-3 mb-2">
+              {set.full_code && (
+                <span className="px-3 py-1 rounded bg-blue-500 text-white text-lg font-mono font-bold">
+                  {set.full_code}
+                </span>
+              )}
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {set.set_name}
+              </h2>
+            </div>
+            <div className="flex items-center gap-4">
               <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                 set.status === 'aktiv' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
               }`}>
                 {set.status === 'aktiv' ? 'Aktiv' : set.status}
               </span>
+              {set.location_code && set.device_number && (
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-gray-500">Location:</span>
+                  <span className="font-mono font-semibold">{set.location_code}</span>
+                  <span className="text-gray-500">|</span>
+                  <span className="text-gray-500">Gerät:</span>
+                  <span className="font-mono font-semibold">{set.device_number}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1 text-sm text-gray-500">
                 <Calendar className="h-4 w-4" />
                 Erstellt: {new Date(set.created_at).toLocaleDateString('de-DE')}
