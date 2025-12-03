@@ -59,7 +59,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/calls');
       if (result.success && result.data) {
-        setCalls(result.data.data || []);
+        setCalls(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading calls:', error);
@@ -74,7 +74,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/contacts');
       if (result.success && result.data) {
-        setContacts(result.data.data || []);
+        setContacts(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading contacts:', error);
@@ -89,7 +89,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/call_center_agents');
       if (result.success && result.data) {
-        setAgents(result.data.data || []);
+        setAgents(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading agents:', error);
@@ -104,7 +104,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/call_center_queues');
       if (result.success && result.data) {
-        setQueues(result.data.data || []);
+        setQueues(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading queues:', error);
@@ -119,7 +119,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/faxes');
       if (result.success && result.data) {
-        setFaxes(result.data.data || []);
+        setFaxes(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading faxes:', error);
@@ -134,7 +134,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/sip_users');
       if (result.success && result.data) {
-        setSipUsers(result.data.data || []);
+        setSipUsers(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading SIP users:', error);
@@ -149,7 +149,7 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/routing_plans');
       if (result.success && result.data) {
-        setRoutingPlans(result.data.data || []);
+        setRoutingPlans(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading routing plans:', error);
