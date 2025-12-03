@@ -244,6 +244,73 @@ async def get_all_devices(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/search")
+async def global_search(
+    query: str,
+    tenant_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Global search across sets, devices, locations, and serial numbers"""
+    try:
+        if not query or len(query) < 2:
+            return {
+                "sets": [],
+                "devices": [],
+                "locations": [],
+                "total_results": 0
+            }
+        
+        search_pattern = {"$regex": query, "$options": "i"}
+        base_query = {}
+        if tenant_id:
+            base_query['tenant_id'] = tenant_id
+        
+        # Search in hardware sets
+        set_query = {**base_query, "$or": [
+            {"set_name": search_pattern},
+            {"full_code": search_pattern},
+            {"location_code": search_pattern},
+            {"notes": search_pattern}
+        ]}
+        sets = await db.hardware_sets.find(set_query, {"_id": 0}).limit(20).to_list(length=None)
+        
+        # Search in devices
+        device_query = {**base_query, "$or": [
+            {"serial_number": search_pattern},
+            {"hardware_type": search_pattern},
+            {"manufacturer": search_pattern},
+            {"model": search_pattern},
+            {"notes": search_pattern}
+        ]}
+        devices = await db.hardware_devices.find(device_query, {"_id": 0}).limit(20).to_list(length=None)
+        
+        # Search in locations (from tenant_locations collection)
+        location_query = {}
+        if tenant_id:
+            location_query['tenant_id'] = tenant_id
+        location_query["$or"] = [
+            {"location_code": search_pattern},
+            {"station_name": search_pattern},
+            {"city": search_pattern},
+            {"postal_code": search_pattern},
+            {"street": search_pattern}
+        ]
+        locations = await db.tenant_locations.find(location_query, {"_id": 0}).limit(20).to_list(length=None)
+        
+        total_results = len(sets) + len(devices) + len(locations)
+        
+        return {
+            "sets": sets,
+            "devices": devices,
+            "locations": locations,
+            "total_results": total_results,
+            "query": query
+        }
+    except Exception as e:
+        print(f"[Hardware] Error in global search: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/devices/search/{serial_number}")
 async def search_device_by_serial(
     serial_number: str,
