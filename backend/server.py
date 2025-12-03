@@ -69,6 +69,7 @@ from routes.key_automat import router as key_automat_router
 from routes.kiosk_verification import router as kiosk_verification_router
 from routes.receipts import router as receipts_router
 from routes.dhl_shipping import router as dhl_shipping_router
+from routes.hardware import router as hardware_router
 
 
 ROOT_DIR = Path(__file__).parent
