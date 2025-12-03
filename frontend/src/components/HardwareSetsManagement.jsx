@@ -425,7 +425,32 @@ const HardwareSetsManagement = ({ tenantId }) => {
             <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Schnellaktionen
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Button
+                onClick={async () => {
+                  if (!window.confirm('Möchten Sie bestehende Geräte und Standorte importieren? Dies erstellt automatisch Sets basierend auf den Location Codes.')) {
+                    return;
+                  }
+                  
+                  try {
+                    const result = await apiCall(`/api/hardware/import/tenant/${tenantId}/from-existing`, {
+                      method: 'POST'
+                    });
+                    
+                    if (result.success) {
+                      toast.success(`Import erfolgreich! ${result.imported_sets_count} Sets und ${result.imported_devices_count} Geräte importiert.`);
+                      await loadData();
+                    }
+                  } catch (error) {
+                    console.error('Import error:', error);
+                    toast.error('Fehler beim Import');
+                  }
+                }}
+                className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Daten importieren
+              </Button>
               <Button
                 onClick={() => {
                   setEditingSet(null);
@@ -434,7 +459,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 className="flex items-center justify-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
               >
                 <Plus className="h-4 w-4" />
-                Neues Set erstellen
+                Neues Set
               </Button>
               <Button
                 onClick={() => {
@@ -444,7 +469,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
               >
                 <Plus className="h-4 w-4" />
-                Neues Gerät hinzufügen
+                Neues Gerät
               </Button>
               <Button
                 onClick={() => setActiveView('search')}
@@ -452,7 +477,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 className={`flex items-center justify-center gap-2 ${theme === 'dark' ? 'border-gray-600 text-gray-300' : ''}`}
               >
                 <Search className="h-4 w-4" />
-                Seriennummer suchen
+                Suche
               </Button>
             </div>
           </Card>
