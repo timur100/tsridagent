@@ -809,23 +809,83 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 <table className="w-full">
                   <thead>
                     <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Set-Code
+                      <th 
+                        onClick={() => handleSort('full_code')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Set-Code
+                          {sortField === 'full_code' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Set-Name
+                      <th 
+                        onClick={() => handleSort('set_name')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Set-Name
+                          {sortField === 'set_name' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Standort
+                      <th 
+                        onClick={() => handleSort('location_name')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Standort
+                          {sortField === 'location_name' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Geräteanzahl
+                      <th 
+                        onClick={() => handleSort('device_count')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Geräteanzahl
+                          {sortField === 'device_count' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Status
+                      <th 
+                        onClick={() => handleSort('status')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Status
+                          {sortField === 'status' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
-                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Erstellt am
+                      <th 
+                        onClick={() => handleSort('created_at')}
+                        className={`px-6 py-4 text-left text-sm font-mono font-semibold cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          Erstellt am
+                          {sortField === 'created_at' ? (
+                            sortDirection === 'asc' ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />
+                          ) : (
+                            <ArrowUpDown className="h-4 w-4 text-gray-400" />
+                          )}
+                        </div>
                       </th>
                       <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         Aktionen
@@ -833,7 +893,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {sets.map((set) => {
+                    {sortedSets.map((set) => {
                       const setDevices = devices.filter(d => d.current_set_id === set.id);
                       const location = locations.find(l => l.id === set.location_id);
                       
