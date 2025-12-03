@@ -330,7 +330,7 @@ async def preview_import_data(
         # Get all locations
         locations = await portal_db.tenant_locations.find(
             {"tenant_id": tenant_id},
-            {"_id": 0, "location_code": 1, "station_name": 1, "sn_pc": 1, "sn_sc": 1, "location_id": 1}
+            {"_id": 0, "location_code": 1, "station_name": 1, "sn_pc": 1, "sn_sc": 1, "sn_dock": 1, "location_id": 1}
         ).to_list(length=None)
         
         # Get all devices
