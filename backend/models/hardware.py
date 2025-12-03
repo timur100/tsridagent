@@ -85,6 +85,7 @@ class DeviceReplacement(BaseModel):
 # Request/Response Models
 class HardwareSetCreate(BaseModel):
     """Create Hardware Set Request"""
+    tenant_id: str
     set_name: str = Field(..., min_length=1, max_length=200)
     location_id: str
     notes: Optional[str] = None
