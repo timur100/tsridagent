@@ -63,6 +63,7 @@ class TenantLocationUpdate(BaseModel):
     tsr_remarks: Optional[str] = None
     sn_pc: Optional[str] = None
     sn_sc: Optional[str] = None
+    sn_dock: Optional[str] = None
     tv_id: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
