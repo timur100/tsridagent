@@ -13,19 +13,7 @@ const PlacetelManagement = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Placetel Integration
-          </h1>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Telefonie-Integration und Rufnummernverwaltung
-          </p>
-        </div>
-      </div>
-
-      {/* Tab Navigation */}
+      {/* Tab Navigation - ganz oben */}
       <div className={`flex gap-2 p-2 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
         {tabs.map((tab) => (
           <button
@@ -43,6 +31,18 @@ const PlacetelManagement = () => {
             {tab.label}
           </button>
         ))}
+      </div>
+
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Placetel Integration
+          </h1>
+          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Telefonie-Integration und Rufnummernverwaltung
+          </p>
+        </div>
       </div>
 
       {/* Content */}
