@@ -91,6 +91,8 @@ class HardwareSetCreate(BaseModel):
     tenant_id: str
     set_name: str = Field(..., min_length=1, max_length=200)
     location_id: str
+    location_code: Optional[str] = Field(None, max_length=50)
+    device_number: Optional[str] = Field(None, max_length=10)
     notes: Optional[str] = None
 
 
