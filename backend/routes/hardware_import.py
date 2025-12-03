@@ -367,16 +367,23 @@ async def preview_import_data(
                 if location.get('sn_pc'):
                     set_preview["devices_will_be_imported"].append({
                         "type": "Tablet",
-                        "serial_number": location.get('sn_pc')
+                        "serial_number": location.get('sn_pc')  # ECHTE Seriennummer
                     })
                     preview_devices.append(f"Tablet: {location.get('sn_pc')}")
                 
                 if location.get('sn_sc'):
                     set_preview["devices_will_be_imported"].append({
                         "type": "Scanner",
-                        "serial_number": location.get('sn_sc')
+                        "serial_number": location.get('sn_sc')  # ECHTE Seriennummer
                     })
                     preview_devices.append(f"Scanner: {location.get('sn_sc')}")
+                
+                if location.get('sn_dock'):
+                    set_preview["devices_will_be_imported"].append({
+                        "type": "Dockingstation",
+                        "serial_number": location.get('sn_dock')  # ECHTE Seriennummer
+                    })
+                    preview_devices.append(f"Dockingstation: {location.get('sn_dock')}")
                 
                 preview_sets.append(set_preview)
         
