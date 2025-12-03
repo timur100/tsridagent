@@ -72,6 +72,7 @@ def generate_barcode(serial_number: str) -> str:
 
 @router.get("/sets", response_model=List[HardwareSet])
 async def get_all_sets(
+    tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     location_id: Optional[str] = None,
     token_data: dict = Depends(verify_token)
@@ -79,6 +80,8 @@ async def get_all_sets(
     """Get all hardware sets with optional filters"""
     try:
         query = {}
+        if tenant_id:
+            query['tenant_id'] = tenant_id
         if status:
             query['status'] = status
         if location_id:
