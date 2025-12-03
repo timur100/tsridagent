@@ -107,11 +107,13 @@ const HardwareSetsManagement = ({ tenantId }) => {
   const loadLocations = async () => {
     try {
       // Load locations from hardware sets
-      const result = await apiCall(`/api/hardware/sets/${tenantId}`);
-      if (result.success && Array.isArray(result.data)) {
+      const result = await apiCall(`/api/hardware/sets?tenant_id=${tenantId}`);
+      const setsData = result.success ? result.data : result;
+      
+      if (Array.isArray(setsData)) {
         // Extract unique locations from sets
         const locationMap = new Map();
-        result.data.forEach(set => {
+        setsData.forEach(set => {
           if (set.location_id && !locationMap.has(set.location_id)) {
             locationMap.set(set.location_id, {
               id: set.location_id,
