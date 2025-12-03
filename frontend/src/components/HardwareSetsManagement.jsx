@@ -126,6 +126,124 @@ const HardwareSetsManagement = ({ tenantId }) => {
     }
   };
 
+  const handleCreateSet = async (data) => {
+    try {
+      const result = await apiCall('/api/hardware/sets', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+      
+      if (result.success || result.id) {
+        toast.success('Set erfolgreich erstellt');
+        await loadData();
+        setShowSetModal(false);
+      }
+    } catch (error) {
+      console.error('Error creating set:', error);
+      toast.error('Fehler beim Erstellen des Sets');
+      throw error;
+    }
+  };
+
+  const handleUpdateSet = async (data) => {
+    try {
+      const result = await apiCall(`/api/hardware/sets/${editingSet.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+      
+      if (result.success || result.id) {
+        toast.success('Set erfolgreich aktualisiert');
+        await loadData();
+        setShowSetModal(false);
+        setEditingSet(null);
+      }
+    } catch (error) {
+      console.error('Error updating set:', error);
+      toast.error('Fehler beim Aktualisieren des Sets');
+      throw error;
+    }
+  };
+
+  const handleCreateDevice = async (data) => {
+    try {
+      const result = await apiCall('/api/hardware/devices', {
+        method: 'POST',
+        body: JSON.stringify(data)
+      });
+      
+      if (result.success || result.id) {
+        toast.success('Gerät erfolgreich hinzugefügt');
+        await loadData();
+        setShowDeviceModal(false);
+      }
+    } catch (error) {
+      console.error('Error creating device:', error);
+      toast.error(error.message || 'Fehler beim Hinzufügen des Geräts');
+      throw error;
+    }
+  };
+
+  const handleUpdateDevice = async (data) => {
+    try {
+      const result = await apiCall(`/api/hardware/devices/${editingDevice.id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data)
+      });
+      
+      if (result.success || result.id) {
+        toast.success('Gerät erfolgreich aktualisiert');
+        await loadData();
+        setShowDeviceModal(false);
+        setEditingDevice(null);
+      }
+    } catch (error) {
+      console.error('Error updating device:', error);
+      toast.error('Fehler beim Aktualisieren des Geräts');
+      throw error;
+    }
+  };
+
+  const handleDeleteSet = async (setId) => {
+    if (!window.confirm('Möchten Sie dieses Set wirklich löschen?')) {
+      return;
+    }
+
+    try {
+      const result = await apiCall(`/api/hardware/sets/${setId}`, {
+        method: 'DELETE'
+      });
+      
+      if (result.success) {
+        toast.success('Set erfolgreich gelöscht');
+        await loadData();
+      }
+    } catch (error) {
+      console.error('Error deleting set:', error);
+      toast.error(error.message || 'Fehler beim Löschen des Sets');
+    }
+  };
+
+  const handleDeleteDevice = async (deviceId) => {
+    if (!window.confirm('Möchten Sie dieses Gerät wirklich löschen?')) {
+      return;
+    }
+
+    try {
+      const result = await apiCall(`/api/hardware/devices/${deviceId}`, {
+        method: 'DELETE'
+      });
+      
+      if (result.success) {
+        toast.success('Gerät erfolgreich gelöscht');
+        await loadData();
+      }
+    } catch (error) {
+      console.error('Error deleting device:', error);
+      toast.error(error.message || 'Fehler beim Löschen des Geräts');
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       'aktiv': { bg: 'bg-green-500', text: 'Aktiv', icon: CheckCircle },
