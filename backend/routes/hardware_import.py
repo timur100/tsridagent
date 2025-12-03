@@ -23,6 +23,24 @@ portal_db = client['portal_db']
 multi_tenant_db = client['multi_tenant_admin']
 
 
+async def generate_barcode_svg(serial_number: str) -> str:
+    """Generate barcode SVG"""
+    try:
+        import barcode
+        from barcode.writer import SVGWriter
+        from io import BytesIO
+        
+        code128 = barcode.get_barcode_class('code128')
+        barcode_instance = code128(serial_number, writer=SVGWriter())
+        buffer = BytesIO()
+        barcode_instance.write(buffer)
+        buffer.seek(0)
+        return buffer.read().decode('utf-8')
+    except Exception as e:
+        print(f"[Import] Barcode generation error: {e}")
+        return None
+
+
 @router.post("/tenant/{tenant_id}/from-existing")
 async def import_from_existing_data(
     tenant_id: str,
@@ -31,25 +49,214 @@ async def import_from_existing_data(
     """
     Import hardware from existing tenant devices and locations
     Creates hardware devices and sets based on existing data
+    
+    Data sources:
+    - Locations from portal_db.tenant_locations (location_code, sn_pc, sn_sc)
+    - Devices from multi_tenant_admin.europcar_devices (device_id, locationcode)
     """
     try:
         imported_devices = []
         imported_sets = []
-        
-        # TODO: Query existing tenant devices from device management system
-        # This will be implemented based on the actual API endpoints
+        skipped = []
+        errors = []
         
         print(f"[Hardware Import] Starting import for tenant {tenant_id}")
         
-        # For now, return sample structure
+        # Step 1: Get all locations for this tenant
+        locations = await portal_db.tenant_locations.find(
+            {"tenant_id": tenant_id},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        print(f"[Hardware Import] Found {len(locations)} locations")
+        
+        # Step 2: Get all devices for this tenant
+        devices = await multi_tenant_db.europcar_devices.find(
+            {"tenant_id": tenant_id},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        print(f"[Hardware Import] Found {len(devices)} devices in multi_tenant_admin")
+        
+        # Step 3: Group locations by location_code to handle multiple sets per location
+        location_groups = {}
+        for loc in locations:
+            loc_code = loc.get('location_code')
+            if loc_code:
+                if loc_code not in location_groups:
+                    location_groups[loc_code] = []
+                location_groups[loc_code].append(loc)
+        
+        # Step 4: Import devices and create sets
+        for loc_code, loc_list in location_groups.items():
+            # For locations with multiple entries (e.g., MUCT01 with different device numbers)
+            for idx, location in enumerate(loc_list, start=1):
+                try:
+                    location_id = location.get('location_id')
+                    sn_pc = location.get('sn_pc')
+                    sn_sc = location.get('sn_sc')
+                    
+                    if not location_id:
+                        skipped.append(f"Location {loc_code}: No location_id")
+                        continue
+                    
+                    # Determine device number
+                    # If there's only one location with this code, use "01"
+                    # Otherwise, use sequential numbers
+                    device_num = str(idx).zfill(2)
+                    set_name = f"{location.get('station_name', loc_code)} - Set {device_num}"
+                    full_code = f"{loc_code}-{device_num}"
+                    
+                    # Check if set already exists
+                    existing_set = await main_db.hardware_sets.find_one({
+                        'tenant_id': tenant_id,
+                        'full_code': full_code
+                    })
+                    
+                    if existing_set:
+                        print(f"[Hardware Import] Set {full_code} already exists, skipping")
+                        skipped.append(f"Set {full_code} already exists")
+                        continue
+                    
+                    # Create hardware set
+                    new_set = {
+                        'id': str(uuid.uuid4()),
+                        'tenant_id': tenant_id,
+                        'set_name': set_name,
+                        'location_id': location_id,
+                        'location_code': loc_code,
+                        'device_number': device_num,
+                        'full_code': full_code,
+                        'status': 'aktiv',
+                        'created_at': datetime.now(timezone.utc).isoformat(),
+                        'closed_at': None,
+                        'notes': f"Automatisch importiert aus bestehenden Daten"
+                    }
+                    
+                    await main_db.hardware_sets.insert_one(new_set)
+                    imported_sets.append(full_code)
+                    
+                    # Import Tablet/PC (SN-PC)
+                    if sn_pc:
+                        existing_device = await main_db.hardware_devices.find_one({
+                            'tenant_id': tenant_id,
+                            'serial_number': sn_pc
+                        })
+                        
+                        if not existing_device:
+                            tablet = {
+                                'id': str(uuid.uuid4()),
+                                'tenant_id': tenant_id,
+                                'serial_number': sn_pc,
+                                'hardware_type': 'Tablet',
+                                'manufacturer': None,
+                                'model': None,
+                                'purchase_date': None,
+                                'warranty_until': None,
+                                'warranty_reminder_days': 30,
+                                'current_status': 'aktiv',
+                                'current_location_id': location_id,
+                                'current_set_id': new_set['id'],
+                                'barcode': generate_barcode_svg(sn_pc),
+                                'notes': f"Importiert von Location {full_code}",
+                                'created_at': datetime.now(timezone.utc).isoformat(),
+                                'updated_at': datetime.now(timezone.utc).isoformat()
+                            }
+                            
+                            await main_db.hardware_devices.insert_one(tablet)
+                            
+                            # Add to set assignment
+                            await main_db.set_assignments.insert_one({
+                                'id': str(uuid.uuid4()),
+                                'device_id': tablet['id'],
+                                'set_id': new_set['id'],
+                                'assigned_date': datetime.now(timezone.utc).isoformat(),
+                                'removed_date': None,
+                                'removal_reason': None,
+                                'assigned_by': token_data.get('email', 'system'),
+                                'active': True
+                            })
+                            
+                            imported_devices.append(f"Tablet: {sn_pc}")
+                    
+                    # Import Scanner (SN-SC)
+                    if sn_sc:
+                        existing_device = await main_db.hardware_devices.find_one({
+                            'tenant_id': tenant_id,
+                            'serial_number': sn_sc
+                        })
+                        
+                        if not existing_device:
+                            scanner = {
+                                'id': str(uuid.uuid4()),
+                                'tenant_id': tenant_id,
+                                'serial_number': sn_sc,
+                                'hardware_type': 'Scanner',
+                                'manufacturer': None,
+                                'model': None,
+                                'purchase_date': None,
+                                'warranty_until': None,
+                                'warranty_reminder_days': 30,
+                                'current_status': 'aktiv',
+                                'current_location_id': location_id,
+                                'current_set_id': new_set['id'],
+                                'barcode': generate_barcode_svg(sn_sc),
+                                'notes': f"Importiert von Location {full_code}",
+                                'created_at': datetime.now(timezone.utc).isoformat(),
+                                'updated_at': datetime.now(timezone.utc).isoformat()
+                            }
+                            
+                            await main_db.hardware_devices.insert_one(scanner)
+                            
+                            # Add to set assignment
+                            await main_db.set_assignments.insert_one({
+                                'id': str(uuid.uuid4()),
+                                'device_id': scanner['id'],
+                                'set_id': new_set['id'],
+                                'assigned_date': datetime.now(timezone.utc).isoformat(),
+                                'removed_date': None,
+                                'removal_reason': None,
+                                'assigned_by': token_data.get('email', 'system'),
+                                'active': True
+                            })
+                            
+                            imported_devices.append(f"Scanner: {sn_sc}")
+                    
+                    # Add device history entries
+                    for device in [d async for d in main_db.hardware_devices.find({'current_set_id': new_set['id']})]:
+                        await main_db.device_history.insert_one({
+                            'id': str(uuid.uuid4()),
+                            'device_id': device['id'],
+                            'action_type': 'created',
+                            'timestamp': datetime.now(timezone.utc).isoformat(),
+                            'performed_by': 'system_import',
+                            'old_value': None,
+                            'new_value': None,
+                            'set_id': new_set['id'],
+                            'location_id': location_id,
+                            'notes': f"Automatisch importiert und zu Set {full_code} hinzugefügt",
+                            'metadata': None
+                        })
+                
+                except Exception as e:
+                    error_msg = f"Location {loc_code}-{device_num}: {str(e)}"
+                    print(f"[Hardware Import] Error: {error_msg}")
+                    errors.append(error_msg)
+        
+        print(f"[Hardware Import] Completed: {len(imported_sets)} sets, {len(imported_devices)} devices")
+        
         return {
             "success": True,
-            "message": "Import vorbereitet",
-            "imported_devices": len(imported_devices),
-            "imported_sets": len(imported_sets),
+            "message": f"Import abgeschlossen",
+            "imported_sets_count": len(imported_sets),
+            "imported_devices_count": len(imported_devices),
+            "skipped_count": len(skipped),
+            "errors_count": len(errors),
             "details": {
-                "devices": imported_devices,
-                "sets": imported_sets
+                "imported_sets": imported_sets,
+                "imported_devices": imported_devices,
+                "skipped": skipped,
+                "errors": errors
             }
         }
         
