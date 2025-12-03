@@ -137,8 +137,8 @@ async def import_from_existing_data(
                     await main_db.hardware_sets.insert_one(new_set)
                     imported_sets.append(full_code)
                     
-                    # Import Tablet/PC (SN-PC)
-                    if sn_pc:
+                    # Import Tablet/PC (SN-PC) - VERWENDE ECHTE SERIENNUMMER
+                    if sn_pc and sn_pc.strip():
                         existing_device = await main_db.hardware_devices.find_one({
                             'tenant_id': tenant_id,
                             'serial_number': sn_pc
@@ -148,7 +148,7 @@ async def import_from_existing_data(
                             tablet = {
                                 'id': str(uuid.uuid4()),
                                 'tenant_id': tenant_id,
-                                'serial_number': sn_pc,
+                                'serial_number': sn_pc,  # ECHTE Seriennummer aus SN-PC
                                 'hardware_type': 'Tablet',
                                 'manufacturer': None,
                                 'model': None,
@@ -158,7 +158,7 @@ async def import_from_existing_data(
                                 'current_status': 'aktiv',
                                 'current_location_id': location_id,
                                 'current_set_id': new_set['id'],
-                                'barcode': generate_barcode_svg(sn_pc),
+                                'barcode': await generate_barcode_svg(sn_pc),
                                 'notes': f"Importiert von Location {full_code}",
                                 'created_at': datetime.now(timezone.utc).isoformat(),
                                 'updated_at': datetime.now(timezone.utc).isoformat()
@@ -179,6 +179,8 @@ async def import_from_existing_data(
                             })
                             
                             imported_devices.append(f"Tablet: {sn_pc}")
+                        else:
+                            skipped.append(f"Tablet {sn_pc} existiert bereits")
                     
                     # Import Scanner (SN-SC)
                     if sn_sc:
