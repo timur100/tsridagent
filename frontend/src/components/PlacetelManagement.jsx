@@ -26,6 +26,14 @@ const PlacetelManagement = () => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
 
+  // Helper to extract array from nested response
+  const extractArrayData = (result) => {
+    if (!result || !result.data) return [];
+    if (Array.isArray(result.data)) return result.data;
+    if (result.data.data && Array.isArray(result.data.data)) return result.data.data;
+    return [];
+  };
+
   const tabs = [
     { id: 'numbers', label: 'Rufnummern', icon: Phone },
     { id: 'calls', label: 'Anrufe', icon: PhoneCall },
