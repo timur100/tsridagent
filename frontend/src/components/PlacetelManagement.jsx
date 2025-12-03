@@ -309,9 +309,9 @@ const PlacetelManagement = () => {
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
-                          number.active ? 'bg-green-500' : 'bg-gray-500'
+                          number.activated ? 'bg-green-500' : 'bg-gray-500'
                         }`}>
-                          {number.active ? 'Aktiv' : 'Inaktiv'}
+                          {number.activated ? 'Aktiv' : 'Inaktiv'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
