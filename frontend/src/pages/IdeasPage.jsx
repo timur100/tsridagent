@@ -762,7 +762,8 @@ const IdeasPage = () => {
                       return (
                         <tr 
                           key={idea.id} 
-                          className={`border-b ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}
+                          onClick={() => handleRowClick(idea)}
+                          className={`border-b cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/50' : 'border-gray-200 hover:bg-gray-50'} transition-colors`}
                         >
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
@@ -782,7 +783,7 @@ const IdeasPage = () => {
                               </p>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                             <select
                               value={idea.status}
                               onChange={(e) => handleStatusChange(idea.id, e.target.value)}
@@ -803,17 +804,17 @@ const IdeasPage = () => {
                               <span>{formatDate(idea.created_at)}</span>
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => handleEdit(idea)}
+                                onClick={(e) => handleEdit(idea, e)}
                                 className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
                                 title="Bearbeiten"
                               >
                                 <Edit2 className="h-4 w-4" />
                               </button>
                               <button
-                                onClick={() => handleDelete(idea.id)}
+                                onClick={(e) => handleDelete(idea.id, e)}
                                 className="p-2 rounded-lg text-red-600 hover:bg-red-50 transition-colors"
                                 title="Löschen"
                               >
