@@ -43,7 +43,8 @@ const PlacetelManagement = () => {
     try {
       const result = await apiCall('/api/placetel/numbers');
       if (result.success && result.data) {
-        setNumbers(result.data.data || []);
+        // Placetel returns array directly
+        setNumbers(Array.isArray(result.data) ? result.data : []);
       }
     } catch (error) {
       console.error('Error loading numbers:', error);
