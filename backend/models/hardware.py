@@ -22,6 +22,7 @@ class HardwareSet(BaseModel):
 class HardwareDevice(BaseModel):
     """Hardware Device Model - Individual device with full history"""
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    tenant_id: str = Field(..., description="Tenant ID")
     serial_number: str = Field(..., min_length=1, max_length=100, description="Unique serial number")
     hardware_type: str = Field(..., min_length=1, max_length=100, description="Type: Tablet, Scanner, etc.")
     manufacturer: Optional[str] = Field(None, max_length=100)
