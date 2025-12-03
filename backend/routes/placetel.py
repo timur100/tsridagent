@@ -132,14 +132,18 @@ async def get_contacts(
         if search_number:
             params["search[number]"] = search_number
             
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/contacts",
                 headers=get_placetel_headers(),
                 params=params
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
+    except httpx.HTTPStatusError as e:
+        print(f"[Placetel] HTTP Error fetching contacts: {e.response.status_code}")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         print(f"[Placetel] Error fetching contacts: {e}")
         raise HTTPException(status_code=500, detail=str(e))
