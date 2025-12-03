@@ -2907,6 +2907,11 @@ const AdminPortalContent = () => {
                       <DHLShipping />
                     )}
 
+                    {/* Placetel */}
+                    {rndTab === 'placetel' && (
+                      <PlacetelManagement />
+                    )}
+
                     {/* Document Scan */}
                     {rndTab === 'document-scan' && (
                       <DocumentScanPage />
@@ -2916,7 +2921,7 @@ const AdminPortalContent = () => {
                     {!['facematch', 'fingerprint', 'iris-scan', 'document-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
                         'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system',
-                        'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping'].includes(rndTab) && (
+                        'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping', 'placetel'].includes(rndTab) && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
