@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { 
   Cpu, Package, Search, Plus, AlertTriangle, CheckCircle, 
   Warehouse, Settings, Edit2, Trash2, Eye, BarChart3, 
-  MapPin, Calendar, TrendingUp, ArrowRight, X, Save
+  MapPin, Calendar, TrendingUp, ArrowRight, X, Save, RefreshCw
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import HardwareSetModal from './HardwareSetModal';
