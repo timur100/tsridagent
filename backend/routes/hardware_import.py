@@ -277,16 +277,68 @@ async def preview_import_data(
     try:
         print(f"[Hardware Import] Preview for tenant {tenant_id}")
         
-        # TODO: Query and return preview of existing data
+        # Get all locations
+        locations = await portal_db.tenant_locations.find(
+            {"tenant_id": tenant_id},
+            {"_id": 0, "location_code": 1, "station_name": 1, "sn_pc": 1, "sn_sc": 1, "location_id": 1}
+        ).to_list(length=None)
+        
+        # Get all devices
+        devices = await multi_tenant_db.europcar_devices.find(
+            {"tenant_id": tenant_id},
+            {"_id": 0, "device_id": 1, "locationcode": 1, "status": 1}
+        ).to_list(length=None)
+        
+        # Calculate what will be imported
+        preview_sets = []
+        preview_devices = []
+        
+        location_groups = {}
+        for loc in locations:
+            loc_code = loc.get('location_code')
+            if loc_code:
+                if loc_code not in location_groups:
+                    location_groups[loc_code] = []
+                location_groups[loc_code].append(loc)
+        
+        for loc_code, loc_list in location_groups.items():
+            for idx, location in enumerate(loc_list, start=1):
+                device_num = str(idx).zfill(2)
+                full_code = f"{loc_code}-{device_num}"
+                
+                set_preview = {
+                    "full_code": full_code,
+                    "location_code": loc_code,
+                    "device_number": device_num,
+                    "station_name": location.get('station_name'),
+                    "devices_will_be_imported": []
+                }
+                
+                if location.get('sn_pc'):
+                    set_preview["devices_will_be_imported"].append({
+                        "type": "Tablet",
+                        "serial_number": location.get('sn_pc')
+                    })
+                    preview_devices.append(f"Tablet: {location.get('sn_pc')}")
+                
+                if location.get('sn_sc'):
+                    set_preview["devices_will_be_imported"].append({
+                        "type": "Scanner",
+                        "serial_number": location.get('sn_sc')
+                    })
+                    preview_devices.append(f"Scanner: {location.get('sn_sc')}")
+                
+                preview_sets.append(set_preview)
         
         return {
             "success": True,
             "message": "Preview erstellt",
             "preview": {
-                "devices_found": 0,
-                "locations_found": 0,
-                "devices": [],
-                "locations": []
+                "sets_to_import": len(preview_sets),
+                "devices_to_import": len(preview_devices),
+                "locations_found": len(locations),
+                "devices_found_in_system": len(devices),
+                "sets": preview_sets
             }
         }
         
