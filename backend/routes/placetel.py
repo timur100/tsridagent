@@ -81,14 +81,18 @@ async def get_calls(
         if filter_type:
             params["filter[type]"] = filter_type
             
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.get(
                 f"{PLACETEL_API_URL}/calls",
                 headers=get_placetel_headers(),
                 params=params
             )
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            return {"success": True, "data": data}
+    except httpx.HTTPStatusError as e:
+        print(f"[Placetel] HTTP Error fetching calls: {e.response.status_code}")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         print(f"[Placetel] Error fetching calls: {e}")
         raise HTTPException(status_code=500, detail=str(e))
