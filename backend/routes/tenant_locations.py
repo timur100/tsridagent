@@ -35,8 +35,9 @@ class TenantLocationCreate(BaseModel):
     port: Optional[str] = None  # Port
     it_comment: Optional[str] = None  # IT Kommentar
     tsr_remarks: Optional[str] = None  # TSR REMARKS
-    sn_pc: Optional[str] = None  # SN-PC
-    sn_sc: Optional[str] = None  # SN-SC
+    sn_pc: Optional[str] = None  # SN-PC (Tablet/PC Serial Number)
+    sn_sc: Optional[str] = None  # SN-SC (Scanner Serial Number)
+    sn_dock: Optional[str] = None  # SN-DOCK (Docking Station Serial Number)
     tv_id: Optional[str] = None  # TV-ID
     latitude: Optional[float] = None  # GPS Latitude
     longitude: Optional[float] = None  # GPS Longitude
