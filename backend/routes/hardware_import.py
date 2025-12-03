@@ -93,8 +93,9 @@ async def import_from_existing_data(
             for idx, location in enumerate(loc_list, start=1):
                 try:
                     location_id = location.get('location_id')
-                    sn_pc = location.get('sn_pc')
-                    sn_sc = location.get('sn_sc')
+                    sn_pc = location.get('sn_pc')  # ECHTE Tablet-Seriennummer
+                    sn_sc = location.get('sn_sc')  # ECHTE Scanner-Seriennummer
+                    sn_dock = location.get('sn_dock')  # ECHTE Dockingstation-Seriennummer
                     
                     if not location_id:
                         skipped.append(f"Location {loc_code}: No location_id")
