@@ -43,15 +43,21 @@ const PlacetelManagement = () => {
     try {
       console.log('[Placetel] Loading numbers...');
       const result = await apiCall('/api/placetel/numbers');
-      console.log('[Placetel] Numbers result:', result);
-      if (result.success && result.data) {
-        // Placetel returns array directly
-        const numbersArray = Array.isArray(result.data) ? result.data : [];
-        console.log('[Placetel] Setting numbers:', numbersArray.length);
-        setNumbers(numbersArray);
-      } else {
-        console.log('[Placetel] No success or no data', result);
+      console.log('[Placetel] Full result:', JSON.stringify(result));
+      
+      // apiCall wraps response in {success, data, status}
+      // Backend returns {success: true, data: [...]}
+      // So result.data.data is the actual array
+      let numbersArray = [];
+      if (result && result.data) {
+        if (Array.isArray(result.data)) {
+          numbersArray = result.data;
+        } else if (result.data.data && Array.isArray(result.data.data)) {
+          numbersArray = result.data.data;
+        }
       }
+      console.log('[Placetel] Setting numbers:', numbersArray.length);
+      setNumbers(numbersArray);
     } catch (error) {
       console.error('[Placetel] Error loading numbers:', error);
       toast.error('Fehler beim Laden der Rufnummern');
