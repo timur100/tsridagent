@@ -127,6 +127,14 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       items: [
         { id: 'dhl-shipping', label: 'DHL', emoji: '📦' }
       ]
+    },
+    {
+      id: 'telephony',
+      label: 'Telefonie',
+      icon: Phone,
+      items: [
+        { id: 'placetel', label: 'Placetel', emoji: '☎️' }
+      ]
     }
   ];
 
