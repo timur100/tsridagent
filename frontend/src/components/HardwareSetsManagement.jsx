@@ -38,6 +38,11 @@ const HardwareSetsManagement = ({ tenantId }) => {
   const [searchSerial, setSearchSerial] = useState('');
   const [searchResult, setSearchResult] = useState(null);
   
+  // Global Search
+  const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [globalSearchResults, setGlobalSearchResults] = useState(null);
+  const [isSearching, setIsSearching] = useState(false);
+  
   // Filters
   const [statusFilter, setStatusFilter] = useState('all');
 
