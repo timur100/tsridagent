@@ -6,8 +6,12 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
-import barcode
-from barcode.writer import ImageWriter
+try:
+    import barcode
+    from barcode.writer import SVGWriter
+    BARCODE_AVAILABLE = True
+except ImportError:
+    BARCODE_AVAILABLE = False
 from io import BytesIO
 import base64
 
