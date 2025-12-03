@@ -869,6 +869,30 @@ const HardwareSetsManagement = ({ tenantId }) => {
           )}
         </div>
       )}
+
+      {/* Modals */}
+      <HardwareSetModal
+        show={showSetModal}
+        onClose={() => {
+          setShowSetModal(false);
+          setEditingSet(null);
+        }}
+        onSubmit={editingSet ? handleUpdateSet : handleCreateSet}
+        editing={editingSet}
+        locations={locations}
+        tenantId={tenantId}
+      />
+
+      <HardwareDeviceModal
+        show={showDeviceModal}
+        onClose={() => {
+          setShowDeviceModal(false);
+          setEditingDevice(null);
+        }}
+        onSubmit={editingDevice ? handleUpdateDevice : handleCreateDevice}
+        editing={editingDevice}
+        tenantId={tenantId}
+      />
     </div>
   );
 };
