@@ -37,7 +37,7 @@ Images: [
 
 1. **Admin-Portal öffnen:**
    ```
-   https://timeflow-portal-1.preview.emergentagent.com/portal/admin
+   https://kiosk-hardware-hub.preview.emergentagent.com/portal/admin
    ```
 
 2. **Einloggen** mit Admin-Credentials
@@ -52,7 +52,7 @@ Images: [
 
 1. **Test-Seite öffnen:**
    ```
-   https://timeflow-portal-1.preview.emergentagent.com/test_images.html
+   https://kiosk-hardware-hub.preview.emergentagent.com/test_images.html
    ```
 
 2. Diese Seite zeigt alle 4 Bilder direkt und ob sie laden

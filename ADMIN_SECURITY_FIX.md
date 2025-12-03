@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://timeflow-portal-1.preview.emergentagent.com/portal/admin
+https://kiosk-hardware-hub.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
