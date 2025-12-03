@@ -231,7 +231,8 @@ const IdeasPage = () => {
     }
   };
 
-  const handleDelete = async (ideaId) => {
+  const handleDelete = async (ideaId, e) => {
+    if (e) e.stopPropagation();
     if (!window.confirm('Möchten Sie diese Idee wirklich löschen?')) {
       return;
     }
@@ -241,6 +242,7 @@ const IdeasPage = () => {
         method: 'DELETE'
       });
       toast.success('Idee gelöscht');
+      setShowDetailModal(false);
       loadIdeas();
       loadStats();
       loadMenuItems();
