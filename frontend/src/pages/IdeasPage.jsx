@@ -133,7 +133,13 @@ const IdeasPage = () => {
     setShowEditor(true);
   };
 
-  const handleEdit = (idea) => {
+  const handleRowClick = (idea) => {
+    setSelectedIdea(idea);
+    setShowDetailModal(true);
+  };
+
+  const handleEdit = (idea, e) => {
+    if (e) e.stopPropagation();
     setCurrentIdea(idea);
     setTitle(idea.title);
     setDescription(idea.description);
@@ -147,7 +153,14 @@ const IdeasPage = () => {
       setCustomMenuItem(idea.menu_item);
     }
     
+    setShowDetailModal(false);
     setShowEditor(true);
+  };
+
+  const handleEditFromDetail = () => {
+    if (selectedIdea) {
+      handleEdit(selectedIdea);
+    }
   };
 
   const handleSave = async () => {
