@@ -751,64 +751,111 @@ const HardwareSetsManagement = ({ tenantId }) => {
               </p>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {sets.map((set) => {
-                const setDevices = devices.filter(d => d.current_set_id === set.id);
-                const location = locations.find(l => l.id === set.location_id);
-                
-                return (
-                  <Card
-                    key={set.id}
-                    className={`p-6 cursor-pointer transition-all hover:scale-105 ${
-                      theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 hover:bg-[#333]' : 'bg-white hover:shadow-lg'
-                    }`}
-                    onClick={() => {
-                      setSelectedSet(set);
-                      setShowSetDetail(true);
-                    }}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          {set.full_code && (
-                            <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold">
-                              {set.full_code}
+            <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-700'}`}>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Set-Code
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Set-Name
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Standort
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Geräteanzahl
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Status
+                      </th>
+                      <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Erstellt am
+                      </th>
+                      <th className={`px-6 py-4 text-right text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Aktionen
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sets.map((set) => {
+                      const setDevices = devices.filter(d => d.current_set_id === set.id);
+                      const location = locations.find(l => l.id === set.location_id);
+                      
+                      return (
+                        <tr
+                          key={set.id}
+                          onClick={() => {
+                            setSelectedSet(set);
+                            setShowSetDetail(true);
+                          }}
+                          className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                        >
+                          <td className="px-6 py-4">
+                            {set.full_code && (
+                              <span className="px-2 py-1 rounded bg-blue-100 text-blue-800 text-xs font-mono font-bold">
+                                {set.full_code}
+                              </span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className="font-mono text-sm font-semibold">
+                              {set.set_name}
                             </span>
-                          )}
-                          <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            {set.set_name}
-                          </h3>
-                        </div>
-                        {location && (
-                          <div className="flex items-center gap-1 text-sm text-gray-500">
-                            <MapPin className="h-3 w-3" />
-                            {location.name}
-                          </div>
-                        )}
-                      </div>
-                      <span className={`px-2 py-1 rounded text-xs font-semibold ${
-                        set.status === 'aktiv' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {set.status === 'aktiv' ? 'Aktiv' : set.status}
-                      </span>
-                    </div>
-
-                    <div className={`flex items-center justify-between pt-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Package className="h-4 w-4 text-gray-500" />
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                          {setDevices.length} Gerät{setDevices.length !== 1 ? 'e' : ''}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(set.created_at)}
-                      </div>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            {location ? (
+                              <div className="flex items-center gap-1 font-mono text-sm">
+                                <MapPin className="h-3 w-3 text-gray-500" />
+                                {location.name}
+                              </div>
+                            ) : (
+                              <span className="font-mono text-sm text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 font-mono text-sm">
+                              <Package className="h-4 w-4 text-gray-500" />
+                              {setDevices.length} Gerät{setDevices.length !== 1 ? 'e' : ''}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold ${
+                              set.status === 'aktiv' ? 'bg-green-500 text-white' : 'bg-gray-500 text-white'
+                            }`}>
+                              {set.status === 'aktiv' ? 'Aktiv' : set.status}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 font-mono text-sm text-gray-500">
+                              <Calendar className="h-3 w-3" />
+                              {formatDate(set.created_at)}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedSet(set);
+                                  setShowSetDetail(true);
+                                }}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                                title="Details anzeigen"
+                              >
+                                <Eye className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
           )}
         </div>
       )}
