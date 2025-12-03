@@ -119,15 +119,23 @@ async def create_set(
 ):
     """Create new hardware set"""
     try:
+        # Generate full_code if location_code and device_number provided
+        full_code = None
+        if set_data.location_code and set_data.device_number:
+            full_code = f"{set_data.location_code}-{set_data.device_number}"
+        
         new_set = HardwareSet(
             tenant_id=set_data.tenant_id,
             set_name=set_data.set_name,
             location_id=set_data.location_id,
+            location_code=set_data.location_code,
+            device_number=set_data.device_number,
+            full_code=full_code,
             notes=set_data.notes
         )
         
         await db.hardware_sets.insert_one(new_set.model_dump())
-        print(f"[Hardware] Created set: {new_set.id} - {new_set.set_name}")
+        print(f"[Hardware] Created set: {new_set.id} - {new_set.set_name} ({full_code or 'no code'})")
         
         return new_set
     except Exception as e:
