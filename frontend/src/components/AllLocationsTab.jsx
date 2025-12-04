@@ -573,10 +573,16 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             <table className="w-full">
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
-                  <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
-                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                  }`}>
-                    Status
+                  <th 
+                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
+                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                    onClick={() => handleSort('status')}
+                  >
+                    <div className="flex items-center">
+                      Status
+                      {getSortIcon('status')}
+                    </div>
                   </th>
                   <th 
                     className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
