@@ -28,9 +28,16 @@ const FleetManagement = ({ selectedTenantId }) => {
   
   useEffect(() => {
     if (selectedTenantId && selectedTenantId !== 'all') {
+      loadLocations();
       loadFleetData();
     }
   }, [selectedTenantId]);
+  
+  useEffect(() => {
+    if (selectedTenantId && selectedTenantId !== 'all') {
+      loadFleetData();
+    }
+  }, [selectedLocation]);
   
   const loadFleetData = async () => {
     setLoading(true);
