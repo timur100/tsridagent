@@ -590,7 +590,22 @@ const PlacetelManagement = () => {
                           <span className="font-mono text-sm">{contact.company || '-'}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-mono text-sm">{contact.phone || contact.phone_work || contact.mobile || contact.mobile_work || '-'}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm">{contact.phone || contact.phone_work || contact.mobile || contact.mobile_work || '-'}</span>
+                            {(contact.phone || contact.phone_work || contact.mobile || contact.mobile_work) && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setCallTarget(contact.phone || contact.phone_work || contact.mobile || contact.mobile_work);
+                                  setShowCallModal(true);
+                                }}
+                                className={`p-1 rounded transition-colors text-green-600 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                                title="Anrufen"
+                              >
+                                <PhoneCall className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           <span className="font-mono text-sm">{contact.email || contact.email_work || '-'}</span>
