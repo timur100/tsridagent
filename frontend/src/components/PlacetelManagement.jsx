@@ -452,26 +452,26 @@ const PlacetelManagement = () => {
                 ) : (
                   calls.map((call, index) => (
                     <tr
-                      key={index}
+                      key={call.id || index}
                       className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          {getCallIcon(call.type)}
-                          <span className="font-mono text-sm capitalize">{call.type || '-'}</span>
+                          {getCallIcon(call.direction)}
+                          <span className="font-mono text-sm capitalize">{call.direction || call.status || '-'}</span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm">{call.from_number || '-'}</span>
+                        <span className="font-mono text-sm">{call.from || '-'}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm">{call.to_number || '-'}</span>
+                        <span className="font-mono text-sm">{call.to || '-'}</span>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-mono text-sm">{call.duration || '0'}s</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm">{formatDate(call.created_at)}</span>
+                        <span className="font-mono text-sm">{formatDate(call.start_time || call.end_time)}</span>
                       </td>
                     </tr>
                   ))
