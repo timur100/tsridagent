@@ -133,13 +133,18 @@ async def get_calls(
 
 @router.post("/calls")
 async def initiate_call(
-    sipuid: str,
-    target: str,
-    from_name: Optional[str] = None,
+    call_data: dict,
     token_data: dict = Depends(verify_token)
 ):
     """Initiate a call"""
     try:
+        sipuid = call_data.get("sipuid")
+        target = call_data.get("target")
+        from_name = call_data.get("from_name")
+        
+        if not sipuid or not target:
+            raise HTTPException(status_code=400, detail="sipuid and target are required")
+        
         async with httpx.AsyncClient() as client:
             response = await client.post(
                 f"{PLACETEL_API_URL}/calls",
@@ -148,6 +153,9 @@ async def initiate_call(
             )
             response.raise_for_status()
             return response.json()
+    except httpx.HTTPStatusError as e:
+        print(f"[Placetel] HTTP Error initiating call: {e.response.status_code} - {e.response.text}")
+        raise HTTPException(status_code=e.response.status_code, detail=str(e))
     except Exception as e:
         print(f"[Placetel] Error initiating call: {e}")
         raise HTTPException(status_code=500, detail=str(e))
