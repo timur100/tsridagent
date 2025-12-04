@@ -1048,6 +1048,296 @@ const PlacetelManagement = () => {
           </div>
         </Card>
       )}
+
+      {/* Contact Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} rounded-lg p-6 w-full max-w-2xl mx-4`}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {editingContact ? 'Kontakt bearbeiten' : 'Neuer Kontakt'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowContactModal(false);
+                  setEditingContact(null);
+                }}
+                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const contactData = {
+                first_name: formData.get('first_name'),
+                last_name: formData.get('last_name'),
+                company: formData.get('company'),
+                phone: formData.get('phone'),
+                phone_work: formData.get('phone_work'),
+                mobile: formData.get('mobile'),
+                mobile_work: formData.get('mobile_work'),
+                email: formData.get('email'),
+                email_work: formData.get('email_work'),
+                address: formData.get('address'),
+                address_work: formData.get('address_work'),
+                fax: formData.get('fax'),
+                fax_work: formData.get('fax_work')
+              };
+
+              try {
+                setLoading(true);
+                if (editingContact) {
+                  await apiCall(`/api/placetel/contacts/${editingContact.id}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(contactData)
+                  });
+                  toast.success('Kontakt erfolgreich aktualisiert');
+                } else {
+                  await apiCall('/api/placetel/contacts', {
+                    method: 'POST',
+                    body: JSON.stringify(contactData)
+                  });
+                  toast.success('Kontakt erfolgreich erstellt');
+                }
+                setShowContactModal(false);
+                setEditingContact(null);
+                loadContacts();
+              } catch (error) {
+                console.error('Error saving contact:', error);
+                toast.error('Fehler beim Speichern des Kontakts');
+              } finally {
+                setLoading(false);
+              }
+            }}>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Vorname *
+                  </label>
+                  <input
+                    type="text"
+                    name="first_name"
+                    required
+                    defaultValue={editingContact?.first_name || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Nachname
+                  </label>
+                  <input
+                    type="text"
+                    name="last_name"
+                    defaultValue={editingContact?.last_name || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Firma
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    defaultValue={editingContact?.company || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Telefon Privat
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    defaultValue={editingContact?.phone || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Telefon Geschäftlich
+                  </label>
+                  <input
+                    type="tel"
+                    name="phone_work"
+                    defaultValue={editingContact?.phone_work || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Mobil Privat
+                  </label>
+                  <input
+                    type="tel"
+                    name="mobile"
+                    defaultValue={editingContact?.mobile || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Mobil Geschäftlich
+                  </label>
+                  <input
+                    type="tel"
+                    name="mobile_work"
+                    defaultValue={editingContact?.mobile_work || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    E-Mail Privat
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    defaultValue={editingContact?.email || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    E-Mail Geschäftlich
+                  </label>
+                  <input
+                    type="email"
+                    name="email_work"
+                    defaultValue={editingContact?.email_work || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Adresse Privat
+                  </label>
+                  <input
+                    type="text"
+                    name="address"
+                    defaultValue={editingContact?.address || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Adresse Geschäftlich
+                  </label>
+                  <input
+                    type="text"
+                    name="address_work"
+                    defaultValue={editingContact?.address_work || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Fax Privat
+                  </label>
+                  <input
+                    type="tel"
+                    name="fax"
+                    defaultValue={editingContact?.fax || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Fax Geschäftlich
+                  </label>
+                  <input
+                    type="tel"
+                    name="fax_work"
+                    defaultValue={editingContact?.fax_work || ''}
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowContactModal(false);
+                    setEditingContact(null);
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                  }`}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 rounded-lg font-medium bg-[#c00000] hover:bg-[#a00000] text-white transition-colors disabled:opacity-50"
+                >
+                  {loading ? 'Speichert...' : editingContact ? 'Aktualisieren' : 'Erstellen'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
