@@ -615,7 +615,68 @@ const PlacetelManagement = () => {
                       </div>
                     </td>
                   </tr>
-                ) : calls.length === 0 ? (
+                ) : (() => {
+                  // Apply filters
+                  const filteredCalls = calls.filter(call => {
+                    const callType = call.type || call.direction;
+                    const from = call.from_number || call.from || '';
+                    const to = typeof call.to_number === 'object' ? call.to_number?.number : call.to_number || call.to || '';
+                    
+                    // Type filter
+                    const matchesType = callTypeFilter === 'all' || callType === callTypeFilter;
+                    
+                    // Search filter
+                    const matchesSearch = !callSearchTerm || 
+                      from.toLowerCase().includes(callSearchTerm.toLowerCase()) ||
+                      to.toLowerCase().includes(callSearchTerm.toLowerCase());
+                    
+                    return matchesType && matchesSearch;
+                  });
+                  
+                  if (filteredCalls.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                          <PhoneCall className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {calls.length === 0 ? 'Keine Anrufe gefunden' : 'Keine Anrufe entsprechen den Filtern'}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  
+                  return filteredCalls.map((call, index) => {
+                    const toNumber = typeof call.to_number === 'object' ? call.to_number?.number : call.to_number;
+                    const callType = call.type || call.direction || call.status;
+                    
+                    return (
+                      <tr
+                        key={call.id || index}
+                        className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
+                      >
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            {getCallIcon(callType)}
+                            <span className="font-mono text-sm capitalize">{callType || '-'}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{call.from_number || call.from || '-'}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{toNumber || call.to || '-'}</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{call.duration || '0'}s</span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm">{formatDate(call.received_at || call.start_time || call.end_time)}</span>
+                        </td>
+                      </tr>
+                    );
+                  });
+                })() ? null : calls.length === 0 ? (
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center">
                       <PhoneCall className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
