@@ -560,7 +560,11 @@ async def get_fleet_statistics(
             "avg_eco_score": round(avg_eco_score, 1),
             "total_co2_emissions_kg": round(total_co2_kg, 1),
             "cost_per_km": round(total_fuel_cost / total_distance, 3) if total_distance > 0 else 0,
-            "suspicious_fuel_transactions": len([f for f in fuel_records if f.get("suspicious", False)])
+            "suspicious_fuel_transactions": len([f for f in fuel_records if f.get("suspicious", False)]),
+            "km_limit_warnings": km_limit_warnings,
+            "vehicles_near_replacement": km_limit_warnings,
+            "total_damages": len(damages_data),
+            "damage_cost": sum(d["estimated_cost"] for d in damages_data)
         }
     }
 
