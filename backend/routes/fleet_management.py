@@ -1,0 +1,334 @@
+"""
+Fleet Management System
+Umfassendes Flottenmanagement mit GPS-Tracking, Routenplanung, Kraftstoffverbrauch und Fahrtenbuch
+"""
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Optional
+from datetime import datetime, timedelta
+import random
+from routes.portal_auth import verify_token
+
+router = APIRouter()
+
+# Mock-Daten Generator
+def generate_mock_fleet_data(tenant_id: str):
+    """Generiert Mock-Flottendaten für einen Tenant"""
+    
+    # Fahrzeugtypen
+    vehicle_types = [
+        {"type": "PKW", "models": ["VW Golf", "Mercedes C-Klasse", "BMW 3er", "Audi A4", "Ford Focus"]},
+        {"type": "Transporter", "models": ["Mercedes Sprinter", "VW Crafter", "Ford Transit", "Renault Master"]},
+        {"type": "LKW", "models": ["MAN TGX", "Mercedes Actros", "Scania R-Serie", "Volvo FH"]},
+    ]
+    
+    # Standorte in Deutschland
+    locations = [
+        {"city": "Berlin", "lat": 52.520008, "lon": 13.404954},
+        {"city": "Hamburg", "lat": 53.551086, "lon": 9.993682},
+        {"city": "München", "lat": 48.137154, "lon": 11.576124},
+        {"city": "Köln", "lat": 50.937531, "lon": 6.960279},
+        {"city": "Frankfurt", "lat": 50.110924, "lon": 8.682127},
+        {"city": "Stuttgart", "lat": 48.775846, "lon": 9.182932},
+        {"city": "Düsseldorf", "lat": 51.227741, "lon": 6.773456},
+        {"city": "Dortmund", "lat": 51.513587, "lon": 7.465298},
+    ]
+    
+    vehicles = []
+    trips = []
+    fuel_records = []
+    
+    # Generiere 10-15 Fahrzeuge pro Tenant
+    num_vehicles = random.randint(10, 15)
+    
+    for i in range(num_vehicles):
+        vehicle_cat = random.choice(vehicle_types)
+        model = random.choice(vehicle_cat["models"])
+        
+        # Kennzeichen generieren
+        prefixes = ["B", "HH", "M", "K", "F", "S", "D", "DO"]
+        plate = f"{random.choice(prefixes)}-{random.choice(['AB', 'CD', 'EF', 'XY'])}-{random.randint(100, 999)}"
+        
+        # Aktueller Standort
+        current_loc = random.choice(locations)
+        
+        # Status
+        statuses = ["driving", "parked", "idle", "maintenance"]
+        weights = [0.3, 0.5, 0.15, 0.05]
+        status = random.choices(statuses, weights=weights)[0]
+        
+        # Fahrzeug erstellen
+        vehicle = {
+            "vehicle_id": f"VEH-{tenant_id}-{i+1:03d}",
+            "tenant_id": tenant_id,
+            "license_plate": plate,
+            "type": vehicle_cat["type"],
+            "model": model,
+            "year": random.randint(2018, 2024),
+            "status": status,
+            "current_location": {
+                "city": current_loc["city"],
+                "lat": current_loc["lat"] + random.uniform(-0.05, 0.05),
+                "lon": current_loc["lon"] + random.uniform(-0.05, 0.05),
+                "timestamp": datetime.now().isoformat()
+            },
+            "odometer": random.randint(10000, 150000),
+            "fuel_level": random.randint(20, 95) if status != "maintenance" else 0,
+            "driver": {
+                "name": random.choice(["Max Müller", "Anna Schmidt", "Tom Weber", "Lisa Klein", "Jan Meyer", None]),
+                "driver_id": f"DRV-{random.randint(1000, 9999)}" if random.random() > 0.3 else None
+            },
+            "last_maintenance": (datetime.now() - timedelta(days=random.randint(10, 90))).isoformat(),
+            "next_maintenance_due": (datetime.now() + timedelta(days=random.randint(10, 60))).isoformat(),
+            "insurance_expires": (datetime.now() + timedelta(days=random.randint(60, 365))).isoformat(),
+            "tuev_expires": (datetime.now() + timedelta(days=random.randint(100, 700))).isoformat(),
+        }
+        
+        vehicles.append(vehicle)
+        
+        # Generiere Fahrten für letzten Monat
+        num_trips = random.randint(15, 40)
+        for j in range(num_trips):
+            start_loc = random.choice(locations)
+            end_loc = random.choice([l for l in locations if l != start_loc])
+            
+            distance = random.randint(10, 500)
+            duration = distance * random.uniform(1.2, 2.0)  # Minuten
+            
+            trip_date = datetime.now() - timedelta(days=random.randint(1, 30))
+            
+            trip = {
+                "trip_id": f"TRIP-{tenant_id}-{i+1:03d}-{j+1:04d}",
+                "vehicle_id": vehicle["vehicle_id"],
+                "tenant_id": tenant_id,
+                "start_time": trip_date.isoformat(),
+                "end_time": (trip_date + timedelta(minutes=duration)).isoformat(),
+                "start_location": start_loc["city"],
+                "end_location": end_loc["city"],
+                "distance_km": round(distance, 1),
+                "duration_minutes": round(duration, 0),
+                "driver_id": vehicle["driver"]["driver_id"] if vehicle["driver"]["driver_id"] else f"DRV-{random.randint(1000, 9999)}",
+                "driver_name": vehicle["driver"]["name"] if vehicle["driver"]["name"] else random.choice(["Max Müller", "Anna Schmidt", "Tom Weber"]),
+                "purpose": random.choice(["Kundenbesuch", "Warenlieferung", "Service-Einsatz", "Transfer", "Materialtransport"]),
+                "avg_speed": round(random.uniform(45, 90), 1),
+                "max_speed": round(random.uniform(100, 140), 1),
+                "fuel_consumed": round(distance * random.uniform(0.06, 0.12), 2),
+                "eco_score": random.randint(65, 98),
+                "harsh_braking_count": random.randint(0, 8),
+                "harsh_acceleration_count": random.randint(0, 5),
+                "speeding_incidents": random.randint(0, 3),
+            }
+            
+            trips.append(trip)
+            
+            # Tankvorgang nach 3-5 Fahrten
+            if j % random.randint(3, 5) == 0:
+                fuel_record = {
+                    "fuel_id": f"FUEL-{tenant_id}-{i+1:03d}-{len(fuel_records)+1:04d}",
+                    "vehicle_id": vehicle["vehicle_id"],
+                    "tenant_id": tenant_id,
+                    "timestamp": (trip_date + timedelta(hours=2)).isoformat(),
+                    "location": random.choice(locations)["city"],
+                    "liters": round(random.uniform(30, 80), 2),
+                    "cost_per_liter": round(random.uniform(1.65, 1.95), 3),
+                    "total_cost": 0,  # wird berechnet
+                    "odometer_reading": vehicle["odometer"] - random.randint(100, 1000),
+                    "card_type": random.choice(["DKV", "Shell", "Aral", "Privat"]),
+                    "card_last4": f"{random.randint(1000, 9999)}",
+                    "fuel_type": random.choice(["Diesel", "Benzin", "Super Plus", "AdBlue"]),
+                    "suspicious": random.random() < 0.05,  # 5% verdächtige Transaktionen
+                }
+                fuel_record["total_cost"] = round(fuel_record["liters"] * fuel_record["cost_per_liter"], 2)
+                fuel_records.append(fuel_record)
+    
+    return {
+        "vehicles": vehicles,
+        "trips": trips,
+        "fuel_records": fuel_records,
+        "generated_at": datetime.now().isoformat()
+    }
+
+# In-Memory Store für Mock-Daten
+fleet_data_store = {}
+
+@router.get("/fleet/{tenant_id}/vehicles")
+async def get_fleet_vehicles(
+    tenant_id: str,
+    status: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole alle Fahrzeuge eines Tenants"""
+    
+    # Generiere Mock-Daten wenn nicht vorhanden
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    vehicles = fleet_data_store[tenant_id]["vehicles"]
+    
+    # Filter nach Status
+    if status:
+        vehicles = [v for v in vehicles if v["status"] == status]
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "vehicles": vehicles,
+        "total": len(vehicles)
+    }
+
+@router.get("/fleet/{tenant_id}/trips")
+async def get_fleet_trips(
+    tenant_id: str,
+    vehicle_id: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    limit: int = 100,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole Fahrten eines Tenants"""
+    
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    trips = fleet_data_store[tenant_id]["trips"]
+    
+    # Filter
+    if vehicle_id:
+        trips = [t for t in trips if t["vehicle_id"] == vehicle_id]
+    
+    if start_date:
+        trips = [t for t in trips if t["start_time"] >= start_date]
+    
+    if end_date:
+        trips = [t for t in trips if t["start_time"] <= end_date]
+    
+    # Sortiere nach Datum absteigend
+    trips = sorted(trips, key=lambda x: x["start_time"], reverse=True)
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "trips": trips[:limit],
+        "total": len(trips)
+    }
+
+@router.get("/fleet/{tenant_id}/fuel")
+async def get_fuel_records(
+    tenant_id: str,
+    vehicle_id: Optional[str] = None,
+    suspicious_only: bool = False,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole Tankdaten"""
+    
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    fuel_records = fleet_data_store[tenant_id]["fuel_records"]
+    
+    if vehicle_id:
+        fuel_records = [f for f in fuel_records if f["vehicle_id"] == vehicle_id]
+    
+    if suspicious_only:
+        fuel_records = [f for f in fuel_records if f.get("suspicious", False)]
+    
+    # Sortiere nach Datum absteigend
+    fuel_records = sorted(fuel_records, key=lambda x: x["timestamp"], reverse=True)
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "fuel_records": fuel_records,
+        "total": len(fuel_records),
+        "total_cost": sum(f["total_cost"] for f in fuel_records),
+        "suspicious_count": len([f for f in fuel_records if f.get("suspicious", False)])
+    }
+
+@router.get("/fleet/{tenant_id}/statistics")
+async def get_fleet_statistics(
+    tenant_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole Flottenstatistiken"""
+    
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    data = fleet_data_store[tenant_id]
+    vehicles = data["vehicles"]
+    trips = data["trips"]
+    fuel_records = data["fuel_records"]
+    
+    # Berechne Statistiken
+    total_distance = sum(t["distance_km"] for t in trips)
+    total_fuel_cost = sum(f["total_cost"] for f in fuel_records)
+    total_fuel_liters = sum(f["liters"] for f in fuel_records)
+    
+    avg_fuel_consumption = (total_fuel_liters / total_distance * 100) if total_distance > 0 else 0
+    
+    # Fahrzeug-Status
+    status_counts = {}
+    for v in vehicles:
+        status = v["status"]
+        status_counts[status] = status_counts.get(status, 0) + 1
+    
+    # Durchschnittlicher Eco-Score
+    avg_eco_score = sum(t["eco_score"] for t in trips) / len(trips) if trips else 0
+    
+    # CO2-Emissionen (grobe Schätzung: 2.65kg CO2 pro Liter Diesel/Benzin)
+    total_co2_kg = total_fuel_liters * 2.65
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "statistics": {
+            "total_vehicles": len(vehicles),
+            "active_vehicles": status_counts.get("driving", 0) + status_counts.get("idle", 0),
+            "parked_vehicles": status_counts.get("parked", 0),
+            "maintenance_vehicles": status_counts.get("maintenance", 0),
+            "total_trips_30d": len(trips),
+            "total_distance_km": round(total_distance, 1),
+            "total_fuel_cost": round(total_fuel_cost, 2),
+            "total_fuel_liters": round(total_fuel_liters, 1),
+            "avg_fuel_consumption_per_100km": round(avg_fuel_consumption, 2),
+            "avg_eco_score": round(avg_eco_score, 1),
+            "total_co2_emissions_kg": round(total_co2_kg, 1),
+            "cost_per_km": round(total_fuel_cost / total_distance, 3) if total_distance > 0 else 0,
+            "suspicious_fuel_transactions": len([f for f in fuel_records if f.get("suspicious", False)])
+        }
+    }
+
+@router.delete("/fleet/{tenant_id}/reset")
+async def reset_fleet_data(
+    tenant_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Lösche Mock-Daten für Tenant (um echte Daten zu nutzen)"""
+    
+    if tenant_id in fleet_data_store:
+        del fleet_data_store[tenant_id]
+        return {
+            "success": True,
+            "message": f"Mock-Daten für Tenant {tenant_id} gelöscht"
+        }
+    
+    return {
+        "success": False,
+        "message": "Keine Mock-Daten vorhanden"
+    }
+
+@router.post("/fleet/{tenant_id}/regenerate")
+async def regenerate_fleet_data(
+    tenant_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Regeneriere Mock-Daten"""
+    
+    fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    return {
+        "success": True,
+        "message": f"Mock-Daten für Tenant {tenant_id} neu generiert",
+        "vehicles_count": len(fleet_data_store[tenant_id]["vehicles"]),
+        "trips_count": len(fleet_data_store[tenant_id]["trips"]),
+        "fuel_records_count": len(fleet_data_store[tenant_id]["fuel_records"])
+    }
