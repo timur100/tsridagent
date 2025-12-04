@@ -602,9 +602,9 @@ const PlacetelManagement = () => {
           <div className={`px-6 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
+                <div className={`w-2 h-2 rounded-full ${webhookConnected ? 'bg-red-500 animate-pulse' : autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
                 <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {autoRefresh ? 'Live-Modus aktiv' : 'Live-Modus pausiert'}
+                  {webhookConnected ? '🔴 Live: Webhook aktiv' : autoRefresh ? 'Polling aktiv' : 'Pausiert'}
                 </span>
               </div>
               {lastUpdate && (
