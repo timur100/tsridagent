@@ -29,6 +29,8 @@ const PlacetelManagement = () => {
   const [callTarget, setCallTarget] = useState('');
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
+  const [webhookConnected, setWebhookConnected] = useState(false);
+  const [webhookEvents, setWebhookEvents] = useState([]);
   
   // Search for numbers
   const [numberSearch, setNumberSearch] = useState('');
