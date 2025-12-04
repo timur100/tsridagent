@@ -19,6 +19,8 @@ const FleetManagement = ({ selectedTenantId }) => {
   const [trips, setTrips] = useState([]);
   const [fuelRecords, setFuelRecords] = useState([]);
   const [statistics, setStatistics] = useState(null);
+  const [locations, setLocations] = useState([]);
+  const [selectedLocation, setSelectedLocation] = useState('all');
   
   // Filter
   const [vehicleStatusFilter, setVehicleStatusFilter] = useState('all');
