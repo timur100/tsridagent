@@ -12,25 +12,30 @@ router = APIRouter()
 
 # Mock-Daten Generator
 def generate_mock_fleet_data(tenant_id: str):
-    """Generiert Mock-Flottendaten für einen Tenant"""
+    """Generiert Mock-Flottendaten für Autovermietung (Europcar-spezifisch)"""
     
-    # Fahrzeugtypen
+    # Fahrzeugtypen für Autovermietung
     vehicle_types = [
-        {"type": "PKW", "models": ["VW Golf", "Mercedes C-Klasse", "BMW 3er", "Audi A4", "Ford Focus"]},
-        {"type": "Transporter", "models": ["Mercedes Sprinter", "VW Crafter", "Ford Transit", "Renault Master"]},
-        {"type": "LKW", "models": ["MAN TGX", "Mercedes Actros", "Scania R-Serie", "Volvo FH"]},
+        {"type": "Kleinwagen", "models": ["VW Polo", "Opel Corsa", "Renault Clio", "Ford Fiesta"]},
+        {"type": "Kompaktklasse", "models": ["VW Golf", "Audi A3", "Mercedes A-Klasse", "BMW 1er"]},
+        {"type": "Mittelklasse", "models": ["VW Passat", "Audi A4", "Mercedes C-Klasse", "BMW 3er"]},
+        {"type": "Oberklasse", "models": ["Audi A6", "Mercedes E-Klasse", "BMW 5er"]},
+        {"type": "SUV", "models": ["VW Tiguan", "Audi Q5", "Mercedes GLC", "BMW X3"]},
+        {"type": "Transporter", "models": ["Mercedes Sprinter", "VW Crafter", "Ford Transit"]},
     ]
     
-    # Standorte in Deutschland
+    # Europcar Standorte (mehrere pro Stadt)
     locations = [
-        {"city": "Berlin", "lat": 52.520008, "lon": 13.404954},
-        {"city": "Hamburg", "lat": 53.551086, "lon": 9.993682},
-        {"city": "München", "lat": 48.137154, "lon": 11.576124},
-        {"city": "Köln", "lat": 50.937531, "lon": 6.960279},
-        {"city": "Frankfurt", "lat": 50.110924, "lon": 8.682127},
-        {"city": "Stuttgart", "lat": 48.775846, "lon": 9.182932},
-        {"city": "Düsseldorf", "lat": 51.227741, "lon": 6.773456},
-        {"city": "Dortmund", "lat": 51.513587, "lon": 7.465298},
+        {"location_id": "berlin-tegel", "city": "Berlin", "name": "Berlin Flughafen Tegel", "address": "Flughafen Tegel, 13405 Berlin", "lat": 52.5540, "lon": 13.2889},
+        {"location_id": "berlin-hbf", "city": "Berlin", "name": "Berlin Hauptbahnhof", "address": "Europaplatz 1, 10557 Berlin", "lat": 52.5250, "lon": 13.3690},
+        {"location_id": "hamburg-airport", "city": "Hamburg", "name": "Hamburg Flughafen", "address": "Flughafenstraße, 22335 Hamburg", "lat": 53.6304, "lon": 9.9882},
+        {"location_id": "hamburg-hbf", "city": "Hamburg", "name": "Hamburg Hauptbahnhof", "address": "Hachmannplatz 16, 20099 Hamburg", "lat": 53.5530, "lon": 10.0067},
+        {"location_id": "muenchen-airport", "city": "München", "name": "München Flughafen", "address": "Nordallee 25, 85356 München", "lat": 48.3537, "lon": 11.7750},
+        {"location_id": "muenchen-hbf", "city": "München", "name": "München Hauptbahnhof", "address": "Bayerstraße 10A, 80335 München", "lat": 48.1402, "lon": 11.5583},
+        {"location_id": "frankfurt-airport", "city": "Frankfurt", "name": "Frankfurt Flughafen", "address": "Hugo-Eckener-Ring, 60549 Frankfurt", "lat": 50.0379, "lon": 8.5622},
+        {"location_id": "stuttgart-airport", "city": "Stuttgart", "name": "Stuttgart Flughafen", "address": "Flughafenstraße 32, 70629 Stuttgart", "lat": 48.6899, "lon": 9.2219},
+        {"location_id": "koeln-bonn-airport", "city": "Köln", "name": "Köln/Bonn Flughafen", "address": "Kennedystraße, 51147 Köln", "lat": 50.8659, "lon": 7.1427},
+        {"location_id": "duesseldorf-airport", "city": "Düsseldorf", "name": "Düsseldorf Flughafen", "address": "Flughafenstraße 120, 40474 Düsseldorf", "lat": 51.2895, "lon": 6.7668},
     ]
     
     vehicles = []
