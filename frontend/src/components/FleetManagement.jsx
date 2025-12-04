@@ -39,14 +39,25 @@ const FleetManagement = ({ selectedTenantId }) => {
     }
   }, [selectedLocation]);
   
+  const loadLocations = async () => {
+    try {
+      const res = await apiCall(`/api/fleet/${selectedTenantId}/locations`);
+      setLocations(res.data?.locations || []);
+    } catch (error) {
+      console.error('Error loading locations:', error);
+    }
+  };
+  
   const loadFleetData = async () => {
     setLoading(true);
     try {
+      const locationParam = selectedLocation !== 'all' ? `&location=${selectedLocation}` : '';
+      
       const [vehiclesRes, tripsRes, fuelRes, statsRes] = await Promise.all([
-        apiCall(`/api/fleet/${selectedTenantId}/vehicles`),
-        apiCall(`/api/fleet/${selectedTenantId}/trips?limit=50`),
-        apiCall(`/api/fleet/${selectedTenantId}/fuel`),
-        apiCall(`/api/fleet/${selectedTenantId}/statistics`)
+        apiCall(`/api/fleet/${selectedTenantId}/vehicles?location=${selectedLocation}`),
+        apiCall(`/api/fleet/${selectedTenantId}/trips?location=${selectedLocation}&limit=50`),
+        apiCall(`/api/fleet/${selectedTenantId}/fuel?location=${selectedLocation}`),
+        apiCall(`/api/fleet/${selectedTenantId}/statistics?location=${selectedLocation}`)
       ]);
       
       setVehicles(vehiclesRes.data?.vehicles || []);
