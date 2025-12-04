@@ -306,6 +306,7 @@ async def get_fuel_records(
 @router.get("/fleet/{tenant_id}/statistics")
 async def get_fleet_statistics(
     tenant_id: str,
+    location: Optional[str] = None,
     token_data: dict = Depends(verify_token)
 ):
     """Hole Flottenstatistiken"""
@@ -314,9 +315,20 @@ async def get_fleet_statistics(
         fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
     
     data = fleet_data_store[tenant_id]
-    vehicles = data["vehicles"]
-    trips = data["trips"]
-    fuel_records = data["fuel_records"]
+    all_vehicles = data["vehicles"]
+    all_trips = data["trips"]
+    all_fuel_records = data["fuel_records"]
+    
+    # Filter nach Standort
+    if location and location != "all":
+        vehicles = [v for v in all_vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles]
+        trips = [t for t in all_trips if t["vehicle_id"] in location_vehicle_ids]
+        fuel_records = [f for f in all_fuel_records if f["vehicle_id"] in location_vehicle_ids]
+    else:
+        vehicles = all_vehicles
+        trips = all_trips
+        fuel_records = all_fuel_records
     
     # Berechne Statistiken
     total_distance = sum(t["distance_km"] for t in trips)
