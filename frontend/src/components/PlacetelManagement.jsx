@@ -546,17 +546,19 @@ const PlacetelManagement = () => {
                       >
                         <td className="px-6 py-4">
                           <div className="font-mono text-sm">
-                            <div className="font-semibold">{contact.first_name} {contact.last_name}</div>
+                            <div className="font-semibold">
+                              {contact.first_name} {contact.last_name}
+                            </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <span className="font-mono text-sm">{contact.company || '-'}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-mono text-sm">{contact.phone || '-'}</span>
+                          <span className="font-mono text-sm">{contact.phone || contact.phone_work || contact.mobile || contact.mobile_work || '-'}</span>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="font-mono text-sm">{contact.email || '-'}</span>
+                          <span className="font-mono text-sm">{contact.email || contact.email_work || '-'}</span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-end gap-2">
