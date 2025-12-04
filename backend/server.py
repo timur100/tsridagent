@@ -73,6 +73,7 @@ from routes.hardware import router as hardware_router
 from routes.hardware_import import router as hardware_import_router
 from routes.placetel import router as placetel_router
 from routes.placetel_webhooks import router as placetel_webhooks_router
+from routes.fleet_management import router as fleet_router
 
 
 ROOT_DIR = Path(__file__).parent
