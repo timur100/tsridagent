@@ -196,13 +196,13 @@ def generate_mock_fleet_data(tenant_id: str):
                 
                 damage_reports.append(damage)
             
-            # Tankvorgang nach 3-5 Fahrten
+            # Tankvorgang nach 3-5 Mietvorgängen
             if j % random.randint(3, 5) == 0:
                 fuel_record = {
                     "fuel_id": f"FUEL-{tenant_id}-{i+1:03d}-{len(fuel_records)+1:04d}",
                     "vehicle_id": vehicle["vehicle_id"],
                     "tenant_id": tenant_id,
-                    "timestamp": (trip_date + timedelta(hours=2)).isoformat(),
+                    "timestamp": (rental_end + timedelta(hours=2)).isoformat(),
                     "location": random.choice(locations)["city"],
                     "liters": round(random.uniform(30, 80), 2),
                     "cost_per_liter": round(random.uniform(1.65, 1.95), 3),
