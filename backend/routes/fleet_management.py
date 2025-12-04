@@ -352,6 +352,7 @@ async def get_fleet_statistics(
     return {
         "success": True,
         "tenant_id": tenant_id,
+        "location": location,
         "statistics": {
             "total_vehicles": len(vehicles),
             "active_vehicles": status_counts.get("driving", 0) + status_counts.get("idle", 0),
