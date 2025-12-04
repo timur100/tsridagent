@@ -251,6 +251,16 @@ const PlacetelManagement = () => {
             Telefonie-Integration und Rufnummernverwaltung
           </p>
         </div>
+        <Button
+          onClick={() => {
+            setCallTarget('');
+            setShowCallModal(true);
+          }}
+          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+        >
+          <PhoneCall className="h-4 w-4" />
+          Anruf tätigen
+        </Button>
       </div>
 
       {/* Content */}
