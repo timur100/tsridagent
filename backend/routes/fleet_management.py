@@ -222,6 +222,7 @@ async def get_fleet_vehicles(
 @router.get("/fleet/{tenant_id}/trips")
 async def get_fleet_trips(
     tenant_id: str,
+    location: Optional[str] = None,
     vehicle_id: Optional[str] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
@@ -234,6 +235,12 @@ async def get_fleet_trips(
         fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
     
     trips = fleet_data_store[tenant_id]["trips"]
+    vehicles = fleet_data_store[tenant_id]["vehicles"]
+    
+    # Filter nach Standort (über Fahrzeug-Zuordnung)
+    if location and location != "all":
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+        trips = [t for t in trips if t["vehicle_id"] in location_vehicle_ids]
     
     # Filter
     if vehicle_id:
@@ -251,6 +258,7 @@ async def get_fleet_trips(
     return {
         "success": True,
         "tenant_id": tenant_id,
+        "location": location,
         "trips": trips[:limit],
         "total": len(trips)
     }
