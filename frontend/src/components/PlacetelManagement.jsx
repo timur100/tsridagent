@@ -305,7 +305,13 @@ const PlacetelManagement = () => {
                     </td>
                   </tr>
                 ) : (
-                  numbers.map((number) => (
+                  numbers
+                    .filter(number => 
+                      !numberSearch || 
+                      number.number?.toLowerCase().includes(numberSearch.toLowerCase()) ||
+                      number.type?.toLowerCase().includes(numberSearch.toLowerCase())
+                    )
+                    .map((number) => (
                     <tr
                       key={number.id}
                       className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
