@@ -1098,6 +1098,135 @@ const PlacetelManagement = () => {
         </Card>
       )}
 
+      {/* Click-to-Call Modal */}
+      {showCallModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className={`${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} rounded-lg p-6 w-full max-w-md mx-4`}>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Anruf tätigen
+              </h2>
+              <button
+                onClick={() => {
+                  setShowCallModal(false);
+                  setCallTarget('');
+                }}
+                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const sipuid = formData.get('sipuid');
+              const target = formData.get('target');
+              const fromName = formData.get('from_name');
+
+              try {
+                setLoading(true);
+                await apiCall('/api/placetel/calls', {
+                  method: 'POST',
+                  body: JSON.stringify({
+                    sipuid,
+                    target,
+                    from_name: fromName || undefined
+                  })
+                });
+                toast.success('Anruf wird eingeleitet...');
+                setShowCallModal(false);
+                setCallTarget('');
+              } catch (error) {
+                console.error('Error initiating call:', error);
+                toast.error('Fehler beim Einleiten des Anrufs');
+              } finally {
+                setLoading(false);
+              }
+            }}>
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    SIP User ID *
+                  </label>
+                  <input
+                    type="text"
+                    name="sipuid"
+                    required
+                    placeholder="z.B. 777c..."
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                  <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                    Die SIP User ID finden Sie im "SIP Users" Tab
+                  </p>
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Ziel-Nummer *
+                  </label>
+                  <input
+                    type="tel"
+                    name="target"
+                    required
+                    defaultValue={callTarget}
+                    placeholder="+49..."
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Anzeigename (optional)
+                  </label>
+                  <input
+                    type="text"
+                    name="from_name"
+                    placeholder="Ihr Name"
+                    className={`w-full px-3 py-2 rounded border text-sm ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-600 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCallModal(false);
+                    setCallTarget('');
+                  }}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+                  }`}
+                >
+                  Abbrechen
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 rounded-lg font-medium bg-green-600 hover:bg-green-700 text-white transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Phone className="h-4 w-4" />
+                  {loading ? 'Ruft an...' : 'Anrufen'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Contact Modal */}
       {showContactModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
