@@ -25,6 +25,9 @@ const PlacetelManagement = () => {
   // Modal states
   const [showContactModal, setShowContactModal] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
+  
+  // Search for numbers
+  const [numberSearch, setNumberSearch] = useState('');
 
   // Helper to extract array from nested response
   const extractArrayData = (result) => {
