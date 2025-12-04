@@ -252,8 +252,9 @@ const PlacetelManagement = () => {
       {/* Content */}
       {activeTab === 'numbers' && (
         <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
-          {/* Search Input */}
-          <div className="p-4 border-b border-gray-700">
+          {/* Search & Filter */}
+          <div className="p-4 border-b border-gray-700 space-y-3">
+            {/* Search Input */}
             <input
               type="text"
               placeholder="Rufnummer suchen..."
@@ -265,6 +266,46 @@ const PlacetelManagement = () => {
                   : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
               }`}
             />
+            
+            {/* Status Filter Buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setNumberStatusFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  numberStatusFilter === 'all'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Alle ({numbers.length})
+              </button>
+              <button
+                onClick={() => setNumberStatusFilter('active')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  numberStatusFilter === 'active'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Aktiv ({numbers.filter(n => n.activated).length})
+              </button>
+              <button
+                onClick={() => setNumberStatusFilter('inactive')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  numberStatusFilter === 'inactive'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Inaktiv ({numbers.filter(n => !n.activated).length})
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
