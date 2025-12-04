@@ -333,6 +333,7 @@ app.include_router(dhl_shipping_router)
 app.include_router(hardware_router)
 app.include_router(hardware_import_router)
 app.include_router(placetel_router, prefix="/api/placetel", tags=["placetel"])
+app.include_router(placetel_webhooks_router, prefix="/api/placetel", tags=["placetel-webhooks"])
 
 # Include the router in the main app
 app.include_router(api_router)
