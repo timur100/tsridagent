@@ -33,6 +33,10 @@ const PlacetelManagement = () => {
   // Search for numbers
   const [numberSearch, setNumberSearch] = useState('');
   const [numberStatusFilter, setNumberStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
+  
+  // Call filters
+  const [callTypeFilter, setCallTypeFilter] = useState('all'); // 'all', 'missed', 'incoming', 'outgoing'
+  const [callSearchTerm, setCallSearchTerm] = useState('');
 
   // Helper to extract array from nested response
   const extractArrayData = (result) => {
