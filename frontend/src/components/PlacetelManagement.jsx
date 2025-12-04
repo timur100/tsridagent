@@ -394,10 +394,33 @@ const PlacetelManagement = () => {
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
-                            title="Details"
+                            onClick={async (e) => {
+                              e.stopPropagation();
+                              if (number.activated) {
+                                const newStatus = !number.activated;
+                                try {
+                                  setLoading(true);
+                                  await apiCall(`/api/placetel/numbers/${number.id}/activate`, {
+                                    method: 'POST'
+                                  });
+                                  toast.success(newStatus ? 'Nummer aktiviert' : 'Nummer deaktiviert');
+                                  loadNumbers();
+                                } catch (error) {
+                                  console.error('Error toggling number:', error);
+                                  toast.error('Fehler beim Ändern des Status');
+                                } finally {
+                                  setLoading(false);
+                                }
+                              }
+                            }}
+                            className={`p-2 rounded-lg transition-colors ${
+                              number.activated 
+                                ? theme === 'dark' ? 'hover:bg-gray-700 text-green-500' : 'hover:bg-gray-200 text-green-600'
+                                : theme === 'dark' ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-gray-200 text-gray-400'
+                            }`}
+                            title={number.activated ? 'Deaktivieren' : 'Aktivieren'}
                           >
-                            <Eye className="h-4 w-4" />
+                            <Phone className="h-4 w-4" />
                           </button>
                         </div>
                       </td>
