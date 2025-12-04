@@ -273,6 +273,11 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   // Filter locations based on search and filters
   const filteredLocations = locations.filter(location => {
+    // Online/Offline status filter
+    const isOnline = location.id_checker !== null;
+    if (onlineStatusFilter === 'online' && !isOnline) return false;
+    if (onlineStatusFilter === 'offline' && isOnline) return false;
+
     // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
