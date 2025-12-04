@@ -573,6 +573,30 @@ const PlacetelManagement = () => {
                             >
                               <Edit2 className="h-4 w-4" />
                             </button>
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Möchten Sie den Kontakt "${contact.first_name} ${contact.last_name}" wirklich löschen?`)) {
+                                  try {
+                                    setLoading(true);
+                                    await apiCall(`/api/placetel/contacts/${contact.id}`, {
+                                      method: 'DELETE'
+                                    });
+                                    toast.success('Kontakt erfolgreich gelöscht');
+                                    loadContacts();
+                                  } catch (error) {
+                                    console.error('Error deleting contact:', error);
+                                    toast.error('Fehler beim Löschen des Kontakts');
+                                  } finally {
+                                    setLoading(false);
+                                  }
+                                }
+                              }}
+                              className={`p-2 rounded-lg transition-colors text-red-500 ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                              title="Löschen"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
                         </td>
                       </tr>
