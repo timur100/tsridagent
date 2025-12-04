@@ -713,13 +713,20 @@ const PlacetelManagement = () => {
                           className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                         >
                           <td className="px-6 py-4">
-                            <span className="font-mono text-sm font-semibold">{queue.name}</span>
+                            <div className="font-mono text-sm">
+                              <div className="font-semibold">{queue.name}</div>
+                              {queue.description && (
+                                <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                                  {queue.description}
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="font-mono text-sm">{queue.waiting_calls || 0}</span>
+                            <span className="font-mono text-sm">{queue.routing_object_counts || 0}</span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="font-mono text-sm">{queue.available_agents || 0}</span>
+                            <span className="font-mono text-sm">{queue.priority || 0}</span>
                           </td>
                         </tr>
                       ))
