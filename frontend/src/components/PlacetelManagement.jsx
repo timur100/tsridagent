@@ -338,11 +338,20 @@ const PlacetelManagement = () => {
                     </td>
                   </tr>
                 ) : (() => {
-                  const filteredNumbers = numbers.filter(number => 
-                    !numberSearch || 
-                    number.number?.toLowerCase().includes(numberSearch.toLowerCase()) ||
-                    number.type?.toLowerCase().includes(numberSearch.toLowerCase())
-                  );
+                  const filteredNumbers = numbers.filter(number => {
+                    // Search filter
+                    const matchesSearch = !numberSearch || 
+                      number.number?.toLowerCase().includes(numberSearch.toLowerCase()) ||
+                      number.type?.toLowerCase().includes(numberSearch.toLowerCase());
+                    
+                    // Status filter
+                    const matchesStatus = 
+                      numberStatusFilter === 'all' ||
+                      (numberStatusFilter === 'active' && number.activated) ||
+                      (numberStatusFilter === 'inactive' && !number.activated);
+                    
+                    return matchesSearch && matchesStatus;
+                  });
                   
                   if (filteredNumbers.length === 0) {
                     return (
