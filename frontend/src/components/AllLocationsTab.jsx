@@ -410,6 +410,49 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
       {/* All Filters in One Row */}
       <div className="flex flex-wrap items-center gap-3">
+        {/* Online/Offline Status Buttons */}
+        <button
+          onClick={() => setOnlineStatusFilter('all')}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
+            onlineStatusFilter === 'all'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
+              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          Alle ({locations.length})
+        </button>
+        <button
+          onClick={() => setOnlineStatusFilter('online')}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            onlineStatusFilter === 'online'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
+              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          <Circle className="w-2 h-2 fill-green-500 text-green-500" />
+          Online ({locations.filter(loc => loc.id_checker !== null).length})
+        </button>
+        <button
+          onClick={() => setOnlineStatusFilter('offline')}
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
+            onlineStatusFilter === 'offline'
+              ? 'bg-[#c00000] text-white'
+              : theme === 'dark'
+              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
+              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          <Circle className="w-2 h-2 fill-gray-400 text-gray-400" />
+          Offline ({locations.filter(loc => loc.id_checker === null).length})
+        </button>
+
+        {/* Divider */}
+        <div className={`h-8 w-px ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+
         {/* Tenant Filter - only show when "Alle Kunden" selected */}
         {!selectedTenantId || selectedTenantId === 'all' ? (
           <select
