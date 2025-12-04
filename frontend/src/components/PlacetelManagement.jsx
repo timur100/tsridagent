@@ -847,10 +847,22 @@ const PlacetelManagement = () => {
                       className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                     >
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm capitalize">{fax.direction || '-'}</span>
+                        <div className="flex items-center gap-2">
+                          {fax.type === 'inbound' ? (
+                            <PhoneIncoming className="h-4 w-4 text-green-500" />
+                          ) : (
+                            <PhoneOutgoing className="h-4 w-4 text-blue-500" />
+                          )}
+                          <span className="font-mono text-sm capitalize">{fax.type || '-'}</span>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm">{fax.number || '-'}</span>
+                        <div className="font-mono text-sm">
+                          <div>Von: {fax.from_number || '-'}</div>
+                          <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                            Zu: {fax.to_number || '-'}
+                          </div>
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-mono text-sm">{fax.pages || 0}</span>
