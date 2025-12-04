@@ -479,6 +479,71 @@ const PlacetelManagement = () => {
 
       {activeTab === 'calls' && (
         <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          {/* Search & Filter */}
+          <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} space-y-3`}>
+            <input
+              type="text"
+              placeholder="Nach Rufnummer suchen..."
+              value={callSearchTerm}
+              onChange={(e) => setCallSearchTerm(e.target.value)}
+              className={`w-full px-3 py-2 rounded border text-sm ${
+                theme === 'dark'
+                  ? 'bg-[#1f1f1f] border-gray-600 text-white placeholder-gray-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCallTypeFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  callTypeFilter === 'all'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Alle ({calls.length})
+              </button>
+              <button
+                onClick={() => setCallTypeFilter('missed')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  callTypeFilter === 'missed'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Verpasst ({calls.filter(c => c.type === 'missed').length})
+              </button>
+              <button
+                onClick={() => setCallTypeFilter('inbound')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  callTypeFilter === 'inbound'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Eingehend ({calls.filter(c => c.type === 'inbound' || c.direction === 'inbound').length})
+              </button>
+              <button
+                onClick={() => setCallTypeFilter('outbound')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  callTypeFilter === 'outbound'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                Ausgehend ({calls.filter(c => c.type === 'outbound' || c.direction === 'outbound').length})
+              </button>
+            </div>
+          </div>
+          
           {/* Live Status Header */}
           <div className={`px-6 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
             <div className="flex items-center gap-3">
