@@ -12,7 +12,7 @@ from routes.portal_auth import verify_token
 router = APIRouter()
 
 PLACETEL_API_URL = "https://api.placetel.de/v2"
-PLACETEL_API_KEY = "de1636b285181b054e5871e25aae99d9ac24c018c177d504010246e964a2b327d20a416f598ecf78525605cf19d281a8c12819c82ae1913935a4a90217aa33aa"
+PLACETEL_API_KEY = os.environ.get("PLACETEL_API_KEY", "")
 
 def get_placetel_headers():
     return {
