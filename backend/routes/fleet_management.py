@@ -266,6 +266,7 @@ async def get_fleet_trips(
 @router.get("/fleet/{tenant_id}/fuel")
 async def get_fuel_records(
     tenant_id: str,
+    location: Optional[str] = None,
     vehicle_id: Optional[str] = None,
     suspicious_only: bool = False,
     token_data: dict = Depends(verify_token)
@@ -276,6 +277,12 @@ async def get_fuel_records(
         fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
     
     fuel_records = fleet_data_store[tenant_id]["fuel_records"]
+    vehicles = fleet_data_store[tenant_id]["vehicles"]
+    
+    # Filter nach Standort
+    if location and location != "all":
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+        fuel_records = [f for f in fuel_records if f["vehicle_id"] in location_vehicle_ids]
     
     if vehicle_id:
         fuel_records = [f for f in fuel_records if f["vehicle_id"] == vehicle_id]
@@ -289,6 +296,7 @@ async def get_fuel_records(
     return {
         "success": True,
         "tenant_id": tenant_id,
+        "location": location,
         "fuel_records": fuel_records,
         "total": len(fuel_records),
         "total_cost": sum(f["total_cost"] for f in fuel_records),
