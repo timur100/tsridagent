@@ -317,6 +317,13 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   // Sort locations
   const sortedLocations = [...filteredLocations].sort((a, b) => {
+    // Special handling for online status sorting
+    if (sortConfig.key === 'status') {
+      const aOnline = a.id_checker !== null ? 1 : 0;
+      const bOnline = b.id_checker !== null ? 1 : 0;
+      return sortConfig.direction === 'asc' ? aOnline - bOnline : bOnline - aOnline;
+    }
+
     const aValue = a[sortConfig.key] || '';
     const bValue = b[sortConfig.key] || '';
 
