@@ -251,6 +251,20 @@ const PlacetelManagement = () => {
       {/* Content */}
       {activeTab === 'numbers' && (
         <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          {/* Search Input */}
+          <div className="p-4 border-b border-gray-700">
+            <input
+              type="text"
+              placeholder="Rufnummer suchen..."
+              value={numberSearch}
+              onChange={(e) => setNumberSearch(e.target.value)}
+              className={`w-full px-3 py-2 rounded border text-sm ${
+                theme === 'dark'
+                  ? 'bg-[#1f1f1f] border-gray-600 text-white placeholder-gray-400'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+            />
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
