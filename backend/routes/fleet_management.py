@@ -114,9 +114,9 @@ def generate_mock_fleet_data(tenant_id: str):
         
         vehicles.append(vehicle)
         
-        # Generiere Fahrten für letzten Monat
-        num_trips = random.randint(15, 40)
-        for j in range(num_trips):
+        # Generiere Mietvorgänge für letzten Monat
+        num_rentals = random.randint(5, 15)
+        for j in range(num_rentals):
             start_loc = random.choice(locations)
             end_loc = random.choice([l for l in locations if l != start_loc])
             
