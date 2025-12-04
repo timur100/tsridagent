@@ -25,6 +25,8 @@ const PlacetelManagement = () => {
   // Modal states
   const [showContactModal, setShowContactModal] = useState(false);
   const [editingContact, setEditingContact] = useState(null);
+  const [showCallModal, setShowCallModal] = useState(false);
+  const [callTarget, setCallTarget] = useState('');
   
   // Search for numbers
   const [numberSearch, setNumberSearch] = useState('');
