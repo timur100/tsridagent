@@ -73,16 +73,23 @@ const PlacetelManagement = () => {
     }
   };
 
-  const loadCalls = async () => {
-    setLoading(true);
+  const loadCalls = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
-      const result = await apiCall('/api/placetel/calls');
-      setCalls(extractArrayData(result));
+      const result = await apiCall('/api/placetel/calls?per_page=50');
+      const callsData = extractArrayData(result);
+      setCalls(callsData);
+      setLastUpdate(new Date());
+      if (!silent && callsData.length > 0) {
+        toast.success(`${callsData.length} Anrufe geladen`);
+      }
     } catch (error) {
       console.error('[Placetel] Error loading calls:', error);
-      toast.error('Fehler beim Laden der Anrufe');
+      if (!silent) {
+        toast.error('Fehler beim Laden der Anrufe');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
