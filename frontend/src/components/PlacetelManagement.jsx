@@ -475,6 +475,47 @@ const PlacetelManagement = () => {
 
       {activeTab === 'calls' && (
         <Card className={`border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-700'}`}>
+          {/* Live Status Header */}
+          <div className={`px-6 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} flex items-center justify-between`}>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${autoRefresh ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
+                <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  {autoRefresh ? 'Live-Modus aktiv' : 'Live-Modus pausiert'}
+                </span>
+              </div>
+              {lastUpdate && (
+                <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                  Letzte Aktualisierung: {lastUpdate.toLocaleTimeString('de-DE')}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  autoRefresh
+                    ? 'bg-green-600 hover:bg-green-700 text-white'
+                    : theme === 'dark'
+                    ? 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                    : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                }`}
+              >
+                {autoRefresh ? 'Pause' : 'Fortsetzen'}
+              </button>
+              <button
+                onClick={() => loadCalls()}
+                disabled={loading}
+                className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  theme === 'dark'
+                    ? 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                    : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                } disabled:opacity-50`}
+              >
+                Jetzt aktualisieren
+              </button>
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
