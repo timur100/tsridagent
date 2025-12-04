@@ -216,10 +216,19 @@ def generate_mock_fleet_data(tenant_id: str):
                 fuel_record["total_cost"] = round(fuel_record["liters"] * fuel_record["cost_per_liter"], 2)
                 fuel_records.append(fuel_record)
     
+    # Setze aktuelle Mietvorgänge für vermietete Fahrzeuge
+    active_rentals = [r for r in rentals if r["status"] == "active"]
+    for vehicle in vehicles:
+        if vehicle["status"] == "rented":
+            matching_rentals = [r for r in active_rentals if r["vehicle_id"] == vehicle["vehicle_id"]]
+            if matching_rentals:
+                vehicle["current_rental"] = matching_rentals[0]
+    
     return {
         "vehicles": vehicles,
-        "trips": trips,
+        "rentals": rentals,  # Mietvorgänge statt trips
         "fuel_records": fuel_records,
+        "damage_reports": damage_reports,
         "generated_at": datetime.now().isoformat()
     }
 
