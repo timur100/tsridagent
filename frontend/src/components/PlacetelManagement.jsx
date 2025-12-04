@@ -204,8 +204,10 @@ const PlacetelManagement = () => {
 
   const getCallIcon = (type) => {
     switch (type) {
+      case 'inbound':
       case 'incoming':
         return <PhoneIncoming className="h-4 w-4 text-green-500" />;
+      case 'outbound':
       case 'outgoing':
         return <PhoneOutgoing className="h-4 w-4 text-blue-500" />;
       case 'missed':
