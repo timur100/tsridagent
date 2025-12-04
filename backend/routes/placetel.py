@@ -23,22 +23,56 @@ def get_placetel_headers():
 # Numbers / Rufnummern
 @router.get("/numbers")
 async def get_numbers(
-    page: int = Query(1, ge=1),
-    per_page: int = Query(25, ge=1, le=100),
+    load_all: bool = Query(False),
     token_data: dict = Depends(verify_token)
 ):
-    """Get all Placetel numbers"""
+    """Get all Placetel numbers - if load_all=True, fetches all pages"""
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(
-                f"{PLACETEL_API_URL}/numbers",
-                headers=get_placetel_headers(),
-                params={"page": page, "per_page": per_page}
-            )
-            response.raise_for_status()
-            data = response.json()
-            # Placetel returns array directly, not wrapped in object
-            return {"success": True, "data": data}
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            if load_all:
+                # Fetch all pages
+                all_numbers = []
+                page = 1
+                per_page = 100
+                
+                while True:
+                    response = await client.get(
+                        f"{PLACETEL_API_URL}/numbers",
+                        headers=get_placetel_headers(),
+                        params={"page": page, "per_page": per_page}
+                    )
+                    response.raise_for_status()
+                    data = response.json()
+                    
+                    if not data:
+                        break
+                    
+                    all_numbers.extend(data)
+                    print(f"[Placetel] Loaded page {page}: {len(data)} numbers, total: {len(all_numbers)}")
+                    
+                    # Check if there are more pages via Link header
+                    link_header = response.headers.get('link', '')
+                    if 'rel="next"' not in link_header:
+                        break
+                    
+                    page += 1
+                    
+                    # Safety limit
+                    if page > 50:
+                        break
+                
+                print(f"[Placetel] Total numbers loaded: {len(all_numbers)}")
+                return {"success": True, "data": all_numbers, "total": len(all_numbers)}
+            else:
+                # Fetch first page only
+                response = await client.get(
+                    f"{PLACETEL_API_URL}/numbers",
+                    headers=get_placetel_headers(),
+                    params={"page": 1, "per_page": 100}
+                )
+                response.raise_for_status()
+                data = response.json()
+                return {"success": True, "data": data}
     except httpx.HTTPStatusError as e:
         print(f"[Placetel] HTTP Error fetching numbers: {e.response.status_code} - {e.response.text}")
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
