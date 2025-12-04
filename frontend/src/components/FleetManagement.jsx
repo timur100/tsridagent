@@ -40,10 +40,10 @@ const FleetManagement = ({ selectedTenantId }) => {
         apiCall(`/api/fleet/${selectedTenantId}/statistics`)
       ]);
       
-      setVehicles(vehiclesRes.vehicles || []);
-      setTrips(tripsRes.trips || []);
-      setFuelRecords(fuelRes.fuel_records || []);
-      setStatistics(statsRes.statistics || null);
+      setVehicles(vehiclesRes.data?.vehicles || []);
+      setTrips(tripsRes.data?.trips || []);
+      setFuelRecords(fuelRes.data?.fuel_records || []);
+      setStatistics(statsRes.data?.statistics || null);
     } catch (error) {
       console.error('Error loading fleet data:', error);
       toast.error('Fehler beim Laden der Flottendaten');
