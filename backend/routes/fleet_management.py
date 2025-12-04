@@ -39,53 +39,77 @@ def generate_mock_fleet_data(tenant_id: str):
     ]
     
     vehicles = []
-    trips = []
+    rentals = []  # Mietvorgänge statt trips
     fuel_records = []
+    damage_reports = []
     
-    # Generiere 10-15 Fahrzeuge pro Tenant
-    num_vehicles = random.randint(10, 15)
+    # Generiere 15-20 Fahrzeuge pro Tenant (Europcar Flotte)
+    num_vehicles = random.randint(15, 20)
     
     for i in range(num_vehicles):
         vehicle_cat = random.choice(vehicle_types)
         model = random.choice(vehicle_cat["models"])
         
         # Kennzeichen generieren
-        prefixes = ["B", "HH", "M", "K", "F", "S", "D", "DO"]
-        plate = f"{random.choice(prefixes)}-{random.choice(['AB', 'CD', 'EF', 'XY'])}-{random.randint(100, 999)}"
+        prefixes = ["B", "HH", "M", "K", "F", "S", "D", "DO", "E"]
+        plate = f"{random.choice(prefixes)}-EC-{random.randint(1000, 9999)}"  # EC für Europcar
         
-        # Aktueller Standort
-        current_loc = random.choice(locations)
+        # Zugewiesener Standort (Heimatstandort)
+        home_location = random.choice(locations)
         
-        # Status
-        statuses = ["driving", "parked", "idle", "maintenance"]
-        weights = [0.3, 0.5, 0.15, 0.05]
-        status = random.choices(statuses, weights=weights)[0]
+        # Aktueller Standort (könnte anders sein wenn vermietet)
+        is_rented = random.random() < 0.4  # 40% sind aktuell vermietet
+        
+        if is_rented:
+            current_loc = random.choice(locations)
+            status = "rented"
+        else:
+            current_loc = home_location
+            status = random.choice(["available", "maintenance", "cleaning"])
+        
+        # km-Stand und km-Limit
+        initial_km = random.randint(5000, 15000)  # Neu gekauft
+        current_km = initial_km + random.randint(5000, 80000)
+        km_limit = random.choice([100000, 120000, 150000])  # Verkauf bei diesem km-Stand
         
         # Fahrzeug erstellen
         vehicle = {
-            "vehicle_id": f"VEH-{tenant_id}-{i+1:03d}",
+            "vehicle_id": f"VEH-{tenant_id}-EC{i+1:04d}",
             "tenant_id": tenant_id,
             "license_plate": plate,
             "type": vehicle_cat["type"],
             "model": model,
-            "year": random.randint(2018, 2024),
+            "year": random.randint(2020, 2024),
             "status": status,
+            "home_location": {
+                "location_id": home_location["location_id"],
+                "name": home_location["name"],
+                "city": home_location["city"],
+                "address": home_location["address"],
+                "lat": home_location["lat"],
+                "lon": home_location["lon"]
+            },
             "current_location": {
+                "location_id": current_loc["location_id"],
+                "name": current_loc["name"],
                 "city": current_loc["city"],
-                "lat": current_loc["lat"] + random.uniform(-0.05, 0.05),
-                "lon": current_loc["lon"] + random.uniform(-0.05, 0.05),
+                "address": current_loc["address"],
+                "lat": current_loc["lat"],
+                "lon": current_loc["lon"],
                 "timestamp": datetime.now().isoformat()
             },
-            "odometer": random.randint(10000, 150000),
-            "fuel_level": random.randint(20, 95) if status != "maintenance" else 0,
-            "driver": {
-                "name": random.choice(["Max Müller", "Anna Schmidt", "Tom Weber", "Lisa Klein", "Jan Meyer", None]),
-                "driver_id": f"DRV-{random.randint(1000, 9999)}" if random.random() > 0.3 else None
-            },
-            "last_maintenance": (datetime.now() - timedelta(days=random.randint(10, 90))).isoformat(),
-            "next_maintenance_due": (datetime.now() + timedelta(days=random.randint(10, 60))).isoformat(),
-            "insurance_expires": (datetime.now() + timedelta(days=random.randint(60, 365))).isoformat(),
-            "tuev_expires": (datetime.now() + timedelta(days=random.randint(100, 700))).isoformat(),
+            "odometer": current_km,
+            "initial_odometer": initial_km,
+            "km_limit": km_limit,
+            "km_until_limit": km_limit - current_km,
+            "km_limit_percentage": round((current_km / km_limit) * 100, 1),
+            "fuel_level": random.randint(30, 95) if status != "maintenance" else 20,
+            "current_rental": None,  # Wird unten gesetzt wenn vermietet
+            "total_rentals": random.randint(50, 300),
+            "last_maintenance": (datetime.now() - timedelta(days=random.randint(10, 60))).isoformat(),
+            "next_maintenance_due": (datetime.now() + timedelta(days=random.randint(30, 90))).isoformat(),
+            "insurance_expires": (datetime.now() + timedelta(days=random.randint(180, 365))).isoformat(),
+            "tuev_expires": (datetime.now() + timedelta(days=random.randint(200, 700))).isoformat(),
         }
         
         vehicles.append(vehicle)
