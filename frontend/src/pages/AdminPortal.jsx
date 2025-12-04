@@ -70,6 +70,7 @@ import DHLShipping from '../components/DHLShipping';
 import DocumentScanPage from '../components/DocumentScanPage';
 import TimeTrackingPage from '../components/TimeTrackingPage';
 import PlacetelManagement from '../components/PlacetelManagement';
+import FleetManagement from '../components/FleetManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
