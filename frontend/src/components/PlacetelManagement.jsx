@@ -856,6 +856,12 @@ const PlacetelManagement = () => {
                     SIP ID
                   </th>
                   <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Rufnummer
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Typ
+                  </th>
+                  <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     Status
                   </th>
                 </tr>
@@ -863,7 +869,7 @@ const PlacetelManagement = () => {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="3" className="px-6 py-12 text-center">
+                    <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
                       </div>
@@ -871,7 +877,7 @@ const PlacetelManagement = () => {
                   </tr>
                 ) : sipUsers.length === 0 ? (
                   <tr>
-                    <td colSpan="3" className="px-6 py-12 text-center">
+                    <td colSpan="5" className="px-6 py-12 text-center">
                       <UserCircle className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
                       <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         Keine SIP Users gefunden
@@ -885,10 +891,36 @@ const PlacetelManagement = () => {
                       className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                     >
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-semibold">{user.name}</span>
+                        <div className="font-mono text-sm">
+                          <div className="font-semibold">{user.name}</div>
+                          {user.description && (
+                            <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                              {user.description}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span className="font-mono text-sm">{user.sipuid || '-'}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-1">
+                          <Phone className="h-3 w-3 text-gray-500" />
+                          <span className="font-mono text-sm font-semibold">
+                            {user.callerid || '-'}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold ${
+                          user.type === 'blf' 
+                            ? 'bg-blue-100 text-blue-800' 
+                            : user.type === 'sip'
+                            ? 'bg-purple-100 text-purple-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {user.type?.toUpperCase() || '-'}
+                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
