@@ -150,9 +150,48 @@ def generate_mock_fleet_data(tenant_id: str):
 # In-Memory Store für Mock-Daten
 fleet_data_store = {}
 
+@router.get("/fleet/{tenant_id}/locations")
+async def get_fleet_locations(
+    tenant_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole alle Standorte mit Flotteninformationen"""
+    
+    # Generiere Mock-Daten wenn nicht vorhanden
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    vehicles = fleet_data_store[tenant_id]["vehicles"]
+    
+    # Gruppiere Fahrzeuge nach Standort (current_location.city)
+    location_map = {}
+    for vehicle in vehicles:
+        city = vehicle["current_location"]["city"]
+        if city not in location_map:
+            location_map[city] = []
+        location_map[city].append(vehicle)
+    
+    # Erstelle Standort-Übersicht
+    locations = []
+    for city, city_vehicles in location_map.items():
+        locations.append({
+            "location_id": city.lower().replace(" ", "-"),
+            "location_name": city,
+            "vehicle_count": len(city_vehicles),
+            "active_vehicles": len([v for v in city_vehicles if v["status"] in ["driving", "idle"]])
+        })
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "locations": sorted(locations, key=lambda x: x["location_name"]),
+        "total": len(locations)
+    }
+
 @router.get("/fleet/{tenant_id}/vehicles")
 async def get_fleet_vehicles(
     tenant_id: str,
+    location: Optional[str] = None,
     status: Optional[str] = None,
     token_data: dict = Depends(verify_token)
 ):
@@ -164,6 +203,10 @@ async def get_fleet_vehicles(
     
     vehicles = fleet_data_store[tenant_id]["vehicles"]
     
+    # Filter nach Standort
+    if location and location != "all":
+        vehicles = [v for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+    
     # Filter nach Status
     if status:
         vehicles = [v for v in vehicles if v["status"] == status]
@@ -171,6 +214,7 @@ async def get_fleet_vehicles(
     return {
         "success": True,
         "tenant_id": tenant_id,
+        "location": location,
         "vehicles": vehicles,
         "total": len(vehicles)
     }
