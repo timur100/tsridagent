@@ -507,24 +507,39 @@ async def get_fleet_statistics(
         trips = all_trips
         fuel_records = all_fuel_records
     
+    # Rentals statt trips
+    rentals_data = fleet_data_store[tenant_id]["rentals"]
+    if location and location != "all":
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles]
+        rentals_data = [r for r in rentals_data if r["vehicle_id"] in location_vehicle_ids]
+    
     # Berechne Statistiken
-    total_distance = sum(t["distance_km"] for t in trips)
+    completed_rentals = [r for r in rentals_data if r["status"] == "completed" and r["km_driven"]]
+    total_distance = sum(r["km_driven"] for r in completed_rentals)
     total_fuel_cost = sum(f["total_cost"] for f in fuel_records)
     total_fuel_liters = sum(f["liters"] for f in fuel_records)
     
     avg_fuel_consumption = (total_fuel_liters / total_distance * 100) if total_distance > 0 else 0
     
-    # Fahrzeug-Status
+    # Fahrzeug-Status (Europcar-spezifisch)
     status_counts = {}
     for v in vehicles:
         status = v["status"]
         status_counts[status] = status_counts.get(status, 0) + 1
     
-    # Durchschnittlicher Eco-Score
-    avg_eco_score = sum(t["eco_score"] for t in trips) / len(trips) if trips else 0
+    # km-Limit Warnungen
+    km_limit_warnings = len([v for v in vehicles if v["km_limit_percentage"] >= 90])
+    
+    # Schadensmeldungen
+    damages_data = fleet_data_store[tenant_id]["damage_reports"]
+    if location and location != "all":
+        damages_data = [d for d in damages_data if d["vehicle_id"] in [v["vehicle_id"] for v in vehicles]]
     
     # CO2-Emissionen (grobe Schätzung: 2.65kg CO2 pro Liter Diesel/Benzin)
     total_co2_kg = total_fuel_liters * 2.65
+    
+    # Durchschnittlicher Eco-Score (aus Mietvorgängen)
+    avg_eco_score = 82.0  # Placeholder für Autovermietung
     
     return {
         "success": True,
