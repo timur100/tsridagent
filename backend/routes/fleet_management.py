@@ -240,7 +240,7 @@ async def get_fleet_locations(
     tenant_id: str,
     token_data: dict = Depends(verify_token)
 ):
-    """Hole alle Standorte mit Flotteninformationen"""
+    """Hole alle Standorte mit Flotteninformationen (mehrere pro Stadt möglich)"""
     
     # Generiere Mock-Daten wenn nicht vorhanden
     if tenant_id not in fleet_data_store:
@@ -248,28 +248,37 @@ async def get_fleet_locations(
     
     vehicles = fleet_data_store[tenant_id]["vehicles"]
     
-    # Gruppiere Fahrzeuge nach Standort (current_location.city)
+    # Gruppiere Fahrzeuge nach Heimat-Standort (home_location.location_id)
     location_map = {}
     for vehicle in vehicles:
-        city = vehicle["current_location"]["city"]
-        if city not in location_map:
-            location_map[city] = []
-        location_map[city].append(vehicle)
+        loc_id = vehicle["home_location"]["location_id"]
+        if loc_id not in location_map:
+            location_map[loc_id] = {
+                "location_id": vehicle["home_location"]["location_id"],
+                "location_name": vehicle["home_location"]["name"],
+                "city": vehicle["home_location"]["city"],
+                "address": vehicle["home_location"]["address"],
+                "vehicles": []
+            }
+        location_map[loc_id]["vehicles"].append(vehicle)
     
     # Erstelle Standort-Übersicht
     locations = []
-    for city, city_vehicles in location_map.items():
+    for loc_id, loc_data in location_map.items():
         locations.append({
-            "location_id": city.lower().replace(" ", "-"),
-            "location_name": city,
-            "vehicle_count": len(city_vehicles),
-            "active_vehicles": len([v for v in city_vehicles if v["status"] in ["driving", "idle"]])
+            "location_id": loc_data["location_id"],
+            "location_name": loc_data["location_name"],
+            "city": loc_data["city"],
+            "address": loc_data["address"],
+            "vehicle_count": len(loc_data["vehicles"]),
+            "available_vehicles": len([v for v in loc_data["vehicles"] if v["status"] == "available"]),
+            "rented_vehicles": len([v for v in loc_data["vehicles"] if v["status"] == "rented"])
         })
     
     return {
         "success": True,
         "tenant_id": tenant_id,
-        "locations": sorted(locations, key=lambda x: x["location_name"]),
+        "locations": sorted(locations, key=lambda x: (x["city"], x["location_name"])),
         "total": len(locations)
     }
 
