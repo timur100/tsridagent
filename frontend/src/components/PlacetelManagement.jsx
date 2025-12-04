@@ -781,17 +781,33 @@ const PlacetelManagement = () => {
                       className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                     >
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm font-semibold">{plan.name}</span>
+                        <div className="font-mono text-sm">
+                          <div className="font-semibold">{plan.name}</div>
+                          {plan.description && (
+                            <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                              {plan.description}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-sm">{plan.type || '-'}</span>
+                        <span className="font-mono text-sm">{plan.did || '-'}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
-                          plan.active ? 'bg-green-500' : 'bg-gray-500'
-                        }`}>
-                          {plan.active ? 'Aktiv' : 'Inaktiv'}
-                        </span>
+                        <div className="font-mono text-sm">
+                          {plan.rings_for && plan.rings_for.length > 0 ? (
+                            <div className="space-y-1">
+                              {plan.rings_for.slice(0, 3).map((num, i) => (
+                                <div key={i} className="text-xs">{num}</div>
+                              ))}
+                              {plan.rings_for.length > 3 && (
+                                <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                                  +{plan.rings_for.length - 3} weitere
+                                </div>
+                              )}
+                            </div>
+                          ) : '-'}
+                        </div>
                       </td>
                     </tr>
                   ))
