@@ -29,6 +29,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
   const { apiCall } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'location_code', direction: 'asc' });
+  const [onlineStatusFilter, setOnlineStatusFilter] = useState('all'); // 'all', 'online', 'offline'
   const [filters, setFilters] = useState({
     continent: '',
     country: '',
