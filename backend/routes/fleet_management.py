@@ -287,6 +287,7 @@ async def get_fleet_vehicles(
     tenant_id: str,
     location: Optional[str] = None,
     status: Optional[str] = None,
+    km_limit_warning: bool = False,
     token_data: dict = Depends(verify_token)
 ):
     """Hole alle Fahrzeuge eines Tenants"""
@@ -297,20 +298,25 @@ async def get_fleet_vehicles(
     
     vehicles = fleet_data_store[tenant_id]["vehicles"]
     
-    # Filter nach Standort
+    # Filter nach Standort (Heimatstandort)
     if location and location != "all":
-        vehicles = [v for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+        vehicles = [v for v in vehicles if v["home_location"]["location_id"] == location]
     
     # Filter nach Status
     if status:
         vehicles = [v for v in vehicles if v["status"] == status]
+    
+    # Filter: km-Limit Warnung (90% erreicht)
+    if km_limit_warning:
+        vehicles = [v for v in vehicles if v["km_limit_percentage"] >= 90]
     
     return {
         "success": True,
         "tenant_id": tenant_id,
         "location": location,
         "vehicles": vehicles,
-        "total": len(vehicles)
+        "total": len(vehicles),
+        "km_limit_warnings": len([v for v in vehicles if v["km_limit_percentage"] >= 90])
     }
 
 @router.get("/fleet/{tenant_id}/rentals")
