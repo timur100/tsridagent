@@ -681,10 +681,10 @@ const PlacetelManagement = () => {
                         Name
                       </th>
                       <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Wartende Anrufe
+                        Routing Objekte
                       </th>
                       <th className={`px-6 py-4 text-left text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                        Verfügbare Agents
+                        Priorität
                       </th>
                     </tr>
                   </thead>
