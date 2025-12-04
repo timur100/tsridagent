@@ -117,37 +117,84 @@ def generate_mock_fleet_data(tenant_id: str):
         # Generiere Mietvorgänge für letzten Monat
         num_rentals = random.randint(5, 15)
         for j in range(num_rentals):
-            start_loc = random.choice(locations)
-            end_loc = random.choice([l for l in locations if l != start_loc])
+            pickup_loc = random.choice(locations)
+            return_loc = random.choice(locations)  # Kann gleich oder anders sein
             
-            distance = random.randint(10, 500)
-            duration = distance * random.uniform(1.2, 2.0)  # Minuten
+            # Mietdauer 1-14 Tage
+            rental_days = random.randint(1, 14)
+            rental_start = datetime.now() - timedelta(days=random.randint(1, 60))
+            rental_end = rental_start + timedelta(days=rental_days)
             
-            trip_date = datetime.now() - timedelta(days=random.randint(1, 30))
+            # km bei Übergabe und Rückgabe
+            pickup_km = vehicle["initial_odometer"] + random.randint(0, current_km - vehicle["initial_odometer"] - 500)
+            km_driven = random.randint(50, 500 * rental_days)
+            return_km = pickup_km + km_driven
             
-            trip = {
-                "trip_id": f"TRIP-{tenant_id}-{i+1:03d}-{j+1:04d}",
+            # Tankfüllung
+            pickup_fuel = random.randint(85, 100)
+            return_fuel = random.randint(10, 95)
+            
+            # Mieter-Daten
+            customer_names = [
+                "Michael Schneider", "Sarah Weber", "Thomas Becker", "Julia Fischer",
+                "Daniel Koch", "Laura Meyer", "Christian Wolf", "Anna Zimmermann",
+                "Markus Hoffmann", "Sophie Schäfer", "Jan Richter", "Maria Klein"
+            ]
+            
+            # Schäden
+            has_damage = random.random() < 0.15  # 15% haben Schäden
+            
+            rental = {
+                "rental_id": f"RENT-{tenant_id}-{i+1:03d}-{j+1:04d}",
                 "vehicle_id": vehicle["vehicle_id"],
                 "tenant_id": tenant_id,
-                "start_time": trip_date.isoformat(),
-                "end_time": (trip_date + timedelta(minutes=duration)).isoformat(),
-                "start_location": start_loc["city"],
-                "end_location": end_loc["city"],
-                "distance_km": round(distance, 1),
-                "duration_minutes": round(duration, 0),
-                "driver_id": vehicle["driver"]["driver_id"] if vehicle["driver"]["driver_id"] else f"DRV-{random.randint(1000, 9999)}",
-                "driver_name": vehicle["driver"]["name"] if vehicle["driver"]["name"] else random.choice(["Max Müller", "Anna Schmidt", "Tom Weber"]),
-                "purpose": random.choice(["Kundenbesuch", "Warenlieferung", "Service-Einsatz", "Transfer", "Materialtransport"]),
-                "avg_speed": round(random.uniform(45, 90), 1),
-                "max_speed": round(random.uniform(100, 140), 1),
-                "fuel_consumed": round(distance * random.uniform(0.06, 0.12), 2),
-                "eco_score": random.randint(65, 98),
-                "harsh_braking_count": random.randint(0, 8),
-                "harsh_acceleration_count": random.randint(0, 5),
-                "speeding_incidents": random.randint(0, 3),
+                "customer_name": random.choice(customer_names),
+                "customer_id": f"CUST-{random.randint(10000, 99999)}",
+                "booking_reference": f"EC{random.randint(100000, 999999)}",
+                "pickup_time": rental_start.isoformat(),
+                "return_time": rental_end.isoformat() if rental_end < datetime.now() else None,
+                "rental_days": rental_days,
+                "pickup_location": pickup_loc,
+                "return_location": return_loc,
+                "pickup_odometer": pickup_km,
+                "return_odometer": return_km if rental_end < datetime.now() else None,
+                "km_driven": km_driven if rental_end < datetime.now() else None,
+                "pickup_fuel_level": pickup_fuel,
+                "return_fuel_level": return_fuel if rental_end < datetime.now() else None,
+                "status": "completed" if rental_end < datetime.now() else "active",
+                "daily_rate": round(random.uniform(45, 150), 2),
+                "total_cost": round(random.uniform(45, 150) * rental_days, 2),
+                "has_damage": has_damage if rental_end < datetime.now() else False,
+                "damage_report_id": f"DMG-{random.randint(1000, 9999)}" if has_damage and rental_end < datetime.now() else None,
+                "pre_existing_damages": random.randint(0, 3),
+                "insurance_type": random.choice(["Basic", "Premium", "Vollkasko"]),
             }
             
-            trips.append(trip)
+            rentals.append(rental)
+            
+            # Schadensmeldung erstellen wenn Schaden vorhanden
+            if has_damage and rental_end < datetime.now():
+                damage_types = [
+                    "Kratzer an der Stoßstange", "Delle in der Tür", "Steinschlag Windschutzscheibe",
+                    "Kratzer am Kotflügel", "Beschädigte Felge", "Innenraum verschmutzt"
+                ]
+                
+                damage = {
+                    "damage_id": rental["damage_report_id"],
+                    "rental_id": rental["rental_id"],
+                    "vehicle_id": vehicle["vehicle_id"],
+                    "tenant_id": tenant_id,
+                    "reported_at": rental_end.isoformat(),
+                    "damage_type": random.choice(damage_types),
+                    "severity": random.choice(["minor", "moderate", "severe"]),
+                    "estimated_cost": round(random.uniform(100, 2500), 2),
+                    "reported_by": "Station Staff",
+                    "customer_liable": random.choice([True, False]),
+                    "insurance_claim": random.choice([True, False]),
+                    "repair_status": random.choice(["pending", "in_progress", "completed"]),
+                }
+                
+                damage_reports.append(damage)
             
             # Tankvorgang nach 3-5 Fahrten
             if j % random.randint(3, 5) == 0:
