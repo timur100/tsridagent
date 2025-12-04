@@ -49,8 +49,14 @@ const PlacetelManagement = () => {
   const loadNumbers = async () => {
     setLoading(true);
     try {
-      const result = await apiCall('/api/placetel/numbers');
-      setNumbers(extractArrayData(result));
+      // Load all numbers (all pages)
+      const result = await apiCall('/api/placetel/numbers?load_all=true');
+      const numbersData = extractArrayData(result);
+      console.log(`[Placetel] Loaded ${numbersData.length} numbers`);
+      setNumbers(numbersData);
+      if (numbersData.length > 0) {
+        toast.success(`${numbersData.length} Rufnummern geladen`);
+      }
     } catch (error) {
       console.error('[Placetel] Error loading numbers:', error);
       toast.error('Fehler beim Laden der Rufnummern');
