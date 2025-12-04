@@ -179,6 +179,7 @@ const PlacetelManagement = () => {
         break;
       case 'calls':
         loadCalls();
+        setAutoRefresh(true); // Enable auto-refresh for calls
         break;
       case 'contacts':
         loadContacts();
@@ -199,7 +200,25 @@ const PlacetelManagement = () => {
       default:
         break;
     }
+    
+    // Disable auto-refresh when leaving calls tab
+    if (activeTab !== 'calls') {
+      setAutoRefresh(false);
+    }
   }, [activeTab]);
+
+  // Auto-refresh for calls tab
+  useEffect(() => {
+    let interval;
+    if (autoRefresh && activeTab === 'calls') {
+      interval = setInterval(() => {
+        loadCalls(true); // Silent refresh
+      }, 5000); // Every 5 seconds
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [autoRefresh, activeTab]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '-';
