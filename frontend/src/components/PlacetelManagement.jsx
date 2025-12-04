@@ -295,23 +295,27 @@ const PlacetelManagement = () => {
                       </div>
                     </td>
                   </tr>
-                ) : numbers.length === 0 ? (
-                  <tr>
-                    <td colSpan="5" className="px-6 py-12 text-center">
-                      <Phone className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                      <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Keine Rufnummern gefunden
-                      </p>
-                    </td>
-                  </tr>
-                ) : (
-                  numbers
-                    .filter(number => 
-                      !numberSearch || 
-                      number.number?.toLowerCase().includes(numberSearch.toLowerCase()) ||
-                      number.type?.toLowerCase().includes(numberSearch.toLowerCase())
-                    )
-                    .map((number) => (
+                ) : (() => {
+                  const filteredNumbers = numbers.filter(number => 
+                    !numberSearch || 
+                    number.number?.toLowerCase().includes(numberSearch.toLowerCase()) ||
+                    number.type?.toLowerCase().includes(numberSearch.toLowerCase())
+                  );
+                  
+                  if (filteredNumbers.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan="5" className="px-6 py-12 text-center">
+                          <Phone className={`h-12 w-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {numbers.length === 0 ? 'Keine Rufnummern gefunden' : 'Keine Rufnummern entsprechen der Suche'}
+                          </p>
+                        </td>
+                      </tr>
+                    );
+                  }
+                  
+                  return filteredNumbers.map((number) => (
                     <tr
                       key={number.id}
                       className={`border-t cursor-pointer ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
