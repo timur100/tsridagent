@@ -28,6 +28,7 @@ const PlacetelManagement = () => {
   
   // Search for numbers
   const [numberSearch, setNumberSearch] = useState('');
+  const [numberStatusFilter, setNumberStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
 
   // Helper to extract array from nested response
   const extractArrayData = (result) => {
