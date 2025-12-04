@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://kiosk-hardware-hub.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-sync-app.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
