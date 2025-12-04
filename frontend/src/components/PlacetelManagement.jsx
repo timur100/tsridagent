@@ -633,17 +633,30 @@ const PlacetelManagement = () => {
                           className={`border-t ${theme === 'dark' ? 'border-gray-700 hover:bg-gray-800/70' : 'border-gray-700 hover:bg-gray-100'} transition-colors`}
                         >
                           <td className="px-6 py-4">
-                            <span className="font-mono text-sm font-semibold">{agent.name}</span>
+                            <div className="font-mono text-sm">
+                              <div className="font-semibold">{agent.name}</div>
+                              {agent.description && (
+                                <div className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                                  {agent.description}
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold text-white ${
-                              agent.online ? 'bg-green-500' : 'bg-gray-500'
+                              agent.status === 'online' ? 'bg-green-500' : 'bg-gray-500'
                             }`}>
-                              {agent.online ? 'Online' : 'Offline'}
+                              {agent.status === 'online' ? 'Online' : 'Offline'}
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="font-mono text-sm">{agent.queue_name || '-'}</span>
+                            <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-semibold ${
+                              agent.agent_type === 'Supervisor' 
+                                ? 'bg-purple-100 text-purple-800' 
+                                : 'bg-blue-100 text-blue-800'
+                            }`}>
+                              {agent.agent_type || '-'}
+                            </span>
                           </td>
                         </tr>
                       ))
