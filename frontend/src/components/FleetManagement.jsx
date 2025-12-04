@@ -151,13 +151,39 @@ const FleetManagement = ({ selectedTenantId }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Flottenmanagement
-          </h1>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            GPS-Tracking, Routenplanung, Kraftstoffverbrauch & Fahrtenbuch
-          </p>
+        <div className="flex-1">
+          <div className="flex items-center gap-4">
+            <div>
+              <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Flottenmanagement
+              </h1>
+              <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                GPS-Tracking, Routenplanung, Kraftstoffverbrauch & Fahrtenbuch
+              </p>
+            </div>
+            
+            {/* Location Selector */}
+            {locations.length > 0 && (
+              <div className="ml-auto">
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                    theme === 'dark'
+                      ? 'bg-[#2a2a2a] border-gray-700 text-white hover:bg-gray-800'
+                      : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <option value="all">🌐 Gesamtflotte (Alle Standorte)</option>
+                  {locations.map(loc => (
+                    <option key={loc.location_id} value={loc.location_id}>
+                      📍 {loc.location_name} ({loc.vehicle_count} Fahrzeuge)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
         </div>
         
         <div className="flex gap-2">
