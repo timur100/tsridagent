@@ -27,6 +27,8 @@ const PlacetelManagement = () => {
   const [editingContact, setEditingContact] = useState(null);
   const [showCallModal, setShowCallModal] = useState(false);
   const [callTarget, setCallTarget] = useState('');
+  const [autoRefresh, setAutoRefresh] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(null);
   
   // Search for numbers
   const [numberSearch, setNumberSearch] = useState('');
