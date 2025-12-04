@@ -226,6 +226,58 @@ const PlacetelManagement = () => {
     };
   }, [autoRefresh, activeTab]);
 
+  // Webhook SSE connection
+  useEffect(() => {
+    if (activeTab !== 'calls') return;
+    
+    const backendUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+    const eventSource = new EventSource(`${backendUrl}/api/placetel/stream`);
+    
+    eventSource.onopen = () => {
+      console.log('[SSE] Connected to webhook stream');
+      setWebhookConnected(true);
+    };
+    
+    eventSource.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        console.log('[SSE] Received event:', data);
+        
+        if (data.type === 'connected') {
+          toast.success('🔴 Live: Webhook-Verbindung aktiv', { duration: 2000 });
+          return;
+        }
+        
+        // Add new event to the list
+        setWebhookEvents(prev => [data, ...prev].slice(0, 50));
+        
+        // Show notification for new call
+        if (data.event === 'incoming') {
+          toast.success(`📞 Eingehender Anruf von ${data.from}`, { duration: 5000 });
+        } else if (data.event === 'outgoing') {
+          toast.info(`📞 Ausgehender Anruf an ${data.to}`, { duration: 5000 });
+        }
+        
+        // Reload calls to get the full data
+        loadCalls(true);
+        
+      } catch (error) {
+        console.error('[SSE] Error parsing event:', error);
+      }
+    };
+    
+    eventSource.onerror = (error) => {
+      console.error('[SSE] Connection error:', error);
+      setWebhookConnected(false);
+    };
+    
+    return () => {
+      console.log('[SSE] Closing connection');
+      eventSource.close();
+      setWebhookConnected(false);
+    };
+  }, [activeTab]);
+
   const formatDate = (dateString) => {
     if (!dateString) return '-';
     const date = new Date(dateString);
