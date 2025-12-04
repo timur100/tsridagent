@@ -304,48 +304,125 @@ async def get_fleet_vehicles(
         "total": len(vehicles)
     }
 
-@router.get("/fleet/{tenant_id}/trips")
-async def get_fleet_trips(
+@router.get("/fleet/{tenant_id}/rentals")
+async def get_fleet_rentals(
     tenant_id: str,
     location: Optional[str] = None,
     vehicle_id: Optional[str] = None,
+    status: Optional[str] = None,
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
     limit: int = 100,
     token_data: dict = Depends(verify_token)
 ):
-    """Hole Fahrten eines Tenants"""
+    """Hole Mietvorgänge eines Tenants"""
     
     if tenant_id not in fleet_data_store:
         fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
     
-    trips = fleet_data_store[tenant_id]["trips"]
+    rentals = fleet_data_store[tenant_id]["rentals"]
     vehicles = fleet_data_store[tenant_id]["vehicles"]
     
-    # Filter nach Standort (über Fahrzeug-Zuordnung)
+    # Filter nach Standort (über Fahrzeug-Heimatstandort)
     if location and location != "all":
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
-        trips = [t for t in trips if t["vehicle_id"] in location_vehicle_ids]
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["home_location"]["location_id"] == location]
+        rentals = [r for r in rentals if r["vehicle_id"] in location_vehicle_ids]
     
     # Filter
     if vehicle_id:
-        trips = [t for t in trips if t["vehicle_id"] == vehicle_id]
+        rentals = [r for r in rentals if r["vehicle_id"] == vehicle_id]
+    
+    if status:
+        rentals = [r for r in rentals if r["status"] == status]
     
     if start_date:
-        trips = [t for t in trips if t["start_time"] >= start_date]
+        rentals = [r for r in rentals if r["pickup_time"] >= start_date]
     
     if end_date:
-        trips = [t for t in trips if t["start_time"] <= end_date]
+        rentals = [r for r in rentals if r["pickup_time"] <= end_date]
     
     # Sortiere nach Datum absteigend
-    trips = sorted(trips, key=lambda x: x["start_time"], reverse=True)
+    rentals = sorted(rentals, key=lambda x: x["pickup_time"], reverse=True)
     
     return {
         "success": True,
         "tenant_id": tenant_id,
         "location": location,
-        "trips": trips[:limit],
-        "total": len(trips)
+        "rentals": rentals[:limit],
+        "total": len(rentals)
+    }
+
+@router.get("/fleet/{tenant_id}/vehicle/{vehicle_id}/rental-history")
+async def get_vehicle_rental_history(
+    tenant_id: str,
+    vehicle_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole komplette Miet-Historie eines Fahrzeugs (Lifecycle)"""
+    
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    rentals = fleet_data_store[tenant_id]["rentals"]
+    vehicle_rentals = [r for r in rentals if r["vehicle_id"] == vehicle_id]
+    
+    # Sortiere chronologisch
+    vehicle_rentals = sorted(vehicle_rentals, key=lambda x: x["pickup_time"])
+    
+    # Berechne Lifecycle-Statistiken
+    total_km = sum(r["km_driven"] for r in vehicle_rentals if r["km_driven"])
+    total_rentals = len(vehicle_rentals)
+    damage_count = len([r for r in vehicle_rentals if r["has_damage"]])
+    
+    return {
+        "success": True,
+        "vehicle_id": vehicle_id,
+        "rental_history": vehicle_rentals,
+        "statistics": {
+            "total_rentals": total_rentals,
+            "total_km_rented": total_km,
+            "damage_count": damage_count,
+            "damage_rate": round((damage_count / total_rentals * 100), 1) if total_rentals > 0 else 0
+        }
+    }
+
+@router.get("/fleet/{tenant_id}/damages")
+async def get_damage_reports(
+    tenant_id: str,
+    location: Optional[str] = None,
+    vehicle_id: Optional[str] = None,
+    severity: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Hole Schadensmeldungen"""
+    
+    if tenant_id not in fleet_data_store:
+        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
+    
+    damages = fleet_data_store[tenant_id]["damage_reports"]
+    vehicles = fleet_data_store[tenant_id]["vehicles"]
+    
+    # Filter nach Standort
+    if location and location != "all":
+        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["home_location"]["location_id"] == location]
+        damages = [d for d in damages if d["vehicle_id"] in location_vehicle_ids]
+    
+    if vehicle_id:
+        damages = [d for d in damages if d["vehicle_id"] == vehicle_id]
+    
+    if severity:
+        damages = [d for d in damages if d["severity"] == severity]
+    
+    # Sortiere nach Datum absteigend
+    damages = sorted(damages, key=lambda x: x["reported_at"], reverse=True)
+    
+    return {
+        "success": True,
+        "tenant_id": tenant_id,
+        "location": location,
+        "damages": damages,
+        "total": len(damages),
+        "total_estimated_cost": sum(d["estimated_cost"] for d in damages)
     }
 
 @router.get("/fleet/{tenant_id}/fuel")
