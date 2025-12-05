@@ -97,13 +97,13 @@ const FleetManagement = ({ selectedTenantId }) => {
   
   const getStatusBadge = (status) => {
     const statusConfig = {
-      driving: { label: 'Unterwegs', color: 'bg-green-500', icon: Circle },
-      parked: { label: 'Geparkt', color: 'bg-blue-500', icon: Circle },
-      idle: { label: 'Leerlauf', color: 'bg-yellow-500', icon: Circle },
+      available: { label: 'Verfügbar', color: 'bg-green-500', icon: Circle },
+      rented: { label: 'Vermietet', color: 'bg-blue-500', icon: Circle },
+      cleaning: { label: 'Reinigung', color: 'bg-yellow-500', icon: Circle },
       maintenance: { label: 'Wartung', color: 'bg-red-500', icon: Circle }
     };
     
-    const config = statusConfig[status] || statusConfig.parked;
+    const config = statusConfig[status] || statusConfig.available;
     const Icon = config.icon;
     
     return (
