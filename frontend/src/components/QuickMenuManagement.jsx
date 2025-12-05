@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, GripVertical, Save, X, Eye, LayoutGrid, Settings } 
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import * as Icons from 'lucide-react';
+import SubTabNavigation from './SubTabNavigation';
 
 const QuickMenuManagement = ({ theme }) => {
   const { apiCall } = useAuth();
