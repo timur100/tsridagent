@@ -15,6 +15,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from '../components/ui/card';
+import TenantHierarchySidebar from '../components/TenantHierarchySidebar';
 
 const TenantsPage = ({ onSelectTenant }) => {
   const { theme } = useTheme();
@@ -26,6 +27,8 @@ const TenantsPage = ({ onSelectTenant }) => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterPlan, setFilterPlan] = useState('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [hierarchyFilter, setHierarchyFilter] = useState(null);
+  const [hierarchySelectedId, setHierarchySelectedId] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
