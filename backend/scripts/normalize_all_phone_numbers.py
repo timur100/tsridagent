@@ -35,25 +35,24 @@ def normalize_phone_number(phone_str):
     if cleaned.startswith('0'):
         cleaned = cleaned[1:]
     
-    # Extract area code and number
-    # German area codes: 2-5 digits
-    match = re.match(r'^(\d{2,5})(\d{4,})$', cleaned)
+    # German phone format: area code (2-5 digits) + subscriber number (4-10 digits)
+    # Typical patterns:
+    # - 2-digit area: Berlin (30), Hamburg (40)
+    # - 3-digit area: Munich (89), Frankfurt (69)
+    # - 4-digit area: smaller cities
+    # - 5-digit area: very small towns
     
-    if match:
-        area_code = match.group(1)
-        number = match.group(2)
-        return f"+49 ({area_code}) {number}"
+    # Try to match with minimum subscriber number length of 4
+    for area_len in [2, 3, 4, 5]:
+        if len(cleaned) >= area_len + 4:  # At least 4 digits for subscriber number
+            area_code = cleaned[:area_len]
+            number = cleaned[area_len:]
+            # Subscriber number should be 4-10 digits
+            if 4 <= len(number) <= 10:
+                return f"+49 ({area_code}) {number}"
     
-    # If parsing failed, return original if it looks like a phone number
-    if cleaned and len(cleaned) >= 6 and cleaned.isdigit():
-        # Try default split: first 3-4 digits as area code
-        if len(cleaned) >= 10:
-            area_code = cleaned[:4]
-            number = cleaned[4:]
-        else:
-            area_code = cleaned[:3]
-            number = cleaned[3:]
-        return f"+49 ({area_code}) {number}"
+    # If no pattern matched, return original
+    return phone_str
     
     return phone_str  # Return original if can't parse
 
