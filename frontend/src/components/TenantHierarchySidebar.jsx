@@ -66,12 +66,18 @@ const TenantHierarchySidebar = ({
       }
     });
 
-    // Sort by tenant type (organization > country > location) and then by name
+    // Sort by tenant type (organization > continent > country > city > location) and then by name
     const sortNodes = (nodes) => {
       return nodes.sort((a, b) => {
-        const typeOrder = { 'organization': 0, 'country': 1, 'location': 2 };
-        const aType = typeOrder[a.tenant_type] || 3;
-        const bType = typeOrder[b.tenant_type] || 3;
+        const typeOrder = { 
+          'organization': 0, 
+          'continent': 1, 
+          'country': 2, 
+          'city': 3, 
+          'location': 4 
+        };
+        const aType = typeOrder[a.tenant_type] || 5;
+        const bType = typeOrder[b.tenant_type] || 5;
         
         if (aType !== bType) return aType - bType;
         return (a.display_name || a.name).localeCompare(b.display_name || b.name);
