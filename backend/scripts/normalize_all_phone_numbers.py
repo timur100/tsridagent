@@ -35,24 +35,48 @@ def normalize_phone_number(phone_str):
     if cleaned.startswith('0'):
         cleaned = cleaned[1:]
     
-    # German phone format: area code (2-5 digits) + subscriber number (4-10 digits)
-    # Typical patterns:
-    # - 2-digit area: Berlin (30), Hamburg (40)
-    # - 3-digit area: Munich (89), Frankfurt (69)
-    # - 4-digit area: smaller cities
-    # - 5-digit area: very small towns
+    # German phone format: Total 10-11 digits (area code + subscriber number)
+    # Area code: 2-5 digits, Subscriber: remaining digits (min 4)
+    # Try different area code lengths, preferring shorter ones
     
-    # Try to match with minimum subscriber number length of 4
+    if len(cleaned) < 6:  # Too short
+        return phone_str
+    
+    # For 10-11 digit numbers, try different splits
+    possible_splits = []
+    
     for area_len in [2, 3, 4, 5]:
-        if len(cleaned) >= area_len + 4:  # At least 4 digits for subscriber number
+        if len(cleaned) >= area_len + 4:
             area_code = cleaned[:area_len]
             number = cleaned[area_len:]
-            # Subscriber number should be 4-10 digits
             if 4 <= len(number) <= 10:
-                return f"+49 ({area_code}) {number}"
+                possible_splits.append((area_code, number))
     
-    # If no pattern matched, return original
-    return phone_str
+    if not possible_splits:
+        return phone_str
+    
+    # For German numbers:
+    # - 10 digits total → area code is likely 2-4 digits
+    # - 11 digits total → area code is likely 3-5 digits
+    total_len = len(cleaned)
+    
+    if total_len == 10:
+        # Prefer 3-digit area code for 10-digit numbers (e.g., 089 12345678)
+        if len(possible_splits) >= 2:
+            area_code, number = possible_splits[1]  # 3-digit
+        else:
+            area_code, number = possible_splits[0]
+    elif total_len == 11:
+        # Prefer 4-digit area code for 11-digit numbers
+        if len(possible_splits) >= 3:
+            area_code, number = possible_splits[2]  # 4-digit
+        else:
+            area_code, number = possible_splits[0]
+    else:
+        # Use first valid split
+        area_code, number = possible_splits[0]
+    
+    return f"+49 ({area_code}) {number}"
     
     return phone_str  # Return original if can't parse
 
