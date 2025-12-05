@@ -493,7 +493,7 @@ async def get_fleet_statistics(
     
     data = fleet_data_store[tenant_id]
     all_vehicles = data["vehicles"]
-    all_trips = data["trips"]
+    all_rentals = data["rentals"]
     all_fuel_records = data["fuel_records"]
     
     # Filter nach Standort
