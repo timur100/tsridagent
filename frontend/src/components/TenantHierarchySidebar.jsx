@@ -52,6 +52,8 @@ const TenantHierarchySidebar = ({
   };
 
   const buildHierarchy = (tenantsList) => {
+    console.log('Building hierarchy from', tenantsList.length, 'tenants');
+    
     // Build a map of tenants by ID
     const tenantMap = {};
     tenantsList.forEach(tenant => {
@@ -70,6 +72,8 @@ const TenantHierarchySidebar = ({
         roots.push(tenantMap[tenant.tenant_id]);
       }
     });
+    
+    console.log('Hierarchy built with', roots.length, 'root nodes');
 
     // Sort by tenant type (organization > continent > country > city > location) and then by name
     const sortNodes = (nodes) => {
