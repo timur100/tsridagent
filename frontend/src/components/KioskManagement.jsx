@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Monitor, Plus, Edit, Trash2, Power, RefreshCw, Settings, AlertCircle, List, BarChart3, Wrench } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
+import SubTabNavigation from './SubTabNavigation';
 
 const KioskManagement = ({ theme }) => {
   const { apiCall } = useAuth();
