@@ -48,18 +48,21 @@ const TenantHierarchySidebarV2 = ({
         const result = await response.json();
         const data = result.tenants || [];
         
-        // Filter out "Scan Sync Demo" and other non-Europcar tenants
-        const europcarTenants = data.filter(t => {
+        // Filter: Keep Europcar and Puma organizations and their children
+        const validOrgs = [
+          '1d3653db-86cb-4dd1-9ef5-0236b116def8', // Europcar
+          '94317b6b-a478-4df5-9a81-d1fd3c5983c8'  // Puma
+        ];
+        
+        const filteredTenants = data.filter(t => {
           const id = t.tenant_id || '';
-          const name = t.name || '';
-          // Keep only Europcar organization and its children
-          return id === '1d3653db-86cb-4dd1-9ef5-0236b116def8' || 
-                 id.startsWith('1d3653db-86cb-4dd1-9ef5-0236b116def8-') ||
-                 name.includes('Europcar');
+          // Keep if it's one of the main organizations OR a child of them
+          return validOrgs.includes(id) || 
+                 validOrgs.some(orgId => id.startsWith(orgId + '-'));
         });
         
-        setTenants(europcarTenants);
-        buildHierarchy(europcarTenants);
+        setTenants(filteredTenants);
+        buildHierarchy(filteredTenants);
       }
     } catch (error) {
       console.error('Error fetching tenants:', error);
