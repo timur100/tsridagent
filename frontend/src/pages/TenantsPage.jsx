@@ -42,6 +42,56 @@ const TenantsPage = ({ onSelectTenant }) => {
     fetchHierarchyStats();
   }, [hierarchySelectedId]);
 
+  const fetchHierarchyStats = async () => {
+    try {
+      // If no hierarchy selection, fetch default stats
+      if (!hierarchySelectedId) {
+        await fetchStats();
+        return;
+      }
+
+      const tenantId = hierarchySelectedId === 'all' ? 'all' : hierarchySelectedId;
+      const url = `${BACKEND_URL}/api/hierarchy-stats/${tenantId}`;
+      
+      console.log('[TenantsPage] Fetching hierarchy stats from:', url);
+      const response = await fetch(url);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.data) {
+          const data = result.data;
+          
+          // Map hierarchy stats to display stats format
+          const mappedStats = {
+            total_tenants: data.hierarchy.locations || 0,
+            total_devices: data.physical_assets.devices || 0,
+            total_locations: data.physical_assets.physical_locations || 0,
+            total_users: data.physical_assets.users || 0,
+            online_devices: 0, // Not provided by hierarchy API
+            offline_devices: 0, // Not provided by hierarchy API
+            total_scans: 0, // Not provided by hierarchy API
+            correct_scans: 0,
+            unknown_scans: 0,
+            failed_scans: 0,
+            _hierarchyInfo: {
+              organizations: data.hierarchy.organizations,
+              continents: data.hierarchy.continents,
+              countries: data.hierarchy.countries,
+              states: data.hierarchy.states,
+              cities: data.hierarchy.cities,
+              locations: data.hierarchy.locations,
+              selected_level: data.scope.selected_level
+            }
+          };
+          
+          console.log('[TenantsPage] Hierarchy stats loaded:', mappedStats);
+          setHierarchyStats(mappedStats);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching hierarchy stats:', error);
+    }
+  };
+
   const fetchStats = async () => {
     try {
       let url = `${BACKEND_URL}/api/tenants/stats`;
@@ -57,6 +107,7 @@ const TenantsPage = ({ onSelectTenant }) => {
         const data = await response.json();
         console.log('[TenantsPage] Stats loaded:', data);
         setStats(data);
+        setHierarchyStats(null); // Clear hierarchy stats when showing default
       }
     } catch (error) {
       console.error('Error fetching tenant stats:', error);
