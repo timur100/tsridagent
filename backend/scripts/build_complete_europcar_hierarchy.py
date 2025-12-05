@@ -34,6 +34,7 @@ GERMAN_STATES = {
 # Internationale Struktur (basierend auf Web-Recherche)
 INTERNATIONAL_STRUCTURE = {
     'Europa': {
+        'Deutschland': {},  # Will be filled with real data
         'Frankreich': {
             'Île-de-France': ['Paris', 'Versailles', 'Orly'],
             'Auvergne-Rhône-Alpes': ['Lyon', 'Grenoble', 'Chambéry'],
