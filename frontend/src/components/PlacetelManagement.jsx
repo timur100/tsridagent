@@ -1747,6 +1747,7 @@ const PlacetelManagement = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
