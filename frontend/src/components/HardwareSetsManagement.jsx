@@ -112,17 +112,17 @@ const HardwareSetsManagement = ({ tenantId }) => {
   const loadLocations = async () => {
     try {
       // Load locations from hardware sets
-      // Load locations from tenant_locations API (clean hierarchy data)
+      // Load locations from tenants hierarchy
       try {
-        const locationsResult = await apiCall(`/api/tenant-locations/${tenantId}`);
-        if (locationsResult.success && Array.isArray(locationsResult.data)) {
-          const cleanedLocations = locationsResult.data
-            .filter(loc => loc.location_code) // Only locations with codes
-            .map(loc => ({
-              id: loc.id || loc.location_code,
-              name: `${loc.location_code} - ${loc.location_name || loc.city || 'Unbekannt'}`,
-              code: loc.location_code,
-              city: loc.city
+        const hierarchyResult = await apiCall(`/api/tenants-hierarchy/list`);
+        if (hierarchyResult.success && Array.isArray(hierarchyResult.tenants)) {
+          const cleanedLocations = hierarchyResult.tenants
+            .filter(tenant => tenant.tenant_level === 'location' && tenant.location_code)
+            .map(tenant => ({
+              id: tenant.location_code,
+              name: `${tenant.location_code} - ${tenant.display_name || tenant.name || 'Unbekannt'}`,
+              code: tenant.location_code,
+              city: tenant.display_name
             }))
             .sort((a, b) => a.code.localeCompare(b.code)); // Alphabetical sort by code
           
