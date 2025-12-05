@@ -109,16 +109,45 @@ async def get_hierarchy_stats(tenant_id: str):
             'tenant_level': 'city'
         })
         
-        # Count locations (actual locations)
+        # Count locations (actual locations in hierarchy)
         location_count = await tsrid_db.tenants.count_documents({
             'tenant_id': {'$in': tenant_ids},
             'tenant_level': 'location'
         })
         
         # Count actual physical locations in portal_db
+        # Need to find the root organization to count physical locations
+        # Get all organizations from the tenant_ids
+        org_ids = []
+        for tid in tenant_ids:
+            # Find the tenant
+            tenant = await tsrid_db.tenants.find_one({'tenant_id': tid})
+            if tenant:
+                # Traverse up to find organization
+                current = tenant
+                while current and current.get('parent_tenant_id'):
+                    parent = await tsrid_db.tenants.find_one({'tenant_id': current['parent_tenant_id']})
+                    if parent:
+                        current = parent
+                    else:
+                        break
+                
+                # current is now the root (organization)
+                if current.get('tenant_level') == 'organization' and current['tenant_id'] not in org_ids:
+                    org_ids.append(current['tenant_id'])
+        
+        # If no org found, use the tenant_ids directly (they might be orgs)
+        if not org_ids:
+            org_ids = [tid for tid in tenant_ids]
+        
         physical_locations = await portal_db.tenant_locations.count_documents({
-            'tenant_id': {'$in': tenant_ids}
+            'tenant_id': {'$in': org_ids}
         })
+        
+        # For more accurate count, use the hierarchy location count
+        # as it represents the actual locations in the selected scope
+        if location_count > 0:
+            physical_locations = location_count
         
         # Count devices (if available)
         # This would need to be implemented based on your device tracking
