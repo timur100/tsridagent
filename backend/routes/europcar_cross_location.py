@@ -10,7 +10,7 @@ import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 
-from middleware.auth import get_current_user, get_current_tenant_id
+from ..middleware.auth import get_current_user, get_current_tenant_id
 
 router = APIRouter(prefix="/api/europcar/cross-location", tags=["Europcar Cross-Location"])
 
