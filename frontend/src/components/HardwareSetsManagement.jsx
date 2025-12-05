@@ -111,8 +111,11 @@ const HardwareSetsManagement = ({ tenantId }) => {
 
   const loadLocations = async () => {
     try {
+      console.log('[HardwareSetsManagement] Loading locations...');
       // Load locations from tenants hierarchy
       const hierarchyResult = await apiCall(`/api/tenants-hierarchy/list`);
+      console.log('[HardwareSetsManagement] Hierarchy result:', hierarchyResult?.success, 'Tenants:', hierarchyResult?.tenants?.length);
+      
       if (hierarchyResult.success && Array.isArray(hierarchyResult.tenants)) {
         const cleanedLocations = hierarchyResult.tenants
           .filter(tenant => tenant.tenant_level === 'location' && tenant.location_code)
@@ -125,12 +128,13 @@ const HardwareSetsManagement = ({ tenantId }) => {
           .sort((a, b) => a.code.localeCompare(b.code)); // Alphabetical sort by code
         
         setLocations(cleanedLocations);
-        console.log('Locations loaded:', cleanedLocations.length);
+        console.log('[HardwareSetsManagement] ✅ Locations loaded:', cleanedLocations.length);
+        console.log('[HardwareSetsManagement] First 3 locations:', cleanedLocations.slice(0, 3));
       } else {
-        console.log('No tenants in hierarchy result:', hierarchyResult);
+        console.warn('[HardwareSetsManagement] ⚠️ No tenants in hierarchy result');
       }
     } catch (error) {
-      console.error('Error loading locations:', error);
+      console.error('[HardwareSetsManagement] ❌ Error loading locations:', error);
     }
   };
 
