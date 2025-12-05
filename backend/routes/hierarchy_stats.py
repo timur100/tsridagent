@@ -14,6 +14,7 @@ client = AsyncIOMotorClient(MONGO_URL)
 tsrid_db = client['tsrid_db']
 portal_db = client['portal_db']
 auth_db = client['auth_db']
+device_db = client['device_db']
 
 async def get_all_child_tenant_ids(parent_tenant_id: Optional[str] = None):
     """
