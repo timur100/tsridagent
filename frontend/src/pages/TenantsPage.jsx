@@ -512,7 +512,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     Benutzer
                   </span>
                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.user_count} / {tenant.limits.max_users}
+                    {tenant.user_count || 0} / {tenant.limits?.max_users || '∞'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
@@ -521,7 +521,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     Geräte
                   </span>
                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.device_count} / {tenant.limits.max_devices}
+                    {tenant.device_count || 0} / {tenant.limits?.max_devices || '∞'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
