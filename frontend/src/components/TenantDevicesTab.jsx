@@ -774,71 +774,10 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
                         : 'border-gray-200 hover:bg-gray-50')
                 }`}
               >
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {device.device_id}
                 </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editedValues.locationcode}
-                      onChange={(e) => handleFieldEdit('locationcode', e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      className={`inline-edit-field w-full px-2 py-1 text-sm font-mono rounded border ${
-                        theme === 'dark'
-                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                  ) : (
-                    device.locationcode
-                  )}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.street || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.zip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      value={editedValues.city}
-                      onChange={(e) => handleFieldEdit('city', e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      className={`inline-edit-field w-full px-2 py-1 text-sm font-mono rounded border ${
-                        theme === 'dark'
-                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
-                          : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                    />
-                  ) : (
-                    device.city || '-'
-                  )}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.country || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_pc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_sc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.set_id || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.tvid || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.ip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sw_version || '-'}
-                </td>
-                <td className="px-2 py-2 text-center">
+                <td className="px-2 py-2 text-center whitespace-nowrap">
                   {isEditing ? (
                     <select
                       value={editedValues.status}
@@ -878,7 +817,68 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
                     </span>
                   )}
                 </td>
-                <td className={`px-2 py-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedValues.locationcode}
+                      onChange={(e) => handleFieldEdit('locationcode', e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`inline-edit-field w-full px-2 py-1 text-sm font-mono rounded border ${
+                        theme === 'dark'
+                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    />
+                  ) : (
+                    device.locationcode
+                  )}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.street || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.zip || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={editedValues.city}
+                      onChange={(e) => handleFieldEdit('city', e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`inline-edit-field w-full px-2 py-1 text-sm font-mono rounded border ${
+                        theme === 'dark'
+                          ? 'bg-[#1a1a1a] border-gray-600 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                    />
+                  ) : (
+                    device.city || '-'
+                  )}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.country || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sn_pc || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sn_sc || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.set_id || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.tvid || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.ip || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sw_version || '-'}
+                </td>
+                <td className={`px-2 py-2 text-xs whitespace-nowrap ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   {device.hardware_model || '-'}
                 </td>
                 <td className="px-2 py-2 text-center">
