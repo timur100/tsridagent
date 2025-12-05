@@ -308,8 +308,10 @@ const KioskConfiguration = ({ theme }) => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Maintenance Settings */}
+      {activeTab === 'maintenance' && (
       <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center gap-3 mb-4">
           <Settings className="h-5 w-5 text-[#c00000]" />
