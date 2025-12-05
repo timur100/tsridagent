@@ -392,6 +392,46 @@ const TenantHierarchySidebarV2 = ({
               {locationCount}
             </div>
           )}
+          
+          {/* 3-Dot Menu for Organizations */}
+          {isOrganization && (
+            <div className="relative" ref={isMenuOpen ? menuRef : null}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenMenuId(isMenuOpen ? null : node.tenant_id);
+                }}
+                className={`p-1 rounded hover:bg-gray-600 transition-colors flex-shrink-0 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                }`}
+              >
+                <MoreVertical className="w-3.5 h-3.5" />
+              </button>
+              
+              {/* Context Menu */}
+              {isMenuOpen && (
+                <div
+                  className={`absolute right-0 top-full mt-1 w-40 rounded-md shadow-lg z-50 ${
+                    theme === 'dark'
+                      ? 'bg-gray-800 border border-gray-700'
+                      : 'bg-white border border-gray-200'
+                  }`}
+                >
+                  <button
+                    onClick={(e) => handleDeleteClick(node, e)}
+                    className={`w-full px-3 py-2 text-xs text-left flex items-center gap-2 transition-colors ${
+                      theme === 'dark'
+                        ? 'text-red-400 hover:bg-gray-700'
+                        : 'text-red-600 hover:bg-red-50'
+                    }`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Löschen
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         {hasChildren && isExpanded && (
