@@ -307,50 +307,35 @@ const PlacetelManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Placetel Integration
-          </h1>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Telefonie-Integration und Rufnummernverwaltung
-          </p>
-        </div>
-        <Button
-          onClick={() => {
-            setCallTarget('');
-            setShowCallModal(true);
-          }}
-          className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
-        >
-          <PhoneCall className="h-4 w-4" />
-          Anruf tätigen
-        </Button>
-      </div>
+    <div className="w-full">
+      <SubTabNavigation
+        tabs={tabs}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
 
-      {/* Tab Navigation */}
-      <div className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className="flex gap-1 overflow-x-auto">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 font-medium text-sm flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-                activeTab === tab.id
-                  ? 'border-[#c00000] text-[#c00000]'
-                  : theme === 'dark'
-                  ? 'border-transparent text-gray-400 hover:text-gray-300'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <tab.icon className="h-4 w-4" />
-              {tab.label}
-            </button>
-          ))}
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Placetel Integration
+            </h1>
+            <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Telefonie-Integration und Rufnummernverwaltung
+            </p>
+          </div>
+          <Button
+            onClick={() => {
+              setCallTarget('');
+              setShowCallModal(true);
+            }}
+            className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+          >
+            <PhoneCall className="h-4 w-4" />
+            Anruf tätigen
+          </Button>
         </div>
-      </div>
 
       {/* Content */}
       {activeTab === 'numbers' && (
