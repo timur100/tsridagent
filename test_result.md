@@ -1251,15 +1251,30 @@ frontend:
 
   - task: "TenantsPage in AdminPortal integrieren"
     implemented: true
-    working: "NA"
+    working: true
     file: "frontend/src/pages/AdminPortal.jsx"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
           agent: "main"
           comment: "✅ TenantsPage erfolgreich in AdminPortal integriert: Import hinzugefügt (import TenantsPage from './TenantsPage'), Tab existiert bereits in Navigation (id: 'tenants', label: 'Tenants', icon: Users), Placeholder-Content ersetzt durch <TenantsPage /> Component im activeTab === 'tenants' Block. Frontend hot reload sollte Änderungen automatisch übernehmen."
+        - working: true
+          agent: "testing"
+          comment: "✅ TENANTS PAGE INTEGRATION VERIFIED: Successfully accessed Tenants page through AdminPortal navigation. Page loads correctly with all components: hierarchy sidebar with Europcar/Puma organizations, statistics cards showing real data (Kunden=2, Geräte=218, Standorte=215, Mitarbeiter=2), tenant cards grid, search and filter functionality. Navigation integration working perfectly."
+
+  - task: "Dynamic Statistics Tiles - Hierarchy Integration"
+    implemented: true
+    working: true
+    file: "frontend/src/pages/TenantsPage.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "testing"
+          comment: "✅ DYNAMIC STATISTICS TILES TESTING COMPLETED: Comprehensive testing verified all functionality working correctly. INITIAL STATE: Statistics cards show real data (NOT all zeros) - Kunden=2, Geräte=218, Standorte=215, Mitarbeiter=2. EUROPCAR SELECTION: Clicking Europcar in hierarchy triggers API call GET /api/hierarchy-stats/1d3653db-86cb-4dd1-9ef5-0236b116def8 (Status: 200), statistics update to show ~206 locations and 1 user as expected. ALLE ANZEIGEN: Button works correctly, triggers GET /api/tenants/stats (Status: 200), returns statistics to global view (2 organizations, 215 locations, 2 users). API integration working perfectly with proper hierarchy-stats endpoint calls. Screenshots captured documenting all states. Minor: Deutschland not found (may need hierarchy expansion)."
 
 backend:
   - task: "Order Service Comprehensive Testing"
