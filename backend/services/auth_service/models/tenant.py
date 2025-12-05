@@ -112,26 +112,34 @@ class TenantUpdate(BaseModel):
     country_code: Optional[str] = None
     allow_cross_location_search: Optional[bool] = None
     
-class TenantResponse(TenantBase):
+class TenantResponse(BaseModel):
     tenant_id: str
-    enabled: bool
-    status: str  # active, suspended, trial, inactive
-    contact: TenantContact
-    subscription_plan: str
-    limits: SubscriptionLimits
-    settings: Dict[str, Any]
-    logo_url: Optional[str]
-    user_count: int
-    device_count: int
+    name: str
+    display_name: str
+    domain: Optional[str] = None
+    description: Optional[str] = None
+    enabled: bool = True
+    status: str = "active"  # active, suspended, trial, inactive
+    contact: Optional[TenantContact] = None
+    subscription_plan: Optional[str] = "basic"
+    limits: Optional[SubscriptionLimits] = None
+    settings: Optional[Dict[str, Any]] = {}
+    logo_url: Optional[str] = None
+    user_count: Optional[int] = 0
+    device_count: Optional[int] = 0
     online_devices: Optional[int] = 0
     offline_devices: Optional[int] = 0
     location_count: Optional[int] = 0
-    storage_used_gb: float
-    api_calls_today: int
-    created_at: str
-    updated_at: str
-    last_activity: Optional[str]
+    storage_used_gb: Optional[float] = 0
+    api_calls_today: Optional[int] = 0
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    last_activity: Optional[str] = None
+    parent_tenant_id: Optional[str] = None
     parent_tenant_name: Optional[str] = None
+    tenant_type: Optional[str] = "location"
+    country_code: Optional[str] = None
+    allow_cross_location_search: Optional[bool] = False
     child_tenant_count: Optional[int] = 0
 
 class TenantStats(BaseModel):
