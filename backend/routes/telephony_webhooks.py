@@ -34,9 +34,21 @@ async def handle_incoming_call(webhook_data: IncomingCallWebhook):
         normalized_caller = ''.join(c for c in caller_phone if c.isdigit() or c == '+')
         
         # Try to find location by phone number
-        location = await portal_db.tenant_locations.find_one({
-            'phone': {'$regex': normalized_caller.replace('+', '\\+'), '$options': 'i'}
-        }, {'_id': 0})
+        # Create a pattern that matches the phone in any format
+        digits_only = ''.join(c for c in normalized_caller if c.isdigit())
+        
+        # Search by matching all digits
+        location = None
+        all_locations = await portal_db.tenant_locations.find({
+            'phone': {'$ne': None, '$ne': ''}
+        }, {'_id': 0}).to_list(1000)
+        
+        for loc in all_locations:
+            loc_phone = loc.get('phone', '')
+            loc_digits = ''.join(c for c in loc_phone if c.isdigit())
+            if loc_digits == digits_only or digits_only in loc_digits or loc_digits in digits_only:
+                location = loc
+                break
         
         if location:
             # Find tenant info
