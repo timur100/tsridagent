@@ -235,7 +235,7 @@ const TenantsPage = ({ onSelectTenant }) => {
         </div>
 
       {/* Statistics Cards */}
-      {stats && (
+      {(stats || hierarchyStats) && (
         <>
           {/* Row 1: Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
@@ -246,8 +246,12 @@ const TenantsPage = ({ onSelectTenant }) => {
             }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunden</p>
-                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_tenants}</p>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {hierarchyStats ? 'Standorte' : 'Kunden'}
+                  </p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {hierarchyStats ? hierarchyStats.total_tenants : stats.total_tenants}
+                  </p>
                 </div>
                 <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
@@ -261,7 +265,9 @@ const TenantsPage = ({ onSelectTenant }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Geräte</p>
-                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_devices}</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {hierarchyStats ? hierarchyStats.total_devices : stats.total_devices}
+                  </p>
                 </div>
                 <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
@@ -274,8 +280,12 @@ const TenantsPage = ({ onSelectTenant }) => {
             }`}>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standorte</p>
-                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_locations}</p>
+                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {hierarchyStats ? 'Physische Standorte' : 'Standorte'}
+                  </p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {hierarchyStats ? hierarchyStats.total_locations : stats.total_locations}
+                  </p>
                 </div>
                 <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
@@ -289,7 +299,9 @@ const TenantsPage = ({ onSelectTenant }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Mitarbeiter</p>
-                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_users}</p>
+                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {hierarchyStats ? hierarchyStats.total_users : stats.total_users}
+                  </p>
                 </div>
                 <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
               </div>
