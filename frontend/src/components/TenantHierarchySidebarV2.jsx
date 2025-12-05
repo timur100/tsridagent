@@ -478,6 +478,16 @@ const TenantHierarchySidebarV2 = ({
           </div>
         )}
       </div>
+
+      {/* Add Organization Modal */}
+      <AddOrganizationModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={(result) => {
+          console.log('Organization created:', result);
+          fetchAllTenants();
+        }}
+      />
     </Card>
   );
 };
