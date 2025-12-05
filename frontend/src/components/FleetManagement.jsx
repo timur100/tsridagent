@@ -175,7 +175,7 @@ const FleetManagement = ({ selectedTenantId }) => {
                   <option value="all">🌐 Gesamtflotte (Alle Standorte)</option>
                   {locations.map(loc => (
                     <option key={loc.location_id} value={loc.location_id}>
-                      📍 {loc.location_name} ({loc.vehicle_count} Fahrzeuge)
+                      📍 {loc.location_name} • {loc.city} ({loc.vehicle_count} Fzg.)
                     </option>
                   ))}
                 </select>
