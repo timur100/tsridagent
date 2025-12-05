@@ -131,6 +131,8 @@ class TenantResponse(TenantBase):
     created_at: str
     updated_at: str
     last_activity: Optional[str]
+    parent_tenant_name: Optional[str] = None
+    child_tenant_count: Optional[int] = 0
 
 class TenantStats(BaseModel):
     """Statistics for tenants overview"""
