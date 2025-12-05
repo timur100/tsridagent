@@ -2561,6 +2561,7 @@ test_plan:
   test_all: false
   test_priority: "high_first"
   backend_testing_complete: false
+  dynamic_statistics_testing_complete: true
   customer_details_edit_testing_complete: true
   standort_details_edit_testing_complete: true
   flagged_scans_backend_verified: true
