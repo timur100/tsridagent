@@ -1569,26 +1569,6 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           </div>
         )}
 
-        {activeTab === 'hierarchy' && (
-          <div className="space-y-6">
-            {/* Hierarchie-Baum */}
-            <TenantHierarchyTree 
-              rootTenantId={tenantId}
-              onSelectTenant={(id) => navigate(`/portal/admin/tenants/${id}`)}
-            />
-            
-            {/* Hierarchie-Einstellungen */}
-            <TenantHierarchySettings
-              tenantId={tenantId}
-              currentData={tenant}
-              onSave={(data) => {
-                setTenant({...tenant, ...data});
-                toast.success('Hierarchie-Einstellungen gespeichert');
-              }}
-            />
-          </div>
-        )}
-
         {activeTab === 'subscription' && (
           <div className="space-y-6">
             {/* Vertragsinformationen */}
