@@ -131,35 +131,16 @@ const KioskManagement = ({ theme }) => {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Tabs */}
-      <div className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-        <div className="flex gap-1 overflow-x-auto">
-          {[
-            { id: 'list', label: 'Kiosks', icon: List },
-            { id: 'monitoring', label: 'Monitoring', icon: BarChart3 },
-            { id: 'settings', label: 'Einstellungen', icon: Wrench }
-          ].map(tab => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-3 font-medium text-sm flex items-center gap-2 border-b-2 transition-colors whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'border-[#c00000] text-[#c00000]'
-                    : theme === 'dark'
-                    ? 'border-transparent text-gray-400 hover:text-gray-300'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-      </div>
+    <div className="w-full">
+      <SubTabNavigation
+        tabs={[
+          { id: 'list', label: 'Kiosks', icon: List },
+          { id: 'monitoring', label: 'Monitoring', icon: BarChart3 },
+          { id: 'settings', label: 'Einstellungen', icon: Wrench }
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
       
       {/* Header */}
       <div className="flex items-center justify-between">
