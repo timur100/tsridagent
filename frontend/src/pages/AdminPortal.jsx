@@ -2721,6 +2721,21 @@ const AdminPortalContent = () => {
                       </div>
                     )}
                     
+                    {/* Workflow Builder */}
+                    {rndTab === 'workflow-builder' && (
+                      <AutomationManagement />
+                    )}
+
+                    {/* Stapelverarbeitung */}
+                    {rndTab === 'batch-processing' && (
+                      <AutomationManagement />
+                    )}
+
+                    {/* API Testing */}
+                    {rndTab === 'api-testing' && (
+                      <AutomationManagement />
+                    )}
+
                     {/* Quick Menu Management */}
                     {rndTab === 'quick-menu' && (
                       <div className="w-full">
