@@ -214,7 +214,8 @@ async def build_complete_hierarchy():
             else:
                 # Build structure for other countries
                 for region_name, cities in regions.items():
-                    region_id = f"{country_id}-{region_name.lower().replace(' ', '-').replace('\'', '')}"
+                    region_normalized = region_name.lower().replace(' ', '-').replace("'", '')
+                    region_id = f"{country_id}-{region_normalized}"
                     
                     await tsrid_db.tenants.update_one(
                         {'tenant_id': region_id},
