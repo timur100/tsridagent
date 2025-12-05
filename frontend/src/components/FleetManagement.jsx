@@ -467,10 +467,10 @@ const FleetManagement = ({ selectedTenantId }) => {
                           Fahrzeug
                         </th>
                         <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                          Fahrer
+                          Mieter
                         </th>
                         <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                          Standort
+                          Heimatstandort
                         </th>
                         <th className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           km-Stand
