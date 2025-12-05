@@ -71,6 +71,10 @@ class TenantBase(BaseModel):
     display_name: str
     domain: Optional[str] = None
     description: Optional[str] = None
+    parent_tenant_id: Optional[str] = None
+    tenant_type: Optional[str] = "location"  # organization, country, location
+    country_code: Optional[str] = None
+    allow_cross_location_search: Optional[bool] = False
     
 class TenantCreate(TenantBase):
     contact: TenantContact
