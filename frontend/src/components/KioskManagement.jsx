@@ -179,8 +179,10 @@ const KioskManagement = ({ theme }) => {
         </button>
       </div>
 
-      {/* Kiosks Grid */}
-      {kiosks.length === 0 ? (
+      {/* List Tab - Kiosks Grid */}
+      {activeTab === 'list' && (
+        <>
+          {kiosks.length === 0 ? (
         <div className={`text-center py-12 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
           <Monitor className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
           <p className={`font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
