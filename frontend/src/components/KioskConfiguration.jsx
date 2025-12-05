@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Settings, Monitor, Palette, Type, Layout, List, BarChart3, Wrench } from 'lucide-react';
+import SubTabNavigation from './SubTabNavigation';
 
 const KioskConfiguration = ({ theme }) => {
   const [activeTab, setActiveTab] = useState('display');
