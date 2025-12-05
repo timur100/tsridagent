@@ -140,25 +140,43 @@ const TenantsPage = ({ onSelectTenant }) => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Tenants
-          </h2>
-          <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Verwalten Sie alle Mandanten und deren Ressourcen
-          </p>
-        </div>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Neuer Tenant
-        </button>
+    <div className="flex gap-6 h-full">
+      {/* Sidebar - Hierarchie */}
+      <div className="w-80 flex-shrink-0">
+        <TenantHierarchySidebar
+          selectedTenantId={hierarchySelectedId}
+          onSelectTenant={(tenantId) => {
+            setHierarchySelectedId(tenantId);
+          }}
+          onFilterChange={(tenantIds) => {
+            setHierarchyFilter(tenantIds);
+          }}
+        />
       </div>
+
+      {/* Main Content */}
+      <div className="flex-1 space-y-6 min-w-0">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Tenants
+            </h2>
+            <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              {hierarchyFilter 
+                ? `${hierarchyFilter.length} Tenant(s) im ausgewählten Bereich`
+                : 'Verwalten Sie alle Mandanten und deren Ressourcen'
+              }
+            </p>
+          </div>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            Neuer Tenant
+          </button>
+        </div>
 
       {/* Statistics Cards */}
       {stats && (
