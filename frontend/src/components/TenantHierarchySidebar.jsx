@@ -105,8 +105,12 @@ const TenantHierarchySidebar = ({
     switch (tenantType) {
       case 'organization':
         return <Building2 className="w-4 h-4" />;
+      case 'continent':
+        return <Globe className="w-4 h-4" />;
       case 'country':
         return <Globe className="w-4 h-4" />;
+      case 'city':
+        return <MapPin className="w-4 h-4" />;
       case 'location':
         return <MapPin className="w-4 h-4" />;
       default:
