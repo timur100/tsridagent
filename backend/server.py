@@ -347,6 +347,7 @@ app.include_router(placetel_webhooks_router, prefix="/api/placetel", tags=["plac
 app.include_router(fleet_router, prefix="/api", tags=["fleet-management"])
 app.include_router(organization_creator_router)
 app.include_router(telephony_router)
+app.include_router(hierarchy_stats_router)
 
 # Include the router in the main app
 app.include_router(api_router)
