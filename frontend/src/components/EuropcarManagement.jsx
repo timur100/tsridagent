@@ -50,6 +50,7 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
       {/* Content Area */}
       <div className="mt-6">
         {activeSubTab === 'vehicles' && <EuropcarVehicles />}
+        {activeSubTab === 'cross-location' && <EuropcarCrossLocationVehicles />}
         {activeSubTab === 'reservations' && <EuropcarReservations />}
         {activeSubTab === 'customers' && <EuropcarCustomers />}
         {activeSubTab === 'contracts' && <EuropcarContracts />}
