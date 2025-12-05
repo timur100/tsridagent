@@ -3404,7 +3404,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "SubTabNavigation Component Testing for 3 New Services R&D Sections"
+    - "FINAL CORRECTED Device Counting in Dynamic Statistics Tiles - Complete Hierarchy Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
