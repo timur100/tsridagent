@@ -3406,8 +3406,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "FINAL CORRECTED Device Counting in Dynamic Statistics Tiles - Complete Hierarchy Testing"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
