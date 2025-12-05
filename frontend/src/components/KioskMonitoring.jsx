@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Cpu, HardDrive, Wifi, AlertTriangle, CheckCircle, Clock, BarChart3, Bell, Settings as SettingsIcon } from 'lucide-react';
+import SubTabNavigation from './SubTabNavigation';
 
 const KioskMonitoring = ({ theme }) => {
   const [activeTab, setActiveTab] = useState('overview');
