@@ -498,13 +498,13 @@ async def get_fleet_statistics(
     
     # Filter nach Standort
     if location and location != "all":
-        vehicles = [v for v in all_vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
+        vehicles = [v for v in all_vehicles if v["home_location"]["location_id"] == location]
         location_vehicle_ids = [v["vehicle_id"] for v in vehicles]
-        trips = [t for t in all_trips if t["vehicle_id"] in location_vehicle_ids]
+        rentals_data = [r for r in all_rentals if r["vehicle_id"] in location_vehicle_ids]
         fuel_records = [f for f in all_fuel_records if f["vehicle_id"] in location_vehicle_ids]
     else:
         vehicles = all_vehicles
-        trips = all_trips
+        rentals_data = all_rentals
         fuel_records = all_fuel_records
     
     # Rentals statt trips
