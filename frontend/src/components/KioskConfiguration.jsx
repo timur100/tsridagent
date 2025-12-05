@@ -381,6 +381,7 @@ const KioskConfiguration = ({ theme }) => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Save Button */}
       <div className="flex justify-end">
