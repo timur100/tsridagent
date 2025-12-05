@@ -1058,7 +1058,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Kiosk-Übersicht Filter Testing - Europcar PKW-Vermietung"
+    - "Hierarchy Statistics Belgium Edge Case Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
