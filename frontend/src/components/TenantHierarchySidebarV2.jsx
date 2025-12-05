@@ -113,6 +113,12 @@ const TenantHierarchySidebarV2 = ({
           if (bName === 'Europa') return 1;
         }
         
+        // For organizations: Europcar before Puma (alphabetical)
+        if ((a.tenant_level === 'organization' || a.tenant_type === 'organization') && 
+            (b.tenant_level === 'organization' || b.tenant_type === 'organization')) {
+          return (a.display_name || a.name).localeCompare(b.display_name || b.name);
+        }
+        
         return (a.display_name || a.name).localeCompare(b.display_name || b.name);
       });
     };
