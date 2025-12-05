@@ -510,14 +510,14 @@ const FleetManagement = ({ selectedTenantId }) => {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-2">
-                              {vehicle.driver.name ? (
+                              {vehicle.current_rental ? (
                                 <>
                                   <User className="w-3 h-3" />
-                                  <span className="text-sm">{vehicle.driver.name}</span>
+                                  <span className="text-sm">{vehicle.current_rental.customer_name}</span>
                                 </>
                               ) : (
                                 <span className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-                                  Nicht zugewiesen
+                                  Nicht vermietet
                                 </span>
                               )}
                             </div>
@@ -525,7 +525,7 @@ const FleetManagement = ({ selectedTenantId }) => {
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-red-500" />
-                              <span className="text-sm">{vehicle.current_location.city}</span>
+                              <span className="text-sm">{vehicle.home_location.name}</span>
                             </div>
                           </td>
                           <td className="px-4 py-3">
