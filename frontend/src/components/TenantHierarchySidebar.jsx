@@ -76,20 +76,20 @@ const TenantHierarchySidebar = ({
     
     console.log('Hierarchy built with', roots.length, 'root nodes');
 
-    // Sort by tenant type (organization > continent > country > city > location) and then by name
+    // Sort by tenant level (organization > continent > country > city > location) and then by name
     const sortNodes = (nodes) => {
       return nodes.sort((a, b) => {
-        const typeOrder = { 
+        const levelOrder = { 
           'organization': 0, 
           'continent': 1, 
           'country': 2, 
           'city': 3, 
           'location': 4 
         };
-        const aType = typeOrder[a.tenant_type] || 5;
-        const bType = typeOrder[b.tenant_type] || 5;
+        const aLevel = levelOrder[a.tenant_level] || levelOrder[a.tenant_type] || 5;
+        const bLevel = levelOrder[b.tenant_level] || levelOrder[b.tenant_type] || 5;
         
-        if (aType !== bType) return aType - bType;
+        if (aLevel !== bLevel) return aLevel - bLevel;
         return (a.display_name || a.name).localeCompare(b.display_name || b.name);
       });
     };
