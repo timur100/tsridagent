@@ -195,13 +195,15 @@ async def get_hierarchy_stats(tenant_id: str):
             device_count = 0
         
         # 2. Fallback: Count from portal_db.tenant_devices (legacy)
-        if device_count == 0 and org_ids:
+        # Only use fallback if we're at organization level
+        if device_count == 0 and is_org_level and org_ids:
             devices_portal = await portal_db.tenant_devices.count_documents({
                 'tenant_id': {'$in': org_ids}
             })
             device_count += devices_portal
         
         # 3. Fallback: Count from device_db.devices (legacy)
+        # Only use fallback if we have location_codes (not for countries without locations)
         if device_count == 0 and location_codes:
             devices_location = await device_db.devices.count_documents({
                 'location_code': {'$in': location_codes}
