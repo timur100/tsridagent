@@ -209,8 +209,10 @@ async def build_complete_hierarchy():
             
             # Special handling for Germany (use real data)
             if country_name == 'Deutschland':
-                await build_german_hierarchy(tsrid_db, country_id, german_locations)
-                location_tenant_count += len(german_locations)
+                counts = await build_german_hierarchy(tsrid_db, country_id, german_locations)
+                state_count += counts['states']
+                city_count += counts['cities']
+                location_tenant_count += counts['locations']
             else:
                 # Build structure for other countries
                 for region_name, cities in regions.items():
