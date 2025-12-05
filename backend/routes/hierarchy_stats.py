@@ -142,13 +142,20 @@ async def get_hierarchy_stats(tenant_id: str):
         if not org_ids:
             org_ids = [tid for tid in tenant_ids]
         
-        physical_locations = await portal_db.tenant_locations.count_documents({
-            'tenant_id': {'$in': org_ids}
-        })
+        # Determine if we're looking at the org level or a sub-level
+        is_org_level = any(
+            tenant_ids[0] == oid for oid in org_ids
+        ) if tenant_ids and org_ids else False
         
-        # For more accurate count, use the hierarchy location count
-        # as it represents the actual locations in the selected scope
-        if location_count > 0:
+        # Physical locations logic:
+        # - If at organization level: count all locations for that org
+        # - If at sub-level (continent/country/state/city): use hierarchy location count
+        if is_org_level and org_ids:
+            physical_locations = await portal_db.tenant_locations.count_documents({
+                'tenant_id': {'$in': org_ids}
+            })
+        else:
+            # For sub-levels, use the hierarchy location count
             physical_locations = location_count
         
         # Count devices from multiple sources
