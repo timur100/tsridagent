@@ -317,6 +317,7 @@ from routes.europcar_tracking import router as europcar_tracking_router
 from routes.europcar_analytics import router as europcar_analytics_router
 from routes.europcar_automation import router as europcar_automation_router
 from routes.europcar_ai import router as europcar_ai_router
+from routes.tenant_hierarchy import router as tenant_hierarchy_router
 app.include_router(europcar_vehicles_router)
 app.include_router(europcar_reservations_router)
 app.include_router(europcar_customers_router)
