@@ -343,6 +343,7 @@ app.include_router(hardware_import_router)
 app.include_router(placetel_router, prefix="/api/placetel", tags=["placetel"])
 app.include_router(placetel_webhooks_router, prefix="/api/placetel", tags=["placetel-webhooks"])
 app.include_router(fleet_router, prefix="/api", tags=["fleet-management"])
+app.include_router(organization_creator_router)
 
 # Include the router in the main app
 app.include_router(api_router)
