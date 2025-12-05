@@ -100,6 +100,16 @@ const TenantHierarchySidebarV2 = ({
         const bLevel = levelOrder[b.tenant_level] || levelOrder[b.tenant_type] || 10;
         
         if (aLevel !== bLevel) return aLevel - bLevel;
+        
+        // Special sorting for continents: Europa first
+        if ((a.tenant_level === 'continent' || a.tenant_type === 'continent') && 
+            (b.tenant_level === 'continent' || b.tenant_type === 'continent')) {
+          const aName = a.display_name || a.name || '';
+          const bName = b.display_name || b.name || '';
+          if (aName === 'Europa') return -1;
+          if (bName === 'Europa') return 1;
+        }
+        
         return (a.display_name || a.name).localeCompare(b.display_name || b.name);
       });
     };
