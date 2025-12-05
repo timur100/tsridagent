@@ -51,17 +51,15 @@ const FleetManagement = ({ selectedTenantId }) => {
   const loadFleetData = async () => {
     setLoading(true);
     try {
-      const locationParam = selectedLocation !== 'all' ? `&location=${selectedLocation}` : '';
-      
-      const [vehiclesRes, tripsRes, fuelRes, statsRes] = await Promise.all([
+      const [vehiclesRes, rentalsRes, fuelRes, statsRes] = await Promise.all([
         apiCall(`/api/fleet/${selectedTenantId}/vehicles?location=${selectedLocation}`),
-        apiCall(`/api/fleet/${selectedTenantId}/trips?location=${selectedLocation}&limit=50`),
+        apiCall(`/api/fleet/${selectedTenantId}/rentals?location=${selectedLocation}&limit=50`),
         apiCall(`/api/fleet/${selectedTenantId}/fuel?location=${selectedLocation}`),
         apiCall(`/api/fleet/${selectedTenantId}/statistics?location=${selectedLocation}`)
       ]);
       
       setVehicles(vehiclesRes.data?.vehicles || []);
-      setTrips(tripsRes.data?.trips || []);
+      setRentals(rentalsRes.data?.rentals || []);
       setFuelRecords(fuelRes.data?.fuel_records || []);
       setStatistics(statsRes.data?.statistics || null);
     } catch (error) {
