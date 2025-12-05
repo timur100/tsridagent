@@ -29,6 +29,7 @@ const TenantsPage = ({ onSelectTenant }) => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [hierarchyFilter, setHierarchyFilter] = useState(null);
   const [hierarchySelectedId, setHierarchySelectedId] = useState(null);
+  const [hierarchyStats, setHierarchyStats] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -36,6 +37,10 @@ const TenantsPage = ({ onSelectTenant }) => {
     fetchStats();
     fetchTenants();
   }, [filterStatus, filterPlan, selectedTenantId]);
+
+  useEffect(() => {
+    fetchHierarchyStats();
+  }, [hierarchySelectedId]);
 
   const fetchStats = async () => {
     try {
