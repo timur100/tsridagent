@@ -150,9 +150,30 @@ async def get_hierarchy_stats(tenant_id: str):
         if location_count > 0:
             physical_locations = location_count
         
-        # Count devices (if available)
-        # This would need to be implemented based on your device tracking
+        # Count devices from multiple sources
         device_count = 0
+        
+        # 1. Count devices from portal_db.tenant_devices (uses org tenant_id)
+        if org_ids:
+            devices_portal = await portal_db.tenant_devices.count_documents({
+                'tenant_id': {'$in': org_ids}
+            })
+            device_count += devices_portal
+        
+        # 2. Count devices from device_db.devices (uses location_code)
+        # Get all location codes from the selected hierarchy
+        location_tenants = await tsrid_db.tenants.find({
+            'tenant_id': {'$in': tenant_ids},
+            'tenant_level': 'location'
+        }, {'_id': 0, 'location_code': 1}).to_list(1000)
+        
+        location_codes = [lt.get('location_code') for lt in location_tenants if lt.get('location_code')]
+        
+        if location_codes:
+            devices_location = await device_db.devices.count_documents({
+                'location_code': {'$in': location_codes}
+            })
+            device_count += devices_location
         
         # Count users from auth_db
         # Users are typically stored at organization level, so use org_ids
