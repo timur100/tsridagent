@@ -251,3 +251,74 @@ async def get_industries():
             {'value': 'custom', 'label': 'Benutzerdefiniert', 'countries': 0}
         ]
     }
+
+
+@router.delete("/{tenant_id}")
+async def delete_organization(
+    tenant_id: str,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """
+    Delete an organization and all its hierarchy (continents, countries, states, cities, locations)
+    """
+    try:
+        # Step 1: Check if organization exists
+        org = await tsrid_db.tenants.find_one({
+            'tenant_id': tenant_id,
+            'tenant_level': 'organization'
+        })
+        
+        if not org:
+            raise HTTPException(status_code=404, detail="Organisation nicht gefunden")
+        
+        org_name = org.get('name', 'Unbekannt')
+        
+        # Step 2: Check for real location data in portal_db
+        from motor.motor_asyncio import AsyncIOMotorClient
+        portal_client = AsyncIOMotorClient(MONGO_URL)
+        portal_db = portal_client['portal_db']
+        
+        location_count = await portal_db.tenant_locations.count_documents({
+            'tenant_id': tenant_id
+        })
+        
+        # Step 3: Count all hierarchy items to be deleted
+        hierarchy_count = await tsrid_db.tenants.count_documents({
+            '$or': [
+                {'tenant_id': tenant_id},
+                {'tenant_id': {'$regex': f'^{tenant_id}-'}}
+            ]
+        })
+        
+        # Step 4: Delete all hierarchy items from tsrid_db
+        delete_result = await tsrid_db.tenants.delete_many({
+            '$or': [
+                {'tenant_id': tenant_id},
+                {'tenant_id': {'$regex': f'^{tenant_id}-'}}
+            ]
+        })
+        
+        # Step 5: Delete from auth_db
+        await auth_db.tenants.delete_one({'tenant_id': tenant_id})
+        
+        # Step 6: Optionally delete location data (only if no real data exists)
+        # We keep location data by default for safety
+        
+        portal_client.close()
+        
+        return {
+            'success': True,
+            'message': f'Organisation "{org_name}" erfolgreich gelöscht',
+            'data': {
+                'deleted_tenant_id': tenant_id,
+                'deleted_name': org_name,
+                'hierarchy_items_deleted': delete_result.deleted_count,
+                'locations_preserved': location_count,
+                'warning': f'{location_count} Standorte wurden behalten' if location_count > 0 else None
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
