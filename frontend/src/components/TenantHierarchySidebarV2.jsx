@@ -51,17 +51,16 @@ const TenantHierarchySidebarV2 = ({
         const result = await response.json();
         const data = result.tenants || [];
         
-        // Filter: Keep Europcar and Puma organizations and their children
-        const validOrgs = [
-          '1d3653db-86cb-4dd1-9ef5-0236b116def8', // Europcar
-          '94317b6b-a478-4df5-9a81-d1fd3c5983c8'  // Puma
-        ];
+        // Filter: Keep all organizations that have tenant_level = 'organization' 
+        // and their children (not Scan Sync Demo)
+        const organizations = data.filter(t => t.tenant_level === 'organization');
+        const validOrgIds = organizations.map(org => org.tenant_id);
         
         const filteredTenants = data.filter(t => {
           const id = t.tenant_id || '';
-          // Keep if it's one of the main organizations OR a child of them
-          return validOrgs.includes(id) || 
-                 validOrgs.some(orgId => id.startsWith(orgId + '-'));
+          // Keep if it's an organization OR a child of an organization
+          return t.tenant_level === 'organization' || 
+                 validOrgIds.some(orgId => id.startsWith(orgId + '-'));
         });
         
         setTenants(filteredTenants);
