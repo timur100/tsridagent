@@ -392,17 +392,29 @@ const TenantHierarchySidebarV2 = ({
           }`}>
             Hierarchie
           </h3>
-          <button
-            onClick={fetchAllTenants}
-            disabled={loading}
-            className={`p-1 rounded hover:bg-gray-700 transition-colors ${
-              loading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''} ${
-              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-            }`} />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowAddModal(true)}
+              className={`p-1 rounded hover:bg-gray-700 transition-colors ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`}
+              title="Neue Organisation hinzufügen"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={fetchAllTenants}
+              disabled={loading}
+              className={`p-1 rounded hover:bg-gray-700 transition-colors ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              title="Aktualisieren"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''} ${
+                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+              }`} />
+            </button>
+          </div>
         </div>
         
         {/* Search Input */}
