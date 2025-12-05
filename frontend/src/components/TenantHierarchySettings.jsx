@@ -177,7 +177,13 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
               <option value="">Kein übergeordneter Tenant</option>
               {parentTenants.map(parent => (
                 <option key={parent.tenant_id} value={parent.tenant_id}>
-                  {parent.display_name} ({parent.tenant_type === 'organization' ? 'Organisation' : 'Land'})
+                  {parent.display_name} ({
+                    parent.tenant_type === 'organization' ? 'Organisation' :
+                    parent.tenant_type === 'continent' ? 'Kontinent' :
+                    parent.tenant_type === 'country' ? 'Land' :
+                    parent.tenant_type === 'city' ? 'Stadt' :
+                    'Standort'
+                  })
                 </option>
               ))}
             </select>
