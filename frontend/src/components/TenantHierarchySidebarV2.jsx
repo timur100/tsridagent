@@ -8,9 +8,11 @@ import {
   ChevronDown,
   RefreshCw,
   Search,
-  X
+  X,
+  Plus
 } from 'lucide-react';
 import { Card } from './ui/card';
+import AddOrganizationModal from './AddOrganizationModal';
 
 const TenantHierarchySidebarV2 = ({ 
   onSelectTenant, 
