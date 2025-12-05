@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   Building2, 
@@ -9,10 +9,13 @@ import {
   RefreshCw,
   Search,
   X,
-  Plus
+  Plus,
+  MoreVertical,
+  Trash2
 } from 'lucide-react';
 import { Card } from './ui/card';
 import AddOrganizationModal from './AddOrganizationModal';
+import DeleteOrganizationModal from './DeleteOrganizationModal';
 
 const TenantHierarchySidebarV2 = ({ 
   onSelectTenant, 
