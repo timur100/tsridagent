@@ -142,8 +142,8 @@ const TenantsPage = ({ onSelectTenant }) => {
   return (
     <div className="flex gap-6 h-full">
       {/* Sidebar - Hierarchie */}
-      <div className="w-80 flex-shrink-0">
-        <TenantHierarchySidebar
+      <div className="flex-shrink-0">
+        <TenantHierarchySidebarV2
           selectedTenantId={hierarchySelectedId}
           onSelectTenant={(tenantId) => {
             setHierarchySelectedId(tenantId);
