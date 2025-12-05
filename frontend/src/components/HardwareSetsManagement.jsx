@@ -112,25 +112,31 @@ const HardwareSetsManagement = ({ tenantId }) => {
   const loadLocations = async () => {
     try {
       // Load locations from hardware sets
+      // Load locations from tenant_locations API (clean hierarchy data)
+      try {
+        const locationsResult = await apiCall(`/api/tenant-locations/${tenantId}`);
+        if (locationsResult.success && Array.isArray(locationsResult.data)) {
+          const cleanedLocations = locationsResult.data
+            .filter(loc => loc.location_code) // Only locations with codes
+            .map(loc => ({
+              id: loc.id || loc.location_code,
+              name: `${loc.location_code} - ${loc.location_name || loc.city || 'Unbekannt'}`,
+              code: loc.location_code,
+              city: loc.city
+            }))
+            .sort((a, b) => a.code.localeCompare(b.code)); // Alphabetical sort by code
+          
+          setLocations(cleanedLocations);
+        }
+      } catch (locError) {
+        console.error('Error loading locations:', locError);
+      }
+
+      // Load sets
       const result = await apiCall(`/api/hardware/sets?tenant_id=${tenantId}`);
       const setsData = result.success ? result.data : result;
-      
-      if (Array.isArray(setsData)) {
-        // Extract unique locations from sets
-        const locationMap = new Map();
-        setsData.forEach(set => {
-          if (set.location_id && !locationMap.has(set.location_id)) {
-            locationMap.set(set.location_id, {
-              id: set.location_id,
-              name: set.set_name?.split(' - Set ')[0] || set.location_code,
-              location_code: set.location_code
-            });
-          }
-        });
-        setLocations(Array.from(locationMap.values()));
-      }
     } catch (error) {
-      console.error('Error loading locations:', error);
+      console.error('Error loading data:', error);
     }
   };
 
