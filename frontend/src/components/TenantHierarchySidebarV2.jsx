@@ -43,6 +43,17 @@ const TenantHierarchySidebarV2 = ({
   }, []);
 
   useEffect(() => {
+    // Close menu when clicking outside
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
     if (searchQuery.trim()) {
       filterTreeBySearch(hierarchyTree, searchQuery);
     } else {
