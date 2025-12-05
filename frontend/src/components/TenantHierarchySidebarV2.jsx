@@ -31,6 +31,10 @@ const TenantHierarchySidebarV2 = ({
   const [filteredTree, setFilteredTree] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(320); // Dynamic width
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [organizationToDelete, setOrganizationToDelete] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const menuRef = useRef(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
