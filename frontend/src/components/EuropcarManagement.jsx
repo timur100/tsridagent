@@ -55,6 +55,7 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
         {activeSubTab === 'analytics' && <EuropcarAnalytics />}
         {activeSubTab === 'ai' && <EuropcarAI />}
       </div>
+      </div>
     </div>
   );
 };
