@@ -207,8 +207,12 @@ const TenantHierarchySidebar = ({
           <div className={`p-1.5 rounded ${
             node.tenant_type === 'organization' 
               ? 'bg-blue-500 bg-opacity-20' 
+              : node.tenant_type === 'continent'
+              ? 'bg-purple-500 bg-opacity-20'
               : node.tenant_type === 'country' 
-              ? 'bg-green-500 bg-opacity-20' 
+              ? 'bg-green-500 bg-opacity-20'
+              : node.tenant_type === 'city'
+              ? 'bg-yellow-500 bg-opacity-20'
               : 'bg-gray-500 bg-opacity-20'
           }`}>
             {getTenantIcon(node.tenant_type)}
