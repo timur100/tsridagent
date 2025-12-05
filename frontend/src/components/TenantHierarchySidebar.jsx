@@ -117,8 +117,9 @@ const TenantHierarchySidebar = ({
     setExpandedNodes(newExpanded);
   };
 
-  const getTenantIcon = (tenantType) => {
-    switch (tenantType) {
+  const getTenantIcon = (tenant) => {
+    const level = tenant.tenant_level || tenant.tenant_type;
+    switch (level) {
       case 'organization':
         return <Building2 className="w-4 h-4" />;
       case 'continent':
