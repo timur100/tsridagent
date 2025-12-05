@@ -8,6 +8,7 @@ import {
   Filter, Download, Trash2, Eye, BarChart3, Leaf
 } from 'lucide-react';
 import { toast } from 'sonner';
+import SubTabNavigation from './SubTabNavigation';
 
 const FleetManagement = ({ selectedTenantId }) => {
   const { theme } = useTheme();
