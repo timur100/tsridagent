@@ -139,10 +139,20 @@ async def lookup_caller(phone_number: str):
         # Normalize for search
         normalized = ''.join(c for c in phone_number if c.isdigit() or c == '+')
         
-        # Search in locations
-        location = await portal_db.tenant_locations.find_one({
-            'phone': {'$regex': normalized.replace('+', '\\+'), '$options': 'i'}
-        }, {'_id': 0})
+        # Search in locations - match by digits only
+        digits_only = ''.join(c for c in normalized if c.isdigit())
+        
+        location = None
+        all_locations = await portal_db.tenant_locations.find({
+            'phone': {'$ne': None, '$ne': ''}
+        }, {'_id': 0}).to_list(1000)
+        
+        for loc in all_locations:
+            loc_phone = loc.get('phone', '')
+            loc_digits = ''.join(c for c in loc_phone if c.isdigit())
+            if loc_digits == digits_only:
+                location = loc
+                break
         
         if location:
             tenant_id = location.get('tenant_id')
