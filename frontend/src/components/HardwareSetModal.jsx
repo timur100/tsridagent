@@ -6,6 +6,17 @@ import toast from 'react-hot-toast';
 
 const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantId }) => {
   const { theme } = useTheme();
+  
+  // Debug: Log locations when modal opens
+  React.useEffect(() => {
+    if (show) {
+      console.log('[HardwareSetModal] Locations received:', locations?.length || 0);
+      if (!locations || locations.length === 0) {
+        console.warn('[HardwareSetModal] No locations available!');
+      }
+    }
+  }, [show, locations]);
+  
   const [formData, setFormData] = useState({
     set_name: '',
     location_id: '',
