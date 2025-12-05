@@ -5,6 +5,7 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Phone, Users, PhoneCall, Settings, Headphones, GitBranch, FileText, UserCircle, Plus, Edit2, Trash2, Eye, PhoneMissed, PhoneIncoming, PhoneOutgoing, Mail, MapPin, Building } from 'lucide-react';
 import toast from 'react-hot-toast';
+import SubTabNavigation from './SubTabNavigation';
 
 const PlacetelManagement = () => {
   const { theme } = useTheme();
