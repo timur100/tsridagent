@@ -27,6 +27,7 @@ const TenantHierarchySidebarV2 = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredTree, setFilteredTree] = useState([]);
   const [sidebarWidth, setSidebarWidth] = useState(320); // Dynamic width
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
