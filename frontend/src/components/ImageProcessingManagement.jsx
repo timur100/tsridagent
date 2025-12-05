@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { Key, Lock, History, Settings, User, MapPin } from 'lucide-react';
+import { Image, Sparkles, ScanLine, Settings, Upload, Download } from 'lucide-react';
 import SubTabNavigation from './SubTabNavigation';
 
-const KeyAutomatManagement = () => {
+const ImageProcessingManagement = () => {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -11,10 +11,10 @@ const KeyAutomatManagement = () => {
     <div className="w-full">
       <SubTabNavigation
         tabs={[
-          { id: 'overview', label: 'Übersicht', icon: Key },
-          { id: 'lockers', label: 'Schließfächer', icon: Lock },
-          { id: 'users', label: 'Benutzer', icon: User },
-          { id: 'history', label: 'Historie', icon: History },
+          { id: 'overview', label: 'Übersicht', icon: Image },
+          { id: 'background', label: 'Hintergrund-Entfernung', icon: Sparkles },
+          { id: 'enhancement', label: 'Bildverbesserung', icon: Sparkles },
+          { id: 'ocr', label: 'Erweiterte OCR', icon: ScanLine },
           { id: 'settings', label: 'Einstellungen', icon: Settings }
         ]}
         activeTab={activeTab}
@@ -24,45 +24,45 @@ const KeyAutomatManagement = () => {
       <div>
         <div className="mb-6">
           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            🔐 Schlüsselautomat
+            📷 Bildverarbeitung
           </h2>
           <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Automatisierte Schlüsselverwaltung und Zugangskontrolle
+            KI-gestützte Bildverarbeitung und Optimierung
           </p>
         </div>
 
         {activeTab === 'overview' && (
           <div className="text-center py-12">
-            <Key className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <Image className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
               Feature in Planung - Wird bald verfügbar sein
             </p>
           </div>
         )}
 
-        {activeTab === 'lockers' && (
+        {activeTab === 'background' && (
           <div className="text-center py-12">
-            <Lock className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <Sparkles className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-              Schließfächer - In Entwicklung
+              Hintergrund-Entfernung - In Entwicklung
             </p>
           </div>
         )}
 
-        {activeTab === 'users' && (
+        {activeTab === 'enhancement' && (
           <div className="text-center py-12">
-            <User className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <Sparkles className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-              Benutzerverwaltung - In Entwicklung
+              Bildverbesserung - In Entwicklung
             </p>
           </div>
         )}
 
-        {activeTab === 'history' && (
+        {activeTab === 'ocr' && (
           <div className="text-center py-12">
-            <History className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+            <ScanLine className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-              Zugriffshistorie - In Entwicklung
+              Erweiterte OCR - In Entwicklung
             </p>
           </div>
         )}
@@ -80,4 +80,4 @@ const KeyAutomatManagement = () => {
   );
 };
 
-export default KeyAutomatManagement;
+export default ImageProcessingManagement;
