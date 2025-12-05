@@ -2766,9 +2766,7 @@ const AdminPortalContent = () => {
 
                     {/* Key Automat */}
                     {rndTab === 'key-automat' && (
-                      <div className="w-full">
-                        <KeyAutomatHierarchical theme={theme} />
-                      </div>
+                      <KeyAutomatManagement />
                     )}
 
                     {/* Mobility Services */}
