@@ -249,6 +249,18 @@ const LocationsTabEnhanced = ({
     }
   };
 
+  const handleClickToCall = (phoneNumber) => {
+    // Format phone for click-to-call (remove spaces and parentheses)
+    const cleanPhone = phoneNumber.replace(/[\s()]/g, '');
+    console.log('[Click-to-Call] Initiating call to:', cleanPhone);
+    
+    // TODO: Integrate with Placetel API
+    // For now, just copy to clipboard and show notification
+    navigator.clipboard.writeText(cleanPhone).then(() => {
+      alert(`Rufnummer ${phoneNumber} wurde in die Zwischenablage kopiert.\n\nPlacetel-Integration wird vorbereitet.`);
+    });
+  };
+
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => {
       const newFilters = { ...prev, [filterType]: value };
