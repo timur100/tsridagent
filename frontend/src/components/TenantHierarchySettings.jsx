@@ -125,7 +125,7 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
             Tenant-Typ
           </label>
           <div className="grid grid-cols-3 gap-3">
-            {['organization', 'country', 'location'].map(type => (
+            {['organization', 'continent', 'country', 'city', 'location'].map(type => (
               <button
                 key={type}
                 type="button"
