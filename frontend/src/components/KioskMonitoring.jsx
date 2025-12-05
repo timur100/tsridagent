@@ -321,6 +321,28 @@ const KioskMonitoring = ({ theme }) => {
           </div>
         ))}
       </div>
+        </>
+      )}
+
+      {/* Alerts Tab */}
+      {activeTab === 'alerts' && (
+        <div className="text-center py-12">
+          <Bell className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+            Warnungen & Benachrichtigungen - In Entwicklung
+          </p>
+        </div>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div className="text-center py-12">
+          <SettingsIcon className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+            Monitoring-Einstellungen - In Entwicklung
+          </p>
+        </div>
+      )}
     </div>
   );
 };
