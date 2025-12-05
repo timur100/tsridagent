@@ -87,7 +87,7 @@ const FleetManagement = ({ selectedTenantId }) => {
         await apiCall(`/api/fleet/${selectedTenantId}/reset`, { method: 'DELETE' });
         toast.success('Mock-Daten gelöscht. Sie können nun echte Daten einbinden.');
         setVehicles([]);
-        setTrips([]);
+        setRentals([]);
         setFuelRecords([]);
         setStatistics(null);
       } catch (error) {
