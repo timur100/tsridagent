@@ -308,40 +308,42 @@ const TenantsPage = ({ onSelectTenant }) => {
             </Card>
           </div>
 
-          {/* Row 2: Device Status */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Online Geräte</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.online_devices}</p>
+          {/* Row 2: Device Status - Only show when not using hierarchy stats */}
+          {!hierarchyStats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Online Geräte</p>
+                    <p className="text-3xl font-bold text-green-600">{stats.online_devices}</p>
+                  </div>
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-500/20' : 'bg-green-200'}`}>
+                    <div className="h-6 w-6 bg-green-600 rounded-full animate-pulse"></div>
+                  </div>
                 </div>
-                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-green-500/20' : 'bg-green-200'}`}>
-                  <div className="h-6 w-6 bg-green-600 rounded-full animate-pulse"></div>
-                </div>
-              </div>
-            </Card>
+              </Card>
 
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Offline Geräte</p>
-                  <p className="text-3xl font-bold text-red-600">{stats.offline_devices}</p>
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Offline Geräte</p>
+                    <p className="text-3xl font-bold text-red-600">{stats.offline_devices}</p>
+                  </div>
+                  <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-red-500/20' : 'bg-red-200'}`}>
+                    <div className="h-6 w-6 bg-red-600 rounded-full"></div>
+                  </div>
                 </div>
-                <div className={`h-12 w-12 rounded-full flex items-center justify-center ${theme === 'dark' ? 'bg-red-500/20' : 'bg-red-200'}`}>
-                  <div className="h-6 w-6 bg-red-600 rounded-full"></div>
-                </div>
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
+          )}
 
           {/* Row 3: Scan Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
