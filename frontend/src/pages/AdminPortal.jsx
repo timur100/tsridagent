@@ -2425,6 +2425,21 @@ const AdminPortalContent = () => {
                     {rndTab === 'anomaly-detection' && (
                       <AIAnalysisManagement />
                     )}
+
+                    {/* Hintergrund-Entfernung */}
+                    {rndTab === 'background-removal' && (
+                      <ImageProcessingManagement />
+                    )}
+
+                    {/* Bildverbesserung */}
+                    {rndTab === 'image-enhancement' && (
+                      <ImageProcessingManagement />
+                    )}
+
+                    {/* Erweiterte OCR */}
+                    {rndTab === 'ocr-advanced' && (
+                      <ImageProcessingManagement />
+                    )}
                     
                     {/* Steuerung */}
                     {rndTab === 'control-system' && (
