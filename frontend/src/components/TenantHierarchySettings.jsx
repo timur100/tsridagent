@@ -144,7 +144,11 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
                     ? 'text-[#c00000]'
                     : theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  {type === 'organization' ? 'Organisation' : type === 'country' ? 'Land' : 'Standort'}
+                  {type === 'organization' ? 'Organisation' : 
+                   type === 'continent' ? 'Kontinent' :
+                   type === 'country' ? 'Land' : 
+                   type === 'city' ? 'Stadt' :
+                   'Standort'}
                 </span>
               </button>
             ))}
