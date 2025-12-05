@@ -558,6 +558,24 @@ const TenantHierarchySidebarV2 = ({
           fetchAllTenants();
         }}
       />
+
+      {/* Delete Organization Modal */}
+      <DeleteOrganizationModal
+        isOpen={showDeleteModal}
+        organization={organizationToDelete}
+        onClose={() => {
+          setShowDeleteModal(false);
+          setOrganizationToDelete(null);
+        }}
+        onSuccess={(result) => {
+          console.log('Organization deleted:', result);
+          fetchAllTenants();
+          if (selectedTenantId === organizationToDelete?.tenant_id) {
+            onSelectTenant && onSelectTenant(null);
+            onFilterChange && onFilterChange(null);
+          }
+        }}
+      />
     </Card>
   );
 };
