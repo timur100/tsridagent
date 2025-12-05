@@ -72,6 +72,7 @@ import TimeTrackingPage from '../components/TimeTrackingPage';
 import PlacetelManagement from '../components/PlacetelManagement';
 import FleetManagement from '../components/FleetManagement';
 import AIAnalysisManagement from '../components/AIAnalysisManagement';
+import AISearchManagement from '../components/AISearchManagement';
 import ImageProcessingManagement from '../components/ImageProcessingManagement';
 import AutomationManagement from '../components/AutomationManagement';
 import toast from 'react-hot-toast';
