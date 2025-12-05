@@ -216,17 +216,17 @@ const TenantHierarchySidebar = ({
           {!hasChildren && <div className="w-4" />}
           
           <div className={`p-1.5 rounded ${
-            node.tenant_type === 'organization' 
+            (node.tenant_level || node.tenant_type) === 'organization' 
               ? 'bg-blue-500 bg-opacity-20' 
-              : node.tenant_type === 'continent'
+              : (node.tenant_level || node.tenant_type) === 'continent'
               ? 'bg-purple-500 bg-opacity-20'
-              : node.tenant_type === 'country' 
+              : (node.tenant_level || node.tenant_type) === 'country' 
               ? 'bg-green-500 bg-opacity-20'
-              : node.tenant_type === 'city'
+              : (node.tenant_level || node.tenant_type) === 'city'
               ? 'bg-yellow-500 bg-opacity-20'
               : 'bg-gray-500 bg-opacity-20'
           }`}>
-            {getTenantIcon(node.tenant_type)}
+            {getTenantIcon(node)}
           </div>
           
           <div className="flex-1 min-w-0">
