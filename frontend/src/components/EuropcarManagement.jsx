@@ -26,24 +26,24 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className={`text-3xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          🔑 Europcar PKW-Vermietung
-        </h2>
-        <p className={`text-base ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Vollständiges Flottenmanagement, Reservierungen und Kundenverwaltung
-        </p>
-      </div>
-
+    <div className="w-full">
       {/* Sub-Tab Navigation */}
       <SubTabNavigation
         tabs={tabs}
         activeTab={activeSubTab}
         onTabChange={setActiveSubTab}
-        theme={theme}
       />
+
+      <div className="space-y-6">
+        {/* Header */}
+        <div>
+          <h2 className={`text-3xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            🔑 Europcar PKW-Vermietung
+          </h2>
+          <p className={`text-base ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Vollständiges Flottenmanagement, Reservierungen und Kundenverwaltung
+          </p>
+        </div>
 
       {/* Content Area */}
       <div className="mt-6">
