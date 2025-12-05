@@ -28,12 +28,15 @@ async def list_all_tenants_for_hierarchy():
                 "tenant_id": 1,
                 "name": 1,
                 "display_name": 1,
+                "tenant_level": 1,
                 "tenant_type": 1,
                 "parent_tenant_id": 1,
                 "country_code": 1,
                 "allow_cross_location_search": 1,
                 "enabled": 1,
-                "status": 1
+                "status": 1,
+                "location_code": 1,
+                "location_id": 1
             }
         ).to_list(10000)
         
