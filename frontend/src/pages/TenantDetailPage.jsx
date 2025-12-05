@@ -294,6 +294,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard' },
     { id: 'overview', label: 'Übersicht' },
+    { id: 'hierarchy', label: 'Hierarchie & Standorte' },
     { id: 'subscription', label: 'Vertrag & Subscription' },
     { id: 'locations', label: 'Standorte' },
     { id: 'devices', label: 'Geräte' },
