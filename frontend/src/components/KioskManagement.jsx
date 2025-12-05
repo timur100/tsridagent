@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Monitor, Plus, Edit, Trash2, Power, RefreshCw, Settings, AlertCircle } from 'lucide-react';
+import { Monitor, Plus, Edit, Trash2, Power, RefreshCw, Settings, AlertCircle, List, BarChart3, Wrench } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const KioskManagement = ({ theme }) => {
   const { apiCall } = useAuth();
+  const [activeTab, setActiveTab] = useState('list');
   const [kiosks, setKiosks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
