@@ -107,6 +107,10 @@ class TenantUpdate(BaseModel):
     api_key: Optional[str] = None
     webhook_url: Optional[str] = None
     server_region: Optional[str] = None
+    parent_tenant_id: Optional[str] = None
+    tenant_type: Optional[str] = None
+    country_code: Optional[str] = None
+    allow_cross_location_search: Optional[bool] = None
     
 class TenantResponse(TenantBase):
     tenant_id: str
