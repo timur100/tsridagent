@@ -219,7 +219,9 @@ const TenantsPage = ({ onSelectTenant }) => {
               Tenants
             </h2>
             <p className={`mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-              {hierarchyFilter 
+              {hierarchyStats && hierarchyStats._hierarchyInfo
+                ? `${hierarchyStats._hierarchyInfo.locations} Standort(e) im ausgewählten Bereich`
+                : hierarchyFilter 
                 ? `${hierarchyFilter.length} Tenant(s) im ausgewählten Bereich`
                 : 'Verwalten Sie alle Mandanten und deren Ressourcen'
               }
