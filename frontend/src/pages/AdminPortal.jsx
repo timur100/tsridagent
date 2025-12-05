@@ -2410,28 +2410,19 @@ const AdminPortalContent = () => {
                       <TimeTrackingPage />
                     )}
                     
-                    {/* KI-Suche - Placeholder */}
+                    {/* KI-Suche */}
                     {rndTab === 'ki-search' && (
-                      <div className="w-full">
-                        <div className="mb-6">
-                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            KI-Suche - Intelligente Dokumentensuche
-                          </h2>
-                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            KI-gestützte Suche und Analyse von Dokumenten
-                          </p>
-                        </div>
-                        
-                        <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
-                          <Search className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                          <h3 className={`text-xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            In Entwicklung
-                          </h3>
-                          <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Dieses Feature wird derzeit entwickelt und steht bald zur Verfügung.
-                          </p>
-                        </Card>
-                      </div>
+                      <AISearchManagement />
+                    )}
+
+                    {/* Dokumentenanalyse */}
+                    {rndTab === 'document-analysis' && (
+                      <AIAnalysisManagement />
+                    )}
+
+                    {/* Anomalieerkennung */}
+                    {rndTab === 'anomaly-detection' && (
+                      <AIAnalysisManagement />
                     )}
                     
                     {/* Steuerung */}
