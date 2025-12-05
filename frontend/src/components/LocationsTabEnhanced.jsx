@@ -699,7 +699,20 @@ const LocationsTabEnhanced = ({
                     <td className={`px-4 py-3 text-sm font-mono whitespace-nowrap ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
-                      {location.phone || '-'}
+                      {location.phone ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleClickToCall(location.phone);
+                          }}
+                          className={`hover:text-[#c00000] transition-colors flex items-center gap-1 ${
+                            theme === 'dark' ? 'hover:text-[#ff0000]' : ''
+                          }`}
+                          title="Anrufen"
+                        >
+                          <span>{location.phone}</span>
+                        </button>
+                      ) : '-'}
                     </td>
                     <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
