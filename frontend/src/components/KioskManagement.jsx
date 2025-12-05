@@ -290,6 +290,28 @@ const KioskManagement = ({ theme }) => {
           ))}
         </div>
       )}
+        </>
+      )}
+
+      {/* Monitoring Tab */}
+      {activeTab === 'monitoring' && (
+        <div className="text-center py-12">
+          <BarChart3 className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+            Kiosk-Monitoring - In Entwicklung
+          </p>
+        </div>
+      )}
+
+      {/* Settings Tab */}
+      {activeTab === 'settings' && (
+        <div className="text-center py-12">
+          <Wrench className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+            Kiosk-Einstellungen - In Entwicklung
+          </p>
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (
