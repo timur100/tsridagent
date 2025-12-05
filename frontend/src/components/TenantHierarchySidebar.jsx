@@ -34,10 +34,15 @@ const TenantHierarchySidebar = ({
     setLoading(true);
     try {
       const response = await fetch(`${BACKEND_URL}/api/tenants/?skip=0&limit=1000`);
+      console.log('Tenant API Response Status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('Tenants loaded:', data.length, 'tenants');
+        console.log('First tenant:', data[0]);
         setTenants(data);
         buildHierarchy(data);
+      } else {
+        console.error('Failed to fetch tenants:', response.status);
       }
     } catch (error) {
       console.error('Error fetching tenants:', error);
