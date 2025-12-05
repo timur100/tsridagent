@@ -189,7 +189,8 @@ async def build_complete_hierarchy():
         print(f"   ✓ Continent: {continent_name}")
         
         for country_name, regions in countries.items():
-            country_id = f"{EUROPCAR_TENANT_ID}-{country_name.lower().replace(' ', '-')}"
+            country_normalized = country_name.lower().replace(' ', '-')
+            country_id = f"{EUROPCAR_TENANT_ID}-{country_normalized}"
             
             await tsrid_db.tenants.update_one(
                 {'tenant_id': country_id},
@@ -207,8 +208,19 @@ async def build_complete_hierarchy():
             )
             country_count += 1
             
-            # Build structure for regions/states and cities
-            if country_name != 'Deutschland':
+            print(f"      Country: {country_name} (id: {country_id})")
+            
+            # Special handling for Germany (use real data)
+            if country_name == 'Deutschland':
+                print(f"      → Building German hierarchy with {len(german_locations)} locations")
+                counts = await build_german_hierarchy(tsrid_db, country_id, german_locations)
+                state_count += counts['states']
+                city_count += counts['cities']
+                location_tenant_count += counts['locations']
+                continue
+            
+            # Build structure for other countries (regions/states and cities)
+            if regions:
                 # Build structure for other countries
                 for region_name, cities in regions.items():
                     region_normalized = region_name.lower().replace(' ', '-').replace("'", '')
