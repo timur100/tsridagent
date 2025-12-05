@@ -110,6 +110,9 @@ const KioskMonitoring = ({ theme }) => {
         </p>
       </div>
 
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className={`p-4 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
