@@ -9,7 +9,8 @@ import EuropcarContracts from './EuropcarContracts';
 import EuropcarReturns from './EuropcarReturns';
 import EuropcarAnalytics from './EuropcarAnalytics';
 import EuropcarAI from './EuropcarAI';
-import { Car, Calendar, Users, FileText, RotateCcw, TrendingUp, MapPin, AlertTriangle, Brain } from 'lucide-react';
+import EuropcarCrossLocationVehicles from './EuropcarCrossLocationVehicles';
+import { Car, Calendar, Users, FileText, RotateCcw, TrendingUp, MapPin, AlertTriangle, Brain, Search } from 'lucide-react';
 
 const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
   const { theme } = useTheme();
@@ -17,6 +18,7 @@ const EuropcarManagement = ({ activeSubTab, setActiveSubTab }) => {
 
   const tabs = [
     { id: 'vehicles', label: 'Fahrzeuge', icon: Car },
+    { id: 'cross-location', label: 'Standortübergreifend', icon: Search },
     { id: 'reservations', label: 'Reservierungen', icon: Calendar },
     { id: 'customers', label: 'Kunden', icon: Users },
     { id: 'contracts', label: 'Verträge', icon: FileText },
