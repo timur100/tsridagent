@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-sync-app.preview.emergentagent.com/api/dhl"
+API_URL="https://fleet-rental-sys.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""
