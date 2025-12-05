@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://europcar-fleet-app.preview.emergentagent.com/api/dhl"
+API_URL="https://tenant-tracker-28.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

@@ -4,7 +4,7 @@
 # Führen Sie diese Befehle aus, um die Webhook-Integration zu testen
 
 API_KEY="G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg"
-WEBHOOK_URL="https://europcar-fleet-app.preview.emergentagent.com/api/webhooks/regula-scan"
+WEBHOOK_URL="https://tenant-tracker-28.preview.emergentagent.com/api/webhooks/regula-scan"
 
 echo "🧪 Regula Webhook Tests mit curl"
 echo "================================"
