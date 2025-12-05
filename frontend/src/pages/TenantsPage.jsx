@@ -430,7 +430,27 @@ const TenantsPage = ({ onSelectTenant }) => {
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
-          {tenants.map((tenant) => (
+          {tenants
+            .filter(tenant => {
+              // Filter by hierarchy if selected
+              if (hierarchyFilter && hierarchyFilter.length > 0) {
+                return hierarchyFilter.includes(tenant.tenant_id);
+              }
+              return true;
+            })
+            .filter(tenant => {
+              // Filter by search query
+              if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                return (
+                  tenant.name?.toLowerCase().includes(query) ||
+                  tenant.display_name?.toLowerCase().includes(query) ||
+                  tenant.tenant_id?.toLowerCase().includes(query)
+                );
+              }
+              return true;
+            })
+            .map((tenant) => (
             <Card
               key={tenant.tenant_id}
               onClick={() => {
