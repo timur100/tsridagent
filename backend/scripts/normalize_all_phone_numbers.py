@@ -24,6 +24,11 @@ def normalize_phone_number(phone_str):
     if re.match(r'^\+\d+\s*\(\d+\)\s*\d+$', phone_str):
         return phone_str
     
+    # Check if already formatted with space separator (e.g., "+49 30 12345678")
+    space_match = re.match(r'^\+49\s+(\d{2,5})\s+(\d{4,10})$', phone_str)
+    if space_match:
+        return f"+49 ({space_match.group(1)}) {space_match.group(2)}"
+    
     # Remove all spaces, hyphens, slashes, dots, parentheses
     cleaned = re.sub(r'[\s\-/\.\(\)]', '', phone_str)
     
