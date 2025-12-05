@@ -669,90 +669,90 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
             <tr>
               <th 
                 onClick={() => handleSort('device_id')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Device-ID {getSortIcon('device_id')}
               </th>
               <th 
+                onClick={() => handleSort('status')}
+                className={`w-20 px-2 py-3 text-center text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                Status {getSortIcon('status')}
+              </th>
+              <th 
                 onClick={() => handleSort('locationcode')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Location {getSortIcon('locationcode')}
               </th>
               <th 
                 onClick={() => handleSort('street')}
-                className={`w-48 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-48 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Straße {getSortIcon('street')}
               </th>
               <th 
                 onClick={() => handleSort('zip')}
-                className={`w-16 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-16 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 PLZ {getSortIcon('zip')}
               </th>
               <th 
                 onClick={() => handleSort('city')}
-                className={`w-32 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-32 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Stadt {getSortIcon('city')}
               </th>
               <th 
                 onClick={() => handleSort('country')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Land {getSortIcon('country')}
               </th>
               <th 
                 onClick={() => handleSort('sn_pc')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 SN-PC {getSortIcon('sn_pc')}
               </th>
               <th 
                 onClick={() => handleSort('sn_sc')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 SN-SC {getSortIcon('sn_sc')}
               </th>
               <th 
                 onClick={() => handleSort('set_id')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Set {getSortIcon('set_id')}
               </th>
               <th 
                 onClick={() => handleSort('tvid')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 TVID {getSortIcon('tvid')}
               </th>
               <th 
                 onClick={() => handleSort('ip')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 IP {getSortIcon('ip')}
               </th>
               <th 
                 onClick={() => handleSort('sw_version')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 SW Vers. {getSortIcon('sw_version')}
               </th>
               <th 
-                onClick={() => handleSort('status')}
-                className={`w-20 px-2 py-3 text-center text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Status {getSortIcon('status')}
-              </th>
-              <th 
                 onClick={() => handleSort('hardware_model')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
               >
                 Hardware {getSortIcon('hardware_model')}
               </th>
               <th 
-                className={`w-24 px-2 py-3 text-center text-xs font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
+                className={`w-24 px-2 py-3 text-center text-xs font-semibold whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}
               >
                 Aktionen
               </th>
