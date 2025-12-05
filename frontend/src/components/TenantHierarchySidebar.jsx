@@ -9,7 +9,8 @@ import {
   RefreshCw,
   Users,
   Filter,
-  X
+  X,
+  Search
 } from 'lucide-react';
 import { Card } from './ui/card';
 
@@ -23,6 +24,8 @@ const TenantHierarchySidebar = ({
   const [loading, setLoading] = useState(true);
   const [expandedNodes, setExpandedNodes] = useState(new Set());
   const [hierarchyTree, setHierarchyTree] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredTree, setFilteredTree] = useState([]);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
