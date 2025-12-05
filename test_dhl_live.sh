@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://fleet-rental-sys.preview.emergentagent.com/api/dhl"
+API_URL="https://europcar-fleet-app.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

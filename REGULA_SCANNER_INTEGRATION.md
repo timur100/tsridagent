@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://fleet-rental-sys.preview.emergentagent.com/portal/admin/id-checks
+   https://europcar-fleet-app.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
