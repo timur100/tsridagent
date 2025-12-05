@@ -368,6 +368,12 @@ async def build_german_hierarchy(tsrid_db, country_id, locations):
                 location_count += 1
     
     print(f"      {state_count} Bundesländer, {city_count} Städte, {location_count} Standorte")
+    
+    return {
+        'states': state_count,
+        'cities': city_count,
+        'locations': location_count
+    }
 
 if __name__ == "__main__":
     asyncio.run(build_complete_hierarchy())
