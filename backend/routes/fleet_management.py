@@ -600,6 +600,6 @@ async def regenerate_fleet_data(
         "success": True,
         "message": f"Mock-Daten für Tenant {tenant_id} neu generiert",
         "vehicles_count": len(fleet_data_store[tenant_id]["vehicles"]),
-        "trips_count": len(fleet_data_store[tenant_id]["trips"]),
+        "rentals_count": len(fleet_data_store[tenant_id]["rentals"]),
         "fuel_records_count": len(fleet_data_store[tenant_id]["fuel_records"])
     }
