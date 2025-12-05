@@ -558,6 +558,7 @@ const TenantsPage = ({ onSelectTenant }) => {
           backendUrl={BACKEND_URL}
         />
       )}
+      </div>
     </div>
   );
 };
