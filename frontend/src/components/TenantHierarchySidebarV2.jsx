@@ -296,14 +296,27 @@ const TenantHierarchySidebarV2 = ({
     }
   };
 
+  const handleDeleteClick = (node, e) => {
+    e.stopPropagation();
+    setOrganizationToDelete({
+      tenant_id: node.tenant_id,
+      name: node.display_name || node.name,
+      locationCount: getLocationCount(node)
+    });
+    setShowDeleteModal(true);
+    setOpenMenuId(null);
+  };
+
   const renderNode = (node, level = 0, parentNodes = []) => {
     const hasChildren = node.children && node.children.length > 0;
     const isExpanded = expandedNodes.has(node.tenant_id);
     const isSelected = selectedTenantId === node.tenant_id;
     const locationCount = getLocationCount(node);
+    const isOrganization = node.tenant_level === 'organization';
+    const isMenuOpen = openMenuId === node.tenant_id;
 
     return (
-      <div key={node.tenant_id} className="mb-0.5">
+      <div key={node.tenant_id} className="mb-0.5 relative">
         <div
           style={{ paddingLeft: `${level * 12}px` }}
           className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-all text-sm ${
