@@ -530,7 +530,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     Storage
                   </span>
                   <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    {tenant.storage_used_gb} / {tenant.limits.max_storage_gb} GB
+                    {tenant.storage_used_gb || 0} / {tenant.limits?.max_storage_gb || '∞'} GB
                   </span>
                 </div>
               </div>
