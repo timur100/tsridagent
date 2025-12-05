@@ -696,7 +696,7 @@ const LocationsTabEnhanced = ({
                     }`}>
                       {location.continent || 'Europa'}
                     </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
+                    <td className={`px-4 py-3 text-sm font-mono whitespace-nowrap ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
                       {location.phone || '-'}
