@@ -154,12 +154,21 @@ async def get_hierarchy_stats(tenant_id: str):
         device_count = 0
         
         # Count users from auth_db
+        # Users are typically stored at organization level, so use org_ids
         user_count = 0
-        for tid in tenant_ids:
-            users = await auth_db.users.count_documents({
-                'tenant_id': tid
-            })
-            user_count += users
+        if org_ids:
+            for oid in org_ids:
+                users = await auth_db.users.count_documents({
+                    'tenant_id': oid
+                })
+                user_count += users
+        else:
+            # Fallback to tenant_ids
+            for tid in tenant_ids:
+                users = await auth_db.users.count_documents({
+                    'tenant_id': tid
+                })
+                user_count += users
         
         return {
             'success': True,
