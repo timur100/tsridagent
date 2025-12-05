@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Activity, Cpu, HardDrive, Wifi, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Activity, Cpu, HardDrive, Wifi, AlertTriangle, CheckCircle, Clock, BarChart3, Bell, Settings as SettingsIcon } from 'lucide-react';
 
 const KioskMonitoring = ({ theme }) => {
+  const [activeTab, setActiveTab] = useState('overview');
   const [monitoringData, setMonitoringData] = useState([
     {
       kiosk_id: '1',
