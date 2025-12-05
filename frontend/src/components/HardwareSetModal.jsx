@@ -123,7 +123,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
               <option value="">-- Standort auswählen --</option>
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
-                  {location.name} {location.code && `(${location.code})`}
+                  {location.name}
                 </option>
               ))}
             </select>
