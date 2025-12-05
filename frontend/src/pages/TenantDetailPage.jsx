@@ -8,6 +8,8 @@ import LocationsTabEnhanced from '../components/LocationsTabEnhanced';
 import LocationModal from '../components/LocationModal';
 import TenantDevicesTab from '../components/TenantDevicesTab';
 import HardwareSetsManagement from '../components/HardwareSetsManagement';
+import TenantHierarchyTree from '../components/TenantHierarchyTree';
+import TenantHierarchySettings from '../components/TenantHierarchySettings';
 import { 
   ArrowLeft, 
   Users, 
