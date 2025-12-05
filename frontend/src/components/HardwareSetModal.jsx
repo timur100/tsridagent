@@ -111,7 +111,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                 setFormData({ 
                   ...formData, 
                   location_id: e.target.value,
-                  location_code: selectedLocation?.code || ''
+                  location_code: selectedLocation?.code || selectedLocation?.location_code || ''
                 });
               }}
               className={`w-full px-4 py-2 rounded-lg border ${
