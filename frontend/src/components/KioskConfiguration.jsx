@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Settings, Monitor, Palette, Type, Layout } from 'lucide-react';
+import { Settings, Monitor, Palette, Type, Layout, List, BarChart3, Wrench } from 'lucide-react';
 
 const KioskConfiguration = ({ theme }) => {
+  const [activeTab, setActiveTab] = useState('display');
   const [config, setConfig] = useState({
     display: {
       orientation: 'landscape',
