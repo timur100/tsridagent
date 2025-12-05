@@ -286,15 +286,17 @@ const TenantHierarchySidebarV2 = ({
               ? 'hover:bg-gray-700'
               : 'hover:bg-gray-100'
           }`}
-          onClick={() => handleTenantClick(node)}
+          onClick={(e) => {
+            // If has children, toggle on click
+            if (hasChildren) {
+              toggleNode(node.tenant_id, node, parentNodes);
+            }
+            handleTenantClick(node);
+          }}
         >
           {hasChildren && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleNode(node.tenant_id, node, parentNodes);
-              }}
-              className={`p-0.5 rounded hover:bg-gray-600 transition-colors flex-shrink-0 ${
+            <div
+              className={`p-0.5 flex-shrink-0 ${
                 theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
@@ -303,7 +305,7 @@ const TenantHierarchySidebarV2 = ({
               ) : (
                 <ChevronRight className="w-3 h-3" />
               )}
-            </button>
+            </div>
           )}
           
           {!hasChildren && <div className="w-4 flex-shrink-0" />}
