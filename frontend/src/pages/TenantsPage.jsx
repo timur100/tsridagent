@@ -345,65 +345,67 @@ const TenantsPage = ({ onSelectTenant }) => {
             </div>
           )}
 
-          {/* Row 3: Scan Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
-            {/* Scans Insgesamt - Moved from Row 1 */}
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans Insgesamt</p>
-                  <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
+          {/* Row 3: Scan Statistics - Only show when not using hierarchy stats */}
+          {!hierarchyStats && (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+              {/* Scans Insgesamt - Moved from Row 1 */}
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans Insgesamt</p>
+                    <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
+                  </div>
+                  <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
                 </div>
-                <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
-              </div>
-            </Card>
+              </Card>
 
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Korrekte Scans</p>
-                  <p className="text-3xl font-bold text-green-600">{stats.correct_scans}</p>
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border border-green-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-green-50 border border-green-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-green-400' : 'text-green-800'}`}>Korrekte Scans</p>
+                    <p className="text-3xl font-bold text-green-600">{stats.correct_scans}</p>
+                  </div>
+                  <CheckCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
                 </div>
-                <CheckCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
-              </div>
-            </Card>
+              </Card>
 
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border border-yellow-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-yellow-50 border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>Unbekannte Scans</p>
-                  <p className="text-3xl font-bold text-yellow-600">{stats.unknown_scans}</p>
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border border-yellow-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-yellow-50 border border-yellow-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-800'}`}>Unbekannte Scans</p>
+                    <p className="text-3xl font-bold text-yellow-600">{stats.unknown_scans}</p>
+                  </div>
+                  <HelpCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
                 </div>
-                <HelpCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`} />
-              </div>
-            </Card>
+              </Card>
 
-            <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
-              theme === 'dark' 
-                ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
-            }`}>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Fehlgeschlagene Scans</p>
-                  <p className="text-3xl font-bold text-red-600">{stats.failed_scans}</p>
+              <Card className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
+                theme === 'dark' 
+                  ? 'bg-[#2a2a2a] border border-red-500/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                  : 'bg-red-50 border border-red-200 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+              }`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-red-400' : 'text-red-800'}`}>Fehlgeschlagene Scans</p>
+                    <p className="text-3xl font-bold text-red-600">{stats.failed_scans}</p>
+                  </div>
+                  <XCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
                 </div>
-                <XCircle className={`h-12 w-12 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
-              </div>
-            </Card>
-          </div>
+              </Card>
+            </div>
+          )}
         </>
       )}
 
