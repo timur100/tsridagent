@@ -111,32 +111,26 @@ const HardwareSetsManagement = ({ tenantId }) => {
 
   const loadLocations = async () => {
     try {
-      // Load locations from hardware sets
       // Load locations from tenants hierarchy
-      try {
-        const hierarchyResult = await apiCall(`/api/tenants-hierarchy/list`);
-        if (hierarchyResult.success && Array.isArray(hierarchyResult.tenants)) {
-          const cleanedLocations = hierarchyResult.tenants
-            .filter(tenant => tenant.tenant_level === 'location' && tenant.location_code)
-            .map(tenant => ({
-              id: tenant.location_code,
-              name: `${tenant.location_code} - ${tenant.display_name || tenant.name || 'Unbekannt'}`,
-              code: tenant.location_code,
-              city: tenant.display_name
-            }))
-            .sort((a, b) => a.code.localeCompare(b.code)); // Alphabetical sort by code
-          
-          setLocations(cleanedLocations);
-        }
-      } catch (locError) {
-        console.error('Error loading locations:', locError);
+      const hierarchyResult = await apiCall(`/api/tenants-hierarchy/list`);
+      if (hierarchyResult.success && Array.isArray(hierarchyResult.tenants)) {
+        const cleanedLocations = hierarchyResult.tenants
+          .filter(tenant => tenant.tenant_level === 'location' && tenant.location_code)
+          .map(tenant => ({
+            id: tenant.location_code,
+            name: `${tenant.location_code} - ${tenant.display_name || tenant.name || 'Unbekannt'}`,
+            code: tenant.location_code,
+            city: tenant.display_name
+          }))
+          .sort((a, b) => a.code.localeCompare(b.code)); // Alphabetical sort by code
+        
+        setLocations(cleanedLocations);
+        console.log('Locations loaded:', cleanedLocations.length);
+      } else {
+        console.log('No tenants in hierarchy result:', hierarchyResult);
       }
-
-      // Load sets
-      const result = await apiCall(`/api/hardware/sets?tenant_id=${tenantId}`);
-      const setsData = result.success ? result.data : result;
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading locations:', error);
     }
   };
 
