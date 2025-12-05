@@ -348,28 +348,28 @@ const FleetManagement = ({ selectedTenantId }) => {
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Circle className="w-3 h-3 fill-green-500 text-green-500" />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Unterwegs</span>
+                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Verfügbar</span>
                     </div>
                     <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {vehicles.filter(v => v.status === 'driving').length}
+                      {statistics.available_vehicles}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Circle className="w-3 h-3 fill-blue-500 text-blue-500" />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Geparkt</span>
+                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Vermietet</span>
                     </div>
                     <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {statistics.parked_vehicles}
+                      {statistics.rented_vehicles}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-2">
                       <Circle className="w-3 h-3 fill-yellow-500 text-yellow-500" />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Leerlauf</span>
+                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>Reinigung</span>
                     </div>
                     <span className={`font-mono font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {vehicles.filter(v => v.status === 'idle').length}
+                      {statistics.cleaning_vehicles || 0}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
