@@ -154,16 +154,6 @@ async def get_hierarchy_stats(tenant_id: str):
         # Count devices from multiple sources
         device_count = 0
         
-        # 1. Count devices from multi_tenant_admin.europcar_devices (main source)
-        # This has devices in format: AAHC01-01, AAHC01-02, etc.
-        if org_ids:
-            # For organization level, count all devices with that tenant_id
-            devices_europcar = await multi_tenant_admin.europcar_devices.count_documents({
-                'tenant_id': {'$in': org_ids}
-            })
-            device_count += devices_europcar
-        
-        # 2. If we're looking at a specific location/city/region, filter by location_code
         # Get all location codes from the selected hierarchy
         location_tenants = await tsrid_db.tenants.find({
             'tenant_id': {'$in': tenant_ids},
@@ -172,23 +162,30 @@ async def get_hierarchy_stats(tenant_id: str):
         
         location_codes = [lt.get('location_code') for lt in location_tenants if lt.get('location_code')]
         
+        # 1. Count devices from multi_tenant_admin.europcar_devices (main source)
+        # This has devices in format: AAHC01-01, AAHC01-02, etc.
+        # Field is 'locationcode' (lowercase, one word)
         if location_codes:
-            # Count devices that match these specific location codes
+            # For specific locations, count devices with matching locationcode
             devices_by_location = await multi_tenant_admin.europcar_devices.count_documents({
-                'location_code': {'$in': location_codes}
+                'locationcode': {'$in': location_codes}
             })
-            # If we have location-specific devices, use that count instead
-            if devices_by_location > 0:
-                device_count = devices_by_location
+            device_count = devices_by_location
+        elif org_ids:
+            # For organization level, count all devices with that tenant_id
+            devices_europcar = await multi_tenant_admin.europcar_devices.count_documents({
+                'tenant_id': {'$in': org_ids}
+            })
+            device_count = devices_europcar
         
-        # 3. Fallback: Count from portal_db.tenant_devices (legacy)
+        # 2. Fallback: Count from portal_db.tenant_devices (legacy)
         if device_count == 0 and org_ids:
             devices_portal = await portal_db.tenant_devices.count_documents({
                 'tenant_id': {'$in': org_ids}
             })
             device_count += devices_portal
         
-        # 4. Fallback: Count from device_db.devices (legacy)
+        # 3. Fallback: Count from device_db.devices (legacy)
         if device_count == 0 and location_codes:
             devices_location = await device_db.devices.count_documents({
                 'location_code': {'$in': location_codes}
