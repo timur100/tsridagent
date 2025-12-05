@@ -260,13 +260,6 @@ async def build_complete_hierarchy():
                             upsert=True
                         )
                         city_count += 1
-            
-            # Special handling for Germany (use real data)
-            if country_name == 'Deutschland':
-                counts = await build_german_hierarchy(tsrid_db, country_id, german_locations)
-                state_count += counts['states']
-                city_count += counts['cities']
-                location_tenant_count += counts['locations']
     
     print(f"\n   Created: {continent_count} continents, {country_count} countries, {state_count} states/regions, {city_count} cities, {location_tenant_count} locations")
     
