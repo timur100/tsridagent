@@ -323,29 +323,47 @@ const TenantHierarchySidebar = ({
         <p className={`text-xs font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           Legende:
         </p>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="p-1 rounded bg-blue-500 bg-opacity-20">
-            <Building2 className="w-3 h-3" />
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-1.5 text-xs">
+            <div className="p-1 rounded bg-blue-500 bg-opacity-20">
+              <Building2 className="w-3 h-3" />
+            </div>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              Organisation
+            </span>
           </div>
-          <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Organisation
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="p-1 rounded bg-green-500 bg-opacity-20">
-            <Globe className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 text-xs">
+            <div className="p-1 rounded bg-purple-500 bg-opacity-20">
+              <Globe className="w-3 h-3" />
+            </div>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              Kontinent
+            </span>
           </div>
-          <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Land
-          </span>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="p-1 rounded bg-gray-500 bg-opacity-20">
-            <MapPin className="w-3 h-3" />
+          <div className="flex items-center gap-1.5 text-xs">
+            <div className="p-1 rounded bg-green-500 bg-opacity-20">
+              <Globe className="w-3 h-3" />
+            </div>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              Land
+            </span>
           </div>
-          <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-            Standort
-          </span>
+          <div className="flex items-center gap-1.5 text-xs">
+            <div className="p-1 rounded bg-yellow-500 bg-opacity-20">
+              <MapPin className="w-3 h-3" />
+            </div>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              Stadt
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs col-span-2">
+            <div className="p-1 rounded bg-gray-500 bg-opacity-20">
+              <MapPin className="w-3 h-3" />
+            </div>
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+              Standort
+            </span>
+          </div>
         </div>
       </div>
     </Card>
