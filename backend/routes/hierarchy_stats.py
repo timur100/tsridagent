@@ -172,18 +172,27 @@ async def get_hierarchy_stats(tenant_id: str):
         # 1. Count devices from multi_tenant_admin.europcar_devices (main source)
         # This has devices in format: AAHC01-01, AAHC01-02, etc.
         # Field is 'locationcode' (lowercase, one word)
+        
+        # Device counting logic:
+        # - If at organization level: count all devices for that org
+        # - If at sub-level with locations: count devices for those specific locations
+        # - If at sub-level WITHOUT locations: 0 devices
+        
         if location_codes:
             # For specific locations, count devices with matching locationcode
             devices_by_location = await multi_tenant_admin.europcar_devices.count_documents({
                 'locationcode': {'$in': location_codes}
             })
             device_count = devices_by_location
-        elif org_ids:
-            # For organization level, count all devices with that tenant_id
+        elif is_org_level and org_ids:
+            # Only at organization level, count all devices with that tenant_id
             devices_europcar = await multi_tenant_admin.europcar_devices.count_documents({
                 'tenant_id': {'$in': org_ids}
             })
             device_count = devices_europcar
+        else:
+            # Sub-level without locations = 0 devices
+            device_count = 0
         
         # 2. Fallback: Count from portal_db.tenant_devices (legacy)
         if device_count == 0 and org_ids:
