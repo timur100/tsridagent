@@ -1,9 +1,24 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Optional
 from pydantic import BaseModel
-from ..middleware.auth import get_current_user, get_current_tenant_id
-from ..db import db
 from datetime import datetime
+import os
+from motor.motor_asyncio import AsyncIOMotorClient
+
+# MongoDB connection
+MONGO_URL = os.getenv('MONGO_URL', 'mongodb://localhost:27017')
+client = AsyncIOMotorClient(MONGO_URL)
+db = client.tsrid_db
+
+# Import after db setup to avoid circular imports
+try:
+    from middleware.auth import get_current_user, get_current_tenant_id
+except:
+    # Fallback for direct import
+    def get_current_user():
+        pass
+    def get_current_tenant_id():
+        pass
 
 router = APIRouter()
 
