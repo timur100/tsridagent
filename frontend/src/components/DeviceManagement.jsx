@@ -699,48 +699,10 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                     : 'border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   {device.device_id}
                 </td>
-                {selectedCustomer === 'all' && (
-                  <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {device.customer || 'Europcar'}
-                  </td>
-                )}
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.locationcode}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.street || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.zip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.city || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.country || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_pc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_sc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.set_id || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.tvid || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.ip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sw_version || '-'}
-                </td>
-                <td className="px-2 py-2 text-center">
+                <td className="px-2 py-2 text-center whitespace-nowrap">
                   <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
                     device.status === 'online' 
                       ? 'bg-green-500/20 text-green-400'
@@ -763,7 +725,45 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                     {device.status === 'online' ? 'Online' : device.status === 'offline' ? 'Offline' : 'Vorbereitung'}
                   </span>
                 </td>
-                <td className={`px-2 py-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                {selectedCustomer === 'all' && (
+                  <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {device.customer || 'Europcar'}
+                  </td>
+                )}
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.locationcode}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.street || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.zip || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.city || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.country || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sn_pc || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sn_sc || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.set_id || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.tvid || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.ip || '-'}
+                </td>
+                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {device.sw_version || '-'}
+                </td>
+                <td className={`px-2 py-2 text-xs whitespace-nowrap ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                   {device.hardware_model || '-'}
                 </td>
               </tr>
