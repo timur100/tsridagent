@@ -15,7 +15,7 @@ import {
 import { useTheme } from '../contexts/ThemeContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from '../components/ui/card';
-import TenantHierarchySidebar from '../components/TenantHierarchySidebar';
+import TenantHierarchySidebarV2 from '../components/TenantHierarchySidebarV2';
 
 const TenantsPage = ({ onSelectTenant }) => {
   const { theme } = useTheme();
