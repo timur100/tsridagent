@@ -431,8 +431,8 @@ const FleetManagement = ({ selectedTenantId }) => {
               <div className="flex gap-2">
                 {[
                   { value: 'all', label: `Alle (${vehicles.length})` },
-                  { value: 'driving', label: `Unterwegs (${vehicles.filter(v => v.status === 'driving').length})` },
-                  { value: 'parked', label: `Geparkt (${vehicles.filter(v => v.status === 'parked').length})` },
+                  { value: 'available', label: `Verfügbar (${vehicles.filter(v => v.status === 'available').length})` },
+                  { value: 'rented', label: `Vermietet (${vehicles.filter(v => v.status === 'rented').length})` },
                   { value: 'maintenance', label: `Wartung (${vehicles.filter(v => v.status === 'maintenance').length})` }
                 ].map(filter => (
                   <button
