@@ -860,6 +860,25 @@ async def get_sales_analytics(
                 product_sales[product_name]['quantity'] += item.get('quantity', 0)
                 product_sales[product_name]['revenue'] += item.get('total_price', 0)
         
+        # Sort and get top products
+        top_products = sorted(
+            product_sales.values(),
+            key=lambda x: x['revenue'],
+            reverse=True
+        )[:10]
+        
+        return {
+            'success': True,
+            'data': {
+                'total_revenue': total_revenue,
+                'total_orders': total_orders,
+                'avg_order_value': avg_order_value,
+                'top_products': top_products
+            }
+        }
+    except Exception as e:
+        print(f"[Fastfood] Error fetching analytics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ==================== DELIVERY ZONES ====================
