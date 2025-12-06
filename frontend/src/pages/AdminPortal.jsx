@@ -2698,6 +2698,14 @@ const AdminPortalContent = () => {
                         {fastfoodSubTab === 'stations' && (
                           <FastfoodStationManagement tenantId="default-tenant" locationId="default-location" />
                         )}
+                        
+                        {fastfoodSubTab === 'delivery' && (
+                          <div className="space-y-8">
+                            <DeliveryZoneManagement tenantId="default-tenant" locationId="default-location" />
+                            <div className="border-t border-gray-200 dark:border-gray-700 my-8"></div>
+                            <DriverManagement tenantId="default-tenant" locationId="default-location" />
+                          </div>
+                        )}
                       </div>
                     )}
                     
