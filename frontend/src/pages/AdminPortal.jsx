@@ -2635,7 +2635,7 @@ const AdminPortalContent = () => {
                         {fastfoodSubTab === 'orders' && (
                           <div className="space-y-4">
                             {/* Orders Sub Navigation */}
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 flex-wrap">
                               <Button
                                 onClick={() => setOrdersView('management')}
                                 variant={ordersView === 'management' ? 'default' : 'outline'}
@@ -2648,6 +2648,18 @@ const AdminPortalContent = () => {
                               >
                                 🖥️ Bestellterminal (Kiosk)
                               </Button>
+                              <Button
+                                onClick={() => setOrdersView('kitchen')}
+                                variant={ordersView === 'kitchen' ? 'default' : 'outline'}
+                              >
+                                👨‍🍳 Küchendisplay (KDS)
+                              </Button>
+                              <Button
+                                onClick={() => setOrdersView('customer')}
+                                variant={ordersView === 'customer' ? 'default' : 'outline'}
+                              >
+                                📺 Kundendisplay
+                              </Button>
                             </div>
 
                             {/* Content */}
@@ -2656,6 +2668,12 @@ const AdminPortalContent = () => {
                             )}
                             {ordersView === 'kiosk' && (
                               <OrderKiosk tenantId="default-tenant" locationId="default-location" />
+                            )}
+                            {ordersView === 'kitchen' && (
+                              <KitchenDisplay tenantId="default-tenant" locationId="default-location" />
+                            )}
+                            {ordersView === 'customer' && (
+                              <CustomerDisplay tenantId="default-tenant" locationId="default-location" />
                             )}
                           </div>
                         )}
