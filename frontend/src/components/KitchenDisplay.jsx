@@ -707,7 +707,7 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
             <div className="flex items-center gap-3 mb-4">
               <User className="h-6 w-6 text-green-400" />
               <h2 className="text-2xl font-bold text-white">
-                Verfügbare Fahrer ({drivers.filter(d => !d.current_delivery_id).length})
+                Fahrer ({drivers.filter(d => d.status === 'available').length} verfügbar / {drivers.length} gesamt)
               </h2>
             </div>
             
