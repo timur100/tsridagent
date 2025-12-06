@@ -237,10 +237,22 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
 
   const startNewOrder = () => {
     setCart([]);
-    setCurrentStep('menu');
+    setCurrentStep('orderType');
+    setOrderType(null);
     setOrderNumber(null);
     setSelectedPayment(null);
     setSelectedCategory(categories.length > 0 ? categories[0].id : null);
+    setDeliveryAddress({
+      customer_name: '',
+      phone: '',
+      street: '',
+      house_number: '',
+      postal_code: '',
+      city: '',
+      additional_info: ''
+    });
+    setSelectedZone(null);
+    setDeliveryFee(0);
   };
 
   const filteredProducts = selectedCategory
