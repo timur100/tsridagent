@@ -608,12 +608,23 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
                     <div className="mb-4 p-3 bg-gray-800/50 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <User className="h-4 w-4 text-gray-400" />
-                        <span className="text-white font-medium">{delivery.customer_name}</span>
+                        <span className="text-white font-medium">
+                          {delivery.delivery_address?.customer_name || 'Kunde'}
+                        </span>
+                      </div>
+                      <div className="text-sm text-gray-300 mb-1">
+                        📞 {delivery.delivery_address?.phone}
                       </div>
                       <div className="flex items-start gap-2">
                         <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
                         <div className="text-sm text-gray-300">
-                          {delivery.delivery_address}
+                          {delivery.delivery_address?.street} {delivery.delivery_address?.house_number}<br />
+                          {delivery.delivery_address?.postal_code} {delivery.delivery_address?.city}
+                          {delivery.delivery_address?.additional_info && (
+                            <div className="text-xs text-gray-400 mt-1">
+                              ℹ️ {delivery.delivery_address.additional_info}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
