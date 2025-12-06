@@ -107,3 +107,16 @@ Die Datenbank enthält 216 Europcar-Geräte mit folgenden Feldern:
 - `status`: "online", "offline", etc.
 
 Für Location "BERT01" sollten Geräte mit IDs wie "BERT01-01", "BERT01-02" existieren.
+
+### Backend Test bereits durchgeführt ✅
+```bash
+# Test mit curl erfolgreich:
+✓ Logged in successfully
+✓ Assignments Endpoint Status: 200
+✓ Success! Found 2 components (PC + Scanner) für BERT01-02
+```
+
+## 🔄 Services Status
+- ✅ Backend neu gestartet und läuft
+- ✅ Frontend Cache geleert und neu gestartet
+- ✅ Beide Services sind RUNNING
