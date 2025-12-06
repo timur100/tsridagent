@@ -132,7 +132,7 @@ const FastfoodMenuManagement = () => {
         });
         toast.success('Produkt aktualisiert');
       } else {
-        await apiCall(`/api/fastfood/products?tenant_id=${selectedTenant.id}`, {
+        await apiCall(`/api/fastfood/products?tenant_id=${activeTenant.id}`, {
           method: 'POST',
           body: JSON.stringify(productData)
         });
