@@ -2625,10 +2625,7 @@ const AdminPortalContent = () => {
                         )}
 
                         {fastfoodSubTab === 'menu' && (
-                          <div className="text-center p-12">
-                            <UtensilsCrossed className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Menü-Verwaltung - In Entwicklung</p>
-                          </div>
+                          <FastfoodMenuManagement />
                         )}
                         {fastfoodSubTab === 'orders' && (
                           <div className="text-center p-12">
