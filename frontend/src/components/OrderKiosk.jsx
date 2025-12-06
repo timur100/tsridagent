@@ -173,21 +173,33 @@ const OrderKiosk = ({ tenantId = 'default-tenant', locationId = 'default-locatio
         terminal_id: 'kiosk-001',
         items: cart,
         payment_method: method,
-        language: language
+        language: language,
+        channel: orderType === 'delivery' ? 'web' : 'kiosk'
       };
 
-      const result = await apiCall('/api/fastfood/orders', {
-        method: 'POST',
-        body: JSON.stringify(orderData)
-      });
+      const result = await apiCall('/api/fastfood/orders', 'POST', orderData);
 
       if (result.success) {
         const order = result.data?.data || result.data;
         
+        // If delivery order, create delivery order
+        if (orderType === 'delivery') {
+          const deliveryData = {
+            order_id: order.id,
+            delivery_address: deliveryAddress,
+            delivery_fee: deliveryZones[0]?.delivery_fee || 2.99,
+            delivery_zone_id: selectedZone?.id || (deliveryZones[0]?.id || null)
+          };
+          
+          await apiCall(
+            `/api/fastfood/delivery-orders?tenant_id=${tenantId}&location_id=${locationId}`,
+            'POST',
+            deliveryData
+          );
+        }
+        
         // Update payment status
-        await apiCall(`/api/fastfood/orders/${order.id}/payment?payment_status=completed`, {
-          method: 'PUT'
-        });
+        await apiCall(`/api/fastfood/orders/${order.id}/payment?payment_status=completed`, 'PATCH');
 
         setOrderNumber(order.order_number);
         setCurrentStep('confirmation');
