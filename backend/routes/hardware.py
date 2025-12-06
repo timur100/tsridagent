@@ -212,6 +212,39 @@ async def delete_set(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/sets/{set_id}/assignments")
+async def get_set_assignments(
+    set_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all device assignments for a hardware set"""
+    try:
+        # Get all active assignments for this set
+        assignments = await db.set_assignments.find(
+            {'set_id': set_id, 'active': True},
+            {"_id": 0}
+        ).to_list(length=None)
+        
+        # Enrich with device details
+        enriched_assignments = []
+        for assignment in assignments:
+            device = await db.hardware_devices.find_one(
+                {'id': assignment['device_id']},
+                {"_id": 0}
+            )
+            if device:
+                enriched_assignments.append({
+                    **assignment,
+                    **device
+                })
+        
+        return {"success": True, "data": enriched_assignments}
+    except Exception as e:
+        print(f"[Hardware] Error fetching assignments for set {set_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 # ==================== HARDWARE DEVICES ====================
 
 @router.get("/devices", response_model=List[HardwareDevice])
