@@ -74,7 +74,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
     }
   };
   
-  const loadAvailableDevices = async (locationCode) => {
+  const loadAvailableDevices = async (locationCode, deviceNumber) => {
     if (!locationCode) {
       setAvailableDevices([]);
       return;
@@ -82,7 +82,9 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
     
     setLoadingAvailableDevices(true);
     try {
-      console.log('[HardwareSetModal] Loading devices for location:', locationCode);
+      // Build the set code (e.g., BERT01-02)
+      const setCode = deviceNumber ? `${locationCode}-${deviceNumber}` : null;
+      console.log('[HardwareSetModal] Loading components for set:', setCode || `location ${locationCode}`);
       
       // Load ALL devices for this tenant
       const devicesResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}`);
@@ -91,24 +93,32 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
         const allDevices = devicesResult.data || devicesResult;
         console.log('[HardwareSetModal] Total devices loaded:', allDevices.length);
         
-        // Filter by locationcode (not location_id!)
-        const locationDevices = allDevices.filter(d => 
-          d.locationcode && d.locationcode.toUpperCase() === locationCode.toUpperCase()
-        );
-        console.log('[HardwareSetModal] Devices at location:', locationDevices.length);
+        let components = [];
         
-        // Show all devices at this location (including those in sets)
-        // This allows users to see what's available and potentially reassign
-        if (locationDevices.length > 0) {
-          setAvailableDevices(locationDevices);
-        } else {
-          // No devices at location - show warehouse devices
-          console.log('[HardwareSetModal] No devices at location, loading warehouse...');
-          const warehouseDevices = allDevices.filter(d => 
-            !d.locationcode || d.locationcode === '' || d.status === 'verfügbar'
+        // If we have a complete set code, find that specific set's components
+        if (setCode) {
+          const setDevice = allDevices.find(d => 
+            d.device_id && d.device_id.toUpperCase() === setCode.toUpperCase()
           );
-          setAvailableDevices(warehouseDevices.slice(0, 50)); // Limit to 50
+          
+          if (setDevice) {
+            console.log('[HardwareSetModal] Found set device:', setDevice.device_id);
+            // Extract components from the set device fields
+            components = extractComponentsFromSetDevice(setDevice);
+            console.log('[HardwareSetModal] Extracted components:', components.length);
+          }
         }
+        
+        // If no specific components found, show all devices at this location
+        if (components.length === 0) {
+          const locationDevices = allDevices.filter(d => 
+            d.locationcode && d.locationcode.toUpperCase() === locationCode.toUpperCase()
+          );
+          console.log('[HardwareSetModal] Showing location devices:', locationDevices.length);
+          components = locationDevices.map(d => extractComponentsFromSetDevice(d)).flat();
+        }
+        
+        setAvailableDevices(components);
       }
     } catch (error) {
       console.error('Error loading available devices:', error);
@@ -116,6 +126,55 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
     } finally {
       setLoadingAvailableDevices(false);
     }
+  };
+  
+  // Extract individual components from a set device record
+  const extractComponentsFromSetDevice = (setDevice) => {
+    const components = [];
+    
+    // PC Component
+    if (setDevice.sn_pc) {
+      components.push({
+        id: `${setDevice.device_id}_PC`,
+        device_type: 'PC',
+        serial_number: setDevice.sn_pc,
+        manufacturer: 'PC',
+        status: setDevice.status || 'unbekannt',
+        locationcode: setDevice.locationcode,
+        parent_set: setDevice.device_id,
+        device_id: setDevice.device_id
+      });
+    }
+    
+    // Scanner Component
+    if (setDevice.sn_sc) {
+      components.push({
+        id: `${setDevice.device_id}_SC`,
+        device_type: 'Scanner',
+        serial_number: setDevice.sn_sc,
+        manufacturer: 'Scanner',
+        status: setDevice.status || 'unbekannt',
+        locationcode: setDevice.locationcode,
+        parent_set: setDevice.device_id,
+        device_id: setDevice.device_id
+      });
+    }
+    
+    // Add more component types if they exist in your data
+    if (setDevice.imei_1) {
+      components.push({
+        id: `${setDevice.device_id}_IMEI1`,
+        device_type: 'Mobile Device',
+        serial_number: setDevice.imei_1,
+        manufacturer: 'Mobile',
+        status: setDevice.status || 'unbekannt',
+        locationcode: setDevice.locationcode,
+        parent_set: setDevice.device_id,
+        device_id: setDevice.device_id
+      });
+    }
+    
+    return components;
   };
   
   // Load available devices when location changes
