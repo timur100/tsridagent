@@ -133,14 +133,24 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
     try {
       await onSubmit({
         ...formData,
-        tenant_id: tenantId
+        tenant_id: tenantId,
+        selected_devices: selectedDevices  // Pass selected devices to parent
       });
       onClose();
+      setSelectedDevices([]);  // Reset
     } catch (error) {
       console.error('Error saving set:', error);
     } finally {
       setSaving(false);
     }
+  };
+  
+  const toggleDeviceSelection = (deviceId) => {
+    setSelectedDevices(prev => 
+      prev.includes(deviceId) 
+        ? prev.filter(id => id !== deviceId)
+        : [...prev, deviceId]
+    );
   };
 
   if (!show) return null;
