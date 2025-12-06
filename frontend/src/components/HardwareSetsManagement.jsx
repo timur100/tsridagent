@@ -228,13 +228,48 @@ const HardwareSetsManagement = ({ tenantId }) => {
       }
       
       // No existing set found - create new one
+      const { selected_devices, ...setData } = data;
       const result = await apiCall('/api/hardware/sets', {
         method: 'POST',
-        body: JSON.stringify(data)
+        body: JSON.stringify(setData)
       });
       
       if (result.success || result.id) {
-        toast.success('Set erfolgreich erstellt');
+        const createdSet = result.data || result;
+        const setId = createdSet.id;
+        
+        // Assign selected devices to the set
+        if (selected_devices && selected_devices.length > 0) {
+          let assignedCount = 0;
+          let failedCount = 0;
+          
+          for (const deviceId of selected_devices) {
+            try {
+              await apiCall('/api/hardware/assign-device', {
+                method: 'POST',
+                body: JSON.stringify({
+                  set_id: setId,
+                  device_id: deviceId,
+                  tenant_id: tenantId
+                })
+              });
+              assignedCount++;
+            } catch (error) {
+              console.error(`Failed to assign device ${deviceId}:`, error);
+              failedCount++;
+            }
+          }
+          
+          if (assignedCount > 0) {
+            toast.success(`Set erstellt und ${assignedCount} Gerät(e) zugewiesen`);
+          }
+          if (failedCount > 0) {
+            toast.error(`${failedCount} Gerät(e) konnten nicht zugewiesen werden`);
+          }
+        } else {
+          toast.success('Set erfolgreich erstellt');
+        }
+        
         await loadData();
         setShowSetModal(false);
       }
