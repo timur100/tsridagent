@@ -298,6 +298,15 @@ const DataCheckPage = () => {
       {/* Results Section */}
       {testResults && (
         <div className="space-y-4">
+          {/* Debug Info - Remove after testing */}
+          {!testResults.summary && (
+            <div className="p-4 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
+              <p className="text-sm text-yellow-800 dark:text-yellow-400">
+                Debug: testResults vorhanden, aber summary fehlt. Keys: {Object.keys(testResults).join(', ')}
+              </p>
+            </div>
+          )}
+          
           {/* Summary Stats */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {Object.entries(testResults.summary || {}).map(([category, count]) => {
