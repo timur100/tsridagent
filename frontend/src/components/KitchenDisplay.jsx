@@ -582,9 +582,12 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <div className="text-2xl font-bold text-white mb-1">
-                          Bestellung #{delivery.order_number?.split('-').pop()}
+                          Lieferung #{delivery.id?.split('-')[0].toUpperCase()}
                         </div>
                         <div className="text-sm text-gray-400">
+                          💰 Liefergebühr: €{delivery.delivery_fee?.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-gray-500">
                           {new Date(delivery.created_at).toLocaleString('de-DE')}
                         </div>
                       </div>
