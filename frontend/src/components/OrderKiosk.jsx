@@ -329,6 +329,60 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
       </div>
 
       <div className="max-w-7xl mx-auto p-6">
+        {/* Order Type Selection */}
+        {currentStep === 'orderType' && (
+          <div className="max-w-4xl mx-auto">
+            <h2 className={`text-3xl font-bold mb-8 text-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {language === 'de' ? 'Wie möchten Sie bestellen?' : 'How would you like to order?'}
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Pickup Option */}
+              <Card
+                onClick={() => {
+                  setOrderType('pickup');
+                  setCurrentStep('menu');
+                }}
+                className={`p-8 cursor-pointer transition-all hover:scale-105 hover:shadow-2xl ${
+                  theme === 'dark' ? 'bg-[#2a2a2a] border-2 border-gray-700 hover:border-orange-500' : 'bg-white border-2 border-gray-200 hover:border-orange-500'
+                }`}
+              >
+                <div className="text-center">
+                  <Store className="h-24 w-24 mx-auto mb-4 text-orange-500" />
+                  <h3 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {language === 'de' ? 'Abholung' : 'Pickup'}
+                  </h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {language === 'de' ? 'Bestellen Sie und holen Sie im Restaurant ab' : 'Order and pick up at the restaurant'}
+                  </p>
+                </div>
+              </Card>
+
+              {/* Delivery Option */}
+              <Card
+                onClick={() => {
+                  setOrderType('delivery');
+                  loadDeliveryZones();
+                  setCurrentStep('menu');
+                }}
+                className={`p-8 cursor-pointer transition-all hover:scale-105 hover:shadow-2xl ${
+                  theme === 'dark' ? 'bg-[#2a2a2a] border-2 border-gray-700 hover:border-blue-500' : 'bg-white border-2 border-gray-200 hover:border-blue-500'
+                }`}
+              >
+                <div className="text-center">
+                  <Truck className="h-24 w-24 mx-auto mb-4 text-blue-500" />
+                  <h3 className={`text-2xl font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    {language === 'de' ? 'Lieferung' : 'Delivery'}
+                  </h3>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {language === 'de' ? 'Lassen Sie sich Ihre Bestellung liefern' : 'Get your order delivered'}
+                  </p>
+                </div>
+              </Card>
+            </div>
+          </div>
+        )}
+
         {/* Menu Selection */}
         {currentStep === 'menu' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
