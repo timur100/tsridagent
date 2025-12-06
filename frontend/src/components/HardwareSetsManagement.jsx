@@ -999,6 +999,27 @@ const HardwareSetsManagement = ({ tenantId }) => {
                               >
                                 <Eye className="h-4 w-4" />
                               </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setEditingSet(set);
+                                  setShowSetModal(true);
+                                }}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-blue-900/30 text-blue-400' : 'hover:bg-blue-100 text-blue-600'}`}
+                                title="Set bearbeiten"
+                              >
+                                <Edit2 className="h-4 w-4" />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeleteSet(set.id);
+                                }}
+                                className={`p-2 rounded-lg transition-colors ${theme === 'dark' ? 'hover:bg-red-900/30 text-red-400' : 'hover:bg-red-100 text-red-600'}`}
+                                title="Set löschen"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
                             </div>
                           </td>
                         </tr>
