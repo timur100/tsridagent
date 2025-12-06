@@ -1,0 +1,268 @@
+"""
+Test Center API Routes - Data Validation and Testing
+"""
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List
+from datetime import datetime, timezone
+import os
+from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
+from routes.portal_auth import verify_token
+
+router = APIRouter(prefix="/api/test-center", tags=["Test Center"])
+
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+client = AsyncIOMotorClient(MONGO_URL)
+db = client['main_db']
+multi_tenant_db = client['multi_tenant_admin']
+tsrid_db = client['tsrid_db']
+
+
+class DataCheckRequest(BaseModel):
+    serial_numbers: List[str]
+
+
+@router.post("/data-check")
+async def run_data_check(
+    request: DataCheckRequest,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Validate device and location data, check serial numbers
+    
+    Categories:
+    - correct: Valid data, correct assignments
+    - incorrect: Invalid data, incorrect assignments
+    - unused: Serial number not found in database
+    - closed_location: Device at closed location
+    - defective: Device marked as defective
+    - in_warehouse: Device in warehouse/storage
+    """
+    try:
+        results = {
+            'correct': [],
+            'incorrect': [],
+            'unused': [],
+            'closed_location': [],
+            'defective': [],
+            'in_warehouse': []
+        }
+        
+        # Get all locations to check if closed
+        locations = await tsrid_db.tenants.find(
+            {'tenant_level': 'location'},
+            {'_id': 0, 'location_code': 1, 'status': 1, 'display_name': 1, 'name': 1}
+        ).to_list(length=None)
+        
+        location_map = {
+            loc['location_code']: {
+                'status': loc.get('status', 'unknown'),
+                'name': loc.get('display_name') or loc.get('name')
+            }
+            for loc in locations if loc.get('location_code')
+        }
+        
+        # Process each serial number
+        for serial_number in request.serial_numbers:
+            sn_clean = serial_number.strip()
+            if not sn_clean:
+                continue
+            
+            found = False
+            result_entry = {
+                'serial_number': sn_clean,
+                'device_type': None,
+                'location': None,
+                'status': None,
+                'notes': None
+            }
+            
+            # Check in Europcar devices (PC, Scanner components)
+            europcar_devices = await multi_tenant_db.europcar_devices.find(
+                {
+                    '$or': [
+                        {'sn_pc': {'$regex': sn_clean, '$options': 'i'}},
+                        {'sn_sc': {'$regex': sn_clean, '$options': 'i'}},
+                        {'imei_1': {'$regex': sn_clean, '$options': 'i'}}
+                    ]
+                },
+                {'_id': 0}
+            ).to_list(length=None)
+            
+            for device in europcar_devices:
+                found = True
+                device_id = device.get('device_id')
+                locationcode = device.get('locationcode')
+                status = device.get('status', 'unknown')
+                
+                # Determine device type
+                device_type = None
+                if device.get('sn_pc') and sn_clean.lower() in device['sn_pc'].lower():
+                    device_type = 'PC'
+                elif device.get('sn_sc') and sn_clean.lower() in device['sn_sc'].lower():
+                    device_type = 'Scanner'
+                elif device.get('imei_1') and sn_clean.lower() in device['imei_1'].lower():
+                    device_type = 'Mobile Device'
+                
+                result_entry.update({
+                    'device_type': device_type,
+                    'location': f"{locationcode} - {location_map.get(locationcode, {}).get('name', 'Unknown')}",
+                    'status': status,
+                    'notes': f"Set: {device_id}"
+                })
+                
+                # Categorize
+                location_info = location_map.get(locationcode, {})
+                location_status = location_info.get('status', 'unknown')
+                
+                if status == 'defekt' or status == 'defective':
+                    results['defective'].append(result_entry.copy())
+                elif location_status in ['closed', 'inactive', 'geschlossen']:
+                    results['closed_location'].append(result_entry.copy())
+                elif status in ['verfügbar_lager', 'warehouse', 'lager']:
+                    results['in_warehouse'].append(result_entry.copy())
+                elif status in ['online', 'aktiv', 'active'] and locationcode:
+                    results['correct'].append(result_entry.copy())
+                else:
+                    results['incorrect'].append({
+                        **result_entry,
+                        'notes': f"Unklarer Status: {status}"
+                    })
+            
+            # Check in regular hardware devices
+            hardware_devices = await db.hardware_devices.find(
+                {'serial_number': {'$regex': sn_clean, '$options': 'i'}},
+                {'_id': 0}
+            ).to_list(length=None)
+            
+            for device in hardware_devices:
+                found = True
+                device_type = device.get('hardware_type') or device.get('device_type')
+                location_id = device.get('current_location_id')
+                status = device.get('current_status', 'unknown')
+                
+                # Get location name
+                location_name = None
+                if location_id:
+                    location = await tsrid_db.tenants.find_one(
+                        {'id': location_id},
+                        {'_id': 0, 'display_name': 1, 'name': 1, 'location_code': 1, 'status': 1}
+                    )
+                    if location:
+                        location_name = f"{location.get('location_code')} - {location.get('display_name') or location.get('name')}"
+                        location_status = location.get('status', 'unknown')
+                    else:
+                        location_status = 'unknown'
+                else:
+                    location_status = 'unknown'
+                
+                result_entry.update({
+                    'device_type': device_type,
+                    'location': location_name or 'Keine Zuordnung',
+                    'status': status,
+                    'notes': None
+                })
+                
+                # Categorize
+                if status == 'defekt' or status == 'defective':
+                    results['defective'].append(result_entry.copy())
+                elif location_status in ['closed', 'inactive', 'geschlossen']:
+                    results['closed_location'].append(result_entry.copy())
+                elif status in ['verfügbar_lager', 'warehouse', 'lager']:
+                    results['in_warehouse'].append(result_entry.copy())
+                elif status in ['aktiv', 'active', 'im_einsatz'] and location_name:
+                    results['correct'].append(result_entry.copy())
+                else:
+                    results['incorrect'].append({
+                        **result_entry,
+                        'notes': 'Unvollständige Daten oder falsche Zuordnung'
+                    })
+            
+            # If not found anywhere
+            if not found:
+                results['unused'].append({
+                    'serial_number': sn_clean,
+                    'device_type': None,
+                    'location': None,
+                    'status': 'Nicht gefunden',
+                    'notes': 'Seriennummer existiert nicht in der Datenbank'
+                })
+        
+        # Calculate summary
+        summary = {
+            'correct': len(results['correct']),
+            'incorrect': len(results['incorrect']),
+            'unused': len(results['unused']),
+            'closed_location': len(results['closed_location']),
+            'defective': len(results['defective']),
+            'in_warehouse': len(results['in_warehouse'])
+        }
+        
+        return {
+            'success': True,
+            'data': {
+                'summary': summary,
+                'results': results,
+                'total_checked': len(request.serial_numbers),
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            }
+        }
+        
+    except Exception as e:
+        print(f"[TestCenter] Error in data check: {e}")
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/validation-stats")
+async def get_validation_stats(
+    token_data: dict = Depends(verify_token)
+):
+    """Get overall data validation statistics"""
+    try:
+        # Count devices by status
+        europcar_total = await multi_tenant_db.europcar_devices.count_documents({})
+        hardware_total = await db.hardware_devices.count_documents({})
+        
+        # Count locations
+        active_locations = await tsrid_db.tenants.count_documents({
+            'tenant_level': 'location',
+            'status': {'$ne': 'closed'}
+        })
+        closed_locations = await tsrid_db.tenants.count_documents({
+            'tenant_level': 'location',
+            'status': 'closed'
+        })
+        
+        # Count devices with issues
+        defective_europcar = await multi_tenant_db.europcar_devices.count_documents({
+            'status': {'$in': ['defekt', 'defective']}
+        })
+        defective_hardware = await db.hardware_devices.count_documents({
+            'current_status': {'$in': ['defekt', 'defective']}
+        })
+        
+        return {
+            'success': True,
+            'data': {
+                'total_devices': {
+                    'europcar': europcar_total,
+                    'hardware': hardware_total,
+                    'total': europcar_total + hardware_total
+                },
+                'locations': {
+                    'active': active_locations,
+                    'closed': closed_locations,
+                    'total': active_locations + closed_locations
+                },
+                'issues': {
+                    'defective_devices': defective_europcar + defective_hardware,
+                    'closed_locations': closed_locations
+                }
+            }
+        }
+    except Exception as e:
+        print(f"[TestCenter] Error getting validation stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
