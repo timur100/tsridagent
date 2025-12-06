@@ -14,6 +14,9 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
   const { apiCall } = useAuth();
   
   const [orders, setOrders] = useState([]);
+  const [deliveryOrders, setDeliveryOrders] = useState([]);
+  const [drivers, setDrivers] = useState([]);
+  const [activeTab, setActiveTab] = useState('kitchen'); // 'kitchen' or 'delivery'
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [fullscreen, setFullscreen] = useState(false);
   const [lastOrderCount, setLastOrderCount] = useState(0);
