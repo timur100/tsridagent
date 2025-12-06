@@ -2581,6 +2581,7 @@ const AdminPortalContent = () => {
                             { id: 'overview', label: 'Übersicht', icon: TrendingUp },
                             { id: 'menu', label: 'Menü-Verwaltung', icon: UtensilsCrossed },
                             { id: 'orders', label: 'Bestellungen', icon: ShoppingCart },
+                            { id: 'terminals', label: 'Terminals', icon: Monitor },
                             { id: 'analytics', label: 'Analysen', icon: FileText }
                           ]}
                           activeTab={fastfoodSubTab}
