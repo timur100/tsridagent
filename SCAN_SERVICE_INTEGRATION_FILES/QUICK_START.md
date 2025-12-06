@@ -22,7 +22,7 @@
 ### Schritt-für-Schritt Anleitung:
 
 ### 1️⃣ VSCode für scan-verify-hub öffnen
-Öffnen Sie: https://asset-manager-pro-2.preview.emergentagent.com/?folder=/app
+Öffnen Sie: https://inventry-3.preview.emergentagent.com/?folder=/app
 
 ### 2️⃣ Dateien kopieren
 
@@ -52,8 +52,8 @@ Fügen Sie diese Zeilen zur `/app/backend/.env` im scan-verify-hub hinzu:
 ```env
 # Webhook Integration
 WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-ID_CHECK_WEBHOOK_URL=https://asset-manager-pro-2.preview.emergentagent.com/api/webhooks/scan-completed
-ID_CHECK_IMAGE_UPLOAD_URL=https://asset-manager-pro-2.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+ID_CHECK_WEBHOOK_URL=https://inventry-3.preview.emergentagent.com/api/webhooks/scan-completed
+ID_CHECK_IMAGE_UPLOAD_URL=https://inventry-3.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
 ```
 
 **D) Dependencies installieren:**
@@ -180,7 +180,7 @@ python test_webhook_integration.py
 
 ### Test 1: Health Check
 ```bash
-curl https://asset-manager-pro-2.preview.emergentagent.com/api/webhooks/health
+curl https://inventry-3.preview.emergentagent.com/api/webhooks/health
 ```
 Erwartete Antwort:
 ```json
@@ -244,7 +244,7 @@ tail -f /var/log/supervisor/backend.*.log | grep "Webhook"
 **Lösung:**
 1. Queue prüfen: `sqlite3 /app/backend/scan_queue.db "SELECT * FROM scan_queue;"`
 2. Logs prüfen: `tail -f /var/log/supervisor/backend.*.log`
-3. Health Check: `curl https://asset-manager-pro-2.preview.emergentagent.com/api/webhooks/health`
+3. Health Check: `curl https://inventry-3.preview.emergentagent.com/api/webhooks/health`
 
 ### Problem: Retry Worker läuft nicht
 **Lösung:**
