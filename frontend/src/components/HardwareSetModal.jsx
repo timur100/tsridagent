@@ -358,13 +358,22 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                                     {device.manufacturer} {device.model && `- ${device.model}`}
                                   </p>
                                 )}
-                                {!device.location_id && (
-                                  <span className={`text-xs px-2 py-1 rounded mt-1 inline-block ${
-                                    theme === 'dark' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
-                                  }`}>
-                                    Aus Lager
-                                  </span>
-                                )}
+                                <div className="flex gap-2 mt-1 flex-wrap">
+                                  {!device.locationcode && (
+                                    <span className={`text-xs px-2 py-1 rounded ${
+                                      theme === 'dark' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
+                                    }`}>
+                                      Aus Lager
+                                    </span>
+                                  )}
+                                  {device.current_set_id && (
+                                    <span className={`text-xs px-2 py-1 rounded ${
+                                      theme === 'dark' ? 'bg-orange-900/30 text-orange-400' : 'bg-orange-100 text-orange-700'
+                                    }`}>
+                                      Bereits in Set: {device.current_set_id}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
