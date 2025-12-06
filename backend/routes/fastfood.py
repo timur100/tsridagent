@@ -101,6 +101,23 @@ class CreateOrderModel(BaseModel):
     items: List[OrderItemModel]
     payment_method: PaymentMethod
     language: str = "de"
+    channel: OrderChannel = OrderChannel.KIOSK
+    # Channel-specific fields
+    drive_in_lane: Optional[str] = None  # Lane 1, Lane 2
+    vehicle_number: Optional[str] = None  # Kennzeichen
+    parking_spot: Optional[str] = None  # Parkplatz-Nr
+    qr_code: Optional[str] = None  # QR-Code für Parkplatz
+
+
+class StationModel(BaseModel):
+    name: str
+    name_en: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    color: str = "#gray"
+    display_order: int = 0
+    active: bool = True
+    category_ids: List[str] = []  # Welche Kategorien gehören zu dieser Station
 
 
 class TerminalModel(BaseModel):
