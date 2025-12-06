@@ -544,6 +544,198 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
           </div>
         </div>
       </div>
+        </>
+      )}
+
+      {activeTab === 'delivery' && (
+        <div className="space-y-6">
+          {/* Delivery Orders */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <Truck className="h-6 w-6 text-blue-400" />
+              <h2 className="text-2xl font-bold text-white">
+                Lieferaufträge ({deliveryOrders.length})
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {deliveryOrders.length === 0 ? (
+                <Card className="bg-gray-800 border-gray-700 p-12 text-center col-span-full">
+                  <Truck className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                  <p className="text-gray-400 text-lg">Keine aktiven Lieferungen</p>
+                </Card>
+              ) : (
+                deliveryOrders.map(delivery => (
+                  <Card
+                    key={delivery.id}
+                    className={`p-6 border-2 ${
+                      delivery.delivery_status === 'pending' 
+                        ? 'bg-orange-900/30 border-orange-500' 
+                        : delivery.delivery_status === 'assigned'
+                        ? 'bg-blue-900/30 border-blue-500'
+                        : delivery.delivery_status === 'picked_up'
+                        ? 'bg-yellow-900/30 border-yellow-500'
+                        : 'bg-green-900/30 border-green-500'
+                    }`}
+                  >
+                    {/* Delivery Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="text-2xl font-bold text-white mb-1">
+                          Bestellung #{delivery.order_number?.split('-').pop()}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          {new Date(delivery.created_at).toLocaleString('de-DE')}
+                        </div>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                        delivery.delivery_status === 'pending' 
+                          ? 'bg-orange-500 text-white' 
+                          : delivery.delivery_status === 'assigned'
+                          ? 'bg-blue-500 text-white'
+                          : delivery.delivery_status === 'picked_up'
+                          ? 'bg-yellow-500 text-black'
+                          : 'bg-green-500 text-white'
+                      }`}>
+                        {delivery.delivery_status === 'pending' && 'Wartend'}
+                        {delivery.delivery_status === 'assigned' && 'Zugewiesen'}
+                        {delivery.delivery_status === 'picked_up' && 'Unterwegs'}
+                        {delivery.delivery_status === 'out_for_delivery' && 'Auslieferung'}
+                      </div>
+                    </div>
+
+                    {/* Customer Info */}
+                    <div className="mb-4 p-3 bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center gap-2 mb-2">
+                        <User className="h-4 w-4 text-gray-400" />
+                        <span className="text-white font-medium">{delivery.customer_name}</span>
+                      </div>
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-gray-400 mt-0.5" />
+                        <div className="text-sm text-gray-300">
+                          {delivery.delivery_address}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Driver Assignment */}
+                    {delivery.delivery_status === 'pending' && (
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Fahrer zuweisen:
+                        </label>
+                        <div className="flex gap-2">
+                          {drivers.filter(d => !d.current_delivery_id).map(driver => (
+                            <Button
+                              key={driver.id}
+                              onClick={() => assignDriver(delivery.id, driver.id)}
+                              variant="outline"
+                              size="sm"
+                              className="text-xs"
+                            >
+                              {driver.name}
+                            </Button>
+                          ))}
+                          {drivers.filter(d => !d.current_delivery_id).length === 0 && (
+                            <p className="text-sm text-gray-400">Keine verfügbaren Fahrer</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Current Driver */}
+                    {delivery.driver_name && (
+                      <div className="mb-4 p-3 bg-blue-900/30 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-blue-400" />
+                          <span className="text-blue-400 font-medium">
+                            Fahrer: {delivery.driver_name}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Status Actions */}
+                    <div className="flex gap-2">
+                      {delivery.delivery_status === 'assigned' && (
+                        <Button
+                          onClick={() => updateDeliveryStatus(delivery.id, 'picked_up')}
+                          className="flex-1 bg-yellow-600 hover:bg-yellow-700"
+                        >
+                          Abgeholt
+                        </Button>
+                      )}
+                      {delivery.delivery_status === 'picked_up' && (
+                        <Button
+                          onClick={() => updateDeliveryStatus(delivery.id, 'out_for_delivery')}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700"
+                        >
+                          Unterwegs
+                        </Button>
+                      )}
+                      {delivery.delivery_status === 'out_for_delivery' && (
+                        <Button
+                          onClick={() => updateDeliveryStatus(delivery.id, 'delivered')}
+                          className="flex-1 bg-green-600 hover:bg-green-700"
+                        >
+                          Zugestellt
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Available Drivers */}
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <User className="h-6 w-6 text-green-400" />
+              <h2 className="text-2xl font-bold text-white">
+                Verfügbare Fahrer ({drivers.filter(d => !d.current_delivery_id).length})
+              </h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {drivers.map(driver => (
+                <Card
+                  key={driver.id}
+                  className={`p-4 border-2 ${
+                    driver.current_delivery_id 
+                      ? 'bg-yellow-900/30 border-yellow-500' 
+                      : 'bg-green-900/30 border-green-500'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-lg font-bold text-white">
+                        {driver.name}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        {driver.phone}
+                      </div>
+                    </div>
+                    <div className={`px-2 py-1 rounded-full text-xs font-bold ${
+                      driver.current_delivery_id 
+                        ? 'bg-yellow-500 text-black' 
+                        : 'bg-green-500 text-white'
+                    }`}>
+                      {driver.current_delivery_id ? 'Beschäftigt' : 'Verfügbar'}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+              {drivers.length === 0 && (
+                <Card className="bg-gray-800 border-gray-700 p-8 text-center col-span-full">
+                  <User className="h-12 w-12 mx-auto mb-3 text-gray-600" />
+                  <p className="text-gray-400">Keine Fahrer registriert</p>
+                </Card>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Statistics Footer */}
       <div className={`mt-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-800'} rounded-lg p-4`}>
