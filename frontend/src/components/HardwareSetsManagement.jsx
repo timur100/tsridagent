@@ -193,6 +193,41 @@ const HardwareSetsManagement = ({ tenantId }) => {
 
   const handleCreateSet = async (data) => {
     try {
+      // First check if a set with this location and device_number already exists
+      if (data.location_code && data.device_number) {
+        const full_code = `${data.location_code}-${data.device_number}`;
+        const existingResult = await apiCall(`/api/hardware/sets?tenant_id=${tenantId}`);
+        
+        if (existingResult.success || Array.isArray(existingResult.data)) {
+          const existingSets = existingResult.data || existingResult;
+          const existingSet = existingSets.find(set => set.full_code === full_code);
+          
+          if (existingSet) {
+            // Set already exists - ask user if they want to edit it
+            const userConfirmed = window.confirm(
+              `Ein Set mit dem Code "${full_code}" existiert bereits.\n\n` +
+              `Möchten Sie es jetzt bearbeiten?`
+            );
+            
+            if (userConfirmed) {
+              // Load the set with its devices
+              const setDetailResult = await apiCall(`/api/hardware/sets/${existingSet.id}`);
+              if (setDetailResult.success || setDetailResult.data) {
+                const setData = setDetailResult.data || setDetailResult;
+                setEditingSet(setData);
+                // Modal will automatically switch to edit mode
+                toast.info('Set wird zum Bearbeiten geladen...');
+                return;
+              }
+            } else {
+              setShowSetModal(false);
+              return;
+            }
+          }
+        }
+      }
+      
+      // No existing set found - create new one
       const result = await apiCall('/api/hardware/sets', {
         method: 'POST',
         body: JSON.stringify(data)
