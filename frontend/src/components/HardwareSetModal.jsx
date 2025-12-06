@@ -120,10 +120,11 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
   
   // Load available devices when location changes
   useEffect(() => {
-    if (formData.location_id && !editing) {
-      loadAvailableDevices(formData.location_id);
+    if (formData.location_code && !editing) {
+      console.log('[HardwareSetModal] Location changed to:', formData.location_code);
+      loadAvailableDevices(formData.location_code);
     }
-  }, [formData.location_id]);
+  }, [formData.location_code]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
