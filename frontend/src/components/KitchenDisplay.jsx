@@ -130,6 +130,35 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
   const receivedOrders = orders.filter(o => o.status === 'received');
   const preparingOrders = orders.filter(o => o.status === 'preparing');
 
+  // Aggregate products across all active orders
+  const getProductSummary = () => {
+    const summary = {};
+    
+    orders.forEach(order => {
+      order.items.forEach(item => {
+        if (!summary[item.product_name]) {
+          summary[item.product_name] = {
+            name: item.product_name,
+            totalQuantity: 0,
+            orderNumbers: [],
+            orders: []
+          };
+        }
+        summary[item.product_name].totalQuantity += item.quantity;
+        summary[item.product_name].orderNumbers.push(order.order_number?.split('-').pop());
+        summary[item.product_name].orders.push({
+          orderNumber: order.order_number?.split('-').pop(),
+          quantity: item.quantity
+        });
+      });
+    });
+    
+    // Sort by total quantity (most needed first)
+    return Object.values(summary).sort((a, b) => b.totalQuantity - a.totalQuantity);
+  };
+
+  const productSummary = getProductSummary();
+
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-900'} p-6`}>
       {/* Header */}
