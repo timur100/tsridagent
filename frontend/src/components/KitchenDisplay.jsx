@@ -210,6 +210,61 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
         </div>
       </div>
 
+      {/* Product Summary - Aggregate View */}
+      {orders.length > 0 && (
+        <div className={`mb-6 ${theme === 'dark' ? 'bg-gradient-to-r from-purple-900/30 to-blue-900/30' : 'bg-gradient-to-r from-purple-800 to-blue-800'} rounded-lg p-6 border-2 border-purple-500`}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-purple-500 p-2 rounded-lg">
+              <Package className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white">
+                Produktzusammenfassung - Gesamtmenge
+              </h2>
+              <p className="text-purple-200 text-sm">
+                Für effiziente Zubereitung: Alle aktuellen Bestellungen aggregiert
+              </p>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            {productSummary.map((product, idx) => (
+              <Card
+                key={idx}
+                className="bg-white/10 backdrop-blur-sm border-2 border-white/20 p-4 hover:bg-white/20 transition-all"
+              >
+                <div className="text-center">
+                  <div className="text-5xl font-black text-white mb-2">
+                    {product.totalQuantity}x
+                  </div>
+                  <div className="text-white font-bold text-sm mb-2 line-clamp-2">
+                    {product.name}
+                  </div>
+                  <div className="text-xs text-purple-200">
+                    aus {product.orders.length} Bestellung{product.orders.length !== 1 ? 'en' : ''}
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1 justify-center">
+                    {product.orderNumbers.slice(0, 3).map((num, i) => (
+                      <span
+                        key={i}
+                        className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full font-mono"
+                      >
+                        #{num}
+                      </span>
+                    ))}
+                    {product.orderNumbers.length > 3 && (
+                      <span className="text-xs text-purple-200">
+                        +{product.orderNumbers.length - 3}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* New Orders Column */}
         <div>
