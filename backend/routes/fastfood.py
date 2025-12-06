@@ -624,6 +624,112 @@ async def delete_terminal(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== STATIONS ====================
+
+@router.post("/stations")
+async def create_station(
+    station: StationModel,
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new kitchen station"""
+    try:
+        station_doc = {
+            'id': str(uuid4()),
+            'tenant_id': tenant_id,
+            'location_id': location_id,
+            **station.dict(),
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc)
+        }
+        
+        await db.stations.insert_one(station_doc)
+        station_doc.pop('_id', None)
+        
+        return {'success': True, 'data': station_doc}
+    except Exception as e:
+        print(f"[Fastfood] Error creating station: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/stations")
+async def get_stations(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    active_only: bool = True,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all stations for a tenant/location"""
+    try:
+        query = {'tenant_id': tenant_id}
+        
+        if location_id:
+            query['$or'] = [
+                {'location_id': location_id},
+                {'location_id': None}
+            ]
+        
+        if active_only:
+            query['active'] = True
+        
+        stations = await db.stations.find(
+            query,
+            {'_id': 0}
+        ).sort('display_order', 1).to_list(length=None)
+        
+        return {'success': True, 'data': stations}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching stations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/stations/{station_id}")
+async def update_station(
+    station_id: str,
+    station: StationModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a station"""
+    try:
+        result = await db.stations.update_one(
+            {'id': station_id},
+            {'$set': {
+                **station.dict(),
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Station not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating station: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/stations/{station_id}")
+async def delete_station(
+    station_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a station (soft delete)"""
+    try:
+        result = await db.stations.update_one(
+            {'id': station_id},
+            {'$set': {'active': False, 'updated_at': datetime.now(timezone.utc)}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Station not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error deleting station: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== ANALYTICS ====================
 
 @router.get("/analytics/sales")
