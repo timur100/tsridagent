@@ -69,16 +69,10 @@ async def run_data_check(
             if not sn_clean:
                 continue
             
-            found = False
-            result_entry = {
-                'serial_number': sn_clean,
-                'device_type': None,
-                'location': None,
-                'status': None,
-                'notes': None
-            }
+            found_in_europcar = False
+            found_in_hardware = False
             
-            # Check in Europcar devices (PC, Scanner components)
+            # Check in Europcar devices FIRST (priority)
             europcar_devices = await multi_tenant_db.europcar_devices.find(
                 {
                     '$or': [
@@ -90,8 +84,9 @@ async def run_data_check(
                 {'_id': 0}
             ).to_list(length=None)
             
+            # Process Europcar devices
             for device in europcar_devices:
-                found = True
+                found_in_europcar = True
                 device_id = device.get('device_id')
                 locationcode = device.get('locationcode')
                 status = device.get('status', 'unknown')
@@ -105,82 +100,83 @@ async def run_data_check(
                 elif device.get('imei_1') and sn_clean.lower() in device['imei_1'].lower():
                     device_type = 'Mobile Device'
                 
-                result_entry.update({
+                result_entry = {
+                    'serial_number': sn_clean,
                     'device_type': device_type,
                     'location': f"{locationcode} - {location_map.get(locationcode, {}).get('name', 'Unknown')}",
                     'status': status,
                     'notes': f"Set: {device_id}"
-                })
+                }
                 
-                # Categorize
+                # Categorize with improved logic
                 location_info = location_map.get(locationcode, {})
                 location_status = location_info.get('status', 'unknown')
                 
-                if status == 'defekt' or status == 'defective':
+                if status in ['defekt', 'defective']:
                     results['defective'].append(result_entry.copy())
                 elif location_status in ['closed', 'inactive', 'geschlossen']:
                     results['closed_location'].append(result_entry.copy())
                 elif status in ['verfügbar_lager', 'warehouse', 'lager']:
                     results['in_warehouse'].append(result_entry.copy())
-                elif status in ['online', 'aktiv', 'active'] and locationcode:
+                elif locationcode and device_id:
+                    # Device has location and device_id = CORRECT (even if offline)
                     results['correct'].append(result_entry.copy())
                 else:
                     results['incorrect'].append({
                         **result_entry,
-                        'notes': f"Unklarer Status: {status}"
+                        'notes': f"Fehlende Zuordnung"
                     })
             
-            # Check in regular hardware devices
-            hardware_devices = await db.hardware_devices.find(
-                {'serial_number': {'$regex': sn_clean, '$options': 'i'}},
-                {'_id': 0}
-            ).to_list(length=None)
-            
-            for device in hardware_devices:
-                found = True
-                device_type = device.get('hardware_type') or device.get('device_type')
-                location_id = device.get('current_location_id')
-                status = device.get('current_status', 'unknown')
+            # Only check hardware_devices if NOT found in Europcar (avoid duplicates)
+            if not found_in_europcar:
+                hardware_devices = await db.hardware_devices.find(
+                    {'serial_number': {'$regex': sn_clean, '$options': 'i'}},
+                    {'_id': 0}
+                ).to_list(length=None)
                 
-                # Get location name
-                location_name = None
-                if location_id:
-                    location = await tsrid_db.tenants.find_one(
-                        {'id': location_id},
-                        {'_id': 0, 'display_name': 1, 'name': 1, 'location_code': 1, 'status': 1}
-                    )
-                    if location:
-                        location_name = f"{location.get('location_code')} - {location.get('display_name') or location.get('name')}"
-                        location_status = location.get('status', 'unknown')
-                    else:
-                        location_status = 'unknown'
-                else:
+                for device in hardware_devices:
+                    found_in_hardware = True
+                    device_type = device.get('hardware_type') or device.get('device_type')
+                    location_id = device.get('current_location_id')
+                    status = device.get('current_status', 'unknown')
+                    
+                    # Get location name
+                    location_name = None
                     location_status = 'unknown'
-                
-                result_entry.update({
-                    'device_type': device_type,
-                    'location': location_name or 'Keine Zuordnung',
-                    'status': status,
-                    'notes': None
-                })
-                
-                # Categorize
-                if status == 'defekt' or status == 'defective':
-                    results['defective'].append(result_entry.copy())
-                elif location_status in ['closed', 'inactive', 'geschlossen']:
-                    results['closed_location'].append(result_entry.copy())
-                elif status in ['verfügbar_lager', 'warehouse', 'lager']:
-                    results['in_warehouse'].append(result_entry.copy())
-                elif status in ['aktiv', 'active', 'im_einsatz'] and location_name:
-                    results['correct'].append(result_entry.copy())
-                else:
-                    results['incorrect'].append({
-                        **result_entry,
-                        'notes': 'Unvollständige Daten oder falsche Zuordnung'
-                    })
+                    if location_id:
+                        location = await tsrid_db.tenants.find_one(
+                            {'id': location_id},
+                            {'_id': 0, 'display_name': 1, 'name': 1, 'location_code': 1, 'status': 1}
+                        )
+                        if location:
+                            location_name = f"{location.get('location_code')} - {location.get('display_name') or location.get('name')}"
+                            location_status = location.get('status', 'unknown')
+                    
+                    result_entry = {
+                        'serial_number': sn_clean,
+                        'device_type': device_type,
+                        'location': location_name or 'Keine Zuordnung',
+                        'status': status,
+                        'notes': 'Aus Hardware-DB'
+                    }
+                    
+                    # Categorize
+                    if status in ['defekt', 'defective']:
+                        results['defective'].append(result_entry.copy())
+                    elif location_status in ['closed', 'inactive', 'geschlossen']:
+                        results['closed_location'].append(result_entry.copy())
+                    elif status in ['verfügbar_lager', 'warehouse', 'lager']:
+                        results['in_warehouse'].append(result_entry.copy())
+                    elif status in ['aktiv', 'active', 'im_einsatz'] and location_name:
+                        results['correct'].append(result_entry.copy())
+                    else:
+                        results['incorrect'].append({
+                            **result_entry,
+                            'notes': 'Unvollständige Daten oder fehlende Standortzuordnung'
+                        })
             
             # If not found anywhere
-            if not found:
+            if not found_in_europcar and not found_in_hardware:
                 results['unused'].append({
                     'serial_number': sn_clean,
                     'device_type': None,
