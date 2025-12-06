@@ -82,6 +82,7 @@ import FastfoodOrdersManagement from '../components/FastfoodOrdersManagement';
 import KitchenDisplay from '../components/KitchenDisplay';
 import CustomerDisplay from '../components/CustomerDisplay';
 import FastfoodTerminalManagement from '../components/FastfoodTerminalManagement';
+import FastfoodStationManagement from '../components/FastfoodStationManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
