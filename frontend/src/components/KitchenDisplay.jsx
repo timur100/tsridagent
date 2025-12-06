@@ -5,7 +5,7 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import {
   Clock, Check, ChefHat, AlertCircle, Volume2, VolumeX,
-  RefreshCw, Maximize2, Minimize2, Bell, Package
+  RefreshCw, Maximize2, Minimize2, Bell, Package, Truck, MapPin, User
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
