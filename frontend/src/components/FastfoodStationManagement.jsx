@@ -62,9 +62,6 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
     try {
       // Fetch stations
       const stationsRes = await apiCall(`/api/fastfood/stations?tenant_id=${tenantId}&location_id=${locationId}`);
-      console.log('[StationManagement] Stations API response:', stationsRes);
-      console.log('[StationManagement] stationsRes.data type:', typeof stationsRes?.data);
-      console.log('[StationManagement] stationsRes.data:', stationsRes?.data);
       
       if (stationsRes?.success) {
         // Handle both array and nested object responses
@@ -74,7 +71,6 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
         } else if (stationsRes.data && Array.isArray(stationsRes.data.data)) {
           stationsData = stationsRes.data.data;
         }
-        console.log('[StationManagement] Setting stations:', stationsData.length, 'stations');
         setStations(stationsData);
       }
 
