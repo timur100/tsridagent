@@ -147,6 +147,63 @@ class TerminalModel(BaseModel):
     printer_ip: Optional[str] = None
 
 
+
+# ==================== DELIVERY SERVICE MODELS ====================
+
+class DeliveryZoneModel(BaseModel):
+    name: str  # z.B. "Innenstadt", "Vorort Nord"
+    description: Optional[str] = None
+    center_lat: float  # Zentrum Breitengrad
+    center_lng: float  # Zentrum Längengrad
+    radius_km: float  # Lieferradius in km
+    delivery_fee: float  # Liefergebühr in EUR
+    min_order_value: float = 0.0  # Mindestbestellwert
+    estimated_time_min: int = 30  # Geschätzte Lieferzeit in Minuten
+    active: bool = True
+    color: Optional[str] = "#3b82f6"  # Farbe für Karte
+
+
+class DeliveryAddressModel(BaseModel):
+    customer_name: str
+    phone: str
+    street: str
+    house_number: str
+    postal_code: str
+    city: str
+    additional_info: Optional[str] = None  # z.B. "Klingel: Müller", "2. Stock"
+    lat: Optional[float] = None  # Für Entfernungsberechnung
+    lng: Optional[float] = None
+
+
+class DriverModel(BaseModel):
+    name: str
+    email: Optional[str] = None
+    phone: str
+    vehicle_type: str  # Auto, Motorrad, Fahrrad
+    vehicle_number: Optional[str] = None  # Kennzeichen
+    status: DriverStatus = DriverStatus.OFFLINE
+    active: bool = True
+
+
+class DeliveryOrderModel(BaseModel):
+    order_id: str  # Verknüpfung zur Hauptbestellung
+    delivery_address: DeliveryAddressModel
+    delivery_zone_id: Optional[str] = None
+    driver_id: Optional[str] = None  # Zugewiesener Fahrer
+    delivery_status: DeliveryStatus = DeliveryStatus.PENDING
+    delivery_fee: float = 0.0
+    estimated_delivery_time: Optional[datetime] = None
+    actual_delivery_time: Optional[datetime] = None
+    customer_notes: Optional[str] = None
+    driver_notes: Optional[str] = None
+
+
+class TrackingUpdateModel(BaseModel):
+    driver_lat: float
+    driver_lng: float
+    timestamp: Optional[datetime] = None
+
+
 # ==================== CATEGORIES ====================
 
 @router.post("/categories")
