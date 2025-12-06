@@ -153,7 +153,13 @@ const OrderKiosk = ({ tenantId = 'default-tenant', locationId = 'default-locatio
       toast.error(language === 'de' ? 'Warenkorb ist leer' : 'Cart is empty');
       return;
     }
-    setCurrentStep('payment');
+    
+    // If delivery, go to address form first
+    if (orderType === 'delivery') {
+      setCurrentStep('delivery');
+    } else {
+      setCurrentStep('payment');
+    }
   };
 
   const handlePayment = async (method) => {
