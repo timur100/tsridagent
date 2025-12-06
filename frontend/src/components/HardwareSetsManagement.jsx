@@ -114,10 +114,10 @@ const HardwareSetsManagement = ({ tenantId }) => {
       console.log('[HardwareSetsManagement] Loading locations...');
       // Load locations from tenants hierarchy
       const hierarchyResult = await apiCall(`/api/tenants-hierarchy/list`);
-      console.log('[HardwareSetsManagement] Hierarchy result:', hierarchyResult?.success, 'Tenants:', hierarchyResult?.tenants?.length);
+      console.log('[HardwareSetsManagement] Hierarchy result:', hierarchyResult?.success, 'Tenants:', hierarchyResult?.data?.tenants?.length);
       
-      if (hierarchyResult.success && Array.isArray(hierarchyResult.tenants)) {
-        const cleanedLocations = hierarchyResult.tenants
+      if (hierarchyResult.success && hierarchyResult.data && Array.isArray(hierarchyResult.data.tenants)) {
+        const cleanedLocations = hierarchyResult.data.tenants
           .filter(tenant => tenant.tenant_level === 'location' && tenant.location_code)
           .map(tenant => ({
             id: tenant.location_code,
