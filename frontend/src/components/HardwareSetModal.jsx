@@ -86,8 +86,8 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       const setCode = deviceNumber ? `${locationCode}-${deviceNumber}` : null;
       console.log('[HardwareSetModal] Loading components for set:', setCode || `location ${locationCode}`);
       
-      // Load ALL devices for this tenant
-      const devicesResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}`);
+      // Load Europcar devices (not the portal devices!)
+      const devicesResult = await apiCall(`/api/portal/europcar-devices`);
       
       if (devicesResult.success || Array.isArray(devicesResult.data)) {
         const allDevices = devicesResult.data || devicesResult;
