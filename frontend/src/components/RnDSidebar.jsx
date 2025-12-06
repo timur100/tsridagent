@@ -134,6 +134,14 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       items: [
         { id: 'placetel', label: 'Placetel', emoji: '☎️' }
       ]
+    },
+    {
+      id: 'test-center',
+      label: 'Test Center',
+      icon: FlaskConical,
+      items: [
+        { id: 'data-check', label: 'Daten Check', emoji: '🔍' }
+      ]
     }
   ];
 
