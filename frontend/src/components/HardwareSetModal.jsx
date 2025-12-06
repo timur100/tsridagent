@@ -21,6 +21,9 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
   
   const [devices, setDevices] = useState([]);
   const [loadingDevices, setLoadingDevices] = useState(false);
+  const [availableDevices, setAvailableDevices] = useState([]);
+  const [loadingAvailableDevices, setLoadingAvailableDevices] = useState(false);
+  const [selectedDevices, setSelectedDevices] = useState([]);
   
   const [formData, setFormData] = useState({
     set_name: '',
