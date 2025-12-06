@@ -91,9 +91,16 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       
       if (devicesResult.success || Array.isArray(devicesResult.data)) {
         // Extract devices from nested structure
-        let allDevices = devicesResult.data || devicesResult;
-        if (allDevices.devices && Array.isArray(allDevices.devices)) {
-          allDevices = allDevices.devices;
+        // apiCall returns: { success, data, status }
+        // API returns: { success: true, data: { summary: {...}, devices: [...] } }
+        // So devicesResult.data.data.devices is the actual devices array
+        let allDevices = [];
+        if (devicesResult.data?.data?.devices && Array.isArray(devicesResult.data.data.devices)) {
+          allDevices = devicesResult.data.data.devices;
+        } else if (devicesResult.data?.devices && Array.isArray(devicesResult.data.devices)) {
+          allDevices = devicesResult.data.devices;
+        } else if (Array.isArray(devicesResult.data)) {
+          allDevices = devicesResult.data;
         }
         console.log('[HardwareSetModal] Total devices loaded:', allDevices.length);
         
