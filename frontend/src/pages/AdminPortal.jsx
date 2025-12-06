@@ -83,6 +83,8 @@ import KitchenDisplay from '../components/KitchenDisplay';
 import CustomerDisplay from '../components/CustomerDisplay';
 import FastfoodTerminalManagement from '../components/FastfoodTerminalManagement';
 import FastfoodStationManagement from '../components/FastfoodStationManagement';
+import DriverManagement from '../components/DriverManagement';
+import DeliveryZoneManagement from '../components/DeliveryZoneManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
