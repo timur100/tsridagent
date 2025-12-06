@@ -1085,7 +1085,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Hierarchy Statistics Belgium Edge Case Testing"
+    - "Fastfood Stationen-Verwaltung (Station Management) Backend APIs Testing"
+    - "Fastfood Stationen-Verwaltung Frontend UI Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
