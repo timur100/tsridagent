@@ -2631,7 +2631,31 @@ const AdminPortalContent = () => {
                           <FastfoodMenuManagement />
                         )}
                         {fastfoodSubTab === 'orders' && (
-                          <OrderKiosk tenantId="default-tenant" locationId="default-location" />
+                          <div className="space-y-4">
+                            {/* Orders Sub Navigation */}
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => setOrdersView('management')}
+                                variant={ordersView === 'management' ? 'default' : 'outline'}
+                              >
+                                📊 Bestellübersicht (Admin)
+                              </Button>
+                              <Button
+                                onClick={() => setOrdersView('kiosk')}
+                                variant={ordersView === 'kiosk' ? 'default' : 'outline'}
+                              >
+                                🖥️ Bestellterminal (Kiosk)
+                              </Button>
+                            </div>
+
+                            {/* Content */}
+                            {ordersView === 'management' && (
+                              <FastfoodOrdersManagement tenantId="default-tenant" />
+                            )}
+                            {ordersView === 'kiosk' && (
+                              <OrderKiosk tenantId="default-tenant" locationId="default-location" />
+                            )}
+                          </div>
                         )}
                         {fastfoodSubTab === 'analytics' && (
                           <div className="text-center p-12">
