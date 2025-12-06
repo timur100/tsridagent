@@ -62,8 +62,11 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
     try {
       // Fetch stations
       const stationsRes = await apiCall(`/api/fastfood/stations?tenant_id=${tenantId}&location_id=${locationId}`);
+      console.log('[StationManagement] Stations API response:', stationsRes);
       if (stationsRes?.success) {
-        setStations(stationsRes.data || []);
+        const stationsData = stationsRes.data || [];
+        console.log('[StationManagement] Setting stations:', stationsData.length, 'stations');
+        setStations(stationsData);
       }
 
       // Fetch categories for linking
