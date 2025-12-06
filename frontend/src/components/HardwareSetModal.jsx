@@ -381,13 +381,9 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                     {availableDevices.map((device) => (
                       <div 
                         key={device.id}
-                        onClick={() => !device.current_set_id && toggleDeviceSelection(device.id)}
+                        onClick={() => toggleDeviceSelection(device.id)}
                         className={`p-3 rounded-lg border transition-all ${
-                          device.current_set_id
-                            ? theme === 'dark'
-                              ? 'bg-[#1a1a1a] border-gray-700 opacity-60 cursor-not-allowed'
-                              : 'bg-gray-100 border-gray-300 opacity-60 cursor-not-allowed'
-                            : selectedDevices.includes(device.id)
+                          selectedDevices.includes(device.id)
                             ? theme === 'dark' 
                               ? 'bg-[#c00000]/20 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer' 
                               : 'bg-red-50 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer'
