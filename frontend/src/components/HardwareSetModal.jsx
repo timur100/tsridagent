@@ -74,31 +74,40 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
     }
   };
   
-  const loadAvailableDevices = async (locationId) => {
-    if (!locationId) {
+  const loadAvailableDevices = async (locationCode) => {
+    if (!locationCode) {
       setAvailableDevices([]);
       return;
     }
     
     setLoadingAvailableDevices(true);
     try {
-      // Load devices for this location that are not assigned to any set
-      const devicesResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}&location_id=${locationId}`);
+      console.log('[HardwareSetModal] Loading devices for location:', locationCode);
+      
+      // Load ALL devices for this tenant
+      const devicesResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}`);
       
       if (devicesResult.success || Array.isArray(devicesResult.data)) {
         const allDevices = devicesResult.data || devicesResult;
-        // Filter for devices without a current_set_id (unassigned)
-        const unassignedDevices = allDevices.filter(d => !d.current_set_id);
+        console.log('[HardwareSetModal] Total devices loaded:', allDevices.length);
         
-        // If no devices at location, load warehouse devices
-        if (unassignedDevices.length === 0) {
-          const warehouseResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}&status=verfügbar`);
-          if (warehouseResult.success || Array.isArray(warehouseResult.data)) {
-            const warehouseDevices = warehouseResult.data || warehouseResult;
-            setAvailableDevices(warehouseDevices.filter(d => !d.current_set_id));
-          }
+        // Filter by locationcode (not location_id!)
+        const locationDevices = allDevices.filter(d => 
+          d.locationcode && d.locationcode.toUpperCase() === locationCode.toUpperCase()
+        );
+        console.log('[HardwareSetModal] Devices at location:', locationDevices.length);
+        
+        // Show all devices at this location (including those in sets)
+        // This allows users to see what's available and potentially reassign
+        if (locationDevices.length > 0) {
+          setAvailableDevices(locationDevices);
         } else {
-          setAvailableDevices(unassignedDevices);
+          // No devices at location - show warehouse devices
+          console.log('[HardwareSetModal] No devices at location, loading warehouse...');
+          const warehouseDevices = allDevices.filter(d => 
+            !d.locationcode || d.locationcode === '' || d.status === 'verfügbar'
+          );
+          setAvailableDevices(warehouseDevices.slice(0, 50)); // Limit to 50
         }
       }
     } catch (error) {
