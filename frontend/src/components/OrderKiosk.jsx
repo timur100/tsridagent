@@ -64,6 +64,37 @@ const OrderKiosk = ({ tenantId = 'default-tenant', locationId = 'default-locatio
     }
   };
 
+  const loadDeliveryZones = async () => {
+    try {
+      const result = await apiCall(`/api/fastfood/delivery-zones?tenant_id=${tenantId}&location_id=${locationId}`);
+      if (result.success) {
+        const zones = result.data?.data || result.data || [];
+        setDeliveryZones(zones.filter(z => z.active));
+      }
+    } catch (error) {
+      console.error('Error loading delivery zones:', error);
+    }
+  };
+
+  const validateDeliveryAddress = async () => {
+    // Simple validation for now
+    if (!deliveryAddress.customer_name || !deliveryAddress.phone || 
+        !deliveryAddress.street || !deliveryAddress.postal_code || !deliveryAddress.city) {
+      toast.error('Bitte füllen Sie alle Pflichtfelder aus');
+      return false;
+    }
+    
+    // If zones are available, pick first one as default
+    if (deliveryZones.length > 0 && !selectedZone) {
+      const zone = deliveryZones[0];
+      setSelectedZone(zone);
+      setDeliveryFee(zone.delivery_fee);
+    }
+    
+    return true;
+  };
+
+
   const addToCart = (product) => {
     const existingItem = cart.find(item => item.product_id === product.id);
     
