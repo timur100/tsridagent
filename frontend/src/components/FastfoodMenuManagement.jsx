@@ -94,7 +94,7 @@ const FastfoodMenuManagement = () => {
         });
         toast.success('Kategorie aktualisiert');
       } else {
-        await apiCall(`/api/fastfood/categories?tenant_id=${selectedTenant.id}`, {
+        await apiCall(`/api/fastfood/categories?tenant_id=${activeTenant.id}`, {
           method: 'POST',
           body: JSON.stringify(categoryForm)
         });
