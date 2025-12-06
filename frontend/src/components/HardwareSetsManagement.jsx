@@ -210,15 +210,12 @@ const HardwareSetsManagement = ({ tenantId }) => {
             );
             
             if (userConfirmed) {
-              // Load the set with its devices
-              const setDetailResult = await apiCall(`/api/hardware/sets/${existingSet.id}`);
-              if (setDetailResult.success || setDetailResult.data) {
-                const setData = setDetailResult.data || setDetailResult;
-                setEditingSet(setData);
-                // Modal will automatically switch to edit mode
-                toast.info('Set wird zum Bearbeiten geladen...');
-                return;
-              }
+              // Close current modal and open detail view instead
+              setShowSetModal(false);
+              setSelectedSet(existingSet);
+              setShowSetDetail(true);
+              toast.info('Set wird zum Anzeigen geladen...');
+              return;
             } else {
               setShowSetModal(false);
               return;
