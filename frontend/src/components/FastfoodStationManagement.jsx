@@ -269,6 +269,38 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
               </p>
             )}
 
+            {/* Zugeordnete Produktkategorien - Prominent Display */}
+            {station.category_ids && station.category_ids.length > 0 ? (
+              <div className="mb-3 p-3 rounded-lg bg-opacity-10" style={{ backgroundColor: `${station.color}20` }}>
+                <p className={`text-xs font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  📋 Zubereitet:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {station.category_ids.map((catId) => {
+                    const cat = categories.find(c => c.id === catId);
+                    return cat ? (
+                      <span
+                        key={catId}
+                        className={`px-3 py-1 text-sm font-medium rounded-full ${
+                          theme === 'dark' 
+                            ? 'bg-gray-700 text-gray-200' 
+                            : 'bg-white text-gray-800 border border-gray-200'
+                        }`}
+                      >
+                        {cat.icon && `${cat.icon} `}{cat.name}
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div className="mb-3 p-3 rounded-lg bg-gray-100 dark:bg-gray-800">
+                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                  ⚠️ Keine Kategorien zugeordnet
+                </p>
+              </div>
+            )}
+
             <div className="flex items-center justify-between text-xs">
               <span className={theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}>
                 Reihenfolge: {station.display_order}
@@ -283,35 +315,6 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
                 {station.active ? 'Aktiv' : 'Inaktiv'}
               </span>
             </div>
-
-            {/* Linked categories */}
-            {station.category_ids && station.category_ids.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <p className={`text-xs mb-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Kategorien ({station.category_ids.length}):
-                </p>
-                <div className="flex flex-wrap gap-1">
-                  {station.category_ids.slice(0, 3).map((catId) => {
-                    const cat = categories.find(c => c.id === catId);
-                    return cat ? (
-                      <span
-                        key={catId}
-                        className={`px-2 py-0.5 text-xs rounded ${
-                          theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        {cat.name}
-                      </span>
-                    ) : null;
-                  })}
-                  {station.category_ids.length > 3 && (
-                    <span className="text-xs text-gray-500">
-                      +{station.category_ids.length - 3}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
           </Card>
         ))}
       </div>
