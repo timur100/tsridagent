@@ -860,6 +860,594 @@ async def get_sales_analytics(
                 product_sales[product_name]['quantity'] += item.get('quantity', 0)
                 product_sales[product_name]['revenue'] += item.get('total_price', 0)
         
+
+
+# ==================== DELIVERY ZONES ====================
+
+@router.post("/delivery-zones")
+async def create_delivery_zone(
+    zone: DeliveryZoneModel,
+    tenant_id: str,
+    location_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new delivery zone"""
+    try:
+        zone_data = zone.dict()
+        zone_data['id'] = str(uuid4())
+        zone_data['tenant_id'] = tenant_id
+        zone_data['location_id'] = location_id
+        zone_data['created_at'] = datetime.now(timezone.utc)
+        zone_data['updated_at'] = datetime.now(timezone.utc)
+        
+        await db.delivery_zones.insert_one(zone_data)
+        
+        return {'success': True, 'data': zone_data}
+    except Exception as e:
+        print(f"[Fastfood] Error creating delivery zone: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/delivery-zones")
+async def get_delivery_zones(
+    tenant_id: str,
+    location_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all delivery zones"""
+    try:
+        zones = await db.delivery_zones.find({
+            'tenant_id': tenant_id,
+            'location_id': location_id
+        }, {'_id': 0}).sort('name', 1).to_list(1000)
+        
+        return {'success': True, 'data': zones}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching delivery zones: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/delivery-zones/{zone_id}")
+async def get_delivery_zone(
+    zone_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get a specific delivery zone"""
+    try:
+        zone = await db.delivery_zones.find_one({'id': zone_id}, {'_id': 0})
+        if not zone:
+            raise HTTPException(status_code=404, detail="Delivery zone not found")
+        
+        return {'success': True, 'data': zone}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error fetching delivery zone: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/delivery-zones/{zone_id}")
+async def update_delivery_zone(
+    zone_id: str,
+    zone: DeliveryZoneModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a delivery zone"""
+    try:
+        zone_data = zone.dict()
+        zone_data['updated_at'] = datetime.now(timezone.utc)
+        
+        result = await db.delivery_zones.update_one(
+            {'id': zone_id},
+            {'$set': zone_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Delivery zone not found")
+        
+        updated_zone = await db.delivery_zones.find_one({'id': zone_id}, {'_id': 0})
+        return {'success': True, 'data': updated_zone}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error updating delivery zone: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/delivery-zones/{zone_id}")
+async def delete_delivery_zone(
+    zone_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a delivery zone"""
+    try:
+        result = await db.delivery_zones.delete_one({'id': zone_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Delivery zone not found")
+        
+        return {'success': True, 'message': 'Delivery zone deleted'}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error deleting delivery zone: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== DRIVERS ====================
+
+@router.post("/drivers")
+async def create_driver(
+    driver: DriverModel,
+    tenant_id: str,
+    location_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new driver"""
+    try:
+        driver_data = driver.dict()
+        driver_data['id'] = str(uuid4())
+        driver_data['tenant_id'] = tenant_id
+        driver_data['location_id'] = location_id
+        driver_data['current_order_id'] = None
+        driver_data['total_deliveries'] = 0
+        driver_data['created_at'] = datetime.now(timezone.utc)
+        driver_data['updated_at'] = datetime.now(timezone.utc)
+        
+        await db.drivers.insert_one(driver_data)
+        
+        return {'success': True, 'data': driver_data}
+    except Exception as e:
+        print(f"[Fastfood] Error creating driver: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/drivers")
+async def get_drivers(
+    tenant_id: str,
+    location_id: str,
+    status: Optional[DriverStatus] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all drivers"""
+    try:
+        query = {
+            'tenant_id': tenant_id,
+            'location_id': location_id
+        }
+        
+        if status:
+            query['status'] = status
+        
+        drivers = await db.drivers.find(query, {'_id': 0}).sort('name', 1).to_list(1000)
+        
+        return {'success': True, 'data': drivers}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching drivers: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/drivers/{driver_id}")
+async def get_driver(
+    driver_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get a specific driver"""
+    try:
+        driver = await db.drivers.find_one({'id': driver_id}, {'_id': 0})
+        if not driver:
+            raise HTTPException(status_code=404, detail="Driver not found")
+        
+        return {'success': True, 'data': driver}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error fetching driver: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/drivers/{driver_id}")
+async def update_driver(
+    driver_id: str,
+    driver: DriverModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a driver"""
+    try:
+        driver_data = driver.dict()
+        driver_data['updated_at'] = datetime.now(timezone.utc)
+        
+        result = await db.drivers.update_one(
+            {'id': driver_id},
+            {'$set': driver_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Driver not found")
+        
+        updated_driver = await db.drivers.find_one({'id': driver_id}, {'_id': 0})
+        return {'success': True, 'data': updated_driver}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error updating driver: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/drivers/{driver_id}/status")
+async def update_driver_status(
+    driver_id: str,
+    status: DriverStatus,
+    token_data: dict = Depends(verify_token)
+):
+    """Update driver status"""
+    try:
+        result = await db.drivers.update_one(
+            {'id': driver_id},
+            {'$set': {
+                'status': status,
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Driver not found")
+        
+        updated_driver = await db.drivers.find_one({'id': driver_id}, {'_id': 0})
+        return {'success': True, 'data': updated_driver}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error updating driver status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/drivers/{driver_id}")
+async def delete_driver(
+    driver_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a driver"""
+    try:
+        result = await db.drivers.delete_one({'id': driver_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Driver not found")
+        
+        return {'success': True, 'message': 'Driver deleted'}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error deleting driver: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== DELIVERY ORDERS ====================
+
+@router.post("/delivery-orders")
+async def create_delivery_order(
+    delivery_order: DeliveryOrderModel,
+    tenant_id: str,
+    location_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new delivery order"""
+    try:
+        delivery_data = delivery_order.dict()
+        delivery_data['id'] = str(uuid4())
+        delivery_data['tenant_id'] = tenant_id
+        delivery_data['location_id'] = location_id
+        delivery_data['created_at'] = datetime.now(timezone.utc)
+        delivery_data['updated_at'] = datetime.now(timezone.utc)
+        
+        # If estimated_delivery_time not provided, calculate it
+        if not delivery_data.get('estimated_delivery_time'):
+            # Get zone info
+            if delivery_data.get('delivery_zone_id'):
+                zone = await db.delivery_zones.find_one(
+                    {'id': delivery_data['delivery_zone_id']},
+                    {'_id': 0}
+                )
+                if zone:
+                    from datetime import timedelta
+                    estimated_minutes = zone.get('estimated_time_min', 30)
+                    delivery_data['estimated_delivery_time'] = (
+                        datetime.now(timezone.utc) + timedelta(minutes=estimated_minutes)
+                    )
+        
+        await db.delivery_orders.insert_one(delivery_data)
+        
+        # Update main order with delivery info
+        await db.orders.update_one(
+            {'id': delivery_data['order_id']},
+            {'$set': {
+                'is_delivery': True,
+                'delivery_id': delivery_data['id']
+            }}
+        )
+        
+        return {'success': True, 'data': delivery_data}
+    except Exception as e:
+        print(f"[Fastfood] Error creating delivery order: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/delivery-orders")
+async def get_delivery_orders(
+    tenant_id: str,
+    location_id: str,
+    status: Optional[DeliveryStatus] = None,
+    driver_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all delivery orders"""
+    try:
+        query = {
+            'tenant_id': tenant_id,
+            'location_id': location_id
+        }
+        
+        if status:
+            query['delivery_status'] = status
+        
+        if driver_id:
+            query['driver_id'] = driver_id
+        
+        deliveries = await db.delivery_orders.find(
+            query,
+            {'_id': 0}
+        ).sort('created_at', -1).to_list(1000)
+        
+        return {'success': True, 'data': deliveries}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching delivery orders: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/delivery-orders/{delivery_id}")
+async def get_delivery_order(
+    delivery_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get a specific delivery order"""
+    try:
+        delivery = await db.delivery_orders.find_one({'id': delivery_id}, {'_id': 0})
+        if not delivery:
+            raise HTTPException(status_code=404, detail="Delivery order not found")
+        
+        return {'success': True, 'data': delivery}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error fetching delivery order: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/delivery-orders/{delivery_id}/assign-driver")
+async def assign_driver_to_delivery(
+    delivery_id: str,
+    driver_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Assign a driver to a delivery order"""
+    try:
+        # Check if driver exists and is available
+        driver = await db.drivers.find_one({'id': driver_id}, {'_id': 0})
+        if not driver:
+            raise HTTPException(status_code=404, detail="Driver not found")
+        
+        if driver['status'] == DriverStatus.BUSY:
+            raise HTTPException(status_code=400, detail="Driver is already busy with another order")
+        
+        # Update delivery order
+        result = await db.delivery_orders.update_one(
+            {'id': delivery_id},
+            {'$set': {
+                'driver_id': driver_id,
+                'delivery_status': DeliveryStatus.ASSIGNED,
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Delivery order not found")
+        
+        # Update driver status
+        await db.drivers.update_one(
+            {'id': driver_id},
+            {'$set': {
+                'status': DriverStatus.BUSY,
+                'current_order_id': delivery_id,
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        updated_delivery = await db.delivery_orders.find_one({'id': delivery_id}, {'_id': 0})
+        return {'success': True, 'data': updated_delivery}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error assigning driver: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.patch("/delivery-orders/{delivery_id}/status")
+async def update_delivery_status(
+    delivery_id: str,
+    status: DeliveryStatus,
+    token_data: dict = Depends(verify_token)
+):
+    """Update delivery order status"""
+    try:
+        update_data = {
+            'delivery_status': status,
+            'updated_at': datetime.now(timezone.utc)
+        }
+        
+        # If delivered, set actual delivery time
+        if status == DeliveryStatus.DELIVERED:
+            update_data['actual_delivery_time'] = datetime.now(timezone.utc)
+            
+            # Update driver status to available
+            delivery = await db.delivery_orders.find_one({'id': delivery_id}, {'_id': 0})
+            if delivery and delivery.get('driver_id'):
+                await db.drivers.update_one(
+                    {'id': delivery['driver_id']},
+                    {'$set': {
+                        'status': DriverStatus.AVAILABLE,
+                        'current_order_id': None
+                    },
+                    '$inc': {'total_deliveries': 1}}
+                )
+        
+        result = await db.delivery_orders.update_one(
+            {'id': delivery_id},
+            {'$set': update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Delivery order not found")
+        
+        updated_delivery = await db.delivery_orders.find_one({'id': delivery_id}, {'_id': 0})
+        return {'success': True, 'data': updated_delivery}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[Fastfood] Error updating delivery status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== DELIVERY TRACKING ====================
+
+@router.post("/delivery-orders/{delivery_id}/tracking")
+async def update_delivery_tracking(
+    delivery_id: str,
+    tracking: TrackingUpdateModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update delivery tracking (driver location)"""
+    try:
+        tracking_data = tracking.dict()
+        tracking_data['delivery_id'] = delivery_id
+        tracking_data['timestamp'] = tracking_data.get('timestamp') or datetime.now(timezone.utc)
+        
+        await db.delivery_tracking.insert_one(tracking_data)
+        
+        # Update delivery order with latest location
+        await db.delivery_orders.update_one(
+            {'id': delivery_id},
+            {'$set': {
+                'last_known_lat': tracking_data['driver_lat'],
+                'last_known_lng': tracking_data['driver_lng'],
+                'last_tracking_update': tracking_data['timestamp']
+            }}
+        )
+        
+        return {'success': True, 'data': tracking_data}
+    except Exception as e:
+        print(f"[Fastfood] Error updating tracking: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/delivery-orders/{delivery_id}/tracking")
+async def get_delivery_tracking(
+    delivery_id: str,
+    limit: int = 50
+):
+    """Get delivery tracking history (public endpoint for customer tracking)"""
+    try:
+        tracking = await db.delivery_tracking.find(
+            {'delivery_id': delivery_id},
+            {'_id': 0}
+        ).sort('timestamp', -1).limit(limit).to_list(limit)
+        
+        # Get delivery order info
+        delivery = await db.delivery_orders.find_one({'id': delivery_id}, {'_id': 0})
+        
+        return {
+            'success': True,
+            'data': {
+                'delivery': delivery,
+                'tracking_points': tracking
+            }
+        }
+    except Exception as e:
+        print(f"[Fastfood] Error fetching tracking: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== DELIVERY ZONE VALIDATION ====================
+
+@router.post("/delivery-zones/validate-address")
+async def validate_delivery_address(
+    address: DeliveryAddressModel,
+    tenant_id: str,
+    location_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Validate if address is within delivery zones and calculate fee"""
+    try:
+        # In a real app, you'd geocode the address here
+        # For now, we'll use provided lat/lng or return all zones
+        
+        zones = await db.delivery_zones.find({
+            'tenant_id': tenant_id,
+            'location_id': location_id,
+            'active': True
+        }, {'_id': 0}).to_list(1000)
+        
+        if not address.lat or not address.lng:
+            # Return all zones if no coordinates
+            return {
+                'success': True,
+                'deliverable': True,
+                'zones': zones,
+                'message': 'Coordinates not provided, returning all zones'
+            }
+        
+        # Calculate which zone contains this address
+        from math import radians, cos, sin, asin, sqrt
+        
+        def haversine(lon1, lat1, lon2, lat2):
+            """Calculate distance in km"""
+            lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+            dlon = lon2 - lon1
+            dlat = lat2 - lat1
+            a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+            c = 2 * asin(sqrt(a))
+            km = 6371 * c
+            return km
+        
+        matching_zone = None
+        for zone in zones:
+            distance = haversine(
+                zone['center_lng'], zone['center_lat'],
+                address.lng, address.lat
+            )
+            if distance <= zone['radius_km']:
+                matching_zone = zone
+                break
+        
+        if matching_zone:
+            return {
+                'success': True,
+                'deliverable': True,
+                'zone': matching_zone,
+                'delivery_fee': matching_zone['delivery_fee'],
+                'min_order_value': matching_zone['min_order_value'],
+                'estimated_time_min': matching_zone['estimated_time_min']
+            }
+        else:
+            return {
+                'success': True,
+                'deliverable': False,
+                'message': 'Address is outside delivery zones'
+            }
+        
+    except Exception as e:
+        print(f"[Fastfood] Error validating address: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
         top_products = sorted(
             product_sales.values(),
             key=lambda x: x['revenue'],
