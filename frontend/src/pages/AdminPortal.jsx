@@ -79,6 +79,8 @@ import DataCheckPage from '../components/DataCheckPage';
 import FastfoodMenuManagement from '../components/FastfoodMenuManagement';
 import OrderKiosk from '../components/OrderKiosk';
 import FastfoodOrdersManagement from '../components/FastfoodOrdersManagement';
+import KitchenDisplay from '../components/KitchenDisplay';
+import CustomerDisplay from '../components/CustomerDisplay';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
