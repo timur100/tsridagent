@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://inventry-3.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-manager-hub.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""
