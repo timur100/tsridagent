@@ -58,9 +58,10 @@ const FastfoodMenuManagement = () => {
 
   const loadCategories = async () => {
     try {
-      const result = await apiCall(`/api/fastfood/categories?tenant_id=${selectedTenant.id}`);
+      const result = await apiCall(`/api/fastfood/categories?tenant_id=${activeTenant.id}`);
       if (result.success) {
-        setCategories(result.data || []);
+        const data = result.data?.data || result.data || [];
+        setCategories(data);
       }
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -69,9 +70,10 @@ const FastfoodMenuManagement = () => {
 
   const loadProducts = async () => {
     try {
-      const result = await apiCall(`/api/fastfood/products?tenant_id=${selectedTenant.id}&available_only=false`);
+      const result = await apiCall(`/api/fastfood/products?tenant_id=${activeTenant.id}&available_only=false`);
       if (result.success) {
-        setProducts(result.data || []);
+        const data = result.data?.data || result.data || [];
+        setProducts(data);
       }
     } catch (error) {
       console.error('Error loading products:', error);
