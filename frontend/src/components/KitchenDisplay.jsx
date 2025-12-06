@@ -24,11 +24,19 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
 
   useEffect(() => {
     loadOrders();
+    loadDeliveryOrders();
+    loadDrivers();
     
     // Auto refresh every 5 seconds
-    const interval = setInterval(loadOrders, 5000);
+    const interval = setInterval(() => {
+      loadOrders();
+      if (activeTab === 'delivery') {
+        loadDeliveryOrders();
+        loadDrivers();
+      }
+    }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [activeTab]);
 
   useEffect(() => {
     // Play sound when new order arrives
