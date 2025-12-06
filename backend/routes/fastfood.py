@@ -60,6 +60,24 @@ class OrderChannel(str, Enum):
     COUNTER = "counter"  # Thekenbestellung
 
 
+
+class DriverStatus(str, Enum):
+    AVAILABLE = "available"  # Verfügbar
+    BUSY = "busy"  # Beschäftigt (hat Bestellung)
+    OFFLINE = "offline"  # Offline/Nicht verfügbar
+    ON_BREAK = "on_break"  # Pause
+
+
+class DeliveryStatus(str, Enum):
+    PENDING = "pending"  # Ausstehend (noch nicht zugewiesen)
+    ASSIGNED = "assigned"  # Fahrer zugewiesen
+    PREPARING = "preparing"  # In Zubereitung
+    READY = "ready"  # Bereit zur Abholung
+    PICKED_UP = "picked_up"  # Vom Fahrer abgeholt
+    ON_THE_WAY = "on_the_way"  # Unterwegs
+    DELIVERED = "delivered"  # Zugestellt
+    CANCELLED = "cancelled"  # Storniert
+
 # ==================== PYDANTIC MODELS ====================
 
 class CategoryModel(BaseModel):
