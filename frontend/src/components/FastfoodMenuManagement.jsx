@@ -12,8 +12,14 @@ import toast from 'react-hot-toast';
 
 const FastfoodMenuManagement = () => {
   const { theme } = useTheme();
-  const { apiCall } = useAuth();
+  const { apiCall, user } = useAuth();
   const { selectedTenant } = useTenant();
+  
+  // Use selectedTenant or create a default tenant
+  const activeTenant = selectedTenant || {
+    id: 'default-tenant',
+    display_name: 'Restaurant'
+  };
   
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
