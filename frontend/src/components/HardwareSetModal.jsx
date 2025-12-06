@@ -322,15 +322,19 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                     {availableDevices.map((device) => (
                       <div 
                         key={device.id}
-                        onClick={() => toggleDeviceSelection(device.id)}
-                        className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                          selectedDevices.includes(device.id)
+                        onClick={() => !device.current_set_id && toggleDeviceSelection(device.id)}
+                        className={`p-3 rounded-lg border transition-all ${
+                          device.current_set_id
+                            ? theme === 'dark'
+                              ? 'bg-[#1a1a1a] border-gray-700 opacity-60 cursor-not-allowed'
+                              : 'bg-gray-100 border-gray-300 opacity-60 cursor-not-allowed'
+                            : selectedDevices.includes(device.id)
                             ? theme === 'dark' 
-                              ? 'bg-[#c00000]/20 border-[#c00000] ring-2 ring-[#c00000]/50' 
-                              : 'bg-red-50 border-[#c00000] ring-2 ring-[#c00000]/50'
+                              ? 'bg-[#c00000]/20 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer' 
+                              : 'bg-red-50 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer'
                             : theme === 'dark' 
-                              ? 'bg-[#2a2a2a] border-gray-600 hover:border-gray-500' 
-                              : 'bg-white border-gray-200 hover:border-gray-300'
+                              ? 'bg-[#2a2a2a] border-gray-600 hover:border-gray-500 cursor-pointer' 
+                              : 'bg-white border-gray-200 hover:border-gray-300 cursor-pointer'
                         }`}
                       >
                         <div className="flex items-center justify-between">
