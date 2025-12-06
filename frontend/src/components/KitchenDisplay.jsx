@@ -296,8 +296,32 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
             </Button>
           </div>
         </div>
+        
+        {/* Tabs */}
+        <div className="flex gap-2 mt-4">
+          <Button
+            onClick={() => setActiveTab('kitchen')}
+            variant={activeTab === 'kitchen' ? 'default' : 'outline'}
+            size="lg"
+            className="flex items-center gap-2"
+          >
+            <ChefHat className="h-5 w-5" />
+            Küche ({orders.length})
+          </Button>
+          <Button
+            onClick={() => setActiveTab('delivery')}
+            variant={activeTab === 'delivery' ? 'default' : 'outline'}
+            size="lg"
+            className="flex items-center gap-2"
+          >
+            <Truck className="h-5 w-5" />
+            Lieferungen ({deliveryOrders.length})
+          </Button>
+        </div>
       </div>
 
+      {activeTab === 'kitchen' && (
+        <>
       {/* Product Summary - Aggregate View */}
       {orders.length > 0 && (
         <div className={`mb-6 ${theme === 'dark' ? 'bg-gradient-to-r from-purple-900/30 to-blue-900/30' : 'bg-gradient-to-r from-purple-800 to-blue-800'} rounded-lg p-6 border-2 border-purple-500`}>
