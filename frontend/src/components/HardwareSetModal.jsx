@@ -73,6 +73,48 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       setLoadingDevices(false);
     }
   };
+  
+  const loadAvailableDevices = async (locationId) => {
+    if (!locationId) {
+      setAvailableDevices([]);
+      return;
+    }
+    
+    setLoadingAvailableDevices(true);
+    try {
+      // Load devices for this location that are not assigned to any set
+      const devicesResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}&location_id=${locationId}`);
+      
+      if (devicesResult.success || Array.isArray(devicesResult.data)) {
+        const allDevices = devicesResult.data || devicesResult;
+        // Filter for devices without a current_set_id (unassigned)
+        const unassignedDevices = allDevices.filter(d => !d.current_set_id);
+        
+        // If no devices at location, load warehouse devices
+        if (unassignedDevices.length === 0) {
+          const warehouseResult = await apiCall(`/api/hardware/devices?tenant_id=${tenantId}&status=verfügbar`);
+          if (warehouseResult.success || Array.isArray(warehouseResult.data)) {
+            const warehouseDevices = warehouseResult.data || warehouseResult;
+            setAvailableDevices(warehouseDevices.filter(d => !d.current_set_id));
+          }
+        } else {
+          setAvailableDevices(unassignedDevices);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading available devices:', error);
+      setAvailableDevices([]);
+    } finally {
+      setLoadingAvailableDevices(false);
+    }
+  };
+  
+  // Load available devices when location changes
+  useEffect(() => {
+    if (formData.location_id && !editing) {
+      loadAvailableDevices(formData.location_id);
+    }
+  }, [formData.location_id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
