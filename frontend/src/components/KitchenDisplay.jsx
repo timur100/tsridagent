@@ -638,8 +638,8 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
                         <label className="block text-sm font-medium text-gray-300 mb-2">
                           Fahrer zuweisen:
                         </label>
-                        <div className="flex gap-2">
-                          {drivers.filter(d => !d.current_delivery_id).map(driver => (
+                        <div className="flex gap-2 flex-wrap">
+                          {drivers.filter(d => d.status === 'available').map(driver => (
                             <Button
                               key={driver.id}
                               onClick={() => assignDriver(delivery.id, driver.id)}
@@ -647,10 +647,10 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
                               size="sm"
                               className="text-xs"
                             >
-                              {driver.name}
+                              {driver.vehicle_type} - {driver.name}
                             </Button>
                           ))}
-                          {drivers.filter(d => !d.current_delivery_id).length === 0 && (
+                          {drivers.filter(d => d.status === 'available').length === 0 && (
                             <p className="text-sm text-gray-400">Keine verfügbaren Fahrer</p>
                           )}
                         </div>
