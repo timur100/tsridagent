@@ -211,7 +211,7 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
 
       {/* Stations Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {stations.map((station) => (
+        {stations && stations.length > 0 && stations.map((station) => (
           <Card
             key={station.id}
             className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}
