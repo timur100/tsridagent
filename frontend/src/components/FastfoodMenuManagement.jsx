@@ -224,7 +224,7 @@ const FastfoodMenuManagement = () => {
             Menü-Verwaltung
           </h1>
           <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            Kategorien und Produkte für {selectedTenant?.display_name || 'Restaurant'}
+            Kategorien und Produkte für {activeTenant?.display_name || 'Restaurant'}
           </p>
         </div>
         <div className="flex gap-3">
