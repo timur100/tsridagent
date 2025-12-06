@@ -349,6 +349,10 @@ app.include_router(organization_creator_router)
 app.include_router(telephony_router)
 app.include_router(hierarchy_stats_router)
 
+# Test Center router (Data validation and testing)
+from routes.test_center import router as test_center_router
+app.include_router(test_center_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
