@@ -71,14 +71,14 @@ def generate_barcode(serial_number: str) -> str:
 
 # ==================== HARDWARE SETS ====================
 
-@router.get("/sets", response_model=List[HardwareSet])
+@router.get("/sets")
 async def get_all_sets(
     tenant_id: Optional[str] = None,
     status: Optional[str] = None,
     location_id: Optional[str] = None,
     token_data: dict = Depends(verify_token)
 ):
-    """Get all hardware sets with optional filters"""
+    """Get all hardware sets with optional filters, enriched with device count and location name"""
     try:
         query = {}
         if tenant_id:
@@ -89,7 +89,62 @@ async def get_all_sets(
             query['location_id'] = location_id
         
         sets = await db.hardware_sets.find(query, {"_id": 0}).sort('created_at', -1).to_list(length=None)
-        return sets
+        
+        # Load location names from tsrid_db.tenants
+        tsrid_db = client['tsrid_db']
+        locations_cursor = tsrid_db.tenants.find(
+            {'tenant_level': 'location'},
+            {'_id': 0, 'location_code': 1, 'display_name': 1, 'name': 1}
+        )
+        locations_list = await locations_cursor.to_list(length=None)
+        location_map = {
+            loc.get('location_code'): loc.get('display_name') or loc.get('name') 
+            for loc in locations_list if loc.get('location_code')
+        }
+        
+        # Enrich each set with device count and location name
+        enriched_sets = []
+        for hw_set in sets:
+            # Get device count
+            device_count = 0
+            full_code = hw_set.get('full_code')
+            
+            # Check if this is an Europcar set
+            if full_code:
+                europcar_device = await multi_tenant_db.europcar_devices.find_one(
+                    {'device_id': full_code},
+                    {"_id": 0, 'sn_pc': 1, 'sn_sc': 1, 'imei_1': 1}
+                )
+                
+                if europcar_device:
+                    # Count components
+                    if europcar_device.get('sn_pc'):
+                        device_count += 1
+                    if europcar_device.get('sn_sc'):
+                        device_count += 1
+                    if europcar_device.get('imei_1'):
+                        device_count += 1
+                else:
+                    # Fallback to regular devices
+                    device_count = await db.hardware_devices.count_documents({'current_set_id': hw_set.get('id')})
+            else:
+                # No full_code, use regular devices
+                device_count = await db.hardware_devices.count_documents({'current_set_id': hw_set.get('id')})
+            
+            # Get location name
+            location_name = None
+            if hw_set.get('location_code'):
+                location_name = location_map.get(hw_set['location_code'])
+            
+            # Add enriched fields
+            enriched_set = {
+                **hw_set,
+                'device_count': device_count,
+                'location_name': location_name
+            }
+            enriched_sets.append(enriched_set)
+        
+        return enriched_sets
     except Exception as e:
         print(f"[Hardware] Error fetching sets: {e}")
         raise HTTPException(status_code=500, detail=str(e))
