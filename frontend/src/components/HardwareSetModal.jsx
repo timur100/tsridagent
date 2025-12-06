@@ -90,7 +90,11 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       const devicesResult = await apiCall(`/api/portal/europcar-devices`);
       
       if (devicesResult.success || Array.isArray(devicesResult.data)) {
-        const allDevices = devicesResult.data || devicesResult;
+        // Extract devices from nested structure
+        let allDevices = devicesResult.data || devicesResult;
+        if (allDevices.devices && Array.isArray(allDevices.devices)) {
+          allDevices = allDevices.devices;
+        }
         console.log('[HardwareSetModal] Total devices loaded:', allDevices.length);
         
         let components = [];
