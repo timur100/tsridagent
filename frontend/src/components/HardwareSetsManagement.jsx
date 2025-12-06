@@ -964,8 +964,15 @@ const HardwareSetsManagement = ({ tenantId }) => {
                   </thead>
                   <tbody>
                     {sortedSets.map((set) => {
-                      const setDevices = devices.filter(d => d.current_set_id === set.id);
-                      const location = locations.find(l => l.id === set.location_id);
+                      // Use device_count from backend if available, otherwise fall back to filtering
+                      const deviceCount = set.device_count !== undefined 
+                        ? set.device_count 
+                        : devices.filter(d => d.current_set_id === set.id).length;
+                      
+                      // Use location_name from backend if available
+                      const locationName = set.location_name || 
+                        (locations.find(l => l.id === set.location_id)?.name) || 
+                        (set.location_code ? `${set.location_code}` : null);
                       
                       return (
                         <tr
@@ -989,10 +996,10 @@ const HardwareSetsManagement = ({ tenantId }) => {
                             </span>
                           </td>
                           <td className="px-6 py-4">
-                            {location ? (
+                            {locationName ? (
                               <div className="flex items-center gap-1 font-mono text-sm">
                                 <MapPin className="h-3 w-3 text-gray-500" />
-                                {location.name}
+                                {locationName}
                               </div>
                             ) : (
                               <span className="font-mono text-sm text-gray-400">-</span>
@@ -1001,7 +1008,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-2 font-mono text-sm">
                               <Package className="h-4 w-4 text-gray-500" />
-                              {setDevices.length} Gerät{setDevices.length !== 1 ? 'e' : ''}
+                              {deviceCount} Gerät{deviceCount !== 1 ? 'e' : ''}
                             </div>
                           </td>
                           <td className="px-6 py-4">
