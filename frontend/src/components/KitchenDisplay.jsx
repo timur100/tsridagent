@@ -658,12 +658,12 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
                     )}
 
                     {/* Current Driver */}
-                    {delivery.driver_name && (
+                    {delivery.driver_id && (
                       <div className="mb-4 p-3 bg-blue-900/30 rounded-lg">
                         <div className="flex items-center gap-2">
                           <User className="h-4 w-4 text-blue-400" />
                           <span className="text-blue-400 font-medium">
-                            Fahrer: {delivery.driver_name}
+                            Fahrer: {drivers.find(d => d.id === delivery.driver_id)?.name || 'Zugewiesen'}
                           </span>
                         </div>
                       </div>
