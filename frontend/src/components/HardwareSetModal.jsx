@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { X, Save, MapPin } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { X, Save, MapPin, Package, Edit2, Trash2, AlertCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import toast from 'react-hot-toast';
 
 const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantId }) => {
   const { theme } = useTheme();
+  const { apiCall } = useAuth();
   
   // Debug: Log locations when modal opens
   React.useEffect(() => {
@@ -16,6 +18,9 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
       }
     }
   }, [show, locations]);
+  
+  const [devices, setDevices] = useState([]);
+  const [loadingDevices, setLoadingDevices] = useState(false);
   
   const [formData, setFormData] = useState({
     set_name: '',
