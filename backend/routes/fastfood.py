@@ -382,6 +382,11 @@ async def create_order(
             'payment_status': PaymentStatus.PENDING,
             'status': OrderStatus.RECEIVED,
             'language': order.language,
+            'channel': order.channel,
+            'drive_in_lane': order.drive_in_lane,
+            'vehicle_number': order.vehicle_number,
+            'parking_spot': order.parking_spot,
+            'qr_code': order.qr_code,
             'created_at': datetime.now(timezone.utc),
             'updated_at': datetime.now(timezone.utc),
             'status_history': [{
