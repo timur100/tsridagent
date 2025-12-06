@@ -2684,6 +2684,10 @@ const AdminPortalContent = () => {
                             <p className="text-gray-500">Analysen - In Entwicklung</p>
                           </div>
                         )}
+                        
+                        {fastfoodSubTab === 'terminals' && (
+                          <FastfoodTerminalManagement tenantId="default-tenant" />
+                        )}
                       </div>
                     )}
                     
