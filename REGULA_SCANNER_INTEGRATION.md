@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tenant-tracker-28.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-manager-pro-2.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
