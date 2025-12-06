@@ -1,0 +1,622 @@
+"""
+Fastfood Ordering System API Routes
+Multi-Tenant, Multi-Location Restaurant Ordering System
+"""
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Optional
+from datetime import datetime, timezone
+from pydantic import BaseModel
+from enum import Enum
+import os
+from uuid import uuid4
+from motor.motor_asyncio import AsyncIOMotorClient
+from routes.portal_auth import verify_token
+
+router = APIRouter(prefix="/api/fastfood", tags=["Fastfood System"])
+
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+client = AsyncIOMotorClient(MONGO_URL)
+db = client['fastfood_db']
+
+
+# ==================== ENUMS ====================
+
+class OrderStatus(str, Enum):
+    RECEIVED = "received"  # Eingegangen
+    PREPARING = "preparing"  # In Zubereitung
+    READY = "ready"  # Abholbereit
+    COMPLETED = "completed"  # Abgeschlossen
+    CANCELLED = "cancelled"  # Storniert
+
+
+class PaymentMethod(str, Enum):
+    CASH = "cash"
+    CARD = "card"
+    MOBILE = "mobile"
+    VOUCHER = "voucher"
+
+
+class PaymentStatus(str, Enum):
+    PENDING = "pending"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+class TerminalType(str, Enum):
+    ORDER_KIOSK = "order_kiosk"  # Bestellterminal
+    KITCHEN_DISPLAY = "kitchen_display"  # Küchendisplay
+    CUSTOMER_DISPLAY = "customer_display"  # Kundendisplay
+    ADMIN = "admin"  # Admin-Terminal
+
+
+# ==================== PYDANTIC MODELS ====================
+
+class CategoryModel(BaseModel):
+    name: str
+    name_en: Optional[str] = None
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    display_order: int = 0
+    active: bool = True
+
+
+class ProductModel(BaseModel):
+    name: str
+    name_en: Optional[str] = None
+    description: Optional[str] = None
+    description_en: Optional[str] = None
+    category_id: str
+    price: float
+    image_url: Optional[str] = None
+    available: bool = True
+    allergens: Optional[List[str]] = []
+    nutritional_info: Optional[dict] = {}
+    preparation_time: Optional[int] = 5  # minutes
+
+
+class OrderItemModel(BaseModel):
+    product_id: str
+    product_name: str
+    quantity: int
+    unit_price: float
+    total_price: float
+    notes: Optional[str] = None
+
+
+class CreateOrderModel(BaseModel):
+    tenant_id: str
+    location_id: str
+    terminal_id: str
+    items: List[OrderItemModel]
+    payment_method: PaymentMethod
+    language: str = "de"
+
+
+class TerminalModel(BaseModel):
+    location_id: str
+    terminal_type: TerminalType
+    name: str
+    ip_address: Optional[str] = None
+    printer_enabled: bool = False
+    printer_ip: Optional[str] = None
+
+
+# ==================== CATEGORIES ====================
+
+@router.post("/categories")
+async def create_category(
+    category: CategoryModel,
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new menu category"""
+    try:
+        category_doc = {
+            'id': str(uuid4()),
+            'tenant_id': tenant_id,
+            'location_id': location_id,  # None = all locations
+            **category.dict(),
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc)
+        }
+        
+        await db.categories.insert_one(category_doc)
+        category_doc.pop('_id', None)
+        
+        return {'success': True, 'data': category_doc}
+    except Exception as e:
+        print(f"[Fastfood] Error creating category: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/categories")
+async def get_categories(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    active_only: bool = True,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all categories for a tenant/location"""
+    try:
+        query = {'tenant_id': tenant_id}
+        
+        # Categories can be global (location_id = None) or location-specific
+        if location_id:
+            query['$or'] = [
+                {'location_id': location_id},
+                {'location_id': None}
+            ]
+        
+        if active_only:
+            query['active'] = True
+        
+        categories = await db.categories.find(
+            query,
+            {'_id': 0}
+        ).sort('display_order', 1).to_list(length=None)
+        
+        return {'success': True, 'data': categories}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching categories: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/categories/{category_id}")
+async def update_category(
+    category_id: str,
+    category: CategoryModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a category"""
+    try:
+        result = await db.categories.update_one(
+            {'id': category_id},
+            {'$set': {
+                **category.dict(),
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating category: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/categories/{category_id}")
+async def delete_category(
+    category_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a category (soft delete)"""
+    try:
+        result = await db.categories.update_one(
+            {'id': category_id},
+            {'$set': {'active': False, 'updated_at': datetime.now(timezone.utc)}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error deleting category: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== PRODUCTS ====================
+
+@router.post("/products")
+async def create_product(
+    product: ProductModel,
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new product"""
+    try:
+        product_doc = {
+            'id': str(uuid4()),
+            'tenant_id': tenant_id,
+            'location_id': location_id,
+            **product.dict(),
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc)
+        }
+        
+        await db.products.insert_one(product_doc)
+        product_doc.pop('_id', None)
+        
+        return {'success': True, 'data': product_doc}
+    except Exception as e:
+        print(f"[Fastfood] Error creating product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/products")
+async def get_products(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    category_id: Optional[str] = None,
+    available_only: bool = True,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all products for a tenant/location"""
+    try:
+        query = {'tenant_id': tenant_id}
+        
+        if location_id:
+            query['$or'] = [
+                {'location_id': location_id},
+                {'location_id': None}
+            ]
+        
+        if category_id:
+            query['category_id'] = category_id
+        
+        if available_only:
+            query['available'] = True
+        
+        products = await db.products.find(
+            query,
+            {'_id': 0}
+        ).to_list(length=None)
+        
+        return {'success': True, 'data': products}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching products: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/products/{product_id}")
+async def update_product(
+    product_id: str,
+    product: ProductModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a product"""
+    try:
+        result = await db.products.update_one(
+            {'id': product_id},
+            {'$set': {
+                **product.dict(),
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/products/{product_id}")
+async def delete_product(
+    product_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a product (soft delete)"""
+    try:
+        result = await db.products.update_one(
+            {'id': product_id},
+            {'$set': {'available': False, 'updated_at': datetime.now(timezone.utc)}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error deleting product: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== ORDERS ====================
+
+@router.post("/orders")
+async def create_order(
+    order: CreateOrderModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new order"""
+    try:
+        # Generate order number (format: LOCATION-YYYYMMDD-###)
+        today = datetime.now(timezone.utc)
+        date_str = today.strftime('%Y%m%d')
+        
+        # Get today's order count for this location
+        count = await db.orders.count_documents({
+            'location_id': order.location_id,
+            'created_at': {'$gte': today.replace(hour=0, minute=0, second=0, microsecond=0)}
+        })
+        
+        order_number = f"{order.location_id[:4].upper()}-{date_str}-{count + 1:03d}"
+        
+        # Calculate total
+        total = sum(item.total_price for item in order.items)
+        
+        order_doc = {
+            'id': str(uuid4()),
+            'order_number': order_number,
+            'tenant_id': order.tenant_id,
+            'location_id': order.location_id,
+            'terminal_id': order.terminal_id,
+            'items': [item.dict() for item in order.items],
+            'total_amount': total,
+            'payment_method': order.payment_method,
+            'payment_status': PaymentStatus.PENDING,
+            'status': OrderStatus.RECEIVED,
+            'language': order.language,
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc),
+            'status_history': [{
+                'status': OrderStatus.RECEIVED,
+                'timestamp': datetime.now(timezone.utc).isoformat()
+            }]
+        }
+        
+        await db.orders.insert_one(order_doc)
+        order_doc.pop('_id', None)
+        
+        return {'success': True, 'data': order_doc}
+    except Exception as e:
+        print(f"[Fastfood] Error creating order: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/orders")
+async def get_orders(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    status: Optional[OrderStatus] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    limit: int = 100,
+    token_data: dict = Depends(verify_token)
+):
+    """Get orders with filters"""
+    try:
+        query = {'tenant_id': tenant_id}
+        
+        if location_id:
+            query['location_id'] = location_id
+        
+        if status:
+            query['status'] = status
+        
+        if date_from:
+            query['created_at'] = {'$gte': datetime.fromisoformat(date_from)}
+        
+        if date_to:
+            if 'created_at' not in query:
+                query['created_at'] = {}
+            query['created_at']['$lte'] = datetime.fromisoformat(date_to)
+        
+        orders = await db.orders.find(
+            query,
+            {'_id': 0}
+        ).sort('created_at', -1).limit(limit).to_list(length=None)
+        
+        return {'success': True, 'data': orders}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching orders: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/orders/{order_id}")
+async def get_order(
+    order_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get a specific order"""
+    try:
+        order = await db.orders.find_one(
+            {'id': order_id},
+            {'_id': 0}
+        )
+        
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {'success': True, 'data': order}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching order: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/orders/{order_id}/status")
+async def update_order_status(
+    order_id: str,
+    status: OrderStatus,
+    token_data: dict = Depends(verify_token)
+):
+    """Update order status (Eingegangen → In Zubereitung → Abholbereit → Abgeschlossen)"""
+    try:
+        # Get current order
+        order = await db.orders.find_one({'id': order_id}, {'_id': 0})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Update status
+        status_history = order.get('status_history', [])
+        status_history.append({
+            'status': status,
+            'timestamp': datetime.now(timezone.utc).isoformat()
+        })
+        
+        result = await db.orders.update_one(
+            {'id': order_id},
+            {'$set': {
+                'status': status,
+                'status_history': status_history,
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating order status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/orders/{order_id}/payment")
+async def update_payment_status(
+    order_id: str,
+    payment_status: PaymentStatus,
+    token_data: dict = Depends(verify_token)
+):
+    """Update payment status"""
+    try:
+        result = await db.orders.update_one(
+            {'id': order_id},
+            {'$set': {
+                'payment_status': payment_status,
+                'updated_at': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating payment status: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== TERMINALS ====================
+
+@router.post("/terminals")
+async def register_terminal(
+    terminal: TerminalModel,
+    tenant_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Register a new terminal (Kiosk, Kitchen Display, Customer Display)"""
+    try:
+        terminal_doc = {
+            'id': str(uuid4()),
+            'tenant_id': tenant_id,
+            **terminal.dict(),
+            'active': True,
+            'last_seen': datetime.now(timezone.utc),
+            'created_at': datetime.now(timezone.utc)
+        }
+        
+        await db.terminals.insert_one(terminal_doc)
+        terminal_doc.pop('_id', None)
+        
+        return {'success': True, 'data': terminal_doc}
+    except Exception as e:
+        print(f"[Fastfood] Error registering terminal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/terminals")
+async def get_terminals(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    terminal_type: Optional[TerminalType] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all terminals for a tenant/location"""
+    try:
+        query = {'tenant_id': tenant_id}
+        
+        if location_id:
+            query['location_id'] = location_id
+        
+        if terminal_type:
+            query['terminal_type'] = terminal_type
+        
+        terminals = await db.terminals.find(
+            query,
+            {'_id': 0}
+        ).to_list(length=None)
+        
+        return {'success': True, 'data': terminals}
+    except Exception as e:
+        print(f"[Fastfood] Error fetching terminals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== ANALYTICS ====================
+
+@router.get("/analytics/sales")
+async def get_sales_analytics(
+    tenant_id: str,
+    location_id: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get sales analytics"""
+    try:
+        query = {
+            'tenant_id': tenant_id,
+            'payment_status': PaymentStatus.COMPLETED
+        }
+        
+        if location_id:
+            query['location_id'] = location_id
+        
+        if date_from:
+            query['created_at'] = {'$gte': datetime.fromisoformat(date_from)}
+        
+        if date_to:
+            if 'created_at' not in query:
+                query['created_at'] = {}
+            query['created_at']['$lte'] = datetime.fromisoformat(date_to)
+        
+        # Get all orders
+        orders = await db.orders.find(query, {'_id': 0}).to_list(length=None)
+        
+        # Calculate stats
+        total_revenue = sum(order.get('total_amount', 0) for order in orders)
+        total_orders = len(orders)
+        avg_order_value = total_revenue / total_orders if total_orders > 0 else 0
+        
+        # Top products
+        product_sales = {}
+        for order in orders:
+            for item in order.get('items', []):
+                product_name = item.get('product_name')
+                if product_name not in product_sales:
+                    product_sales[product_name] = {
+                        'name': product_name,
+                        'quantity': 0,
+                        'revenue': 0
+                    }
+                product_sales[product_name]['quantity'] += item.get('quantity', 0)
+                product_sales[product_name]['revenue'] += item.get('total_price', 0)
+        
+        top_products = sorted(
+            product_sales.values(),
+            key=lambda x: x['revenue'],
+            reverse=True
+        )[:10]
+        
+        return {
+            'success': True,
+            'data': {
+                'total_revenue': round(total_revenue, 2),
+                'total_orders': total_orders,
+                'avg_order_value': round(avg_order_value, 2),
+                'top_products': top_products
+            }
+        }
+    except Exception as e:
+        print(f"[Fastfood] Error fetching analytics: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
