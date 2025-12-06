@@ -51,6 +51,15 @@ class TerminalType(str, Enum):
     ADMIN = "admin"  # Admin-Terminal
 
 
+class OrderChannel(str, Enum):
+    KIOSK = "kiosk"  # Kiosk-Bestellung
+    DRIVE_IN = "drive_in"  # Drive-In
+    PARKPLATZ = "parkplatz"  # Click & Collect Parkplatz
+    MOBILE_APP = "mobile_app"  # Mobile App
+    WEB = "web"  # Web-Bestellung
+    COUNTER = "counter"  # Thekenbestellung
+
+
 # ==================== PYDANTIC MODELS ====================
 
 class CategoryModel(BaseModel):
