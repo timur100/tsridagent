@@ -1090,12 +1090,11 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Fastfood Stationen-Verwaltung (Station Management) Backend APIs Testing"
-    - "Fastfood Stationen-Verwaltung Frontend UI Testing"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
+  fastfood_station_testing_complete: true
   notes: "KIOSK OVERVIEW TESTING ATTEMPTED: Successfully navigated to Europcar tenant detail page but Kiosk tab not found. Navigation successful through login → Tenants → Europcar tenant → tenant detail page. However, the expected Kiosk tab with Übersicht sub-tab and filter functionality is not accessible. This indicates the feature may not be implemented yet or may be located elsewhere."
   
   - task: "Europcar Schnellmenü Route Testing - /menue Route Implementation"
