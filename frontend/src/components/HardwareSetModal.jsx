@@ -343,8 +343,9 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                               <input
                                 type="checkbox"
                                 checked={selectedDevices.includes(device.id)}
+                                disabled={!!device.current_set_id}
                                 onChange={() => toggleDeviceSelection(device.id)}
-                                className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                                className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000] disabled:opacity-50 disabled:cursor-not-allowed"
                               />
                               <div>
                                 <div className="flex items-center gap-3">
