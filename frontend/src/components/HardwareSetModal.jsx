@@ -285,6 +285,104 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
             />
           </div>
 
+          {/* Available Devices Section - Only shown when creating new set */}
+          {!editing && formData.location_id && (
+            <div className={`mt-6 p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className={`text-lg font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  <Package className="h-5 w-5" />
+                  Verfügbare Komponenten auswählen ({selectedDevices.length} ausgewählt)
+                </h3>
+              </div>
+              
+              {loadingAvailableDevices ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000] mx-auto"></div>
+                  <p className="text-sm text-gray-500 mt-2">Lade verfügbare Geräte...</p>
+                </div>
+              ) : availableDevices.length === 0 ? (
+                <div className={`text-center py-8 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <AlertCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Keine verfügbaren Geräte am Standort</p>
+                  <p className="text-xs mt-1">Fügen Sie Geräte später über die Geräte-Verwaltung hinzu</p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {availableDevices.map((device) => (
+                      <div 
+                        key={device.id}
+                        onClick={() => toggleDeviceSelection(device.id)}
+                        className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                          selectedDevices.includes(device.id)
+                            ? theme === 'dark' 
+                              ? 'bg-[#c00000]/20 border-[#c00000] ring-2 ring-[#c00000]/50' 
+                              : 'bg-red-50 border-[#c00000] ring-2 ring-[#c00000]/50'
+                            : theme === 'dark' 
+                              ? 'bg-[#2a2a2a] border-gray-600 hover:border-gray-500' 
+                              : 'bg-white border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="checkbox"
+                                checked={selectedDevices.includes(device.id)}
+                                onChange={() => toggleDeviceSelection(device.id)}
+                                className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                              />
+                              <div>
+                                <div className="flex items-center gap-3">
+                                  <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                    {device.device_type || 'Unbekannt'}
+                                  </span>
+                                  <span className={`text-sm px-2 py-1 rounded ${
+                                    theme === 'dark' ? 'bg-blue-900/30 text-blue-400' : 'bg-blue-100 text-blue-700'
+                                  }`}>
+                                    {device.serial_number}
+                                  </span>
+                                </div>
+                                {device.manufacturer && (
+                                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    {device.manufacturer} {device.model && `- ${device.model}`}
+                                  </p>
+                                )}
+                                {!device.location_id && (
+                                  <span className={`text-xs px-2 py-1 rounded mt-1 inline-block ${
+                                    theme === 'dark' ? 'bg-yellow-900/30 text-yellow-400' : 'bg-yellow-100 text-yellow-700'
+                                  }`}>
+                                    Aus Lager
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs px-2 py-1 rounded font-medium ${
+                              device.status === 'aktiv' || device.status === 'verfügbar'
+                                ? theme === 'dark' ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-700'
+                                : device.status === 'defekt'
+                                ? theme === 'dark' ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-700'
+                                : theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {device.status || 'Unbekannt'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className={`mt-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
+                    <p className={`text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-blue-700'}`}>
+                      <strong>Hinweis:</strong> Wählen Sie die Komponenten aus, die zu diesem Set gehören sollen. Sie können auch später weitere Geräte hinzufügen.
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
           {/* Devices/Components Section - Only shown in edit mode */}
           {editing && (
             <div className={`mt-6 p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
