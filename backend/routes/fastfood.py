@@ -552,6 +552,52 @@ async def get_terminals(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.put("/terminals/{terminal_id}")
+async def update_terminal(
+    terminal_id: str,
+    terminal: TerminalModel,
+    token_data: dict = Depends(verify_token)
+):
+    """Update a terminal"""
+    try:
+        result = await db.terminals.update_one(
+            {'id': terminal_id},
+            {'$set': {
+                **terminal.dict(),
+                'last_seen': datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Terminal not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error updating terminal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/terminals/{terminal_id}")
+async def delete_terminal(
+    terminal_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete a terminal"""
+    try:
+        result = await db.terminals.update_one(
+            {'id': terminal_id},
+            {'$set': {'active': False}}
+        )
+        
+        if result.modified_count == 0:
+            raise HTTPException(status_code=404, detail="Terminal not found")
+        
+        return {'success': True}
+    except Exception as e:
+        print(f"[Fastfood] Error deleting terminal: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== ANALYTICS ====================
 
 @router.get("/analytics/sales")
