@@ -245,12 +245,11 @@ const HardwareSetsManagement = ({ tenantId }) => {
           
           for (const deviceId of selected_devices) {
             try {
-              await apiCall('/api/hardware/assign-device', {
+              await apiCall(`/api/hardware/sets/${setId}/assign`, {
                 method: 'POST',
                 body: JSON.stringify({
-                  set_id: setId,
                   device_id: deviceId,
-                  tenant_id: tenantId
+                  notes: `Zugewiesen bei Set-Erstellung`
                 })
               });
               assignedCount++;
