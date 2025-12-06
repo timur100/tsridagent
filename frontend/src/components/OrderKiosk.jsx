@@ -561,6 +561,179 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
         )}
 
         {/* Payment Selection */}
+
+        {/* Delivery Address Form */}
+        {currentStep === 'delivery' && (
+          <div className="max-w-3xl mx-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {language === 'de' ? 'Lieferadresse' : 'Delivery Address'}
+              </h2>
+              <Button
+                variant="outline"
+                onClick={() => setCurrentStep('menu')}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                {language === 'de' ? 'Zurück' : 'Back'}
+              </Button>
+            </div>
+
+            <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+              <div className="space-y-4">
+                {/* Customer Name */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {language === 'de' ? 'Name' : 'Name'} *
+                  </label>
+                  <input
+                    type="text"
+                    value={deliveryAddress.customer_name}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, customer_name: e.target.value})}
+                    className={`w-full px-4 py-3 text-lg rounded border ${
+                      theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                    }`}
+                    placeholder={language === 'de' ? 'Max Mustermann' : 'John Doe'}
+                  />
+                </div>
+
+                {/* Phone */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {language === 'de' ? 'Telefon' : 'Phone'} *
+                  </label>
+                  <input
+                    type="tel"
+                    value={deliveryAddress.phone}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, phone: e.target.value})}
+                    className={`w-full px-4 py-3 text-lg rounded border ${
+                      theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                    }`}
+                    placeholder="+49 123 456789"
+                  />
+                </div>
+
+                {/* Street & House Number */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div className="col-span-2">
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {language === 'de' ? 'Straße' : 'Street'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={deliveryAddress.street}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, street: e.target.value})}
+                      className={`w-full px-4 py-3 text-lg rounded border ${
+                        theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                      }`}
+                      placeholder="Hauptstraße"
+                    />
+                  </div>
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {language === 'de' ? 'Nr.' : 'No.'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={deliveryAddress.house_number}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, house_number: e.target.value})}
+                      className={`w-full px-4 py-3 text-lg rounded border ${
+                        theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                      }`}
+                      placeholder="123"
+                    />
+                  </div>
+                </div>
+
+                {/* Postal Code & City */}
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {language === 'de' ? 'PLZ' : 'ZIP'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={deliveryAddress.postal_code}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, postal_code: e.target.value})}
+                      className={`w-full px-4 py-3 text-lg rounded border ${
+                        theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                      }`}
+                      placeholder="12345"
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {language === 'de' ? 'Stadt' : 'City'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={deliveryAddress.city}
+                      onChange={(e) => setDeliveryAddress({...deliveryAddress, city: e.target.value})}
+                      className={`w-full px-4 py-3 text-lg rounded border ${
+                        theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                      }`}
+                      placeholder="Berlin"
+                    />
+                  </div>
+                </div>
+
+                {/* Additional Info */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    {language === 'de' ? 'Zusätzliche Informationen' : 'Additional Information'}
+                  </label>
+                  <textarea
+                    value={deliveryAddress.additional_info}
+                    onChange={(e) => setDeliveryAddress({...deliveryAddress, additional_info: e.target.value})}
+                    className={`w-full px-4 py-3 text-lg rounded border ${
+                      theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
+                    }`}
+                    rows="2"
+                    placeholder={language === 'de' ? 'z.B. Klingel: Müller, 2. Stock' : 'e.g. Ring: Smith, 2nd floor'}
+                  />
+                </div>
+
+                {/* Delivery Fee Info */}
+                {deliveryZones.length > 0 && (
+                  <div className={`p-4 rounded ${theme === 'dark' ? 'bg-blue-500 bg-opacity-10' : 'bg-blue-50'}`}>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`text-sm ${theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>
+                          {language === 'de' ? 'Liefergebühr' : 'Delivery Fee'}
+                        </p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-blue-400' : 'text-blue-700'}`}>
+                          {language === 'de' ? 'Geschätzte Lieferzeit: 30-45 Min' : 'Estimated delivery: 30-45 min'}
+                        </p>
+                      </div>
+                      <p className={`text-xl font-bold ${theme === 'dark' ? 'text-blue-300' : 'text-blue-900'}`}>
+                        €{deliveryZones[0]?.delivery_fee?.toFixed(2) || '2.99'}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Continue Button */}
+              <div className="mt-6">
+                <Button
+                  onClick={async () => {
+                    const valid = await validateDeliveryAddress();
+                    if (valid) {
+                      setCurrentStep('payment');
+                    }
+                  }}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 text-lg"
+                  size="lg"
+                >
+                  {language === 'de' ? 'Weiter zur Zahlung' : 'Continue to Payment'}
+                  <span className="ml-2">
+                    €{(getTotal() + (deliveryZones[0]?.delivery_fee || 2.99)).toFixed(2)}
+                  </span>
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+
         {currentStep === 'payment' && (
           <div className="max-w-2xl mx-auto">
             <Card className={`p-8 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
