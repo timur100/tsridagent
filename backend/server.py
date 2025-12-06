@@ -353,6 +353,10 @@ app.include_router(hierarchy_stats_router)
 from routes.test_center import router as test_center_router
 app.include_router(test_center_router)
 
+# Fastfood System router (Multi-tenant restaurant ordering)
+from routes.fastfood import router as fastfood_router
+app.include_router(fastfood_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
