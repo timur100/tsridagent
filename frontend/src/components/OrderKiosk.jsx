@@ -5,7 +5,7 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import {
   ShoppingCart, Plus, Minus, X, CreditCard, Banknote, 
-  Smartphone, Check, ArrowLeft, Trash2, Receipt, Home
+  Smartphone, Check, ArrowLeft, Trash2, Receipt, Home, Truck, Store
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
