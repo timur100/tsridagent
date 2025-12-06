@@ -17,10 +17,25 @@ const OrderKiosk = ({ tenantId = 'default-tenant', locationId = 'default-locatio
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [cart, setCart] = useState([]);
-  const [currentStep, setCurrentStep] = useState('menu'); // menu, payment, confirmation
+  const [currentStep, setCurrentStep] = useState('orderType'); // orderType, menu, delivery, payment, confirmation
+  const [orderType, setOrderType] = useState(null); // 'pickup' or 'delivery'
   const [orderNumber, setOrderNumber] = useState(null);
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [language, setLanguage] = useState('de');
+  
+  // Delivery-specific state
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    customer_name: '',
+    phone: '',
+    street: '',
+    house_number: '',
+    postal_code: '',
+    city: '',
+    additional_info: ''
+  });
+  const [deliveryZones, setDeliveryZones] = useState([]);
+  const [selectedZone, setSelectedZone] = useState(null);
+  const [deliveryFee, setDeliveryFee] = useState(0);
 
   useEffect(() => {
     loadMenu();
