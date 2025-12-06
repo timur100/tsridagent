@@ -61,6 +61,83 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
     }
   };
 
+  const loadDeliveryOrders = async () => {
+    try {
+      const result = await apiCall(
+        `/api/fastfood/delivery-orders?tenant_id=${tenantId}&location_id=${locationId}`
+      );
+      
+      if (result.success) {
+        const deliveries = result.data?.data || result.data || [];
+        // Filter out completed/cancelled
+        const activeDeliveries = deliveries.filter(d => 
+          !['delivered', 'cancelled'].includes(d.delivery_status)
+        );
+        setDeliveryOrders(activeDeliveries);
+      }
+    } catch (error) {
+      console.error('Error loading delivery orders:', error);
+    }
+  };
+
+  const loadDrivers = async () => {
+    try {
+      const result = await apiCall(
+        `/api/fastfood/drivers?tenant_id=${tenantId}&location_id=${locationId}`
+      );
+      
+      if (result.success) {
+        const driversList = result.data?.data || result.data || [];
+        setDrivers(driversList.filter(d => d.active));
+      }
+    } catch (error) {
+      console.error('Error loading drivers:', error);
+    }
+  };
+
+  const assignDriver = async (deliveryId, driverId) => {
+    try {
+      const result = await apiCall(
+        `/api/fastfood/delivery-orders/${deliveryId}/assign-driver?driver_id=${driverId}`,
+        'PATCH'
+      );
+      
+      if (result.success) {
+        toast.success('Fahrer zugewiesen!');
+        loadDeliveryOrders();
+        loadDrivers();
+      } else {
+        toast.error('Fehler beim Zuweisen des Fahrers');
+      }
+    } catch (error) {
+      console.error('Error assigning driver:', error);
+      toast.error('Fehler beim Zuweisen des Fahrers');
+    }
+  };
+
+  const updateDeliveryStatus = async (deliveryId, newStatus) => {
+    try {
+      const result = await apiCall(
+        `/api/fastfood/delivery-orders/${deliveryId}/status?status=${newStatus}`,
+        'PATCH'
+      );
+      
+      if (result.success) {
+        toast.success('Status aktualisiert!');
+        loadDeliveryOrders();
+        if (newStatus === 'delivered') {
+          loadDrivers(); // Refresh driver status
+        }
+      } else {
+        toast.error('Fehler beim Aktualisieren des Status');
+      }
+    } catch (error) {
+      console.error('Error updating delivery status:', error);
+      toast.error('Fehler beim Aktualisieren des Status');
+    }
+  };
+
+
   const playNotificationSound = () => {
     // Create a simple beep sound
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
