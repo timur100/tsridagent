@@ -40,6 +40,8 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
         device_number: editing.device_number || '',
         notes: editing.notes || ''
       });
+      // Load devices for this set
+      loadSetDevices(editing.id);
     } else {
       setFormData({
         set_name: '',
@@ -48,8 +50,26 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
         device_number: '',
         notes: ''
       });
+      setDevices([]);
     }
   }, [editing, show]);
+  
+  const loadSetDevices = async (setId) => {
+    if (!setId) return;
+    setLoadingDevices(true);
+    try {
+      // Load set assignments
+      const assignmentsResult = await apiCall(`/api/hardware/sets/${setId}/assignments`);
+      if (assignmentsResult.success || Array.isArray(assignmentsResult.data)) {
+        const assignments = assignmentsResult.data || assignmentsResult;
+        setDevices(assignments.filter(a => a.active));
+      }
+    } catch (error) {
+      console.error('Error loading devices:', error);
+    } finally {
+      setLoadingDevices(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
