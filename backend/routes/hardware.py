@@ -220,7 +220,77 @@ async def get_set_assignments(
 ):
     """Get all device assignments for a hardware set"""
     try:
-        # Get all active assignments for this set
+        # First, get the set details to check if it's an Europcar set
+        hardware_set = await db.hardware_sets.find_one({'id': set_id}, {"_id": 0})
+        
+        if not hardware_set:
+            return {"success": True, "data": []}
+        
+        # Check if this is an Europcar set by looking for the device in europcar_devices
+        full_code = hardware_set.get('full_code') or hardware_set.get('device_number')
+        europcar_device = None
+        
+        if full_code:
+            europcar_device = await multi_tenant_db.europcar_devices.find_one(
+                {'device_id': full_code},
+                {"_id": 0}
+            )
+        
+        # If we found europcar device data, extract components from it
+        if europcar_device:
+            components = []
+            
+            # Extract PC component
+            if europcar_device.get('sn_pc'):
+                components.append({
+                    'id': f"{europcar_device['device_id']}_PC",
+                    'device_id': f"{europcar_device['device_id']}_PC",
+                    'device_type': 'PC',
+                    'serial_number': europcar_device['sn_pc'],
+                    'manufacturer': 'PC',
+                    'model': '',
+                    'status': europcar_device.get('status', 'unbekannt'),
+                    'current_status': europcar_device.get('status', 'unbekannt'),
+                    'notes': '',
+                    'active': True,
+                    'set_id': set_id
+                })
+            
+            # Extract Scanner component
+            if europcar_device.get('sn_sc'):
+                components.append({
+                    'id': f"{europcar_device['device_id']}_SC",
+                    'device_id': f"{europcar_device['device_id']}_SC",
+                    'device_type': 'Scanner',
+                    'serial_number': europcar_device['sn_sc'],
+                    'manufacturer': 'Scanner',
+                    'model': '',
+                    'status': europcar_device.get('status', 'unbekannt'),
+                    'current_status': europcar_device.get('status', 'unbekannt'),
+                    'notes': '',
+                    'active': True,
+                    'set_id': set_id
+                })
+            
+            # Extract IMEI if exists
+            if europcar_device.get('imei_1'):
+                components.append({
+                    'id': f"{europcar_device['device_id']}_IMEI1",
+                    'device_id': f"{europcar_device['device_id']}_IMEI1",
+                    'device_type': 'Mobile Device',
+                    'serial_number': europcar_device['imei_1'],
+                    'manufacturer': 'Mobile',
+                    'model': '',
+                    'status': europcar_device.get('status', 'unbekannt'),
+                    'current_status': europcar_device.get('status', 'unbekannt'),
+                    'notes': '',
+                    'active': True,
+                    'set_id': set_id
+                })
+            
+            return {"success": True, "data": components}
+        
+        # Fallback to regular assignments if not Europcar
         assignments = await db.set_assignments.find(
             {'set_id': set_id, 'active': True},
             {"_id": 0}
