@@ -77,7 +77,14 @@ const FastfoodStationManagement = ({ tenantId = 'default-tenant', locationId = '
       // Fetch categories for linking
       const categoriesRes = await apiCall(`/api/fastfood/categories?tenant_id=${tenantId}&location_id=${locationId}`);
       if (categoriesRes?.success) {
-        setCategories(categoriesRes.data || []);
+        // Handle both array and nested object responses
+        let categoriesData = [];
+        if (Array.isArray(categoriesRes.data)) {
+          categoriesData = categoriesRes.data;
+        } else if (categoriesRes.data && Array.isArray(categoriesRes.data.data)) {
+          categoriesData = categoriesRes.data.data;
+        }
+        setCategories(categoriesData);
       }
     } catch (error) {
       console.error('Error fetching data:', error);
