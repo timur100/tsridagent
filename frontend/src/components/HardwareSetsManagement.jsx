@@ -413,20 +413,20 @@ const HardwareSetsManagement = ({ tenantId }) => {
     let aVal = a[sortField];
     let bVal = b[sortField];
     
-    // Special handling for device count
+    // Special handling for device count - use backend value if available
     if (sortField === 'device_count') {
-      const aDevices = devices.filter(d => d.current_set_id === a.id).length;
-      const bDevices = devices.filter(d => d.current_set_id === b.id).length;
-      aVal = aDevices;
-      bVal = bDevices;
+      aVal = a.device_count !== undefined 
+        ? a.device_count 
+        : devices.filter(d => d.current_set_id === a.id).length;
+      bVal = b.device_count !== undefined 
+        ? b.device_count 
+        : devices.filter(d => d.current_set_id === b.id).length;
     }
     
-    // Special handling for location name
+    // Special handling for location name - use backend value if available
     if (sortField === 'location_name') {
-      const aLocation = locations.find(l => l.id === a.location_id);
-      const bLocation = locations.find(l => l.id === b.location_id);
-      aVal = aLocation?.name || '';
-      bVal = bLocation?.name || '';
+      aVal = a.location_name || locations.find(l => l.id === a.location_id)?.name || '';
+      bVal = b.location_name || locations.find(l => l.id === b.location_id)?.name || '';
     }
     
     // Handle null/undefined values
