@@ -2629,10 +2629,7 @@ const AdminPortalContent = () => {
                           <FastfoodMenuManagement />
                         )}
                         {fastfoodSubTab === 'orders' && (
-                          <div className="text-center p-12">
-                            <ShoppingCart className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Bestellungen - In Entwicklung</p>
-                          </div>
+                          <OrderKiosk tenantId="default-tenant" locationId="default-location" />
                         )}
                         {fastfoodSubTab === 'analytics' && (
                           <div className="text-center p-12">
