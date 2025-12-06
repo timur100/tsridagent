@@ -2,9 +2,19 @@
 
 ## ✅ Durchgeführte Änderungen
 
-### Bug Fix in `/app/frontend/src/components/HardwareSetModal.jsx`
+### 1. Bug Fix in `/app/frontend/src/components/HardwareSetModal.jsx` (CREATE Mode)
 - **Problem**: Die Komponenten wurden nicht angezeigt, weil der Code auf `response.data` zugegriffen hat, aber die API die Geräteliste unter `response.data.data.devices` zurückgibt.
 - **Lösung**: Korrigierter Datenzugriffspfad mit mehreren Fallback-Optionen für robuste Fehlerbehandlung.
+
+### 2. Bug Fix in `/app/backend/routes/hardware.py` (EDIT Mode)
+- **Problem**: Der Endpoint `/api/hardware/sets/{set_id}/assignments` lieferte 0 Komponenten, weil:
+  - Die Europcar-Daten in `multi_tenant_admin.europcar_devices` gespeichert sind
+  - Aber der Endpoint nur in `main_db.set_assignments` gesucht hat
+  - Die Assignments wurden nie erstellt beim Import
+- **Lösung**: 
+  - Endpoint erweitert, um Europcar-Sets zu erkennen
+  - Komponenten (sn_pc, sn_sc, imei_1) werden direkt aus `europcar_devices` extrahiert
+  - Fallback auf reguläre Assignments für nicht-Europcar Sets
 
 ### Code-Änderung (Zeilen 89-105):
 ```javascript
