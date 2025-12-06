@@ -62,11 +62,20 @@ Bitte führen Sie einen **Hard Refresh** im Browser durch:
 3. Geben Sie optional eine **Gerätenummer** ein (z.B. "01" oder "02")
 
 ### 5. Erwartetes Ergebnis ✅
+
+**A) CREATE MODE (Neues Set erstellen):**
 Nach der Standort-Auswahl sollten Sie sehen:
 - ✅ Eine Liste von verfügbaren Komponenten wird angezeigt
 - ✅ Komponenten enthalten: PC (mit SN-PC), Scanner (mit SN-SC), etc.
 - ✅ Konsolen-Log zeigt: `[HardwareSetModal] Total devices loaded: <Anzahl>`
 - ✅ Konsolen-Log zeigt: `[HardwareSetModal] Extracted components: <Anzahl>`
+
+**B) EDIT MODE (Bestehendes Set bearbeiten - z.B. BERT01-02):**
+Im Edit-Modal sollten Sie sehen:
+- ✅ "Komponenten (2)" statt "Komponenten (0)"
+- ✅ PC-Komponente mit Seriennummer: 020264780153
+- ✅ Scanner-Komponente mit Seriennummer: 201737 01576
+- ✅ Status: offline (aktuelle TeamViewer-Status)
 
 ### 6. Browser-Konsole überprüfen
 Öffnen Sie die Browser-Entwickler-Tools (F12) und prüfen Sie:
