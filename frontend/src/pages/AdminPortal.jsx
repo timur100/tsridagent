@@ -76,6 +76,7 @@ import AISearchManagement from '../components/AISearchManagement';
 import ImageProcessingManagement from '../components/ImageProcessingManagement';
 import AutomationManagement from '../components/AutomationManagement';
 import DataCheckPage from '../components/DataCheckPage';
+import FastfoodMenuManagement from '../components/FastfoodMenuManagement';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
