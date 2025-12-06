@@ -712,34 +712,57 @@ const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-loc
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {drivers.map(driver => (
-                <Card
-                  key={driver.id}
-                  className={`p-4 border-2 ${
-                    driver.current_delivery_id 
-                      ? 'bg-yellow-900/30 border-yellow-500' 
-                      : 'bg-green-900/30 border-green-500'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-lg font-bold text-white">
-                        {driver.name}
-                      </div>
-                      <div className="text-sm text-gray-400">
-                        {driver.phone}
-                      </div>
-                    </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                      driver.current_delivery_id 
-                        ? 'bg-yellow-500 text-black' 
-                        : 'bg-green-500 text-white'
-                    }`}>
-                      {driver.current_delivery_id ? 'Beschäftigt' : 'Verfügbar'}
-                    </div>
-                  </div>
+              {drivers.length === 0 ? (
+                <Card className="bg-gray-800 border-gray-700 p-8 text-center col-span-full">
+                  <p className="text-gray-400">Keine Fahrer verfügbar</p>
                 </Card>
-              ))}
+              ) : (
+                drivers.map(driver => (
+                  <Card
+                    key={driver.id}
+                    className={`p-4 border-2 ${
+                      driver.status === 'busy' 
+                        ? 'bg-yellow-900/30 border-yellow-500' 
+                        : driver.status === 'available'
+                        ? 'bg-green-900/30 border-green-500'
+                        : 'bg-gray-900/30 border-gray-500'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-lg font-bold text-white">
+                          {driver.name}
+                        </div>
+                        <div className="text-sm text-gray-400">
+                          📞 {driver.phone}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {driver.vehicle_type} {driver.vehicle_number && `· ${driver.vehicle_number}`}
+                        </div>
+                      </div>
+                      <div className={`px-2 py-1 rounded-full text-xs font-bold ${
+                        driver.status === 'busy' 
+                          ? 'bg-yellow-500 text-black' 
+                          : driver.status === 'available'
+                          ? 'bg-green-500 text-white'
+                          : driver.status === 'on_break'
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-gray-500 text-white'
+                      }`}>
+                        {driver.status === 'busy' && '🚗 Beschäftigt'}
+                        {driver.status === 'available' && '✅ Verfügbar'}
+                        {driver.status === 'on_break' && '☕ Pause'}
+                        {driver.status === 'offline' && '⚫ Offline'}
+                      </div>
+                    </div>
+                    {driver.current_order_id && (
+                      <div className="mt-2 text-xs text-yellow-400">
+                        Aktive Bestellung: {driver.current_order_id.split('-')[0]}
+                      </div>
+                    )}
+                  </Card>
+                ))
+              )}
               {drivers.length === 0 && (
                 <Card className="bg-gray-800 border-gray-700 p-8 text-center col-span-full">
                   <User className="h-12 w-12 mx-auto mb-3 text-gray-600" />
