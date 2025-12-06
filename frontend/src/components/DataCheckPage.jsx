@@ -1,0 +1,414 @@
+import React, { useState } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import {
+  CheckCircle, XCircle, AlertTriangle, Package, MapPin, Wrench,
+  Upload, FileText, Play, Download, Search, Filter, RefreshCw,
+  Clock, Archive, X, Info, TrendingUp, Database, FileSpreadsheet
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const DataCheckPage = () => {
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
+  
+  const [serialNumbers, setSerialNumbers] = useState('');
+  const [importedFile, setImportedFile] = useState(null);
+  const [testResults, setTestResults] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target.result;
+        // Parse CSV or text file
+        const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+        setSerialNumbers(lines.join('\n'));
+        setImportedFile(file.name);
+        toast.success(`${lines.length} Seriennummern importiert`);
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleRunTest = async () => {
+    if (!serialNumbers.trim()) {
+      toast.error('Bitte geben Sie mindestens eine Seriennummer ein');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const serialList = serialNumbers
+        .split('\n')
+        .map(sn => sn.trim())
+        .filter(sn => sn);
+
+      const result = await apiCall('/api/test-center/data-check', {
+        method: 'POST',
+        body: JSON.stringify({
+          serial_numbers: serialList
+        })
+      });
+
+      if (result.success || result.results) {
+        setTestResults(result.data || result);
+        toast.success(`Test abgeschlossen: ${serialList.length} Seriennummern geprüft`);
+      }
+    } catch (error) {
+      console.error('Error running data check:', error);
+      toast.error('Fehler beim Ausführen des Tests');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleClear = () => {
+    setSerialNumbers('');
+    setImportedFile(null);
+    setTestResults(null);
+    setActiveFilter('all');
+  };
+
+  const handleExportResults = () => {
+    if (!testResults) return;
+
+    const csvContent = generateCSVReport(testResults);
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `daten-check-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    toast.success('Report exportiert');
+  };
+
+  const generateCSVReport = (results) => {
+    let csv = 'Seriennummer,Status,Kategorie,Gerät,Standort,Bemerkungen\n';
+    
+    Object.entries(results.results || {}).forEach(([category, items]) => {
+      items.forEach(item => {
+        csv += `"${item.serial_number}","${item.status}","${category}","${item.device_type || '-'}","${item.location || '-'}","${item.notes || '-'}"\n`;
+      });
+    });
+    
+    return csv;
+  };
+
+  const getFilteredResults = () => {
+    if (!testResults || !testResults.results) return {};
+    
+    if (activeFilter === 'all') {
+      return testResults.results;
+    }
+    
+    return {
+      [activeFilter]: testResults.results[activeFilter] || []
+    };
+  };
+
+  const getCategoryIcon = (category) => {
+    const icons = {
+      'correct': CheckCircle,
+      'incorrect': XCircle,
+      'unused': AlertTriangle,
+      'closed_location': Archive,
+      'defective': Wrench,
+      'in_warehouse': Package
+    };
+    return icons[category] || Info;
+  };
+
+  const getCategoryColor = (category) => {
+    const colors = {
+      'correct': 'text-green-600 bg-green-100 dark:bg-green-900/30 dark:text-green-400',
+      'incorrect': 'text-red-600 bg-red-100 dark:bg-red-900/30 dark:text-red-400',
+      'unused': 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-400',
+      'closed_location': 'text-gray-600 bg-gray-100 dark:bg-gray-800 dark:text-gray-400',
+      'defective': 'text-orange-600 bg-orange-100 dark:bg-orange-900/30 dark:text-orange-400',
+      'in_warehouse': 'text-blue-600 bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400'
+    };
+    return colors[category] || 'text-gray-600 bg-gray-100';
+  };
+
+  const getCategoryLabel = (category) => {
+    const labels = {
+      'correct': 'Korrekt',
+      'incorrect': 'Inkorrekt',
+      'unused': 'Unbenutzt',
+      'closed_location': 'Geschlossener Standort',
+      'defective': 'Defekt',
+      'in_warehouse': 'Im Lager'
+    };
+    return labels[category] || category;
+  };
+
+  const filteredResults = getFilteredResults();
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Daten Check
+          </h1>
+          <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Validierung von Geräte- und Standortdaten, Seriennummern-Prüfung
+          </p>
+        </div>
+        {testResults && (
+          <Button
+            onClick={handleExportResults}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Download className="h-4 w-4" />
+            Report exportieren
+          </Button>
+        )}
+      </div>
+
+      {/* Input Section */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Seriennummern eingeben oder importieren
+            </h2>
+            {serialNumbers && (
+              <Button
+                onClick={handleClear}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <X className="h-4 w-4" />
+                Zurücksetzen
+              </Button>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Text Input */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Seriennummern (eine pro Zeile)
+              </label>
+              <textarea
+                value={serialNumbers}
+                onChange={(e) => setSerialNumbers(e.target.value)}
+                placeholder="Seriennummern hier eingeben...&#10;Beispiel:&#10;047924271453&#10;201737 01567&#10;010242571153"
+                rows={10}
+                className={`w-full px-4 py-2 rounded-lg border font-mono text-sm ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                }`}
+              />
+              <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                {serialNumbers.split('\n').filter(s => s.trim()).length} Seriennummern eingegeben
+              </p>
+            </div>
+
+            {/* File Upload */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                CSV/TXT Datei importieren
+              </label>
+              <div className={`border-2 border-dashed rounded-lg p-8 text-center ${
+                theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'
+              }`}>
+                <Upload className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
+                <p className={`text-sm mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {importedFile || 'CSV oder TXT Datei hochladen'}
+                </p>
+                <label className="cursor-pointer">
+                  <span className="text-[#c00000] hover:text-[#a00000] text-sm font-medium">
+                    Datei auswählen
+                  </span>
+                  <input
+                    type="file"
+                    accept=".csv,.txt"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+              <div className={`mt-4 p-4 rounded-lg ${theme === 'dark' ? 'bg-blue-900/20 border border-blue-800' : 'bg-blue-50 border border-blue-200'}`}>
+                <p className={`text-sm ${theme === 'dark' ? 'text-blue-400' : 'text-blue-700'}`}>
+                  <strong>Format:</strong> Eine Seriennummer pro Zeile. CSV-Dateien werden automatisch geparst.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-3 pt-4">
+            <Button
+              onClick={handleRunTest}
+              disabled={isLoading || !serialNumbers.trim()}
+              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+            >
+              {isLoading ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Test läuft...
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4" />
+                  Test starten
+                </>
+              )}
+            </Button>
+            
+            <Button
+              onClick={() => setSerialNumbers('')}
+              variant="outline"
+              disabled={!serialNumbers.trim()}
+            >
+              Eingabe löschen
+            </Button>
+          </div>
+        </div>
+      </Card>
+
+      {/* Results Section */}
+      {testResults && (
+        <div className="space-y-4">
+          {/* Summary Stats */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {Object.entries(testResults.summary || {}).map(([category, count]) => {
+              const Icon = getCategoryIcon(category);
+              return (
+                <Card
+                  key={category}
+                  onClick={() => setActiveFilter(category)}
+                  className={`p-4 cursor-pointer transition-all ${
+                    activeFilter === category
+                      ? 'ring-2 ring-[#c00000]'
+                      : ''
+                  } ${theme === 'dark' ? 'bg-[#2a2a2a] hover:bg-[#333]' : 'bg-white hover:bg-gray-50'}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-lg ${getCategoryColor(category)}`}>
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                        {count}
+                      </p>
+                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {getCategoryLabel(category)}
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Filter Buttons */}
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setActiveFilter('all')}
+              variant={activeFilter === 'all' ? 'default' : 'outline'}
+              size="sm"
+            >
+              Alle anzeigen
+            </Button>
+            {Object.keys(testResults.results || {}).map(category => (
+              <Button
+                key={category}
+                onClick={() => setActiveFilter(category)}
+                variant={activeFilter === category ? 'default' : 'outline'}
+                size="sm"
+              >
+                {getCategoryLabel(category)}
+              </Button>
+            ))}
+          </div>
+
+          {/* Results Table */}
+          <Card className={`${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Status
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Seriennummer
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Gerätetyp
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Standort
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Bemerkungen
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(filteredResults).map(([category, items]) =>
+                    items.map((item, idx) => {
+                      const Icon = getCategoryIcon(category);
+                      return (
+                        <tr
+                          key={`${category}-${idx}`}
+                          className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
+                        >
+                          <td className="px-6 py-4">
+                            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(category)}`}>
+                              <Icon className="h-4 w-4" />
+                              {getCategoryLabel(category)}
+                            </div>
+                          </td>
+                          <td className={`px-6 py-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {item.serial_number}
+                          </td>
+                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            {item.device_type || '-'}
+                          </td>
+                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            {item.location || '-'}
+                          </td>
+                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {item.notes || '-'}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!testResults && !isLoading && (
+        <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+          <Database className={`h-16 w-16 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+          <h3 className={`text-lg font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Keine Testergebnisse
+          </h3>
+          <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Geben Sie Seriennummern ein und starten Sie den Test, um Ergebnisse zu sehen
+          </p>
+        </Card>
+      )}
+    </div>
+  );
+};
+
+export default DataCheckPage;
