@@ -1,0 +1,379 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import {
+  Clock, Check, ChefHat, AlertCircle, Volume2, VolumeX,
+  RefreshCw, Maximize2, Minimize2, Bell
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const KitchenDisplay = ({ tenantId = 'default-tenant', locationId = 'default-location' }) => {
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
+  
+  const [orders, setOrders] = useState([]);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    loadOrders();
+    
+    // Auto refresh every 5 seconds
+    const interval = setInterval(loadOrders, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Play sound when new order arrives
+    if (orders.length > lastOrderCount && soundEnabled && lastOrderCount > 0) {
+      playNotificationSound();
+      toast.success('Neue Bestellung!', {
+        icon: '🔔',
+        duration: 3000
+      });
+    }
+    setLastOrderCount(orders.length);
+  }, [orders.length]);
+
+  const loadOrders = async () => {
+    try {
+      // Load only active orders (received + preparing)
+      const receivedResult = await apiCall(
+        `/api/fastfood/orders?tenant_id=${tenantId}&status=received&limit=50`
+      );
+      const preparingResult = await apiCall(
+        `/api/fastfood/orders?tenant_id=${tenantId}&status=preparing&limit=50`
+      );
+
+      const received = receivedResult.data?.data || receivedResult.data || [];
+      const preparing = preparingResult.data?.data || preparingResult.data || [];
+      
+      setOrders([...received, ...preparing]);
+    } catch (error) {
+      console.error('Error loading orders:', error);
+    }
+  };
+
+  const playNotificationSound = () => {
+    // Create a simple beep sound
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.5);
+  };
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    try {
+      await apiCall(`/api/fastfood/orders/${orderId}/status?status=${newStatus}`, {
+        method: 'PUT'
+      });
+      
+      if (newStatus === 'ready') {
+        toast.success('Bestellung fertig!', { icon: '✅' });
+      }
+      
+      loadOrders();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast.error('Fehler beim Aktualisieren');
+    }
+  };
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setFullscreen(true);
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+        setFullscreen(false);
+      }
+    }
+  };
+
+  const getElapsedTime = (createdAt) => {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const diff = Math.floor((now - created) / 1000); // seconds
+    
+    const minutes = Math.floor(diff / 60);
+    const seconds = diff % 60;
+    
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const getTimeColor = (createdAt) => {
+    const now = new Date();
+    const created = new Date(createdAt);
+    const minutes = Math.floor((now - created) / 1000 / 60);
+    
+    if (minutes < 5) return 'text-green-600';
+    if (minutes < 10) return 'text-yellow-600';
+    return 'text-red-600';
+  };
+
+  const receivedOrders = orders.filter(o => o.status === 'received');
+  const preparingOrders = orders.filter(o => o.status === 'preparing');
+
+  return (
+    <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-900'} p-6`}>
+      {/* Header */}
+      <div className={`mb-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-800'} rounded-lg p-4`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <ChefHat className="h-10 w-10 text-white" />
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Küchendisplay
+              </h1>
+              <p className="text-gray-400">
+                {receivedOrders.length} Neu · {preparingOrders.length} In Zubereitung
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <Button
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              variant={soundEnabled ? 'default' : 'outline'}
+              size="lg"
+              className="flex items-center gap-2"
+            >
+              {soundEnabled ? <Volume2 className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+              Sound
+            </Button>
+            
+            <Button
+              onClick={toggleFullscreen}
+              variant="outline"
+              size="lg"
+              className="flex items-center gap-2"
+            >
+              {fullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+              Fullscreen
+            </Button>
+            
+            <Button
+              onClick={loadOrders}
+              variant="outline"
+              size="lg"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-5 w-5" />
+              Aktualisieren
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* New Orders Column */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <Bell className="h-6 w-6 text-blue-400" />
+            <h2 className="text-2xl font-bold text-white">
+              Neue Bestellungen ({receivedOrders.length})
+            </h2>
+          </div>
+          
+          <div className="space-y-4">
+            {receivedOrders.length === 0 ? (
+              <Card className="bg-gray-800 border-gray-700 p-12 text-center">
+                <Check className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                <p className="text-gray-400 text-lg">Keine neuen Bestellungen</p>
+              </Card>
+            ) : (
+              receivedOrders.map(order => (
+                <Card
+                  key={order.id}
+                  className="bg-blue-900/30 border-blue-500 border-2 p-6 animate-pulse-slow"
+                >
+                  {/* Order Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <div className="text-4xl font-bold text-blue-400 mb-2">
+                        #{order.order_number?.split('-').pop()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {new Date(order.created_at).toLocaleTimeString('de-DE')}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-3xl font-bold ${getTimeColor(order.created_at)}`}>
+                        <Clock className="inline h-8 w-8 mr-2" />
+                        {getElapsedTime(order.created_at)}
+                      </div>
+                      <div className="text-sm text-gray-400 mt-1">
+                        Wartezeit
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Order Items */}
+                  <div className="space-y-2 mb-4">
+                    {order.items.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-gray-800/50 p-4 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-blue-500 text-white font-bold text-xl rounded-full h-10 w-10 flex items-center justify-center">
+                              {item.quantity}
+                            </div>
+                            <span className="text-white font-bold text-xl">
+                              {item.product_name}
+                            </span>
+                          </div>
+                        </div>
+                        {item.notes && (
+                          <div className="mt-2 text-yellow-400 text-sm flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4" />
+                            {item.notes}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Action Button */}
+                  <Button
+                    onClick={() => updateOrderStatus(order.id, 'preparing')}
+                    className="w-full h-16 text-xl bg-yellow-600 hover:bg-yellow-700 text-white"
+                  >
+                    <ChefHat className="h-6 w-6 mr-2" />
+                    Zubereitung starten
+                  </Button>
+                </Card>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Preparing Orders Column */}
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <ChefHat className="h-6 w-6 text-yellow-400" />
+            <h2 className="text-2xl font-bold text-white">
+              In Zubereitung ({preparingOrders.length})
+            </h2>
+          </div>
+          
+          <div className="space-y-4">
+            {preparingOrders.length === 0 ? (
+              <Card className="bg-gray-800 border-gray-700 p-12 text-center">
+                <ChefHat className="h-16 w-16 mx-auto mb-4 text-gray-600" />
+                <p className="text-gray-400 text-lg">Keine Bestellungen in Zubereitung</p>
+              </Card>
+            ) : (
+              preparingOrders.map(order => (
+                <Card
+                  key={order.id}
+                  className="bg-yellow-900/30 border-yellow-500 border-2 p-6"
+                >
+                  {/* Order Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <div className="text-4xl font-bold text-yellow-400 mb-2">
+                        #{order.order_number?.split('-').pop()}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {new Date(order.created_at).toLocaleTimeString('de-DE')}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className={`text-3xl font-bold ${getTimeColor(order.created_at)}`}>
+                        <Clock className="inline h-8 w-8 mr-2" />
+                        {getElapsedTime(order.created_at)}
+                      </div>
+                      <div className="text-sm text-gray-400 mt-1">
+                        Gesamtzeit
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Order Items */}
+                  <div className="space-y-2 mb-4">
+                    {order.items.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-gray-800/50 p-4 rounded-lg"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-yellow-500 text-black font-bold text-xl rounded-full h-10 w-10 flex items-center justify-center">
+                              {item.quantity}
+                            </div>
+                            <span className="text-white font-bold text-xl">
+                              {item.product_name}
+                            </span>
+                          </div>
+                        </div>
+                        {item.notes && (
+                          <div className="mt-2 text-yellow-400 text-sm flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4" />
+                            {item.notes}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Action Button */}
+                  <Button
+                    onClick={() => updateOrderStatus(order.id, 'ready')}
+                    className="w-full h-16 text-xl bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    <Check className="h-6 w-6 mr-2" />
+                    Fertig - Abholbereit
+                  </Button>
+                </Card>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Statistics Footer */}
+      <div className={`mt-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-800'} rounded-lg p-4`}>
+        <div className="grid grid-cols-4 gap-4 text-center">
+          <div>
+            <div className="text-3xl font-bold text-blue-400">{receivedOrders.length}</div>
+            <div className="text-sm text-gray-400">Neu</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-yellow-400">{preparingOrders.length}</div>
+            <div className="text-sm text-gray-400">In Arbeit</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-green-400">{orders.length}</div>
+            <div className="text-sm text-gray-400">Gesamt Aktiv</div>
+          </div>
+          <div>
+            <div className={`text-3xl font-bold ${soundEnabled ? 'text-green-400' : 'text-gray-600'}`}>
+              {soundEnabled ? '🔔' : '🔕'}
+            </div>
+            <div className="text-sm text-gray-400">Sound</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default KitchenDisplay;
