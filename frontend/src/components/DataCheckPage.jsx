@@ -56,9 +56,26 @@ const DataCheckPage = () => {
         })
       });
 
-      if (result.success || result.results) {
-        setTestResults(result.data || result);
+      console.log('[DataCheck] API Response:', result);
+
+      // apiCall returns { success, data, status }
+      // Backend returns { success: true, data: { summary, results, ... } }
+      if (result.success) {
+        const responseData = result.data;
+        console.log('[DataCheck] Response data:', responseData);
+        
+        // Check if data is nested (from apiCall wrapper)
+        if (responseData && responseData.data) {
+          setTestResults(responseData.data);
+        } else if (responseData && responseData.summary && responseData.results) {
+          setTestResults(responseData);
+        } else {
+          setTestResults(responseData);
+        }
+        
         toast.success(`Test abgeschlossen: ${serialList.length} Seriennummern geprüft`);
+      } else {
+        toast.error('Test fehlgeschlagen');
       }
     } catch (error) {
       console.error('Error running data check:', error);
