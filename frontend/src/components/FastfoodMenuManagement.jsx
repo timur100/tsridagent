@@ -50,11 +50,11 @@ const FastfoodMenuManagement = () => {
   });
 
   useEffect(() => {
-    if (selectedTenant) {
+    if (activeTenant) {
       loadCategories();
       loadProducts();
     }
-  }, [selectedTenant]);
+  }, [activeTenant]);
 
   const loadCategories = async () => {
     try {
