@@ -74,6 +74,7 @@ from routes.hardware_import import router as hardware_import_router
 from routes.placetel import router as placetel_router
 from routes.placetel_webhooks import router as placetel_webhooks_router
 from routes.fleet_management import router as fleet_router
+from routes.mobility_services import router as mobility_router
 from routes.organization_creator import router as organization_creator_router
 from routes.telephony_webhooks import router as telephony_router
 from routes.hierarchy_stats import router as hierarchy_stats_router
