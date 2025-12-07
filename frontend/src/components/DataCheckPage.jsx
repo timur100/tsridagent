@@ -310,7 +310,8 @@ const DataCheckPage = () => {
       <SubTabNavigation
         tabs={[
           { id: 'validation', label: 'Validierung', icon: CheckCircle },
-          { id: 'setid-config', label: 'Set-ID Konfiguration', icon: Settings }
+          { id: 'setid-config', label: 'Set-ID Konfiguration', icon: Settings },
+          { id: 'ai-analysis', label: 'KI & Analyse', icon: Brain }
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
