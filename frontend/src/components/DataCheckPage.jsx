@@ -102,6 +102,8 @@ const DataCheckPage = () => {
 
   const handleClear = () => {
     setSerialNumbers('');
+    setLicensedSerials('');
+    setWarehouseSerials('');
     setImportedFile(null);
     setTestResults(null);
     setActiveFilter('all');
