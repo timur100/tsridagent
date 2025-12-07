@@ -552,85 +552,73 @@ const DataCheckPage = () => {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {/* Licensed Devices */}
-                <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-                  <h4 className={`text-md font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Aktivierte Lizenzen
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Gesamt:</span>
-                      <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {testResults.comparison.licensed.total}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Aktiv im Einsatz:</span>
-                      <span className="font-bold text-green-600">
-                        {testResults.comparison.licensed.active.length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Nicht gefunden:</span>
-                      <span className="font-bold text-red-600">
-                        {testResults.comparison.licensed.not_found.length}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                <ComparisonCard
+                  title="Aktivierte Lizenzen"
+                  total={testResults.comparison.licensed.total}
+                  sections={[
+                    {
+                      label: 'Aktiv im Einsatz',
+                      count: testResults.comparison.licensed.active.length,
+                      color: 'green',
+                      items: testResults.comparison.licensed.active
+                    },
+                    {
+                      label: 'Nicht gefunden',
+                      count: testResults.comparison.licensed.not_found.length,
+                      color: 'red',
+                      items: testResults.comparison.licensed.not_found
+                    }
+                  ]}
+                  theme={theme}
+                />
 
                 {/* Warehouse Scanners */}
-                <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-                  <h4 className={`text-md font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Scanner auf Lager
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Gesamt:</span>
-                      <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {testResults.comparison.warehouse.total}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Im Einsatz:</span>
-                      <span className="font-bold text-orange-600">
-                        {testResults.comparison.warehouse.in_use.length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Verfügbar:</span>
-                      <span className="font-bold text-blue-600">
-                        {testResults.comparison.warehouse.available.length}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                <ComparisonCard
+                  title="Scanner auf Lager"
+                  total={testResults.comparison.warehouse.total}
+                  sections={[
+                    {
+                      label: 'Im Einsatz',
+                      count: testResults.comparison.warehouse.in_use.length,
+                      color: 'orange',
+                      items: testResults.comparison.warehouse.in_use
+                    },
+                    {
+                      label: 'Verfügbar',
+                      count: testResults.comparison.warehouse.available.length,
+                      color: 'blue',
+                      items: testResults.comparison.warehouse.available
+                    }
+                  ]}
+                  theme={theme}
+                />
 
                 {/* Cross Check */}
-                <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
-                  <h4 className={`text-md font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Kreuzprüfung
-                  </h4>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lizenziert & Aktiv:</span>
-                      <span className="font-bold text-green-600">
-                        {testResults.comparison.cross_check.licensed_and_active.length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lizenz aber inaktiv:</span>
-                      <span className="font-bold text-yellow-600">
-                        {testResults.comparison.cross_check.licensed_but_not_active.length}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lager aber aktiv:</span>
-                      <span className="font-bold text-orange-600">
-                        {testResults.comparison.cross_check.warehouse_but_active.length}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
+                <ComparisonCard
+                  title="Kreuzprüfung"
+                  total={null}
+                  sections={[
+                    {
+                      label: 'Lizenziert & Aktiv',
+                      count: testResults.comparison.cross_check.licensed_and_active.length,
+                      color: 'green',
+                      items: testResults.comparison.cross_check.licensed_and_active
+                    },
+                    {
+                      label: 'Lizenz aber inaktiv',
+                      count: testResults.comparison.cross_check.licensed_but_not_active.length,
+                      color: 'yellow',
+                      items: testResults.comparison.cross_check.licensed_but_not_active
+                    },
+                    {
+                      label: 'Lager aber aktiv',
+                      count: testResults.comparison.cross_check.warehouse_but_active.length,
+                      color: 'orange',
+                      items: testResults.comparison.cross_check.warehouse_but_active
+                    }
+                  ]}
+                  theme={theme}
+                />
               </div>
             </div>
           )}
