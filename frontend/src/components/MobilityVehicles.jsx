@@ -251,15 +251,15 @@ const MobilityVehicles = ({ tenantId }) => {
           const location = locations.find(l => l.id === vehicle.location_id);
           
           return (
-            <Card key={vehicle.id} className="p-4 hover:shadow-lg transition-shadow">
+            <Card key={vehicle.id} className="p-4 hover:shadow-lg transition-shadow bg-white dark:bg-gray-900">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-[#c00000]/10 rounded-lg">
                     <VehicleIcon className="w-6 h-6 text-[#c00000]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold">{vehicle.name}</h3>
-                    <p className="text-sm text-gray-500">{vehicle.brand} {vehicle.model}</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">{vehicle.name}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{vehicle.brand} {vehicle.model}</p>
                   </div>
                 </div>
                 <div className="flex gap-1">
