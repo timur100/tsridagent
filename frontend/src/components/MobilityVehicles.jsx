@@ -450,7 +450,7 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, hourly: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                       />
                     </div>
                     <div>
@@ -463,7 +463,7 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, daily: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                       />
                     </div>
                     <div>
@@ -476,7 +476,7 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, per_km: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                        className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                       />
                     </div>
                   </div>
