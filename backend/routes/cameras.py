@@ -190,3 +190,66 @@ async def get_camera_stats(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def generate_frames(stream_url: str, username: Optional[str] = None, password: Optional[str] = None):
+    """
+    Generator function to stream RTSP as MJPEG
+    """
+    # Build RTSP URL with credentials if provided
+    if username and password:
+        # Parse the URL and inject credentials
+        # rtsp://10.10.10.197:554/stream -> rtsp://user:pass@10.10.10.197:554/stream
+        url_parts = stream_url.replace("rtsp://", "")
+        stream_url = f"rtsp://{username}:{password}@{url_parts}"
+    
+    cap = cv2.VideoCapture(stream_url)
+    
+    try:
+        while True:
+            success, frame = cap.read()
+            if not success:
+                break
+            
+            # Encode frame as JPEG
+            ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+            if not ret:
+                continue
+            
+            frame_bytes = buffer.tobytes()
+            
+            # Yield frame in multipart format
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+    finally:
+        cap.release()
+
+@router.get("/cameras/{camera_id}/stream")
+async def stream_camera(
+    camera_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Stream camera feed as MJPEG
+    """
+    try:
+        # Get camera details from database
+        camera = await db.cameras.find_one({"id": camera_id}, {"_id": 0})
+        
+        if not camera:
+            raise HTTPException(status_code=404, detail="Camera not found")
+        
+        stream_url = camera.get("stream_url")
+        if not stream_url:
+            raise HTTPException(status_code=400, detail="Camera has no stream URL configured")
+        
+        username = camera.get("username")
+        password = camera.get("password")
+        
+        return StreamingResponse(
+            generate_frames(stream_url, username, password),
+            media_type="multipart/x-mixed-replace; boundary=frame"
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error streaming camera: {str(e)}")
