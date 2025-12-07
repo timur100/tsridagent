@@ -3,6 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Video, Plus, Edit, Trash2, X } from 'lucide-react';
 import { Card } from './ui/card';
+import WebRTCPlayer from './WebRTCPlayer';
 import toast from 'react-hot-toast';
 
 const CameraManagement = () => {
