@@ -280,18 +280,18 @@ const MobilityVehicles = ({ tenantId }) => {
               
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-500">Status:</span>
+                  <span className="text-gray-500 dark:text-gray-400">Status:</span>
                   {getStatusBadge(vehicle.status)}
                 </div>
                 
                 {vehicle.license_plate && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Kennzeichen:</span>
-                    <span className="font-mono font-semibold">{vehicle.license_plate}</span>
+                    <span className="text-gray-500 dark:text-gray-400">Kennzeichen:</span>
+                    <span className="font-mono font-semibold text-gray-900 dark:text-white">{vehicle.license_plate}</span>
                   </div>
                 )}
                 
-                <div className="flex items-center gap-1 text-gray-500">
+                <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
                   <MapPin className="w-4 h-4" />
                   <span>{location?.name || 'Unbekannt'}</span>
                 </div>
