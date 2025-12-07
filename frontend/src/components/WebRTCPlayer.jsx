@@ -80,17 +80,29 @@ const WebRTCPlayer = ({ streamName, cameraIp, cameraPort, onError }) => {
       } catch (error) {
         console.error('[WebRTC] Error:', error);
         setStatus('error');
+        
+        // Set user-friendly error message
+        if (error.message.includes('timeout') || error.message.includes('dial tcp')) {
+          setErrorMessage(`Kamera ${cameraIp}:${cameraPort} ist nicht erreichbar. Netzwerk-Timeout.`);
+        } else if (error.message.includes('404')) {
+          setErrorMessage('Stream nicht gefunden. Bitte prüfen Sie die Kamera-Konfiguration.');
+        } else {
+          setErrorMessage('WebRTC-Verbindung fehlgeschlagen. Siehe Netzwerk-Hinweis unten.');
+        }
+        
         if (onError) {
           onError(error);
         }
 
-        // Retry after 3 seconds
-        restartTimeout = setTimeout(() => {
-          if (pcRef.current) {
-            pcRef.current.close();
-          }
-          startStream();
-        }, 3000);
+        // Don't retry automatically if it's a network issue
+        if (!error.message.includes('timeout') && !error.message.includes('dial tcp')) {
+          restartTimeout = setTimeout(() => {
+            if (pcRef.current) {
+              pcRef.current.close();
+            }
+            startStream();
+          }, 5000);
+        }
       }
     };
 
