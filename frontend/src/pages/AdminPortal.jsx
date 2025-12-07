@@ -1994,10 +1994,7 @@ const AdminPortalContent = () => {
                         )}
 
                         {licensePlateSubTab === 'recognition' && (
-                          <div className="text-center p-12">
-                            <Car className="h-16 w-16 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-500">Erkennungs-Funktion - In Entwicklung</p>
-                          </div>
+                          <LicensePlateRecognition />
                         )}
                         {licensePlateSubTab === 'history' && (
                           <div className="text-center p-12">
