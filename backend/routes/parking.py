@@ -556,3 +556,189 @@ async def remove_whitelist_entry(
         "success": True,
         "message": "Whitelist-Eintrag entfernt"
     }
+
+
+@router.post("/recognize-plate")
+async def recognize_license_plate(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(verify_token)
+):
+    """
+    OCR endpoint to recognize license plate from uploaded image
+    """
+    try:
+        # Read image data
+        image_data = await file.read()
+        
+        # Extract license plate
+        result = extract_license_plate_from_image(image_data)
+        
+        if not result['success']:
+            raise HTTPException(status_code=400, detail=result.get('error', 'OCR failed'))
+        
+        # Store recognition in history
+        recognition_record = {
+            'license_plate': result['license_plate'],
+            'confidence': result['confidence'],
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+            'user': current_user.get('email'),
+            'image_name': file.filename
+        }
+        
+        await db.license_plate_recognitions.insert_one(recognition_record)
+        
+        return {
+            'success': True,
+            'data': {
+                'license_plate': result['license_plate'],
+                'confidence': result['confidence'],
+                'raw_text': result.get('raw_text', '')
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
+
+
+@router.post("/entry-with-ocr")
+async def parking_entry_with_ocr(
+    file: UploadFile = File(...),
+    location: str = Form(...),
+    current_user: dict = Depends(verify_token)
+):
+    """
+    Record parking entry with automatic license plate recognition
+    """
+    try:
+        # Read and recognize license plate
+        image_data = await file.read()
+        ocr_result = extract_license_plate_from_image(image_data)
+        
+        if not ocr_result['success'] or not ocr_result['license_plate']:
+            raise HTTPException(status_code=400, detail="Kennzeichen konnte nicht erkannt werden")
+        
+        license_plate = ocr_result['license_plate']
+        
+        # Check if vehicle already has active entry
+        existing_entry = await db.parking_entries.find_one({
+            'license_plate': license_plate,
+            'exit_time': None
+        })
+        
+        if existing_entry:
+            raise HTTPException(status_code=400, detail="Fahrzeug hat bereits einen aktiven Parkvorgang")
+        
+        # Create parking entry
+        entry_time = datetime.now(timezone.utc)
+        
+        parking_entry = {
+            'license_plate': license_plate,
+            'location': location,
+            'entry_time': entry_time.isoformat(),
+            'exit_time': None,
+            'duration_minutes': None,
+            'status': 'active',
+            'ocr_confidence': ocr_result['confidence'],
+            'created_by': current_user.get('email'),
+            'image_name': file.filename
+        }
+        
+        result = await db.parking_entries.insert_one(parking_entry)
+        parking_entry['_id'] = str(result.inserted_id)
+        
+        return {
+            'success': True,
+            'message': f'Einfahrt erfasst: {license_plate}',
+            'data': parking_entry
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.post("/exit-with-ocr")
+async def parking_exit_with_ocr(
+    file: UploadFile = File(...),
+    current_user: dict = Depends(verify_token)
+):
+    """
+    Record parking exit with automatic license plate recognition
+    """
+    try:
+        # Read and recognize license plate
+        image_data = await file.read()
+        ocr_result = extract_license_plate_from_image(image_data)
+        
+        if not ocr_result['success'] or not ocr_result['license_plate']:
+            raise HTTPException(status_code=400, detail="Kennzeichen konnte nicht erkannt werden")
+        
+        license_plate = ocr_result['license_plate']
+        
+        # Find active parking entry
+        active_entry = await db.parking_entries.find_one({
+            'license_plate': license_plate,
+            'exit_time': None
+        })
+        
+        if not active_entry:
+            raise HTTPException(status_code=404, detail="Keine aktive Einfahrt für dieses Kennzeichen gefunden")
+        
+        # Calculate duration
+        entry_time = datetime.fromisoformat(active_entry['entry_time'])
+        exit_time = datetime.now(timezone.utc)
+        duration = exit_time - entry_time
+        duration_minutes = int(duration.total_seconds() / 60)
+        
+        # Update parking entry
+        await db.parking_entries.update_one(
+            {'_id': active_entry['_id']},
+            {
+                '$set': {
+                    'exit_time': exit_time.isoformat(),
+                    'duration_minutes': duration_minutes,
+                    'status': 'completed',
+                    'exit_ocr_confidence': ocr_result['confidence']
+                }
+            }
+        )
+        
+        return {
+            'success': True,
+            'message': f'Ausfahrt erfasst: {license_plate}',
+            'data': {
+                'license_plate': license_plate,
+                'entry_time': active_entry['entry_time'],
+                'exit_time': exit_time.isoformat(),
+                'duration_minutes': duration_minutes,
+                'location': active_entry.get('location', 'Unknown')
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+
+@router.get("/recognition-history")
+async def get_recognition_history(
+    limit: int = 50,
+    current_user: dict = Depends(verify_token)
+):
+    """
+    Get history of license plate recognitions
+    """
+    try:
+        history = await db.license_plate_recognitions.find(
+            {},
+            {'_id': 0}
+        ).sort('timestamp', -1).limit(limit).to_list(length=limit)
+        
+        return {
+            'success': True,
+            'data': history
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
