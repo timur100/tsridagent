@@ -730,10 +730,10 @@ async def get_recognition_history(
     Get history of license plate recognitions
     """
     try:
-        history = await db.license_plate_recognitions.find(
+        history = list(db.license_plate_recognitions.find(
             {},
             {'_id': 0}
-        ).sort('timestamp', -1).limit(limit).to_list(length=limit)
+        ).sort('timestamp', -1).limit(limit))
         
         return {
             'success': True,
