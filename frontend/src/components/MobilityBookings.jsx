@@ -137,7 +137,7 @@ const MobilityBookings = ({ tenantId }) => {
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+            className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
           >
             {statusOptions.map(status => (
               <option key={status.id} value={status.id}>{status.label}</option>
