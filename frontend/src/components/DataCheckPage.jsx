@@ -842,18 +842,40 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
 
             {/* Components */}
             <div>
-              <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Komponenten & Seriennummern-Patterns
-              </h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Komponenten & Seriennummern-Patterns
+                </h3>
+                <Button
+                  onClick={() => addComponent(setType.id)}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-3 w-3" />
+                  Komponente hinzufügen
+                </Button>
+              </div>
               <div className="space-y-4">
                 {setType.components.map((component, idx) => (
                   <div
                     key={idx}
-                    className={`p-4 rounded-lg border ${
+                    className={`p-4 rounded-lg border relative ${
                       theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'
                     }`}
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {setType.components.length > 1 && (
+                      <button
+                        onClick={() => removeComponent(setType.id, idx)}
+                        className={`absolute top-2 right-2 p-1 rounded hover:bg-red-500 hover:text-white ${
+                          theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                        }`}
+                        title="Komponente entfernen"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pr-8">
                       <div>
                         <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                           Typ
