@@ -357,7 +357,14 @@ const CameraManagement = () => {
                         : 'bg-white border-gray-300 text-gray-900'
                     }`}
                     placeholder="rtsp://192.168.1.100:554/stream"
+                    pattern="^rtsp://.*"
+                    title="URL muss mit 'rtsp://' beginnen (nicht 'rstp://')"
                   />
+                  {formData.stream_url && !formData.stream_url.startsWith('rtsp://') && (
+                    <p className="mt-1 text-xs text-red-500">
+                      ⚠️ Die URL muss mit 'rtsp://' beginnen (Sie haben möglicherweise 'rstp://' eingegeben)
+                    </p>
+                  )}
                 </div>
 
                 <div>
