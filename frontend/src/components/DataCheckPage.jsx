@@ -516,7 +516,8 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
       const config = {
         format: setIdFormat,
         parts: formatParts,
-        separator: separator
+        separator: separator,
+        setTypes: setTypes
       };
       
       const result = await apiCall('/api/test-center/setid-config', {
@@ -533,6 +534,39 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
     } finally {
       setIsSaving(false);
     }
+  };
+
+  const handleSetTypeChange = (setTypeId, field, value) => {
+    const newSetTypes = setTypes.map(st => 
+      st.id === setTypeId ? { ...st, [field]: value } : st
+    );
+    setSetTypes(newSetTypes);
+  };
+
+  const handleComponentChange = (setTypeId, componentIndex, field, value) => {
+    const newSetTypes = setTypes.map(st => {
+      if (st.id === setTypeId) {
+        const newComponents = [...st.components];
+        newComponents[componentIndex] = { ...newComponents[componentIndex], [field]: value };
+        return { ...st, components: newComponents };
+      }
+      return st;
+    });
+    setSetTypes(newSetTypes);
+  };
+
+  const addSetType = () => {
+    const newId = `S${setTypes.length + 1}`;
+    setSetTypes([...setTypes, {
+      id: newId,
+      name: `Neues Set ${newId}`,
+      description: 'Beschreibung eingeben',
+      components: [
+        { type: 'PC', label: 'PC/Tablet', pattern: '', example: '' },
+        { type: 'Scanner', label: 'Scanner', pattern: '', example: '' },
+        { type: 'Dockingstation', label: 'Dockingstation', pattern: '', example: '' }
+      ]
+    }]);
   };
 
   const handlePartChange = (index, field, value) => {
