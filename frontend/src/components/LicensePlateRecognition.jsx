@@ -105,6 +105,74 @@ const LicensePlateRecognition = () => {
     }, 'image/jpeg', 0.95);
   };
 
+  // Foto aufnehmen UND direkt erkennen (für automatische Erkennung)
+  const captureAndRecognize = async () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    canvas.toBlob(async (blob) => {
+      const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+      setSelectedImage(file);
+      setImagePreview(canvas.toDataURL('image/jpeg'));
+      stopCamera();
+      
+      // Automatisch OCR durchführen
+      toast.loading('Kennzeichen wird erkannt...');
+      await recognizeLicensePlate(file);
+    }, 'image/jpeg', 0.95);
+  };
+
+  const recognizeLicensePlate = async (imageFile) => {
+    setIsRecognizing(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', imageFile);
+      
+      let endpoint = '/api/parking/recognize-plate';
+      
+      if (mode === 'entry') {
+        endpoint = '/api/parking/entry-with-ocr';
+        if (location) {
+          formData.append('location', location);
+        }
+      } else if (mode === 'exit') {
+        endpoint = '/api/parking/exit-with-ocr';
+      }
+      
+      const result = await apiCall(endpoint, 'POST', formData, false, true);
+      
+      setRecognitionResult(result);
+      
+      if (result.success) {
+        toast.success(`Kennzeichen erkannt: ${result.data.license_plate}`);
+        
+        // Auto-fill Event für Parkzeitüberschreitung
+        window.dispatchEvent(new CustomEvent('license-plate-recognized', {
+          detail: {
+            licensePlate: result.data.license_plate,
+            confidence: result.data.confidence,
+            timestamp: new Date().toISOString()
+          }
+        }));
+      } else {
+        toast.error(result.message || 'Erkennung fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('OCR error:', error);
+      toast.error('Fehler bei der Erkennung');
+    } finally {
+      setIsRecognizing(false);
+    }
+  };
+
   // Webcam automatisch starten wenn Webcam-Modus aktiviert wird
   useEffect(() => {
     let mounted = true;
