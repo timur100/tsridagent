@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://fleet-genius-9.preview.emergentagent.com/portal/admin/id-checks
+   https://mobility-hub-18.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

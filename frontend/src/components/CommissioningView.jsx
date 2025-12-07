@@ -45,7 +45,7 @@ const CommissioningView = () => {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://fleet-genius-9.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://mobility-hub-18.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/fulfillment/stats/overview`);
       const result = await response.json();
       
@@ -75,7 +75,7 @@ const CommissioningView = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://fleet-genius-9.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://mobility-hub-18.preview.emergentagent.com';
       const statusParam = activeStage === 'all' ? '' : `?status=${activeStage}`;
       const response = await fetch(`${backendUrl}/api/fulfillment/orders/pending${statusParam}`);
       const result = await response.json();
@@ -97,7 +97,7 @@ const CommissioningView = () => {
 
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://fleet-genius-9.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://mobility-hub-18.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/fulfillment/orders/update-status`, {
         method: 'POST',
         headers: {
