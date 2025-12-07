@@ -365,15 +365,14 @@ class MobilityServicesTester:
             )
             return False
 
-    def test_get_tiles_for_tenant_api(self):
-        """Test GET /api/quick-menu/tiles/tenant/{tenant_id} - Get all tiles for a tenant"""
+    def test_get_vehicles_api(self):
+        """Test GET /api/mobility/vehicles?tenant_id=test-tenant - Get all vehicles"""
         try:
-            tenant_id = "tenant-europcar"
-            response = self.session.get(f"{API_BASE}/quick-menu/tiles/tenant/{tenant_id}")
+            response = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -385,7 +384,7 @@ class MobilityServicesTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
                     "Response indicates failure",
                     data
@@ -393,80 +392,80 @@ class MobilityServicesTester:
                 return False
             
             # Check data structure
-            if "tiles" not in data:
+            if "data" not in data:
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
-                    "Missing 'tiles' field in response",
+                    "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            if "count" not in data:
+            if "total" not in data:
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
-                    "Missing 'count' field in response",
+                    "Missing 'total' field in response",
                     data
                 )
                 return False
             
-            tiles = data["tiles"]
+            vehicles = data["data"]
             
-            # Verify tiles is a list
-            if not isinstance(tiles, list):
+            # Verify vehicles is a list
+            if not isinstance(vehicles, list):
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
-                    f"Tiles should be a list, got {type(tiles)}",
+                    f"Vehicles should be a list, got {type(vehicles)}",
                     data
                 )
                 return False
             
-            # Verify count matches array length
-            if data["count"] != len(tiles):
+            # Verify total matches array length
+            if data["total"] != len(vehicles):
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
-                    f"Count mismatch: count={data['count']}, array length={len(tiles)}",
+                    f"Total mismatch: total={data['total']}, array length={len(vehicles)}",
                     data
                 )
                 return False
             
-            # Should have at least 1 tile (the one we created)
-            if len(tiles) < 1:
+            # Should have at least 1 vehicle (the one we created)
+            if len(vehicles) < 1:
                 self.log_result(
-                    "GET Tiles for Tenant API",
+                    "GET Vehicles API",
                     False,
-                    f"Expected at least 1 tile for tenant {tenant_id}, got {len(tiles)}",
+                    f"Expected at least 1 vehicle for tenant test-tenant, got {len(vehicles)}",
                     data
                 )
                 return False
             
-            # Verify tile structure
-            if tiles:
-                tile = tiles[0]
-                required_fields = ["tile_id", "tenant_id", "title", "description", "icon", "color", "target_url", "target_type", "order"]
+            # Verify vehicle structure
+            if vehicles:
+                vehicle = vehicles[0]
+                required_fields = ["id", "tenant_id", "name", "vehicle_type", "status", "location_id", "pricing"]
                 for field in required_fields:
-                    if field not in tile:
+                    if field not in vehicle:
                         self.log_result(
-                            "GET Tiles for Tenant API",
+                            "GET Vehicles API",
                             False,
-                            f"Missing required field in tile: {field}",
+                            f"Missing required field in vehicle: {field}",
                             data
                         )
                         return False
             
             self.log_result(
-                "GET Tiles for Tenant API",
+                "GET Vehicles API",
                 True,
-                f"Successfully retrieved {len(tiles)} tiles for tenant {tenant_id}"
+                f"Successfully retrieved {len(vehicles)} vehicles for tenant test-tenant"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Tiles for Tenant API",
+                "GET Vehicles API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
