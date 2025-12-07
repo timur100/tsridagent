@@ -34,15 +34,27 @@ const CameraManagement = () => {
     try {
       setLoading(true);
       const result = await apiCall('/api/cameras');
-      console.log('[CameraManagement] API Response:', result);
-      if (result.success) {
-        const cameras = result.data.cameras || [];
-        console.log('[CameraManagement] Loaded cameras:', cameras.length);
+      console.log('[CameraManagement] ============ API Response:', result);
+      console.log('[CameraManagement] Result structure:', {
+        success: result?.success,
+        hasData: !!result?.data,
+        hasCameras: !!result?.data?.cameras,
+        camerasLength: result?.data?.cameras?.length
+      });
+      
+      if (result && result.success && result.data && result.data.cameras) {
+        const cameras = result.data.cameras;
+        console.log('[CameraManagement] ✅ Setting cameras, count:', cameras.length);
+        console.log('[CameraManagement] Camera names:', cameras.map(c => c.name));
         setCameras(cameras);
+      } else {
+        console.error('[CameraManagement] ❌ Invalid response structure:', result);
+        setCameras([]);
       }
     } catch (error) {
-      console.error('Error loading cameras:', error);
+      console.error('[CameraManagement] ❌ Error loading cameras:', error);
       toast.error('Fehler beim Laden der Kameras');
+      setCameras([]);
     } finally {
       setLoading(false);
     }
