@@ -22,10 +22,11 @@ const MobilityStatistics = ({ tenantId }) => {
     setLoading(true);
     try {
       const response = await apiCall(`/api/mobility/statistics?tenant_id=${tenantId}`);
-      setStatistics(response.statistics);
+      setStatistics(response?.statistics || response?.data || response || null);
     } catch (error) {
       console.error('Error loading statistics:', error);
       toast.error('Fehler beim Laden der Statistiken');
+      setStatistics(null);
     } finally {
       setLoading(false);
     }
