@@ -433,7 +433,13 @@ const DataCheckPage = () => {
                             </div>
                           </td>
                           <td className={`px-6 py-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            {item.serial_number}
+                            {item.sn_scanner || item.serial_number}
+                          </td>
+                          <td className={`px-6 py-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {item.sn_pc || '-'}
+                          </td>
+                          <td className={`px-6 py-4 font-mono text-sm font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                            {item.set_id || '-'}
                           </td>
                           <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             {item.device_type || '-'}
