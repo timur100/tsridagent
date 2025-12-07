@@ -357,22 +357,22 @@ const MobilityVehicles = ({ tenantId }) => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-1">Name *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Name *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                     placeholder="z.B. Tesla Model 3"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Fahrzeugtyp *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Fahrzeugtyp *</label>
                   <select
                     value={formData.vehicle_type}
                     onChange={(e) => setFormData({ ...formData, vehicle_type: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   >
                     {vehicleTypes.map(type => (
                       <option key={type.id} value={type.id}>{type.label}</option>
@@ -381,11 +381,11 @@ const MobilityVehicles = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Status</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Status</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   >
                     {statusOptions.map(status => (
                       <option key={status.id} value={status.id}>{status.label}</option>
@@ -394,41 +394,41 @@ const MobilityVehicles = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Marke</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Marke</label>
                   <input
                     type="text"
                     value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Modell</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Modell</label>
                   <input
                     type="text"
                     value={formData.model}
                     onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Kennzeichen</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Kennzeichen</label>
                   <input
                     type="text"
                     value={formData.license_plate}
                     onChange={(e) => setFormData({ ...formData, license_plate: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Standort *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Standort *</label>
                   <select
                     value={formData.location_id}
                     onChange={(e) => setFormData({ ...formData, location_id: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   >
                     <option value="">Bitte wählen</option>
                     {locations.map(loc => (
@@ -438,10 +438,10 @@ const MobilityVehicles = ({ tenantId }) => {
                 </div>
                 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-2">Preisgestaltung</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Preisgestaltung</label>
                   <div className="grid grid-cols-3 gap-2">
                     <div>
-                      <label className="text-xs text-gray-500">Stündlich (€)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Stündlich (€)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -450,11 +450,11 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, hourly: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">Täglich (€)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Täglich (€)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -463,11 +463,11 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, daily: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500">Pro km (€)</label>
+                      <label className="text-xs text-gray-500 dark:text-gray-400">Pro km (€)</label>
                       <input
                         type="number"
                         step="0.01"
@@ -476,7 +476,7 @@ const MobilityVehicles = ({ tenantId }) => {
                           ...formData, 
                           pricing: { ...formData.pricing, per_km: parseFloat(e.target.value) || 0 }
                         })}
-                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700"
+                        className="w-full px-2 py-1 border rounded dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       />
                     </div>
                   </div>
@@ -484,26 +484,26 @@ const MobilityVehicles = ({ tenantId }) => {
                 
                 {(formData.vehicle_type === 'e_bike' || formData.vehicle_type === 'e_scooter') && (
                   <div>
-                    <label className="block text-sm font-medium mb-1">Akkuladung (%)</label>
+                    <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Akkuladung (%)</label>
                     <input
                       type="number"
                       min="0"
                       max="100"
                       value={formData.battery_level}
                       onChange={(e) => setFormData({ ...formData, battery_level: parseInt(e.target.value) || 0 })}
-                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                      className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                     />
                   </div>
                 )}
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Kapazität (Personen)</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Kapazität (Personen)</label>
                   <input
                     type="number"
                     min="1"
                     value={formData.capacity}
                     onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 1 })}
-                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700"
+                    className="w-full px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   />
                 </div>
               </div>
