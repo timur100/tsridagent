@@ -140,6 +140,9 @@ async def run_data_check(
             'in_warehouse': []
         }
         
+        # Get Set-ID configuration
+        setid_config = await get_set_id_config()
+        
         # Get all locations to check if closed
         locations = await tsrid_db.tenants.find(
             {'tenant_level': 'location'},
@@ -153,6 +156,10 @@ async def run_data_check(
             }
             for loc in locations if loc.get('location_code')
         }
+        
+        # Group serial numbers by device (to identify sets)
+        # This will be used to identify which serials belong to same set
+        device_groups = {}
         
         # Process each serial number
         for serial_number in request.serial_numbers:
