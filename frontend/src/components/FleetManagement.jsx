@@ -154,11 +154,11 @@ const FleetManagement = ({ selectedTenantId }) => {
     <div className="w-full">
       <SubTabNavigation
         tabs={[
-          { id: 'overview', label: 'Übersicht', icon: BarChart3 },
-          { id: 'vehicles', label: 'Fahrzeuge', icon: Truck },
-          { id: 'trips', label: 'Fahrten & Routen', icon: Navigation },
-          { id: 'fuel', label: 'Kraftstoff', icon: Fuel },
-          { id: 'logbook', label: 'Fahrtenbuch', icon: FileText }
+          { id: 'overview', label: 'Übersicht (Mock)', icon: BarChart3 },
+          { id: 'mobility-vehicles', label: 'Fahrzeuge', icon: Car },
+          { id: 'mobility-locations', label: 'Standorte', icon: MapPin },
+          { id: 'mobility-bookings', label: 'Buchungen', icon: Calendar },
+          { id: 'mobility-statistics', label: 'Statistiken', icon: TrendingUp }
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
