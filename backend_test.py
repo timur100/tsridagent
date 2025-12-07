@@ -643,45 +643,14 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_check_out_api(self):
-        """Test POST /api/mobility/bookings/{booking_id}/check-out - Check-out with cost calculation"""
+    def test_parking_stats_api(self):
+        """Test GET /api/parking/stats - Get parking statistics"""
         try:
-            # Use the booking_id from the create booking test
-            if not hasattr(self, 'created_booking_id'):
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    "No booking_id available from create booking test. Run create booking test first.",
-                    None
-                )
-                return False
-            
-            if not hasattr(self, 'created_location_id'):
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    "No location_id available from create location test. Run create location test first.",
-                    None
-                )
-                return False
-            
-            # Check-out data
-            checkout_data = {
-                "booking_id": self.created_booking_id,
-                "action": "check_out",
-                "location_id": self.created_location_id,
-                "odometer_reading": 50150,
-                "fuel_level": 80,
-                "battery_level": 85,
-                "damage_reported": False,
-                "notes": "Vehicle returned in good condition"
-            }
-            
-            response = self.session.post(f"{API_BASE}/mobility/bookings/{self.created_booking_id}/check-out", json=checkout_data)
+            response = self.session.get(f"{API_BASE}/parking/stats")
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Check-out API",
+                    "GET Parking Stats API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -693,7 +662,7 @@ class LicensePlateOCRTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Check-out API",
+                    "GET Parking Stats API",
                     False,
                     "Response indicates failure",
                     data
@@ -703,65 +672,49 @@ class LicensePlateOCRTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Check-out API",
+                    "GET Parking Stats API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            booking = data["data"]
+            stats = data["data"]
             
-            # Verify booking status changed to completed
-            if booking["status"] != "completed":
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    f"Expected booking status 'completed', got '{booking['status']}'",
-                    data
-                )
-                return False
+            # Verify stats structure
+            required_fields = ["active_sessions", "sessions_today", "total_violations", "pending_violations", "total_penalty_amount"]
+            for field in required_fields:
+                if field not in stats:
+                    self.log_result(
+                        "GET Parking Stats API",
+                        False,
+                        f"Missing required field in stats: {field}",
+                        data
+                    )
+                    return False
             
-            # Verify check-out data was recorded
-            if "check_out_time" not in booking:
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    "Missing 'check_out_time' field in booking",
-                    data
-                )
-                return False
-            
-            # Verify cost calculation
-            if "actual_cost" not in booking:
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    "Missing 'actual_cost' field in booking",
-                    data
-                )
-                return False
-            
-            # Verify distance calculation
-            if "distance_km" not in booking:
-                self.log_result(
-                    "POST Check-out API",
-                    False,
-                    "Missing 'distance_km' field in booking",
-                    data
-                )
-                return False
+            # Verify stats are numeric
+            numeric_fields = ["active_sessions", "sessions_today", "total_violations", "pending_violations", "total_penalty_amount"]
+            for field in numeric_fields:
+                if not isinstance(stats[field], (int, float)):
+                    self.log_result(
+                        "GET Parking Stats API",
+                        False,
+                        f"Field '{field}' should be numeric, got {type(stats[field])}",
+                        data
+                    )
+                    return False
             
             self.log_result(
-                "POST Check-out API",
+                "GET Parking Stats API",
                 True,
-                f"Successfully checked out booking {self.created_booking_id}, status: '{booking['status']}', cost: {booking['actual_cost']}, distance: {booking['distance_km']}km"
+                f"Successfully retrieved parking stats: {stats['active_sessions']} active, {stats['sessions_today']} today, {stats['total_violations']} violations"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Check-out API",
+                "GET Parking Stats API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
