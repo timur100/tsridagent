@@ -41,7 +41,7 @@ const DataCheckPage = () => {
   };
 
   const handleRunTest = async () => {
-    if (!serialNumbers.trim()) {
+    if (!serialNumbers.trim() && !licensedSerials.trim() && !warehouseSerials.trim()) {
       toast.error('Bitte geben Sie mindestens eine Seriennummer ein');
       return;
     }
@@ -52,11 +52,21 @@ const DataCheckPage = () => {
         .split('\n')
         .map(sn => sn.trim())
         .filter(sn => sn);
+      const licensedList = licensedSerials
+        .split('\n')
+        .map(sn => sn.trim())
+        .filter(sn => sn);
+      const warehouseList = warehouseSerials
+        .split('\n')
+        .map(sn => sn.trim())
+        .filter(sn => sn);
 
       const result = await apiCall('/api/test-center/data-check', {
         method: 'POST',
         body: JSON.stringify({
-          serial_numbers: serialList
+          serial_numbers: serialList,
+          licensed_serials: licensedList,
+          warehouse_serials: warehouseList
         })
       });
 
@@ -77,7 +87,8 @@ const DataCheckPage = () => {
           setTestResults(responseData);
         }
         
-        toast.success(`Test abgeschlossen: ${serialList.length} Seriennummern geprüft`);
+        const totalSerials = serialList.length + licensedList.length + warehouseList.length;
+        toast.success(`Test abgeschlossen: ${totalSerials} Seriennummern geprüft`);
       } else {
         toast.error('Test fehlgeschlagen');
       }
