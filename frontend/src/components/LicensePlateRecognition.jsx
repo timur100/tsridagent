@@ -295,38 +295,119 @@ const LicensePlateRecognition = () => {
             {inputMode === 'webcam' ? 'Webcam' : 'Bild hochladen'}
           </h3>
 
-          {/* Image Preview */}
-          {imagePreview ? (
-            <div className="relative">
-              <img
-                src={imagePreview}
-                alt="Preview"
-                className="w-full h-64 object-contain rounded-lg bg-black"
-              />
-              <button
-                onClick={clearImage}
-                className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
+          {/* Webcam Mode */}
+          {inputMode === 'webcam' ? (
+            <>
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Captured"
+                    className="w-full h-64 object-contain rounded-lg bg-black"
+                  />
+                  <button
+                    onClick={clearImage}
+                    className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <>
+                  {isCameraActive ? (
+                    <div className="relative">
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                        className="w-full h-64 object-cover rounded-lg bg-black"
+                      />
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                        <Button
+                          onClick={capturePhoto}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          <Camera className="h-4 w-4 mr-2" />
+                          Foto aufnehmen
+                        </Button>
+                        <Button
+                          onClick={stopCamera}
+                          variant="outline"
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          <VideoOff className="h-4 w-4 mr-2" />
+                          Stop
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className={`border-2 border-dashed rounded-lg p-12 text-center ${
+                      theme === 'dark'
+                        ? 'border-gray-700 bg-[#1a1a1a]'
+                        : 'border-gray-300 bg-gray-50'
+                    }`}>
+                      <Video className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                      {cameraError ? (
+                        <>
+                          <p className="text-sm text-red-500 mb-3">{cameraError}</p>
+                          <Button onClick={startCamera} variant="outline">
+                            <Video className="h-4 w-4 mr-2" />
+                            Erneut versuchen
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <p className={`text-sm mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Webcam wird gestartet...
+                          </p>
+                          <Button onClick={startCamera}>
+                            <Video className="h-4 w-4 mr-2" />
+                            Kamera starten
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
+              )}
+              <canvas ref={canvasRef} style={{ display: 'none' }} />
+            </>
           ) : (
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
-                theme === 'dark'
-                  ? 'border-gray-700 hover:border-gray-600 bg-[#1a1a1a]'
-                  : 'border-gray-300 hover:border-gray-400 bg-gray-50'
-              }`}
-            >
-              <ImageIcon className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Klicken Sie hier oder ziehen Sie ein Bild
-              </p>
-              <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                Unterstützte Formate: JPG, PNG
-              </p>
-            </div>
+            /* Upload Mode */
+            <>
+              {imagePreview ? (
+                <div className="relative">
+                  <img
+                    src={imagePreview}
+                    alt="Preview"
+                    className="w-full h-64 object-contain rounded-lg bg-black"
+                  />
+                  <button
+                    onClick={clearImage}
+                    className="absolute top-2 right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-colors ${
+                    theme === 'dark'
+                      ? 'border-gray-700 hover:border-gray-600 bg-[#1a1a1a]'
+                      : 'border-gray-300 hover:border-gray-400 bg-gray-50'
+                  }`}
+                >
+                  <ImageIcon className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Klicken Sie hier oder ziehen Sie ein Bild
+                  </p>
+                  <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Unterstützte Formate: JPG, PNG
+                  </p>
+                </div>
+              )}
+            </>
           )}
 
           <input
