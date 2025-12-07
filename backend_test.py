@@ -269,14 +269,14 @@ class LicensePlateOCRTester:
                 files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
                 data_form = {'location': 'Test Parking Area'}
                 
-                # Remove Content-Type header for multipart requests
-                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                # Create a new session without Content-Type header for multipart
+                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
                 
-                response = self.session.post(
+                response = requests.post(
                     f"{API_BASE}/parking/entry-with-ocr", 
                     files=files,
                     data=data_form,
-                    headers=headers
+                    headers=temp_headers
                 )
             
             if response.status_code != 200:
