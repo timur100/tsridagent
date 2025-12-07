@@ -450,13 +450,24 @@ async def run_data_check(
         # Calculate device statistics
         device_stats = await calculate_device_statistics(results, setid_config)
         
+        # Compare lists if additional lists provided
+        comparison = None
+        if request.licensed_serials or request.warehouse_serials:
+            comparison = compare_serial_lists(
+                request.serial_numbers,
+                request.licensed_serials,
+                request.warehouse_serials,
+                results
+            )
+        
         return {
             'success': True,
             'data': {
                 'summary': summary,
                 'results': results,
                 'device_stats': device_stats,
-                'total_checked': len(request.serial_numbers),
+                'comparison': comparison,
+                'total_checked': len(request.serial_numbers) + len(request.licensed_serials) + len(request.warehouse_serials),
                 'timestamp': datetime.now(timezone.utc).isoformat()
             }
         }
