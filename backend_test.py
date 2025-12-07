@@ -454,49 +454,14 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_create_booking_api(self):
-        """Test POST /api/mobility/bookings?tenant_id=test-tenant - Create booking"""
+    def test_recognition_history_api(self):
+        """Test GET /api/parking/recognition-history - Get OCR recognition history"""
         try:
-            # Use the vehicle_id from the create vehicle test
-            if not hasattr(self, 'created_vehicle_id'):
-                self.log_result(
-                    "POST Create Booking API",
-                    False,
-                    "No vehicle_id available from create vehicle test. Run create vehicle test first.",
-                    None
-                )
-                return False
-            
-            if not hasattr(self, 'created_location_id'):
-                self.log_result(
-                    "POST Create Booking API",
-                    False,
-                    "No location_id available from create location test. Run create location test first.",
-                    None
-                )
-                return False
-            
-            # Booking test data as specified in review request
-            booking_data = {
-                "vehicle_id": self.created_vehicle_id,
-                "customer_name": "Max Mustermann",
-                "customer_email": "max@example.com",
-                "customer_phone": "+49 30 12345678",
-                "pickup_location_id": self.created_location_id,
-                "return_location_id": self.created_location_id,
-                "start_time": "2025-12-01T10:00:00",
-                "end_time": "2025-12-01T18:00:00",
-                "pricing_model": "daily",
-                "estimated_cost": 120.0,
-                "requires_license": True,
-                "license_number": "B1234567"
-            }
-            
-            response = self.session.post(f"{API_BASE}/mobility/bookings?tenant_id=test-tenant", json=booking_data)
+            response = self.session.get(f"{API_BASE}/parking/recognition-history?limit=10")
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Create Booking API",
+                    "GET Recognition History API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -508,7 +473,7 @@ class LicensePlateOCRTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Create Booking API",
+                    "GET Recognition History API",
                     False,
                     "Response indicates failure",
                     data
@@ -518,59 +483,59 @@ class LicensePlateOCRTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Create Booking API",
+                    "GET Recognition History API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            booking = data["data"]
+            history = data["data"]
             
-            # Verify booking structure and data
-            required_fields = ["id", "tenant_id", "vehicle_id", "customer_name", "customer_email", "booking_number", "status", "created_at", "updated_at"]
-            for field in required_fields:
-                if field not in booking:
-                    self.log_result(
-                        "POST Create Booking API",
-                        False,
-                        f"Missing required field in booking: {field}",
-                        data
-                    )
-                    return False
-            
-            # Verify the data matches what we sent
-            if booking["customer_name"] != booking_data["customer_name"]:
+            # Verify history is a list
+            if not isinstance(history, list):
                 self.log_result(
-                    "POST Create Booking API",
+                    "GET Recognition History API",
                     False,
-                    f"Customer name mismatch: expected {booking_data['customer_name']}, got {booking['customer_name']}",
+                    f"History should be a list, got {type(history)}",
                     data
                 )
                 return False
             
-            if booking["vehicle_id"] != booking_data["vehicle_id"]:
+            # Should have at least 1 recognition from our previous test
+            if len(history) < 1:
                 self.log_result(
-                    "POST Create Booking API",
+                    "GET Recognition History API",
                     False,
-                    f"Vehicle ID mismatch: expected {booking_data['vehicle_id']}, got {booking['vehicle_id']}",
+                    f"Expected at least 1 recognition in history, got {len(history)}",
                     data
                 )
                 return False
             
-            # Store booking_id for later tests
-            self.created_booking_id = booking["id"]
+            # Verify history entry structure
+            if history:
+                entry = history[0]
+                required_fields = ["license_plate", "confidence", "timestamp", "user"]
+                for field in required_fields:
+                    if field not in entry:
+                        self.log_result(
+                            "GET Recognition History API",
+                            False,
+                            f"Missing required field in history entry: {field}",
+                            data
+                        )
+                        return False
             
             self.log_result(
-                "POST Create Booking API",
+                "GET Recognition History API",
                 True,
-                f"Successfully created booking '{booking['booking_number']}' for customer '{booking['customer_name']}' with ID {booking['id']}"
+                f"Successfully retrieved {len(history)} recognition history entries"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Create Booking API",
+                "GET Recognition History API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
