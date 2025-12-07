@@ -213,14 +213,14 @@ const MobilityVehicles = ({ tenantId }) => {
       </div>
       
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="p-4 bg-white dark:bg-gray-900">
         <div className="flex flex-wrap gap-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Fahrzeugtyp</label>
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               <option value="all">Alle Typen</option>
               {vehicleTypes.map(type => (
@@ -233,7 +233,7 @@ const MobilityVehicles = ({ tenantId }) => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             >
               <option value="all">Alle Status</option>
               {statusOptions.map(status => (
