@@ -34,8 +34,11 @@ const CameraManagement = () => {
     try {
       setLoading(true);
       const result = await apiCall('/api/cameras');
+      console.log('[CameraManagement] API Response:', result);
       if (result.success) {
-        setCameras(result.data.cameras || []);
+        const cameras = result.data.cameras || [];
+        console.log('[CameraManagement] Loaded cameras:', cameras.length);
+        setCameras(cameras);
       }
     } catch (error) {
       console.error('Error loading cameras:', error);
