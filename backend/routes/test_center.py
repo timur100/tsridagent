@@ -204,6 +204,10 @@ async def run_data_check(
                     device_serial_numbers.append(device['sn_pc'])
                 if device.get('sn_sc'):
                     device_serial_numbers.append(device['sn_sc'])
+                if device.get('sn_docking'):
+                    device_serial_numbers.append(device['sn_docking'])
+                if device.get('sn_power'):
+                    device_serial_numbers.append(device['sn_power'])
                 
                 # Identify set type and generate Set-ID
                 set_type_id, matched_components = await identify_set_type(device_serial_numbers, setid_config)
