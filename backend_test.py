@@ -43,7 +43,7 @@ MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
 main_db = mongo_client['main_db']
 
-class MobilityServicesTester:
+class LicensePlateOCRTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
