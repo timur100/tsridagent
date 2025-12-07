@@ -352,14 +352,40 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_get_vehicles_api(self):
-        """Test GET /api/mobility/vehicles?tenant_id=test-tenant - Get all vehicles"""
+    def test_exit_with_ocr_api(self):
+        """Test POST /api/parking/exit-with-ocr - Exit with automatic OCR recognition"""
         try:
-            response = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant")
+            # Check if test image exists
+            test_image_path = "/tmp/test_plate.jpg"
+            if not os.path.exists(test_image_path):
+                self.log_result(
+                    "POST Exit with OCR API",
+                    False,
+                    f"Test image not found at {test_image_path}",
+                    None
+                )
+                return False
+            
+            # Wait a moment to ensure some duration for the parking session
+            import time
+            time.sleep(2)
+            
+            # Prepare multipart form data
+            with open(test_image_path, 'rb') as f:
+                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
+                
+                # Remove Content-Type header for multipart requests
+                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                
+                response = self.session.post(
+                    f"{API_BASE}/parking/exit-with-ocr", 
+                    files=files,
+                    headers=headers
+                )
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Vehicles API",
+                    "POST Exit with OCR API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -368,91 +394,61 @@ class LicensePlateOCRTester:
             
             data = response.json()
             
-            # Verify response structure
+            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Vehicles API",
+                    "POST Exit with OCR API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check data structure
+            # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "GET Vehicles API",
+                    "POST Exit with OCR API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            if "total" not in data:
+            exit_data = data["data"]
+            
+            # Verify exit structure
+            required_fields = ["license_plate", "entry_time", "exit_time", "duration_minutes"]
+            for field in required_fields:
+                if field not in exit_data:
+                    self.log_result(
+                        "POST Exit with OCR API",
+                        False,
+                        f"Missing required field in exit data: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify duration was calculated
+            duration = exit_data["duration_minutes"]
+            if duration < 0:
                 self.log_result(
-                    "GET Vehicles API",
+                    "POST Exit with OCR API",
                     False,
-                    "Missing 'total' field in response",
+                    f"Invalid duration: {duration} minutes",
                     data
                 )
                 return False
-            
-            vehicles = data["data"]
-            
-            # Verify vehicles is a list
-            if not isinstance(vehicles, list):
-                self.log_result(
-                    "GET Vehicles API",
-                    False,
-                    f"Vehicles should be a list, got {type(vehicles)}",
-                    data
-                )
-                return False
-            
-            # Verify total matches array length
-            if data["total"] != len(vehicles):
-                self.log_result(
-                    "GET Vehicles API",
-                    False,
-                    f"Total mismatch: total={data['total']}, array length={len(vehicles)}",
-                    data
-                )
-                return False
-            
-            # Should have at least 1 vehicle (the one we created)
-            if len(vehicles) < 1:
-                self.log_result(
-                    "GET Vehicles API",
-                    False,
-                    f"Expected at least 1 vehicle for tenant test-tenant, got {len(vehicles)}",
-                    data
-                )
-                return False
-            
-            # Verify vehicle structure
-            if vehicles:
-                vehicle = vehicles[0]
-                required_fields = ["id", "tenant_id", "name", "vehicle_type", "status", "location_id", "pricing"]
-                for field in required_fields:
-                    if field not in vehicle:
-                        self.log_result(
-                            "GET Vehicles API",
-                            False,
-                            f"Missing required field in vehicle: {field}",
-                            data
-                        )
-                        return False
             
             self.log_result(
-                "GET Vehicles API",
+                "POST Exit with OCR API",
                 True,
-                f"Successfully retrieved {len(vehicles)} vehicles for tenant test-tenant"
+                f"Successfully processed parking exit for '{exit_data['license_plate']}' with duration {duration} minutes"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Vehicles API",
+                "POST Exit with OCR API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
