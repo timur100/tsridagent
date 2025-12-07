@@ -786,325 +786,83 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_vehicle_filtering_apis(self):
-        """Test vehicle filtering APIs - by type and available only"""
-        try:
-            # Test filter by vehicle type
-            response = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant&vehicle_type=car")
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "GET Vehicles Filter by Type API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            if not data.get("success"):
-                self.log_result(
-                    "GET Vehicles Filter by Type API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            vehicles = data["data"]
-            
-            # Verify all vehicles are cars
-            for vehicle in vehicles:
-                if vehicle["vehicle_type"] != "car":
-                    self.log_result(
-                        "GET Vehicles Filter by Type API",
-                        False,
-                        f"Expected vehicle_type 'car', got '{vehicle['vehicle_type']}'",
-                        data
-                    )
-                    return False
-            
-            # Test filter by available only
-            response2 = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant&available_only=true")
-            
-            if response2.status_code != 200:
-                self.log_result(
-                    "GET Vehicles Available Only API",
-                    False,
-                    f"Request failed. Status: {response2.status_code}",
-                    response2.text
-                )
-                return False
-            
-            data2 = response2.json()
-            
-            if not data2.get("success"):
-                self.log_result(
-                    "GET Vehicles Available Only API",
-                    False,
-                    "Response indicates failure",
-                    data2
-                )
-                return False
-            
-            available_vehicles = data2["data"]
-            
-            # Verify all vehicles are available
-            for vehicle in available_vehicles:
-                if vehicle["status"] != "available":
-                    self.log_result(
-                        "GET Vehicles Available Only API",
-                        False,
-                        f"Expected vehicle status 'available', got '{vehicle['status']}'",
-                        data2
-                    )
-                    return False
-            
-            self.log_result(
-                "Vehicle Filtering APIs",
-                True,
-                f"Successfully tested vehicle filtering: {len(vehicles)} cars, {len(available_vehicles)} available vehicles"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "Vehicle Filtering APIs",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_availability_check_api(self):
-        """Test GET /api/mobility/availability - Check availability for time period"""
-        try:
-            # Test availability check as specified in review request
-            params = {
-                "tenant_id": "test-tenant",
-                "vehicle_type": "car",
-                "start_time": "2025-12-01T10:00:00",
-                "end_time": "2025-12-01T18:00:00"
-            }
-            
-            response = self.session.get(f"{API_BASE}/mobility/availability", params=params)
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "GET Availability Check API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            if not data.get("success"):
-                self.log_result(
-                    "GET Availability Check API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check response structure
-            required_fields = ["data", "total", "filters"]
-            for field in required_fields:
-                if field not in data:
-                    self.log_result(
-                        "GET Availability Check API",
-                        False,
-                        f"Missing required field: {field}",
-                        data
-                    )
-                    return False
-            
-            vehicles = data["data"]
-            filters = data["filters"]
-            
-            # Verify filters were applied
-            if filters["vehicle_type"] != "car":
-                self.log_result(
-                    "GET Availability Check API",
-                    False,
-                    f"Filter not applied correctly: expected vehicle_type 'car', got '{filters['vehicle_type']}'",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "GET Availability Check API",
-                True,
-                f"Successfully checked availability: {len(vehicles)} cars available for specified time period"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "GET Availability Check API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
-    def test_calculate_price_api(self):
-        """Test POST /api/mobility/calculate-price - Calculate price for booking"""
-        try:
-            # Use the vehicle_id from the create vehicle test
-            if not hasattr(self, 'created_vehicle_id'):
-                self.log_result(
-                    "POST Calculate Price API",
-                    False,
-                    "No vehicle_id available from create vehicle test. Run create vehicle test first.",
-                    None
-                )
-                return False
-            
-            # Price calculation data as query parameters
-            params = {
-                "vehicle_id": self.created_vehicle_id,
-                "start_time": "2025-12-01T10:00:00",
-                "end_time": "2025-12-01T18:00:00",
-                "estimated_distance_km": 150
-            }
-            
-            response = self.session.post(f"{API_BASE}/mobility/calculate-price", params=params)
-            
-            if response.status_code != 200:
-                self.log_result(
-                    "POST Calculate Price API",
-                    False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
-                )
-                return False
-            
-            data = response.json()
-            
-            if not data.get("success"):
-                self.log_result(
-                    "POST Calculate Price API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check response structure
-            required_fields = ["vehicle_id", "duration_hours", "duration_days", "prices", "recommended_pricing"]
-            for field in required_fields:
-                if field not in data:
-                    self.log_result(
-                        "POST Calculate Price API",
-                        False,
-                        f"Missing required field: {field}",
-                        data
-                    )
-                    return False
-            
-            prices = data["prices"]
-            
-            # Verify pricing options are calculated
-            if "hourly" not in prices and "daily" not in prices:
-                self.log_result(
-                    "POST Calculate Price API",
-                    False,
-                    "No pricing options calculated",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "POST Calculate Price API",
-                True,
-                f"Successfully calculated prices: {len(prices)} pricing models, recommended: {data['recommended_pricing']}"
-            )
-            return True
-            
-        except Exception as e:
-            self.log_result(
-                "POST Calculate Price API",
-                False,
-                f"Exception occurred: {str(e)}"
-            )
-            return False
-
     def test_mongodb_persistence(self):
-        """Test MongoDB persistence - Verify data is stored correctly"""
+        """Test MongoDB persistence - Verify OCR data is stored correctly"""
         try:
-            # Check mobility_vehicles collection
-            vehicles_count = main_db.mobility_vehicles.count_documents({"tenant_id": "test-tenant"})
+            # Check license_plate_recognitions collection
+            recognitions_count = db.license_plate_recognitions.count_documents({})
             
-            if vehicles_count < 1:
+            if recognitions_count < 1:
                 self.log_result(
-                    "MongoDB Persistence - Vehicles",
+                    "MongoDB Persistence - Recognitions",
                     False,
-                    f"Expected at least 1 vehicle in MongoDB, found {vehicles_count}",
+                    f"Expected at least 1 recognition in MongoDB, found {recognitions_count}",
                     None
                 )
                 return False
             
-            # Check mobility_locations collection
-            locations_count = main_db.mobility_locations.count_documents({"tenant_id": "test-tenant"})
+            # Check parking_entries collection
+            entries_count = db.parking_entries.count_documents({})
             
-            if locations_count < 1:
+            if entries_count < 1:
                 self.log_result(
-                    "MongoDB Persistence - Locations",
+                    "MongoDB Persistence - Parking Entries",
                     False,
-                    f"Expected at least 1 location in MongoDB, found {locations_count}",
+                    f"Expected at least 1 parking entry in MongoDB, found {entries_count}",
                     None
                 )
                 return False
             
-            # Check mobility_bookings collection
-            bookings_count = main_db.mobility_bookings.count_documents({"tenant_id": "test-tenant"})
-            
-            if bookings_count < 1:
+            # Verify specific recognition data
+            recognition = db.license_plate_recognitions.find_one({}, sort=[("timestamp", -1)])
+            if not recognition:
                 self.log_result(
-                    "MongoDB Persistence - Bookings",
+                    "MongoDB Persistence - Recognition Data",
                     False,
-                    f"Expected at least 1 booking in MongoDB, found {bookings_count}",
+                    "No recognition data found in MongoDB",
                     None
                 )
                 return False
             
-            # Verify specific data
-            vehicle = main_db.mobility_vehicles.find_one({"tenant_id": "test-tenant", "name": "Tesla Model 3"})
-            if not vehicle:
+            # Verify recognition has required fields
+            required_fields = ["license_plate", "confidence", "timestamp", "user"]
+            for field in required_fields:
+                if field not in recognition:
+                    self.log_result(
+                        "MongoDB Persistence - Recognition Fields",
+                        False,
+                        f"Missing field '{field}' in recognition data",
+                        None
+                    )
+                    return False
+            
+            # Verify parking entry data
+            entry = db.parking_entries.find_one({}, sort=[("entry_time", -1)])
+            if not entry:
                 self.log_result(
-                    "MongoDB Persistence - Vehicle Data",
+                    "MongoDB Persistence - Entry Data",
                     False,
-                    "Tesla Model 3 vehicle not found in MongoDB",
+                    "No parking entry data found in MongoDB",
                     None
                 )
                 return False
             
-            location = main_db.mobility_locations.find_one({"tenant_id": "test-tenant", "name": "Berlin Hauptbahnhof"})
-            if not location:
-                self.log_result(
-                    "MongoDB Persistence - Location Data",
-                    False,
-                    "Berlin Hauptbahnhof location not found in MongoDB",
-                    None
-                )
-                return False
-            
-            booking = main_db.mobility_bookings.find_one({"tenant_id": "test-tenant", "customer_name": "Max Mustermann"})
-            if not booking:
-                self.log_result(
-                    "MongoDB Persistence - Booking Data",
-                    False,
-                    "Max Mustermann booking not found in MongoDB",
-                    None
-                )
-                return False
+            # Verify entry has required fields
+            required_entry_fields = ["license_plate", "location", "entry_time", "status"]
+            for field in required_entry_fields:
+                if field not in entry:
+                    self.log_result(
+                        "MongoDB Persistence - Entry Fields",
+                        False,
+                        f"Missing field '{field}' in parking entry data",
+                        None
+                    )
+                    return False
             
             self.log_result(
                 "MongoDB Persistence Verification",
                 True,
-                f"Successfully verified MongoDB persistence: {vehicles_count} vehicles, {locations_count} locations, {bookings_count} bookings"
+                f"Successfully verified MongoDB persistence: {recognitions_count} recognitions, {entries_count} parking entries"
             )
             return True
             
