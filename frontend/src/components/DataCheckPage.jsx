@@ -398,7 +398,13 @@ const DataCheckPage = () => {
                       Status
                     </th>
                     <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      Seriennummer
+                      SN-SC
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      SN-PC
+                    </th>
+                    <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      Set-ID
                     </th>
                     <th className={`px-6 py-4 text-left text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                       Gerätetyp
