@@ -392,8 +392,10 @@ async def save_setid_config(
             'format': config.format,
             'parts': [part.dict() for part in config.parts],
             'separator': config.separator,
+            'setTypes': [st.dict() for st in config.setTypes] if config.setTypes else [],
             'updated_at': datetime.now(timezone.utc).isoformat(),
-            'updated_by': token_data.get('email', 'unknown')
+            'updated_by': token_data.get('email', 'unknown'),
+            'config_type': 'default'
         }
         
         # Upsert configuration (only one config document)
