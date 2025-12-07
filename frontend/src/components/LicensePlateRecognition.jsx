@@ -80,13 +80,20 @@ const LicensePlateRecognition = () => {
 
   // Webcam automatisch starten wenn Webcam-Modus aktiviert wird
   useEffect(() => {
-    if (inputMode === 'webcam') {
-      startCamera();
-    } else {
-      stopCamera();
-    }
+    let mounted = true;
+    
+    const initCamera = async () => {
+      if (inputMode === 'webcam' && mounted) {
+        await startCamera();
+      } else {
+        stopCamera();
+      }
+    };
+    
+    initCamera();
     
     return () => {
+      mounted = false;
       stopCamera();
     };
   }, [inputMode]);
