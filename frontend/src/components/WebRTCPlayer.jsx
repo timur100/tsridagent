@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
-const WebRTCPlayer = ({ streamName, onError }) => {
+const WebRTCPlayer = ({ streamName, cameraIp, cameraPort, onError }) => {
   const { theme } = useTheme();
   const videoRef = useRef(null);
   const pcRef = useRef(null);
   const [status, setStatus] = useState('connecting');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     let pc = null;
