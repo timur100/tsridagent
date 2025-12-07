@@ -348,6 +348,7 @@ const DataCheckPage = () => {
                 </p>
               </div>
             </div>
+            </div>
           </div>
 
           {/* Action Buttons */}
