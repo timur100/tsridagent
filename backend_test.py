@@ -41,7 +41,7 @@ WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 # MongoDB connection for verification
 MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
-main_db = mongo_client['main_db']
+db = mongo_client['verification_db']  # Use verification_db as per parking.py
 
 class LicensePlateOCRTester:
     def __init__(self):
