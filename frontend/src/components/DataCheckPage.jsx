@@ -432,28 +432,34 @@ const DataCheckPage = () => {
                           key={`${category}-${idx}`}
                           className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                         >
-                          <td className="px-6 py-4">
+                          <td className="px-4 py-4">
                             <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(category)}`}>
                               <Icon className="h-4 w-4" />
                               {getCategoryLabel(category)}
                             </div>
                           </td>
-                          <td className={`px-6 py-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                            {item.sn_scanner || item.serial_number}
+                          <td className={`px-4 py-4 font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {item.sn_scanner || item.serial_number || '-'}
                           </td>
-                          <td className={`px-6 py-4 font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          <td className={`px-4 py-4 font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             {item.sn_pc || '-'}
                           </td>
-                          <td className={`px-6 py-4 font-mono text-sm font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                          <td className={`px-4 py-4 font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {item.sn_docking || '-'}
+                          </td>
+                          <td className={`px-4 py-4 font-mono text-xs ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {item.sn_power || '-'}
+                          </td>
+                          <td className={`px-4 py-4 font-mono text-sm font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
                             {item.set_id || '-'}
                           </td>
-                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          <td className={`px-4 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             {item.device_type || '-'}
                           </td>
-                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          <td className={`px-4 py-4 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             {item.location || '-'}
                           </td>
-                          <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          <td className={`px-4 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                             {item.notes || '-'}
                           </td>
                         </tr>
