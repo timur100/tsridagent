@@ -323,32 +323,18 @@ const CameraManagement = () => {
               </button>
             </div>
 
-            {/* Modal Body - Video Stream */}
+            {/* Modal Body - Video Stream with WebRTC */}
             <div className="p-4">
-              <div className="relative bg-black rounded-lg overflow-hidden" style={{ paddingBottom: '56.25%' }}>
-                <img
-                  src={`${process.env.REACT_APP_BACKEND_URL}/api/cameras/${viewingCamera.id}/stream`}
-                  alt={`Live stream from ${viewingCamera.name}`}
-                  className="absolute top-0 left-0 w-full h-full object-contain"
-                  onLoad={() => {
-                    console.log('[Camera] Stream loaded successfully');
-                  }}
-                  onError={(e) => {
-                    console.error('[Camera] Stream loading error:', e);
-                    e.target.style.display = 'none';
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'absolute inset-0 flex items-center justify-center flex-col text-white';
-                    errorDiv.innerHTML = `
-                      <svg class="h-16 w-16 mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                      <p class="text-lg font-semibold mb-2">Stream nicht verfügbar</p>
-                      <p class="text-sm text-gray-400">Kamera ${viewingCamera.ip_address} ist nicht erreichbar</p>
-                      <p class="text-xs text-gray-500 mt-2">Bitte prüfen Sie die Netzwerkverbindung</p>
-                    `;
-                    e.target.parentElement.appendChild(errorDiv);
-                  }}
-                />
+              <div className="relative bg-black rounded-lg overflow-hidden" style={{ paddingBottom: '56.25%', height: 0 }}>
+                <div className="absolute top-0 left-0 w-full h-full">
+                  <WebRTCPlayer
+                    streamName="testbuero"
+                    onError={(error) => {
+                      console.error('[Camera] WebRTC error:', error);
+                      toast.error('Kamera-Stream konnte nicht geladen werden');
+                    }}
+                  />
+                </div>
               </div>
               <div className={`mt-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'}`}>
                 <div className="grid grid-cols-3 gap-4 text-sm">
