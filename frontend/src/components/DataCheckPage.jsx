@@ -842,6 +842,11 @@ const DataCheckPage = () => {
       {activeTab === 'setid-config' && (
         <SetIDConfigurationTab theme={theme} apiCall={apiCall} />
       )}
+
+      {/* KI & Analyse Tab */}
+      {activeTab === 'ai-analysis' && (
+        <AIAnalysisTab theme={theme} apiCall={apiCall} />
+      )}
     </div>
   );
 };
