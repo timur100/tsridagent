@@ -298,3 +298,35 @@ async def stream_camera(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error streaming camera: {str(e)}")
+
+@router.get("/cameras/{camera_id}/webrtc-info")
+async def get_webrtc_info(
+    camera_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """
+    Get WebRTC streaming information for a camera
+    """
+    try:
+        # Get camera details from database
+        camera = await db.cameras.find_one({"id": camera_id}, {"_id": 0})
+        
+        if not camera:
+            raise HTTPException(status_code=404, detail="Camera not found")
+        
+        # Map camera to go2rtc stream
+        stream_name = "testbuero"  # Default for now
+        
+        # Return WebRTC connection info
+        return {
+            "stream_name": stream_name,
+            "webrtc_url": f"http://localhost:1984/api/ws?src={stream_name}",
+            "go2rtc_api": "http://localhost:1984",
+            "camera_name": camera.get("name"),
+            "camera_ip": camera.get("ip_address")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error getting WebRTC info: {str(e)}")
+
