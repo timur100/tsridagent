@@ -374,7 +374,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-2">Öffnungszeiten</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Öffnungszeiten</label>
                   <div className="flex gap-2 items-center">
                     <input
                       type="time"
@@ -399,7 +399,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-2">Verfügbare Fahrzeugtypen</label>
+                  <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Verfügbare Fahrzeugtypen</label>
                   <div className="flex flex-wrap gap-2">
                     {vehicleTypeOptions.map(type => {
                       const isSelected = (formData.available_vehicle_types || []).includes(type.id);
