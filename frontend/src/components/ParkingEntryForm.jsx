@@ -27,7 +27,32 @@ const ParkingEntryForm = ({ videoRef, onEntrySuccess, onPlateRecognized }) => {
 
   useEffect(() => {
     loadLocations();
-  }, []);
+    
+    // Event-Listener für automatische Kennzeichenerkennung
+    const handleLicensePlateRecognized = (event) => {
+      const { licensePlate, confidence } = event.detail;
+      console.log('[ParkingEntry] License plate recognized:', licensePlate, confidence);
+      
+      setFormData(prev => ({
+        ...prev,
+        license_plate: licensePlate
+      }));
+      setRecognizedPlate(licensePlate);
+      setOcrConfidence(confidence);
+      
+      toast.success(`Kennzeichen automatisch erkannt: ${licensePlate}`);
+      
+      if (onPlateRecognized) {
+        onPlateRecognized(licensePlate, confidence);
+      }
+    };
+    
+    window.addEventListener('license-plate-recognized', handleLicensePlateRecognized);
+    
+    return () => {
+      window.removeEventListener('license-plate-recognized', handleLicensePlateRecognized);
+    };
+  }, [onPlateRecognized]);
 
   const loadLocations = async () => {
     try {
