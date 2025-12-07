@@ -677,7 +677,7 @@ async def parking_exit_with_ocr(
         license_plate = ocr_result['license_plate']
         
         # Find active parking entry
-        active_entry = await db.parking_entries.find_one({
+        active_entry = db.parking_entries.find_one({
             'license_plate': license_plate,
             'exit_time': None
         })
@@ -692,7 +692,7 @@ async def parking_exit_with_ocr(
         duration_minutes = int(duration.total_seconds() / 60)
         
         # Update parking entry
-        await db.parking_entries.update_one(
+        db.parking_entries.update_one(
             {'_id': active_entry['_id']},
             {
                 '$set': {
