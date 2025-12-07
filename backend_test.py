@@ -62,7 +62,7 @@ WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 # MongoDB connection for verification
 MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
-tsrid_db = mongo_client['tsrid_db']
+main_db = mongo_client['main_db']
 
 class MobilityServicesTester:
     def __init__(self):
@@ -471,33 +471,49 @@ class MobilityServicesTester:
             )
             return False
 
-    def test_update_tile_api(self):
-        """Test PUT /api/quick-menu/tiles/update/{tile_id} - Update a tile"""
+    def test_create_booking_api(self):
+        """Test POST /api/mobility/bookings?tenant_id=test-tenant - Create booking"""
         try:
-            # Use the tile_id from the create test
-            if not hasattr(self, 'created_tile_id'):
+            # Use the vehicle_id from the create vehicle test
+            if not hasattr(self, 'created_vehicle_id'):
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
-                    "No tile_id available from create test. Run create test first.",
+                    "No vehicle_id available from create vehicle test. Run create vehicle test first.",
                     None
                 )
                 return False
             
-            tile_id = self.created_tile_id
+            if not hasattr(self, 'created_location_id'):
+                self.log_result(
+                    "POST Create Booking API",
+                    False,
+                    "No location_id available from create location test. Run create location test first.",
+                    None
+                )
+                return False
             
-            # Update tile data
-            update_data = {
-                "title": "Fahrzeuge & Flotte",
-                "color": "#ff6600",  # Orange color
-                "description": "Fahrzeugverwaltung und Flottenübersicht"
+            # Booking test data as specified in review request
+            booking_data = {
+                "vehicle_id": self.created_vehicle_id,
+                "customer_name": "Max Mustermann",
+                "customer_email": "max@example.com",
+                "customer_phone": "+49 30 12345678",
+                "pickup_location_id": self.created_location_id,
+                "return_location_id": self.created_location_id,
+                "start_time": "2025-12-01T10:00:00",
+                "end_time": "2025-12-01T18:00:00",
+                "pricing_model": "daily",
+                "estimated_cost": 120.0,
+                "requires_license": True,
+                "license_number": "B1234567"
             }
             
-            response = self.session.put(f"{API_BASE}/quick-menu/tiles/update/{tile_id}", json=update_data)
+            response = self.session.post(f"{API_BASE}/mobility/bookings?tenant_id=test-tenant", json=booking_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -509,7 +525,7 @@ class MobilityServicesTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
                     "Response indicates failure",
                     data
@@ -517,70 +533,302 @@ class MobilityServicesTester:
                 return False
             
             # Check response structure
-            if "tile" not in data:
+            if "data" not in data:
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
-                    "Missing 'tile' field in response",
+                    "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            tile = data["tile"]
+            booking = data["data"]
             
-            # Verify the updates were applied
-            if tile["title"] != update_data["title"]:
+            # Verify booking structure and data
+            required_fields = ["id", "tenant_id", "vehicle_id", "customer_name", "customer_email", "booking_number", "status", "created_at", "updated_at"]
+            for field in required_fields:
+                if field not in booking:
+                    self.log_result(
+                        "POST Create Booking API",
+                        False,
+                        f"Missing required field in booking: {field}",
+                        data
+                    )
+                    return False
+            
+            # Verify the data matches what we sent
+            if booking["customer_name"] != booking_data["customer_name"]:
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
-                    f"Title not updated: expected {update_data['title']}, got {tile['title']}",
+                    f"Customer name mismatch: expected {booking_data['customer_name']}, got {booking['customer_name']}",
                     data
                 )
                 return False
             
-            if tile["color"] != update_data["color"]:
+            if booking["vehicle_id"] != booking_data["vehicle_id"]:
                 self.log_result(
-                    "PUT Update Tile API",
+                    "POST Create Booking API",
                     False,
-                    f"Color not updated: expected {update_data['color']}, got {tile['color']}",
+                    f"Vehicle ID mismatch: expected {booking_data['vehicle_id']}, got {booking['vehicle_id']}",
                     data
                 )
                 return False
             
-            # Verify updated_at timestamp changed
-            if "updated_at" not in tile:
-                self.log_result(
-                    "PUT Update Tile API",
-                    False,
-                    "Missing updated_at field in response",
-                    data
-                )
-                return False
+            # Store booking_id for later tests
+            self.created_booking_id = booking["id"]
             
             self.log_result(
-                "PUT Update Tile API",
+                "POST Create Booking API",
                 True,
-                f"Successfully updated tile {tile_id}: title='{tile['title']}', color='{tile['color']}'"
+                f"Successfully created booking '{booking['booking_number']}' for customer '{booking['customer_name']}' with ID {booking['id']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "PUT Update Tile API",
+                "POST Create Booking API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
             return False
 
-    def test_get_tenant_config_api(self):
-        """Test GET /api/quick-menu/config/tenant/{tenant_id} - Get config for a tenant"""
+    def test_check_in_api(self):
+        """Test POST /api/mobility/bookings/{booking_id}/check-in - Check-in with odometer/fuel data"""
         try:
-            tenant_id = "tenant-europcar"
-            response = self.session.get(f"{API_BASE}/quick-menu/config/tenant/{tenant_id}")
+            # Use the booking_id from the create booking test
+            if not hasattr(self, 'created_booking_id'):
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    "No booking_id available from create booking test. Run create booking test first.",
+                    None
+                )
+                return False
+            
+            if not hasattr(self, 'created_location_id'):
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    "No location_id available from create location test. Run create location test first.",
+                    None
+                )
+                return False
+            
+            # Check-in data
+            checkin_data = {
+                "booking_id": self.created_booking_id,
+                "action": "check_in",
+                "location_id": self.created_location_id,
+                "odometer_reading": 50000,
+                "fuel_level": 95,
+                "battery_level": 100,
+                "damage_reported": False,
+                "notes": "Vehicle in excellent condition"
+            }
+            
+            response = self.session.post(f"{API_BASE}/mobility/bookings/{self.created_booking_id}/check-in", json=checkin_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Tenant Config API",
+                    "POST Check-in API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Check if response indicates success
+            if not data.get("success"):
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check response structure
+            if "data" not in data:
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            booking = data["data"]
+            
+            # Verify booking status changed to active
+            if booking["status"] != "active":
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    f"Expected booking status 'active', got '{booking['status']}'",
+                    data
+                )
+                return False
+            
+            # Verify check-in data was recorded
+            if "check_in_time" not in booking:
+                self.log_result(
+                    "POST Check-in API",
+                    False,
+                    "Missing 'check_in_time' field in booking",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "POST Check-in API",
+                True,
+                f"Successfully checked in booking {self.created_booking_id}, status changed to '{booking['status']}'"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "POST Check-in API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_check_out_api(self):
+        """Test POST /api/mobility/bookings/{booking_id}/check-out - Check-out with cost calculation"""
+        try:
+            # Use the booking_id from the create booking test
+            if not hasattr(self, 'created_booking_id'):
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "No booking_id available from create booking test. Run create booking test first.",
+                    None
+                )
+                return False
+            
+            if not hasattr(self, 'created_location_id'):
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "No location_id available from create location test. Run create location test first.",
+                    None
+                )
+                return False
+            
+            # Check-out data
+            checkout_data = {
+                "booking_id": self.created_booking_id,
+                "action": "check_out",
+                "location_id": self.created_location_id,
+                "odometer_reading": 50150,
+                "fuel_level": 80,
+                "battery_level": 85,
+                "damage_reported": False,
+                "notes": "Vehicle returned in good condition"
+            }
+            
+            response = self.session.post(f"{API_BASE}/mobility/bookings/{self.created_booking_id}/check-out", json=checkout_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            # Check if response indicates success
+            if not data.get("success"):
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Check response structure
+            if "data" not in data:
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "Missing 'data' field in response",
+                    data
+                )
+                return False
+            
+            booking = data["data"]
+            
+            # Verify booking status changed to completed
+            if booking["status"] != "completed":
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    f"Expected booking status 'completed', got '{booking['status']}'",
+                    data
+                )
+                return False
+            
+            # Verify check-out data was recorded
+            if "check_out_time" not in booking:
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "Missing 'check_out_time' field in booking",
+                    data
+                )
+                return False
+            
+            # Verify cost calculation
+            if "actual_cost" not in booking:
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "Missing 'actual_cost' field in booking",
+                    data
+                )
+                return False
+            
+            # Verify distance calculation
+            if "distance_km" not in booking:
+                self.log_result(
+                    "POST Check-out API",
+                    False,
+                    "Missing 'distance_km' field in booking",
+                    data
+                )
+                return False
+            
+            self.log_result(
+                "POST Check-out API",
+                True,
+                f"Successfully checked out booking {self.created_booking_id}, status: '{booking['status']}', cost: {booking['actual_cost']}, distance: {booking['distance_km']}km"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "POST Check-out API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_get_statistics_api(self):
+        """Test GET /api/mobility/statistics?tenant_id=test-tenant - Get statistics dashboard"""
+        try:
+            response = self.session.get(f"{API_BASE}/mobility/statistics?tenant_id=test-tenant")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Statistics API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -592,7 +840,7 @@ class MobilityServicesTester:
             # Verify response structure
             if not data.get("success"):
                 self.log_result(
-                    "GET Tenant Config API",
+                    "GET Statistics API",
                     False,
                     "Response indicates failure",
                     data
@@ -600,71 +848,72 @@ class MobilityServicesTester:
                 return False
             
             # Check data structure
-            if "config" not in data:
+            if "statistics" not in data:
                 self.log_result(
-                    "GET Tenant Config API",
+                    "GET Statistics API",
                     False,
-                    "Missing 'config' field in response",
+                    "Missing 'statistics' field in response",
                     data
                 )
                 return False
             
-            config = data["config"]
+            stats = data["statistics"]
             
-            # Verify config structure (should return default config or existing config)
-            required_fields = ["tenant_id", "title", "is_active"]
+            # Verify statistics structure
+            required_fields = ["total_vehicles", "vehicle_counts", "available_vehicles", "total_bookings", "completed_bookings", "total_revenue"]
             for field in required_fields:
-                if field not in config:
+                if field not in stats:
                     self.log_result(
-                        "GET Tenant Config API",
+                        "GET Statistics API",
                         False,
-                        f"Missing required field in config: {field}",
+                        f"Missing required field in statistics: {field}",
                         data
                     )
                     return False
             
-            # Verify tenant_id matches
-            if config["tenant_id"] != tenant_id:
+            # Verify we have at least 1 vehicle and 1 booking from our tests
+            if stats["total_vehicles"] < 1:
                 self.log_result(
-                    "GET Tenant Config API",
+                    "GET Statistics API",
                     False,
-                    f"Tenant ID mismatch: expected {tenant_id}, got {config['tenant_id']}",
+                    f"Expected at least 1 vehicle in statistics, got {stats['total_vehicles']}",
+                    data
+                )
+                return False
+            
+            if stats["total_bookings"] < 1:
+                self.log_result(
+                    "GET Statistics API",
+                    False,
+                    f"Expected at least 1 booking in statistics, got {stats['total_bookings']}",
                     data
                 )
                 return False
             
             self.log_result(
-                "GET Tenant Config API",
+                "GET Statistics API",
                 True,
-                f"Successfully retrieved config for tenant {tenant_id}: title='{config['title']}', active={config['is_active']}"
+                f"Successfully retrieved statistics: {stats['total_vehicles']} vehicles, {stats['total_bookings']} bookings, €{stats['total_revenue']} revenue"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Tenant Config API",
+                "GET Statistics API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
             return False
 
-    def test_update_tenant_config_api(self):
-        """Test PUT /api/quick-menu/config/update/{tenant_id} - Update config for a tenant"""
+    def test_vehicle_filtering_apis(self):
+        """Test vehicle filtering APIs - by type and available only"""
         try:
-            tenant_id = "tenant-europcar"
-            
-            # Update config data as specified in review request
-            config_data = {
-                "title": "Europcar Schnellmenü",
-                "subtitle": "Schnellzugriff auf wichtige Funktionen",
-                "is_active": True
-            }
-            
-            response = self.session.put(f"{API_BASE}/quick-menu/config/update/{tenant_id}", json=config_data)
+            # Test filter by vehicle type
+            response = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant&vehicle_type=car")
             
             if response.status_code != 200:
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Vehicles Filter by Type API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -673,10 +922,106 @@ class MobilityServicesTester:
             
             data = response.json()
             
-            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Vehicles Filter by Type API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            vehicles = data["data"]
+            
+            # Verify all vehicles are cars
+            for vehicle in vehicles:
+                if vehicle["vehicle_type"] != "car":
+                    self.log_result(
+                        "GET Vehicles Filter by Type API",
+                        False,
+                        f"Expected vehicle_type 'car', got '{vehicle['vehicle_type']}'",
+                        data
+                    )
+                    return False
+            
+            # Test filter by available only
+            response2 = self.session.get(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant&available_only=true")
+            
+            if response2.status_code != 200:
+                self.log_result(
+                    "GET Vehicles Available Only API",
+                    False,
+                    f"Request failed. Status: {response2.status_code}",
+                    response2.text
+                )
+                return False
+            
+            data2 = response2.json()
+            
+            if not data2.get("success"):
+                self.log_result(
+                    "GET Vehicles Available Only API",
+                    False,
+                    "Response indicates failure",
+                    data2
+                )
+                return False
+            
+            available_vehicles = data2["data"]
+            
+            # Verify all vehicles are available
+            for vehicle in available_vehicles:
+                if vehicle["status"] != "available":
+                    self.log_result(
+                        "GET Vehicles Available Only API",
+                        False,
+                        f"Expected vehicle status 'available', got '{vehicle['status']}'",
+                        data2
+                    )
+                    return False
+            
+            self.log_result(
+                "Vehicle Filtering APIs",
+                True,
+                f"Successfully tested vehicle filtering: {len(vehicles)} cars, {len(available_vehicles)} available vehicles"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "Vehicle Filtering APIs",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_availability_check_api(self):
+        """Test GET /api/mobility/availability - Check availability for time period"""
+        try:
+            # Test availability check as specified in review request
+            params = {
+                "tenant_id": "test-tenant",
+                "vehicle_type": "car",
+                "start_time": "2025-12-01T10:00:00",
+                "end_time": "2025-12-01T18:00:00"
+            }
+            
+            response = self.session.get(f"{API_BASE}/mobility/availability", params=params)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "GET Availability Check API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            
+            if not data.get("success"):
+                self.log_result(
+                    "GET Availability Check API",
                     False,
                     "Response indicates failure",
                     data
@@ -684,80 +1029,71 @@ class MobilityServicesTester:
                 return False
             
             # Check response structure
-            if "config" not in data:
-                self.log_result(
-                    "PUT Update Config API",
-                    False,
-                    "Missing 'config' field in response",
-                    data
-                )
-                return False
+            required_fields = ["data", "total", "filters"]
+            for field in required_fields:
+                if field not in data:
+                    self.log_result(
+                        "GET Availability Check API",
+                        False,
+                        f"Missing required field: {field}",
+                        data
+                    )
+                    return False
             
-            config = data["config"]
+            vehicles = data["data"]
+            filters = data["filters"]
             
-            # Verify the updates were applied
-            if config["title"] != config_data["title"]:
+            # Verify filters were applied
+            if filters["vehicle_type"] != "car":
                 self.log_result(
-                    "PUT Update Config API",
+                    "GET Availability Check API",
                     False,
-                    f"Title not updated: expected {config_data['title']}, got {config['title']}",
-                    data
-                )
-                return False
-            
-            if config["subtitle"] != config_data["subtitle"]:
-                self.log_result(
-                    "PUT Update Config API",
-                    False,
-                    f"Subtitle not updated: expected {config_data['subtitle']}, got {config['subtitle']}",
-                    data
-                )
-                return False
-            
-            if config["is_active"] != config_data["is_active"]:
-                self.log_result(
-                    "PUT Update Config API",
-                    False,
-                    f"is_active not updated: expected {config_data['is_active']}, got {config['is_active']}",
+                    f"Filter not applied correctly: expected vehicle_type 'car', got '{filters['vehicle_type']}'",
                     data
                 )
                 return False
             
             self.log_result(
-                "PUT Update Config API",
+                "GET Availability Check API",
                 True,
-                f"Successfully updated config for tenant {tenant_id}: title='{config['title']}', subtitle='{config['subtitle']}'"
+                f"Successfully checked availability: {len(vehicles)} cars available for specified time period"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "PUT Update Config API",
+                "GET Availability Check API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
             return False
 
-    def test_delete_tile_api(self):
-        """Test DELETE /api/quick-menu/tiles/delete/{tile_id} - Delete a tile"""
+    def test_calculate_price_api(self):
+        """Test POST /api/mobility/calculate-price - Calculate price for booking"""
         try:
-            # Use the tile_id from the create test
-            if not hasattr(self, 'created_tile_id'):
+            # Use the vehicle_id from the create vehicle test
+            if not hasattr(self, 'created_vehicle_id'):
                 self.log_result(
-                    "DELETE Tile API",
+                    "POST Calculate Price API",
                     False,
-                    "No tile_id available from create test. Run create test first.",
+                    "No vehicle_id available from create vehicle test. Run create vehicle test first.",
                     None
                 )
                 return False
             
-            tile_id = self.created_tile_id
+            # Price calculation data
+            price_data = {
+                "vehicle_id": self.created_vehicle_id,
+                "start_time": "2025-12-01T10:00:00",
+                "end_time": "2025-12-01T18:00:00",
+                "estimated_distance_km": 150
+            }
             
-            response = self.session.delete(f"{API_BASE}/quick-menu/tiles/delete/{tile_id}")
+            response = self.session.post(f"{API_BASE}/mobility/calculate-price", json=price_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "DELETE Tile API",
+                    "POST Calculate Price API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -766,59 +1102,148 @@ class MobilityServicesTester:
             
             data = response.json()
             
-            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "DELETE Tile API",
+                    "POST Calculate Price API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Verify the tile is actually deleted by trying to get tiles for tenant
-            tenant_id = "tenant-europcar"
-            verify_response = self.session.get(f"{API_BASE}/quick-menu/tiles/tenant/{tenant_id}")
+            # Check response structure
+            required_fields = ["vehicle_id", "duration_hours", "duration_days", "prices", "recommended_pricing"]
+            for field in required_fields:
+                if field not in data:
+                    self.log_result(
+                        "POST Calculate Price API",
+                        False,
+                        f"Missing required field: {field}",
+                        data
+                    )
+                    return False
             
-            if verify_response.status_code == 200:
-                verify_data = verify_response.json()
-                if verify_data.get("success"):
-                    tiles = verify_data.get("tiles", [])
-                    # Check that our deleted tile is not in the list
-                    for tile in tiles:
-                        if tile.get("tile_id") == tile_id:
-                            self.log_result(
-                                "DELETE Tile API",
-                                False,
-                                f"Tile {tile_id} still exists after deletion",
-                                verify_data
-                            )
-                            return False
+            prices = data["prices"]
+            
+            # Verify pricing options are calculated
+            if "hourly" not in prices and "daily" not in prices:
+                self.log_result(
+                    "POST Calculate Price API",
+                    False,
+                    "No pricing options calculated",
+                    data
+                )
+                return False
             
             self.log_result(
-                "DELETE Tile API",
+                "POST Calculate Price API",
                 True,
-                f"Successfully deleted tile {tile_id} and verified removal from tenant tiles list"
+                f"Successfully calculated prices: {len(prices)} pricing models, recommended: {data['recommended_pricing']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "DELETE Tile API",
+                "POST Calculate Price API",
+                False,
+                f"Exception occurred: {str(e)}"
+            )
+            return False
+
+    def test_mongodb_persistence(self):
+        """Test MongoDB persistence - Verify data is stored correctly"""
+        try:
+            # Check mobility_vehicles collection
+            vehicles_count = main_db.mobility_vehicles.count_documents({"tenant_id": "test-tenant"})
+            
+            if vehicles_count < 1:
+                self.log_result(
+                    "MongoDB Persistence - Vehicles",
+                    False,
+                    f"Expected at least 1 vehicle in MongoDB, found {vehicles_count}",
+                    None
+                )
+                return False
+            
+            # Check mobility_locations collection
+            locations_count = main_db.mobility_locations.count_documents({"tenant_id": "test-tenant"})
+            
+            if locations_count < 1:
+                self.log_result(
+                    "MongoDB Persistence - Locations",
+                    False,
+                    f"Expected at least 1 location in MongoDB, found {locations_count}",
+                    None
+                )
+                return False
+            
+            # Check mobility_bookings collection
+            bookings_count = main_db.mobility_bookings.count_documents({"tenant_id": "test-tenant"})
+            
+            if bookings_count < 1:
+                self.log_result(
+                    "MongoDB Persistence - Bookings",
+                    False,
+                    f"Expected at least 1 booking in MongoDB, found {bookings_count}",
+                    None
+                )
+                return False
+            
+            # Verify specific data
+            vehicle = main_db.mobility_vehicles.find_one({"tenant_id": "test-tenant", "name": "Tesla Model 3"})
+            if not vehicle:
+                self.log_result(
+                    "MongoDB Persistence - Vehicle Data",
+                    False,
+                    "Tesla Model 3 vehicle not found in MongoDB",
+                    None
+                )
+                return False
+            
+            location = main_db.mobility_locations.find_one({"tenant_id": "test-tenant", "name": "Berlin Hauptbahnhof"})
+            if not location:
+                self.log_result(
+                    "MongoDB Persistence - Location Data",
+                    False,
+                    "Berlin Hauptbahnhof location not found in MongoDB",
+                    None
+                )
+                return False
+            
+            booking = main_db.mobility_bookings.find_one({"tenant_id": "test-tenant", "customer_name": "Max Mustermann"})
+            if not booking:
+                self.log_result(
+                    "MongoDB Persistence - Booking Data",
+                    False,
+                    "Max Mustermann booking not found in MongoDB",
+                    None
+                )
+                return False
+            
+            self.log_result(
+                "MongoDB Persistence Verification",
+                True,
+                f"Successfully verified MongoDB persistence: {vehicles_count} vehicles, {locations_count} locations, {bookings_count} bookings"
+            )
+            return True
+            
+        except Exception as e:
+            self.log_result(
+                "MongoDB Persistence Verification",
                 False,
                 f"Exception occurred: {str(e)}"
             )
             return False
 
     async def run_all_tests(self):
-        """Run all Quick Menu Feature API tests"""
+        """Run all Mobility Services API tests"""
         print("=" * 80)
-        print("QUICK MENU FEATURE API TESTING")
+        print("MOBILITY SERVICES PHASE 1 COMPREHENSIVE API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Quick Menu Backend APIs for tenant-specific customizable tiles")
-        print(f"Database: tsrid collections: quick_menu_tiles, quick_menu_configs, customers")
-        print("Test Data: tenant-europcar (Europcar Deutschland), tenant-tsrid (TSRID GmbH)")
+        print(f"Testing APIs: Multi-modal mobility booking system with 20+ endpoints")
+        print(f"Database: main_db collections: mobility_vehicles, mobility_locations, mobility_bookings")
+        print("Test Data: tenant_id=test-tenant, Berlin Hauptbahnhof location, Tesla Model 3 vehicle")
         print("=" * 80)
         print()
         
@@ -830,35 +1255,39 @@ class MobilityServicesTester:
                 return
             print()
             
-            # Step 2: Test Utility APIs
-            print("🏢 STEP 2: Utility APIs")
-            self.test_get_tenants_list_api()
+            # Step 2: Test Location Management
+            print("📍 STEP 2: Location Management APIs")
+            self.test_create_location_api()
             print()
             
-            # Step 3: Test Tile Creation
-            print("➕ STEP 3: Tile Creation APIs")
-            self.test_create_tile_api()
+            # Step 3: Test Vehicle Management
+            print("🚗 STEP 3: Vehicle Management APIs")
+            self.test_create_vehicle_api()
+            self.test_get_vehicles_api()
+            self.test_vehicle_filtering_apis()
             print()
             
-            # Step 4: Test Tile Retrieval
-            print("📋 STEP 4: Tile Retrieval APIs")
-            self.test_get_tiles_for_tenant_api()
+            # Step 4: Test Booking System
+            print("📋 STEP 4: Booking System APIs")
+            self.test_create_booking_api()
             print()
             
-            # Step 5: Test Tile Updates
-            print("✏️ STEP 5: Tile Update APIs")
-            self.test_update_tile_api()
+            # Step 5: Test Check-in/Check-out
+            print("✅ STEP 5: Check-in/Check-out APIs")
+            self.test_check_in_api()
+            self.test_check_out_api()
             print()
             
-            # Step 6: Test Config APIs
-            print("⚙️ STEP 6: Configuration APIs")
-            self.test_get_tenant_config_api()
-            self.test_update_tenant_config_api()
+            # Step 6: Test Additional Features
+            print("⚡ STEP 6: Additional Features APIs")
+            self.test_availability_check_api()
+            self.test_calculate_price_api()
+            self.test_get_statistics_api()
             print()
             
-            # Step 7: Test Tile Deletion
-            print("🗑️ STEP 7: Tile Deletion APIs")
-            self.test_delete_tile_api()
+            # Step 7: Test MongoDB Persistence
+            print("💾 STEP 7: MongoDB Persistence Verification")
+            self.test_mongodb_persistence()
             print()
             
         except Exception as e:
@@ -891,7 +1320,7 @@ class MobilityServicesTester:
 
 def main():
     """Main function to run the tests"""
-    tester = QuickMenuTester()
+    tester = MobilityServicesTester()
     
     # Run tests
     import asyncio
