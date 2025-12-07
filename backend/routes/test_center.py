@@ -57,30 +57,57 @@ async def identify_set_type(serial_numbers, config):
     """
     Identify set type based on serial number patterns
     Returns: (set_type_id, matched_components) or (None, {})
+    
+    Strategy:
+    - Try to match serial numbers to component patterns
+    - If at least 2 main components (PC + Scanner) match, identify the set type
     """
     if not config or 'setTypes' not in config:
         return None, {}
     
+    best_match = None
+    best_match_count = 0
+    
     for set_type in config['setTypes']:
         matched = {}
+        match_score = 0
+        
         for component in set_type['components']:
-            pattern = component['pattern']
+            pattern = component.get('pattern', '')
+            if not pattern:
+                continue
+                
             comp_type = component['type']
             
             # Try to match any serial number against this pattern
             for sn in serial_numbers:
-                sn_clean = sn.strip()
+                if not sn:
+                    continue
+                sn_clean = str(sn).strip()
                 try:
                     if re.match(pattern, sn_clean):
                         matched[comp_type] = sn_clean
+                        # Higher score for PC and Scanner (main components)
+                        if comp_type in ['PC', 'Scanner']:
+                            match_score += 10
+                        else:
+                            match_score += 1
                         break
-                except:
+                except Exception as e:
+                    print(f"[SetType] Pattern match error: {e}")
                     pass
         
-        # If we matched all required components, return this set type
-        required_types = set(comp['type'] for comp in set_type['components'])
-        if matched and set(matched.keys()) == required_types:
-            return set_type['id'], matched
+        # Check if we have at least PC and Scanner matched
+        has_pc = 'PC' in matched
+        has_scanner = 'Scanner' in matched
+        
+        if (has_pc and has_scanner) and match_score > best_match_count:
+            best_match = (set_type['id'], matched)
+            best_match_count = match_score
+    
+    if best_match:
+        print(f"[SetType] Identified: {best_match[0]} with {len(best_match[1])} components")
+        return best_match
     
     return None, {}
 
