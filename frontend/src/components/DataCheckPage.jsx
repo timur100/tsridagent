@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import {
   CheckCircle, XCircle, AlertTriangle, Package, MapPin, Wrench,
   Upload, FileText, Play, Download, Search, Filter, RefreshCw,
-  Clock, Archive, X, Info, TrendingUp, Database, FileSpreadsheet, Settings, Plus, ChevronDown, ChevronUp
+  Clock, Archive, X, Info, TrendingUp, Database, FileSpreadsheet, Settings, Plus, ChevronDown, ChevronUp, Brain, BarChart3, PieChart, Sparkles, Zap, Target, Activity, ChevronRight
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import SubTabNavigation from './SubTabNavigation';
