@@ -430,11 +430,19 @@ const LicensePlateRecognition = () => {
                       />
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
                         <Button
+                          onClick={captureAndRecognize}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          disabled={isRecognizing}
+                        >
+                          <Camera className="h-4 w-4 mr-2" />
+                          {isRecognizing ? 'Erkenne...' : 'Aufnehmen & Erkennen'}
+                        </Button>
+                        <Button
                           onClick={capturePhoto}
                           className="bg-blue-600 hover:bg-blue-700 text-white"
                         >
                           <Camera className="h-4 w-4 mr-2" />
-                          Foto aufnehmen
+                          Nur Foto
                         </Button>
                         <Button
                           onClick={stopCamera}
