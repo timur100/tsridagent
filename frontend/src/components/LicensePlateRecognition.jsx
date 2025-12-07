@@ -269,11 +269,30 @@ const LicensePlateRecognition = () => {
         </Button>
       </div>
 
+      {/* Input Mode Selection - Webcam or Upload */}
+      <div className="flex gap-2">
+        <Button
+          onClick={() => setInputMode('webcam')}
+          variant={inputMode === 'webcam' ? 'default' : 'outline'}
+          className={inputMode === 'webcam' ? 'bg-blue-600 hover:bg-blue-700' : ''}
+        >
+          <Video className="h-4 w-4 mr-2" />
+          Webcam
+        </Button>
+        <Button
+          onClick={() => setInputMode('upload')}
+          variant={inputMode === 'upload' ? 'default' : 'outline'}
+        >
+          <Upload className="h-4 w-4 mr-2" />
+          Datei hochladen
+        </Button>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upload Area */}
+        {/* Webcam/Upload Area */}
         <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
           <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Bild hochladen
+            {inputMode === 'webcam' ? 'Webcam' : 'Bild hochladen'}
           </h3>
 
           {/* Image Preview */}
