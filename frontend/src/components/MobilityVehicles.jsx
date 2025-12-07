@@ -298,8 +298,8 @@ const MobilityVehicles = ({ tenantId }) => {
                 
                 {(vehicle.vehicle_type === 'e_bike' || vehicle.vehicle_type === 'e_scooter') && vehicle.battery_level !== null && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-500">Akku:</span>
-                    <div className="flex items-center gap-1">
+                    <span className="text-gray-500 dark:text-gray-400">Akku:</span>
+                    <div className="flex items-center gap-1 text-gray-900 dark:text-white">
                       <Battery className="w-4 h-4" />
                       <span>{vehicle.battery_level}%</span>
                     </div>
@@ -308,8 +308,8 @@ const MobilityVehicles = ({ tenantId }) => {
                 
                 <div className="pt-2 mt-2 border-t dark:border-gray-700">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-gray-500">Preise:</span>
-                    <div className="flex gap-2">
+                    <span className="text-gray-500 dark:text-gray-400">Preise:</span>
+                    <div className="flex gap-2 text-gray-900 dark:text-white">
                       {vehicle.pricing?.hourly > 0 && (
                         <span>{vehicle.pricing.hourly}€/h</span>
                       )}
