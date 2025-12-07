@@ -702,6 +702,8 @@ async def check_out(
         
         # Calculate actual cost
         start_time = datetime.fromisoformat(booking['start_time'])
+        if start_time.tzinfo is None:
+            start_time = start_time.replace(tzinfo=timezone.utc)
         end_time = datetime.now(timezone.utc)
         
         duration_hours = (end_time - start_time).total_seconds() / 3600
