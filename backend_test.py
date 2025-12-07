@@ -251,26 +251,41 @@ class MobilityServicesTester:
             )
             return False
 
-    def test_create_tile_api(self):
-        """Test POST /api/quick-menu/tiles/create - Create a new tile"""
+    def test_create_vehicle_api(self):
+        """Test POST /api/mobility/vehicles?tenant_id=test-tenant - Create vehicle"""
         try:
-            # Create tile data as specified in review request
-            tile_data = {
-                "tenant_id": "tenant-europcar",
-                "title": "Reservierungsverwaltung",
-                "description": "Alle Reservierungen verwalten",
-                "icon": "Calendar",
-                "color": "#00aa00",
-                "target_url": "/portal/admin/europcar/reservations",
-                "target_type": "internal",
-                "order": 1
+            # Use the location_id from the create location test
+            if not hasattr(self, 'created_location_id'):
+                self.log_result(
+                    "POST Create Vehicle API",
+                    False,
+                    "No location_id available from create location test. Run create location test first.",
+                    None
+                )
+                return False
+            
+            # Vehicle test data as specified in review request
+            vehicle_data = {
+                "name": "Tesla Model 3",
+                "vehicle_type": "car",
+                "brand": "Tesla",
+                "model": "Model 3",
+                "license_plate": "B-TEST-123",
+                "location_id": self.created_location_id,
+                "status": "available",
+                "pricing": {"hourly": 15.0, "daily": 120.0, "per_km": 0.5},
+                "features": ["GPS", "Automatic", "Electric"],
+                "capacity": 5,
+                "battery_level": 100,
+                "range_km": 500,
+                "active": True
             }
             
-            response = self.session.post(f"{API_BASE}/quick-menu/tiles/create", json=tile_data)
+            response = self.session.post(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant", json=vehicle_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Create Tile API",
+                    "POST Create Vehicle API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -282,7 +297,7 @@ class MobilityServicesTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Create Tile API",
+                    "POST Create Vehicle API",
                     False,
                     "Response indicates failure",
                     data
@@ -290,61 +305,61 @@ class MobilityServicesTester:
                 return False
             
             # Check response structure
-            if "tile" not in data:
+            if "data" not in data:
                 self.log_result(
-                    "POST Create Tile API",
+                    "POST Create Vehicle API",
                     False,
-                    "Missing 'tile' field in response",
+                    "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            tile = data["tile"]
+            vehicle = data["data"]
             
-            # Verify tile structure and data
-            required_fields = ["tile_id", "tenant_id", "title", "description", "icon", "color", "target_url", "target_type", "order", "created_at", "updated_at"]
+            # Verify vehicle structure and data
+            required_fields = ["id", "tenant_id", "name", "vehicle_type", "brand", "model", "license_plate", "location_id", "status", "pricing", "features", "capacity", "created_at", "updated_at"]
             for field in required_fields:
-                if field not in tile:
+                if field not in vehicle:
                     self.log_result(
-                        "POST Create Tile API",
+                        "POST Create Vehicle API",
                         False,
-                        f"Missing required field in tile: {field}",
+                        f"Missing required field in vehicle: {field}",
                         data
                     )
                     return False
             
             # Verify the data matches what we sent
-            if tile["tenant_id"] != tile_data["tenant_id"]:
+            if vehicle["name"] != vehicle_data["name"]:
                 self.log_result(
-                    "POST Create Tile API",
+                    "POST Create Vehicle API",
                     False,
-                    f"Tenant ID mismatch: expected {tile_data['tenant_id']}, got {tile['tenant_id']}",
+                    f"Name mismatch: expected {vehicle_data['name']}, got {vehicle['name']}",
                     data
                 )
                 return False
             
-            if tile["title"] != tile_data["title"]:
+            if vehicle["vehicle_type"] != vehicle_data["vehicle_type"]:
                 self.log_result(
-                    "POST Create Tile API",
+                    "POST Create Vehicle API",
                     False,
-                    f"Title mismatch: expected {tile_data['title']}, got {tile['title']}",
+                    f"Vehicle type mismatch: expected {vehicle_data['vehicle_type']}, got {vehicle['vehicle_type']}",
                     data
                 )
                 return False
             
-            # Store tile_id for later tests
-            self.created_tile_id = tile["tile_id"]
+            # Store vehicle_id for later tests
+            self.created_vehicle_id = vehicle["id"]
             
             self.log_result(
-                "POST Create Tile API",
+                "POST Create Vehicle API",
                 True,
-                f"Successfully created tile '{tile['title']}' with ID {tile['tile_id']} for tenant {tile['tenant_id']}"
+                f"Successfully created vehicle '{vehicle['name']}' ({vehicle['license_plate']}) with ID {vehicle['id']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Create Tile API",
+                "POST Create Vehicle API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
