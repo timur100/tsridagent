@@ -64,7 +64,7 @@ MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
 tsrid_db = mongo_client['tsrid_db']
 
-class QuickMenuTester:
+class MobilityServicesTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
