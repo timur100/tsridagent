@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
-import { Plus, Edit2, Trash2, Save, X, User, Car, Bike, Motorcycle } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, User, Car, Bike } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const DriverManagement = ({ tenantId = 'default-tenant', locationId = 'default-location' }) => {
