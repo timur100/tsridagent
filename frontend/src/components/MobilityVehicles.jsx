@@ -66,10 +66,12 @@ const MobilityVehicles = ({ tenantId }) => {
       if (filterStatus !== 'all') url += `&status=${filterStatus}`;
       
       const response = await apiCall(url);
-      setVehicles(response.data || []);
+      const vehicleData = response?.data || response || [];
+      setVehicles(Array.isArray(vehicleData) ? vehicleData : []);
     } catch (error) {
       console.error('Error loading vehicles:', error);
       toast.error('Fehler beim Laden der Fahrzeuge');
+      setVehicles([]);
     } finally {
       setLoading(false);
     }
@@ -78,9 +80,11 @@ const MobilityVehicles = ({ tenantId }) => {
   const loadLocations = async () => {
     try {
       const response = await apiCall(`/api/mobility/locations?tenant_id=${tenantId}`);
-      setLocations(response.data || []);
+      const locationData = response?.data || response || [];
+      setLocations(Array.isArray(locationData) ? locationData : []);
     } catch (error) {
       console.error('Error loading locations:', error);
+      setLocations([]);
     }
   };
   
