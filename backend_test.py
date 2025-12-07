@@ -137,29 +137,36 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_create_location_api(self):
-        """Test POST /api/mobility/locations?tenant_id=test-tenant - Create location"""
+    def test_recognize_plate_api(self):
+        """Test POST /api/parking/recognize-plate - OCR recognition with image upload"""
         try:
-            # Location test data as specified in review request
-            location_data = {
-                "name": "Berlin Hauptbahnhof",
-                "address": "Europaplatz 1",
-                "city": "Berlin",
-                "postal_code": "10557",
-                "country": "Deutschland",
-                "lat": 52.5251,
-                "lng": 13.3694,
-                "location_type": "station",
-                "operating_hours": {"open": "06:00", "close": "22:00"},
-                "available_vehicle_types": ["car", "e_bike", "e_scooter"],
-                "active": True
-            }
+            # Check if test image exists
+            test_image_path = "/tmp/test_plate.jpg"
+            if not os.path.exists(test_image_path):
+                self.log_result(
+                    "POST Recognize Plate API",
+                    False,
+                    f"Test image not found at {test_image_path}",
+                    None
+                )
+                return False
             
-            response = self.session.post(f"{API_BASE}/mobility/locations?tenant_id=test-tenant", json=location_data)
+            # Prepare multipart form data
+            with open(test_image_path, 'rb') as f:
+                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
+                
+                # Remove Content-Type header for multipart requests
+                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                
+                response = self.session.post(
+                    f"{API_BASE}/parking/recognize-plate", 
+                    files=files,
+                    headers=headers
+                )
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Create Location API",
+                    "POST Recognize Plate API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -171,7 +178,7 @@ class LicensePlateOCRTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Create Location API",
+                    "POST Recognize Plate API",
                     False,
                     "Response indicates failure",
                     data
@@ -181,50 +188,63 @@ class LicensePlateOCRTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Create Location API",
+                    "POST Recognize Plate API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            location = data["data"]
+            ocr_data = data["data"]
             
-            # Verify location structure and data
-            required_fields = ["id", "tenant_id", "name", "address", "city", "lat", "lng", "created_at", "updated_at"]
+            # Verify OCR result structure
+            required_fields = ["license_plate", "confidence"]
             for field in required_fields:
-                if field not in location:
+                if field not in ocr_data:
                     self.log_result(
-                        "POST Create Location API",
+                        "POST Recognize Plate API",
                         False,
-                        f"Missing required field in location: {field}",
+                        f"Missing required field in OCR data: {field}",
                         data
                     )
                     return False
             
-            # Verify the data matches what we sent
-            if location["name"] != location_data["name"]:
+            # Verify license plate was recognized
+            license_plate = ocr_data["license_plate"]
+            confidence = ocr_data["confidence"]
+            
+            if not license_plate:
                 self.log_result(
-                    "POST Create Location API",
+                    "POST Recognize Plate API",
                     False,
-                    f"Name mismatch: expected {location_data['name']}, got {location['name']}",
+                    "No license plate recognized",
                     data
                 )
                 return False
             
-            # Store location_id for later tests
-            self.created_location_id = location["id"]
+            # Check if recognized plate contains expected characters (B-MW 1234 -> BMW1234 or similar)
+            expected_chars = ["B", "M", "W", "1", "2", "3", "4"]
+            recognized_chars = [c for c in expected_chars if c in license_plate]
+            
+            if len(recognized_chars) < 4:  # At least half the characters should be recognized
+                self.log_result(
+                    "POST Recognize Plate API",
+                    False,
+                    f"OCR result '{license_plate}' doesn't contain enough expected characters from 'B-MW 1234'",
+                    data
+                )
+                return False
             
             self.log_result(
-                "POST Create Location API",
+                "POST Recognize Plate API",
                 True,
-                f"Successfully created location '{location['name']}' with ID {location['id']} in {location['city']}"
+                f"Successfully recognized license plate '{license_plate}' with {confidence}% confidence"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Create Location API",
+                "POST Recognize Plate API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
