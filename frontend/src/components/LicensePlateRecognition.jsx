@@ -1,22 +1,27 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Camera, Upload, X, CheckCircle, AlertCircle, ArrowRight, ArrowLeft, Image as ImageIcon, Zap } from 'lucide-react';
+import { Camera, Upload, X, CheckCircle, AlertCircle, ArrowRight, ArrowLeft, Image as ImageIcon, Zap, Video, VideoOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const LicensePlateRecognition = () => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
   const fileInputRef = useRef(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [isRecognizing, setIsRecognizing] = useState(false);
   const [recognitionResult, setRecognitionResult] = useState(null);
   const [mode, setMode] = useState('recognize'); // recognize, entry, exit
+  const [inputMode, setInputMode] = useState('webcam'); // webcam or upload
   const [location, setLocation] = useState('');
   const [history, setHistory] = useState([]);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [cameraError, setCameraError] = useState(null);
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
