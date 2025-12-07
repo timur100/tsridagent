@@ -720,85 +720,67 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_get_statistics_api(self):
-        """Test GET /api/mobility/statistics?tenant_id=test-tenant - Get statistics dashboard"""
+    def test_error_cases(self):
+        """Test error cases for OCR endpoints"""
         try:
-            response = self.session.get(f"{API_BASE}/mobility/statistics?tenant_id=test-tenant")
+            # Test 1: Exit without active session (should fail)
+            test_image_path = "/tmp/test_plate.jpg"
             
-            if response.status_code != 200:
+            # Create a fake license plate entry that doesn't exist
+            with open(test_image_path, 'rb') as f:
+                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
+                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                
+                # This should fail because there's no active session for this plate
+                response = self.session.post(
+                    f"{API_BASE}/parking/exit-with-ocr", 
+                    files=files,
+                    headers=headers
+                )
+            
+            # Should get 404 for no active session
+            if response.status_code == 404:
+                error_test_1_passed = True
+            else:
+                error_test_1_passed = False
+            
+            # Test 2: Duplicate entry (should create violation)
+            with open(test_image_path, 'rb') as f:
+                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
+                data_form = {'location': 'Test Parking Area 2'}
+                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                
+                response = self.session.post(
+                    f"{API_BASE}/parking/entry-with-ocr", 
+                    files=files,
+                    data=data_form,
+                    headers=headers
+                )
+            
+            # Should get 400 for duplicate entry
+            if response.status_code == 400:
+                error_test_2_passed = True
+            else:
+                error_test_2_passed = False
+            
+            if error_test_1_passed and error_test_2_passed:
                 self.log_result(
-                    "GET Statistics API",
+                    "Error Cases Testing",
+                    True,
+                    "Successfully tested error cases: no active session (404) and duplicate entry (400)"
+                )
+                return True
+            else:
+                self.log_result(
+                    "Error Cases Testing",
                     False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    f"Error case testing failed: exit without session={error_test_1_passed}, duplicate entry={error_test_2_passed}"
                 )
                 return False
-            
-            data = response.json()
-            
-            # Verify response structure
-            if not data.get("success"):
-                self.log_result(
-                    "GET Statistics API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check data structure
-            if "statistics" not in data:
-                self.log_result(
-                    "GET Statistics API",
-                    False,
-                    "Missing 'statistics' field in response",
-                    data
-                )
-                return False
-            
-            stats = data["statistics"]
-            
-            # Verify statistics structure
-            required_fields = ["total_vehicles", "vehicle_counts", "available_vehicles", "total_bookings", "completed_bookings", "total_revenue"]
-            for field in required_fields:
-                if field not in stats:
-                    self.log_result(
-                        "GET Statistics API",
-                        False,
-                        f"Missing required field in statistics: {field}",
-                        data
-                    )
-                    return False
-            
-            # Verify we have at least 1 vehicle and 1 booking from our tests
-            if stats["total_vehicles"] < 1:
-                self.log_result(
-                    "GET Statistics API",
-                    False,
-                    f"Expected at least 1 vehicle in statistics, got {stats['total_vehicles']}",
-                    data
-                )
-                return False
-            
-            if stats["total_bookings"] < 1:
-                self.log_result(
-                    "GET Statistics API",
-                    False,
-                    f"Expected at least 1 booking in statistics, got {stats['total_bookings']}",
-                    data
-                )
-                return False
-            
-            self.log_result(
-                "GET Statistics API",
-                True,
-                f"Successfully retrieved statistics: {stats['total_vehicles']} vehicles, {stats['total_bookings']} bookings, €{stats['total_revenue']} revenue"
-            )
-            return True
             
         except Exception as e:
             self.log_result(
-                "GET Statistics API",
+                "Error Cases Testing",
                 False,
                 f"Exception occurred: {str(e)}"
             )
