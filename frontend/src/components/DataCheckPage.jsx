@@ -6,10 +6,103 @@ import { Button } from './ui/button';
 import {
   CheckCircle, XCircle, AlertTriangle, Package, MapPin, Wrench,
   Upload, FileText, Play, Download, Search, Filter, RefreshCw,
-  Clock, Archive, X, Info, TrendingUp, Database, FileSpreadsheet, Settings, Plus
+  Clock, Archive, X, Info, TrendingUp, Database, FileSpreadsheet, Settings, Plus, ChevronDown, ChevronUp
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import SubTabNavigation from './SubTabNavigation';
+
+// Comparison Card Component with expandable sections
+const ComparisonCard = ({ title, total, sections, theme }) => {
+  const [expandedSections, setExpandedSections] = useState({});
+
+  const toggleSection = (label) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [label]: !prev[label]
+    }));
+  };
+
+  const getColorClass = (color) => {
+    const colors = {
+      green: 'text-green-600',
+      red: 'text-red-600',
+      orange: 'text-orange-600',
+      blue: 'text-blue-600',
+      yellow: 'text-yellow-600'
+    };
+    return colors[color] || 'text-gray-600';
+  };
+
+  const getBgColorClass = (color) => {
+    const colors = {
+      green: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800',
+      red: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
+      orange: 'bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800',
+      blue: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
+      yellow: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+    };
+    return colors[color] || 'bg-gray-50 dark:bg-gray-800';
+  };
+
+  return (
+    <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+      <h4 className={`text-md font-semibold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+        {title}
+      </h4>
+      <div className="space-y-2 text-sm">
+        {total !== null && (
+          <div className="flex justify-between mb-2 pb-2 border-b border-gray-700">
+            <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Gesamt:</span>
+            <span className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {total}
+            </span>
+          </div>
+        )}
+        
+        {sections.map((section, idx) => (
+          <div key={idx} className="space-y-1">
+            <button
+              onClick={() => section.items.length > 0 && toggleSection(section.label)}
+              className={`w-full flex justify-between items-center p-2 rounded ${
+                section.items.length > 0 ? 'hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer' : ''
+              }`}
+              disabled={section.items.length === 0}
+            >
+              <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{section.label}:</span>
+              <div className="flex items-center gap-2">
+                <span className={`font-bold ${getColorClass(section.color)}`}>
+                  {section.count}
+                </span>
+                {section.items.length > 0 && (
+                  expandedSections[section.label] ? 
+                    <ChevronUp className="h-4 w-4" /> : 
+                    <ChevronDown className="h-4 w-4" />
+                )}
+              </div>
+            </button>
+            
+            {expandedSections[section.label] && section.items.length > 0 && (
+              <div className={`ml-2 p-3 rounded border ${getBgColorClass(section.color)} max-h-48 overflow-y-auto`}>
+                <div className="space-y-1">
+                  {section.items.map((item, itemIdx) => (
+                    <div
+                      key={itemIdx}
+                      className={`font-mono text-xs p-1 rounded ${
+                        theme === 'dark' ? 'bg-black/30' : 'bg-white/50'
+                      }`}
+                    >
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Card>
+  );
+};
 
 const DataCheckPage = () => {
   const { theme } = useTheme();
