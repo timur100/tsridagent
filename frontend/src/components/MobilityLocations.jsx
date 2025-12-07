@@ -52,10 +52,12 @@ const MobilityLocations = ({ tenantId }) => {
     setLoading(true);
     try {
       const response = await apiCall(`/api/mobility/locations?tenant_id=${tenantId}`);
-      setLocations(response.data || []);
+      const locationData = response?.data || response || [];
+      setLocations(Array.isArray(locationData) ? locationData : []);
     } catch (error) {
       console.error('Error loading locations:', error);
       toast.error('Fehler beim Laden der Standorte');
+      setLocations([]);
     } finally {
       setLoading(false);
     }
