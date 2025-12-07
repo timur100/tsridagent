@@ -326,12 +326,12 @@ const MobilityVehicles = ({ tenantId }) => {
       </div>
       
       {filteredVehicles.length === 0 && (
-        <Card className="p-12 text-center">
-          <Car className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-500">Keine Fahrzeuge gefunden</p>
+        <Card className="p-12 text-center bg-white dark:bg-gray-900">
+          <Car className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
+          <p className="text-gray-500 dark:text-gray-400">Keine Fahrzeuge gefunden</p>
           <button
             onClick={handleCreate}
-            className="mt-4 text-[#c00000] hover:underline"
+            className="mt-4 text-[#c00000] hover:underline font-medium"
           >
             Erstes Fahrzeug erstellen
           </button>
