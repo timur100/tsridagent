@@ -179,7 +179,7 @@ const MobilityLocations = ({ tenantId }) => {
       {/* Location List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {locations.map(location => (
-          <Card key={location.id} className="p-6 hover:shadow-lg transition-shadow">
+          <Card key={location.id} className="p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-900">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-3 bg-[#c00000]/10 rounded-lg">
@@ -256,7 +256,7 @@ const MobilityLocations = ({ tenantId }) => {
       </div>
       
       {locations.length === 0 && (
-        <Card className="p-12 text-center">
+        <Card className="p-12 text-center bg-white dark:bg-gray-900">
           <MapPin className="w-12 h-12 mx-auto mb-4 text-gray-400" />
           <p className="text-gray-500">Keine Standorte gefunden</p>
           <button
