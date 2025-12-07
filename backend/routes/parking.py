@@ -585,7 +585,7 @@ async def recognize_license_plate(
             'image_name': file.filename
         }
         
-        await db.license_plate_recognitions.insert_one(recognition_record)
+        db.license_plate_recognitions.insert_one(recognition_record)
         
         return {
             'success': True,
