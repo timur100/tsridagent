@@ -251,8 +251,8 @@ const DataCheckPage = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Text Input */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Text Input - Main Serial Numbers */}
             <div>
               <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 Seriennummern (eine pro Zeile)
@@ -261,7 +261,7 @@ const DataCheckPage = () => {
                 value={serialNumbers}
                 onChange={(e) => setSerialNumbers(e.target.value)}
                 placeholder="Seriennummern hier eingeben...&#10;Beispiel:&#10;047924271453&#10;201737 01567&#10;010242571153"
-                rows={10}
+                rows={8}
                 className={`w-full px-4 py-2 rounded-lg border font-mono text-sm ${
                   theme === 'dark'
                     ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
@@ -269,11 +269,56 @@ const DataCheckPage = () => {
                 }`}
               />
               <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                {serialNumbers.split('\n').filter(s => s.trim()).length} Seriennummern eingegeben
+                {serialNumbers.split('\n').filter(s => s.trim()).length} Seriennummern
               </p>
             </div>
 
-            {/* File Upload */}
+            {/* Licensed Serials */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Aktivierte Lizenzen (eine pro Zeile)
+              </label>
+              <textarea
+                value={licensedSerials}
+                onChange={(e) => setLicensedSerials(e.target.value)}
+                placeholder="Lizenzen hier eingeben...&#10;Beispiel:&#10;047924271453&#10;201737 01567"
+                rows={8}
+                className={`w-full px-4 py-2 rounded-lg border font-mono text-sm ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                }`}
+              />
+              <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                {licensedSerials.split('\n').filter(s => s.trim()).length} Lizenzen
+              </p>
+            </div>
+
+            {/* Warehouse Scanners */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Scanner auf Lager (eine pro Zeile)
+              </label>
+              <textarea
+                value={warehouseSerials}
+                onChange={(e) => setWarehouseSerials(e.target.value)}
+                placeholder="Scanner-SNs hier eingeben...&#10;Beispiel:&#10;201743 00735&#10;201820 00651"
+                rows={8}
+                className={`w-full px-4 py-2 rounded-lg border font-mono text-sm ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
+                }`}
+              />
+              <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                {warehouseSerials.split('\n').filter(s => s.trim()).length} Scanner
+              </p>
+            </div>
+          </div>
+
+          {/* File Upload */}
+          <div className="mt-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">{/* File Upload */}
             <div>
               <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                 CSV/TXT Datei importieren
