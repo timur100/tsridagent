@@ -22,6 +22,18 @@ tsrid_db = client['tsrid_db']
 class DataCheckRequest(BaseModel):
     serial_numbers: List[str]
 
+class SetIDConfigPart(BaseModel):
+    key: str
+    label: str
+    description: str
+    example: str
+
+class SetIDConfig(BaseModel):
+    format: str
+    parts: List[SetIDConfigPart]
+    separator: str
+
+
 
 @router.post("/data-check")
 async def run_data_check(
