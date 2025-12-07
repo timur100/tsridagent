@@ -621,7 +621,7 @@ async def parking_entry_with_ocr(
         license_plate = ocr_result['license_plate']
         
         # Check if vehicle already has active entry
-        existing_entry = await db.parking_entries.find_one({
+        existing_entry = db.parking_entries.find_one({
             'license_plate': license_plate,
             'exit_time': None
         })
@@ -644,7 +644,7 @@ async def parking_entry_with_ocr(
             'image_name': file.filename
         }
         
-        result = await db.parking_entries.insert_one(parking_entry)
+        result = db.parking_entries.insert_one(parking_entry)
         parking_entry['_id'] = str(result.inserted_id)
         
         return {
