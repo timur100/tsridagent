@@ -228,6 +228,10 @@ const LicensePlateRecognition = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    // Wenn im Webcam-Modus, Kamera neu starten
+    if (inputMode === 'webcam') {
+      startCamera();
+    }
   };
 
   return (
