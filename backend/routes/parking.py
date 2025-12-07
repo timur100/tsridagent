@@ -7,6 +7,12 @@ import os
 from pymongo import MongoClient
 from bson import ObjectId
 import base64
+import pytesseract
+from PIL import Image
+import cv2
+import numpy as np
+import io
+import re
 
 router = APIRouter(prefix="/api/parking", tags=["parking"])
 
