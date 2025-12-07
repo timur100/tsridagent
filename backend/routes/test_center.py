@@ -533,6 +533,20 @@ async def get_validation_stats(
 ):
     """Get overall data validation statistics"""
     try:
+        # Get device counts
+        europcar_total = await multi_tenant_db.europcar_devices.count_documents({})
+        hardware_total = await tsrid_db.hardware.count_documents({})
+        
+        return {
+            'success': True,
+            'data': {
+                'europcar_devices': europcar_total,
+                'hardware_devices': hardware_total,
+                'total': europcar_total + hardware_total
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/ai-search")
