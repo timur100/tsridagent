@@ -213,6 +213,54 @@ async def calculate_device_statistics(results, config):
     return stats
 
 
+
+def compare_serial_lists(main_serials, licensed_serials, warehouse_serials, results):
+    """
+    Compare three serial lists and return insights
+    - Which devices have licenses
+    - Which scanners are in warehouse vs. active
+    - Missing items across lists
+    """
+    # Convert to sets for easy comparison
+    main_set = set(sn.strip() for sn in main_serials if sn.strip())
+    licensed_set = set(sn.strip() for sn in licensed_serials if sn.strip())
+    warehouse_set = set(sn.strip() for sn in warehouse_serials if sn.strip())
+    
+    # Get all found devices from results
+    found_devices = set()
+    for category, items in results.items():
+        for item in items:
+            sn = item.get('serial_number', '').strip()
+            if sn:
+                found_devices.add(sn)
+            # Also check component SNs
+            for key in ['sn_pc', 'sn_scanner', 'sn_docking', 'sn_power']:
+                comp_sn = item.get(key, '').strip()
+                if comp_sn:
+                    found_devices.add(comp_sn)
+    
+    comparison = {
+        'licensed': {
+            'total': len(licensed_set),
+            'active': list(licensed_set & found_devices),
+            'not_found': list(licensed_set - found_devices)
+        },
+        'warehouse': {
+            'total': len(warehouse_set),
+            'in_use': list(warehouse_set & found_devices),
+            'available': list(warehouse_set - found_devices)
+        },
+        'cross_check': {
+            'licensed_and_active': list(licensed_set & main_set),
+            'licensed_but_not_active': list(licensed_set - main_set),
+            'warehouse_but_active': list(warehouse_set & found_devices),
+            'warehouse_and_not_in_main': list(warehouse_set - main_set)
+        }
+    }
+    
+    return comparison
+
+
 async def generate_set_id(location_code, set_number, set_type_id, config):
     """
     Generate Set-ID based on configuration
