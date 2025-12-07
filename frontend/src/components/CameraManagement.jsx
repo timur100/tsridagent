@@ -329,11 +329,35 @@ const CameraManagement = () => {
                 <div className="absolute top-0 left-0 w-full h-full">
                   <WebRTCPlayer
                     streamName="testbuero"
+                    cameraIp={viewingCamera.ip_address}
+                    cameraPort={viewingCamera.port || 554}
                     onError={(error) => {
                       console.error('[Camera] WebRTC error:', error);
-                      toast.error('Kamera-Stream konnte nicht geladen werden');
                     }}
                   />
+                </div>
+              </div>
+              
+              {/* Network Info Card */}
+              <div className={`mt-4 p-4 rounded-lg border ${
+                theme === 'dark' ? 'bg-yellow-900 border-yellow-700 text-yellow-200' : 'bg-yellow-50 border-yellow-200 text-yellow-800'
+              }`}>
+                <div className="flex items-start gap-3">
+                  <svg className="h-6 w-6 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div>
+                    <p className="font-semibold mb-1">Netzwerk-Hinweis</p>
+                    <p className="text-sm">
+                      Die Kamera ({viewingCamera.ip_address}:{viewingCamera.port || 554}) ist vom Backend-Server nicht direkt erreichbar. 
+                      Für Live-Streaming benötigen Sie:
+                    </p>
+                    <ul className="text-sm mt-2 space-y-1 list-disc list-inside">
+                      <li>VPN-Verbindung zum Kamera-Netzwerk, oder</li>
+                      <li>Port-Forwarding für RTSP (Port 554), oder</li>
+                      <li>WebRTC-Gateway im gleichen Netzwerk</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
               <div className={`mt-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'}`}>
