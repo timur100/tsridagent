@@ -218,7 +218,8 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
             {/* Sub-items */}
             {!collapsed && expandedCategories.includes(category.id) && (
               <div className="ml-8 mt-1 space-y-1">
-                {category.items.map((item) => (
+                {console.log(`[RnDSidebar] Rendering items for category: ${category.id}, items count: ${category.items?.length}`)}
+                {category.items && category.items.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => onSectionChange(item.id)}
