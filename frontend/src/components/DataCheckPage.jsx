@@ -14,6 +14,7 @@ const DataCheckPage = () => {
   const { theme } = useTheme();
   const { apiCall } = useAuth();
   
+  const [activeTab, setActiveTab] = useState('validation');
   const [serialNumbers, setSerialNumbers] = useState('');
   const [importedFile, setImportedFile] = useState(null);
   const [testResults, setTestResults] = useState(null);
