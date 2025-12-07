@@ -26,6 +26,13 @@ const LicensePlateRecognition = () => {
   // Webcam starten
   const startCamera = async () => {
     try {
+      console.log('[Webcam] Requesting camera access...');
+      
+      // Check if getUserMedia is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia not supported (HTTPS required)');
+      }
+      
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { 
           facingMode: 'environment',
@@ -33,15 +40,35 @@ const LicensePlateRecognition = () => {
           height: { ideal: 720 }
         } 
       });
+      
+      console.log('[Webcam] Camera access granted');
+      
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.play();
         setIsCameraActive(true);
         setCameraError(null);
+        toast.success('Kamera gestartet');
       }
     } catch (error) {
-      console.error('Kamera-Zugriff fehlgeschlagen:', error);
-      setCameraError('Kamera-Zugriff fehlgeschlagen. Bitte überprüfen Sie die Berechtigungen.');
-      toast.error('Kamera-Zugriff fehlgeschlagen');
+      console.error('[Webcam] Camera access failed:', error);
+      
+      let errorMessage = 'Kamera-Zugriff fehlgeschlagen. ';
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage += 'Berechtigung verweigert. Bitte erlauben Sie den Kamera-Zugriff in Ihren Browser-Einstellungen.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage += 'Keine Kamera gefunden. Bitte schließen Sie eine Kamera an.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage += 'Kamera wird bereits von einer anderen Anwendung verwendet.';
+      } else if (error.message.includes('HTTPS')) {
+        errorMessage += 'HTTPS erforderlich. Webcam funktioniert nur über sichere Verbindungen.';
+      } else {
+        errorMessage += error.message || 'Unbekannter Fehler.';
+      }
+      
+      setCameraError(errorMessage);
+      toast.error('Kamera konnte nicht gestartet werden');
     }
   };
 
