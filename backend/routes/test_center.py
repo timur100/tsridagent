@@ -274,3 +274,70 @@ async def get_validation_stats(
     except Exception as e:
         print(f"[TestCenter] Error getting validation stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/setid-config")
+async def save_setid_config(
+    config: SetIDConfig,
+    token_data: dict = Depends(verify_token)
+):
+    """Save Set-ID format configuration"""
+    try:
+        config_data = {
+            'format': config.format,
+            'parts': [part.dict() for part in config.parts],
+            'separator': config.separator,
+            'updated_at': datetime.now(timezone.utc).isoformat(),
+            'updated_by': token_data.get('email', 'unknown')
+        }
+        
+        # Upsert configuration (only one config document)
+        await db.setid_config.update_one(
+            {'config_type': 'default'},
+            {'$set': config_data},
+            upsert=True
+        )
+        
+        return {
+            'success': True,
+            'message': 'Set-ID Konfiguration gespeichert',
+            'data': config_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/setid-config")
+async def get_setid_config(
+    token_data: dict = Depends(verify_token)
+):
+    """Get Set-ID format configuration"""
+    try:
+        config = await db.setid_config.find_one(
+            {'config_type': 'default'},
+            {'_id': 0}
+        )
+        
+        if not config:
+            # Return default configuration
+            default_config = {
+                'format': 'LOCATIONCODE-SETNUMBER-SERIALNUMBER',
+                'parts': [
+                    {'key': 'LOCATIONCODE', 'label': 'Standortcode', 'description': 'z.B. BERT01', 'example': 'BERT01'},
+                    {'key': 'SETNUMBER', 'label': 'Set-Nummer', 'description': 'z.B. 01', 'example': '01'},
+                    {'key': 'SERIALNUMBER', 'label': 'Seriennummer', 'description': 'z.B. S1', 'example': 'S1'}
+                ],
+                'separator': '-'
+            }
+            return {
+                'success': True,
+                'data': default_config
+            }
+        
+        return {
+            'success': True,
+            'data': config
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
