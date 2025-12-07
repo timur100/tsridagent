@@ -875,14 +875,14 @@ class LicensePlateOCRTester:
             return False
 
     async def run_all_tests(self):
-        """Run all Mobility Services API tests"""
+        """Run all License Plate Recognition OCR API tests"""
         print("=" * 80)
-        print("MOBILITY SERVICES PHASE 1 COMPREHENSIVE API TESTING")
+        print("LICENSE PLATE RECOGNITION OCR COMPREHENSIVE API TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: Multi-modal mobility booking system with 20+ endpoints")
-        print(f"Database: main_db collections: mobility_vehicles, mobility_locations, mobility_bookings")
-        print("Test Data: tenant_id=test-tenant, Berlin Hauptbahnhof location, Tesla Model 3 vehicle")
+        print(f"Testing APIs: License Plate Recognition OCR for parking management system")
+        print(f"Database: verification_db collections: license_plate_recognitions, parking_entries")
+        print("Test Data: /tmp/test_plate.jpg (contains 'B-MW 1234'), admin@tsrid.com authentication")
         print("=" * 80)
         print()
         
@@ -894,38 +894,39 @@ class LicensePlateOCRTester:
                 return
             print()
             
-            # Step 2: Test Location Management
-            print("📍 STEP 2: Location Management APIs")
-            self.test_create_location_api()
+            # Step 2: Test OCR Recognition
+            print("🔍 STEP 2: License Plate OCR Recognition")
+            self.test_recognize_plate_api()
             print()
             
-            # Step 3: Test Vehicle Management
-            print("🚗 STEP 3: Vehicle Management APIs")
-            self.test_create_vehicle_api()
-            self.test_get_vehicles_api()
-            self.test_vehicle_filtering_apis()
+            # Step 3: Test Entry with OCR
+            print("🚗 STEP 3: Parking Entry with OCR")
+            self.test_entry_with_ocr_api()
             print()
             
-            # Step 4: Test Booking System
-            print("📋 STEP 4: Booking System APIs")
-            self.test_create_booking_api()
+            # Step 4: Test Exit with OCR
+            print("🚪 STEP 4: Parking Exit with OCR")
+            self.test_exit_with_ocr_api()
             print()
             
-            # Step 5: Test Check-in/Check-out
-            print("✅ STEP 5: Check-in/Check-out APIs")
-            self.test_check_in_api()
-            self.test_check_out_api()
+            # Step 5: Test Recognition History
+            print("📋 STEP 5: OCR Recognition History")
+            self.test_recognition_history_api()
             print()
             
-            # Step 6: Test Additional Features
-            print("⚡ STEP 6: Additional Features APIs")
-            self.test_availability_check_api()
-            self.test_calculate_price_api()
-            self.test_get_statistics_api()
+            # Step 6: Test Parking Management APIs
+            print("📊 STEP 6: Parking Management APIs")
+            self.test_active_sessions_api()
+            self.test_parking_stats_api()
             print()
             
-            # Step 7: Test MongoDB Persistence
-            print("💾 STEP 7: MongoDB Persistence Verification")
+            # Step 7: Test Error Cases
+            print("⚠️ STEP 7: Error Case Testing")
+            self.test_error_cases()
+            print()
+            
+            # Step 8: Test MongoDB Persistence
+            print("💾 STEP 8: MongoDB Persistence Verification")
             self.test_mongodb_persistence()
             print()
             
