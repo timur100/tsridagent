@@ -12,6 +12,8 @@ const CameraManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingCamera, setEditingCamera] = useState(null);
+  const [viewingCamera, setViewingCamera] = useState(null);
+  const [showLiveView, setShowLiveView] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     location: '',
