@@ -158,14 +158,29 @@ class MobilityServicesTester:
             )
             return False
 
-    def test_get_tenants_list_api(self):
-        """Test GET /api/quick-menu/tenants/list - Should return 3 tenants: europcar, tsrid, demo"""
+    def test_create_location_api(self):
+        """Test POST /api/mobility/locations?tenant_id=test-tenant - Create location"""
         try:
-            response = self.session.get(f"{API_BASE}/quick-menu/tenants/list")
+            # Location test data as specified in review request
+            location_data = {
+                "name": "Berlin Hauptbahnhof",
+                "address": "Europaplatz 1",
+                "city": "Berlin",
+                "postal_code": "10557",
+                "country": "Deutschland",
+                "lat": 52.5251,
+                "lng": 13.3694,
+                "location_type": "station",
+                "operating_hours": {"open": "06:00", "close": "22:00"},
+                "available_vehicle_types": ["car", "e_bike", "e_scooter"],
+                "active": True
+            }
+            
+            response = self.session.post(f"{API_BASE}/mobility/locations?tenant_id=test-tenant", json=location_data)
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Tenants List API",
+                    "POST Create Location API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -174,89 +189,63 @@ class MobilityServicesTester:
             
             data = response.json()
             
-            # Verify response structure
+            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Tenants List API",
+                    "POST Create Location API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check data structure
-            if "tenants" not in data:
+            # Check response structure
+            if "data" not in data:
                 self.log_result(
-                    "GET Tenants List API",
+                    "POST Create Location API",
                     False,
-                    "Missing 'tenants' field in response",
+                    "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            tenants = data["tenants"]
+            location = data["data"]
             
-            # Verify tenants is a list
-            if not isinstance(tenants, list):
-                self.log_result(
-                    "GET Tenants List API",
-                    False,
-                    f"Tenants should be a list, got {type(tenants)}",
-                    data
-                )
-                return False
-            
-            # Check expected count (should be 3 tenants)
-            expected_count = 3
-            actual_count = len(tenants)
-            
-            if actual_count != expected_count:
-                self.log_result(
-                    "GET Tenants List API",
-                    False,
-                    f"Expected {expected_count} tenants, got {actual_count}",
-                    data
-                )
-                return False
-            
-            # Verify tenant structure and expected tenants
-            expected_tenant_ids = ["tenant-europcar", "tenant-tsrid", "tenant-demo"]
-            found_tenant_ids = []
-            
-            for tenant in tenants:
-                required_fields = ["id", "name", "domain"]
-                for field in required_fields:
-                    if field not in tenant:
-                        self.log_result(
-                            "GET Tenants List API",
-                            False,
-                            f"Missing required field in tenant: {field}",
-                            data
-                        )
-                        return False
-                found_tenant_ids.append(tenant["id"])
-            
-            # Check if all expected tenants are present
-            for expected_id in expected_tenant_ids:
-                if expected_id not in found_tenant_ids:
+            # Verify location structure and data
+            required_fields = ["id", "tenant_id", "name", "address", "city", "lat", "lng", "created_at", "updated_at"]
+            for field in required_fields:
+                if field not in location:
                     self.log_result(
-                        "GET Tenants List API",
+                        "POST Create Location API",
                         False,
-                        f"Expected tenant '{expected_id}' not found in response",
+                        f"Missing required field in location: {field}",
                         data
                     )
                     return False
             
+            # Verify the data matches what we sent
+            if location["name"] != location_data["name"]:
+                self.log_result(
+                    "POST Create Location API",
+                    False,
+                    f"Name mismatch: expected {location_data['name']}, got {location['name']}",
+                    data
+                )
+                return False
+            
+            # Store location_id for later tests
+            self.created_location_id = location["id"]
+            
             self.log_result(
-                "GET Tenants List API",
+                "POST Create Location API",
                 True,
-                f"Successfully retrieved {actual_count} tenants: {', '.join(found_tenant_ids)}"
+                f"Successfully created location '{location['name']}' with ID {location['id']} in {location['city']}"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Tenants List API",
+                "POST Create Location API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
