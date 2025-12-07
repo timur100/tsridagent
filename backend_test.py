@@ -541,45 +541,14 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_check_in_api(self):
-        """Test POST /api/mobility/bookings/{booking_id}/check-in - Check-in with odometer/fuel data"""
+    def test_active_sessions_api(self):
+        """Test GET /api/parking/active - Get active parking sessions"""
         try:
-            # Use the booking_id from the create booking test
-            if not hasattr(self, 'created_booking_id'):
-                self.log_result(
-                    "POST Check-in API",
-                    False,
-                    "No booking_id available from create booking test. Run create booking test first.",
-                    None
-                )
-                return False
-            
-            if not hasattr(self, 'created_location_id'):
-                self.log_result(
-                    "POST Check-in API",
-                    False,
-                    "No location_id available from create location test. Run create location test first.",
-                    None
-                )
-                return False
-            
-            # Check-in data
-            checkin_data = {
-                "booking_id": self.created_booking_id,
-                "action": "check_in",
-                "location_id": self.created_location_id,
-                "odometer_reading": 50000,
-                "fuel_level": 95,
-                "battery_level": 100,
-                "damage_reported": False,
-                "notes": "Vehicle in excellent condition"
-            }
-            
-            response = self.session.post(f"{API_BASE}/mobility/bookings/{self.created_booking_id}/check-in", json=checkin_data)
+            response = self.session.get(f"{API_BASE}/parking/active")
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Check-in API",
+                    "GET Active Sessions API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -591,7 +560,7 @@ class LicensePlateOCRTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Check-in API",
+                    "GET Active Sessions API",
                     False,
                     "Response indicates failure",
                     data
@@ -601,45 +570,74 @@ class LicensePlateOCRTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Check-in API",
+                    "GET Active Sessions API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            booking = data["data"]
+            session_data = data["data"]
             
-            # Verify booking status changed to active
-            if booking["status"] != "active":
+            # Verify session data structure
+            required_fields = ["active_count", "sessions"]
+            for field in required_fields:
+                if field not in session_data:
+                    self.log_result(
+                        "GET Active Sessions API",
+                        False,
+                        f"Missing required field in session data: {field}",
+                        data
+                    )
+                    return False
+            
+            active_count = session_data["active_count"]
+            sessions = session_data["sessions"]
+            
+            # Verify sessions is a list
+            if not isinstance(sessions, list):
                 self.log_result(
-                    "POST Check-in API",
+                    "GET Active Sessions API",
                     False,
-                    f"Expected booking status 'active', got '{booking['status']}'",
+                    f"Sessions should be a list, got {type(sessions)}",
                     data
                 )
                 return False
             
-            # Verify check-in data was recorded
-            if "check_in_time" not in booking:
+            # Verify count matches array length
+            if active_count != len(sessions):
                 self.log_result(
-                    "POST Check-in API",
+                    "GET Active Sessions API",
                     False,
-                    "Missing 'check_in_time' field in booking",
+                    f"Active count mismatch: count={active_count}, array length={len(sessions)}",
                     data
                 )
                 return False
+            
+            # If there are active sessions, verify structure
+            if sessions:
+                session = sessions[0]
+                required_session_fields = ["session_id", "license_plate", "entry_time", "status", "current_duration_minutes"]
+                for field in required_session_fields:
+                    if field not in session:
+                        self.log_result(
+                            "GET Active Sessions API",
+                            False,
+                            f"Missing required field in session: {field}",
+                            data
+                        )
+                        return False
             
             self.log_result(
-                "POST Check-in API",
+                "GET Active Sessions API",
                 True,
-                f"Successfully checked in booking {self.created_booking_id}, status changed to '{booking['status']}'"
+                f"Successfully retrieved {active_count} active parking sessions"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Check-in API",
+                "GET Active Sessions API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
