@@ -142,13 +142,19 @@ const WebRTCPlayer = ({ streamName, cameraIp, cameraPort, onError }) => {
       )}
       
       {status === 'error' && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="text-center text-white">
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-90">
+          <div className="text-center text-white px-6 max-w-md">
             <svg className="h-16 w-16 mb-4 text-red-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            <p className="text-lg font-semibold mb-2">Verbindung fehlgeschlagen</p>
-            <p className="text-sm text-gray-400">Erneuter Versuch in 3 Sekunden...</p>
+            <p className="text-lg font-semibold mb-2">Stream nicht verfügbar</p>
+            <p className="text-sm text-gray-300 mb-4">{errorMessage || 'Verbindung fehlgeschlagen'}</p>
+            {cameraIp && (
+              <div className="text-xs text-gray-400 bg-gray-800 rounded px-3 py-2">
+                <p className="mb-1">Kamera: {cameraIp}:{cameraPort || 554}</p>
+                <p>Protokoll: RTSP → WebRTC (go2rtc)</p>
+              </div>
+            )}
           </div>
         </div>
       )}
