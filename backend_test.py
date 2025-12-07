@@ -1,44 +1,23 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - MOBILITY SERVICES PHASE 1 COMPREHENSIVE TESTING
-Tests Mobility Services Backend APIs for multi-modal mobility booking system:
+Backend API Testing Suite - LICENSE PLATE RECOGNITION OCR COMPREHENSIVE TESTING
+Tests License Plate Recognition OCR Backend APIs for parking management system:
 
-VEHICLE MANAGEMENT APIs (8 endpoints):
-- POST /api/mobility/vehicles?tenant_id=test-tenant - Create vehicle
-- GET /api/mobility/vehicles?tenant_id=test-tenant - Get all vehicles
-- GET /api/mobility/vehicles?tenant_id=test-tenant&vehicle_type=car - Filter by type
-- GET /api/mobility/vehicles?tenant_id=test-tenant&available_only=true - Filter available only
-- GET /api/mobility/vehicles/{vehicle_id} - Get single vehicle
-- PUT /api/mobility/vehicles/{vehicle_id} - Update vehicle
-- PATCH /api/mobility/vehicles/{vehicle_id}/status?status=maintenance - Update status
-- DELETE /api/mobility/vehicles/{vehicle_id} - Delete vehicle
+OCR RECOGNITION APIs (4 endpoints):
+- POST /api/parking/recognize-plate - OCR recognition with image upload
+- POST /api/parking/entry-with-ocr - Entry with automatic OCR recognition
+- POST /api/parking/exit-with-ocr - Exit with automatic OCR recognition
+- GET /api/parking/recognition-history - Get OCR recognition history
 
-LOCATION MANAGEMENT APIs (5 endpoints):
-- POST /api/mobility/locations?tenant_id=test-tenant - Create location
-- GET /api/mobility/locations?tenant_id=test-tenant - Get all locations
-- GET /api/mobility/locations/{location_id} - Get single location with vehicle counts
-- PUT /api/mobility/locations/{location_id} - Update location
-- DELETE /api/mobility/locations/{location_id} - Delete location
-
-BOOKING SYSTEM APIs (5 endpoints):
-- POST /api/mobility/bookings?tenant_id=test-tenant - Create booking
-- GET /api/mobility/bookings?tenant_id=test-tenant - Get all bookings
-- GET /api/mobility/bookings/{booking_id} - Get single booking with enriched data
-- PATCH /api/mobility/bookings/{booking_id}/status?status=active - Update status
-- DELETE /api/mobility/bookings/{booking_id} - Cancel booking
-
-CHECK-IN/CHECK-OUT APIs (2 endpoints):
-- POST /api/mobility/bookings/{booking_id}/check-in - Check-in with odometer/fuel data
-- POST /api/mobility/bookings/{booking_id}/check-out - Check-out with cost calculation
-
-ADDITIONAL FEATURES (3 endpoints):
-- GET /api/mobility/availability?tenant_id=test-tenant&vehicle_type=car&start_time=2025-12-01T10:00:00&end_time=2025-12-01T18:00:00 - Check availability
-- POST /api/mobility/calculate-price - Calculate price for booking
-- GET /api/mobility/statistics?tenant_id=test-tenant - Get statistics dashboard
+PARKING MANAGEMENT APIs (additional endpoints):
+- GET /api/parking/active - Get active parking sessions
+- GET /api/parking/sessions - Get parking session history
+- GET /api/parking/stats - Get parking statistics
 
 Test Data:
-- Tenant ID: test-tenant
+- Test image: /tmp/test_plate.jpg (contains "B-MW 1234")
 - Authentication: admin@tsrid.com / admin123
+- Expected OCR result: "B-MW1234" or similar
 """
 
 import requests
