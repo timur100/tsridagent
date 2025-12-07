@@ -42,6 +42,72 @@ class SetType(BaseModel):
 
 class SetIDConfig(BaseModel):
     format: str
+
+import re
+
+async def get_set_id_config():
+    """Get Set-ID configuration from database"""
+    config = await db.setid_config.find_one(
+        {'config_type': 'default'},
+        {'_id': 0}
+    )
+    return config
+
+async def identify_set_type(serial_numbers, config):
+    """
+    Identify set type based on serial number patterns
+    Returns: (set_type_id, matched_components) or (None, {})
+    """
+    if not config or 'setTypes' not in config:
+        return None, {}
+    
+    for set_type in config['setTypes']:
+        matched = {}
+        for component in set_type['components']:
+            pattern = component['pattern']
+            comp_type = component['type']
+            
+            # Try to match any serial number against this pattern
+            for sn in serial_numbers:
+                sn_clean = sn.strip()
+                try:
+                    if re.match(pattern, sn_clean):
+                        matched[comp_type] = sn_clean
+                        break
+                except:
+                    pass
+        
+        # If we matched all required components, return this set type
+        required_types = set(comp['type'] for comp in set_type['components'])
+        if matched and set(matched.keys()) == required_types:
+            return set_type['id'], matched
+    
+    return None, {}
+
+async def generate_set_id(location_code, set_number, set_type_id, config):
+    """
+    Generate Set-ID based on configuration
+    Example: BERT01-01-S1
+    """
+    if not config:
+        return None
+    
+    separator = config.get('separator', '-')
+    parts = config.get('parts', [])
+    
+    # Build Set-ID from parts
+    id_parts = []
+    for part in parts:
+        key = part.get('key', '')
+        if key == 'LOCATIONCODE':
+            id_parts.append(location_code)
+        elif key == 'SETNUMBER':
+            id_parts.append(set_number)
+        elif key == 'SETTYPE':
+            id_parts.append(set_type_id or '')
+    
+    return separator.join(filter(None, id_parts))
+
     parts: List[SetIDConfigPart]
     separator: str
     setTypes: List[SetType] = []
