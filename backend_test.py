@@ -1081,15 +1081,15 @@ class MobilityServicesTester:
                 )
                 return False
             
-            # Price calculation data
-            price_data = {
+            # Price calculation data as query parameters
+            params = {
                 "vehicle_id": self.created_vehicle_id,
                 "start_time": "2025-12-01T10:00:00",
                 "end_time": "2025-12-01T18:00:00",
                 "estimated_distance_km": 150
             }
             
-            response = self.session.post(f"{API_BASE}/mobility/calculate-price", json=price_data)
+            response = self.session.post(f"{API_BASE}/mobility/calculate-price", params=params)
             
             if response.status_code != 200:
                 self.log_result(
