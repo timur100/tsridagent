@@ -1,24 +1,44 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - QUICK MENU FEATURE TESTING
-Tests Quick Menu Backend APIs for tenant-specific customizable tiles (shortcuts):
+Backend API Testing Suite - MOBILITY SERVICES PHASE 1 COMPREHENSIVE TESTING
+Tests Mobility Services Backend APIs for multi-modal mobility booking system:
 
-Tiles Endpoints:
-- POST /api/quick-menu/tiles/create - Create a new tile
-- GET /api/quick-menu/tiles/tenant/{tenant_id} - Get all tiles for a tenant  
-- PUT /api/quick-menu/tiles/update/{tile_id} - Update a tile
-- DELETE /api/quick-menu/tiles/delete/{tile_id} - Delete a tile
+VEHICLE MANAGEMENT APIs (8 endpoints):
+- POST /api/mobility/vehicles?tenant_id=test-tenant - Create vehicle
+- GET /api/mobility/vehicles?tenant_id=test-tenant - Get all vehicles
+- GET /api/mobility/vehicles?tenant_id=test-tenant&vehicle_type=car - Filter by type
+- GET /api/mobility/vehicles?tenant_id=test-tenant&available_only=true - Filter available only
+- GET /api/mobility/vehicles/{vehicle_id} - Get single vehicle
+- PUT /api/mobility/vehicles/{vehicle_id} - Update vehicle
+- PATCH /api/mobility/vehicles/{vehicle_id}/status?status=maintenance - Update status
+- DELETE /api/mobility/vehicles/{vehicle_id} - Delete vehicle
 
-Config Endpoints:
-- GET /api/quick-menu/config/tenant/{tenant_id} - Get config for a tenant
-- PUT /api/quick-menu/config/update/{tenant_id} - Update config for a tenant
+LOCATION MANAGEMENT APIs (5 endpoints):
+- POST /api/mobility/locations?tenant_id=test-tenant - Create location
+- GET /api/mobility/locations?tenant_id=test-tenant - Get all locations
+- GET /api/mobility/locations/{location_id} - Get single location with vehicle counts
+- PUT /api/mobility/locations/{location_id} - Update location
+- DELETE /api/mobility/locations/{location_id} - Delete location
 
-Utility Endpoints:
-- GET /api/quick-menu/tenants/list - Get list of all tenants
+BOOKING SYSTEM APIs (5 endpoints):
+- POST /api/mobility/bookings?tenant_id=test-tenant - Create booking
+- GET /api/mobility/bookings?tenant_id=test-tenant - Get all bookings
+- GET /api/mobility/bookings/{booking_id} - Get single booking with enriched data
+- PATCH /api/mobility/bookings/{booking_id}/status?status=active - Update status
+- DELETE /api/mobility/bookings/{booking_id} - Cancel booking
+
+CHECK-IN/CHECK-OUT APIs (2 endpoints):
+- POST /api/mobility/bookings/{booking_id}/check-in - Check-in with odometer/fuel data
+- POST /api/mobility/bookings/{booking_id}/check-out - Check-out with cost calculation
+
+ADDITIONAL FEATURES (3 endpoints):
+- GET /api/mobility/availability?tenant_id=test-tenant&vehicle_type=car&start_time=2025-12-01T10:00:00&end_time=2025-12-01T18:00:00 - Check availability
+- POST /api/mobility/calculate-price - Calculate price for booking
+- GET /api/mobility/statistics?tenant_id=test-tenant - Get statistics dashboard
 
 Test Data:
-- Tenant ID: tenant-europcar (Europcar Deutschland)
-- Alternative tenant: tenant-tsrid (TSRID GmbH)
+- Tenant ID: test-tenant
+- Authentication: admin@tsrid.com / admin123
 """
 
 import requests
