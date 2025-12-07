@@ -428,13 +428,35 @@ async def get_setid_config(
         if not config:
             # Return default configuration
             default_config = {
-                'format': 'LOCATIONCODE-SETNUMBER-SERIALNUMBER',
+                'format': 'LOCATIONCODE-SETNUMBER-SETTYPE',
                 'parts': [
                     {'key': 'LOCATIONCODE', 'label': 'Standortcode', 'description': 'z.B. BERT01', 'example': 'BERT01'},
                     {'key': 'SETNUMBER', 'label': 'Set-Nummer', 'description': 'z.B. 01', 'example': '01'},
-                    {'key': 'SERIALNUMBER', 'label': 'Seriennummer', 'description': 'z.B. S1', 'example': 'S1'}
+                    {'key': 'SETTYPE', 'label': 'Set-Typ', 'description': 'z.B. S1', 'example': 'S1'}
                 ],
-                'separator': '-'
+                'separator': '-',
+                'setTypes': [
+                    {
+                        'id': 'S1',
+                        'name': 'Microsoft Surface Set',
+                        'description': 'Surface + Desko Scanner + Desko Dockingstation',
+                        'components': [
+                            {'type': 'PC', 'label': 'Microsoft Surface', 'pattern': '^\\d{12}$', 'example': '033341763753'},
+                            {'type': 'Scanner', 'label': 'Desko Scanner', 'pattern': '^\\d{6}\\s\\d{5}$', 'example': '201743 00735'},
+                            {'type': 'Dockingstation', 'label': 'Desko Dockingstation', 'pattern': '^\\d{6}\\s\\d{5}$', 'example': '201743 00736'}
+                        ]
+                    },
+                    {
+                        'id': 'S2',
+                        'name': 'TSRID Tablet Set',
+                        'description': 'TSRID Tablet + TSRID Scanner + Dockingstation',
+                        'components': [
+                            {'type': 'PC', 'label': 'TSRID Tablet', 'pattern': '^[A-Z0-9]{13}$', 'example': '7E81054BA3550'},
+                            {'type': 'Scanner', 'label': 'TSRID Scanner', 'pattern': '^[A-Z0-9]{13}$', 'example': '7E81054BA3559'},
+                            {'type': 'Dockingstation', 'label': 'Dockingstation', 'pattern': '^[A-Z0-9]{13}$', 'example': '7E81054BA3560'}
+                        ]
+                    }
+                ]
             }
             return {
                 'success': True,
