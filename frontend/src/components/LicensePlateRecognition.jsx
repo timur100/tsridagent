@@ -23,6 +23,74 @@ const LicensePlateRecognition = () => {
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [cameraError, setCameraError] = useState(null);
 
+  // Webcam starten
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          facingMode: 'environment',
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        } 
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        setIsCameraActive(true);
+        setCameraError(null);
+      }
+    } catch (error) {
+      console.error('Kamera-Zugriff fehlgeschlagen:', error);
+      setCameraError('Kamera-Zugriff fehlgeschlagen. Bitte überprüfen Sie die Berechtigungen.');
+      toast.error('Kamera-Zugriff fehlgeschlagen');
+    }
+  };
+
+  // Webcam stoppen
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
+      setIsCameraActive(false);
+    }
+  };
+
+  // Foto aufnehmen
+  const capturePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    
+    const context = canvas.getContext('2d');
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    
+    canvas.toBlob((blob) => {
+      const file = new File([blob], 'webcam-capture.jpg', { type: 'image/jpeg' });
+      setSelectedImage(file);
+      setImagePreview(canvas.toDataURL('image/jpeg'));
+      setRecognitionResult(null);
+      stopCamera();
+      toast.success('Foto aufgenommen');
+    }, 'image/jpeg', 0.95);
+  };
+
+  // Webcam automatisch starten wenn Webcam-Modus aktiviert wird
+  useEffect(() => {
+    if (inputMode === 'webcam') {
+      startCamera();
+    } else {
+      stopCamera();
+    }
+    
+    return () => {
+      stopCamera();
+    };
+  }, [inputMode]);
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file) {
