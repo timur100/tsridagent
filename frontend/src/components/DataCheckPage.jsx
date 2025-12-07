@@ -92,6 +92,12 @@ const DataCheckPage = () => {
     setActiveFilter('all');
   };
 
+  const handleLoadExamples = () => {
+    const exampleSerials = '047924271453\n201737 01567\n010242571153';
+    setSerialNumbers(exampleSerials);
+    toast.success('Beispieldaten geladen');
+  };
+
   const handleExportResults = () => {
     if (!testResults) return;
 
