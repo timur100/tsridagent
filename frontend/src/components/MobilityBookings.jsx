@@ -38,10 +38,12 @@ const MobilityBookings = ({ tenantId }) => {
       }
       
       const response = await apiCall(url);
-      setBookings(response.data || []);
+      const bookingData = response?.data || response || [];
+      setBookings(Array.isArray(bookingData) ? bookingData : []);
     } catch (error) {
       console.error('Error loading bookings:', error);
       toast.error('Fehler beim Laden der Buchungen');
+      setBookings([]);
     } finally {
       setLoading(false);
     }
