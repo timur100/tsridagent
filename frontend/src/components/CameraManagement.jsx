@@ -297,6 +297,66 @@ const CameraManagement = () => {
         </table>
       </div>
 
+      {/* Live View Modal */}
+      {showLiveView && viewingCamera && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-75">
+          <div className={`w-full max-w-5xl rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+            {/* Modal Header */}
+            <div className={`flex justify-between items-center p-4 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <div>
+                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Live-Ansicht: {viewingCamera.name}
+                </h3>
+                <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {viewingCamera.location} • {viewingCamera.ip_address}
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowLiveView(false);
+                  setViewingCamera(null);
+                }}
+                className={`text-gray-500 hover:text-gray-700 ${theme === 'dark' ? 'hover:text-gray-300' : ''}`}
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            {/* Modal Body - Video Stream */}
+            <div className="p-4">
+              <div className="relative bg-black rounded-lg overflow-hidden" style={{ paddingBottom: '56.25%' }}>
+                <img
+                  src={`${process.env.REACT_APP_BACKEND_URL}/api/cameras/${viewingCamera.id}/stream`}
+                  alt={`Live stream from ${viewingCamera.name}`}
+                  className="absolute top-0 left-0 w-full h-full object-contain"
+                  onError={(e) => {
+                    console.error('Stream loading error:', e);
+                  }}
+                />
+              </div>
+              <div className={`mt-3 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-100'}`}>
+                <div className="grid grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <span className={`font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Auflösung: </span>
+                    <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{viewingCamera.resolution}</span>
+                  </div>
+                  <div>
+                    <span className={`font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>FPS: </span>
+                    <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{viewingCamera.fps}</span>
+                  </div>
+                  <div>
+                    <span className={`font-medium ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Status: </span>
+                    <span className={viewingCamera.status === 'online' ? 'text-green-500' : 'text-red-500'}>
+                      {viewingCamera.status === 'online' ? '● Online' : '● Offline'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Add/Edit Camera Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
