@@ -28,10 +28,23 @@ class SetIDConfigPart(BaseModel):
     description: str
     example: str
 
+class SetTypeComponent(BaseModel):
+    type: str
+    label: str
+    pattern: str
+    example: str
+
+class SetType(BaseModel):
+    id: str
+    name: str
+    description: str
+    components: List[SetTypeComponent]
+
 class SetIDConfig(BaseModel):
     format: str
     parts: List[SetIDConfigPart]
     separator: str
+    setTypes: List[SetType] = []
 
 
 
