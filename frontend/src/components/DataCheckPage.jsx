@@ -461,6 +461,211 @@ const DataCheckPage = () => {
           </p>
         </Card>
       )}
+        </>
+      )}
+
+      {/* Set-ID Configuration Tab */}
+      {activeTab === 'setid-config' && (
+        <SetIDConfigurationTab theme={theme} apiCall={apiCall} />
+      )}
+    </div>
+  );
+};
+
+// Set-ID Configuration Component
+const SetIDConfigurationTab = ({ theme, apiCall }) => {
+  const [setIdFormat, setSetIdFormat] = useState('LOCATIONCODE-SETNUMBER-SERIALNUMBER');
+  const [formatParts, setFormatParts] = useState([
+    { key: 'LOCATIONCODE', label: 'Standortcode', description: 'z.B. BERT01', example: 'BERT01' },
+    { key: 'SETNUMBER', label: 'Set-Nummer', description: 'z.B. 01', example: '01' },
+    { key: 'SERIALNUMBER', label: 'Seriennummer', description: 'z.B. S1', example: 'S1' }
+  ]);
+  const [separator, setSeparator] = useState('-');
+  const [isSaving, setIsSaving] = useState(false);
+
+  const generatePreview = () => {
+    return formatParts.map(part => part.example).join(separator);
+  };
+
+  const handleSaveConfiguration = async () => {
+    setIsSaving(true);
+    try {
+      const config = {
+        format: setIdFormat,
+        parts: formatParts,
+        separator: separator
+      };
+      
+      const result = await apiCall('/api/test-center/setid-config', {
+        method: 'POST',
+        body: JSON.stringify(config)
+      });
+
+      if (result.success) {
+        toast.success('Set-ID Konfiguration gespeichert');
+      }
+    } catch (error) {
+      console.error('Error saving Set-ID config:', error);
+      toast.error('Fehler beim Speichern der Konfiguration');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handlePartChange = (index, field, value) => {
+    const newParts = [...formatParts];
+    newParts[index][field] = value;
+    setFormatParts(newParts);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Configuration Info */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <div className="mb-4">
+          <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Set-ID Format Konfiguration
+          </h2>
+          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Definieren Sie das Format und die Bedeutung der Set-ID Komponenten
+          </p>
+        </div>
+
+        {/* Preview */}
+        <div className={`p-4 rounded-lg mb-6 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            Vorschau
+          </label>
+          <div className="flex items-center gap-2">
+            <code className={`text-2xl font-mono font-bold ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+              {generatePreview()}
+            </code>
+            <span className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+              (Beispiel)
+            </span>
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="mb-6">
+          <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            Trennzeichen
+          </label>
+          <select
+            value={separator}
+            onChange={(e) => setSeparator(e.target.value)}
+            className={`w-48 px-3 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="-">Bindestrich (-)</option>
+            <option value="_">Unterstrich (_)</option>
+            <option value=".">Punkt (.)</option>
+            <option value="">Kein Trennzeichen</option>
+          </select>
+        </div>
+
+        {/* Format Parts */}
+        <div className="space-y-4">
+          <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Format-Komponenten
+          </h3>
+          
+          {formatParts.map((part, index) => (
+            <div
+              key={index}
+              className={`p-4 rounded-lg border ${
+                theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'
+              }`}
+            >
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Bezeichnung
+                  </label>
+                  <input
+                    type="text"
+                    value={part.label}
+                    onChange={(e) => handlePartChange(index, 'label', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Beschreibung
+                  </label>
+                  <input
+                    type="text"
+                    value={part.description}
+                    onChange={(e) => handlePartChange(index, 'description', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+                
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    Beispielwert
+                  </label>
+                  <input
+                    type="text"
+                    value={part.example}
+                    onChange={(e) => handlePartChange(index, 'example', e.target.value)}
+                    className={`w-full px-3 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Save Button */}
+        <div className="mt-6 flex justify-end">
+          <Button
+            onClick={handleSaveConfiguration}
+            disabled={isSaving}
+            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          >
+            {isSaving ? 'Speichern...' : 'Konfiguration speichern'}
+          </Button>
+        </div>
+      </Card>
+
+      {/* Usage Example */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          Verwendungsbeispiel
+        </h3>
+        <div className={`space-y-3 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          <div className="flex items-start gap-2">
+            <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium">Format: {generatePreview()}</p>
+              <ul className="mt-2 space-y-1 ml-4">
+                {formatParts.map((part, idx) => (
+                  <li key={idx}>
+                    <span className="font-mono font-semibold">{part.example}</span> = {part.description}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };
