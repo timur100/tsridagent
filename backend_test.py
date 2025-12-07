@@ -748,13 +748,13 @@ class LicensePlateOCRTester:
             with open(test_image_path, 'rb') as f:
                 files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
                 data_form = {'location': 'Test Parking Area 2'}
-                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
                 
-                response = self.session.post(
+                response = requests.post(
                     f"{API_BASE}/parking/entry-with-ocr", 
                     files=files,
                     data=data_form,
-                    headers=headers
+                    headers=temp_headers
                 )
             
             # Should get 400 for duplicate entry
