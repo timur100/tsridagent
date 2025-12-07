@@ -34,21 +34,27 @@ const CameraManagement = () => {
     try {
       setLoading(true);
       const result = await apiCall('/api/cameras');
-      console.log('[CameraManagement] ============ API Response:', result);
-      console.log('[CameraManagement] Result structure:', {
-        success: result?.success,
-        hasData: !!result?.data,
-        hasCameras: !!result?.data?.cameras,
-        camerasLength: result?.data?.cameras?.length
-      });
+      console.log('[CameraManagement] ============ FULL API Response:', JSON.stringify(result, null, 2));
+      console.log('[CameraManagement] result.data:', result?.data);
+      console.log('[CameraManagement] result.data type:', typeof result?.data);
+      console.log('[CameraManagement] result.data keys:', result?.data ? Object.keys(result.data) : 'NO DATA');
       
-      if (result && result.success && result.data && result.data.cameras) {
-        const cameras = result.data.cameras;
-        console.log('[CameraManagement] ✅ Setting cameras, count:', cameras.length);
-        console.log('[CameraManagement] Camera names:', cameras.map(c => c.name));
-        setCameras(cameras);
+      // Try direct access
+      if (result && result.data) {
+        console.log('[CameraManagement] Trying direct array access...');
+        // Maybe data IS the array?
+        if (Array.isArray(result.data)) {
+          console.log('[CameraManagement] ✅ data is directly an array!', result.data.length);
+          setCameras(result.data);
+        } else if (result.data.cameras) {
+          console.log('[CameraManagement] ✅ data.cameras exists!', result.data.cameras.length);
+          setCameras(result.data.cameras);
+        } else {
+          console.error('[CameraManagement] ❌ Cannot find cameras in response');
+          setCameras([]);
+        }
       } else {
-        console.error('[CameraManagement] ❌ Invalid response structure:', result);
+        console.error('[CameraManagement] ❌ No result or result.data');
         setCameras([]);
       }
     } catch (error) {
