@@ -111,6 +111,106 @@ async def identify_set_type(serial_numbers, config):
     
     return None, {}
 
+
+async def calculate_device_statistics(results, config):
+    """
+    Calculate device statistics from validation results
+    Returns counts of different device types and set completeness
+    """
+    stats = {
+        'scanners': {'desko': 0, 'tsrid': 0, 'total': 0},
+        'tablets': {'surface': 0, 'tsrid': 0, 'total': 0},
+        'docking_stations': {'desko': 0, 'tsrid': 0, 'total': 0},
+        'power_supplies': {'total': 0},
+        'sets': {
+            'complete': 0,
+            'incomplete': 0,
+            'total': 0
+        }
+    }
+    
+    # Group devices by device_id to analyze sets
+    device_sets = {}
+    all_items = []
+    
+    # Collect all items
+    for category, items in results.items():
+        all_items.extend(items)
+    
+    # Group by device_id (from notes field "Set: XXX")
+    for item in all_items:
+        notes = item.get('notes', '')
+        if 'Set:' in notes:
+            device_id = notes.replace('Set:', '').strip()
+            if device_id not in device_sets:
+                device_sets[device_id] = {
+                    'items': [],
+                    'has_pc': False,
+                    'has_scanner': False,
+                    'has_docking': False,
+                    'has_power': False,
+                    'set_id': item.get('set_id')
+                }
+            device_sets[device_id]['items'].append(item)
+    
+    # Analyze each set and count devices
+    for device_id, set_data in device_sets.items():
+        for item in set_data['items']:
+            sn_pc = item.get('sn_pc', '')
+            sn_scanner = item.get('sn_scanner', '')
+            sn_docking = item.get('sn_docking', '')
+            sn_power = item.get('sn_power', '')
+            
+            # Count PC/Tablets
+            if sn_pc:
+                set_data['has_pc'] = True
+                # Detect type by pattern
+                if re.match(r'^\d{12}$', sn_pc):
+                    stats['tablets']['surface'] += 1
+                elif re.match(r'^[A-Z0-9]{13}$', sn_pc):
+                    stats['tablets']['tsrid'] += 1
+                stats['tablets']['total'] += 1
+            
+            # Count Scanners
+            if sn_scanner:
+                set_data['has_scanner'] = True
+                # Detect type by pattern
+                if re.match(r'^\d{6}\s\d{5}$', sn_scanner):
+                    stats['scanners']['desko'] += 1
+                elif re.match(r'^[A-Z0-9]{13}$', sn_scanner):
+                    stats['scanners']['tsrid'] += 1
+                stats['scanners']['total'] += 1
+            
+            # Count Docking Stations
+            if sn_docking:
+                set_data['has_docking'] = True
+                # Detect type by pattern
+                if re.match(r'^\d{6}\s\d{5}$', sn_docking):
+                    stats['docking_stations']['desko'] += 1
+                elif re.match(r'^[A-Z0-9]{13}$', sn_docking):
+                    stats['docking_stations']['tsrid'] += 1
+                stats['docking_stations']['total'] += 1
+            
+            # Count Power Supplies
+            if sn_power:
+                set_data['has_power'] = True
+                stats['power_supplies']['total'] += 1
+    
+    # Determine set completeness
+    for device_id, set_data in device_sets.items():
+        stats['sets']['total'] += 1
+        
+        # A complete set should have at least PC and Scanner
+        is_complete = set_data['has_pc'] and set_data['has_scanner']
+        
+        if is_complete:
+            stats['sets']['complete'] += 1
+        else:
+            stats['sets']['incomplete'] += 1
+    
+    return stats
+
+
 async def generate_set_id(location_code, set_number, set_type_id, config):
     """
     Generate Set-ID based on configuration
