@@ -468,6 +468,9 @@ async def create_booking(
         booking_data['start_time'] = booking.start_time.isoformat()
         booking_data['end_time'] = booking.end_time.isoformat()
         
+        # Store the clean data before insertion
+        clean_booking_data = booking_data.copy()
+        
         await db.mobility_bookings.insert_one(booking_data)
         
         # Update vehicle status to booked
@@ -476,7 +479,7 @@ async def create_booking(
             {'$set': {'status': 'booked', 'updated_at': datetime.now(timezone.utc)}}
         )
         
-        return {'success': True, 'data': booking_data}
+        return {'success': True, 'data': clean_booking_data}
     except HTTPException:
         raise
     except Exception as e:
