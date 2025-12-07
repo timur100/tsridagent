@@ -218,6 +218,8 @@ async def run_data_check(
                     'serial_number': sn_clean,
                     'sn_scanner': device.get('sn_sc', ''),
                     'sn_pc': device.get('sn_pc', ''),
+                    'sn_docking': device.get('sn_docking', ''),
+                    'sn_power': device.get('sn_power', ''),
                     'set_id': set_id,
                     'device_type': device_type,
                     'location': f"{locationcode} - {location_map.get(locationcode, {}).get('name', 'Unknown')}",
