@@ -27,7 +27,7 @@ const DriverManagement = ({ tenantId = 'default-tenant', locationId = 'default-l
 
   const vehicleTypes = [
     { value: 'Auto', label: 'Auto 🚗', icon: Car },
-    { value: 'Motorrad', label: 'Motorrad 🏍️', icon: Motorcycle },
+    { value: 'Motorrad', label: 'Motorrad 🏍️', icon: Bike },
     { value: 'Fahrrad', label: 'Fahrrad 🚴', icon: Bike }
   ];
 
