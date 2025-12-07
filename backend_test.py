@@ -250,41 +250,38 @@ class LicensePlateOCRTester:
             )
             return False
 
-    def test_create_vehicle_api(self):
-        """Test POST /api/mobility/vehicles?tenant_id=test-tenant - Create vehicle"""
+    def test_entry_with_ocr_api(self):
+        """Test POST /api/parking/entry-with-ocr - Entry with automatic OCR recognition"""
         try:
-            # Use the location_id from the create location test
-            if not hasattr(self, 'created_location_id'):
+            # Check if test image exists
+            test_image_path = "/tmp/test_plate.jpg"
+            if not os.path.exists(test_image_path):
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Entry with OCR API",
                     False,
-                    "No location_id available from create location test. Run create location test first.",
+                    f"Test image not found at {test_image_path}",
                     None
                 )
                 return False
             
-            # Vehicle test data as specified in review request
-            vehicle_data = {
-                "name": "Tesla Model 3",
-                "vehicle_type": "car",
-                "brand": "Tesla",
-                "model": "Model 3",
-                "license_plate": "B-TEST-123",
-                "location_id": self.created_location_id,
-                "status": "available",
-                "pricing": {"hourly": 15.0, "daily": 120.0, "per_km": 0.5},
-                "features": ["GPS", "Automatic", "Electric"],
-                "capacity": 5,
-                "battery_level": 100,
-                "range_km": 500,
-                "active": True
-            }
-            
-            response = self.session.post(f"{API_BASE}/mobility/vehicles?tenant_id=test-tenant", json=vehicle_data)
+            # Prepare multipart form data
+            with open(test_image_path, 'rb') as f:
+                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
+                data_form = {'location': 'Test Parking Area'}
+                
+                # Remove Content-Type header for multipart requests
+                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                
+                response = self.session.post(
+                    f"{API_BASE}/parking/entry-with-ocr", 
+                    files=files,
+                    data=data_form,
+                    headers=headers
+                )
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Entry with OCR API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -296,7 +293,7 @@ class LicensePlateOCRTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Entry with OCR API",
                     False,
                     "Response indicates failure",
                     data
@@ -306,59 +303,50 @@ class LicensePlateOCRTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Entry with OCR API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            vehicle = data["data"]
+            entry_data = data["data"]
             
-            # Verify vehicle structure and data
-            required_fields = ["id", "tenant_id", "name", "vehicle_type", "brand", "model", "license_plate", "location_id", "status", "pricing", "features", "capacity", "created_at", "updated_at"]
+            # Verify entry structure
+            required_fields = ["license_plate", "location", "entry_time", "status"]
             for field in required_fields:
-                if field not in vehicle:
+                if field not in entry_data:
                     self.log_result(
-                        "POST Create Vehicle API",
+                        "POST Entry with OCR API",
                         False,
-                        f"Missing required field in vehicle: {field}",
+                        f"Missing required field in entry data: {field}",
                         data
                     )
                     return False
             
-            # Verify the data matches what we sent
-            if vehicle["name"] != vehicle_data["name"]:
+            # Verify entry was created with active status
+            if entry_data["status"] != "active":
                 self.log_result(
-                    "POST Create Vehicle API",
+                    "POST Entry with OCR API",
                     False,
-                    f"Name mismatch: expected {vehicle_data['name']}, got {vehicle['name']}",
+                    f"Expected status 'active', got '{entry_data['status']}'",
                     data
                 )
                 return False
             
-            if vehicle["vehicle_type"] != vehicle_data["vehicle_type"]:
-                self.log_result(
-                    "POST Create Vehicle API",
-                    False,
-                    f"Vehicle type mismatch: expected {vehicle_data['vehicle_type']}, got {vehicle['vehicle_type']}",
-                    data
-                )
-                return False
-            
-            # Store vehicle_id for later tests
-            self.created_vehicle_id = vehicle["id"]
+            # Store license plate for exit test
+            self.recognized_license_plate = entry_data["license_plate"]
             
             self.log_result(
-                "POST Create Vehicle API",
+                "POST Entry with OCR API",
                 True,
-                f"Successfully created vehicle '{vehicle['name']}' ({vehicle['license_plate']}) with ID {vehicle['id']}"
+                f"Successfully created parking entry for '{entry_data['license_plate']}' at '{entry_data['location']}'"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Create Vehicle API",
+                "POST Entry with OCR API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
