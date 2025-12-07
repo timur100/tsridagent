@@ -39,17 +39,26 @@ const CameraManagement = () => {
       console.log('[CameraManagement] result.data type:', typeof result?.data);
       console.log('[CameraManagement] result.data keys:', result?.data ? Object.keys(result.data) : 'NO DATA');
       
-      // Try direct access
+      // Handle nested response structure from apiCall
       if (result && result.data) {
-        console.log('[CameraManagement] Trying direct array access...');
-        // Maybe data IS the array?
-        if (Array.isArray(result.data)) {
+        console.log('[CameraManagement] Checking nested structure...');
+        
+        // Check for double-nested response (apiCall wraps backend response)
+        if (result.data.data && result.data.data.cameras) {
+          console.log('[CameraManagement] ✅ Found cameras at result.data.data.cameras!', result.data.data.cameras.length);
+          setCameras(result.data.data.cameras);
+        } 
+        // Fallback: direct array
+        else if (Array.isArray(result.data)) {
           console.log('[CameraManagement] ✅ data is directly an array!', result.data.length);
           setCameras(result.data);
-        } else if (result.data.cameras) {
+        } 
+        // Fallback: data.cameras
+        else if (result.data.cameras) {
           console.log('[CameraManagement] ✅ data.cameras exists!', result.data.cameras.length);
           setCameras(result.data.cameras);
-        } else {
+        } 
+        else {
           console.error('[CameraManagement] ❌ Cannot find cameras in response');
           setCameras([]);
         }
