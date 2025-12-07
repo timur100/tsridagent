@@ -57,6 +57,76 @@ def calculate_penalty(duration_minutes: int, max_free_minutes: int, penalty_per_
     
     overstay_minutes = duration_minutes - max_free_minutes
     overstay_hours = overstay_minutes / 60.0
+
+
+def preprocess_image_for_ocr(image_data: bytes) -> np.ndarray:
+    """
+    Preprocess image for better OCR accuracy
+    - Convert to grayscale
+    - Apply thresholding
+    - Noise reduction
+    """
+    # Convert bytes to numpy array
+    nparr = np.frombuffer(image_data, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Apply bilateral filter to reduce noise while keeping edges sharp
+    denoised = cv2.bilateralFilter(gray, 11, 17, 17)
+    
+    # Apply adaptive thresholding
+    thresh = cv2.adaptiveThreshold(
+        denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+        cv2.THRESH_BINARY, 11, 2
+    )
+    
+    return thresh
+
+def extract_license_plate_from_image(image_data: bytes) -> dict:
+    """
+    Extract license plate from image using Tesseract OCR
+    Returns dict with detected text and confidence
+    """
+    try:
+        # Preprocess image
+        processed_img = preprocess_image_for_ocr(image_data)
+        
+        # Convert to PIL Image
+        pil_img = Image.fromarray(processed_img)
+        
+        # Configure Tesseract for better license plate recognition
+        custom_config = r'--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-'
+        
+        # Extract text
+        text = pytesseract.image_to_string(pil_img, config=custom_config, lang='deu+eng')
+        
+        # Clean up the text
+        text = text.strip().upper()
+        text = re.sub(r'[^A-Z0-9-]', '', text)
+        
+        # Get detailed data with confidence
+        data = pytesseract.image_to_data(pil_img, config=custom_config, lang='deu+eng', output_type=pytesseract.Output.DICT)
+        
+        # Calculate average confidence
+        confidences = [int(conf) for conf in data['conf'] if conf != '-1']
+        avg_confidence = sum(confidences) / len(confidences) if confidences else 0
+        
+        return {
+            'success': True,
+            'license_plate': text,
+            'confidence': round(avg_confidence, 2),
+            'raw_text': pytesseract.image_to_string(pil_img, lang='deu+eng')
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'error': str(e),
+            'license_plate': '',
+            'confidence': 0
+        }
+
     
     # Round up to next full hour
     import math
