@@ -287,7 +287,7 @@ const MobilityLocations = ({ tenantId }) => {
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-1">Name *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Name *</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -298,7 +298,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div className="col-span-2">
-                  <label className="block text-sm font-medium mb-1">Adresse *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Adresse *</label>
                   <input
                     type="text"
                     value={formData.address}
@@ -309,7 +309,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Stadt *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Stadt *</label>
                   <input
                     type="text"
                     value={formData.city}
@@ -319,7 +319,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">PLZ *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">PLZ *</label>
                   <input
                     type="text"
                     value={formData.postal_code}
@@ -329,7 +329,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Latitude *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Latitude *</label>
                   <input
                     type="number"
                     step="0.000001"
@@ -340,7 +340,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Longitude *</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Longitude *</label>
                   <input
                     type="number"
                     step="0.000001"
@@ -351,7 +351,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Typ</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Typ</label>
                   <select
                     value={formData.location_type}
                     onChange={(e) => setFormData({ ...formData, location_type: e.target.value })}
@@ -364,7 +364,7 @@ const MobilityLocations = ({ tenantId }) => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Land</label>
+                  <label className="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Land</label>
                   <input
                     type="text"
                     value={formData.country}
