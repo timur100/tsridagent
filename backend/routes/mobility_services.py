@@ -130,9 +130,12 @@ async def create_vehicle(
         vehicle_data['total_distance_km'] = 0
         vehicle_data['last_maintenance'] = None
         
+        # Store the clean data before insertion
+        clean_vehicle_data = vehicle_data.copy()
+        
         await db.mobility_vehicles.insert_one(vehicle_data)
         
-        return {'success': True, 'data': vehicle_data}
+        return {'success': True, 'data': clean_vehicle_data}
     except Exception as e:
         print(f"[Mobility] Error creating vehicle: {e}")
         raise HTTPException(status_code=500, detail=str(e))
