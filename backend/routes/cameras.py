@@ -193,8 +193,11 @@ async def get_camera_stats(
 
 def generate_frames(stream_url: str, username: Optional[str] = None, password: Optional[str] = None):
     """
-    Generator function to stream RTSP as MJPEG
+    Generator function to stream RTSP as MJPEG with improved error handling
     """
+    import numpy as np
+    import time
+    
     # Build RTSP URL with credentials if provided
     if username and password:
         # Parse the URL and inject credentials
@@ -202,13 +205,47 @@ def generate_frames(stream_url: str, username: Optional[str] = None, password: O
         url_parts = stream_url.replace("rtsp://", "")
         stream_url = f"rtsp://{username}:{password}@{url_parts}"
     
-    cap = cv2.VideoCapture(stream_url)
+    print(f"[Camera Stream] Attempting to connect to: {stream_url.replace(password if password else '', '***')}")
+    
+    cap = cv2.VideoCapture(stream_url, cv2.CAP_FFMPEG)
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+    cap.set(cv2.CAP_PROP_OPEN_TIMEOUT_MSEC, 5000)  # 5 second timeout for opening
+    cap.set(cv2.CAP_PROP_READ_TIMEOUT_MSEC, 5000)  # 5 second timeout for reading
+    
+    # Wait a bit for connection
+    time.sleep(0.5)
+    
+    if not cap.isOpened():
+        print(f"[Camera Stream] Failed to open stream: {stream_url.replace(password if password else '', '***')}")
+        # Generate error frame
+        error_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+        cv2.putText(error_frame, 'Kamera nicht erreichbar', (50, 240), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        ret, buffer = cv2.imencode('.jpg', error_frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
+        frame_bytes = buffer.tobytes()
+        
+        # Yield error frame once
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        return
+    
+    print(f"[Camera Stream] Stream opened successfully")
+    frame_count = 0
+    error_count = 0
+    max_errors = 10
     
     try:
-        while True:
+        while error_count < max_errors:
             success, frame = cap.read()
             if not success:
-                break
+                error_count += 1
+                print(f"[Camera Stream] Frame read failed (attempt {error_count}/{max_errors})")
+                time.sleep(0.1)
+                continue
+            
+            # Reset error count on successful read
+            error_count = 0
+            frame_count += 1
             
             # Encode frame as JPEG
             ret, buffer = cv2.imencode('.jpg', frame, [cv2.IMWRITE_JPEG_QUALITY, 70])
@@ -220,8 +257,16 @@ def generate_frames(stream_url: str, username: Optional[str] = None, password: O
             # Yield frame in multipart format
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            
+            # Log every 100 frames
+            if frame_count % 100 == 0:
+                print(f"[Camera Stream] Streamed {frame_count} frames")
+                
+    except Exception as e:
+        print(f"[Camera Stream] Error during streaming: {e}")
     finally:
         cap.release()
+        print(f"[Camera Stream] Stream closed. Total frames: {frame_count}")
 
 @router.get("/cameras/{camera_id}/stream")
 async def stream_camera(
