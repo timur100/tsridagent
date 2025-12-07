@@ -198,7 +198,20 @@ const DataCheckPage = () => {
         )}
       </div>
 
-      {/* Input Section */}
+      {/* Tab Navigation */}
+      <SubTabNavigation
+        tabs={[
+          { id: 'validation', label: 'Validierung', icon: CheckCircle },
+          { id: 'setid-config', label: 'Set-ID Konfiguration', icon: Settings }
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+      />
+
+      {/* Validation Tab */}
+      {activeTab === 'validation' && (
+        <>
+          {/* Input Section */}
       <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
         <div className="space-y-4">
           <div className="flex items-center justify-between">
