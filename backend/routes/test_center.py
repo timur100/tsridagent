@@ -21,6 +21,8 @@ tsrid_db = client['tsrid_db']
 
 class DataCheckRequest(BaseModel):
     serial_numbers: List[str]
+    licensed_serials: List[str] = []
+    warehouse_serials: List[str] = []
 
 class SetIDConfigPart(BaseModel):
     key: str
