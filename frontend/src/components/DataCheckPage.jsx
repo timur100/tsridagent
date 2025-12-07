@@ -592,9 +592,35 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
       components: [
         { type: 'PC', label: 'PC/Tablet', pattern: '', example: '' },
         { type: 'Scanner', label: 'Scanner', pattern: '', example: '' },
-        { type: 'Dockingstation', label: 'Dockingstation', pattern: '', example: '' }
+        { type: 'Dockingstation', label: 'Dockingstation', pattern: '', example: '' },
+        { type: 'Power_PC', label: 'Netzteil PC/Tablet', pattern: '', example: '' },
+        { type: 'Power_Scanner', label: 'Netzteil Scanner', pattern: '', example: '' }
       ]
     }]);
+  };
+
+  const addComponent = (setTypeId) => {
+    const newSetTypes = setTypes.map(st => {
+      if (st.id === setTypeId) {
+        return {
+          ...st,
+          components: [...st.components, { type: 'Other', label: 'Neue Komponente', pattern: '', example: '' }]
+        };
+      }
+      return st;
+    });
+    setSetTypes(newSetTypes);
+  };
+
+  const removeComponent = (setTypeId, componentIndex) => {
+    const newSetTypes = setTypes.map(st => {
+      if (st.id === setTypeId) {
+        const newComponents = st.components.filter((_, idx) => idx !== componentIndex);
+        return { ...st, components: newComponents };
+      }
+      return st;
+    });
+    setSetTypes(newSetTypes);
   };
 
   const handlePartChange = (index, field, value) => {
