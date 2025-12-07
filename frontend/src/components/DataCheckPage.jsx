@@ -203,6 +203,15 @@ const DataCheckPage = () => {
             <h2 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Seriennummern eingeben oder importieren
             </h2>
+            <Button
+              onClick={handleLoadExamples}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              Beispieldaten laden
+            </Button>
             {serialNumbers && (
               <Button
                 onClick={handleClear}
