@@ -690,6 +690,178 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
           ))}
         </div>
 
+      </Card>
+
+      {/* Set-Types Configuration */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Set-Typen Konfiguration
+            </h2>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Definieren Sie verschiedene Set-Typen mit Seriennummern-Patterns für automatische Erkennung
+            </p>
+          </div>
+          <Button
+            onClick={addSetType}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Set-Typ hinzufügen
+          </Button>
+        </div>
+
+        {/* Set Type Tabs */}
+        <div className="flex gap-2 mb-6 flex-wrap">
+          {setTypes.map(st => (
+            <button
+              key={st.id}
+              onClick={() => setActiveSetType(st.id)}
+              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                activeSetType === st.id
+                  ? 'bg-[#c00000] text-white'
+                  : theme === 'dark'
+                  ? 'bg-[#1a1a1a] text-gray-400 hover:bg-[#3a3a3a]'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {st.id}: {st.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Active Set Type Configuration */}
+        {setTypes.filter(st => st.id === activeSetType).map(setType => (
+          <div key={setType.id} className="space-y-6">
+            {/* Set Type Info */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Set-Typ ID
+                </label>
+                <input
+                  type="text"
+                  value={setType.id}
+                  readOnly
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-gray-500'
+                      : 'bg-gray-100 border-gray-300 text-gray-500'
+                  }`}
+                />
+              </div>
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={setType.name}
+                  onChange={(e) => handleSetTypeChange(setType.id, 'name', e.target.value)}
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                Beschreibung
+              </label>
+              <input
+                type="text"
+                value={setType.description}
+                onChange={(e) => handleSetTypeChange(setType.id, 'description', e.target.value)}
+                className={`w-full px-3 py-2 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#1a1a1a] border-gray-700 text-white'
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
+              />
+            </div>
+
+            {/* Components */}
+            <div>
+              <h3 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Komponenten & Seriennummern-Patterns
+              </h3>
+              <div className="space-y-4">
+                {setType.components.map((component, idx) => (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-lg border ${
+                      theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Typ
+                        </label>
+                        <div className={`px-3 py-2 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a] text-gray-400' : 'bg-gray-100 text-gray-600'}`}>
+                          {component.type}
+                        </div>
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Bezeichnung
+                        </label>
+                        <input
+                          type="text"
+                          value={component.label}
+                          onChange={(e) => handleComponentChange(setType.id, idx, 'label', e.target.value)}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm ${
+                            theme === 'dark'
+                              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Regex Pattern
+                        </label>
+                        <input
+                          type="text"
+                          value={component.pattern}
+                          onChange={(e) => handleComponentChange(setType.id, idx, 'pattern', e.target.value)}
+                          placeholder="^\\d{12}$"
+                          className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${
+                            theme === 'dark'
+                              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-xs font-medium mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Beispiel
+                        </label>
+                        <input
+                          type="text"
+                          value={component.example}
+                          onChange={(e) => handleComponentChange(setType.id, idx, 'example', e.target.value)}
+                          className={`w-full px-3 py-2 rounded-lg border text-sm font-mono ${
+                            theme === 'dark'
+                              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+
         {/* Save Button */}
         <div className="mt-6 flex justify-end">
           <Button
