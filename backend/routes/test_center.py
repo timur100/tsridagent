@@ -533,6 +533,165 @@ async def get_validation_stats(
 ):
     """Get overall data validation statistics"""
     try:
+
+
+@router.post("/ai-search")
+async def ai_search(
+    request: dict,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    AI-powered natural language search for devices
+    """
+    try:
+        query = request.get('query', '').lower()
+        
+        # Simple keyword-based search (can be enhanced with actual AI/NLP)
+        search_keywords = {
+            'surface': ['surface', 'microsoft', 'tablet'],
+            'scanner': ['scanner', 'desko', 'tsrid'],
+            'unvollständig': ['unvollständig', 'incomplete', 'fehlt'],
+            'lizenz': ['lizenz', 'license', 'aktiviert'],
+            'defekt': ['defekt', 'broken', 'kaputt'],
+            'lager': ['lager', 'warehouse', 'verfügbar']
+        }
+        
+        # Analyze query intent
+        intent = []
+        for category, keywords in search_keywords.items():
+            if any(kw in query for kw in keywords):
+                intent.append(category)
+        
+        # Get all devices for searching
+        europcar_devices = await multi_tenant_db.europcar_devices.find(
+            {},
+            {'_id': 0}
+        ).to_list(length=1000)
+        
+        # Filter based on intent
+        filtered_results = []
+        for device in europcar_devices:
+            match = True
+            
+            if 'surface' in intent:
+                sn_pc = device.get('sn_pc', '')
+                if not (sn_pc and re.match(r'^\d{12}$', sn_pc)):
+                    match = False
+            
+            if 'scanner' in intent:
+                sn_sc = device.get('sn_sc', '')
+                if not sn_sc:
+                    match = False
+            
+            if 'unvollständig' in intent:
+                has_pc = bool(device.get('sn_pc'))
+                has_scanner = bool(device.get('sn_sc'))
+                if has_pc and has_scanner:
+                    match = False
+            
+            if match:
+                filtered_results.append(device)
+        
+        # Generate interpretation
+        interpretation_parts = []
+        if 'surface' in intent:
+            interpretation_parts.append("Surface-Geräte")
+        if 'scanner' in intent:
+            interpretation_parts.append("Scanner")
+        if 'unvollständig' in intent:
+            interpretation_parts.append("unvollständige Sets")
+        
+        interpretation = f"Suche nach: {', '.join(interpretation_parts) if interpretation_parts else 'alle Geräte'}"
+        
+        summary = f"Es wurden {len(filtered_results)} Geräte gefunden, die Ihren Kriterien entsprechen."
+        
+        return {
+            'success': True,
+            'data': {
+                'interpretation': interpretation,
+                'count': len(filtered_results),
+                'summary': summary,
+                'results': filtered_results[:50]  # Limit to 50 results
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/ai-analysis")
+async def ai_analysis(
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Comprehensive AI-driven analysis of all devices and sets
+    """
+    try:
+        # Get all devices
+        europcar_devices = await multi_tenant_db.europcar_devices.find(
+            {},
+            {'_id': 0}
+        ).to_list(length=None)
+        
+        hardware_devices = await tsrid_db.hardware.find(
+            {},
+            {'_id': 0}
+        ).to_list(length=None)
+        
+        total_devices = len(europcar_devices) + len(hardware_devices)
+        
+        # Calculate health score
+        complete_sets = 0
+        incomplete_sets = 0
+        
+        for device in europcar_devices:
+            has_pc = bool(device.get('sn_pc'))
+            has_scanner = bool(device.get('sn_sc'))
+            
+            if has_pc and has_scanner:
+                complete_sets += 1
+            elif has_pc or has_scanner:
+                incomplete_sets += 1
+        
+        total_sets = complete_sets + incomplete_sets
+        health_score = int((complete_sets / total_sets * 100)) if total_sets > 0 else 0
+        
+        # Calculate optimization potential
+        optimization_potential = int((incomplete_sets / total_sets * 100)) if total_sets > 0 else 0
+        
+        # Generate recommendations
+        recommendations = []
+        
+        if incomplete_sets > 0:
+            recommendations.append(f"{incomplete_sets} unvollständige Sets können durch Zuordnung fehlender Komponenten vervollständigt werden")
+        
+        if optimization_potential > 20:
+            recommendations.append(f"Hohes Optimierungspotenzial: {optimization_potential}% der Sets sind unvollständig")
+        
+        # Check for devices without location
+        no_location = sum(1 for d in europcar_devices if not d.get('locationcode'))
+        if no_location > 0:
+            recommendations.append(f"{no_location} Geräte haben keine Standort-Zuordnung")
+        
+        # Check for license optimization
+        recommendations.append("Prüfen Sie, ob alle aktivierten Lizenzen tatsächlich genutzt werden")
+        
+        if not recommendations:
+            recommendations.append("Ihre Geräteverwaltung ist optimal konfiguriert!")
+        
+        return {
+            'success': True,
+            'data': {
+                'total_devices': total_devices,
+                'health_score': health_score,
+                'optimization_potential': optimization_potential,
+                'complete_sets': complete_sets,
+                'incomplete_sets': incomplete_sets,
+                'recommendations': recommendations
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
         # Count devices by status
         europcar_total = await multi_tenant_db.europcar_devices.count_documents({})
         hardware_total = await db.hardware_devices.count_documents({})
