@@ -960,7 +960,7 @@ class LicensePlateOCRTester:
 
 def main():
     """Main function to run the tests"""
-    tester = MobilityServicesTester()
+    tester = LicensePlateOCRTester()
     
     # Run tests
     import asyncio
