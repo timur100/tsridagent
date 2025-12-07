@@ -283,9 +283,12 @@ async def create_location(
         location_data['created_at'] = datetime.now(timezone.utc)
         location_data['updated_at'] = datetime.now(timezone.utc)
         
+        # Store the clean data before insertion
+        clean_location_data = location_data.copy()
+        
         await db.mobility_locations.insert_one(location_data)
         
-        return {'success': True, 'data': location_data}
+        return {'success': True, 'data': clean_location_data}
     except Exception as e:
         print(f"[Mobility] Error creating location: {e}")
         raise HTTPException(status_code=500, detail=str(e))
