@@ -124,6 +124,7 @@ pymongo==4.6.0
 pyparsing==3.2.5
 pypng==0.20220715.0
 PySocks==1.7.1
+pytesseract==0.3.13
 pytest==7.1.2
 python-barcode==0.16.1
 python-dateutil==2.9.0.post0
