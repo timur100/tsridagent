@@ -212,17 +212,15 @@ const DataCheckPage = () => {
               <FileText className="h-4 w-4" />
               Beispieldaten laden
             </Button>
-            {serialNumbers && (
-              <Button
-                onClick={handleClear}
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <X className="h-4 w-4" />
-                Zurücksetzen
-              </Button>
-            )}
+            <Button
+              onClick={handleClear}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 border-red-600"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Alles zurücksetzen
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
