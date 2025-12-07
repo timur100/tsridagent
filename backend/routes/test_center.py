@@ -198,8 +198,27 @@ async def run_data_check(
                 elif device.get('imei_1') and sn_clean.lower() in device['imei_1'].lower():
                     device_type = 'Mobile Device'
                 
+                # Get all serial numbers for this device (for Set-ID generation)
+                device_serial_numbers = []
+                if device.get('sn_pc'):
+                    device_serial_numbers.append(device['sn_pc'])
+                if device.get('sn_sc'):
+                    device_serial_numbers.append(device['sn_sc'])
+                
+                # Identify set type and generate Set-ID
+                set_type_id, matched_components = await identify_set_type(device_serial_numbers, setid_config)
+                
+                # Extract set number from device_id (e.g., "BERT01-01" -> "01")
+                set_number = device_id.split('-')[-1] if device_id and '-' in device_id else '01'
+                
+                # Generate Set-ID
+                set_id = await generate_set_id(locationcode, set_number, set_type_id, setid_config) if set_type_id else None
+                
                 result_entry = {
                     'serial_number': sn_clean,
+                    'sn_scanner': device.get('sn_sc', ''),
+                    'sn_pc': device.get('sn_pc', ''),
+                    'set_id': set_id,
                     'device_type': device_type,
                     'location': f"{locationcode} - {location_map.get(locationcode, {}).get('name', 'Unknown')}",
                     'status': status,
