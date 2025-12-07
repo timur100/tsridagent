@@ -35,7 +35,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://asset-manager-hub.preview.emergentagent.com"
+BACKEND_URL = "https://fleet-genius-9.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 

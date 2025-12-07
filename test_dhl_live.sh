@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-manager-hub.preview.emergentagent.com/api/dhl"
+API_URL="https://fleet-genius-9.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""
