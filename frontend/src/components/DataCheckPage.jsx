@@ -509,21 +509,25 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
     {
       id: 'S1',
       name: 'Microsoft Surface Set',
-      description: 'Surface + Desko Scanner + Desko Dockingstation',
+      description: 'Surface + Desko Scanner + Desko Dockingstation + Netzteile',
       components: [
         { type: 'PC', label: 'Microsoft Surface', pattern: '^\\d{12}$', example: '033341763753' },
         { type: 'Scanner', label: 'Desko Scanner', pattern: '^\\d{6}\\s\\d{5}$', example: '201743 00735' },
-        { type: 'Dockingstation', label: 'Desko Dockingstation', pattern: '^\\d{6}\\s\\d{5}$', example: '201743 00736' }
+        { type: 'Dockingstation', label: 'Desko Dockingstation', pattern: '^\\d{6}\\s\\d{5}$', example: '201743 00736' },
+        { type: 'Power_Surface', label: 'Netzteil Surface', pattern: '^\\d{12}$', example: '033341763754' },
+        { type: 'Power_Scanner', label: 'Netzteil Desko Scanner', pattern: '^\\d{6}\\s\\d{5}$', example: '201743 00737' }
       ]
     },
     {
       id: 'S2',
       name: 'TSRID Tablet Set',
-      description: 'TSRID Tablet + TSRID Scanner + Dockingstation',
+      description: 'TSRID Tablet + TSRID Scanner + Dockingstation + Netzteile',
       components: [
         { type: 'PC', label: 'TSRID Tablet', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3550' },
         { type: 'Scanner', label: 'TSRID Scanner', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3559' },
-        { type: 'Dockingstation', label: 'Dockingstation', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3560' }
+        { type: 'Dockingstation', label: 'Dockingstation', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3560' },
+        { type: 'Power_Tablet', label: 'Netzteil TSRID Tablet', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3561' },
+        { type: 'Power_Scanner', label: 'Netzteil TSRID Scanner', pattern: '^[A-Z0-9]{13}$', example: '7E81054BA3562' }
       ]
     }
   ]);
