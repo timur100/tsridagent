@@ -587,6 +587,23 @@ const FleetManagement = ({ selectedTenantId }) => {
           )}
         </>
       )}
+      
+      {/* Mobility Services Tabs */}
+      {activeTab === 'mobility-vehicles' && (
+        <MobilityVehicles tenantId={selectedTenantId} />
+      )}
+      
+      {activeTab === 'mobility-locations' && (
+        <MobilityLocations tenantId={selectedTenantId} />
+      )}
+      
+      {activeTab === 'mobility-bookings' && (
+        <MobilityBookings tenantId={selectedTenantId} />
+      )}
+      
+      {activeTab === 'mobility-statistics' && (
+        <MobilityStatistics tenantId={selectedTenantId} />
+      )}
     </div>
   );
 };
