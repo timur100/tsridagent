@@ -1,0 +1,13 @@
+streams:
+  testbuero:
+    - rtsp://admin:TimurOktem123@10.10.10.197:554
+    - "ffmpeg:testbuero#video=h264#hardware"
+
+api:
+  listen: ":1984"
+
+webrtc:
+  listen: ":8555"
+
+log:
+  level: info
