@@ -729,13 +729,13 @@ class LicensePlateOCRTester:
             # Create a fake license plate entry that doesn't exist
             with open(test_image_path, 'rb') as f:
                 files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
                 
                 # This should fail because there's no active session for this plate
-                response = self.session.post(
+                response = requests.post(
                     f"{API_BASE}/parking/exit-with-ocr", 
                     files=files,
-                    headers=headers
+                    headers=temp_headers
                 )
             
             # Should get 404 for no active session
