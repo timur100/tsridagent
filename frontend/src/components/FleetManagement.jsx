@@ -5,10 +5,14 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   Truck, MapPin, Fuel, FileText, Navigation, TrendingUp, AlertTriangle,
   Circle, Calendar, Clock, User, DollarSign, Gauge, Activity, RefreshCw,
-  Filter, Download, Trash2, Eye, BarChart3, Leaf
+  Filter, Download, Trash2, Eye, BarChart3, Leaf, Car, Bike, Zap
 } from 'lucide-react';
 import { toast } from 'sonner';
 import SubTabNavigation from './SubTabNavigation';
+import MobilityVehicles from './MobilityVehicles';
+import MobilityLocations from './MobilityLocations';
+import MobilityBookings from './MobilityBookings';
+import MobilityStatistics from './MobilityStatistics';
 
 const FleetManagement = ({ selectedTenantId }) => {
   const { theme } = useTheme();
