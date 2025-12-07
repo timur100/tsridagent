@@ -155,13 +155,13 @@ class LicensePlateOCRTester:
             with open(test_image_path, 'rb') as f:
                 files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
                 
-                # Remove Content-Type header for multipart requests
-                headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
+                # Create a new session without Content-Type header for multipart
+                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
                 
-                response = self.session.post(
+                response = requests.post(
                     f"{API_BASE}/parking/recognize-plate", 
                     files=files,
-                    headers=headers
+                    headers=temp_headers
                 )
             
             if response.status_code != 200:
