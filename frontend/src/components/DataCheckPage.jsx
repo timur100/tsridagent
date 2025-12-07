@@ -17,6 +17,8 @@ const DataCheckPage = () => {
   
   const [activeTab, setActiveTab] = useState('validation');
   const [serialNumbers, setSerialNumbers] = useState('');
+  const [licensedSerials, setLicensedSerials] = useState('');
+  const [warehouseSerials, setWarehouseSerials] = useState('');
   const [importedFile, setImportedFile] = useState(null);
   const [testResults, setTestResults] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
