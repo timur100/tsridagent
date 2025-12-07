@@ -345,11 +345,15 @@ async def run_data_check(
             'in_warehouse': len(results['in_warehouse'])
         }
         
+        # Calculate device statistics
+        device_stats = await calculate_device_statistics(results, setid_config)
+        
         return {
             'success': True,
             'data': {
                 'summary': summary,
                 'results': results,
+                'device_stats': device_stats,
                 'total_checked': len(request.serial_numbers),
                 'timestamp': datetime.now(timezone.utc).isoformat()
             }
