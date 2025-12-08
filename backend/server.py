@@ -78,6 +78,7 @@ from routes.mobility_services import router as mobility_router
 from routes.organization_creator import router as organization_creator_router
 from routes.telephony_webhooks import router as telephony_router
 from routes.hierarchy_stats import router as hierarchy_stats_router
+from routes.assets import router as assets_router
 
 
 ROOT_DIR = Path(__file__).parent
