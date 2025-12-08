@@ -224,6 +224,8 @@ const GlobalSearch = ({ onResultSelect }) => {
 
   const getIcon = (type) => {
     switch (type) {
+      case 'asset':
+        return <Package className="h-5 w-5 text-[#c00000]" />;
       case 'artikel':
         return <Package className="h-5 w-5 text-blue-500" />;
       case 'bestellung':
