@@ -105,13 +105,13 @@
 user_problem_statement: "Test the Auto-Open feature for Asset search in Global Search. URL: https://configsaver.preview.emergentagent.com/portal/admin. Login: admin@tsrid.com / admin123. Test Scenarios: 1) Test Asset-ID QR-Code Simulation: Type exact Asset-ID 'TSR.EC.SCDE.000001', wait 300-500ms, expect auto-open without pressing Enter and navigation to Assets tab or toast 'Asset gefunden: TSR.EC.SCDE.000001'. 2) Test Single Result Auto-Open: Type unique serial number '201737 01567', wait 300-500ms, expect auto-open if only 1 asset found. 3) Test Multiple Results (NO Auto-Open): Type partial search 'Desko', expect dropdown with multiple results, NO auto-open, user must click to select. 4) Verify Auto-Open Pattern Detection: Test patterns 'TSR.EC.SCDE.000001', 'TSR.EC.SCDE.000050', '201737 01567' should auto-open. What to verify: Asset-ID pattern TSR.EC.SCDE.XXXXXX triggers auto-open, Single result searches auto-open after 300ms, Multiple results show dropdown (no auto-open), Auto-open navigates correctly to Assets tab, Toast notification appears."
 
 frontend:
-  - task: "Asset Settings Feature Testing - Category CRUD Operations"
+  - task: "Auto-Open Feature for Asset Search in Global Search"
     implemented: true
-    working: false
-    file: "frontend/src/components/AssetSettings.jsx, frontend/src/pages/AdminPortal.jsx"
-    stuck_count: 1
+    working: "NA"
+    file: "frontend/src/components/GlobalSearch.jsx, frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
         - working: "NA"
           agent: "main"
