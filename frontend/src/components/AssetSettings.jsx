@@ -236,8 +236,15 @@ const AssetSettings = () => {
 
   const deleteTemplate = async (id) => {
     if (window.confirm('Vorlage wirklich löschen?')) {
-      setTemplates(templates.filter(t => t.id !== id));
-      toast.success('Vorlage gelöscht');
+      try {
+        const result = await apiCall(`/api/assets/${selectedTenantId}/templates/${id}`, 'DELETE');
+        if (result.success) {
+          toast.success('Vorlage gelöscht');
+          loadTemplates();
+        }
+      } catch (error) {
+        toast.error('Fehler beim Löschen');
+      }
     }
   };
 
