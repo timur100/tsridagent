@@ -110,19 +110,15 @@ const AssetSettings = () => {
 
   const loadCategories = async () => {
     try {
-      console.log(`[AssetSettings] loadCategories: Fetching from /api/assets/${selectedTenantId}/categories`);
       const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
-      console.log('[AssetSettings] loadCategories FULL result:', JSON.stringify(result, null, 2));
-      console.log('[AssetSettings] result.data type:', typeof result.data, 'isArray:', Array.isArray(result.data));
-      console.log('[AssetSettings] result.data:', result.data);
       
       if (result.success) {
-        const data = result.data || [];
+        // Handle nested response format: result.data.data
+        const data = result.data?.data || result.data || [];
         const validData = Array.isArray(data) ? data : [];
-        console.log(`[AssetSettings] loadCategories: Setting ${validData.length} categories`, validData);
+        console.log(`[AssetSettings] Loaded ${validData.length} categories`);
         setCategories(validData);
       } else {
-        console.log('[AssetSettings] loadCategories: Result not successful, setting empty array');
         setCategories([]);
       }
     } catch (error) {
