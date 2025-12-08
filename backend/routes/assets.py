@@ -49,6 +49,19 @@ class AssetIDRequest(BaseModel):
     category_id: Optional[str] = None
     location_id: Optional[str] = None
 
+class Asset(BaseModel):
+    asset_id: str
+    name: str
+    category_id: str
+    description: Optional[str] = ""
+    serial_number: Optional[str] = ""
+    device_id: Optional[str] = ""  # Verknüpfung zu Geräte-Tabelle
+    purchase_date: Optional[str] = ""
+    warranty_end: Optional[str] = ""
+    status: str = "active"  # active, maintenance, retired
+    location: Optional[str] = ""
+    notes: Optional[str] = ""
+
 # ===== CATEGORIES =====
 @router.get("/{tenant_id}/categories")
 async def get_categories(
