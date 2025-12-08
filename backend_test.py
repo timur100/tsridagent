@@ -608,14 +608,15 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_active_sessions_api(self):
-        """Test GET /api/parking/active - Get active parking sessions"""
+    def test_rules_crud_api(self):
+        """Test Rules CRUD APIs - Create, Read, Update, Delete"""
         try:
-            response = self.session.get(f"{API_BASE}/parking/active")
+            # Test 1: GET Rules (should be empty initially)
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/rules")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Active Sessions API",
+                    "GET Rules API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -623,88 +624,122 @@ class AssetSettingsTester:
                 return False
             
             data = response.json()
-            
-            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Active Sessions API",
+                    "GET Rules API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check response structure
-            if "data" not in data:
+            initial_rules = data.get("data", [])
+            
+            # Test 2: POST Create Rule
+            rule_data = {
+                "name": "Warranty Alert",
+                "type": "warranty",
+                "condition": "30 days before expiry",
+                "action": "Send email",
+                "enabled": True
+            }
+            
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/rules", json=rule_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "GET Active Sessions API",
+                    "POST Create Rule API",
                     False,
-                    "Missing 'data' field in response",
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "POST Create Rule API",
+                    False,
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            session_data = data["data"]
+            # Store rule ID for update/delete tests
+            created_rule = data.get("data", {})
+            self.created_rule_id = created_rule.get("id")
             
-            # Verify session data structure
-            required_fields = ["active_count", "sessions"]
-            for field in required_fields:
-                if field not in session_data:
-                    self.log_result(
-                        "GET Active Sessions API",
-                        False,
-                        f"Missing required field in session data: {field}",
-                        data
-                    )
-                    return False
-            
-            active_count = session_data["active_count"]
-            sessions = session_data["sessions"]
-            
-            # Verify sessions is a list
-            if not isinstance(sessions, list):
+            if not self.created_rule_id:
                 self.log_result(
-                    "GET Active Sessions API",
+                    "POST Create Rule API",
                     False,
-                    f"Sessions should be a list, got {type(sessions)}",
+                    "No rule ID returned in response",
                     data
                 )
                 return False
             
-            # Verify count matches array length
-            if active_count != len(sessions):
+            # Test 3: PUT Update Rule (including enabled toggle)
+            update_data = {
+                "name": "Updated Warranty Alert",
+                "type": "warranty",
+                "condition": "60 days before expiry",
+                "action": "Send email and SMS",
+                "enabled": False  # Test enabled toggle
+            }
+            
+            response = self.session.put(f"{API_BASE}/assets/{self.tenant_id}/rules/{self.created_rule_id}", json=update_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "GET Active Sessions API",
+                    "PUT Update Rule API",
                     False,
-                    f"Active count mismatch: count={active_count}, array length={len(sessions)}",
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "PUT Update Rule API",
+                    False,
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            # If there are active sessions, verify structure
-            if sessions:
-                session = sessions[0]
-                required_session_fields = ["session_id", "license_plate", "entry_time", "status", "current_duration_minutes"]
-                for field in required_session_fields:
-                    if field not in session:
-                        self.log_result(
-                            "GET Active Sessions API",
-                            False,
-                            f"Missing required field in session: {field}",
-                            data
-                        )
-                        return False
+            # Test 4: DELETE Rule
+            response = self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/rules/{self.created_rule_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "DELETE Rule API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "DELETE Rule API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
             
             self.log_result(
-                "GET Active Sessions API",
+                "Rules CRUD APIs",
                 True,
-                f"Successfully retrieved {active_count} active parking sessions"
+                f"Successfully tested all Rules CRUD operations (Create, Read, Update, Delete) including enabled toggle"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Active Sessions API",
+                "Rules CRUD APIs",
                 False,
                 f"Exception occurred: {str(e)}"
             )
