@@ -63,9 +63,10 @@ class AssetSettingsTester:
         })
         self.results = []
         self.admin_token = None
-        self.created_location_id = None
-        self.created_vehicle_id = None
-        self.created_booking_id = None
+        self.tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Europcar
+        self.created_category_id = None
+        self.created_template_id = None
+        self.created_rule_id = None
         
     def log_result(self, test_name: str, success: bool, details: str, response_data: Any = None):
         """Log test result"""
