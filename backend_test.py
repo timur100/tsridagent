@@ -745,78 +745,52 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_parking_stats_api(self):
-        """Test GET /api/parking/stats - Get parking statistics"""
+    def test_authentication_required(self):
+        """Test that all endpoints require valid JWT token"""
         try:
-            response = self.session.get(f"{API_BASE}/parking/stats")
+            # Create a session without authentication
+            unauth_session = requests.Session()
+            unauth_session.headers.update({
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            })
             
-            if response.status_code != 200:
+            # Test endpoints that should require authentication
+            endpoints_to_test = [
+                f"/assets/{self.tenant_id}/config",
+                f"/assets/{self.tenant_id}/categories",
+                f"/assets/{self.tenant_id}/templates",
+                f"/assets/{self.tenant_id}/rules"
+            ]
+            
+            auth_failures = []
+            
+            for endpoint in endpoints_to_test:
+                response = unauth_session.get(f"{API_BASE}{endpoint}")
+                
+                # Should return 401 or 403 for unauthorized access
+                if response.status_code not in [401, 403]:
+                    auth_failures.append(f"{endpoint} returned {response.status_code} instead of 401/403")
+            
+            if auth_failures:
                 self.log_result(
-                    "GET Parking Stats API",
+                    "Authentication Required Test",
                     False,
-                    f"Request failed. Status: {response.status_code}",
-                    response.text
+                    f"Authentication not properly enforced: {'; '.join(auth_failures)}",
+                    None
                 )
                 return False
-            
-            data = response.json()
-            
-            # Check if response indicates success
-            if not data.get("success"):
-                self.log_result(
-                    "GET Parking Stats API",
-                    False,
-                    "Response indicates failure",
-                    data
-                )
-                return False
-            
-            # Check response structure
-            if "data" not in data:
-                self.log_result(
-                    "GET Parking Stats API",
-                    False,
-                    "Missing 'data' field in response",
-                    data
-                )
-                return False
-            
-            stats = data["data"]
-            
-            # Verify stats structure
-            required_fields = ["active_sessions", "sessions_today", "total_violations", "pending_violations", "total_penalty_amount"]
-            for field in required_fields:
-                if field not in stats:
-                    self.log_result(
-                        "GET Parking Stats API",
-                        False,
-                        f"Missing required field in stats: {field}",
-                        data
-                    )
-                    return False
-            
-            # Verify stats are numeric
-            numeric_fields = ["active_sessions", "sessions_today", "total_violations", "pending_violations", "total_penalty_amount"]
-            for field in numeric_fields:
-                if not isinstance(stats[field], (int, float)):
-                    self.log_result(
-                        "GET Parking Stats API",
-                        False,
-                        f"Field '{field}' should be numeric, got {type(stats[field])}",
-                        data
-                    )
-                    return False
             
             self.log_result(
-                "GET Parking Stats API",
+                "Authentication Required Test",
                 True,
-                f"Successfully retrieved parking stats: {stats['active_sessions']} active, {stats['sessions_today']} today, {stats['total_violations']} violations"
+                f"Successfully verified authentication is required for all {len(endpoints_to_test)} endpoints"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Parking Stats API",
+                "Authentication Required Test",
                 False,
                 f"Exception occurred: {str(e)}"
             )
