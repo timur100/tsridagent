@@ -169,6 +169,63 @@ const AssetManagement = () => {
     setShowModal(true);
   };
 
+  const saveAsset = async () => {
+    try {
+      if (editingAsset) {
+        // Update existing asset
+        const result = await apiCall(`/api/assets/${selectedTenantId}/assets/${editingAsset.asset_id}`, {
+          method: 'PUT',
+          body: assetForm
+        });
+        
+        if (result.success) {
+          toast.success('Asset aktualisiert');
+          setShowModal(false);
+          loadAssets();
+        } else {
+          toast.error('Fehler beim Aktualisieren');
+        }
+      } else {
+        // Create new asset
+        const result = await apiCall(`/api/assets/${selectedTenantId}/assets`, {
+          method: 'POST',
+          body: assetForm
+        });
+        
+        if (result.success) {
+          toast.success('Asset erstellt');
+          setShowModal(false);
+          loadAssets();
+        } else {
+          toast.error(result.data?.detail || 'Fehler beim Erstellen');
+        }
+      }
+    } catch (error) {
+      console.error('Error saving asset:', error);
+      toast.error('Fehler beim Speichern: ' + error.message);
+    }
+  };
+
+  const deleteAsset = async (assetId) => {
+    if (!window.confirm('Asset wirklich löschen?')) return;
+    
+    try {
+      const result = await apiCall(`/api/assets/${selectedTenantId}/assets/${assetId}`, {
+        method: 'DELETE'
+      });
+      
+      if (result.success) {
+        toast.success('Asset gelöscht');
+        loadAssets();
+      } else {
+        toast.error('Fehler beim Löschen');
+      }
+    } catch (error) {
+      toast.error('Fehler beim Löschen');
+    }
+  };
+
+
   const getCategoryName = (categoryId) => {
     const category = categories.find(c => c.id === categoryId);
     return category ? `${category.icon} ${category.name}` : 'Unbekannt';
