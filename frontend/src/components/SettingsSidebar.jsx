@@ -54,6 +54,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       icon: Wrench,
       items: [
         { id: 'customers-management', label: 'Kunden', emoji: '🏢' },
+        { id: 'assets', label: 'Assets', emoji: '📦' },
         { id: 'portal', label: 'Portal', emoji: '🚀' },
         { id: 'scanner-pin', label: 'Scanner PIN', emoji: '🔒' },
         { id: 'subscription-plans', label: 'Subscription Plans', emoji: '💳' },
