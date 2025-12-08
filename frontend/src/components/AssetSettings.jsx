@@ -249,7 +249,7 @@ const AssetSettings = () => {
 
   const saveAssetIdConfig = async () => {
     try {
-      const result = await apiCall(`/api/assets/${selectedTenantId}/config`, 'POST', assetIdConfig);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/config`, { method: 'POST', body: assetIdConfig });
       if (result.success) {
         toast.success('Konfiguration gespeichert');
       } else {
