@@ -49,7 +49,7 @@ class AssetIDConfig(BaseModel):
 @router.get("/{tenant_id}/categories")
 async def get_categories(
     tenant_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Get all asset categories for a tenant"""
     try:
