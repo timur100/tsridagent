@@ -89,19 +89,19 @@ const AssetManagement = () => {
   };
 
   const loadAssets = async () => {
-    // Placeholder - you'll need to create the actual assets endpoint
-    setAssets([
-      // Mock data for now
-      {
-        id: '1',
-        asset_id: 'ASSET-2025-PC-00001',
-        name: 'Dell Laptop',
-        category_id: 'cat1',
-        serial_number: 'DL123456',
-        status: 'active',
-        location: 'Berlin Office'
+    try {
+      setLoading(true);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/assets`);
+      if (result.success) {
+        const data = result.data?.data || result.data || [];
+        setAssets(Array.isArray(data) ? data : []);
       }
-    ]);
+    } catch (error) {
+      console.error('Error loading assets:', error);
+      toast.error('Fehler beim Laden der Assets');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loadIdPreview = async () => {
