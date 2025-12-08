@@ -72,6 +72,9 @@ const AssetSettings = () => {
   useEffect(() => {
     if (selectedTenantId) {
       loadAssetIdConfig();
+      loadCategories();
+      loadTemplates();
+      loadRules();
     }
   }, [selectedTenantId]);
 
@@ -101,6 +104,51 @@ const AssetSettings = () => {
       console.log('Loading asset config for tenant:', selectedTenantId);
     } catch (error) {
       console.error('Error loading asset config:', error);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      // TODO: Backend API endpoint
+      // const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      // Demo data
+      setCategories([
+        { id: '1', name: 'Computer', short_code: 'PC', type: 'hardware', description: 'Desktop & Laptop Computer', icon: '💻' },
+        { id: '2', name: 'Monitor', short_code: 'MON', type: 'hardware', description: 'Bildschirme & Displays', icon: '🖥️' },
+        { id: '3', name: 'Drucker', short_code: 'PRT', type: 'hardware', description: 'Drucker & Scanner', icon: '🖨️' },
+        { id: '4', name: 'Betriebssystem', short_code: 'OS', type: 'software', description: 'Windows, Linux, MacOS', icon: '🖥️' },
+        { id: '5', name: 'Office Suite', short_code: 'OFF', type: 'software', description: 'Microsoft Office, LibreOffice', icon: '📝' }
+      ]);
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const loadTemplates = async () => {
+    try {
+      // TODO: Backend API endpoint
+      // Demo data
+      setTemplates([
+        { id: '1', name: 'Standard PC', category_id: '1', description: 'Standard Büro-Computer', fields: ['CPU', 'RAM', 'HDD', 'OS'] },
+        { id: '2', name: 'Laptop', category_id: '1', description: 'Mobile Arbeitsstation', fields: ['CPU', 'RAM', 'SSD', 'Display'] },
+        { id: '3', name: 'Monitor 24"', category_id: '2', description: 'Standard Monitor', fields: ['Größe', 'Auflösung', 'Anschlüsse'] }
+      ]);
+    } catch (error) {
+      console.error('Error loading templates:', error);
+    }
+  };
+
+  const loadRules = async () => {
+    try {
+      // TODO: Backend API endpoint
+      // Demo data
+      setRules([
+        { id: '1', name: 'Garantie-Warnung', type: 'warranty', condition: '30 Tage vor Ablauf', action: 'E-Mail Benachrichtigung', enabled: true },
+        { id: '2', name: 'Wartungs-Intervall', type: 'maintenance', condition: 'Alle 6 Monate', action: 'Wartungsticket erstellen', enabled: true },
+        { id: '3', name: 'Lifecycle-Check', type: 'lifecycle', condition: 'Nach 5 Jahren', action: 'Als veraltet markieren', enabled: false }
+      ]);
+    } catch (error) {
+      console.error('Error loading rules:', error);
     }
   };
 
