@@ -3601,13 +3601,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Asset Settings Feature Testing - Category CRUD Operations"
-  stuck_tasks:
-    - "Asset Settings Feature Testing - Category CRUD Operations"
+    - "Auto-Open Feature for Asset Search in Global Search"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   qr_code_testing_complete: true
-  notes: "QR-CODE FEATURE TESTING COMPLETED SUCCESSFULLY: Comprehensive testing of QR-Code functionality in Asset Management completed with authentication bug discovered and fixed. All 215 Desko Scanner assets have functional QR-Code download buttons. Both individual and bulk QR-Code downloads working correctly with proper authentication and backend API integration."
+  notes: "AUTO-OPEN ASSET SEARCH TESTING: Testing the Auto-Open feature for Asset search in Global Search component. Focus on Asset-ID pattern detection (TSR.EC.SCDE.XXXXXX), single result auto-open after 300ms, multiple results dropdown behavior, and proper navigation to Assets tab with toast notifications."
 
 agent_communication:
     - agent: "main"
