@@ -1,6 +1,6 @@
 streams:
   testbuero:
-    - rtsp://admin:TimurOktem123@10.10.10.197:554
+    - rtsp://admin:TimurOktem123@87.138.236.115:554
     - "ffmpeg:testbuero#video=h264#hardware"
 
 api:
