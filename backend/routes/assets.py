@@ -1,10 +1,15 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.responses import StreamingResponse, Response
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
 from pymongo import MongoClient
+import qrcode
+import io
+from PIL import Image, ImageDraw, ImageFont
+import zipfile
 
 router = APIRouter(prefix="/api/assets", tags=["Assets"])
 
