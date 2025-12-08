@@ -131,13 +131,10 @@ const AssetSettings = () => {
 
   const loadRules = async () => {
     try {
-      // TODO: Backend API endpoint
-      // Demo data
-      setRules([
-        { id: '1', name: 'Garantie-Warnung', type: 'warranty', condition: '30 Tage vor Ablauf', action: 'E-Mail Benachrichtigung', enabled: true },
-        { id: '2', name: 'Wartungs-Intervall', type: 'maintenance', condition: 'Alle 6 Monate', action: 'Wartungsticket erstellen', enabled: true },
-        { id: '3', name: 'Lifecycle-Check', type: 'lifecycle', condition: 'Nach 5 Jahren', action: 'Als veraltet markieren', enabled: false }
-      ]);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/rules`);
+      if (result.success) {
+        setRules(result.data || []);
+      }
     } catch (error) {
       console.error('Error loading rules:', error);
     }
