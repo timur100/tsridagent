@@ -14,6 +14,7 @@ admin_db = mongo_client['multi_tenant_admin']
 portal_db = mongo_client['portal_db']
 main_db = mongo_client['main_db']
 tsrid_db = mongo_client['tsrid_db']
+verification_db = mongo_client['verification_db']
 
 @router.get("/global")
 async def global_search(
