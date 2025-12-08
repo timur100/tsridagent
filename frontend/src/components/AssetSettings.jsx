@@ -168,14 +168,18 @@ const AssetSettings = () => {
 
   const saveCate = async () => {
     try {
-      // TODO: Backend API endpoint
       if (editingCategory) {
-        setCategories(categories.map(c => c.id === editingCategory.id ? { ...categoryForm, id: c.id } : c));
-        toast.success('Kategorie aktualisiert');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${editingCategory.id}`, 'PUT', categoryForm);
+        if (result.success) {
+          toast.success('Kategorie aktualisiert');
+          loadCategories();
+        }
       } else {
-        const newCategory = { ...categoryForm, id: Date.now().toString() };
-        setCategories([...categories, newCategory]);
-        toast.success('Kategorie erstellt');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', categoryForm);
+        if (result.success) {
+          toast.success('Kategorie erstellt');
+          loadCategories();
+        }
       }
       setShowCategoryModal(false);
     } catch (error) {
