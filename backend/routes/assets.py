@@ -427,6 +427,9 @@ async def save_asset_config(
         return {
             "success": True,
             "message": "Konfiguration gespeichert"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # ===== ASSET ID GENERATION =====
 @router.post("/{tenant_id}/generate-id")
