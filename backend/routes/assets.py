@@ -45,6 +45,10 @@ class AssetIDConfig(BaseModel):
     include_location: bool = False
     include_year: bool = False
 
+class AssetIDRequest(BaseModel):
+    category_id: Optional[str] = None
+    location_id: Optional[str] = None
+
 # ===== CATEGORIES =====
 @router.get("/{tenant_id}/categories")
 async def get_categories(
