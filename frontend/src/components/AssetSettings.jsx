@@ -120,13 +120,10 @@ const AssetSettings = () => {
 
   const loadTemplates = async () => {
     try {
-      // TODO: Backend API endpoint
-      // Demo data
-      setTemplates([
-        { id: '1', name: 'Standard PC', category_id: '1', description: 'Standard Büro-Computer', fields: ['CPU', 'RAM', 'HDD', 'OS'] },
-        { id: '2', name: 'Laptop', category_id: '1', description: 'Mobile Arbeitsstation', fields: ['CPU', 'RAM', 'SSD', 'Display'] },
-        { id: '3', name: 'Monitor 24"', category_id: '2', description: 'Standard Monitor', fields: ['Größe', 'Auflösung', 'Anschlüsse'] }
-      ]);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/templates`);
+      if (result.success) {
+        setTemplates(result.data || []);
+      }
     } catch (error) {
       console.error('Error loading templates:', error);
     }
