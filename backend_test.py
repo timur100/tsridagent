@@ -448,14 +448,37 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_recognition_history_api(self):
-        """Test GET /api/parking/recognition-history - Get OCR recognition history"""
+    def test_templates_crud_api(self):
+        """Test Templates CRUD APIs - Create, Read, Update, Delete"""
         try:
-            response = self.session.get(f"{API_BASE}/parking/recognition-history?limit=10")
+            # First create a category for the template
+            category_data = {
+                "name": "Laptop Category",
+                "short_code": "LC",
+                "type": "hardware",
+                "description": "Category for laptops",
+                "icon": "💻"
+            }
+            
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/categories", json=category_data)
+            if response.status_code != 200:
+                self.log_result(
+                    "Templates CRUD - Create Category",
+                    False,
+                    f"Failed to create category for template test. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            category_result = response.json()
+            category_id = category_result.get("data", {}).get("id")
+            
+            # Test 1: GET Templates (should be empty initially)
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/templates")
             
             if response.status_code != 200:
                 self.log_result(
-                    "GET Recognition History API",
+                    "GET Templates API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -463,73 +486,123 @@ class AssetSettingsTester:
                 return False
             
             data = response.json()
-            
-            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "GET Recognition History API",
+                    "GET Templates API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check response structure
-            if "data" not in data:
+            initial_templates = data.get("data", [])
+            
+            # Test 2: POST Create Template
+            template_data = {
+                "name": "Laptop Template",
+                "category_id": category_id,
+                "fields": ["CPU", "RAM", "SSD"],
+                "description": "Standard laptop config"
+            }
+            
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/templates", json=template_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "GET Recognition History API",
+                    "POST Create Template API",
                     False,
-                    "Missing 'data' field in response",
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "POST Create Template API",
+                    False,
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            history = data["data"]
+            # Store template ID for update/delete tests
+            created_template = data.get("data", {})
+            self.created_template_id = created_template.get("id")
             
-            # Verify history is a list
-            if not isinstance(history, list):
+            if not self.created_template_id:
                 self.log_result(
-                    "GET Recognition History API",
+                    "POST Create Template API",
                     False,
-                    f"History should be a list, got {type(history)}",
+                    "No template ID returned in response",
                     data
                 )
                 return False
             
-            # Should have at least 1 recognition from our previous test
-            if len(history) < 1:
+            # Test 3: PUT Update Template
+            update_data = {
+                "name": "Updated Laptop Template",
+                "category_id": category_id,
+                "fields": ["CPU", "RAM", "SSD", "GPU"],
+                "description": "Updated laptop config with GPU"
+            }
+            
+            response = self.session.put(f"{API_BASE}/assets/{self.tenant_id}/templates/{self.created_template_id}", json=update_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "GET Recognition History API",
+                    "PUT Update Template API",
                     False,
-                    f"Expected at least 1 recognition in history, got {len(history)}",
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "PUT Update Template API",
+                    False,
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            # Verify history entry structure
-            if history:
-                entry = history[0]
-                required_fields = ["license_plate", "confidence", "timestamp", "user"]
-                for field in required_fields:
-                    if field not in entry:
-                        self.log_result(
-                            "GET Recognition History API",
-                            False,
-                            f"Missing required field in history entry: {field}",
-                            data
-                        )
-                        return False
+            # Test 4: DELETE Template
+            response = self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/templates/{self.created_template_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "DELETE Template API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "DELETE Template API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Clean up category
+            self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/categories/{category_id}")
             
             self.log_result(
-                "GET Recognition History API",
+                "Templates CRUD APIs",
                 True,
-                f"Successfully retrieved {len(history)} recognition history entries"
+                f"Successfully tested all Templates CRUD operations (Create, Read, Update, Delete)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "GET Recognition History API",
+                "Templates CRUD APIs",
                 False,
                 f"Exception occurred: {str(e)}"
             )
