@@ -1,0 +1,625 @@
+import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
+import { Card } from './ui/card';
+import { Button } from './ui/button';
+import { 
+  Plus, Search, Filter, Download, Upload, 
+  Edit2, Trash2, Package, Monitor, Laptop,
+  Zap, RefreshCw
+} from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const AssetManagement = () => {
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
+  
+  const [assets, setAssets] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [tenants, setTenants] = useState([]);
+  const [selectedTenantId, setSelectedTenantId] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('all');
+  
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [editingAsset, setEditingAsset] = useState(null);
+  const [assetForm, setAssetForm] = useState({
+    asset_id: '',
+    name: '',
+    category_id: '',
+    description: '',
+    serial_number: '',
+    purchase_date: '',
+    warranty_end: '',
+    status: 'active',
+    location: ''
+  });
+  
+  // Asset-ID generation state
+  const [generatingId, setGeneratingId] = useState(false);
+  const [idPreview, setIdPreview] = useState('');
+
+  useEffect(() => {
+    loadTenants();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTenantId) {
+      loadCategories();
+      loadAssets();
+    }
+  }, [selectedTenantId]);
+
+  useEffect(() => {
+    if (assetForm.category_id && selectedTenantId) {
+      loadIdPreview();
+    }
+  }, [assetForm.category_id]);
+
+  const loadTenants = async () => {
+    try {
+      const result = await apiCall('/api/tenants');
+      if (result.success) {
+        const tenantsList = result.data?.data || result.data || [];
+        setTenants(tenantsList);
+        if (tenantsList.length > 0 && !selectedTenantId) {
+          setSelectedTenantId(tenantsList[0].tenant_id);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading tenants:', error);
+      toast.error('Fehler beim Laden der Tenants');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadCategories = async () => {
+    try {
+      const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      if (result.success) {
+        const data = result.data?.data || result.data || [];
+        setCategories(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  };
+
+  const loadAssets = async () => {
+    // Placeholder - you'll need to create the actual assets endpoint
+    setAssets([
+      // Mock data for now
+      {
+        id: '1',
+        asset_id: 'ASSET-2025-PC-00001',
+        name: 'Dell Laptop',
+        category_id: 'cat1',
+        serial_number: 'DL123456',
+        status: 'active',
+        location: 'Berlin Office'
+      }
+    ]);
+  };
+
+  const loadIdPreview = async () => {
+    try {
+      const result = await apiCall(
+        `/api/assets/${selectedTenantId}/preview-id?category_id=${assetForm.category_id}`
+      );
+      if (result.success && result.data) {
+        setIdPreview(result.data.preview);
+      }
+    } catch (error) {
+      console.error('Error loading ID preview:', error);
+    }
+  };
+
+  const generateAssetId = async () => {
+    if (!assetForm.category_id) {
+      toast.error('Bitte wählen Sie zuerst eine Kategorie');
+      return;
+    }
+
+    setGeneratingId(true);
+    try {
+      const result = await apiCall(`/api/assets/${selectedTenantId}/generate-id`, {
+        method: 'POST',
+        body: {
+          category_id: assetForm.category_id,
+          location_id: assetForm.location
+        }
+      });
+
+      if (result.success && result.data) {
+        const newId = result.data.asset_id;
+        setAssetForm({ ...assetForm, asset_id: newId });
+        toast.success(`Asset-ID generiert: ${newId}`);
+      } else {
+        toast.error('Fehler beim Generieren der Asset-ID');
+      }
+    } catch (error) {
+      console.error('Error generating asset ID:', error);
+      toast.error('Fehler beim Generieren der Asset-ID');
+    } finally {
+      setGeneratingId(false);
+    }
+  };
+
+  const openModal = (asset = null) => {
+    if (asset) {
+      setEditingAsset(asset);
+      setAssetForm(asset);
+    } else {
+      setEditingAsset(null);
+      setAssetForm({
+        asset_id: '',
+        name: '',
+        category_id: '',
+        description: '',
+        serial_number: '',
+        purchase_date: '',
+        warranty_end: '',
+        status: 'active',
+        location: ''
+      });
+    }
+    setShowModal(true);
+  };
+
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(c => c.id === categoryId);
+    return category ? `${category.icon} ${category.name}` : 'Unbekannt';
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
+      case 'maintenance':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
+      case 'retired':
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'active': return 'Aktiv';
+      case 'maintenance': return 'Wartung';
+      case 'retired': return 'Ausgemustert';
+      default: return status;
+    }
+  };
+
+  const filteredAssets = assets.filter(asset => {
+    const matchesSearch = asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         asset.asset_id.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === 'all' || asset.category_id === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Asset Management
+          </h2>
+          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Verwalten Sie alle Hardware- und Software-Assets
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            onClick={() => toast.info('Import-Funktion kommt bald')}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            Import
+          </Button>
+          <Button
+            onClick={() => openModal()}
+            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+          >
+            <Plus className="h-4 w-4" />
+            Neues Asset
+          </Button>
+        </div>
+      </div>
+
+      {/* Tenant Selection */}
+      <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+        <div className="flex items-center gap-4">
+          <label className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Tenant:
+          </label>
+          <select
+            value={selectedTenantId}
+            onChange={(e) => setSelectedTenantId(e.target.value)}
+            className={`flex-1 px-4 py-2 rounded-lg border ${
+              theme === 'dark'
+                ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="">-- Tenant wählen --</option>
+            {tenants.map((tenant) => (
+              <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                {tenant.display_name || tenant.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Card>
+
+      {selectedTenantId && (
+        <>
+          {/* Filters & Search */}
+          <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+            <div className="flex gap-4">
+              {/* Search */}
+              <div className="flex-1 relative">
+                <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 ${
+                  theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
+                }`} />
+                <input
+                  type="text"
+                  placeholder="Suche nach Name oder Asset-ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                />
+              </div>
+
+              {/* Category Filter */}
+              <div className="w-64">
+                <select
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className={`w-full px-4 py-2 rounded-lg border ${
+                    theme === 'dark'
+                      ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="all">Alle Kategorien</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </Card>
+
+          {/* Assets Table */}
+          <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+            <div className="space-y-4">
+              {filteredAssets.length === 0 ? (
+                <div className="text-center py-12">
+                  <Package className={`h-16 w-16 mx-auto mb-4 ${
+                    theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                  }`} />
+                  <h3 className={`text-lg font-semibold mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Keine Assets gefunden
+                  </h3>
+                  <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    Erstellen Sie Ihr erstes Asset mit dem "Neues Asset" Button
+                  </p>
+                  <Button
+                    onClick={() => openModal()}
+                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Neues Asset erstellen
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {filteredAssets.map((asset) => (
+                    <Card key={asset.id} className={`p-4 ${
+                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className={`p-3 rounded-lg ${
+                            theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'
+                          }`}>
+                            <Package className="h-6 w-6 text-[#c00000]" />
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3">
+                              <h4 className={`font-semibold ${
+                                theme === 'dark' ? 'text-white' : 'text-gray-900'
+                              }`}>
+                                {asset.name}
+                              </h4>
+                              <span className={`text-xs px-2 py-1 rounded ${getStatusColor(asset.status)}`}>
+                                {getStatusText(asset.status)}
+                              </span>
+                            </div>
+                            <div className={`flex items-center gap-4 mt-1 text-sm ${
+                              theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                            }`}>
+                              <span className="font-mono">{asset.asset_id}</span>
+                              <span>•</span>
+                              <span>{getCategoryName(asset.category_id)}</span>
+                              {asset.serial_number && (
+                                <>
+                                  <span>•</span>
+                                  <span>SN: {asset.serial_number}</span>
+                                </>
+                              )}
+                              {asset.location && (
+                                <>
+                                  <span>•</span>
+                                  <span>📍 {asset.location}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openModal(asset)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              theme === 'dark'
+                                ? 'hover:bg-gray-700 text-gray-400'
+                                : 'hover:bg-gray-200 text-gray-600'
+                            }`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => toast.info('Lösch-Funktion kommt bald')}
+                            className={`p-2 rounded-lg transition-colors ${
+                              theme === 'dark'
+                                ? 'hover:bg-red-900 text-red-400'
+                                : 'hover:bg-red-100 text-red-600'
+                            }`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+        </>
+      )}
+
+      {/* Create/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className={`w-full max-w-2xl max-h-[90vh] overflow-y-auto ${
+            theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'
+          }`}>
+            <div className="p-6">
+              <h3 className={`text-xl font-bold mb-6 ${
+                theme === 'dark' ? 'text-white' : 'text-gray-900'
+              }`}>
+                {editingAsset ? 'Asset bearbeiten' : 'Neues Asset erstellen'}
+              </h3>
+
+              <div className="space-y-4">
+                {/* Asset-ID with Generator */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Asset-ID
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={assetForm.asset_id}
+                      onChange={(e) => setAssetForm({ ...assetForm, asset_id: e.target.value })}
+                      placeholder="Wird automatisch generiert"
+                      className={`flex-1 px-4 py-2 rounded-lg border font-mono ${
+                        theme === 'dark'
+                          ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                          : 'bg-white border-gray-300 text-gray-900'
+                      }`}
+                      readOnly={!editingAsset}
+                    />
+                    {!editingAsset && (
+                      <Button
+                        onClick={generateAssetId}
+                        disabled={!assetForm.category_id || generatingId}
+                        className="bg-[#c00000] hover:bg-[#a00000] text-white whitespace-nowrap"
+                      >
+                        {generatingId ? (
+                          <>
+                            <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                            Generiere...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="h-4 w-4 mr-2" />
+                            ID Generieren
+                          </>
+                        )}
+                      </Button>
+                    )}
+                  </div>
+                  {idPreview && !assetForm.asset_id && (
+                    <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      Vorschau: {idPreview}
+                    </p>
+                  )}
+                </div>
+
+                {/* Category */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Kategorie *
+                  </label>
+                  <select
+                    value={assetForm.category_id}
+                    onChange={(e) => setAssetForm({ ...assetForm, category_id: e.target.value })}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                    required
+                  >
+                    <option value="">-- Kategorie wählen --</option>
+                    {categories.map((cat) => (
+                      <option key={cat.id} value={cat.id}>
+                        {cat.icon} {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Name */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={assetForm.name}
+                    onChange={(e) => setAssetForm({ ...assetForm, name: e.target.value })}
+                    placeholder="z.B. Dell Laptop XPS 13"
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                    required
+                  />
+                </div>
+
+                {/* Serial Number */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Seriennummer
+                  </label>
+                  <input
+                    type="text"
+                    value={assetForm.serial_number}
+                    onChange={(e) => setAssetForm({ ...assetForm, serial_number: e.target.value })}
+                    placeholder="z.B. SN123456789"
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                {/* Location */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Standort
+                  </label>
+                  <input
+                    type="text"
+                    value={assetForm.location}
+                    onChange={(e) => setAssetForm({ ...assetForm, location: e.target.value })}
+                    placeholder="z.B. Berlin Office"
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                {/* Description */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Beschreibung
+                  </label>
+                  <textarea
+                    value={assetForm.description}
+                    onChange={(e) => setAssetForm({ ...assetForm, description: e.target.value })}
+                    placeholder="Zusätzliche Informationen..."
+                    rows={3}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  />
+                </div>
+
+                {/* Status */}
+                <div>
+                  <label className={`block text-sm font-medium mb-2 ${
+                    theme === 'dark' ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    Status
+                  </label>
+                  <select
+                    value={assetForm.status}
+                    onChange={(e) => setAssetForm({ ...assetForm, status: e.target.value })}
+                    className={`w-full px-4 py-2 rounded-lg border ${
+                      theme === 'dark'
+                        ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    <option value="active">Aktiv</option>
+                    <option value="maintenance">Wartung</option>
+                    <option value="retired">Ausgemustert</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 mt-6">
+                <Button
+                  onClick={() => toast.info('Speicher-Funktion wird implementiert')}
+                  className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  disabled={!assetForm.name || !assetForm.category_id || !assetForm.asset_id}
+                >
+                  {editingAsset ? 'Änderungen speichern' : 'Asset erstellen'}
+                </Button>
+                <Button
+                  onClick={() => setShowModal(false)}
+                  variant="outline"
+                >
+                  Abbrechen
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default AssetManagement;
