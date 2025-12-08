@@ -229,7 +229,7 @@ const AssetManagement = () => {
   const downloadQRCode = async (assetId) => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('portal_token');
       
       const response = await fetch(
         `${backendUrl}/api/assets/${selectedTenantId}/assets/${assetId}/qr-code`,
