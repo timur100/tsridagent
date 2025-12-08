@@ -152,7 +152,7 @@ const AssetSettings = () => {
       ];
 
       for (const category of demoCategories) {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', category);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, { method: 'POST', body: category });
         console.log(`[AssetSettings] Created category: ${category.name}`, result);
       }
 
