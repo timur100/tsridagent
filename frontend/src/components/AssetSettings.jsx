@@ -793,19 +793,86 @@ const AssetSettings = () => {
           {/* Rules Tab */}
           {activeTab === 'rules' && (
             <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-              <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Asset-Regeln
-              </h4>
-              <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Definieren Sie automatische Regeln und Validierungen
-              </p>
-              <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-              }`}>
-                <Key className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Asset-Regeln Verwaltung wird hier angezeigt
-                </p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Asset-Regeln
+                  </h4>
+                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {rules.length} Regeln ({rules.filter(r => r.enabled).length} aktiv)
+                  </p>
+                </div>
+                <Button
+                  onClick={() => openRuleModal()}
+                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Neue Regel
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {rules.map(rule => {
+                  const typeColors = {
+                    warranty: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+                    maintenance: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                    lifecycle: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                    compliance: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                  };
+
+                  return (
+                    <Card key={rule.id} className={`p-4 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-start gap-3 flex-1">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={rule.enabled}
+                              onChange={() => toggleRule(rule.id)}
+                              className="sr-only peer"
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                          </label>
+                          
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <h5 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                {rule.name}
+                              </h5>
+                              <span className={`text-xs px-2 py-1 rounded ${typeColors[rule.type]}`}>
+                                {rule.type === 'warranty' ? 'Garantie' : 
+                                 rule.type === 'maintenance' ? 'Wartung' :
+                                 rule.type === 'lifecycle' ? 'Lifecycle' : 'Compliance'}
+                              </span>
+                            </div>
+                            <div className="mt-2 space-y-1">
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <span className="font-medium">Bedingung:</span> {rule.condition}
+                              </p>
+                              <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <span className="font-medium">Aktion:</span> {rule.action}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openRuleModal(rule)}
+                            className={`p-2 rounded hover:bg-gray-200 ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => deleteRule(rule.id)}
+                            className={`p-2 rounded hover:bg-red-100 ${theme === 'dark' ? 'hover:bg-red-900' : ''}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </Card>
           )}
