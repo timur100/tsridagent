@@ -24,6 +24,8 @@ const AssetManagement = () => {
   
   // Modal state
   const [showModal, setShowModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedAsset, setSelectedAsset] = useState(null);
   const [editingAsset, setEditingAsset] = useState(null);
   const [assetForm, setAssetForm] = useState({
     asset_id: '',
