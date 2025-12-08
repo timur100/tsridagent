@@ -220,6 +220,9 @@ app.include_router(euroboxes_router)
 # Categories
 app.include_router(categories_router)
 
+# Assets (Asset Management)
+app.include_router(assets_router)
+
 # Resources (Dropbox)
 api_router.include_router(resources_router, prefix="/resources", tags=["resources"])
 
