@@ -439,7 +439,7 @@ const AssetSettings = () => {
       const rule = rules.find(r => r.id === id);
       if (rule) {
         const updatedRule = { ...rule, enabled: !rule.enabled };
-        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${id}`, 'PUT', updatedRule);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${id}`, { method: 'PUT', body: updatedRule });
         if (result.success) {
           toast.success('Regel-Status aktualisiert');
           loadRules();
