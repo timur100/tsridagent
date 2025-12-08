@@ -142,10 +142,12 @@ const AssetSettings = () => {
 
   const saveAssetIdConfig = async () => {
     try {
-      // TODO: Backend API endpoint
-      // const result = await apiCall(`/api/assets/${selectedTenantId}/config`, 'POST', assetIdConfig);
-      toast.success('Konfiguration gespeichert');
-      console.log('Saving asset config:', assetIdConfig);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/config`, 'POST', assetIdConfig);
+      if (result.success) {
+        toast.success('Konfiguration gespeichert');
+      } else {
+        toast.error('Fehler beim Speichern');
+      }
     } catch (error) {
       console.error('Error saving asset config:', error);
       toast.error('Fehler beim Speichern');
