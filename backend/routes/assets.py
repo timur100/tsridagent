@@ -2,11 +2,17 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-from database import get_db
-from auth import get_current_user
+from routes.portal_auth import verify_token
+import os
+from pymongo import MongoClient
 
 router = APIRouter(prefix="/api/assets", tags=["Assets"])
-db = get_db()
+
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+DB_NAME = os.environ.get('DB_NAME', 'verification_db')
+client = MongoClient(MONGO_URL)
+db = client[DB_NAME]
 
 # Pydantic Models
 class AssetCategory(BaseModel):
