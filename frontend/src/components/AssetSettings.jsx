@@ -124,13 +124,12 @@ const AssetSettings = () => {
   };
 
   const loadDemoData = async () => {
+    if (!window.confirm('Demo-Daten laden? Vorhandene Daten bleiben erhalten.')) {
+      return;
+    }
+    
     try {
-      // Check if demo data already exists
-      const categoriesResult = await apiCall(`/api/assets/${selectedTenantId}/categories`);
-      if (categoriesResult.success && categoriesResult.data && categoriesResult.data.length > 0) {
-        toast.info('Demo-Daten bereits vorhanden');
-        return;
-      }
+      toast.loading('Demo-Daten werden erstellt...');
 
       // Create demo categories
       const demoCategories = [
