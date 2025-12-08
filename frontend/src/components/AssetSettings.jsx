@@ -717,17 +717,9 @@ const AssetSettings = () => {
                         <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                           Icon (Emoji)
                         </label>
-                        <input
-                          type="text"
+                        <EmojiPicker
                           value={categoryForm.icon}
-                          onChange={(e) => setCategoryForm({...categoryForm, icon: e.target.value})}
-                          className={`w-full px-4 py-2 rounded-lg border ${
-                            theme === 'dark'
-                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
-                              : 'bg-white border-gray-300 text-gray-900'
-                          }`}
-                          placeholder="z.B. 💻"
-                          maxLength={2}
+                          onChange={(emoji) => setCategoryForm({...categoryForm, icon: emoji})}
                         />
                       </div>
 
