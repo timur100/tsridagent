@@ -592,7 +592,3 @@ async def preview_asset_id(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
