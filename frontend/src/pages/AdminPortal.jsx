@@ -740,7 +740,14 @@ const AdminPortalContent = () => {
             <div className="flex-1 max-w-md mx-8">
               <GlobalSearch 
                 onResultSelect={(result) => {
-                  if (result.type === 'vehicle') {
+                  if (result.type === 'asset') {
+                    // Open Asset Management with this asset
+                    setActiveTab('assets');
+                    setAssetsSubTab('hardware');
+                    // Show asset details modal
+                    toast.success(`Asset gefunden: ${result.data.asset_id}`);
+                    // You can add setSelectedAssetId if you create an asset detail modal
+                  } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
                     setRndTab('vehicle-management');
