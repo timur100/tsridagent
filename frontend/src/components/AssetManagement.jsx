@@ -226,6 +226,79 @@ const AssetManagement = () => {
   };
 
 
+  const downloadQRCode = async (assetId) => {
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch(
+        `${backendUrl}/api/assets/${selectedTenantId}/assets/${assetId}/qr-code`,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${assetId}.png`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        toast.success(`QR-Code für ${assetId} heruntergeladen`);
+      } else {
+        toast.error('Fehler beim Laden des QR-Codes');
+      }
+    } catch (error) {
+      console.error('Error downloading QR code:', error);
+      toast.error('Fehler beim Download');
+    }
+  };
+
+  const downloadAllQRCodes = async () => {
+    try {
+      const backendUrl = process.env.REACT_APP_BACKEND_URL;
+      const token = localStorage.getItem('token');
+      
+      toast.loading('Generiere alle QR-Codes...', { id: 'qr-bulk' });
+      
+      let url = `${backendUrl}/api/assets/${selectedTenantId}/assets/qr-codes/bulk`;
+      if (filterCategory !== 'all') {
+        url += `?category_id=${filterCategory}`;
+      }
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = `asset_qr_codes_${selectedTenantId}.zip`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
+        toast.success('Alle QR-Codes heruntergeladen', { id: 'qr-bulk' });
+      } else {
+        toast.error('Fehler beim Generieren', { id: 'qr-bulk' });
+      }
+    } catch (error) {
+      console.error('Error downloading bulk QR codes:', error);
+      toast.error('Fehler beim Download', { id: 'qr-bulk' });
+    }
+  };
+
+
   const getCategoryName = (categoryId) => {
     const category = categories.find(c => c.id === categoryId);
     return category ? `${category.icon} ${category.name}` : 'Unbekannt';
