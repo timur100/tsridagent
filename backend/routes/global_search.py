@@ -283,7 +283,7 @@ async def global_search(
         # Calculate total results
         total_results = len(assets_results) + len(vehicles_results) + len(geraete_results) + len(standorte_results) + len(id_checks_results)
         
-        print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, Vehicles: {len(vehicles_results)}, ID-Checks: {len(id_checks_results)})")
+        print(f"[Global Search] Total results: {total_results} (Assets: {len(assets_results)}, Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, Vehicles: {len(vehicles_results)}, ID-Checks: {len(id_checks_results)})")
         
         # Priority match: try to determine the single best match
         priority_match = None
