@@ -699,8 +699,8 @@ async def generate_bulk_qr_codes(
             for asset in assets:
                 asset_id = asset.get('asset_id')
                 
-                # Create QR code data
-                qr_data = f"Asset-ID: {asset_id}\nName: {asset.get('name', '')}\nSN: {asset.get('serial_number', '')}\nLocation: {asset.get('location', '')}"
+                # Create QR code data - only Asset-ID
+                qr_data = asset_id
                 
                 # Generate QR code
                 qr = qrcode.QRCode(
@@ -715,39 +715,23 @@ async def generate_bulk_qr_codes(
                 img = qr.make_image(fill_color="black", back_color="white")
                 img = img.resize((300, 300), Image.LANCZOS)
                 
-                # Add label
-                label_height = 80
+                # Add label - only Asset-ID
+                label_height = 50
                 final_img = Image.new('RGB', (300, 300 + label_height), 'white')
                 final_img.paste(img, (0, 0))
                 
                 draw = ImageDraw.Draw(final_img)
                 try:
-                    font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
-                    font_normal = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+                    font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
                 except:
                     font_bold = ImageFont.load_default()
-                    font_normal = ImageFont.load_default()
                 
-                # Asset-ID
+                # Asset-ID centered
                 text = asset_id
                 bbox = draw.textbbox((0, 0), text, font=font_bold)
                 text_width = bbox[2] - bbox[0]
                 text_x = (300 - text_width) // 2
-                draw.text((text_x, 310), text, fill="black", font=font_bold)
-                
-                # Name
-                name = asset.get('name', '')[:30]
-                bbox2 = draw.textbbox((0, 0), name, font=font_normal)
-                text_width2 = bbox2[2] - bbox2[0]
-                text_x2 = (300 - text_width2) // 2
-                draw.text((text_x2, 335), name, fill="gray", font=font_normal)
-                
-                # SN
-                sn = f"SN: {asset.get('serial_number', '')}"
-                bbox3 = draw.textbbox((0, 0), sn, font=font_normal)
-                text_width3 = bbox3[2] - bbox3[0]
-                text_x3 = (300 - text_width3) // 2
-                draw.text((text_x3, 355), sn, fill="gray", font=font_normal)
+                draw.text((text_x, 315), text, fill="black", font=font_bold)
                 
                 # Save to bytes
                 img_byte_arr = io.BytesIO()
