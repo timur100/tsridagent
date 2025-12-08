@@ -78,6 +78,7 @@ import AutomationManagement from '../components/AutomationManagement';
 import DataCheckPage from '../components/DataCheckPage';
 import FastfoodMenuManagement from '../components/FastfoodMenuManagement';
 import OrderKiosk from '../components/OrderKiosk';
+import KioskTerminal from '../components/KioskTerminal';
 import FastfoodOrdersManagement from '../components/FastfoodOrdersManagement';
 import KitchenDisplay from '../components/KitchenDisplay';
 import CustomerDisplay from '../components/CustomerDisplay';
