@@ -135,7 +135,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
             </button>
 
             {/* Sub-items */}
-            {!collapsed && expandedCategories.includes(category.id) && (
+            {!collapsed && (expandedCategories.includes(category.id) || category.id === 'system') && (
               <div className="ml-8 mt-1 space-y-1">
                 {category.items.map((item) => (
                   <button
