@@ -108,14 +108,24 @@ const AssetManagement = () => {
 
 
   // Function to show specific asset details (called from global search)
-  const showAssetDetails = async (assetId) => {
+  const showAssetDetails = async (assetId, tenantId = null) => {
     try {
+      // Use provided tenant ID or current selected tenant
+      const targetTenantId = tenantId || selectedTenantId;
+      
+      // If tenant ID provided and different from current, switch tenant
+      if (tenantId && tenantId !== selectedTenantId) {
+        setSelectedTenantId(tenantId);
+        // Wait for assets to load
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
       // Find asset in current list
       let asset = assets.find(a => a.asset_id === assetId);
       
       // If not in current list, fetch from API
-      if (!asset) {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/assets/${assetId}`);
+      if (!asset && targetTenantId) {
+        const result = await apiCall(`/api/assets/${targetTenantId}/assets/${assetId}`);
         if (result.success) {
           asset = result.data?.data || result.data;
         }
@@ -124,8 +134,9 @@ const AssetManagement = () => {
       if (asset) {
         setSelectedAsset(asset);
         setShowDetailModal(true);
+        toast.success(`Asset Details: ${asset.asset_id}`);
       } else {
-        toast.error('Asset nicht gefunden');
+        toast.error(`Asset ${assetId} nicht gefunden`);
       }
     } catch (error) {
       console.error('Error loading asset details:', error);
