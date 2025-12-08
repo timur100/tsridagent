@@ -8,6 +8,7 @@ import {
   Plus, Edit2, Trash2, Save, Building2
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import EmojiPicker from './EmojiPicker';
 
 const AssetSettings = () => {
   const { theme } = useTheme();
