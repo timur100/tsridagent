@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://asset-tracker-270.preview.emergentagent.com/portal/admin
+https://configsaver.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://asset-tracker-270.preview.emergentagent.com/portal/admin
+**URL:** https://configsaver.preview.emergentagent.com/portal/admin

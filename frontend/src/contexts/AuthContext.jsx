@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
   const authInProgressRef = useRef(false);
 
   // Use environment variable for BACKEND_URL
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://asset-tracker-270.preview.emergentagent.com';
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://configsaver.preview.emergentagent.com';
   
   // Debug logging
   console.log('[AuthContext] BACKEND_URL:', BACKEND_URL);

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-tracker-270.preview.emergentagent.com/api/dhl"
+API_URL="https://configsaver.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

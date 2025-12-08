@@ -26,7 +26,7 @@ Laut DHL-Dokumentation sind folgende Test-Abrechnungsnummern in der Sandbox verf
 
 1. **Öffnen Sie in Ihrem Browser**:
    ```
-   https://asset-tracker-270.preview.emergentagent.com/portal/admin
+   https://configsaver.preview.emergentagent.com/portal/admin
    ```
 
 2. **Login**:
@@ -48,7 +48,7 @@ Laut DHL-Dokumentation sind folgende Test-Abrechnungsnummern in der Sandbox verf
 
 #### 1. Health Check
 ```bash
-curl -s "https://asset-tracker-270.preview.emergentagent.com/api/dhl/health" | jq
+curl -s "https://configsaver.preview.emergentagent.com/api/dhl/health" | jq
 ```
 
 **Erwartetes Ergebnis**:
@@ -63,12 +63,12 @@ curl -s "https://asset-tracker-270.preview.emergentagent.com/api/dhl/health" | j
 
 #### 2. Mock-Daten abrufen
 ```bash
-curl -s "https://asset-tracker-270.preview.emergentagent.com/api/dhl/shipments/mock" | jq
+curl -s "https://configsaver.preview.emergentagent.com/api/dhl/shipments/mock" | jq
 ```
 
 #### 3. Test-Sendung erstellen (Sandbox)
 ```bash
-curl -X POST "https://asset-tracker-270.preview.emergentagent.com/api/dhl/shipments" \
+curl -X POST "https://configsaver.preview.emergentagent.com/api/dhl/shipments" \
   -H "Content-Type: application/json" \
   -d '{
     "reference_id": "TEST-001",

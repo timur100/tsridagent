@@ -9,8 +9,8 @@
 
 # Webhook Integration zu ID-Check Service
 WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-ID_CHECK_WEBHOOK_URL=https://asset-tracker-270.preview.emergentagent.com/api/webhooks/scan-completed
-ID_CHECK_IMAGE_UPLOAD_URL=https://asset-tracker-270.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+ID_CHECK_WEBHOOK_URL=https://configsaver.preview.emergentagent.com/api/webhooks/scan-completed
+ID_CHECK_IMAGE_UPLOAD_URL=https://configsaver.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
 
 # SQLite Queue Database Path (optional - default: /app/backend/scan_queue.db)
 # SCAN_QUEUE_DB_PATH=/app/backend/scan_queue.db
