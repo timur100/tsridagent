@@ -1,23 +1,34 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - LICENSE PLATE RECOGNITION OCR COMPREHENSIVE TESTING
-Tests License Plate Recognition OCR Backend APIs for parking management system:
+Backend API Testing Suite - ASSET SETTINGS API COMPREHENSIVE TESTING
+Tests Asset Settings API Backend for Asset Management Configuration System:
 
-OCR RECOGNITION APIs (4 endpoints):
-- POST /api/parking/recognize-plate - OCR recognition with image upload
-- POST /api/parking/entry-with-ocr - Entry with automatic OCR recognition
-- POST /api/parking/exit-with-ocr - Exit with automatic OCR recognition
-- GET /api/parking/recognition-history - Get OCR recognition history
+ASSET ID CONFIGURATION APIs (2 endpoints):
+- GET /api/assets/{tenant_id}/config - Get asset ID configuration (returns default if none exists)
+- POST /api/assets/{tenant_id}/config - Save/update asset ID configuration
 
-PARKING MANAGEMENT APIs (additional endpoints):
-- GET /api/parking/active - Get active parking sessions
-- GET /api/parking/sessions - Get parking session history
-- GET /api/parking/stats - Get parking statistics
+CATEGORIES CRUD APIs (4 endpoints):
+- GET /api/assets/{tenant_id}/categories - List all categories
+- POST /api/assets/{tenant_id}/categories - Create new category
+- PUT /api/assets/{tenant_id}/categories/{category_id} - Update category
+- DELETE /api/assets/{tenant_id}/categories/{category_id} - Delete category
+
+TEMPLATES CRUD APIs (4 endpoints):
+- GET /api/assets/{tenant_id}/templates - List all templates
+- POST /api/assets/{tenant_id}/templates - Create new template
+- PUT /api/assets/{tenant_id}/templates/{template_id} - Update template
+- DELETE /api/assets/{tenant_id}/templates/{template_id} - Delete template
+
+RULES CRUD APIs (4 endpoints):
+- GET /api/assets/{tenant_id}/rules - List all rules
+- POST /api/assets/{tenant_id}/rules - Create new rule
+- PUT /api/assets/{tenant_id}/rules/{rule_id} - Update rule (including enabled toggle)
+- DELETE /api/assets/{tenant_id}/rules/{rule_id} - Delete rule
 
 Test Data:
-- Test image: /tmp/test_plate.jpg (contains "B-MW 1234")
 - Authentication: admin@tsrid.com / admin123
-- Expected OCR result: "B-MW1234" or similar
+- Test Tenant ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8 (Europcar)
+- Database: verification_db collections: asset_categories, asset_templates, asset_rules, asset_id_config
 """
 
 import requests
