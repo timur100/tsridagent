@@ -141,10 +141,14 @@ const AssetSettings = () => {
     try {
       const result = await apiCall(`/api/assets/${selectedTenantId}/rules`);
       if (result.success) {
-        setRules(result.data || []);
+        const data = result.data || [];
+        setRules(Array.isArray(data) ? data : []);
+      } else {
+        setRules([]);
       }
     } catch (error) {
       console.error('Error loading rules:', error);
+      setRules([]);
     }
   };
 
