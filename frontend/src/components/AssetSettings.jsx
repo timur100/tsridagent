@@ -126,10 +126,14 @@ const AssetSettings = () => {
     try {
       const result = await apiCall(`/api/assets/${selectedTenantId}/templates`);
       if (result.success) {
-        setTemplates(result.data || []);
+        const data = result.data || [];
+        setTemplates(Array.isArray(data) ? data : []);
+      } else {
+        setTemplates([]);
       }
     } catch (error) {
       console.error('Error loading templates:', error);
+      setTemplates([]);
     }
   };
 
