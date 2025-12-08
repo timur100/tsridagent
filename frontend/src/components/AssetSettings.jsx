@@ -170,14 +170,19 @@ const AssetSettings = () => {
         await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', rule);
       }
 
-      toast.success('Demo-Daten erfolgreich erstellt!');
+      toast.dismiss();
+      toast.success('6 Kategorien, 1 Vorlage und 3 Regeln erstellt!');
       
       // Reload all data
-      loadCategories();
-      loadTemplates();
-      loadRules();
+      await loadCategories();
+      await loadTemplates();
+      await loadRules();
+      
+      // Switch to categories tab to show results
+      setActiveTab('categories');
     } catch (error) {
       console.error('Error loading demo data:', error);
+      toast.dismiss();
       toast.error('Fehler beim Laden der Demo-Daten');
     }
   };
