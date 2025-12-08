@@ -658,7 +658,7 @@ const AssetManagement = () => {
               {/* Actions */}
               <div className="flex gap-3 mt-6">
                 <Button
-                  onClick={() => toast.info('Speicher-Funktion wird implementiert')}
+                  onClick={saveAsset}
                   className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
                   disabled={!assetForm.name || !assetForm.category_id || !assetForm.asset_id}
                 >
