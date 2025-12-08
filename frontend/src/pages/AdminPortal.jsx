@@ -37,6 +37,7 @@ import GoodsReceiptManagement from '../components/GoodsReceiptManagement';
 import LowStockAlert from '../components/LowStockAlert';
 import SupportManagement from '../components/SupportManagement';
 import AssetSettings from '../components/AssetSettings';
+import AssetManagement from '../components/AssetManagement';
 import BrandingSettings from '../components/BrandingSettings';
 import LicenseManagement from '../components/LicenseManagement';
 import HardwareLicenseManagement from '../components/HardwareLicenseManagement';
