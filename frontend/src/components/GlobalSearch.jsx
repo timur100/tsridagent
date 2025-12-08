@@ -417,6 +417,48 @@ const GlobalSearch = ({ onResultSelect }) => {
             </div>
           )}
 
+
+          {/* Assets Results */}
+          {results.results.assets && results.results.assets.length > 0 && (
+            <div>
+              <div className={`px-4 py-2 text-xs font-semibold uppercase ${
+                theme === 'dark' ? 'text-gray-400 bg-[#1a1a1a]' : 'text-gray-600 bg-gray-50'
+              }`}>
+                Assets ({results.results.assets.length})
+              </div>
+              {results.results.assets.map((item, idx) => (
+                <button
+                  key={`asset-${idx}`}
+                  onClick={() => handleResultClick(item)}
+                  className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-opacity-50 transition-colors ${
+                    theme === 'dark' ? 'hover:bg-[#3d3d3d]' : 'hover:bg-gray-50'
+                  }`}
+                >
+                  {getIcon('asset')}
+                  <div className="flex-1 text-left">
+                    <div className={`font-medium font-mono ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {item.title}
+                    </div>
+                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {item.subtitle}
+                    </div>
+                    {item.status && (
+                      <div className={`text-xs mt-1 inline-block px-2 py-0.5 rounded ${
+                        item.status === 'active' ? 'bg-green-500/20 text-green-600' :
+                        item.status === 'maintenance' ? 'bg-yellow-500/20 text-yellow-600' :
+                        'bg-gray-500/20 text-gray-600'
+                      }`}>
+                        {item.status === 'active' ? 'Aktiv' :
+                         item.status === 'maintenance' ? 'Wartung' :
+                         'Ausgemustert'}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+
           {/* Geräte Results */}
           {results.results.geraete && results.results.geraete.length > 0 && (
             <div>
