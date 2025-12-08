@@ -347,6 +347,15 @@ const AssetManagement = () => {
         </div>
         <div className="flex gap-3">
           <Button
+            onClick={downloadAllQRCodes}
+            variant="outline"
+            className="flex items-center gap-2"
+            disabled={!selectedTenantId || assets.length === 0}
+          >
+            <QrCode className="h-4 w-4" />
+            Alle QR-Codes
+          </Button>
+          <Button
             onClick={() => toast.info('Import-Funktion kommt bald')}
             variant="outline"
             className="flex items-center gap-2"
