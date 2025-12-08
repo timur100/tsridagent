@@ -638,15 +638,15 @@ async def generate_qr_code(
         if size != 300:
             img = img.resize((size, size), Image.LANCZOS)
         
-        # Add label below QR code
-        label_height = 60
+        # Add label below QR code - only Asset-ID
+        label_height = 50
         final_img = Image.new('RGB', (size, size + label_height), 'white')
         final_img.paste(img, (0, 0))
         
-        # Add text
+        # Add text - Asset-ID centered
         draw = ImageDraw.Draw(final_img)
         try:
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 18)
         except:
             font = ImageFont.load_default()
         
@@ -654,7 +654,7 @@ async def generate_qr_code(
         bbox = draw.textbbox((0, 0), text, font=font)
         text_width = bbox[2] - bbox[0]
         text_x = (size - text_width) // 2
-        draw.text((text_x, size + 10), text, fill="black", font=font)
+        draw.text((text_x, size + 15), text, fill="black", font=font)
         
         # Convert to bytes
         img_byte_arr = io.BytesIO()
