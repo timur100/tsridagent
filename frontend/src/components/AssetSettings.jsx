@@ -98,10 +98,10 @@ const AssetSettings = () => {
 
   const loadAssetIdConfig = async () => {
     try {
-      // TODO: Backend API endpoint
-      // const result = await apiCall(`/api/assets/${selectedTenantId}/config`);
-      // For now, use default values
-      console.log('Loading asset config for tenant:', selectedTenantId);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/config`);
+      if (result.success && result.data) {
+        setAssetIdConfig(result.data);
+      }
     } catch (error) {
       console.error('Error loading asset config:', error);
     }
