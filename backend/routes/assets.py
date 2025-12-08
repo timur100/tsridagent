@@ -80,7 +80,7 @@ async def create_category(
             "tenant_id": tenant_id,
             **category.dict(),
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": current_user.get("email")
+            "created_by": token_data.get("email")
         }
         
         db.asset_categories.insert_one(category_data)
@@ -108,7 +108,7 @@ async def update_category(
                 "$set": {
                     **category.dict(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_by": current_user.get("email")
+                    "updated_by": token_data.get("email")
                 }
             }
         )
@@ -185,7 +185,7 @@ async def create_template(
             "tenant_id": tenant_id,
             **template.dict(),
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": current_user.get("email")
+            "created_by": token_data.get("email")
         }
         
         db.asset_templates.insert_one(template_data)
@@ -213,7 +213,7 @@ async def update_template(
                 "$set": {
                     **template.dict(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_by": current_user.get("email")
+                    "updated_by": token_data.get("email")
                 }
             }
         )
@@ -290,7 +290,7 @@ async def create_rule(
             "tenant_id": tenant_id,
             **rule.dict(),
             "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": current_user.get("email")
+            "created_by": token_data.get("email")
         }
         
         db.asset_rules.insert_one(rule_data)
@@ -318,7 +318,7 @@ async def update_rule(
                 "$set": {
                     **rule.dict(),
                     "updated_at": datetime.now(timezone.utc).isoformat(),
-                    "updated_by": current_user.get("email")
+                    "updated_by": token_data.get("email")
                 }
             }
         )
@@ -406,7 +406,7 @@ async def save_asset_config(
             "tenant_id": tenant_id,
             **config.dict(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "updated_by": current_user.get("email")
+            "updated_by": token_data.get("email")
         }
         
         db.asset_id_config.update_one(
