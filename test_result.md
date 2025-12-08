@@ -1183,8 +1183,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Asset Settings Tab Navigation Fix"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
