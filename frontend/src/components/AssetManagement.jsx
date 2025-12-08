@@ -263,7 +263,7 @@ const AssetManagement = () => {
   const downloadAllQRCodes = async () => {
     try {
       const backendUrl = process.env.REACT_APP_BACKEND_URL;
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('portal_token');
       
       toast.loading('Generiere alle QR-Codes...', { id: 'qr-bulk' });
       
