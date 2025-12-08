@@ -2652,7 +2652,14 @@ const AdminPortalContent = () => {
                                 onClick={() => setOrdersView('kiosk')}
                                 variant={ordersView === 'kiosk' ? 'default' : 'outline'}
                               >
-                                🖥️ Bestellterminal (Kiosk)
+                                🖥️ Bestellterminal (Alt)
+                              </Button>
+                              <Button
+                                onClick={() => setOrdersView('kioskNew')}
+                                variant={ordersView === 'kioskNew' ? 'default' : 'outline'}
+                                className="bg-gradient-to-r from-red-500 to-orange-500 text-white hover:from-red-600 hover:to-orange-600"
+                              >
+                                ⭐ Kiosk-Terminal (NEU)
                               </Button>
                               <Button
                                 onClick={() => setOrdersView('kitchen')}
