@@ -215,120 +215,67 @@ class AssetSettingsTester:
             return False
 
     def test_save_asset_config_api(self):
-        """Test POST /api/parking/entry-with-ocr - Entry with automatic OCR recognition"""
+        """Test POST /api/assets/{tenant_id}/config - Save asset ID configuration"""
         try:
-            # Check if test image exists
-            test_image_path = "/tmp/test_plate.jpg"
-            if not os.path.exists(test_image_path):
-                self.log_result(
-                    "POST Entry with OCR API",
-                    False,
-                    f"Test image not found at {test_image_path}",
-                    None
-                )
-                return False
+            config_data = {
+                "prefix": "EC",
+                "pattern": "",
+                "start_number": 1000,
+                "padding": 6,
+                "separator": "-",
+                "include_category": True,
+                "include_location": True,
+                "include_year": False
+            }
             
-            # Prepare multipart form data
-            with open(test_image_path, 'rb') as f:
-                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                data_form = {'location': 'Test Parking Area'}
-                
-                # Create a new session without Content-Type header for multipart
-                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                
-                response = requests.post(
-                    f"{API_BASE}/parking/entry-with-ocr", 
-                    files=files,
-                    data=data_form,
-                    headers=temp_headers
-                )
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/config", json=config_data)
             
-            # Handle both success and duplicate entry cases
-            if response.status_code == 200:
-                data = response.json()
-                
-                # Check if response indicates success
-                if data.get("success"):
-                    # Successful entry
-                    entry_data = data["data"]
-                    
-                    # Verify entry structure
-                    required_fields = ["license_plate", "location", "entry_time", "status"]
-                    for field in required_fields:
-                        if field not in entry_data:
-                            self.log_result(
-                                "POST Entry with OCR API",
-                                False,
-                                f"Missing required field in entry data: {field}",
-                                data
-                            )
-                            return False
-                    
-                    # Store license plate for exit test
-                    self.recognized_license_plate = entry_data["license_plate"]
-                    
-                    self.log_result(
-                        "POST Entry with OCR API",
-                        True,
-                        f"Successfully created parking entry for '{entry_data['license_plate']}' at '{entry_data['location']}'"
-                    )
-                    return True
-                else:
-                    self.log_result(
-                        "POST Entry with OCR API",
-                        False,
-                        "Response indicates failure",
-                        data
-                    )
-                    return False
-                    
-            elif response.status_code == 400:
-                # Check if it's a duplicate entry error (which is expected behavior)
-                error_text = response.text
-                if "bereits einen aktiven Parkvorgang" in error_text:
-                    # This is expected - vehicle already has active session
-                    # Let's get the license plate from OCR for the exit test
-                    with open(test_image_path, 'rb') as f:
-                        files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                        temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                        
-                        ocr_response = requests.post(
-                            f"{API_BASE}/parking/recognize-plate", 
-                            files=files,
-                            headers=temp_headers
-                        )
-                        
-                        if ocr_response.status_code == 200:
-                            ocr_data = ocr_response.json()
-                            if ocr_data.get("success") and ocr_data.get("data", {}).get("license_plate"):
-                                self.recognized_license_plate = ocr_data["data"]["license_plate"]
-                    
-                    self.log_result(
-                        "POST Entry with OCR API",
-                        True,
-                        "Entry correctly rejected - vehicle already has active parking session (expected behavior)"
-                    )
-                    return True
-                else:
-                    self.log_result(
-                        "POST Entry with OCR API",
-                        False,
-                        f"Unexpected 400 error: {error_text}",
-                        None
-                    )
-                    return False
-            else:
+            if response.status_code != 200:
                 self.log_result(
-                    "POST Entry with OCR API",
+                    "POST Save Asset Config API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
                 )
                 return False
             
+            data = response.json()
+            
+            # Check if response indicates success
+            if not data.get("success"):
+                self.log_result(
+                    "POST Save Asset Config API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify the config was saved by retrieving it
+            get_response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/config")
+            if get_response.status_code == 200:
+                get_data = get_response.json()
+                if get_data.get("success") and get_data.get("data"):
+                    saved_config = get_data["data"]
+                    if saved_config.get("prefix") == "EC" and saved_config.get("start_number") == 1000:
+                        self.log_result(
+                            "POST Save Asset Config API",
+                            True,
+                            f"Successfully saved asset config with prefix 'EC' and start_number 1000"
+                        )
+                        return True
+            
+            self.log_result(
+                "POST Save Asset Config API",
+                False,
+                "Config was not saved correctly",
+                data
+            )
+            return False
+            
         except Exception as e:
             self.log_result(
-                "POST Entry with OCR API",
+                "POST Save Asset Config API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
