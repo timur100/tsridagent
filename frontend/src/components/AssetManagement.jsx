@@ -444,7 +444,7 @@ const AssetManagement = () => {
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
-                            onClick={() => toast.info('Lösch-Funktion kommt bald')}
+                            onClick={() => deleteAsset(asset.asset_id)}
                             className={`p-2 rounded-lg transition-colors ${
                               theme === 'dark'
                                 ? 'hover:bg-red-900 text-red-400'
