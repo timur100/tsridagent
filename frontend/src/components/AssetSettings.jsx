@@ -296,8 +296,19 @@ const AssetSettings = () => {
   };
 
   const toggleRule = async (id) => {
-    setRules(rules.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
-    toast.success('Regel-Status aktualisiert');
+    try {
+      const rule = rules.find(r => r.id === id);
+      if (rule) {
+        const updatedRule = { ...rule, enabled: !rule.enabled };
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${id}`, 'PUT', updatedRule);
+        if (result.success) {
+          toast.success('Regel-Status aktualisiert');
+          loadRules();
+        }
+      }
+    } catch (error) {
+      toast.error('Fehler beim Aktualisieren');
+    }
   };
 
   const getExampleAssetId = () => {
