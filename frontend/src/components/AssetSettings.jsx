@@ -110,15 +110,21 @@ const AssetSettings = () => {
 
   const loadCategories = async () => {
     try {
+      console.log(`[AssetSettings] loadCategories: Fetching from /api/assets/${selectedTenantId}/categories`);
       const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      console.log('[AssetSettings] loadCategories result:', result);
+      
       if (result.success) {
         const data = result.data || [];
-        setCategories(Array.isArray(data) ? data : []);
+        const validData = Array.isArray(data) ? data : [];
+        console.log(`[AssetSettings] loadCategories: Setting ${validData.length} categories`);
+        setCategories(validData);
       } else {
+        console.log('[AssetSettings] loadCategories: Result not successful, setting empty array');
         setCategories([]);
       }
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('[AssetSettings] Error loading categories:', error);
       setCategories([]);
     }
   };
