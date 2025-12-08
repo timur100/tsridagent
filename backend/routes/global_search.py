@@ -54,6 +54,7 @@ async def global_search(
         standorte_results = []
         id_checks_results = []
         vehicles_results = []
+        assets_results = []
         
         # 1. Search Devices (HIGH PRIORITY) - Search ALL fields
         device_query = {
