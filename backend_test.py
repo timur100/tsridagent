@@ -1044,7 +1044,7 @@ class AssetSettingsTester:
 
 def main():
     """Main function to run the tests"""
-    tester = LicensePlateOCRTester()
+    tester = AssetSettingsTester()
     
     # Run tests
     import asyncio
