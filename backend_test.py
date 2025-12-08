@@ -958,14 +958,15 @@ class AssetSettingsTester:
             return False
 
     async def run_all_tests(self):
-        """Run all License Plate Recognition OCR API tests"""
+        """Run all Asset Settings API tests"""
         print("=" * 80)
-        print("LICENSE PLATE RECOGNITION OCR COMPREHENSIVE API TESTING")
+        print("ASSET SETTINGS API COMPREHENSIVE TESTING")
         print("=" * 80)
         print(f"Backend URL: {BACKEND_URL}")
-        print(f"Testing APIs: License Plate Recognition OCR for parking management system")
-        print(f"Database: verification_db collections: license_plate_recognitions, parking_entries")
-        print("Test Data: /tmp/test_plate.jpg (contains 'B-MW 1234'), admin@tsrid.com authentication")
+        print(f"Testing APIs: Asset Management Configuration System")
+        print(f"Database: verification_db collections: asset_categories, asset_templates, asset_rules, asset_id_config")
+        print(f"Test Tenant: {self.tenant_id} (Europcar)")
+        print("Authentication: admin@tsrid.com / admin123")
         print("=" * 80)
         print()
         
@@ -977,39 +978,39 @@ class AssetSettingsTester:
                 return
             print()
             
-            # Step 2: Test OCR Recognition
-            print("🔍 STEP 2: License Plate OCR Recognition")
-            self.test_recognize_plate_api()
+            # Step 2: Test Asset ID Configuration
+            print("⚙️ STEP 2: Asset ID Configuration APIs")
+            self.test_get_asset_config_api()
+            self.test_save_asset_config_api()
             print()
             
-            # Step 3: Test Entry with OCR
-            print("🚗 STEP 3: Parking Entry with OCR")
-            self.test_entry_with_ocr_api()
+            # Step 3: Test Categories CRUD
+            print("📁 STEP 3: Categories CRUD APIs")
+            self.test_categories_crud_api()
             print()
             
-            # Step 4: Test Exit with OCR
-            print("🚪 STEP 4: Parking Exit with OCR")
-            self.test_exit_with_ocr_api()
+            # Step 4: Test Templates CRUD
+            print("📋 STEP 4: Templates CRUD APIs")
+            self.test_templates_crud_api()
             print()
             
-            # Step 5: Test Recognition History
-            print("📋 STEP 5: OCR Recognition History")
-            self.test_recognition_history_api()
+            # Step 5: Test Rules CRUD
+            print("📏 STEP 5: Rules CRUD APIs")
+            self.test_rules_crud_api()
             print()
             
-            # Step 6: Test Parking Management APIs
-            print("📊 STEP 6: Parking Management APIs")
-            self.test_active_sessions_api()
-            self.test_parking_stats_api()
+            # Step 6: Test Authentication Requirements
+            print("🔐 STEP 6: Authentication Verification")
+            self.test_authentication_required()
             print()
             
-            # Step 7: Test Error Cases
-            print("⚠️ STEP 7: Error Case Testing")
-            self.test_error_cases()
+            # Step 7: Test Error Handling
+            print("⚠️ STEP 7: Error Handling Testing")
+            self.test_error_handling()
             print()
             
             # Step 8: Test MongoDB Persistence
-            print("💾 STEP 8: MongoDB Persistence Verification")
+            print("💾 STEP 8: MongoDB Persistence & Tenant Isolation")
             self.test_mongodb_persistence()
             print()
             
