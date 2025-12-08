@@ -721,19 +721,71 @@ const AssetSettings = () => {
           {/* Templates Tab */}
           {activeTab === 'templates' && (
             <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-              <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Asset-Vorlagen
-              </h4>
-              <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Erstellen Sie Vorlagen für verschiedene Asset-Typen
-              </p>
-              <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-              }`}>
-                <Cpu className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Asset-Vorlagen Verwaltung wird hier angezeigt
-                </p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Asset-Vorlagen
+                  </h4>
+                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {templates.length} Vorlagen verfügbar
+                  </p>
+                </div>
+                <Button
+                  onClick={() => openTemplateModal()}
+                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Neue Vorlage
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                {templates.map(template => {
+                  const category = categories.find(c => c.id === template.category_id);
+                  return (
+                    <Card key={template.id} className={`p-4 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <Cpu className="h-5 w-5 text-[#c00000]" />
+                            <h5 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              {template.name}
+                            </h5>
+                            {category && (
+                              <span className={`text-xs px-2 py-1 rounded ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
+                                {category.icon} {category.name}
+                              </span>
+                            )}
+                          </div>
+                          <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {template.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {template.fields.map((field, idx) => (
+                              <span key={idx} className={`text-xs px-2 py-1 rounded ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-300'}`}>
+                                {field}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => openTemplateModal(template)}
+                            className={`p-2 rounded hover:bg-gray-200 ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => deleteTemplate(template.id)}
+                            className={`p-2 rounded hover:bg-red-100 ${theme === 'dark' ? 'hover:bg-red-900' : ''}`}
+                          >
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </button>
+                        </div>
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             </Card>
           )}
