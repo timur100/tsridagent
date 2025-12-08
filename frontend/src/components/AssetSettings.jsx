@@ -402,13 +402,13 @@ const AssetSettings = () => {
   const saveRule = async () => {
     try {
       if (editingRule) {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${editingRule.id}`, 'PUT', ruleForm);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${editingRule.id}`, { method: 'PUT', body: ruleForm });
         if (result.success) {
           toast.success('Regel aktualisiert');
           loadRules();
         }
       } else {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', ruleForm);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules`, { method: 'POST', body: ruleForm });
         if (result.success) {
           toast.success('Regel erstellt');
           loadRules();
