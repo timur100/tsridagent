@@ -1,53 +1,45 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - ASSET SETTINGS API COMPREHENSIVE TESTING
-Tests Asset Settings API Backend for Asset Management Configuration System:
+Backend API Testing Suite - ASSET SETTINGS FEATURE TESTING
+Tests Asset Settings API Backend after frontend apiCall fix:
 
-ASSET ID CONFIGURATION APIs (2 endpoints):
-- GET /api/assets/{tenant_id}/config - Get asset ID configuration (returns default if none exists)
-- POST /api/assets/{tenant_id}/config - Save/update asset ID configuration
+The bug was that the frontend was calling apiCall incorrectly - it was passing method and body 
+as separate parameters instead of in an options object.
 
-CATEGORIES CRUD APIs (4 endpoints):
-- GET /api/assets/{tenant_id}/categories - List all categories
-- POST /api/assets/{tenant_id}/categories - Create new category
+ENDPOINTS TO TEST:
+- POST /api/portal/auth/login - Login
+- GET /api/tenants - Get tenants  
+- GET /api/assets/{tenant_id}/categories - List categories
+- POST /api/assets/{tenant_id}/categories - Create category
 - PUT /api/assets/{tenant_id}/categories/{category_id} - Update category
 - DELETE /api/assets/{tenant_id}/categories/{category_id} - Delete category
 
-TEMPLATES CRUD APIs (4 endpoints):
-- GET /api/assets/{tenant_id}/templates - List all templates
-- POST /api/assets/{tenant_id}/templates - Create new template
-- PUT /api/assets/{tenant_id}/templates/{template_id} - Update template
-- DELETE /api/assets/{tenant_id}/templates/{template_id} - Delete template
+Test Scenario:
+1. Login as admin@tsrid.com / admin123
+2. Create a new asset category with:
+   - Name: "E2E Test Category"
+   - Short Code: "E2E"
+   - Type: "hardware"
+   - Description: "End-to-end test"
+   - Icon: "🧪"
+3. Verify the category was saved to the database
+4. Create another category and verify both are persisted
+5. Update a category and verify changes are saved
+6. Delete a category and verify it's removed
 
-RULES CRUD APIs (4 endpoints):
-- GET /api/assets/{tenant_id}/rules - List all rules
-- POST /api/assets/{tenant_id}/rules - Create new rule
-- PUT /api/assets/{tenant_id}/rules/{rule_id} - Update rule (including enabled toggle)
-- DELETE /api/assets/{tenant_id}/rules/{rule_id} - Delete rule
-
-Test Data:
-- Authentication: admin@tsrid.com / admin123
-- Test Tenant ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8 (Europcar)
-- Database: verification_db collections: asset_categories, asset_templates, asset_rules, asset_id_config
+Expected behavior: All CRUD operations should work correctly now.
+Categories are stored in the `asset_categories` collection in MongoDB.
 """
 
 import requests
 import json
 import sys
 from typing import Dict, Any, List
-import pymongo
-import os
-import asyncio
-import websockets
-import jwt
-from datetime import datetime, timezone
 import time
-import uuid
 
 # Backend URL from environment
 BACKEND_URL = "https://configsaver.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
-WS_BASE = BACKEND_URL.replace("https://", "wss://").replace("http://", "ws://")
 
 # MongoDB connection for verification
 MONGO_URL = "mongodb://localhost:27017"
