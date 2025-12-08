@@ -149,36 +149,14 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_recognize_plate_api(self):
-        """Test POST /api/parking/recognize-plate - OCR recognition with image upload"""
+    def test_get_asset_config_api(self):
+        """Test GET /api/assets/{tenant_id}/config - Get asset ID configuration"""
         try:
-            # Check if test image exists
-            test_image_path = "/tmp/test_plate.jpg"
-            if not os.path.exists(test_image_path):
-                self.log_result(
-                    "POST Recognize Plate API",
-                    False,
-                    f"Test image not found at {test_image_path}",
-                    None
-                )
-                return False
-            
-            # Prepare multipart form data
-            with open(test_image_path, 'rb') as f:
-                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                
-                # Create a new session without Content-Type header for multipart
-                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                
-                response = requests.post(
-                    f"{API_BASE}/parking/recognize-plate", 
-                    files=files,
-                    headers=temp_headers
-                )
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/config")
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Recognize Plate API",
+                    "GET Asset Config API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -190,7 +168,7 @@ class AssetSettingsTester:
             # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Recognize Plate API",
+                    "GET Asset Config API",
                     False,
                     "Response indicates failure",
                     data
@@ -200,63 +178,37 @@ class AssetSettingsTester:
             # Check response structure
             if "data" not in data:
                 self.log_result(
-                    "POST Recognize Plate API",
+                    "GET Asset Config API",
                     False,
                     "Missing 'data' field in response",
                     data
                 )
                 return False
             
-            ocr_data = data["data"]
+            config = data["data"]
             
-            # Verify OCR result structure
-            required_fields = ["license_plate", "confidence"]
+            # Verify config structure (should return default if none exists)
+            required_fields = ["prefix", "start_number", "padding", "separator", "include_category", "include_location", "include_year"]
             for field in required_fields:
-                if field not in ocr_data:
+                if field not in config:
                     self.log_result(
-                        "POST Recognize Plate API",
+                        "GET Asset Config API",
                         False,
-                        f"Missing required field in OCR data: {field}",
+                        f"Missing required field in config: {field}",
                         data
                     )
                     return False
             
-            # Verify license plate was recognized
-            license_plate = ocr_data["license_plate"]
-            confidence = ocr_data["confidence"]
-            
-            if not license_plate:
-                self.log_result(
-                    "POST Recognize Plate API",
-                    False,
-                    "No license plate recognized",
-                    data
-                )
-                return False
-            
-            # Check if recognized plate contains expected characters (B-MW 1234 -> BMW1234 or similar)
-            expected_chars = ["B", "M", "W", "1", "2", "3", "4"]
-            recognized_chars = [c for c in expected_chars if c in license_plate]
-            
-            if len(recognized_chars) < 4:  # At least half the characters should be recognized
-                self.log_result(
-                    "POST Recognize Plate API",
-                    False,
-                    f"OCR result '{license_plate}' doesn't contain enough expected characters from 'B-MW 1234'",
-                    data
-                )
-                return False
-            
             self.log_result(
-                "POST Recognize Plate API",
+                "GET Asset Config API",
                 True,
-                f"Successfully recognized license plate '{license_plate}' with {confidence}% confidence"
+                f"Successfully retrieved asset config with prefix '{config['prefix']}'"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Recognize Plate API",
+                "GET Asset Config API",
                 False,
                 f"Exception occurred: {str(e)}"
             )
