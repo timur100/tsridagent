@@ -214,7 +214,7 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_entry_with_ocr_api(self):
+    def test_save_asset_config_api(self):
         """Test POST /api/parking/entry-with-ocr - Entry with automatic OCR recognition"""
         try:
             # Check if test image exists
