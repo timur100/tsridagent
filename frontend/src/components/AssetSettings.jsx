@@ -272,30 +272,53 @@ const AssetSettings = () => {
 
   const saveCate = async () => {
     try {
+      console.log('[AssetSettings] saveCate called');
+      console.log('[AssetSettings] editingCategory:', editingCategory);
+      console.log('[AssetSettings] categoryForm:', categoryForm);
+      console.log('[AssetSettings] selectedTenantId:', selectedTenantId);
+      
       if (editingCategory) {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${editingCategory.id}`, 'PUT', categoryForm);
+        const url = `/api/assets/${selectedTenantId}/categories/${editingCategory.id}`;
+        console.log('[AssetSettings] PUT URL:', url);
+        const result = await apiCall(url, 'PUT', categoryForm);
+        console.log('[AssetSettings] PUT result:', JSON.stringify(result, null, 2));
+        
         if (result.success || result.data?.success) {
           setShowCategoryModal(false);
           toast.success('Kategorie aktualisiert');
           await loadCategories();
         } else {
-          toast.error('Fehler beim Speichern');
+          console.error('[AssetSettings] PUT failed:', result);
+          toast.error('Fehler beim Speichern: ' + JSON.stringify(result));
         }
       } else {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', categoryForm);
+        const url = `/api/assets/${selectedTenantId}/categories`;
+        console.log('[AssetSettings] POST URL:', url);
+        console.log('[AssetSettings] POST data:', JSON.stringify(categoryForm, null, 2));
+        
+        const result = await apiCall(url, 'POST', categoryForm);
+        console.log('[AssetSettings] POST result:', JSON.stringify(result, null, 2));
+        console.log('[AssetSettings] result.success:', result.success);
+        console.log('[AssetSettings] result.data?.success:', result.data?.success);
+        
         if (result.success || result.data?.success) {
+          console.log('[AssetSettings] Save successful, closing modal and reloading');
           setShowCategoryModal(false);
-          toast.success('Kategorie erstellt');
+          toast.success('Kategorie erstellt - wird neu geladen...');
+          
           // Force re-render by setting empty first, then loading
           setCategories([]);
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 200));
           await loadCategories();
+          console.log('[AssetSettings] Categories reloaded, new count:', categories.length);
         } else {
-          toast.error('Fehler beim Speichern');
+          console.error('[AssetSettings] POST failed:', result);
+          toast.error('Fehler beim Speichern: ' + JSON.stringify(result));
         }
       }
     } catch (error) {
-      console.error('[AssetSettings] Error saving category:', error);
+      console.error('[AssetSettings] Exception in saveCate:', error);
+      console.error('[AssetSettings] Error stack:', error.stack);
       toast.error('Fehler beim Speichern: ' + error.message);
     }
   };
