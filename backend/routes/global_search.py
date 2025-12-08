@@ -302,6 +302,7 @@ async def global_search(
             "total": total_results,
             "priority_match": priority_match,
             "results": {
+                "assets": assets_results[:25],  # Limit to 25
                 "vehicles": vehicles_results[:25],  # Limit to 25
                 "geraete": geraete_results[:25],  # Limit to 25
                 "standorte": standorte_results[:25],  # Limit to 25
