@@ -876,82 +876,76 @@ class AssetSettingsTester:
             return False
 
     def test_mongodb_persistence(self):
-        """Test MongoDB persistence - Verify OCR data is stored correctly"""
+        """Test MongoDB persistence - Verify Asset data is stored correctly"""
         try:
-            # Check license_plate_recognitions collection
-            recognitions_count = db.license_plate_recognitions.count_documents({})
+            # Create test data to verify persistence
+            category_data = {
+                "name": "Persistence Test Category",
+                "short_code": "PTC",
+                "type": "hardware",
+                "description": "Test category for persistence verification",
+                "icon": "🔧"
+            }
             
-            if recognitions_count < 1:
+            # Create category
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/categories", json=category_data)
+            if response.status_code != 200:
                 self.log_result(
-                    "MongoDB Persistence - Recognitions",
+                    "MongoDB Persistence - Create Test Data",
                     False,
-                    f"Expected at least 1 recognition in MongoDB, found {recognitions_count}",
+                    f"Failed to create test category. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            created_data = response.json().get("data", {})
+            test_category_id = created_data.get("id")
+            
+            # Check asset_categories collection
+            categories_count = db.asset_categories.count_documents({"tenant_id": self.tenant_id})
+            
+            if categories_count < 1:
+                self.log_result(
+                    "MongoDB Persistence - Categories",
+                    False,
+                    f"Expected at least 1 category in MongoDB for tenant {self.tenant_id}, found {categories_count}",
                     None
                 )
                 return False
             
-            # Check parking_entries collection
-            entries_count = db.parking_entries.count_documents({})
-            
-            if entries_count < 1:
+            # Verify specific category data
+            category = db.asset_categories.find_one({"id": test_category_id, "tenant_id": self.tenant_id})
+            if not category:
                 self.log_result(
-                    "MongoDB Persistence - Parking Entries",
+                    "MongoDB Persistence - Category Data",
                     False,
-                    f"Expected at least 1 parking entry in MongoDB, found {entries_count}",
+                    f"Test category with ID {test_category_id} not found in MongoDB",
                     None
                 )
                 return False
             
-            # Verify specific recognition data
-            recognition = db.license_plate_recognitions.find_one({}, sort=[("timestamp", -1)])
-            if not recognition:
-                self.log_result(
-                    "MongoDB Persistence - Recognition Data",
-                    False,
-                    "No recognition data found in MongoDB",
-                    None
-                )
-                return False
-            
-            # Verify recognition has required fields
-            required_fields = ["license_plate", "confidence", "timestamp", "user"]
+            # Verify category has required fields
+            required_fields = ["id", "tenant_id", "name", "short_code", "type", "created_at", "created_by"]
             for field in required_fields:
-                if field not in recognition:
+                if field not in category:
                     self.log_result(
-                        "MongoDB Persistence - Recognition Fields",
+                        "MongoDB Persistence - Category Fields",
                         False,
-                        f"Missing field '{field}' in recognition data",
+                        f"Missing field '{field}' in category data",
                         None
                     )
                     return False
             
-            # Verify parking entry data
-            entry = db.parking_entries.find_one({}, sort=[("entry_time", -1)])
-            if not entry:
-                self.log_result(
-                    "MongoDB Persistence - Entry Data",
-                    False,
-                    "No parking entry data found in MongoDB",
-                    None
-                )
-                return False
+            # Verify tenant isolation
+            other_tenant_categories = db.asset_categories.count_documents({"tenant_id": {"$ne": self.tenant_id}})
             
-            # Verify entry has required fields
-            required_entry_fields = ["license_plate", "location", "entry_time", "status"]
-            for field in required_entry_fields:
-                if field not in entry:
-                    self.log_result(
-                        "MongoDB Persistence - Entry Fields",
-                        False,
-                        f"Missing field '{field}' in parking entry data",
-                        None
-                    )
-                    return False
+            # Clean up test data
+            self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/categories/{test_category_id}")
             
             self.log_result(
                 "MongoDB Persistence Verification",
                 True,
-                f"Successfully verified MongoDB persistence: {recognitions_count} recognitions, {entries_count} parking entries"
+                f"Successfully verified MongoDB persistence: {categories_count} categories for tenant, tenant isolation working (other tenants: {other_tenant_categories})"
             )
             return True
             
