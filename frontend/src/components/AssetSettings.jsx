@@ -216,7 +216,8 @@ const AssetSettings = () => {
     try {
       const result = await apiCall(`/api/assets/${selectedTenantId}/templates`);
       if (result.success) {
-        const data = result.data || [];
+        // Handle nested response format: result.data.data
+        const data = result.data?.data || result.data || [];
         setTemplates(Array.isArray(data) ? data : []);
       } else {
         setTemplates([]);
