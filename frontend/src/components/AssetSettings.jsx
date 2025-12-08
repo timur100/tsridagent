@@ -104,42 +104,6 @@ const AssetSettings = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="mb-4">
-        <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-          📦 Asset Konfiguration
-        </h3>
-        <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          Konfigurieren Sie Asset-IDs, Kategorien und Regeln pro Tenant
-        </p>
-      </div>
-
-      {/* Tenant Selection */}
-      <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-        <div className="flex items-center gap-4">
-          <Building2 className="h-5 w-5 text-[#c00000]" />
-          <label className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Tenant auswählen:
-          </label>
-          <select
-            value={selectedTenantId}
-            onChange={(e) => setSelectedTenantId(e.target.value)}
-            className={`flex-1 px-4 py-2 rounded-lg border ${
-              theme === 'dark'
-                ? 'bg-[#1f1f1f] border-gray-700 text-white'
-                : 'bg-white border-gray-300 text-gray-900'
-            }`}
-          >
-            <option value="">-- Tenant wählen --</option>
-            {tenants.map((tenant) => (
-              <option key={tenant.tenant_id} value={tenant.tenant_id}>
-                {tenant.display_name || tenant.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </Card>
-
       {/* Tabs */}
       <Card className={`p-1 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex gap-2">
