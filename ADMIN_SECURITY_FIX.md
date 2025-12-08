@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://hardware-check.preview.emergentagent.com/portal/admin
+https://asset-tracker-270.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
