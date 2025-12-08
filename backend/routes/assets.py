@@ -618,8 +618,8 @@ async def generate_qr_code(
         if not asset:
             raise HTTPException(status_code=404, detail="Asset nicht gefunden")
         
-        # Create QR code data
-        qr_data = f"Asset-ID: {asset_id}\nName: {asset.get('name', '')}\nSN: {asset.get('serial_number', '')}"
+        # Create QR code data - only Asset-ID
+        qr_data = asset_id
         
         # Generate QR code
         qr = qrcode.QRCode(
