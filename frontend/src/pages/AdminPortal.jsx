@@ -1664,6 +1664,66 @@ const AdminPortalContent = () => {
           </div>
         )}
 
+        {activeTab === 'assets' && (
+          <div>
+            {/* Assets Sub-Navigation */}
+            <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setAssetsSubTab('hardware')}
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    assetsSubTab === 'hardware'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Monitor className="h-5 w-5" />
+                  Hardware Assets
+                </button>
+                <button
+                  onClick={() => setAssetsSubTab('software')}
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    assetsSubTab === 'software'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Package className="h-5 w-5" />
+                  Software Assets
+                </button>
+              </div>
+            </div>
+
+            {/* Render appropriate component based on sub-tab */}
+            {assetsSubTab === 'hardware' && (
+              <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h2 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Hardware Asset Management
+                </h2>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Verwalten Sie alle Hardware-Assets (Computer, Monitore, Drucker, etc.)
+                </p>
+                {/* TODO: Hardware Asset Management Component */}
+              </div>
+            )}
+            {assetsSubTab === 'software' && (
+              <div className={`p-6 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <h2 className={`text-2xl font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Software Asset Management
+                </h2>
+                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Verwalten Sie alle Software-Lizenzen und Subscriptions
+                </p>
+                {/* TODO: Software Asset Management Component */}
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'resources' && (
           <div>
             <ResourcesManagement />
