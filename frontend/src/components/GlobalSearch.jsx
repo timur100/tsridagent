@@ -171,20 +171,29 @@ const GlobalSearch = ({ onResultSelect }) => {
         setResults(result);
         setShowResults(true);
 
-        // Auto-open only for barcode scans (8+ characters) or order numbers
-        // Short searches (2-7 characters) should only show suggestions
+        // Auto-open logic for specific search patterns
         const isBarcodeSearch = /^\d+$/.test(trimmedQuery) && trimmedQuery.length >= 8;  // 8+ digit barcode
         const isOrderNumberSearch = trimmedQuery.toUpperCase().startsWith('BE.');  // Order numbers
+        const isAssetIDSearch = /^TSR\.EC\.[A-Z]+\.\d+$/i.test(trimmedQuery);  // Asset-ID format: TSR.EC.SCDE.000001
         
-        if (result.priority_match && result.total > 0 && (isBarcodeSearch || isOrderNumberSearch)) {
-          // Automatically open only for complete barcode scans or order numbers
+        // Auto-open for exact matches or specific patterns
+        if (result.priority_match && result.total > 0 && (isBarcodeSearch || isOrderNumberSearch || isAssetIDSearch)) {
+          // Automatically open for:
+          // - Complete barcode scans
+          // - Order numbers
+          // - Asset-IDs (from QR code scan)
           setTimeout(() => {
             handleResultClick(result.priority_match);
           }, 100);
+        } else if (result.total === 1 && result.priority_match) {
+          // If only ONE result found (any type), auto-open it after short delay
+          setTimeout(() => {
+            handleResultClick(result.priority_match);
+          }, 300);
         } else if (result.total === 0) {
           toast.error('Keine Ergebnisse gefunden');
         }
-        // For all other searches (including short 2-7 char searches), just show suggestions
+        // For all other searches (multiple results), just show suggestions
       }
     } catch (error) {
       console.error('Search error:', error);
