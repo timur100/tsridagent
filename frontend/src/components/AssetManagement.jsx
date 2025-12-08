@@ -106,6 +106,42 @@ const AssetManagement = () => {
     }
   };
 
+
+  // Function to show specific asset details (called from global search)
+  const showAssetDetails = async (assetId) => {
+    try {
+      // Find asset in current list
+      let asset = assets.find(a => a.asset_id === assetId);
+      
+      // If not in current list, fetch from API
+      if (!asset) {
+        const result = await apiCall(`/api/assets/${selectedTenantId}/assets/${assetId}`);
+        if (result.success) {
+          asset = result.data?.data || result.data;
+        }
+      }
+      
+      if (asset) {
+        setSelectedAsset(asset);
+        setShowDetailModal(true);
+      } else {
+        toast.error('Asset nicht gefunden');
+      }
+    } catch (error) {
+      console.error('Error loading asset details:', error);
+      toast.error('Fehler beim Laden der Asset-Details');
+    }
+  };
+
+  // Expose function to parent via ref or global
+  React.useEffect(() => {
+    // Store function globally so AdminPortal can call it
+    window.showAssetDetails = showAssetDetails;
+    return () => {
+      delete window.showAssetDetails;
+    };
+  }, [assets, selectedTenantId]);
+
   const loadIdPreview = async () => {
     try {
       const result = await apiCall(
