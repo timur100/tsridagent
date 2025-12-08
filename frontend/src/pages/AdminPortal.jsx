@@ -744,9 +744,14 @@ const AdminPortalContent = () => {
                     // Open Asset Management with this asset
                     setActiveTab('assets');
                     setAssetsSubTab('hardware');
-                    // Show asset details modal
-                    toast.success(`Asset gefunden: ${result.data.asset_id}`);
-                    // You can add setSelectedAssetId if you create an asset detail modal
+                    // Show asset details modal after tab switch
+                    setTimeout(() => {
+                      if (window.showAssetDetails) {
+                        window.showAssetDetails(result.data.asset_id);
+                      } else {
+                        toast.success(`Asset gefunden: ${result.data.asset_id}`);
+                      }
+                    }, 100);
                   } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
