@@ -1180,12 +1180,13 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Asset Management Feature Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
   fastfood_station_testing_complete: true
-  notes: "KIOSK OVERVIEW TESTING ATTEMPTED: Successfully navigated to Europcar tenant detail page but Kiosk tab not found. Navigation successful through login → Tenants → Europcar tenant → tenant detail page. However, the expected Kiosk tab with Übersicht sub-tab and filter functionality is not accessible. This indicates the feature may not be implemented yet or may be located elsewhere."
+  notes: "ASSET MANAGEMENT TESTING INITIATED: Testing complete Asset Management feature with 215 Desko Scanner assets for Europcar tenant. Requirements: Login → Assets tab → Hardware Assets → Select Europcar → Verify 215 assets with TSR.EC.SCDDE format, test search/filter, edit functionality, and ID generator."
   
   - task: "Europcar Schnellmenü Route Testing - /menue Route Implementation"
     implemented: true
