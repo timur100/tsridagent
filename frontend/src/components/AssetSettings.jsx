@@ -338,7 +338,7 @@ const AssetSettings = () => {
       <Card className={`p-1 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex gap-2">
           <button
-            onClick={() => setActiveTab('asset-ids')}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('asset-ids'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'asset-ids'
                 ? 'bg-[#c00000] text-white'
@@ -346,12 +346,13 @@ const AssetSettings = () => {
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
+            type="button"
           >
             <Settings className="h-5 w-5" />
             Asset-IDs
           </button>
           <button
-            onClick={() => setActiveTab('categories')}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('categories'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'categories'
                 ? 'bg-[#c00000] text-white'
@@ -359,12 +360,13 @@ const AssetSettings = () => {
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
+            type="button"
           >
             <Package className="h-5 w-5" />
             Kategorien
           </button>
           <button
-            onClick={() => setActiveTab('templates')}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('templates'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'templates'
                 ? 'bg-[#c00000] text-white'
@@ -372,12 +374,13 @@ const AssetSettings = () => {
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
+            type="button"
           >
             <Cpu className="h-5 w-5" />
             Vorlagen
           </button>
           <button
-            onClick={() => setActiveTab('rules')}
+            onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('rules'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'rules'
                 ? 'bg-[#c00000] text-white'
@@ -385,6 +388,7 @@ const AssetSettings = () => {
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
+            type="button"
           >
             <Key className="h-5 w-5" />
             Regeln
