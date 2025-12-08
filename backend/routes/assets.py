@@ -444,6 +444,155 @@ async def save_asset_config(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ===== ASSETS CRUD =====
+@router.get("/{tenant_id}/assets")
+async def get_assets(
+    tenant_id: str,
+    category_id: Optional[str] = None,
+    status: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all assets for a tenant with optional filters"""
+    try:
+        query = {"tenant_id": tenant_id}
+        
+        if category_id:
+            query["category_id"] = category_id
+        if status:
+            query["status"] = status
+        
+        assets = list(db.assets.find(query, {"_id": 0}).sort("asset_id", 1))
+        
+        return {
+            "success": True,
+            "data": assets
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/assets/{asset_id}")
+async def get_asset(
+    tenant_id: str,
+    asset_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Get a single asset by ID"""
+    try:
+        asset = db.assets.find_one(
+            {"tenant_id": tenant_id, "asset_id": asset_id},
+            {"_id": 0}
+        )
+        
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset nicht gefunden")
+        
+        return {
+            "success": True,
+            "data": asset
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/{tenant_id}/assets")
+async def create_asset(
+    tenant_id: str,
+    asset: Asset,
+    token_data: dict = Depends(verify_token)
+):
+    """Create a new asset"""
+    try:
+        # Check if asset_id already exists
+        existing = db.assets.find_one({
+            "tenant_id": tenant_id,
+            "asset_id": asset.asset_id
+        })
+        
+        if existing:
+            raise HTTPException(status_code=400, detail="Asset-ID bereits vorhanden")
+        
+        asset_data = {
+            "tenant_id": tenant_id,
+            **asset.dict(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": token_data.get("email"),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        result = db.assets.insert_one(asset_data)
+        
+        if not result.inserted_id:
+            raise HTTPException(status_code=500, detail="Fehler beim Erstellen")
+        
+        return {
+            "success": True,
+            "message": "Asset erstellt",
+            "data": {k: v for k, v in asset_data.items() if k != '_id'}
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] Failed to create asset: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.put("/{tenant_id}/assets/{asset_id}")
+async def update_asset(
+    tenant_id: str,
+    asset_id: str,
+    asset: Asset,
+    token_data: dict = Depends(verify_token)
+):
+    """Update an asset"""
+    try:
+        result = db.assets.update_one(
+            {"tenant_id": tenant_id, "asset_id": asset_id},
+            {
+                "$set": {
+                    **asset.dict(),
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                    "updated_by": token_data.get("email")
+                }
+            }
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Asset nicht gefunden")
+        
+        return {
+            "success": True,
+            "message": "Asset aktualisiert"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/{tenant_id}/assets/{asset_id}")
+async def delete_asset(
+    tenant_id: str,
+    asset_id: str,
+    token_data: dict = Depends(verify_token)
+):
+    """Delete an asset"""
+    try:
+        result = db.assets.delete_one({
+            "tenant_id": tenant_id,
+            "asset_id": asset_id
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Asset nicht gefunden")
+        
+        return {
+            "success": True,
+            "message": "Asset gelöscht"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ===== ASSET ID GENERATION =====
 @router.post("/{tenant_id}/generate-id")
 async def generate_asset_id(
