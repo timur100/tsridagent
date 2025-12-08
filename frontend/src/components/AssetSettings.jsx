@@ -186,7 +186,7 @@ const AssetSettings = () => {
       ];
 
       for (const rule of demoRules) {
-        const ruleResult = await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', rule);
+        const ruleResult = await apiCall(`/api/assets/${selectedTenantId}/rules`, { method: 'POST', body: rule });
         console.log(`[AssetSettings] Created rule: ${rule.name}`, ruleResult);
       }
 
