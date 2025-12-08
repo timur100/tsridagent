@@ -43,7 +43,11 @@ import {
   Mail,
   User,
   Edit,
-  Navigation
+  Navigation,
+  BarChart3,
+  Cpu,
+  Package,
+  Key
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useWebSocket } from '../hooks/useWebSocket';
