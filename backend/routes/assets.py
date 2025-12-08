@@ -83,7 +83,11 @@ async def create_category(
             "created_by": token_data.get("email")
         }
         
-        db.asset_categories.insert_one(category_data)
+        result = db.asset_categories.insert_one(category_data)
+        
+        # Verify insertion
+        if not result.inserted_id:
+            raise HTTPException(status_code=500, detail="Failed to insert category")
         
         return {
             "success": True,
@@ -91,6 +95,7 @@ async def create_category(
             "data": {k: v for k, v in category_data.items() if k != '_id'}
         }
     except Exception as e:
+        print(f"[ERROR] Failed to create category: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.put("/{tenant_id}/categories/{category_id}")
