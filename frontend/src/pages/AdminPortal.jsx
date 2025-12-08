@@ -921,6 +921,7 @@ const AdminPortalContent = () => {
                   { id: 'users-roles', label: 'Users & Roles', icon: Users },
                   { id: 'tenants', label: 'Tenants', icon: Users },
                   { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
+                  { id: 'assets', label: 'Assets', icon: Boxes },
                   { id: 'devices', label: 'Devices', icon: Monitor },
                   { id: 'locations', label: 'Locations', icon: MapPin },
                   { id: 'inventory', label: 'Inventory', icon: Package },
