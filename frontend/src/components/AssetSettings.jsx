@@ -164,6 +164,118 @@ const AssetSettings = () => {
     }
   };
 
+  // Category Functions
+  const openCategoryModal = (category = null) => {
+    if (category) {
+      setEditingCategory(category);
+      setCategoryForm(category);
+    } else {
+      setEditingCategory(null);
+      setCategoryForm({ name: '', short_code: '', type: 'hardware', description: '', icon: '' });
+    }
+    setShowCategoryModal(true);
+  };
+
+  const saveCate = async () => {
+    try {
+      // TODO: Backend API endpoint
+      if (editingCategory) {
+        setCategories(categories.map(c => c.id === editingCategory.id ? { ...categoryForm, id: c.id } : c));
+        toast.success('Kategorie aktualisiert');
+      } else {
+        const newCategory = { ...categoryForm, id: Date.now().toString() };
+        setCategories([...categories, newCategory]);
+        toast.success('Kategorie erstellt');
+      }
+      setShowCategoryModal(false);
+    } catch (error) {
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  const deleteCategory = async (id) => {
+    if (window.confirm('Kategorie wirklich löschen?')) {
+      // TODO: Backend API endpoint
+      setCategories(categories.filter(c => c.id !== id));
+      toast.success('Kategorie gelöscht');
+    }
+  };
+
+  // Template Functions
+  const openTemplateModal = (template = null) => {
+    if (template) {
+      setEditingTemplate(template);
+      setTemplateForm(template);
+    } else {
+      setEditingTemplate(null);
+      setTemplateForm({ name: '', category_id: '', fields: [], description: '' });
+    }
+    setShowTemplateModal(true);
+  };
+
+  const saveTemplate = async () => {
+    try {
+      if (editingTemplate) {
+        setTemplates(templates.map(t => t.id === editingTemplate.id ? { ...templateForm, id: t.id } : t));
+        toast.success('Vorlage aktualisiert');
+      } else {
+        const newTemplate = { ...templateForm, id: Date.now().toString() };
+        setTemplates([...templates, newTemplate]);
+        toast.success('Vorlage erstellt');
+      }
+      setShowTemplateModal(false);
+    } catch (error) {
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  const deleteTemplate = async (id) => {
+    if (window.confirm('Vorlage wirklich löschen?')) {
+      setTemplates(templates.filter(t => t.id !== id));
+      toast.success('Vorlage gelöscht');
+    }
+  };
+
+  // Rule Functions
+  const openRuleModal = (rule = null) => {
+    if (rule) {
+      setEditingRule(rule);
+      setRuleForm(rule);
+    } else {
+      setEditingRule(null);
+      setRuleForm({ name: '', type: 'warranty', condition: '', action: '', enabled: true });
+    }
+    setShowRuleModal(true);
+  };
+
+  const saveRule = async () => {
+    try {
+      if (editingRule) {
+        setRules(rules.map(r => r.id === editingRule.id ? { ...ruleForm, id: r.id } : r));
+        toast.success('Regel aktualisiert');
+      } else {
+        const newRule = { ...ruleForm, id: Date.now().toString() };
+        setRules([...rules, newRule]);
+        toast.success('Regel erstellt');
+      }
+      setShowRuleModal(false);
+    } catch (error) {
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  const deleteRule = async (id) => {
+    if (window.confirm('Regel wirklich löschen?')) {
+      setRules(rules.filter(r => r.id !== id));
+      toast.success('Regel gelöscht');
+    }
+  };
+
+  const toggleRule = async (id) => {
+    setRules(rules.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r));
+    toast.success('Regel-Status aktualisiert');
+  };
+
   const getExampleAssetId = () => {
     const { prefix, separator, padding, include_category, include_location, include_year } = assetIdConfig;
     let example = prefix || 'ASSET';
