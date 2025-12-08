@@ -153,20 +153,25 @@ const AssetSettings = () => {
       }
 
       // Create demo template
+      console.log('[AssetSettings] Creating demo template...');
       const categories = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      console.log('[AssetSettings] Fetched categories for template:', categories);
+      
       if (categories.success && categories.data && categories.data.length > 0) {
         const pcCategory = categories.data.find(c => c.short_code === 'PC');
         if (pcCategory) {
-          await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', {
+          const templateResult = await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', {
             name: 'Standard Laptop',
             category_id: pcCategory.id,
             fields: ['CPU', 'RAM', 'SSD', 'Display', 'Betriebssystem'],
             description: 'Standard Büro-Laptop Konfiguration'
           });
+          console.log('[AssetSettings] Created template:', templateResult);
         }
       }
 
       // Create demo rules
+      console.log('[AssetSettings] Creating 3 demo rules...');
       const demoRules = [
         { name: 'Garantie-Warnung', type: 'warranty', condition: '30 Tage vor Ablauf', action: 'E-Mail Benachrichtigung senden', enabled: true },
         { name: 'Wartungs-Intervall', type: 'maintenance', condition: 'Alle 6 Monate', action: 'Wartungsticket erstellen', enabled: true },
@@ -174,23 +179,27 @@ const AssetSettings = () => {
       ];
 
       for (const rule of demoRules) {
-        await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', rule);
+        const ruleResult = await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', rule);
+        console.log(`[AssetSettings] Created rule: ${rule.name}`, ruleResult);
       }
 
       toast.dismiss();
       toast.success('6 Kategorien, 1 Vorlage und 3 Regeln erstellt!');
+      console.log('[AssetSettings] Demo data creation completed!');
       
       // Reload all data
+      console.log('[AssetSettings] Reloading all data...');
       await loadCategories();
       await loadTemplates();
       await loadRules();
       
       // Switch to categories tab to show results
+      console.log('[AssetSettings] Switching to categories tab');
       setActiveTab('categories');
     } catch (error) {
-      console.error('Error loading demo data:', error);
+      console.error('[AssetSettings] Error loading demo data:', error);
       toast.dismiss();
-      toast.error('Fehler beim Laden der Demo-Daten');
+      toast.error('Fehler beim Laden der Demo-Daten: ' + error.message);
     }
   };
 
