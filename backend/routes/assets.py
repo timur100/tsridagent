@@ -427,6 +427,169 @@ async def save_asset_config(
         return {
             "success": True,
             "message": "Konfiguration gespeichert"
+
+# ===== ASSET ID GENERATION =====
+@router.post("/{tenant_id}/generate-id")
+async def generate_asset_id(
+    tenant_id: str,
+    request: AssetIDRequest,
+    token_data: dict = Depends(verify_token)
+):
+    """Generate a new Asset-ID based on tenant configuration"""
+    try:
+        # Get the configuration
+        config = db.asset_id_config.find_one(
+            {"tenant_id": tenant_id},
+            {"_id": 0}
+        )
+        
+        if not config:
+            # Use default config
+            config = {
+                "prefix": "ASSET",
+                "start_number": 1,
+                "padding": 5,
+                "separator": "-",
+                "include_category": True,
+                "include_location": False,
+                "include_year": False
+            }
+        
+        # Build the Asset-ID
+        parts = [config["prefix"]]
+        separator = config["separator"]
+        
+        # Add year if configured
+        if config.get("include_year"):
+            parts.append(str(datetime.now().year))
+        
+        # Add category code if configured and provided
+        if config.get("include_category") and request.category_id:
+            category = db.asset_categories.find_one(
+                {"id": request.category_id, "tenant_id": tenant_id},
+                {"_id": 0, "short_code": 1}
+            )
+            if category:
+                parts.append(category["short_code"])
+        
+        # Add location code if configured and provided
+        if config.get("include_location") and request.location_id:
+            # For now, use a placeholder. You can integrate with actual location data
+            parts.append(request.location_id[:5].upper())
+        
+        # Get the next sequence number
+        # Find the highest used number for this prefix pattern
+        prefix_pattern = separator.join(parts)
+        
+        # Query existing asset IDs to find the highest number
+        # This assumes asset IDs are stored somewhere - we'll use a counter collection
+        counter_key = f"{tenant_id}:{prefix_pattern}"
+        counter = db.asset_id_counters.find_one({"key": counter_key})
+        
+        if counter:
+            next_number = counter["current"] + 1
+        else:
+            next_number = config.get("start_number", 1)
+        
+        # Update the counter
+        db.asset_id_counters.update_one(
+            {"key": counter_key},
+            {"$set": {"current": next_number, "updated_at": datetime.now(timezone.utc).isoformat()}},
+            upsert=True
+        )
+        
+        # Add the padded number
+        padding = config.get("padding", 5)
+        parts.append(str(next_number).zfill(padding))
+        
+        # Generate the final Asset-ID
+        asset_id = separator.join(parts)
+        
+        return {
+            "success": True,
+            "data": {
+                "asset_id": asset_id,
+                "components": {
+                    "prefix": config["prefix"],
+                    "year": str(datetime.now().year) if config.get("include_year") else None,
+                    "category": parts[2] if config.get("include_category") and request.category_id else None,
+                    "location": parts[-2] if config.get("include_location") and request.location_id else None,
+                    "number": next_number
+                }
+            }
+        }
+    except Exception as e:
+        print(f"[ERROR] Failed to generate asset ID: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/preview-id")
+async def preview_asset_id(
+    tenant_id: str,
+    category_id: Optional[str] = None,
+    location_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Preview what an Asset-ID would look like without generating it"""
+    try:
+        # Get the configuration
+        config = db.asset_id_config.find_one(
+            {"tenant_id": tenant_id},
+            {"_id": 0}
+        )
+        
+        if not config:
+            config = {
+                "prefix": "ASSET",
+                "start_number": 1,
+                "padding": 5,
+                "separator": "-",
+                "include_category": True,
+                "include_location": False,
+                "include_year": False
+            }
+        
+        # Build preview
+        parts = [config["prefix"]]
+        separator = config["separator"]
+        
+        if config.get("include_year"):
+            parts.append(str(datetime.now().year))
+        
+        if config.get("include_category"):
+            if category_id:
+                category = db.asset_categories.find_one(
+                    {"id": category_id, "tenant_id": tenant_id},
+                    {"_id": 0, "short_code": 1}
+                )
+                if category:
+                    parts.append(category["short_code"])
+                else:
+                    parts.append("CAT")
+            else:
+                parts.append("CAT")
+        
+        if config.get("include_location"):
+            if location_id:
+                parts.append(location_id[:5].upper())
+            else:
+                parts.append("LOC")
+        
+        # Use "XXXXX" as placeholder for number
+        padding = config.get("padding", 5)
+        parts.append("X" * padding)
+        
+        preview_id = separator.join(parts)
+        
+        return {
+            "success": True,
+            "data": {
+                "preview": preview_id,
+                "description": f"Nächste ID wird in diesem Format generiert (X = fortlaufende Nummer)"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
