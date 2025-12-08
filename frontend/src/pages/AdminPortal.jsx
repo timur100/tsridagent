@@ -2682,6 +2682,9 @@ const AdminPortalContent = () => {
                             {ordersView === 'kiosk' && (
                               <OrderKiosk tenantId="default-tenant" locationId="default-location" />
                             )}
+                            {ordersView === 'kioskNew' && (
+                              <KioskTerminal tenantId="default-tenant" locationId="default-location" />
+                            )}
                             {ordersView === 'kitchen' && (
                               <KitchenDisplay tenantId="default-tenant" locationId="default-location" />
                             )}
