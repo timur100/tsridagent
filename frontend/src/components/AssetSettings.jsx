@@ -164,11 +164,14 @@ const AssetSettings = () => {
       if (categories.success && categories.data && categories.data.length > 0) {
         const pcCategory = categories.data.find(c => c.short_code === 'PC');
         if (pcCategory) {
-          const templateResult = await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', {
-            name: 'Standard Laptop',
-            category_id: pcCategory.id,
-            fields: ['CPU', 'RAM', 'SSD', 'Display', 'Betriebssystem'],
-            description: 'Standard Büro-Laptop Konfiguration'
+          const templateResult = await apiCall(`/api/assets/${selectedTenantId}/templates`, { 
+            method: 'POST', 
+            body: {
+              name: 'Standard Laptop',
+              category_id: pcCategory.id,
+              fields: ['CPU', 'RAM', 'SSD', 'Display', 'Betriebssystem'],
+              description: 'Standard Büro-Laptop Konfiguration'
+            }
           });
           console.log('[AssetSettings] Created template:', templateResult);
         }
