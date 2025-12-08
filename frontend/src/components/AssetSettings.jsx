@@ -216,12 +216,17 @@ const AssetSettings = () => {
   const saveTemplate = async () => {
     try {
       if (editingTemplate) {
-        setTemplates(templates.map(t => t.id === editingTemplate.id ? { ...templateForm, id: t.id } : t));
-        toast.success('Vorlage aktualisiert');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/templates/${editingTemplate.id}`, 'PUT', templateForm);
+        if (result.success) {
+          toast.success('Vorlage aktualisiert');
+          loadTemplates();
+        }
       } else {
-        const newTemplate = { ...templateForm, id: Date.now().toString() };
-        setTemplates([...templates, newTemplate]);
-        toast.success('Vorlage erstellt');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', templateForm);
+        if (result.success) {
+          toast.success('Vorlage erstellt');
+          loadTemplates();
+        }
       }
       setShowTemplateModal(false);
     } catch (error) {
