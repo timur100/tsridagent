@@ -1173,6 +1173,18 @@ frontend:
           agent: "testing"
           comment: "✅ HIERARCHY STATISTICS BELGIUM EDGE CASE TESTING COMPLETED SUCCESSFULLY: Comprehensive API testing completed with CRITICAL SUCCESS confirmed for Belgium edge case. BELGIUM EDGE CASE VERIFICATION (CRITICAL): ✅ Belgium tenant ID: 1d3653db-86cb-4dd1-9ef5-0236b116def8-belgien found in hierarchy, ✅ Standorte (locations): 0 - CORRECT ✓, ✅ Geräte (devices): 0 - CORRECT ✓, ✅ Physische Standorte (physical_locations): 0 - CORRECT ✓, ✅ Mitarbeiter (users): 1 - CORRECT ✓. BELGIUM SHOWS PERFECT 0,0,0,1 PATTERN AS EXPECTED! HIERARCHY COMPARISON TESTING: ✅ Europcar (Organization): 206 locations, 210 devices, 214 physical, 1 user - matches expected ~206/210, ✅ Europa (Continent): 206 locations, 210 devices, 206 physical, 1 user - matches expected, ✅ Deutschland (Country): 206 locations, 210 devices, 206 physical, 1 user - matches expected ~206/210, ✅ Berlin (City): 8 locations, 9 devices, 8 physical, 1 user - higher than expected 1/2 but shows proper filtering. API FUNCTIONALITY VERIFICATION: ✅ Hierarchy stats API working correctly with tenant IDs (not query parameters), ✅ Belgium edge case logic implemented correctly - no fallback to organization counts, ✅ Countries/regions WITHOUT locations properly show 0 for all stats except Users=1, ✅ All hierarchy levels return appropriate filtered statistics, ✅ No 500 errors, all API calls return 200 OK. SUCCESS CRITERIA FULLY MET: Belgium shows 0,0,0,1 ✓, No fallback to organization-level counts ✓, Users field shows tenant admin (1) ✓, Other hierarchy levels show correct filtered data ✓, API authentication working ✓. The Belgium edge case fix is fully functional and production-ready - countries without locations correctly show zeros while maintaining user count of 1."
 
+  - task: "Asset Management Feature Testing - Complete Desko Scanner Assets Verification"
+    implemented: true
+    working: "NA"
+    file: "frontend/src/components/AssetManagement.jsx, frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+          agent: "main"
+          comment: "🔧 ASSET MANAGEMENT FEATURE TESTING REQUESTED: Complete testing of Asset Management feature with focus on 215 Desko Scanner assets for Europcar tenant. TESTING REQUIREMENTS: 1) Login as admin@tsrid.com/admin123, 2) Navigate to Assets (📦 icon) in main navigation, 3) Should show 'Hardware Assets' tab, 4) Select Tenant 'Europcar' from dropdown, 5) Should see 215 Desko Scanner assets, 6) Verify Asset-IDs in format TSR.EC.SCDE.000001, TSR.EC.SCDE.000002, etc., 7) Check asset names show 'Desko Scanner - {City}', 8) Verify serial numbers (SN-SC) are displayed, 9) Check locations are shown, 10) Test search & filter functionality (search for 'Berlin', search for asset ID 'TSR.EC.SCDE.000001', use category filter for 'Scanner Desko'), 11) Test asset details (Edit button), 12) Test 'Neues Asset' feature with ID generator (⚡ ID Generieren button should generate TSR.EC.SCDE.000216). EXPECTED VERIFICATION: 215 assets displayed, Asset-IDs follow TSR.EC.SCDE.XXXXXX format, all scanner information visible (Device-ID, SN, Location), search and filter work, asset creation modal functions properly, ID Generator works. Ready for comprehensive frontend testing with screenshots at each step."
+
 metadata:
   created_by: "main_agent"
   version: "1.1"
