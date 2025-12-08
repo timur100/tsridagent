@@ -30,6 +30,41 @@ const AssetSettings = () => {
     include_year: false
   });
 
+  // Categories State
+  const [categories, setCategories] = useState([]);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
+  const [categoryForm, setCategoryForm] = useState({
+    name: '',
+    short_code: '',
+    type: 'hardware',
+    description: '',
+    icon: ''
+  });
+
+  // Templates State
+  const [templates, setTemplates] = useState([]);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateForm, setTemplateForm] = useState({
+    name: '',
+    category_id: '',
+    fields: [],
+    description: ''
+  });
+
+  // Rules State
+  const [rules, setRules] = useState([]);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+  const [editingRule, setEditingRule] = useState(null);
+  const [ruleForm, setRuleForm] = useState({
+    name: '',
+    type: 'warranty', // warranty, maintenance, lifecycle, compliance
+    condition: '',
+    action: '',
+    enabled: true
+  });
+
   useEffect(() => {
     loadTenants();
   }, []);
