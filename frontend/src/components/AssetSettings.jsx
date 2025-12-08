@@ -329,7 +329,7 @@ const AssetSettings = () => {
   const deleteCategory = async (id) => {
     if (window.confirm('Kategorie wirklich löschen?')) {
       try {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${id}`, 'DELETE');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${id}`, { method: 'DELETE' });
         if (result.success) {
           toast.success('Kategorie gelöscht');
           loadCategories();
