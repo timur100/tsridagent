@@ -105,11 +105,11 @@
 user_problem_statement: "Test the Asset Settings feature in the UI to verify that categories can be created, updated, and deleted from the frontend. URL to test: https://configsaver.preview.emergentagent.com/portal/admin/settings/system/assets. Login credentials: admin@tsrid.com / admin123. Test scenarios: 1) Login and navigate to Settings → System → Assets, 2) Switch to Asset-Kategorien tab, 3) Count existing categories, 4) Create a new category (Name: UI Test Category, Short Code: UTC, Type: hardware, Description: Created from UI test, Icon: 🎯), 5) Verify the new category appears in the list, 6) Verify the Demo-Daten laden button works, 7) Take screenshots at each step. What to verify: The category creation modal opens properly, All form fields can be filled, The save button works, The new category appears in the list after saving, The count of categories increases by 1. Note: The frontend code was just fixed - the bug was that apiCall was being called incorrectly with separate parameters instead of an options object. This should now work correctly."
 
 frontend:
-  - task: "Fastfood Stationen-Verwaltung Frontend UI Testing"
+  - task: "Asset Settings Feature Testing - Category CRUD Operations"
     implemented: true
-    working: true
-    file: "frontend/src/components/FastfoodStationManagement.jsx, frontend/src/pages/AdminPortal.jsx"
-    stuck_count: 0
+    working: false
+    file: "frontend/src/components/AssetSettings.jsx, frontend/src/pages/AdminPortal.jsx"
+    stuck_count: 1
     priority: "high"
     needs_retesting: false
     status_history:
