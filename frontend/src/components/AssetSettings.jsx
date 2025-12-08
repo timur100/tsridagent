@@ -124,14 +124,20 @@ const AssetSettings = () => {
   };
 
   const loadDemoData = async () => {
+    console.log('[AssetSettings] loadDemoData called');
+    
     if (!window.confirm('Demo-Daten laden? Vorhandene Daten bleiben erhalten.')) {
+      console.log('[AssetSettings] User cancelled demo data load');
       return;
     }
     
+    console.log('[AssetSettings] Starting demo data creation...');
+    
     try {
-      toast.loading('Demo-Daten werden erstellt...');
+      const toastId = toast.loading('Demo-Daten werden erstellt...');
 
       // Create demo categories
+      console.log('[AssetSettings] Creating 6 demo categories...');
       const demoCategories = [
         { name: 'Computer', short_code: 'PC', type: 'hardware', description: 'Desktop & Laptop Computer', icon: '💻' },
         { name: 'Monitor', short_code: 'MON', type: 'hardware', description: 'Bildschirme & Displays', icon: '🖥️' },
@@ -142,7 +148,8 @@ const AssetSettings = () => {
       ];
 
       for (const category of demoCategories) {
-        await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', category);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', category);
+        console.log(`[AssetSettings] Created category: ${category.name}`, result);
       }
 
       // Create demo template
