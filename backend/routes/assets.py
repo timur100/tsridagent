@@ -598,6 +598,184 @@ async def delete_asset(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+# ===== QR CODE GENERATION =====
+@router.get("/{tenant_id}/assets/{asset_id}/qr-code")
+async def generate_qr_code(
+    tenant_id: str,
+    asset_id: str,
+    size: int = 300,
+    token_data: dict = Depends(verify_token)
+):
+    """Generate QR code for an asset"""
+    try:
+        # Get asset details
+        asset = db.assets.find_one(
+            {"tenant_id": tenant_id, "asset_id": asset_id},
+            {"_id": 0}
+        )
+        
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset nicht gefunden")
+        
+        # Create QR code data
+        qr_data = f"Asset-ID: {asset_id}\nName: {asset.get('name', '')}\nSN: {asset.get('serial_number', '')}"
+        
+        # Generate QR code
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_H,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        
+        # Create image
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Resize if needed
+        if size != 300:
+            img = img.resize((size, size), Image.LANCZOS)
+        
+        # Add label below QR code
+        label_height = 60
+        final_img = Image.new('RGB', (size, size + label_height), 'white')
+        final_img.paste(img, (0, 0))
+        
+        # Add text
+        draw = ImageDraw.Draw(final_img)
+        try:
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+        except:
+            font = ImageFont.load_default()
+        
+        text = asset_id
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_width = bbox[2] - bbox[0]
+        text_x = (size - text_width) // 2
+        draw.text((text_x, size + 10), text, fill="black", font=font)
+        
+        # Convert to bytes
+        img_byte_arr = io.BytesIO()
+        final_img.save(img_byte_arr, format='PNG')
+        img_byte_arr.seek(0)
+        
+        return StreamingResponse(
+            img_byte_arr,
+            media_type="image/png",
+            headers={
+                "Content-Disposition": f"inline; filename={asset_id}.png"
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] QR code generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/{tenant_id}/assets/qr-codes/bulk")
+async def generate_bulk_qr_codes(
+    tenant_id: str,
+    category_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Generate ZIP file with all QR codes for a tenant's assets"""
+    try:
+        # Get assets
+        query = {"tenant_id": tenant_id}
+        if category_id:
+            query["category_id"] = category_id
+        
+        assets = list(db.assets.find(query, {"_id": 0}))
+        
+        if not assets:
+            raise HTTPException(status_code=404, detail="Keine Assets gefunden")
+        
+        # Create ZIP in memory
+        zip_buffer = io.BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for asset in assets:
+                asset_id = asset.get('asset_id')
+                
+                # Create QR code data
+                qr_data = f"Asset-ID: {asset_id}\nName: {asset.get('name', '')}\nSN: {asset.get('serial_number', '')}\nLocation: {asset.get('location', '')}"
+                
+                # Generate QR code
+                qr = qrcode.QRCode(
+                    version=1,
+                    error_correction=qrcode.constants.ERROR_CORRECT_H,
+                    box_size=10,
+                    border=4,
+                )
+                qr.add_data(qr_data)
+                qr.make(fit=True)
+                
+                img = qr.make_image(fill_color="black", back_color="white")
+                img = img.resize((300, 300), Image.LANCZOS)
+                
+                # Add label
+                label_height = 80
+                final_img = Image.new('RGB', (300, 300 + label_height), 'white')
+                final_img.paste(img, (0, 0))
+                
+                draw = ImageDraw.Draw(final_img)
+                try:
+                    font_bold = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 16)
+                    font_normal = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 12)
+                except:
+                    font_bold = ImageFont.load_default()
+                    font_normal = ImageFont.load_default()
+                
+                # Asset-ID
+                text = asset_id
+                bbox = draw.textbbox((0, 0), text, font=font_bold)
+                text_width = bbox[2] - bbox[0]
+                text_x = (300 - text_width) // 2
+                draw.text((text_x, 310), text, fill="black", font=font_bold)
+                
+                # Name
+                name = asset.get('name', '')[:30]
+                bbox2 = draw.textbbox((0, 0), name, font=font_normal)
+                text_width2 = bbox2[2] - bbox2[0]
+                text_x2 = (300 - text_width2) // 2
+                draw.text((text_x2, 335), name, fill="gray", font=font_normal)
+                
+                # SN
+                sn = f"SN: {asset.get('serial_number', '')}"
+                bbox3 = draw.textbbox((0, 0), sn, font=font_normal)
+                text_width3 = bbox3[2] - bbox3[0]
+                text_x3 = (300 - text_width3) // 2
+                draw.text((text_x3, 355), sn, fill="gray", font=font_normal)
+                
+                # Save to bytes
+                img_byte_arr = io.BytesIO()
+                final_img.save(img_byte_arr, format='PNG')
+                
+                # Add to ZIP
+                zip_file.writestr(f"{asset_id}.png", img_byte_arr.getvalue())
+        
+        zip_buffer.seek(0)
+        
+        filename = f"asset_qr_codes_{tenant_id}"
+        if category_id:
+            filename += f"_{category_id}"
+        filename += ".zip"
+        
+        return StreamingResponse(
+            zip_buffer,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}"
+            }
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"[ERROR] Bulk QR code generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ===== ASSET ID GENERATION =====
 @router.post("/{tenant_id}/generate-id")
 async def generate_asset_id(
