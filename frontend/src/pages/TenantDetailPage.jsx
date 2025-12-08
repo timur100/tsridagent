@@ -84,7 +84,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const [editedTenant, setEditedTenant] = useState(null);
   const [saving, setSaving] = useState(false);
   const [deviceStatusFilter, setDeviceStatusFilter] = useState(null);
-  const [assetsSubTab, setAssetsSubTab] = useState('hardware'); // hardware or software
+  const [assetsSubTab, setAssetsSubTab] = useState('dashboard'); // dashboard, hardware, software, licenses
   const [kioskSubTab, setKioskSubTab] = useState('overview');
   
   // Kiosk Location Selection States
