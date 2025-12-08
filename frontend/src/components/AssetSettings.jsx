@@ -580,7 +580,7 @@ const AssetSettings = () => {
             </Card>
           )}
 
-          {/* Categories Tab */}
+          {/* Asset Categories Tab */}
           {activeTab === 'categories' && (
             <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
               <div className="flex items-center justify-between mb-6">
