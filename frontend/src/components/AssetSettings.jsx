@@ -355,13 +355,13 @@ const AssetSettings = () => {
   const saveTemplate = async () => {
     try {
       if (editingTemplate) {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/templates/${editingTemplate.id}`, 'PUT', templateForm);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/templates/${editingTemplate.id}`, { method: 'PUT', body: templateForm });
         if (result.success) {
           toast.success('Vorlage aktualisiert');
           loadTemplates();
         }
       } else {
-        const result = await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', templateForm);
+        const result = await apiCall(`/api/assets/${selectedTenantId}/templates`, { method: 'POST', body: templateForm });
         if (result.success) {
           toast.success('Vorlage erstellt');
           loadTemplates();
