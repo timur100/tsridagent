@@ -109,16 +109,10 @@ const AssetSettings = () => {
 
   const loadCategories = async () => {
     try {
-      // TODO: Backend API endpoint
-      // const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
-      // Demo data
-      setCategories([
-        { id: '1', name: 'Computer', short_code: 'PC', type: 'hardware', description: 'Desktop & Laptop Computer', icon: '💻' },
-        { id: '2', name: 'Monitor', short_code: 'MON', type: 'hardware', description: 'Bildschirme & Displays', icon: '🖥️' },
-        { id: '3', name: 'Drucker', short_code: 'PRT', type: 'hardware', description: 'Drucker & Scanner', icon: '🖨️' },
-        { id: '4', name: 'Betriebssystem', short_code: 'OS', type: 'software', description: 'Windows, Linux, MacOS', icon: '🖥️' },
-        { id: '5', name: 'Office Suite', short_code: 'OFF', type: 'software', description: 'Microsoft Office, LibreOffice', icon: '📝' }
-      ]);
+      const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      if (result.success) {
+        setCategories(result.data || []);
+      }
     } catch (error) {
       console.error('Error loading categories:', error);
     }
