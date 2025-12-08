@@ -111,10 +111,14 @@ const AssetSettings = () => {
     try {
       const result = await apiCall(`/api/assets/${selectedTenantId}/categories`);
       if (result.success) {
-        setCategories(result.data || []);
+        const data = result.data || [];
+        setCategories(Array.isArray(data) ? data : []);
+      } else {
+        setCategories([]);
       }
     } catch (error) {
       console.error('Error loading categories:', error);
+      setCategories([]);
     }
   };
 
