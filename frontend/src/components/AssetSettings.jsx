@@ -423,7 +423,7 @@ const AssetSettings = () => {
   const deleteRule = async (id) => {
     if (window.confirm('Regel wirklich löschen?')) {
       try {
-        const result = await apiCall(`/app/assets/${selectedTenantId}/rules/${id}`, { method: 'DELETE' });
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${id}`, { method: 'DELETE' });
         if (result.success) {
           toast.success('Regel gelöscht');
           loadRules();
