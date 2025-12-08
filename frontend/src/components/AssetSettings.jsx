@@ -263,12 +263,17 @@ const AssetSettings = () => {
   const saveRule = async () => {
     try {
       if (editingRule) {
-        setRules(rules.map(r => r.id === editingRule.id ? { ...ruleForm, id: r.id } : r));
-        toast.success('Regel aktualisiert');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules/${editingRule.id}`, 'PUT', ruleForm);
+        if (result.success) {
+          toast.success('Regel aktualisiert');
+          loadRules();
+        }
       } else {
-        const newRule = { ...ruleForm, id: Date.now().toString() };
-        setRules([...rules, newRule]);
-        toast.success('Regel erstellt');
+        const result = await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', ruleForm);
+        if (result.success) {
+          toast.success('Regel erstellt');
+          loadRules();
+        }
       }
       setShowRuleModal(false);
     } catch (error) {
