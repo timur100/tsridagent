@@ -123,6 +123,66 @@ const AssetSettings = () => {
     }
   };
 
+  const loadDemoData = async () => {
+    try {
+      // Check if demo data already exists
+      const categoriesResult = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      if (categoriesResult.success && categoriesResult.data && categoriesResult.data.length > 0) {
+        toast.info('Demo-Daten bereits vorhanden');
+        return;
+      }
+
+      // Create demo categories
+      const demoCategories = [
+        { name: 'Computer', short_code: 'PC', type: 'hardware', description: 'Desktop & Laptop Computer', icon: '💻' },
+        { name: 'Monitor', short_code: 'MON', type: 'hardware', description: 'Bildschirme & Displays', icon: '🖥️' },
+        { name: 'Drucker', short_code: 'PRT', type: 'hardware', description: 'Drucker & Scanner', icon: '🖨️' },
+        { name: 'Mobilgerät', short_code: 'MOB', type: 'hardware', description: 'Smartphones & Tablets', icon: '📱' },
+        { name: 'Betriebssystem', short_code: 'OS', type: 'software', description: 'Windows, Linux, MacOS', icon: '💿' },
+        { name: 'Office Suite', short_code: 'OFF', type: 'software', description: 'Microsoft Office, LibreOffice', icon: '📝' }
+      ];
+
+      for (const category of demoCategories) {
+        await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', category);
+      }
+
+      // Create demo template
+      const categories = await apiCall(`/api/assets/${selectedTenantId}/categories`);
+      if (categories.success && categories.data && categories.data.length > 0) {
+        const pcCategory = categories.data.find(c => c.short_code === 'PC');
+        if (pcCategory) {
+          await apiCall(`/api/assets/${selectedTenantId}/templates`, 'POST', {
+            name: 'Standard Laptop',
+            category_id: pcCategory.id,
+            fields: ['CPU', 'RAM', 'SSD', 'Display', 'Betriebssystem'],
+            description: 'Standard Büro-Laptop Konfiguration'
+          });
+        }
+      }
+
+      // Create demo rules
+      const demoRules = [
+        { name: 'Garantie-Warnung', type: 'warranty', condition: '30 Tage vor Ablauf', action: 'E-Mail Benachrichtigung senden', enabled: true },
+        { name: 'Wartungs-Intervall', type: 'maintenance', condition: 'Alle 6 Monate', action: 'Wartungsticket erstellen', enabled: true },
+        { name: 'Lifecycle-Check', type: 'lifecycle', condition: 'Nach 5 Jahren', action: 'Als veraltet markieren', enabled: false }
+      ];
+
+      for (const rule of demoRules) {
+        await apiCall(`/api/assets/${selectedTenantId}/rules`, 'POST', rule);
+      }
+
+      toast.success('Demo-Daten erfolgreich erstellt!');
+      
+      // Reload all data
+      loadCategories();
+      loadTemplates();
+      loadRules();
+    } catch (error) {
+      console.error('Error loading demo data:', error);
+      toast.error('Fehler beim Laden der Demo-Daten');
+    }
+  };
+
   const loadTemplates = async () => {
     try {
       const result = await apiCall(`/api/assets/${selectedTenantId}/templates`);
