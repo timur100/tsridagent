@@ -375,7 +375,7 @@ const AssetManagement = () => {
                     Keine Assets gefunden
                   </h3>
                   <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Erstellen Sie Ihr erstes Asset mit dem "Neues Asset" Button
+                    Erstellen Sie Ihr erstes Asset mit dem &quot;Neues Asset&quot; Button
                   </p>
                   <Button
                     onClick={() => openModal()}
