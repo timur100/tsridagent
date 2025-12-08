@@ -796,79 +796,80 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_error_cases(self):
-        """Test error cases for OCR endpoints"""
+    def test_error_handling(self):
+        """Test error handling for invalid requests"""
         try:
-            # Test 1: Exit without active session (should fail)
-            test_image_path = "/tmp/test_plate.jpg"
+            # Test 1: Invalid tenant ID
+            invalid_tenant_id = "invalid-tenant-id"
+            response = self.session.get(f"{API_BASE}/assets/{invalid_tenant_id}/categories")
             
-            # Create a fake license plate entry that doesn't exist
-            with open(test_image_path, 'rb') as f:
-                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                
-                # This should fail because there's no active session for this plate
-                response = requests.post(
-                    f"{API_BASE}/parking/exit-with-ocr", 
-                    files=files,
-                    headers=temp_headers
-                )
-            
-            # Should get 404 for no active session
-            if response.status_code == 404:
-                error_test_1_passed = True
-                error_1_details = "Exit without active session correctly returned 404"
+            # Should return 200 with empty data (tenant isolation)
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success") and isinstance(data.get("data"), list):
+                    error_test_1_passed = True
+                    error_1_details = "Invalid tenant ID correctly returns empty data (tenant isolation working)"
+                else:
+                    error_test_1_passed = False
+                    error_1_details = "Invalid tenant ID response structure incorrect"
             else:
                 error_test_1_passed = False
-                error_1_details = f"Exit without active session returned {response.status_code} instead of 404"
+                error_1_details = f"Invalid tenant ID returned {response.status_code} instead of 200"
             
-            # Test 2: Duplicate entry - check if it handles it properly
-            with open(test_image_path, 'rb') as f:
-                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                data_form = {'location': 'Test Parking Area 2'}
-                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                
-                response = requests.post(
-                    f"{API_BASE}/parking/entry-with-ocr", 
-                    files=files,
-                    data=data_form,
-                    headers=temp_headers
-                )
+            # Test 2: Invalid category ID for update
+            invalid_category_id = "invalid-category-id"
+            update_data = {
+                "name": "Test Category",
+                "short_code": "TC",
+                "type": "hardware",
+                "description": "Test",
+                "icon": "💻"
+            }
             
-            # Check response - could be 400 (error) or 200 (handled gracefully)
-            if response.status_code in [200, 400]:
+            response = self.session.put(f"{API_BASE}/assets/{self.tenant_id}/categories/{invalid_category_id}", json=update_data)
+            
+            # Should return 404 for not found
+            if response.status_code == 404:
                 error_test_2_passed = True
-                if response.status_code == 200:
-                    # Check if it's handled as a violation
-                    data = response.json()
-                    if not data.get("success", True):
-                        error_2_details = "Duplicate entry correctly handled as violation"
-                    else:
-                        error_2_details = "Duplicate entry allowed (may be by design)"
-                else:
-                    error_2_details = "Duplicate entry correctly rejected with 400"
+                error_2_details = "Invalid category ID correctly returned 404"
             else:
                 error_test_2_passed = False
-                error_2_details = f"Duplicate entry returned unexpected status {response.status_code}"
+                error_2_details = f"Invalid category ID returned {response.status_code} instead of 404"
             
-            if error_test_1_passed and error_test_2_passed:
+            # Test 3: Missing required fields
+            incomplete_data = {
+                "name": "Test Category"
+                # Missing required fields: short_code, type
+            }
+            
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/categories", json=incomplete_data)
+            
+            # Should return 422 for validation error
+            if response.status_code == 422:
+                error_test_3_passed = True
+                error_3_details = "Missing required fields correctly returned 422"
+            else:
+                error_test_3_passed = False
+                error_3_details = f"Missing required fields returned {response.status_code} instead of 422"
+            
+            if error_test_1_passed and error_test_2_passed and error_test_3_passed:
                 self.log_result(
-                    "Error Cases Testing",
+                    "Error Handling Test",
                     True,
-                    f"Successfully tested error cases: {error_1_details}, {error_2_details}"
+                    f"Successfully tested error cases: {error_1_details}, {error_2_details}, {error_3_details}"
                 )
                 return True
             else:
                 self.log_result(
-                    "Error Cases Testing",
+                    "Error Handling Test",
                     False,
-                    f"Error case testing failed: {error_1_details}, {error_2_details}"
+                    f"Error handling failed: {error_1_details}, {error_2_details}, {error_3_details}"
                 )
                 return False
             
         except Exception as e:
             self.log_result(
-                "Error Cases Testing",
+                "Error Handling Test",
                 False,
                 f"Exception occurred: {str(e)}"
             )
