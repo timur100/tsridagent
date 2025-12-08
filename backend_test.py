@@ -89,8 +89,7 @@ class AssetSettingsAPITester:
             print(f"Tenants response status: {response.status_code}")
             
             if response.status_code == 200:
-                data = response.json()
-                tenants = data.get("data", [])
+                tenants = response.json()  # API returns array directly
                 
                 # Look for Europcar tenant
                 for tenant in tenants:
