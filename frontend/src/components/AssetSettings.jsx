@@ -283,7 +283,7 @@ const AssetSettings = () => {
       if (editingCategory) {
         const url = `/api/assets/${selectedTenantId}/categories/${editingCategory.id}`;
         console.log('[AssetSettings] PUT URL:', url);
-        const result = await apiCall(url, 'PUT', categoryForm);
+        const result = await apiCall(url, { method: 'PUT', body: categoryForm });
         console.log('[AssetSettings] PUT result:', JSON.stringify(result, null, 2));
         
         if (result.success || result.data?.success) {
@@ -299,7 +299,7 @@ const AssetSettings = () => {
         console.log('[AssetSettings] POST URL:', url);
         console.log('[AssetSettings] POST data:', JSON.stringify(categoryForm, null, 2));
         
-        const result = await apiCall(url, 'POST', categoryForm);
+        const result = await apiCall(url, { method: 'POST', body: categoryForm });
         console.log('[AssetSettings] POST result:', JSON.stringify(result, null, 2));
         console.log('[AssetSettings] result.success:', result.success);
         console.log('[AssetSettings] result.data?.success:', result.data?.success);
