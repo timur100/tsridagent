@@ -492,6 +492,14 @@ const AssetSettings = () => {
               </option>
             ))}
           </select>
+          {selectedTenantId && (
+            <Button
+              onClick={loadDemoData}
+              className="bg-blue-600 hover:bg-blue-700 text-white whitespace-nowrap"
+            >
+              📦 Demo-Daten laden
+            </Button>
+          )}
         </div>
       </Card>
 
