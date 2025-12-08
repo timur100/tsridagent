@@ -189,9 +189,15 @@ const AssetSettings = () => {
 
   const deleteCategory = async (id) => {
     if (window.confirm('Kategorie wirklich löschen?')) {
-      // TODO: Backend API endpoint
-      setCategories(categories.filter(c => c.id !== id));
-      toast.success('Kategorie gelöscht');
+      try {
+        const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${id}`, 'DELETE');
+        if (result.success) {
+          toast.success('Kategorie gelöscht');
+          loadCategories();
+        }
+      } catch (error) {
+        toast.error('Fehler beim Löschen');
+      }
     }
   };
 
