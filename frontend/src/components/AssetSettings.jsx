@@ -544,20 +544,177 @@ const AssetSettings = () => {
           {/* Categories Tab */}
           {activeTab === 'categories' && (
             <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-              <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Asset-Kategorien
-              </h4>
-              <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                Definieren Sie Kategorien für Hardware und Software Assets
-              </p>
-              <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-              }`}>
-                <Package className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Asset-Kategorien Verwaltung wird hier angezeigt
-                </p>
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Asset-Kategorien
+                  </h4>
+                  <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {categories.length} Kategorien ({categories.filter(c => c.type === 'hardware').length} Hardware, {categories.filter(c => c.type === 'software').length} Software)
+                  </p>
+                </div>
+                <Button
+                  onClick={() => openCategoryModal()}
+                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Neue Kategorie
+                </Button>
               </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {categories.map(category => (
+                  <Card key={category.id} className={`p-4 ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-3 flex-1">
+                        <div className="text-3xl">{category.icon}</div>
+                        <div className="flex-1">
+                          <h5 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            {category.name}
+                          </h5>
+                          <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>
+                            Kürzel: {category.short_code} • Typ: {category.type === 'hardware' ? 'Hardware' : 'Software'}
+                          </p>
+                          <p className={`text-sm mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => openCategoryModal(category)}
+                          className={`p-2 rounded hover:bg-gray-200 ${theme === 'dark' ? 'hover:bg-gray-700' : ''}`}
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteCategory(category.id)}
+                          className={`p-2 rounded hover:bg-red-100 ${theme === 'dark' ? 'hover:bg-red-900' : ''}`}
+                        >
+                          <Trash2 className="h-4 w-4 text-red-500" />
+                        </button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Category Modal */}
+              {showCategoryModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <Card className={`p-6 w-full max-w-md ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+                    <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {editingCategory ? 'Kategorie bearbeiten' : 'Neue Kategorie'}
+                    </h4>
+
+                    <div className="space-y-4">
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Name
+                        </label>
+                        <input
+                          type="text"
+                          value={categoryForm.name}
+                          onChange={(e) => setCategoryForm({...categoryForm, name: e.target.value})}
+                          className={`w-full px-4 py-2 rounded-lg border ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          placeholder="z.B. Computer"
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Kürzel
+                        </label>
+                        <input
+                          type="text"
+                          value={categoryForm.short_code}
+                          onChange={(e) => setCategoryForm({...categoryForm, short_code: e.target.value})}
+                          className={`w-full px-4 py-2 rounded-lg border ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          placeholder="z.B. PC"
+                          maxLength={5}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Typ
+                        </label>
+                        <select
+                          value={categoryForm.type}
+                          onChange={(e) => setCategoryForm({...categoryForm, type: e.target.value})}
+                          className={`w-full px-4 py-2 rounded-lg border ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                        >
+                          <option value="hardware">Hardware</option>
+                          <option value="software">Software</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Icon (Emoji)
+                        </label>
+                        <input
+                          type="text"
+                          value={categoryForm.icon}
+                          onChange={(e) => setCategoryForm({...categoryForm, icon: e.target.value})}
+                          className={`w-full px-4 py-2 rounded-lg border ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          placeholder="z.B. 💻"
+                          maxLength={2}
+                        />
+                      </div>
+
+                      <div>
+                        <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          Beschreibung
+                        </label>
+                        <textarea
+                          value={categoryForm.description}
+                          onChange={(e) => setCategoryForm({...categoryForm, description: e.target.value})}
+                          className={`w-full px-4 py-2 rounded-lg border ${
+                            theme === 'dark'
+                              ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                              : 'bg-white border-gray-300 text-gray-900'
+                          }`}
+                          rows={3}
+                          placeholder="Kurze Beschreibung"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 mt-6">
+                      <Button
+                        onClick={saveCate}
+                        className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                      >
+                        <Save className="h-4 w-4 mr-2" />
+                        Speichern
+                      </Button>
+                      <Button
+                        onClick={() => setShowCategoryModal(false)}
+                        variant="outline"
+                      >
+                        Abbrechen
+                      </Button>
+                    </div>
+                  </Card>
+                </div>
+              )}
             </Card>
           )}
 
