@@ -747,11 +747,11 @@ const AdminPortalContent = () => {
                     // Show asset details modal after tab switch
                     setTimeout(() => {
                       if (window.showAssetDetails) {
-                        window.showAssetDetails(result.data.asset_id);
+                        window.showAssetDetails(result.data.asset_id, result.data.tenant_id);
                       } else {
                         toast.success(`Asset gefunden: ${result.data.asset_id}`);
                       }
-                    }, 100);
+                    }, 200);
                   } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
