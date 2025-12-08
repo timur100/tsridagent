@@ -187,11 +187,16 @@ const AssetSettings = () => {
       toast.success('6 Kategorien, 1 Vorlage und 3 Regeln erstellt!');
       console.log('[AssetSettings] Demo data creation completed!');
       
+      // Small delay to ensure DB write completion
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Reload all data
       console.log('[AssetSettings] Reloading all data...');
       await loadCategories();
       await loadTemplates();
       await loadRules();
+      
+      console.log('[AssetSettings] Data reloaded, categories state:', categories.length);
       
       // Switch to categories tab to show results
       console.log('[AssetSettings] Switching to categories tab');
