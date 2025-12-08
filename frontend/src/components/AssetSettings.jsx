@@ -273,27 +273,27 @@ const AssetSettings = () => {
   const saveCate = async () => {
     try {
       if (editingCategory) {
-        console.log('[AssetSettings] Updating category:', editingCategory.id, categoryForm);
         const result = await apiCall(`/api/assets/${selectedTenantId}/categories/${editingCategory.id}`, 'PUT', categoryForm);
-        console.log('[AssetSettings] Update result:', result);
         if (result.success || result.data?.success) {
+          setShowCategoryModal(false);
           toast.success('Kategorie aktualisiert');
           await loadCategories();
         } else {
           toast.error('Fehler beim Speichern');
         }
       } else {
-        console.log('[AssetSettings] Creating new category:', categoryForm);
         const result = await apiCall(`/api/assets/${selectedTenantId}/categories`, 'POST', categoryForm);
-        console.log('[AssetSettings] Create result:', result);
         if (result.success || result.data?.success) {
+          setShowCategoryModal(false);
           toast.success('Kategorie erstellt');
+          // Force re-render by setting empty first, then loading
+          setCategories([]);
+          await new Promise(resolve => setTimeout(resolve, 100));
           await loadCategories();
         } else {
           toast.error('Fehler beim Speichern');
         }
       }
-      setShowCategoryModal(false);
     } catch (error) {
       console.error('[AssetSettings] Error saving category:', error);
       toast.error('Fehler beim Speichern: ' + error.message);
