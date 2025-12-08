@@ -54,7 +54,7 @@ MONGO_URL = "mongodb://localhost:27017"
 mongo_client = pymongo.MongoClient(MONGO_URL)
 db = mongo_client['verification_db']  # Use verification_db as per parking.py
 
-class LicensePlateOCRTester:
+class AssetSettingsTester:
     def __init__(self):
         self.session = requests.Session()
         self.session.headers.update({
