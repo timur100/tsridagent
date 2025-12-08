@@ -281,40 +281,15 @@ class AssetSettingsTester:
             )
             return False
 
-    def test_exit_with_ocr_api(self):
-        """Test POST /api/parking/exit-with-ocr - Exit with automatic OCR recognition"""
+    def test_categories_crud_api(self):
+        """Test Categories CRUD APIs - Create, Read, Update, Delete"""
         try:
-            # Check if test image exists
-            test_image_path = "/tmp/test_plate.jpg"
-            if not os.path.exists(test_image_path):
-                self.log_result(
-                    "POST Exit with OCR API",
-                    False,
-                    f"Test image not found at {test_image_path}",
-                    None
-                )
-                return False
-            
-            # Wait a moment to ensure some duration for the parking session
-            import time
-            time.sleep(2)
-            
-            # Prepare multipart form data
-            with open(test_image_path, 'rb') as f:
-                files = {'file': ('test_plate.jpg', f, 'image/jpeg')}
-                
-                # Create a new session without Content-Type header for multipart
-                temp_headers = {k: v for k, v in self.session.headers.items() if k.lower() != 'content-type'}
-                
-                response = requests.post(
-                    f"{API_BASE}/parking/exit-with-ocr", 
-                    files=files,
-                    headers=temp_headers
-                )
+            # Test 1: GET Categories (should be empty initially)
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/categories")
             
             if response.status_code != 200:
                 self.log_result(
-                    "POST Exit with OCR API",
+                    "GET Categories API",
                     False,
                     f"Request failed. Status: {response.status_code}",
                     response.text
@@ -322,62 +297,152 @@ class AssetSettingsTester:
                 return False
             
             data = response.json()
-            
-            # Check if response indicates success
             if not data.get("success"):
                 self.log_result(
-                    "POST Exit with OCR API",
+                    "GET Categories API",
                     False,
                     "Response indicates failure",
                     data
                 )
                 return False
             
-            # Check response structure
-            if "data" not in data:
+            initial_categories = data.get("data", [])
+            
+            # Test 2: POST Create Category
+            category_data = {
+                "name": "Test Computer",
+                "short_code": "TC",
+                "type": "hardware",
+                "description": "Test description",
+                "icon": "💻"
+            }
+            
+            response = self.session.post(f"{API_BASE}/assets/{self.tenant_id}/categories", json=category_data)
+            
+            if response.status_code != 200:
                 self.log_result(
-                    "POST Exit with OCR API",
+                    "POST Create Category API",
                     False,
-                    "Missing 'data' field in response",
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "POST Create Category API",
+                    False,
+                    "Response indicates failure",
                     data
                 )
                 return False
             
-            exit_data = data["data"]
+            # Store category ID for update/delete tests
+            created_category = data.get("data", {})
+            self.created_category_id = created_category.get("id")
             
-            # Verify exit structure
-            required_fields = ["license_plate", "entry_time", "exit_time", "duration_minutes"]
-            for field in required_fields:
-                if field not in exit_data:
-                    self.log_result(
-                        "POST Exit with OCR API",
-                        False,
-                        f"Missing required field in exit data: {field}",
-                        data
-                    )
-                    return False
-            
-            # Verify duration was calculated
-            duration = exit_data["duration_minutes"]
-            if duration < 0:
+            if not self.created_category_id:
                 self.log_result(
-                    "POST Exit with OCR API",
+                    "POST Create Category API",
                     False,
-                    f"Invalid duration: {duration} minutes",
+                    "No category ID returned in response",
                     data
                 )
                 return False
+            
+            # Test 3: GET Categories (should now have 1 more)
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/categories")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    current_categories = data.get("data", [])
+                    if len(current_categories) != len(initial_categories) + 1:
+                        self.log_result(
+                            "Categories CRUD - Verification",
+                            False,
+                            f"Expected {len(initial_categories) + 1} categories, got {len(current_categories)}",
+                            data
+                        )
+                        return False
+            
+            # Test 4: PUT Update Category
+            update_data = {
+                "name": "Updated Computer",
+                "short_code": "UC",
+                "type": "hardware",
+                "description": "Updated test description",
+                "icon": "🖥️"
+            }
+            
+            response = self.session.put(f"{API_BASE}/assets/{self.tenant_id}/categories/{self.created_category_id}", json=update_data)
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "PUT Update Category API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "PUT Update Category API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Test 5: DELETE Category
+            response = self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/categories/{self.created_category_id}")
+            
+            if response.status_code != 200:
+                self.log_result(
+                    "DELETE Category API",
+                    False,
+                    f"Request failed. Status: {response.status_code}",
+                    response.text
+                )
+                return False
+            
+            data = response.json()
+            if not data.get("success"):
+                self.log_result(
+                    "DELETE Category API",
+                    False,
+                    "Response indicates failure",
+                    data
+                )
+                return False
+            
+            # Verify deletion - GET should return original count
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/categories")
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("success"):
+                    final_categories = data.get("data", [])
+                    if len(final_categories) != len(initial_categories):
+                        self.log_result(
+                            "Categories CRUD - Delete Verification",
+                            False,
+                            f"Expected {len(initial_categories)} categories after deletion, got {len(final_categories)}",
+                            data
+                        )
+                        return False
             
             self.log_result(
-                "POST Exit with OCR API",
+                "Categories CRUD APIs",
                 True,
-                f"Successfully processed parking exit for '{exit_data['license_plate']}' with duration {duration} minutes"
+                f"Successfully tested all Categories CRUD operations (Create, Read, Update, Delete)"
             )
             return True
             
         except Exception as e:
             self.log_result(
-                "POST Exit with OCR API",
+                "Categories CRUD APIs",
                 False,
                 f"Exception occurred: {str(e)}"
             )
