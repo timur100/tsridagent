@@ -280,8 +280,8 @@ async def global_search(
                 "data": check
             })
         
-        # Calculate total
-        total_results = len(geraete_results) + len(standorte_results) + len(id_checks_results) + len(vehicles_results)
+        # Calculate total results
+        total_results = len(assets_results) + len(vehicles_results) + len(geraete_results) + len(standorte_results) + len(id_checks_results)
         
         print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, Vehicles: {len(vehicles_results)}, ID-Checks: {len(id_checks_results)})")
         
