@@ -516,6 +516,17 @@ const AssetManagement = () => {
 
                         <div className="flex gap-2">
                           <button
+                            onClick={() => downloadQRCode(asset.asset_id)}
+                            className={`p-2 rounded-lg transition-colors ${
+                              theme === 'dark'
+                                ? 'hover:bg-blue-900 text-blue-400'
+                                : 'hover:bg-blue-100 text-blue-600'
+                            }`}
+                            title="QR-Code herunterladen"
+                          >
+                            <QrCode className="h-4 w-4" />
+                          </button>
+                          <button
                             onClick={() => openModal(asset)}
                             className={`p-2 rounded-lg transition-colors ${
                               theme === 'dark'
