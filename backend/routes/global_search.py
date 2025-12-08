@@ -285,9 +285,11 @@ async def global_search(
         
         print(f"[Global Search] Total results: {total_results} (Devices: {len(geraete_results)}, Locations: {len(standorte_results)}, Vehicles: {len(vehicles_results)}, ID-Checks: {len(id_checks_results)})")
         
-        # Determine priority match (for barcode scanning)
+        # Priority match: try to determine the single best match
         priority_match = None
-        if vehicles_results:
+        if assets_results:
+            priority_match = assets_results[0]
+        elif vehicles_results:
             priority_match = vehicles_results[0]
         elif geraete_results:
             priority_match = geraete_results[0]
