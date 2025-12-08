@@ -2076,153 +2076,143 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         )}
 
         {activeTab === 'assets' && (
-          <Card className={`p-8 rounded-xl ${
-            theme === 'dark' 
-              ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
-              : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
-          }`}>
-              <div className="space-y-6">
-                <div>
-                  <h3 className={`text-xl font-semibold mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    📦 Asset Management
-                  </h3>
-                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    Verwalten Sie alle Hardware- und Software-Assets für {tenant?.display_name || 'diesen Tenant'}.
+          <div className="space-y-6">
+            {/* Navigation Tabs - Same style as Hardware-Sets */}
+            <div className={`flex gap-2 p-2 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+              <button
+                onClick={() => setAssetsSubTab('dashboard')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  assetsSubTab === 'dashboard'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:bg-gray-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <BarChart3 className="h-4 w-4" />
+                Dashboard
+              </button>
+              <button
+                onClick={() => setAssetsSubTab('hardware')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  assetsSubTab === 'hardware'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:bg-gray-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Cpu className="h-4 w-4" />
+                Hardware Assets
+              </button>
+              <button
+                onClick={() => setAssetsSubTab('software')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  assetsSubTab === 'software'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:bg-gray-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Package className="h-4 w-4" />
+                Software Assets
+              </button>
+              <button
+                onClick={() => setAssetsSubTab('licenses')}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  assetsSubTab === 'licenses'
+                    ? 'bg-[#c00000] text-white'
+                    : theme === 'dark'
+                    ? 'text-gray-400 hover:bg-gray-700'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Key className="h-4 w-4" />
+                Lizenzen
+              </button>
+            </div>
+
+            {/* Dashboard View */}
+            {assetsSubTab === 'dashboard' && (
+              <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  📦 Asset Management Dashboard
+                </h3>
+                <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Übersicht aller Assets für {tenant?.display_name || 'diesen Tenant'}
+                </p>
+                <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
+                  theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
+                }`}>
+                  <BarChart3 className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Asset Dashboard wird hier angezeigt
                   </p>
                 </div>
+              </Card>
+            )}
 
-                {/* Sub-Tabs */}
-                <div className="flex gap-2 border-b pb-2" style={{ borderColor: theme === 'dark' ? '#3a3a3a' : '#e5e7eb' }}>
-                  <button
-                    onClick={() => setAssetsSubTab('hardware')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-                      assetsSubTab === 'hardware'
-                        ? 'bg-[#c00000] text-white'
-                        : theme === 'dark'
-                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    Hardware Assets
-                  </button>
-                  <button
-                    onClick={() => setAssetsSubTab('software')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-                      assetsSubTab === 'software'
-                        ? 'bg-[#c00000] text-white'
-                        : theme === 'dark'
-                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    Software Assets
-                  </button>
-                  <button
-                    onClick={() => setAssetsSubTab('licenses')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-                      assetsSubTab === 'licenses'
-                        ? 'bg-[#c00000] text-white'
-                        : theme === 'dark'
-                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    Lizenzen
-                  </button>
-                  <button
-                    onClick={() => setAssetsSubTab('assignments')}
-                    className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
-                      assetsSubTab === 'assignments'
-                        ? 'bg-[#c00000] text-white'
-                        : theme === 'dark'
-                        ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                    }`}
-                  >
-                    Zuweisungen
-                  </button>
+            {/* Hardware Assets View */}
+            {assetsSubTab === 'hardware' && (
+              <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Hardware Assets
+                </h3>
+                <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Computer, Monitore, Drucker, Keyboards, Mäuse, etc.
+                </p>
+                <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
+                  theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
+                }`}>
+                  <Cpu className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Hardware Assets Tabelle wird hier angezeigt
+                  </p>
                 </div>
+              </Card>
+            )}
 
-                {/* Sub-Tab Content */}
-                <div>
-                  {assetsSubTab === 'hardware' && (
-                    <div>
-                      <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Hardware Assets
-                      </h4>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Computer, Monitore, Drucker, Keyboards, Mäuse, etc.
-                      </p>
-                      {/* TODO: Hardware Assets Table Component */}
-                      <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                        theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-                      }`}>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                          Hardware Assets Tabelle wird hier angezeigt
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {assetsSubTab === 'software' && (
-                    <div>
-                      <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Software Assets
-                      </h4>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Installierte Software, Versionen, Updates
-                      </p>
-                      {/* TODO: Software Assets Table Component */}
-                      <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                        theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-                      }`}>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                          Software Assets Tabelle wird hier angezeigt
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {assetsSubTab === 'licenses' && (
-                    <div>
-                      <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Lizenzverwaltung
-                      </h4>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Software-Lizenzen, Subscriptions, Ablaufdaten
-                      </p>
-                      {/* TODO: License Management Component */}
-                      <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                        theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-                      }`}>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                          Lizenzen Tabelle wird hier angezeigt
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {assetsSubTab === 'assignments' && (
-                    <div>
-                      <h4 className={`text-lg font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        Asset-Zuweisungen
-                      </h4>
-                      <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Zuweisungen von Assets zu Mitarbeitern und Standorten
-                      </p>
-                      {/* TODO: Assignments Management Component */}
-                      <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
-                        theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
-                      }`}>
-                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                          Zuweisungen Tabelle wird hier angezeigt
-                        </p>
-                      </div>
-                    </div>
-                  )}
+            {/* Software Assets View */}
+            {assetsSubTab === 'software' && (
+              <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Software Assets
+                </h3>
+                <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Installierte Software, Versionen, Updates
+                </p>
+                <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
+                  theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
+                }`}>
+                  <Package className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Software Assets Tabelle wird hier angezeigt
+                  </p>
                 </div>
-              </div>
-          </Card>
+              </Card>
+            )}
+
+            {/* Licenses View */}
+            {assetsSubTab === 'licenses' && (
+              <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
+                <h3 className={`text-xl font-semibold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Lizenzverwaltung
+                </h3>
+                <p className={`text-sm mb-6 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Software-Lizenzen, Subscriptions, Ablaufdaten
+                </p>
+                <div className={`p-8 rounded-lg border-2 border-dashed text-center ${
+                  theme === 'dark' ? 'border-gray-700 bg-[#1f1f1f]' : 'border-gray-300 bg-gray-50'
+                }`}>
+                  <Key className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                    Lizenzen Tabelle wird hier angezeigt
+                  </p>
+                </div>
+              </Card>
+            )}
+          </div>
         )}
 
         {activeTab === 'devices' && (
