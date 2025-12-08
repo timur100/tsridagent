@@ -363,7 +363,7 @@ const AssetSettings = () => {
             type="button"
           >
             <Package className="h-5 w-5" />
-            Kategorien
+            Asset-Kategorien
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('templates'); }}
