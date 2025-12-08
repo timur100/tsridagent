@@ -69,7 +69,7 @@ async def get_categories(
 async def create_category(
     tenant_id: str,
     category: AssetCategory,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Create a new asset category"""
     try:
@@ -98,7 +98,7 @@ async def update_category(
     tenant_id: str,
     category_id: str,
     category: AssetCategory,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Update an asset category"""
     try:
@@ -129,7 +129,7 @@ async def update_category(
 async def delete_category(
     tenant_id: str,
     category_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Delete an asset category"""
     try:
@@ -154,7 +154,7 @@ async def delete_category(
 @router.get("/{tenant_id}/templates")
 async def get_templates(
     tenant_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Get all asset templates for a tenant"""
     try:
@@ -174,7 +174,7 @@ async def get_templates(
 async def create_template(
     tenant_id: str,
     template: AssetTemplate,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Create a new asset template"""
     try:
@@ -203,7 +203,7 @@ async def update_template(
     tenant_id: str,
     template_id: str,
     template: AssetTemplate,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Update an asset template"""
     try:
@@ -234,7 +234,7 @@ async def update_template(
 async def delete_template(
     tenant_id: str,
     template_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Delete an asset template"""
     try:
@@ -259,7 +259,7 @@ async def delete_template(
 @router.get("/{tenant_id}/rules")
 async def get_rules(
     tenant_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Get all asset rules for a tenant"""
     try:
@@ -279,7 +279,7 @@ async def get_rules(
 async def create_rule(
     tenant_id: str,
     rule: AssetRule,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Create a new asset rule"""
     try:
@@ -308,7 +308,7 @@ async def update_rule(
     tenant_id: str,
     rule_id: str,
     rule: AssetRule,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Update an asset rule"""
     try:
@@ -339,7 +339,7 @@ async def update_rule(
 async def delete_rule(
     tenant_id: str,
     rule_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Delete an asset rule"""
     try:
@@ -364,7 +364,7 @@ async def delete_rule(
 @router.get("/{tenant_id}/config")
 async def get_asset_config(
     tenant_id: str,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Get asset ID configuration for a tenant"""
     try:
@@ -398,7 +398,7 @@ async def get_asset_config(
 async def save_asset_config(
     tenant_id: str,
     config: AssetIDConfig,
-    current_user: dict = Depends(get_current_user)
+    token_data: dict = Depends(verify_token)
 ):
     """Save asset ID configuration for a tenant"""
     try:
