@@ -3598,6 +3598,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "QR-Code Feature Testing in Asset Management"
     - "Asset Settings Feature Testing - Category CRUD Operations"
   stuck_tasks:
     - "Asset Settings Feature Testing - Category CRUD Operations"
