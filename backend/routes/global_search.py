@@ -121,12 +121,12 @@ async def global_search(
         if user_role == "admin":
             # Admin: search all assets
             print(f"[Global Search] Admin search - all assets")
-            assets = list(main_db.assets.find(asset_query, {"_id": 0}).limit(50))
+            assets = list(verification_db.assets.find(asset_query, {"_id": 0}).limit(50))
         elif user_tenant_ids:
             # Customer: only their tenant's assets
             asset_query["tenant_id"] = {"$in": user_tenant_ids}
             print(f"[Global Search] Customer search - tenant assets: {user_tenant_ids}")
-            assets = list(main_db.assets.find(asset_query, {"_id": 0}).limit(50))
+            assets = list(verification_db.assets.find(asset_query, {"_id": 0}).limit(50))
         
         print(f"[Global Search] Found {len(assets)} assets")
         
