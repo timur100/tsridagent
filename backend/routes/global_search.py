@@ -104,6 +104,45 @@ async def global_search(
                     "data": device
                 })
         
+
+        # 1.5. Search Assets (HIGH PRIORITY) - Search asset_id, name, serial_number
+        asset_query = {
+            "$or": [
+                {"asset_id": search_regex},
+                {"name": search_regex},
+                {"serial_number": search_regex},
+                {"device_id": search_regex},
+                {"location": search_regex}
+            ]
+        }
+        
+        assets = []
+        if user_role == "admin":
+            # Admin: search all assets
+            print(f"[Global Search] Admin search - all assets")
+            assets = list(main_db.assets.find(asset_query, {"_id": 0}).limit(50))
+        elif user_tenant_ids:
+            # Customer: only their tenant's assets
+            asset_query["tenant_id"] = {"$in": user_tenant_ids}
+            print(f"[Global Search] Customer search - tenant assets: {user_tenant_ids}")
+            assets = list(main_db.assets.find(asset_query, {"_id": 0}).limit(50))
+        
+        print(f"[Global Search] Found {len(assets)} assets")
+        
+        # Process asset results
+        for asset in assets:
+            asset_id = asset.get('asset_id')
+            if asset_id:
+                assets_results.append({
+                    "type": "asset",
+                    "id": asset_id,
+                    "title": asset_id,
+                    "subtitle": f"{asset.get('name', 'N/A')} | SN: {asset.get('serial_number', 'N/A')}",
+                    "status": asset.get('status'),
+                    "tenant_id": asset.get('tenant_id'),
+                    "data": asset
+                })
+
         # 2. Search Locations (HIGH PRIORITY) - Search ALL fields
         location_query = {
             "$or": [
