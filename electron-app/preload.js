@@ -1,35 +1,42 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
-// Expose scanner API to renderer process
-contextBridge.exposeInMainWorld('electronAPI', {
-  // Scanner functions
-  checkScannerStatus: () => ipcRenderer.invoke('scanner:check-status'),
-  performScan: (options) => ipcRenderer.invoke('scanner:scan', options),
-  controlLED: (ledOptions) => ipcRenderer.invoke('scanner:led', ledOptions),
+// Expose USB API to web content
+contextBridge.exposeInMainWorld('usbAPI', {
+  // Get all USB devices
+  getDevices: () => ipcRenderer.invoke('usb:getDevices'),
   
-  // Settings management
-  getSetting: (key) => ipcRenderer.invoke('settings:get', key),
-  setSetting: (key, value) => ipcRenderer.invoke('settings:set', key, value),
-  getRegulaConfig: () => ipcRenderer.invoke('settings:get-regula-config'),
+  // Get serial ports
+  getSerialPorts: () => ipcRenderer.invoke('usb:getSerialPorts'),
   
-  // Process management
-  checkReaderDemo: () => ipcRenderer.invoke('process:check-reader-demo'),
-  startReaderDemo: () => ipcRenderer.invoke('process:start-reader-demo'),
-  showReaderDemo: () => ipcRenderer.invoke('process:show-reader-demo'),
-  hideReaderDemo: () => ipcRenderer.invoke('process:hide-reader-demo'),
-  
-  // PIN verification
-  verifyPin: (pin) => ipcRenderer.invoke('pin:verify', pin),
-  
-  // Get logs
-  getLogs: () => ipcRenderer.invoke('get-logs'),
-  
-  // Get backend URL
-  getBackendUrl: () => ipcRenderer.invoke('get-backend-url'),
-  
-  // Platform info
-  platform: process.platform,
-  isElectron: true
+  // Get HID devices
+  getHIDDevices: () => ipcRenderer.invoke('usb:getHIDDevices')
 });
 
-console.log('Preload script loaded - Scanner API exposed');
+// Expose Printer API
+contextBridge.exposeInMainWorld('printerAPI', {
+  // Print data to USB printer
+  print: (port, data, encoding) => 
+    ipcRenderer.invoke('printer:print', { port, data, encoding }),
+  
+  // Print ZPL label
+  printZPL: (port, zpl) => 
+    ipcRenderer.invoke('printer:printZPL', { port, zpl }),
+  
+  // Test printer connection
+  test: (port) => 
+    ipcRenderer.invoke('printer:test', { port })
+});
+
+// Expose File Dialog API
+contextBridge.exposeInMainWorld('dialogAPI', {
+  showSave: (options) => ipcRenderer.invoke('dialog:showSave', options),
+  showOpen: (options) => ipcRenderer.invoke('dialog:showOpen', options)
+});
+
+// Expose App API
+contextBridge.exposeInMainWorld('appAPI', {
+  getVersion: () => ipcRenderer.invoke('app:getVersion'),
+  reload: () => ipcRenderer.invoke('app:reload')
+});
+
+console.log('[TSRID Desktop] Preload script loaded');
