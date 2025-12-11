@@ -12,7 +12,9 @@ const USBDeviceManager = () => {
   const [usbDevices, setUsbDevices] = useState([]);
   const [serialPorts, setSerialPorts] = useState([]);
   const [hidDevices, setHidDevices] = useState([]);
+  const [windowsPrinters, setWindowsPrinters] = useState([]);
   const [selectedPort, setSelectedPort] = useState('');
+  const [selectedWindowsPrinter, setSelectedWindowsPrinter] = useState('');
   const [loading, setLoading] = useState(false);
   const [testData, setTestData] = useState('');
 
@@ -54,10 +56,19 @@ const USBDeviceManager = () => {
         setHidDevices(hid || []);
       }
 
-      toast.success('USB-Geräte geladen');
+      // Load Windows Printers (NEW!)
+      if (window.printerAPI && window.printerAPI.getSystemPrinters) {
+        const printers = await window.printerAPI.getSystemPrinters();
+        setWindowsPrinters(printers || []);
+        if (printers.length > 0 && !selectedWindowsPrinter) {
+          setSelectedWindowsPrinter(printers[0].name);
+        }
+      }
+
+      toast.success('Geräte geladen');
     } catch (error) {
       console.error('Error loading devices:', error);
-      toast.error('Fehler beim Laden der USB-Geräte');
+      toast.error('Fehler beim Laden der Geräte');
     } finally {
       setLoading(false);
     }
