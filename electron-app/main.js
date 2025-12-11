@@ -134,6 +134,70 @@ ipcMain.handle('printer:printToWindows', async (event, { printerName, data, type
   }
 });
 
+// Print Image to Windows Printer (NEW!)
+ipcMain.handle('printer:printImage', async (event, { printerName, imageData }) => {
+  try {
+    console.log('[PRINTER] Printing image to:', printerName);
+    
+    const fs = require('fs');
+    const path = require('path');
+    const os = require('os');
+    
+    // Save base64 image to temp file
+    const base64Data = imageData.replace(/^data:image\/\w+;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+    const tempFile = path.join(os.tmpdir(), `tsrid-label-${Date.now()}.png`);
+    
+    fs.writeFileSync(tempFile, buffer);
+    console.log('[PRINTER] Temp image saved:', tempFile);
+    
+    // Use Windows default image printer
+    return new Promise((resolve, reject) => {
+      const { spawn } = require('child_process');
+      
+      // Use mspaint to print (works on all Windows versions)
+      const print = spawn('rundll32.exe', [
+        'C:\\Windows\\System32\\shimgvw.dll,ImageView_PrintTo',
+        tempFile,
+        printerName
+      ]);
+      
+      print.on('close', (code) => {
+        try {
+          fs.unlinkSync(tempFile);
+        } catch (e) {}
+        
+        if (code === 0) {
+          console.log('[PRINTER] Image printed successfully');
+          resolve({ success: true });
+        } else {
+          reject(new Error('Print failed with code: ' + code));
+        }
+      });
+      
+      print.on('error', (err) => {
+        try {
+          fs.unlinkSync(tempFile);
+        } catch (e) {}
+        reject(err);
+      });
+      
+      // Timeout after 30 seconds
+      setTimeout(() => {
+        print.kill();
+        try {
+          fs.unlinkSync(tempFile);
+        } catch (e) {}
+        reject(new Error('Print timeout'));
+      }, 30000);
+    });
+    
+  } catch (error) {
+    console.error('[PRINTER] Image print error:', error);
+    return { success: false, error: error.message };
+  }
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {

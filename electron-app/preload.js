@@ -32,7 +32,11 @@ contextBridge.exposeInMainWorld('printerAPI', {
   
   // Print to Windows Printer (NEW!)
   printToWindows: (printerName, data, type) => 
-    ipcRenderer.invoke('printer:printToWindows', { printerName, data, type })
+    ipcRenderer.invoke('printer:printToWindows', { printerName, data, type }),
+  
+  // Print Image/HTML to Windows Printer (NEW!)
+  printImage: (printerName, imageData) => 
+    ipcRenderer.invoke('printer:printImage', { printerName, imageData })
 });
 
 // Expose File Dialog API
