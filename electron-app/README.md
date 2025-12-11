@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://configsaver.preview.emergentagent.com
+│   └── Lädt: https://desk-manager-2.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

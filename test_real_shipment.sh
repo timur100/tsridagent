@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://configsaver.preview.emergentagent.com/api/dhl"
+API_URL="https://desk-manager-2.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

@@ -14,7 +14,7 @@ import jwt
 import pymongo
 
 # Backend URL from environment
-BACKEND_URL = "https://configsaver.preview.emergentagent.com"
+BACKEND_URL = "https://desk-manager-2.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification

@@ -5,7 +5,7 @@ const usb = require('usb');
 const HID = require('node-hid');
 
 // Configuration
-const PREVIEW_URL = 'https://configsaver.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://desk-manager-2.preview.emergentagent.com/portal/admin';
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
