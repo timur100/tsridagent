@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { 
   Plus, Search, Filter, Download, Upload, 
   Edit2, Trash2, Package, Monitor, Laptop,
-  Zap, RefreshCw, QrCode
+  Zap, RefreshCw, QrCode, Printer
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
