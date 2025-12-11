@@ -136,6 +136,70 @@ ipcMain.handle('printer:print', async (event, { port, data }) => {
   }
 });
 
+// Print ZPL label to printer
+ipcMain.handle('printer:printZPL', async (event, { port, zpl }) => {
+  try {
+    return new Promise((resolve, reject) => {
+      const serialPort = new SerialPort({
+        path: port,
+        baudRate: 9600
+      });
+
+      serialPort.on('open', () => {
+        serialPort.write(zpl, (err) => {
+          if (err) {
+            serialPort.close();
+            reject(err);
+          } else {
+            serialPort.drain(() => {
+              serialPort.close();
+              resolve({ success: true });
+            });
+          }
+        });
+      });
+
+      serialPort.on('error', (err) => {
+        reject(err);
+      });
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Test printer connection
+ipcMain.handle('printer:test', async (event, { port }) => {
+  try {
+    return new Promise((resolve, reject) => {
+      const serialPort = new SerialPort({
+        path: port,
+        baudRate: 9600
+      });
+
+      serialPort.on('open', () => {
+        serialPort.close();
+        resolve({ success: true });
+      });
+
+      serialPort.on('error', (err) => {
+        reject(err);
+      });
+
+      setTimeout(() => {
+        try {
+          serialPort.close();
+          reject(new Error('Connection timeout'));
+        } catch (e) {
+          reject(e);
+        }
+      }, 5000);
+    });
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 app.whenReady().then(() => {
   createWindow();
 
