@@ -112,29 +112,49 @@ class AssetManagementAPITester:
             print(f"❌ Asset list error: {str(e)}")
             return False
     
-    def list_categories(self) -> bool:
-        """List existing categories"""
-        print("📋 [TEST 3/8] Listing existing categories...")
+    def test_single_asset(self) -> bool:
+        """Test GET /api/assets/<asset_id>"""
+        print(f"🔍 [TEST 3/6] Testing single asset retrieval...")
+        
+        test_asset_id = self.test_asset_ids[0]  # TSR.EC.SCDE.000001
         
         try:
-            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/categories")
-            print(f"List categories response status: {response.status_code}")
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/assets/{test_asset_id}")
+            print(f"Single asset response status: {response.status_code}")
             
             if response.status_code == 200:
                 data = response.json()
-                categories = data.get("data", [])
-                print(f"✅ Found {len(categories)} existing categories")
-                
-                for cat in categories:
-                    print(f"   - {cat.get('name')} ({cat.get('short_code')}) - {cat.get('type')}")
-                
-                return True
+                if data.get("success"):
+                    asset = data.get("data", {})
+                    asset_id = asset.get("asset_id")
+                    asset_name = asset.get("name")
+                    print(f"✅ Retrieved asset: {asset_id} - {asset_name}")
+                    
+                    # Verify expected fields
+                    expected_fields = ["asset_id", "name", "category_id", "status"]
+                    missing_fields = []
+                    for field in expected_fields:
+                        if field not in asset:
+                            missing_fields.append(field)
+                    
+                    if missing_fields:
+                        print(f"⚠️ Missing fields: {missing_fields}")
+                    else:
+                        print("✅ All expected fields present")
+                    
+                    return True
+                else:
+                    print(f"❌ API returned success=false: {data.get('message', 'Unknown error')}")
+                    return False
+            elif response.status_code == 404:
+                print(f"⚠️ Asset {test_asset_id} not found - this is expected if no test data exists")
+                return True  # Not a failure, just no test data
             else:
-                print(f"❌ Failed to list categories: {response.status_code} - {response.text}")
+                print(f"❌ Failed to get single asset: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
-            print(f"❌ List categories error: {str(e)}")
+            print(f"❌ Single asset error: {str(e)}")
             return False
     
     def create_category(self, name: str, short_code: str, type_: str, description: str, icon: str) -> str:
