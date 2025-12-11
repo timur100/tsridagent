@@ -1,34 +1,26 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - ASSET SETTINGS FEATURE TESTING
-Tests Asset Settings API Backend after frontend apiCall fix:
-
-The bug was that the frontend was calling apiCall incorrectly - it was passing method and body 
-as separate parameters instead of in an options object.
+Backend API Testing Suite - ASSET MANAGEMENT APIS TESTING
+Tests Asset Management APIs after USB Device Manager integration:
 
 ENDPOINTS TO TEST:
 - POST /api/portal/auth/login - Login
-- GET /api/tenants - Get tenants  
-- GET /api/assets/{tenant_id}/categories - List categories
-- POST /api/assets/{tenant_id}/categories - Create category
-- PUT /api/assets/{tenant_id}/categories/{category_id} - Update category
-- DELETE /api/assets/{tenant_id}/categories/{category_id} - Delete category
+- GET /api/assets/list?tenant_id=<tenant_id> - List assets
+- GET /api/assets/<asset_id> - Get single asset details
+- POST /api/assets/qrcode/single - Generate QR code for an asset
+- POST /api/assets/qrcode/bulk - Generate bulk QR codes
+- GET /api/search/global?query=TSR.EC.SCDE - Global search for assets
 
 Test Scenario:
 1. Login as admin@tsrid.com / admin123
-2. Create a new asset category with:
-   - Name: "E2E Test Category"
-   - Short Code: "E2E"
-   - Type: "hardware"
-   - Description: "End-to-end test"
-   - Icon: "🧪"
-3. Verify the category was saved to the database
-4. Create another category and verify both are persisted
-5. Update a category and verify changes are saved
-6. Delete a category and verify it's removed
+2. Test asset listing with Europcar tenant
+3. Test single asset retrieval
+4. Test QR code generation (single and bulk)
+5. Test global search integration for assets
+6. Verify Asset ID generation logic
 
-Expected behavior: All CRUD operations should work correctly now.
-Categories are stored in the `asset_categories` collection in MongoDB.
+Expected behavior: All APIs should return 200 status, QR codes should be generated successfully,
+global search should find assets by Asset ID, no regression from USB Device Manager integration.
 """
 
 import requests
