@@ -1,56 +1,53 @@
 {
-  "name": "document-verification-scanner",
+  "name": "tsrid-admin-portal",
   "version": "1.0.0",
-  "description": "Europcar Document Verification with Regula Scanner Integration",
+  "description": "TSRID Admin Portal Desktop App with USB Device Support",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "build": "electron-builder --win --x64",
-    "build-portable": "electron-builder --win portable",
-    "dist": "electron-builder"
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux"
   },
-  "build": {
-    "appId": "com.europcar.verification",
-    "productName": "Document Verification Scanner",
-    "win": {
-      "target": [
-        {
-          "target": "nsis",
-          "arch": ["x64"]
-        },
-        {
-          "target": "portable",
-          "arch": ["x64"]
-        }
-      ],
-      "icon": "assets/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true
-    },
-    "portable": {
-      "artifactName": "DocumentVerificationScanner-Portable.exe"
-    },
-    "files": [
-      "main.js",
-      "preload.js",
-      "renderer/**/*",
-      "assets/**/*"
-    ]
+  "author": "TSRID",
+  "license": "MIT",
+  "dependencies": {
+    "serialport": "^12.0.0",
+    "usb": "^2.11.0",
+    "node-hid": "^3.0.0",
+    "escpos": "^3.0.0-alpha.6",
+    "qrcode": "^1.5.3"
   },
-  "keywords": ["electron", "scanner", "document", "verification"],
-  "author": "Europcar",
-  "license": "ISC",
   "devDependencies": {
     "electron": "^28.0.0",
     "electron-builder": "^24.9.1"
   },
-  "dependencies": {
-    "electron-store": "^8.1.0",
-    "ini": "^4.1.1",
-    "chokidar": "^3.5.3"
+  "build": {
+    "appId": "com.tsrid.adminportal",
+    "productName": "TSRID Admin Portal",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer.js",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": ["nsis"],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.business"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    }
   }
 }
