@@ -9,6 +9,7 @@ import {
   Zap, RefreshCw, QrCode, Printer
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import QRCodeLib from 'qrcode';
 
 const AssetManagement = () => {
   const { theme } = useTheme();
@@ -347,7 +348,119 @@ const AssetManagement = () => {
     }
   };
 
-  // Print QR Code Label to Brother QL Printer
+  // Generate high-resolution QR Code Label Image
+  const generateQRCodeLabel = async (asset) => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Create canvas for label (62mm x 100mm at 300dpi = ~730x1180 pixels)
+        // Brother QL-1110NWB: 300dpi, max width 696 pixels for 62mm
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Label dimensions for Brother QL (62mm wide)
+        const labelWidth = 696;   // 62mm at 300dpi
+        const labelHeight = 1000; // Variable length
+        
+        canvas.width = labelWidth;
+        canvas.height = labelHeight;
+        
+        // White background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Generate QR Code at high resolution
+        const qrSize = 500; // Large QR code
+        const qrCanvas = document.createElement('canvas');
+        
+        await QRCodeLib.toCanvas(qrCanvas, asset.asset_id, {
+          width: qrSize,
+          margin: 2,
+          errorCorrectionLevel: 'H', // High error correction
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+        
+        // Draw QR code centered horizontally
+        const qrX = (labelWidth - qrSize) / 2;
+        const qrY = 80;
+        ctx.drawImage(qrCanvas, qrX, qrY, qrSize, qrSize);
+        
+        // Set text styles
+        ctx.fillStyle = '#000000';
+        ctx.textAlign = 'center';
+        
+        // Title
+        ctx.font = 'bold 32px Arial';
+        ctx.fillText('TSRID ASSET', labelWidth / 2, 40);
+        ctx.fillText('MANAGEMENT', labelWidth / 2, 70);
+        
+        // Asset ID below QR code
+        ctx.font = 'bold 40px Courier New';
+        const lines = asset.asset_id.match(/.{1,20}/g) || [asset.asset_id];
+        let yPos = qrY + qrSize + 50;
+        lines.forEach(line => {
+          ctx.fillText(line, labelWidth / 2, yPos);
+          yPos += 45;
+        });
+        
+        // Asset name
+        ctx.font = 'bold 28px Arial';
+        yPos += 20;
+        const nameLines = wrapText(ctx, asset.name, labelWidth - 60, 28);
+        nameLines.forEach(line => {
+          ctx.fillText(line, labelWidth / 2, yPos);
+          yPos += 35;
+        });
+        
+        // Status and Location
+        ctx.font = '24px Arial';
+        yPos += 20;
+        ctx.fillText(`Status: ${asset.status || 'Active'}`, labelWidth / 2, yPos);
+        yPos += 35;
+        if (asset.location) {
+          ctx.fillText(`Standort: ${asset.location}`, labelWidth / 2, yPos);
+          yPos += 35;
+        }
+        
+        // Footer
+        ctx.font = '20px Arial';
+        yPos += 20;
+        ctx.fillText('Scannen fuer Details', labelWidth / 2, yPos);
+        
+        // Convert canvas to blob
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, 'image/png', 1.0);
+        
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  // Helper function to wrap text
+  const wrapText = (ctx, text, maxWidth, fontSize) => {
+    const words = text.split(' ');
+    const lines = [];
+    let currentLine = words[0];
+
+    for (let i = 1; i < words.length; i++) {
+      const word = words[i];
+      const width = ctx.measureText(currentLine + ' ' + word).width;
+      if (width < maxWidth) {
+        currentLine += ' ' + word;
+      } else {
+        lines.push(currentLine);
+        currentLine = word;
+      }
+    }
+    lines.push(currentLine);
+    return lines;
+  };
+
+  // Print QR Code Label to Brother QL Printer (High Resolution)
   const printQRCodeLabel = async (asset) => {
     try {
       // Check if running in Electron desktop app
@@ -356,7 +469,7 @@ const AssetManagement = () => {
         return;
       }
 
-      toast.loading('Bereite Druck vor...', { id: 'print-qr' });
+      toast.loading('Generiere hochauflösendes Label...', { id: 'print-qr' });
 
       // Get available printers
       const printers = await window.printerAPI.getSystemPrinters();
@@ -378,44 +491,59 @@ const AssetManagement = () => {
       console.log('[PRINT] Selected printer:', brotherPrinter.name);
       console.log('[PRINT] Asset:', asset.asset_id);
 
-      // Create label text (Brother QL will print this as text)
-      // For better results, we'd need to generate an actual label image
-      const labelText = [
-        '',
-        '================================',
-        '    TSRID ASSET MANAGEMENT',
-        '================================',
-        '',
-        'Asset-ID:',
-        asset.asset_id,
-        '',
-        'Name:',
-        asset.name,
-        '',
-        'Status: ' + (asset.status || 'Active'),
-        'Standort: ' + (asset.location || 'N/A'),
-        '',
-        '================================',
-        'Scannen Sie den QR-Code mit',
-        'der TSRID App fuer Details',
-        '================================',
-        ''
-      ].join('\n');
+      // Generate high-resolution label image
+      const labelBlob = await generateQRCodeLabel(asset);
+      
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(labelBlob);
+      
+      reader.onloadend = async () => {
+        const base64Image = reader.result;
+        
+        toast.loading(`Drucke auf ${brotherPrinter.name}...`, { id: 'print-qr' });
 
-      toast.loading(`Drucke auf ${brotherPrinter.name}...`, { id: 'print-qr' });
+        // Create HTML with image for printing
+        const printHTML = `
+          <html>
+          <head>
+            <style>
+              @page { 
+                size: 62mm 100mm;
+                margin: 0;
+              }
+              body { 
+                margin: 0;
+                padding: 0;
+                width: 62mm;
+                height: 100mm;
+              }
+              img { 
+                width: 100%;
+                height: auto;
+                display: block;
+              }
+            </style>
+          </head>
+          <body>
+            <img src="${base64Image}" />
+          </body>
+          </html>
+        `;
 
-      // Print to Windows printer
-      const result = await window.printerAPI.printToWindows(
-        brotherPrinter.name,
-        labelText,
-        'TEXT'
-      );
+        // Print via Windows printer
+        const result = await window.printerAPI.printToWindows(
+          brotherPrinter.name,
+          printHTML,
+          'TEXT'
+        );
 
-      if (result.success) {
-        toast.success(`Label fuer ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
-      } else {
-        toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
-      }
+        if (result.success) {
+          toast.success(`Hochauflösendes Label für ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
+        } else {
+          toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+        }
+      };
 
     } catch (error) {
       console.error('[PRINT] Error:', error);
