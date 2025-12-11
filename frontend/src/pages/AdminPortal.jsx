@@ -89,6 +89,7 @@ import FastfoodStationManagement from '../components/FastfoodStationManagement';
 import DriverManagement from '../components/DriverManagement';
 import DeliveryZoneManagement from '../components/DeliveryZoneManagement';
 import LicensePlateRecognition from '../components/LicensePlateRecognition';
+import USBDeviceManager from '../components/USBDeviceManager';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
@@ -3001,12 +3002,27 @@ const AdminPortalContent = () => {
                     {rndTab === 'data-check' && (
                       <DataCheckPage />
                     )}
+
+                    {/* USB Device Manager */}
+                    {rndTab === 'usb-devices' && (
+                      <div className="w-full">
+                        <div className="mb-6">
+                          <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                            USB Device Manager
+                          </h2>
+                          <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                            USB-Geräte verwalten und testen (nur in Desktop App verfügbar)
+                          </p>
+                        </div>
+                        <USBDeviceManager />
+                      </div>
+                    )}
                     
                     {/* Default Placeholder für alle anderen Tabs */}
                     {!['facematch', 'fingerprint', 'iris-scan', 'document-scan', 'ki-search', 'license-plate-recognition', 
                         'vehicle-management', 'fleet-management', 'europcar-integration', 'parking-system', 
                         'parking-payment', 'parking-overstay', 'access-control', 'time-tracking', 'control-system', 'surveillance-system',
-                        'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping', 'placetel', 'data-check'].includes(rndTab) && (
+                        'fastfood-system', 'delivery-service', 'mobility-services', 'dhl-shipping', 'placetel', 'data-check', 'usb-devices'].includes(rndTab) && (
                       <div className="w-full">
                         <div className="mb-6">
                           <h2 className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
