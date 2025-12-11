@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "react-hot-toast": "^2.6.0"
+  },
+  "scripts": {
+    "electron": "cd electron-app && yarn start"
   }
 }

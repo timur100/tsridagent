@@ -86,6 +86,24 @@ ipcMain.handle('usb:getSerialPorts', async () => {
   }
 });
 
+// Get HID devices
+ipcMain.handle('usb:getHIDDevices', async () => {
+  try {
+    const devices = HID.devices();
+    return devices.map(device => ({
+      vendorId: device.vendorId,
+      productId: device.productId,
+      manufacturer: device.manufacturer,
+      product: device.product,
+      serialNumber: device.serialNumber,
+      path: device.path
+    }));
+  } catch (error) {
+    console.error('[HID] Error:', error);
+    return [];
+  }
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {
