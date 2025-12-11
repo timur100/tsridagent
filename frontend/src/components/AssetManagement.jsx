@@ -501,47 +501,23 @@ const AssetManagement = () => {
       reader.onloadend = async () => {
         const base64Image = reader.result;
         
-        toast.loading(`Drucke auf ${brotherPrinter.name}...`, { id: 'print-qr' });
+        toast.loading(`Drucke hochauflösendes Label auf ${brotherPrinter.name}...`, { id: 'print-qr' });
 
-        // Create HTML with image for printing
-        const printHTML = `
-          <html>
-          <head>
-            <style>
-              @page { 
-                size: 62mm 100mm;
-                margin: 0;
-              }
-              body { 
-                margin: 0;
-                padding: 0;
-                width: 62mm;
-                height: 100mm;
-              }
-              img { 
-                width: 100%;
-                height: auto;
-                display: block;
-              }
-            </style>
-          </head>
-          <body>
-            <img src="${base64Image}" />
-          </body>
-          </html>
-        `;
+        try {
+          // Print image via Windows printer
+          const result = await window.printerAPI.printImage(
+            brotherPrinter.name,
+            base64Image
+          );
 
-        // Print via Windows printer
-        const result = await window.printerAPI.printToWindows(
-          brotherPrinter.name,
-          printHTML,
-          'TEXT'
-        );
-
-        if (result.success) {
-          toast.success(`Hochauflösendes Label für ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
-        } else {
-          toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+          if (result.success) {
+            toast.success(`QR-Code-Label für ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
+          } else {
+            toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+          }
+        } catch (error) {
+          console.error('[PRINT] Print image error:', error);
+          toast.error('Fehler beim Bilderdruck: ' + error.message, { id: 'print-qr' });
         }
       };
 
