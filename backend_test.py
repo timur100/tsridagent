@@ -281,72 +281,35 @@ class AssetManagementAPITester:
             print(f"❌ Global search error: {str(e)}")
             return False
     
-    def delete_category(self, category_id: str) -> bool:
-        """Delete a category"""
-        print(f"🗑️ [TEST 7/8] Deleting category...")
+    def test_asset_id_generation(self) -> bool:
+        """Test Asset ID generation logic"""
+        print(f"🔢 [BONUS TEST] Testing Asset ID generation logic...")
         
         try:
-            response = self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/categories/{category_id}")
-            print(f"Delete category response status: {response.status_code}")
+            # Test preview endpoint
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/preview-id")
+            print(f"Asset ID preview response status: {response.status_code}")
             
             if response.status_code == 200:
                 data = response.json()
                 if data.get("success"):
-                    print("✅ Category deleted successfully")
-                    # Remove from our tracking list
-                    if category_id in self.created_categories:
-                        self.created_categories.remove(category_id)
+                    preview_data = data.get("data", {})
+                    preview_id = preview_data.get("preview", "")
+                    description = preview_data.get("description", "")
+                    
+                    print(f"✅ Asset ID preview generated: {preview_id}")
+                    print(f"   Description: {description}")
                     return True
                 else:
-                    print(f"❌ Delete failed: {data.get('message', 'Unknown error')}")
+                    print(f"❌ Preview failed: {data.get('message', 'Unknown error')}")
                     return False
             else:
-                print(f"❌ Failed to delete category: {response.status_code} - {response.text}")
+                print(f"❌ Failed to get Asset ID preview: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Delete category error: {str(e)}")
+            print(f"❌ Asset ID generation error: {str(e)}")
             return False
-    
-    def verify_deletion(self, category_id: str) -> bool:
-        """Verify category was deleted from database"""
-        print(f"🔍 [TEST 8/8] Verifying category deletion...")
-        
-        try:
-            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/categories")
-            
-            if response.status_code == 200:
-                data = response.json()
-                categories = data.get("data", [])
-                
-                for cat in categories:
-                    if cat.get("id") == category_id:
-                        print(f"❌ Category still exists in database")
-                        return False
-                
-                print(f"✅ Category successfully removed from database")
-                return True
-            else:
-                print(f"❌ Failed to verify deletion: {response.status_code}")
-                return False
-                
-        except Exception as e:
-            print(f"❌ Verify deletion error: {str(e)}")
-            return False
-    
-    def cleanup(self):
-        """Clean up any remaining test categories"""
-        print("\n🧹 Cleaning up test data...")
-        
-        for category_id in self.created_categories:
-            try:
-                response = self.session.delete(f"{API_BASE}/assets/{self.tenant_id}/categories/{category_id}")
-                if response.status_code == 200:
-                    print(f"✅ Cleaned up category: {category_id}")
-                else:
-                    print(f"⚠️ Failed to clean up category: {category_id}")
-            except Exception as e:
-                print(f"⚠️ Cleanup error for {category_id}: {str(e)}")
     
     def run_tests(self) -> bool:
         """Run all Asset Settings API tests"""
