@@ -229,39 +229,56 @@ class AssetManagementAPITester:
             print(f"❌ Bulk QR code generation error: {str(e)}")
             return False
     
-    def update_category(self, category_id: str) -> bool:
-        """Update a category"""
-        print(f"✏️ [TEST 6/8] Updating category...")
+    def test_global_search(self) -> bool:
+        """Test GET /api/search/global?query=TSR.EC.SCDE"""
+        print(f"🔍 [TEST 6/6] Testing global search integration...")
         
-        updated_data = {
-            "name": "Updated E2E Test Category",
-            "short_code": "UE2E",
-            "type": "software",
-            "description": "Updated end-to-end test category",
-            "icon": "🔄"
-        }
+        search_query = "TSR.EC.SCDE"
         
         try:
-            response = self.session.put(
-                f"{API_BASE}/assets/{self.tenant_id}/categories/{category_id}",
-                json=updated_data
-            )
-            print(f"Update category response status: {response.status_code}")
+            response = self.session.get(f"{API_BASE}/search/global?query={search_query}")
+            print(f"Global search response status: {response.status_code}")
             
             if response.status_code == 200:
                 data = response.json()
                 if data.get("success"):
-                    print("✅ Category updated successfully")
+                    total = data.get("total", 0)
+                    results = data.get("results", {})
+                    assets = results.get("assets", [])
+                    
+                    print(f"✅ Global search successful")
+                    print(f"   Total results: {total}")
+                    print(f"   Asset results: {len(assets)}")
+                    
+                    # Check if we found any assets matching our pattern
+                    matching_assets = []
+                    for asset in assets:
+                        asset_id = asset.get("id") or asset.get("title", "")
+                        if "TSR.EC.SCDE" in asset_id:
+                            matching_assets.append(asset_id)
+                    
+                    if matching_assets:
+                        print(f"✅ Found {len(matching_assets)} matching assets:")
+                        for asset_id in matching_assets[:3]:  # Show first 3
+                            print(f"   - {asset_id}")
+                    else:
+                        print("⚠️ No matching assets found - expected if no test data")
+                    
+                    # Check priority match
+                    priority_match = data.get("priority_match")
+                    if priority_match:
+                        print(f"✅ Priority match: {priority_match.get('title', 'N/A')}")
+                    
                     return True
                 else:
-                    print(f"❌ Update failed: {data.get('message', 'Unknown error')}")
+                    print(f"❌ Search returned success=false: {data.get('message', 'Unknown error')}")
                     return False
             else:
-                print(f"❌ Failed to update category: {response.status_code} - {response.text}")
+                print(f"❌ Failed to perform global search: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Update category error: {str(e)}")
+            print(f"❌ Global search error: {str(e)}")
             return False
     
     def delete_category(self, category_id: str) -> bool:
