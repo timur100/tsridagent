@@ -3,6 +3,7 @@ const path = require('path');
 const { SerialPort } = require('serialport');
 const usb = require('usb');
 const HID = require('node-hid');
+const printer = require('printer');
 
 // Configuration
 const PREVIEW_URL = 'https://desk-manager-2.preview.emergentagent.com/portal/admin';
@@ -101,6 +102,58 @@ ipcMain.handle('usb:getHIDDevices', async () => {
   } catch (error) {
     console.error('[HID] Error:', error);
     return [];
+  }
+});
+
+// Get Windows Printers (NEW!)
+ipcMain.handle('printer:getSystemPrinters', async () => {
+  try {
+    const printers = printer.getPrinters();
+    console.log('[PRINTER] Found system printers:', printers.length);
+    return printers.map(p => ({
+      name: p.name,
+      description: p.description || '',
+      driver: p.driverName || '',
+      status: p.status || '',
+      isDefault: p.isDefault || false,
+      options: p.options || {}
+    }));
+  } catch (error) {
+    console.error('[PRINTER] Error:', error);
+    return [];
+  }
+});
+
+// Print to Windows Printer (NEW!)
+ipcMain.handle('printer:printToWindows', async (event, { printerName, data, type }) => {
+  try {
+    console.log('[PRINTER] Printing to:', printerName);
+    
+    return new Promise((resolve, reject) => {
+      // Type kann sein: 'RAW', 'TEXT', 'PDF', etc.
+      const options = {
+        type: type || 'RAW',
+        success: (jobId) => {
+          console.log('[PRINTER] Print job success:', jobId);
+          resolve({ success: true, jobId });
+        },
+        error: (err) => {
+          console.error('[PRINTER] Print job error:', err);
+          reject(err);
+        }
+      };
+      
+      printer.printDirect({
+        data: data,
+        printer: printerName,
+        type: options.type,
+        success: options.success,
+        error: options.error
+      });
+    });
+  } catch (error) {
+    console.error('[PRINTER] Print error:', error);
+    return { success: false, error: error.message };
   }
 });
 
