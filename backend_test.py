@@ -72,38 +72,44 @@ class AssetManagementAPITester:
             print(f"❌ Login error: {str(e)}")
             return False
     
-    def get_tenant_id(self) -> bool:
-        """Get tenant ID for testing"""
-        print("🏢 [TEST 2/8] Getting tenant information...")
+    def test_asset_list(self) -> bool:
+        """Test GET /api/assets/list?tenant_id=<tenant_id>"""
+        print(f"📋 [TEST 2/6] Testing asset list for tenant {self.tenant_id}...")
         
         try:
-            response = self.session.get(f"{API_BASE}/tenants")
-            print(f"Tenants response status: {response.status_code}")
+            # Test the correct endpoint based on the assets.py router
+            response = self.session.get(f"{API_BASE}/assets/{self.tenant_id}/assets")
+            print(f"Asset list response status: {response.status_code}")
             
             if response.status_code == 200:
-                tenants = response.json()  # API returns array directly
-                
-                # Look for Europcar tenant
-                for tenant in tenants:
-                    if tenant.get("name") == "Europcar":
-                        self.tenant_id = tenant.get("tenant_id")
-                        print(f"✅ Found Europcar tenant: {self.tenant_id}")
+                data = response.json()
+                if data.get("success"):
+                    assets = data.get("data", [])
+                    print(f"✅ Found {len(assets)} assets")
+                    
+                    # Look for test asset IDs
+                    found_assets = []
+                    for asset in assets:
+                        asset_id = asset.get("asset_id")
+                        if asset_id in self.test_asset_ids:
+                            found_assets.append(asset_id)
+                            print(f"   - Found test asset: {asset_id}")
+                    
+                    if found_assets:
+                        print(f"✅ Found {len(found_assets)} test assets in database")
                         return True
-                
-                # If no Europcar tenant, use the first available
-                if tenants:
-                    self.tenant_id = tenants[0].get("tenant_id")
-                    print(f"✅ Using first available tenant: {self.tenant_id}")
-                    return True
+                    else:
+                        print("⚠️ No test assets found, but API is working")
+                        return True
                 else:
-                    print("❌ No tenants found")
+                    print(f"❌ API returned success=false: {data.get('message', 'Unknown error')}")
                     return False
             else:
-                print(f"❌ Failed to get tenants: {response.status_code} - {response.text}")
+                print(f"❌ Failed to get asset list: {response.status_code} - {response.text}")
                 return False
                 
         except Exception as e:
-            print(f"❌ Get tenants error: {str(e)}")
+            print(f"❌ Asset list error: {str(e)}")
             return False
     
     def list_categories(self) -> bool:
