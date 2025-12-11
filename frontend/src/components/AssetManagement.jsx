@@ -1013,6 +1013,15 @@ const AssetManagement = () => {
                   QR-Code
                 </Button>
                 <Button
+                  onClick={() => printQRCodeLabel(selectedAsset)}
+                  variant="outline"
+                  className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30 border-green-300 dark:border-green-700"
+                  title="Label auf Brother QL drucken"
+                >
+                  <Printer className="h-4 w-4 text-green-600 dark:text-green-400" />
+                  <span className="text-green-700 dark:text-green-300">Drucken</span>
+                </Button>
+                <Button
                   onClick={() => {
                     setShowDetailModal(false);
                     openModal(selectedAsset);
