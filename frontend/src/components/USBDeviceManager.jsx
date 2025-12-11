@@ -245,21 +245,43 @@ const USBDeviceManager = () => {
                   try {
                     toast.loading('Drucke Test-Label...', { id: 'win-print' });
                     
-                    // Brother QL benötigt spezielle Befehle
-                    const testLabel = 'Test Label\nBrother QL-1110NWB\nUSB Device Manager';
+                    // Einfacher Test-Text
+                    const testLabel = [
+                      '',
+                      '================================',
+                      '    TSRID USB DEVICE MANAGER    ',
+                      '================================',
+                      '',
+                      'Test-Druck erfolgreich!',
+                      '',
+                      'Drucker: ' + selectedWindowsPrinter,
+                      'Zeit: ' + new Date().toLocaleString('de-DE'),
+                      '',
+                      'Brother QL-1110NWB',
+                      'Asset Management System',
+                      '',
+                      '================================',
+                      ''
+                    ].join('\n');
+                    
+                    console.log('[USB-MGR] Sending print job to:', selectedWindowsPrinter);
+                    console.log('[USB-MGR] Data length:', testLabel.length);
                     
                     const result = await window.printerAPI.printToWindows(
                       selectedWindowsPrinter,
                       testLabel,
-                      'RAW'
+                      'TEXT'
                     );
                     
+                    console.log('[USB-MGR] Print result:', result);
+                    
                     if (result.success) {
-                      toast.success('Test-Druck gesendet!', { id: 'win-print' });
+                      toast.success('Test-Druck gesendet! Job-ID: ' + result.jobId, { id: 'win-print' });
                     } else {
-                      toast.error('Druckfehler: ' + result.error, { id: 'win-print' });
+                      toast.error('Druckfehler: ' + (result.error || 'Unbekannter Fehler'), { id: 'win-print' });
                     }
                   } catch (error) {
+                    console.error('[USB-MGR] Print error:', error);
                     toast.error('Fehler: ' + error.message, { id: 'win-print' });
                   }
                 }}
