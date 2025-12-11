@@ -9,15 +9,80 @@ const path = require('path');
 const os = require('os');
 
 /**
- * Holt alle Windows-Drucker via PowerShell
+ * Holt alle Windows-Drucker via WMIC (robusteste Methode)
  * @returns {Promise<Array>} Liste der Drucker
  */
-async function getWindowsPrinters() {
+async function getWindowsPrintersViaWmic() {
   return new Promise((resolve, reject) => {
+    const wmic = spawn('wmic', [
+      'printer',
+      'get',
+      'Name,DriverName,PrinterStatus,Default',
+      '/format:csv'
+    ]);
+
+    let output = '';
+    let errorOutput = '';
+
+    wmic.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    wmic.stderr.on('data', (data) => {
+      errorOutput += data.toString();
+    });
+
+    wmic.on('close', (code) => {
+      if (code === 0 && output) {
+        try {
+          const lines = output.split('\n').filter(line => line.trim());
+          
+          // Erste 2 Zeilen überspringen (Header + leere Zeile)
+          const dataLines = lines.slice(2);
+          
+          const printers = dataLines.map(line => {
+            const parts = line.split(',');
+            if (parts.length >= 4) {
+              return {
+                name: parts[2] || '',
+                driver: parts[1] || 'Unknown',
+                status: parts[3] || 'Unknown',
+                isDefault: parts[0] === 'TRUE'
+              };
+            }
+            return null;
+          }).filter(p => p && p.name);
+          
+          console.log('[PRINTER-WMIC] Found', printers.length, 'printers');
+          resolve(printers);
+        } catch (e) {
+          console.error('[PRINTER-WMIC] Parse error:', e.message);
+          reject(e);
+        }
+      } else {
+        console.error('[PRINTER-WMIC] Error:', errorOutput);
+        reject(new Error('WMIC failed: ' + errorOutput));
+      }
+    });
+
+    wmic.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
+/**
+ * Holt alle Windows-Drucker via PowerShell (Fallback)
+ * @returns {Promise<Array>} Liste der Drucker
+ */
+async function getWindowsPrintersViaPowerShell() {
+  return new Promise((resolve, reject) => {
+    // Einfacherer PowerShell-Befehl
     const ps = spawn('powershell.exe', [
       '-NoProfile',
+      '-ExecutionPolicy', 'Bypass',
       '-Command',
-      'Get-Printer | Select-Object Name,DriverName,PrinterStatus,ComputerName,@{Name="IsDefault";Expression={$_.Name -eq (Get-WmiObject -Query "SELECT * FROM Win32_Printer WHERE Default=$true").Name}} | ConvertTo-Json'
+      'Get-WmiObject -Class Win32_Printer | Select-Object Name,DriverName,PrinterStatus,Default | ConvertTo-Json'
     ]);
 
     let output = '';
@@ -32,11 +97,10 @@ async function getWindowsPrinters() {
     });
 
     ps.on('close', (code) => {
-      if (code === 0 && output) {
+      if (code === 0 && output.trim()) {
         try {
           let printers = JSON.parse(output);
           
-          // Sicherstellen, dass es ein Array ist
           if (!Array.isArray(printers)) {
             printers = [printers];
           }
@@ -44,27 +108,117 @@ async function getWindowsPrinters() {
           const result = printers.map(p => ({
             name: p.Name || '',
             driver: p.DriverName || 'Unknown',
-            status: p.PrinterStatus || 'Unknown',
-            computer: p.ComputerName || os.hostname(),
-            isDefault: p.IsDefault || false
+            status: p.PrinterStatus ? p.PrinterStatus.toString() : 'Unknown',
+            isDefault: p.Default || false
           }));
           
-          console.log('[PRINTER-WIN] Found', result.length, 'printers');
+          console.log('[PRINTER-PS] Found', result.length, 'printers');
           resolve(result);
         } catch (e) {
-          console.error('[PRINTER-WIN] Parse error:', e.message);
-          reject(new Error('Failed to parse printer list: ' + e.message));
+          console.error('[PRINTER-PS] Parse error:', e.message, 'Output:', output.substring(0, 200));
+          reject(e);
         }
       } else {
-        console.error('[PRINTER-WIN] PowerShell error:', errorOutput);
-        reject(new Error('Failed to get printers: ' + errorOutput));
+        console.error('[PRINTER-PS] Error. Code:', code, 'Stderr:', errorOutput);
+        reject(new Error('PowerShell failed'));
       }
     });
 
     ps.on('error', (err) => {
-      reject(new Error('Failed to spawn PowerShell: ' + err.message));
+      reject(err);
     });
   });
+}
+
+/**
+ * Holt alle Windows-Drucker via Registry (letzte Option)
+ * @returns {Promise<Array>} Liste der Drucker
+ */
+async function getWindowsPrintersViaReg() {
+  return new Promise((resolve, reject) => {
+    const reg = spawn('reg', [
+      'query',
+      'HKEY_CURRENT_USER\\Printers\\Connections',
+      '/s'
+    ]);
+
+    let output = '';
+
+    reg.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    reg.on('close', (code) => {
+      const printerNames = [];
+      const lines = output.split('\n');
+      
+      lines.forEach(line => {
+        if (line.includes('\\Connections\\')) {
+          const match = line.match(/Connections\\(.+)/);
+          if (match && match[1]) {
+            const name = match[1].trim().replace(/,/g, ' ');
+            printerNames.push({
+              name: name,
+              driver: 'Unknown',
+              status: 'Unknown',
+              isDefault: false
+            });
+          }
+        }
+      });
+      
+      console.log('[PRINTER-REG] Found', printerNames.length, 'printers');
+      resolve(printerNames);
+    });
+
+    reg.on('error', (err) => {
+      reject(err);
+    });
+  });
+}
+
+/**
+ * Holt alle Windows-Drucker mit mehreren Methoden (Hauptfunktion)
+ * @returns {Promise<Array>} Liste der Drucker
+ */
+async function getWindowsPrinters() {
+  console.log('[PRINTER] Starting printer detection...');
+  
+  // Versuch 1: WMIC (am robustesten)
+  try {
+    const printers = await getWindowsPrintersViaWmic();
+    if (printers.length > 0) {
+      console.log('[PRINTER] ✓ WMIC method successful:', printers.length, 'printers');
+      return printers;
+    }
+  } catch (error) {
+    console.warn('[PRINTER] WMIC method failed:', error.message);
+  }
+  
+  // Versuch 2: PowerShell mit WMI
+  try {
+    const printers = await getWindowsPrintersViaPowerShell();
+    if (printers.length > 0) {
+      console.log('[PRINTER] ✓ PowerShell method successful:', printers.length, 'printers');
+      return printers;
+    }
+  } catch (error) {
+    console.warn('[PRINTER] PowerShell method failed:', error.message);
+  }
+  
+  // Versuch 3: Registry
+  try {
+    const printers = await getWindowsPrintersViaReg();
+    if (printers.length > 0) {
+      console.log('[PRINTER] ✓ Registry method successful:', printers.length, 'printers');
+      return printers;
+    }
+  } catch (error) {
+    console.warn('[PRINTER] Registry method failed:', error.message);
+  }
+  
+  console.error('[PRINTER] ✗ All methods failed!');
+  return [];
 }
 
 /**
