@@ -178,6 +178,29 @@ async function getWindowsPrintersViaReg() {
 }
 
 /**
+ * Lädt Drucker aus manueller Konfiguration (Fallback)
+ * @returns {Promise<Array>} Liste der Drucker
+ */
+async function getWindowsPrintersFromConfig() {
+  return new Promise((resolve) => {
+    try {
+      const configPath = path.join(__dirname, 'printers-manual.json');
+      if (fs.existsSync(configPath)) {
+        const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+        console.log('[PRINTER-CONFIG] Loaded', config.printers.length, 'printers from config');
+        resolve(config.printers || []);
+      } else {
+        console.log('[PRINTER-CONFIG] No config file found');
+        resolve([]);
+      }
+    } catch (error) {
+      console.error('[PRINTER-CONFIG] Error loading config:', error.message);
+      resolve([]);
+    }
+  });
+}
+
+/**
  * Holt alle Windows-Drucker mit mehreren Methoden (Hauptfunktion)
  * @returns {Promise<Array>} Liste der Drucker
  */
@@ -217,7 +240,22 @@ async function getWindowsPrinters() {
     console.warn('[PRINTER] Registry method failed:', error.message);
   }
   
+  // Versuch 4: Manuelle Konfiguration (FALLBACK)
+  console.warn('[PRINTER] All automatic methods failed, trying manual config...');
+  try {
+    const printers = await getWindowsPrintersFromConfig();
+    if (printers.length > 0) {
+      console.log('[PRINTER] ✓ Manual config method successful:', printers.length, 'printers');
+      console.log('[PRINTER] ⚠️  Using hardcoded printer list from printers-manual.json');
+      return printers;
+    }
+  } catch (error) {
+    console.warn('[PRINTER] Manual config method failed:', error.message);
+  }
+  
   console.error('[PRINTER] ✗ All methods failed!');
+  console.error('[PRINTER] Please run: node test-printer-detection.js');
+  console.error('[PRINTER] Or edit printers-manual.json with your printer names');
   return [];
 }
 

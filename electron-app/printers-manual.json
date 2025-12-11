@@ -1,0 +1,46 @@
+{
+  "printers": [
+    {
+      "name": "Brother QL-1110NWB",
+      "driver": "Brother QL-1110NWB",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "Brother QL-1110NWB (Kopie 1)",
+      "driver": "Brother QL-1110NWB",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "ZDesigner ZQ630 Plus (ZPL)",
+      "driver": "ZDesigner ZPL",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "ZDesigner ZD621R-300dpi ZPL",
+      "driver": "ZDesigner ZPL",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "ZDesigner ZD621-300dpi ZPL123",
+      "driver": "ZDesigner ZPL",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "EPSON TM-T20III Receipt",
+      "driver": "EPSON TM-T",
+      "status": "OK",
+      "isDefault": false
+    },
+    {
+      "name": "EPSON TM-T(203dpi) Receipt6",
+      "driver": "EPSON TM-T",
+      "status": "OK",
+      "isDefault": false
+    }
+  ]
+}
