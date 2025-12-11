@@ -194,12 +194,131 @@ const USBDeviceManager = () => {
         </div>
       </Card>
 
+      {/* Windows Printers (NEW!) */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
+        <div className="flex items-center gap-3 mb-4">
+          <Printer className="h-6 w-6 text-green-500" />
+          <h4 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            Windows-Drucker ({windowsPrinters.length})
+          </h4>
+        </div>
+
+        {windowsPrinters.length === 0 ? (
+          <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
+            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Keine Windows-Drucker gefunden.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Printer Selection */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Drucker auswählen:
+              </label>
+              <select
+                value={selectedWindowsPrinter}
+                onChange={(e) => setSelectedWindowsPrinter(e.target.value)}
+                className={`w-full px-4 py-2 rounded-lg border ${
+                  theme === 'dark'
+                    ? 'bg-[#1f1f1f] border-gray-700 text-white'
+                    : 'bg-white border-gray-300 text-gray-900'
+                }`}
+              >
+                {windowsPrinters.map(p => (
+                  <option key={p.name} value={p.name}>
+                    {p.name} {p.isDefault ? '(Standard)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Test Print Button */}
+            <div className="flex gap-3">
+              <Button
+                onClick={async () => {
+                  if (!selectedWindowsPrinter) {
+                    toast.error('Bitte Drucker auswählen');
+                    return;
+                  }
+                  
+                  try {
+                    toast.loading('Drucke Test-Label...', { id: 'win-print' });
+                    
+                    // Brother QL benötigt spezielle Befehle
+                    const testLabel = 'Test Label\nBrother QL-1110NWB\nUSB Device Manager';
+                    
+                    const result = await window.printerAPI.printToWindows(
+                      selectedWindowsPrinter,
+                      testLabel,
+                      'RAW'
+                    );
+                    
+                    if (result.success) {
+                      toast.success('Test-Druck gesendet!', { id: 'win-print' });
+                    } else {
+                      toast.error('Druckfehler: ' + result.error, { id: 'win-print' });
+                    }
+                  } catch (error) {
+                    toast.error('Fehler: ' + error.message, { id: 'win-print' });
+                  }
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+              >
+                <Printer className="h-4 w-4" />
+                Test-Druck über Windows
+              </Button>
+            </div>
+
+            {/* Printer List */}
+            <div>
+              <h5 className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                Verfügbare Windows-Drucker:
+              </h5>
+              <div className="space-y-2">
+                {windowsPrinters.map(p => (
+                  <div
+                    key={p.name}
+                    className={`p-3 rounded-lg ${
+                      theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className={`font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {p.name}
+                        </p>
+                        <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {p.driver || 'Unknown Driver'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {p.isDefault && (
+                          <span className="text-xs px-2 py-1 rounded bg-blue-500/20 text-blue-600">
+                            Standard
+                          </span>
+                        )}
+                        {p.name === selectedWindowsPrinter && (
+                          <span className="text-xs px-2 py-1 rounded bg-green-500/20 text-green-600">
+                            Ausgewählt
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </Card>
+
       {/* Serial Ports / Printers */}
       <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex items-center gap-3 mb-4">
           <Printer className="h-6 w-6 text-[#c00000]" />
           <h4 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            USB Drucker / Serial Ports ({serialPorts.length})
+            USB Serial Ports ({serialPorts.length})
           </h4>
         </div>
 
