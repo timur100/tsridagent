@@ -121,17 +121,13 @@ ipcMain.handle('printer:getSystemPrinters', async () => {
 // Print to Windows Printer via PowerShell (NEW!)
 ipcMain.handle('printer:printToWindows', async (event, { printerName, data, type }) => {
   try {
-    console.log('[PRINTER] Printing to:', printerName, 'Type:', type);
+    console.log('[PRINTER] Printing to:', printerName, 'Type:', type || 'TEXT');
+    console.log('[PRINTER] Data length:', data.length, 'bytes');
     
-    if (type === 'RAW') {
-      // RAW-Druck für Brother QL, Zebra, etc.
-      const result = await printerWindows.printRawToWindows(printerName, data);
-      return result;
-    } else {
-      // Text-Druck
-      const result = await printerWindows.printTextToWindows(printerName, data);
-      return result;
-    }
+    // Brother QL und andere Label-Drucker arbeiten am besten mit Text-Druck
+    // Windows Print Spooler konvertiert automatisch
+    const result = await printerWindows.printTextToWindows(printerName, data);
+    return result;
   } catch (error) {
     console.error('[PRINTER] Print error:', error);
     return { success: false, error: error.message };
