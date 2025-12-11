@@ -37,8 +37,8 @@ class AssetManagementAPITester:
     def __init__(self):
         self.session = requests.Session()
         self.token = None
-        self.tenant_id = None
-        self.created_categories = []
+        self.tenant_id = "1d3653db-86cb-4dd1-9ef5-0236b116def8"  # Europcar tenant ID
+        self.test_asset_ids = ["TSR.EC.SCDE.000001", "TSR.EC.SCDE.000005", "TSR.EC.SCDE.000050"]
         
     def login(self) -> bool:
         """Login and get JWT token"""
