@@ -33,7 +33,7 @@ import time
 BACKEND_URL = "https://desk-manager-2.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
-class AssetSettingsAPITester:
+class AssetManagementAPITester:
     def __init__(self):
         self.session = requests.Session()
         self.token = None
