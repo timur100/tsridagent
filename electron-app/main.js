@@ -3,7 +3,8 @@ const path = require('path');
 const { SerialPort } = require('serialport');
 const usb = require('usb');
 const HID = require('node-hid');
-const printer = require('printer');
+// const printer = require('printer'); // Ersetzt durch PowerShell-Lösung
+const printerWindows = require('./printer-windows');
 
 // Configuration
 const PREVIEW_URL = 'https://desk-manager-2.preview.emergentagent.com/portal/admin';
@@ -105,52 +106,32 @@ ipcMain.handle('usb:getHIDDevices', async () => {
   }
 });
 
-// Get Windows Printers (NEW!)
+// Get Windows Printers via PowerShell (NEW!)
 ipcMain.handle('printer:getSystemPrinters', async () => {
   try {
-    const printers = printer.getPrinters();
+    const printers = await printerWindows.getWindowsPrinters();
     console.log('[PRINTER] Found system printers:', printers.length);
-    return printers.map(p => ({
-      name: p.name,
-      description: p.description || '',
-      driver: p.driverName || '',
-      status: p.status || '',
-      isDefault: p.isDefault || false,
-      options: p.options || {}
-    }));
+    return printers;
   } catch (error) {
     console.error('[PRINTER] Error:', error);
     return [];
   }
 });
 
-// Print to Windows Printer (NEW!)
+// Print to Windows Printer via PowerShell (NEW!)
 ipcMain.handle('printer:printToWindows', async (event, { printerName, data, type }) => {
   try {
-    console.log('[PRINTER] Printing to:', printerName);
+    console.log('[PRINTER] Printing to:', printerName, 'Type:', type);
     
-    return new Promise((resolve, reject) => {
-      // Type kann sein: 'RAW', 'TEXT', 'PDF', etc.
-      const options = {
-        type: type || 'RAW',
-        success: (jobId) => {
-          console.log('[PRINTER] Print job success:', jobId);
-          resolve({ success: true, jobId });
-        },
-        error: (err) => {
-          console.error('[PRINTER] Print job error:', err);
-          reject(err);
-        }
-      };
-      
-      printer.printDirect({
-        data: data,
-        printer: printerName,
-        type: options.type,
-        success: options.success,
-        error: options.error
-      });
-    });
+    if (type === 'RAW') {
+      // RAW-Druck für Brother QL, Zebra, etc.
+      const result = await printerWindows.printRawToWindows(printerName, data);
+      return result;
+    } else {
+      // Text-Druck
+      const result = await printerWindows.printTextToWindows(printerName, data);
+      return result;
+    }
   } catch (error) {
     console.error('[PRINTER] Print error:', error);
     return { success: false, error: error.message };
