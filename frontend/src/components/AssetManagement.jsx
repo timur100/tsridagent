@@ -504,16 +504,37 @@ const AssetManagement = () => {
         toast.loading(`Drucke hochauflösendes Label auf ${brotherPrinter.name}...`, { id: 'print-qr' });
 
         try {
-          // Print image via Windows printer
-          const result = await window.printerAPI.printImage(
-            brotherPrinter.name,
-            base64Image
-          );
+          // Check if printImage API is available
+          if (window.printerAPI.printImage) {
+            console.log('[PRINT] Using printImage API (new method)');
+            
+            // Print image via Windows printer (NEW METHOD)
+            const result = await window.printerAPI.printImage(
+              brotherPrinter.name,
+              base64Image
+            );
 
-          if (result.success) {
-            toast.success(`QR-Code-Label für ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
+            if (result.success) {
+              toast.success(`QR-Code-Label für ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
+            } else {
+              toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+            }
           } else {
-            toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+            console.warn('[PRINT] printImage API not available, using fallback');
+            
+            // FALLBACK: Download image and show instructions
+            const link = document.createElement('a');
+            link.href = base64Image;
+            link.download = `label_${asset.asset_id}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            toast.success('Label heruntergeladen!', { id: 'print-qr' });
+            toast('Bitte öffnen Sie das Bild und drucken Sie es manuell auf dem Brother QL', {
+              duration: 5000,
+              icon: 'ℹ️'
+            });
           }
         } catch (error) {
           console.error('[PRINT] Print image error:', error);
