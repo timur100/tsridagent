@@ -280,7 +280,7 @@ async function printTextToWindows(printerName, text) {
 }
 
 /**
- * Druckt RAW Daten (für Brother QL, Zebra, etc.)
+ * Druckt RAW Daten via PowerShell (funktioniert besser als copy /b)
  * @param {string} printerName - Name des Druckers
  * @param {Buffer|string} data - RAW Daten
  * @returns {Promise<Object>} Ergebnis
@@ -301,20 +301,30 @@ async function printRawToWindows(printerName, data) {
     }
 
     console.log('[PRINTER-WIN] Printing RAW to:', printerName);
+    console.log('[PRINTER-WIN] Temp file:', tempFile);
 
-    // Nutze copy /b für RAW-Druck (binär)
-    const cmd = spawn('cmd.exe', [
-      '/c',
-      `copy /b "${tempFile}" "\\\\${os.hostname()}\\${printerName}"`
+    // Nutze PowerShell mit Get-Content -Raw für binäre Daten
+    const ps = spawn('powershell.exe', [
+      '-NoProfile',
+      '-Command',
+      `$bytes = [System.IO.File]::ReadAllBytes("${tempFile.replace(/\\/g, '\\\\')}"); ` +
+      `$printer = Get-Printer -Name "${printerName}"; ` +
+      `$port = $printer.PortName; ` +
+      `Out-Printer -Name "${printerName}" -InputObject ([System.Text.Encoding]::Default.GetString($bytes))`
     ]);
 
+    let output = '';
     let errorOutput = '';
 
-    cmd.stderr.on('data', (data) => {
+    ps.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    ps.stderr.on('data', (data) => {
       errorOutput += data.toString();
     });
 
-    cmd.on('close', (code) => {
+    ps.on('close', (code) => {
       // Temp-Datei löschen
       try {
         fs.unlinkSync(tempFile);
@@ -326,17 +336,68 @@ async function printRawToWindows(printerName, data) {
         console.log('[PRINTER-WIN] RAW print successful');
         resolve({ success: true, jobId: Date.now() });
       } else {
-        console.error('[PRINTER-WIN] RAW print failed:', errorOutput);
-        reject(new Error('RAW print failed: ' + errorOutput));
+        console.error('[PRINTER-WIN] RAW print failed:', errorOutput || 'Unknown error');
+        // Fallback zu Text-Druck wenn RAW fehlschlägt
+        console.log('[PRINTER-WIN] Trying text print as fallback...');
+        printTextToWindows(printerName, data.toString())
+          .then(resolve)
+          .catch(reject);
       }
     });
 
-    cmd.on('error', (err) => {
+    ps.on('error', (err) => {
       try {
         fs.unlinkSync(tempFile);
       } catch (e) {}
-      reject(new Error('Failed to print RAW: ' + err.message));
+      reject(new Error('Failed to spawn PowerShell: ' + err.message));
     });
+  });
+}
+
+/**
+ * Druckt Daten direkt an Drucker-Port (für Brother QL)
+ * @param {string} printerName - Name des Druckers
+ * @param {Buffer|string} data - Daten
+ * @returns {Promise<Object>} Ergebnis
+ */
+async function printDirectToPort(printerName, data) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Erst Port-Name des Druckers finden
+      const ps = spawn('powershell.exe', [
+        '-NoProfile',
+        '-Command',
+        `(Get-Printer -Name "${printerName}").PortName`
+      ]);
+
+      let portName = '';
+      ps.stdout.on('data', (d) => {
+        portName += d.toString().trim();
+      });
+
+      ps.on('close', (code) => {
+        if (code === 0 && portName) {
+          console.log('[PRINTER-WIN] Port found:', portName);
+          
+          // Wenn es ein USB-Port ist, nutze Text-Druck
+          if (portName.startsWith('USB') || portName.startsWith('WSD')) {
+            console.log('[PRINTER-WIN] USB/WSD port detected, using text print');
+            printTextToWindows(printerName, data.toString())
+              .then(resolve)
+              .catch(reject);
+          } else {
+            // Für Netzwerk-Ports versuche direkte Verbindung
+            printTextToWindows(printerName, data.toString())
+              .then(resolve)
+              .catch(reject);
+          }
+        } else {
+          reject(new Error('Failed to get printer port'));
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
   });
 }
 
