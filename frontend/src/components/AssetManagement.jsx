@@ -347,6 +347,82 @@ const AssetManagement = () => {
     }
   };
 
+  // Print QR Code Label to Brother QL Printer
+  const printQRCodeLabel = async (asset) => {
+    try {
+      // Check if running in Electron desktop app
+      if (!window.printerAPI || !window.printerAPI.getSystemPrinters) {
+        toast.error('Druck-Funktion nur in Desktop-App verfügbar!');
+        return;
+      }
+
+      toast.loading('Bereite Druck vor...', { id: 'print-qr' });
+
+      // Get available printers
+      const printers = await window.printerAPI.getSystemPrinters();
+      
+      if (printers.length === 0) {
+        toast.error('Keine Drucker gefunden!', { id: 'print-qr' });
+        return;
+      }
+
+      // Find Brother QL printer
+      let brotherPrinter = printers.find(p => p.name.includes('Brother QL'));
+      
+      // Fallback: Use first printer if Brother not found
+      if (!brotherPrinter) {
+        brotherPrinter = printers[0];
+        console.warn('[PRINT] Brother QL not found, using:', brotherPrinter.name);
+      }
+
+      console.log('[PRINT] Selected printer:', brotherPrinter.name);
+      console.log('[PRINT] Asset:', asset.asset_id);
+
+      // Create label text (Brother QL will print this as text)
+      // For better results, we'd need to generate an actual label image
+      const labelText = [
+        '',
+        '================================',
+        '    TSRID ASSET MANAGEMENT',
+        '================================',
+        '',
+        'Asset-ID:',
+        asset.asset_id,
+        '',
+        'Name:',
+        asset.name,
+        '',
+        'Status: ' + (asset.status || 'Active'),
+        'Standort: ' + (asset.location || 'N/A'),
+        '',
+        '================================',
+        'Scannen Sie den QR-Code mit',
+        'der TSRID App fuer Details',
+        '================================',
+        ''
+      ].join('\n');
+
+      toast.loading(`Drucke auf ${brotherPrinter.name}...`, { id: 'print-qr' });
+
+      // Print to Windows printer
+      const result = await window.printerAPI.printToWindows(
+        brotherPrinter.name,
+        labelText,
+        'TEXT'
+      );
+
+      if (result.success) {
+        toast.success(`Label fuer ${asset.asset_id} gedruckt!`, { id: 'print-qr' });
+      } else {
+        toast.error('Druckfehler: ' + (result.error || 'Unbekannt'), { id: 'print-qr' });
+      }
+
+    } catch (error) {
+      console.error('[PRINT] Error:', error);
+      toast.error('Fehler beim Drucken: ' + error.message, { id: 'print-qr' });
+    }
+  };
+
 
   const getCategoryName = (categoryId) => {
     const category = categories.find(c => c.id === categoryId);
