@@ -361,15 +361,15 @@ class AssetManagementAPITester:
 
 def main():
     """Main test execution"""
-    tester = AssetSettingsAPITester()
+    tester = AssetManagementAPITester()
     
     success = tester.run_tests()
     
     if success:
-        print("\n🎉 Asset Settings API testing completed successfully!")
+        print("\n🎉 Asset Management API testing completed successfully!")
         sys.exit(0)
     else:
-        print("\n💥 Asset Settings API testing failed!")
+        print("\n💥 Asset Management API testing failed!")
         sys.exit(1)
 
 if __name__ == "__main__":
