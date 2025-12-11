@@ -24,7 +24,15 @@ contextBridge.exposeInMainWorld('printerAPI', {
   
   // Test printer connection
   test: (port) => 
-    ipcRenderer.invoke('printer:test', { port })
+    ipcRenderer.invoke('printer:test', { port }),
+  
+  // Get Windows System Printers (NEW!)
+  getSystemPrinters: () => 
+    ipcRenderer.invoke('printer:getSystemPrinters'),
+  
+  // Print to Windows Printer (NEW!)
+  printToWindows: (printerName, data, type) => 
+    ipcRenderer.invoke('printer:printToWindows', { printerName, data, type })
 });
 
 // Expose File Dialog API
