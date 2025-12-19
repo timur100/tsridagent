@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  # MongoDB
+  mongo:
+    image: mongo:7
+    container_name: tsrid-mongo
+    restart: always
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo-backup:/backup
+    environment:
+      MONGO_INITDB_DATABASE: verification_db
+    networks:
+      - tsrid-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/verification_db --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tsrid-backend
+    restart: always
+    env_file:
+      - ./backend/.env.production
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - tsrid-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_BACKEND_URL=${REACT_APP_BACKEND_URL}
+    container_name: tsrid-frontend
+    restart: always
+    depends_on:
+      - backend
+    networks:
+      - tsrid-network
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: tsrid-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/logs:/var/log/nginx
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - tsrid-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  tsrid-network:
+    driver: bridge
