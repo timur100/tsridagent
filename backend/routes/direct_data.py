@@ -308,3 +308,175 @@ async def get_stats_overview(token_data: dict = Depends(verify_token)):
     except Exception as e:
         logger.error(f"Error fetching stats: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============== TENANT HIERARCHY ==============
+
+@router.get("/api/tenants-hierarchy/list")
+async def get_tenants_hierarchy_list():
+    """
+    Get tenant hierarchy as a flat list with parent-child relationships
+    """
+    try:
+        db = get_db()
+        
+        # Get all tenants
+        tenants = list(db.tenants.find({}, {"_id": 0}))
+        
+        # Build hierarchy structure
+        hierarchy = []
+        for tenant in tenants:
+            hierarchy.append({
+                "id": tenant.get("tenant_id") or tenant.get("id"),
+                "name": tenant.get("name") or tenant.get("display_name"),
+                "display_name": tenant.get("display_name") or tenant.get("name"),
+                "parent_id": tenant.get("parent_tenant_id"),
+                "level": tenant.get("tenant_level", 0),
+                "country_code": tenant.get("country_code"),
+                "enabled": tenant.get("enabled", True)
+            })
+        
+        return {
+            "success": True,
+            "tenants": hierarchy,
+            "total": len(hierarchy)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching tenant hierarchy: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/tenants/{tenant_id}/hierarchy")
+async def get_tenant_hierarchy(tenant_id: str):
+    """
+    Get hierarchy for a specific tenant
+    """
+    try:
+        db = get_db()
+        
+        # Get the tenant
+        tenant = db.tenants.find_one(
+            {"$or": [{"tenant_id": tenant_id}, {"id": tenant_id}]},
+            {"_id": 0}
+        )
+        
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+        
+        # Get children
+        children = list(db.tenants.find(
+            {"parent_tenant_id": tenant_id},
+            {"_id": 0}
+        ))
+        
+        return {
+            "success": True,
+            "tenant": tenant,
+            "children": children,
+            "children_count": len(children)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching tenant hierarchy: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/tenants/{tenant_id}/siblings")
+async def get_tenant_siblings(
+    tenant_id: str,
+    same_country_only: bool = False
+):
+    """
+    Get sibling tenants (same parent)
+    """
+    try:
+        db = get_db()
+        
+        # Get the tenant first
+        tenant = db.tenants.find_one(
+            {"$or": [{"tenant_id": tenant_id}, {"id": tenant_id}]},
+            {"_id": 0}
+        )
+        
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+        
+        # Build query for siblings
+        query = {"parent_tenant_id": tenant.get("parent_tenant_id")}
+        if same_country_only and tenant.get("country_code"):
+            query["country_code"] = tenant["country_code"]
+        
+        siblings = list(db.tenants.find(query, {"_id": 0}))
+        
+        # Remove self from siblings
+        siblings = [s for s in siblings if s.get("tenant_id") != tenant_id and s.get("id") != tenant_id]
+        
+        return {
+            "success": True,
+            "siblings": siblings,
+            "count": len(siblings)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching tenant siblings: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/tenants/{tenant_id}/dashboard-stats")
+async def get_tenant_dashboard_stats(tenant_id: str):
+    """
+    Get dashboard statistics for a specific tenant
+    """
+    try:
+        db = get_db()
+        
+        # Verify tenant exists
+        tenant = db.tenants.find_one(
+            {"$or": [{"tenant_id": tenant_id}, {"id": tenant_id}]},
+            {"_id": 0, "name": 1, "display_name": 1}
+        )
+        
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+        
+        # Count related data
+        locations = db.key_locations.count_documents({"tenant_id": tenant_id})
+        vehicles = db.europcar_vehicles.count_documents({"tenant_id": tenant_id}) if "europcar_vehicles" in db.list_collection_names() else 0
+        contracts = db.europcar_contracts.count_documents({"tenant_id": tenant_id}) if "europcar_contracts" in db.list_collection_names() else 0
+        
+        return {
+            "success": True,
+            "data": {
+                "tenant": tenant,
+                "locations_count": locations,
+                "vehicles_count": vehicles,
+                "contracts_count": contracts
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching tenant stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/portal/locations/list")
+async def get_portal_locations_list(token_data: dict = Depends(verify_token)):
+    """
+    Get locations list for portal dashboard
+    """
+    try:
+        db = get_db()
+        locations = list(db.key_locations.find({}, {"_id": 0}))
+        
+        return {
+            "success": True,
+            "locations": locations,
+            "total": len(locations)
+        }
+    except Exception as e:
+        logger.error(f"Error fetching portal locations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
