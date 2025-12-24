@@ -331,8 +331,8 @@ const APIKeysManagement = () => {
         </Card>
       )}
 
-      {/* API Keys List - Grouped by Category */}
-      <div className="space-y-6">
+      {/* API Keys List - Simple List (no category grouping for now) */}
+      <div className="space-y-4">
         {apiKeys.length === 0 ? (
           <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'}`}>
             <Key className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
@@ -344,29 +344,8 @@ const APIKeysManagement = () => {
             </p>
           </Card>
         ) : (
-          /* Group keys by category */
-          apiCategories.map(category => {
-            const categoryKeys = apiKeys.filter(key => 
-              category.items.some(item => item.name === key.api_name)
-            );
-            
-            if (categoryKeys.length === 0) return null;
-            
-            return (
-              <div key={category.category} className="mb-6">
-                <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  <span>{category.icon}</span>
-                  {category.category}
-                  <span className={`text-xs px-2 py-0.5 rounded-full ${theme === 'dark' ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'}`}>
-                    {categoryKeys.length}
-                  </span>
-                </h4>
-                <div className="space-y-3">
-                  {categoryKeys.map((key) => renderKeyCard(key))}
-                </div>
-              </div>
-            );
-          })
+          /* Show all keys in a simple list */
+          apiKeys.map((key) => renderKeyCard(key))
         )}
       </div>
     </div>
