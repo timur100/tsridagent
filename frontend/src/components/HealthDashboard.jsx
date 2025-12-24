@@ -390,6 +390,103 @@ const HealthDashboard = () => {
           </div>
         </Card>
       )}
+
+      {/* System Monitor Actions */}
+      <Card className={`p-6 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'}`}>
+        <h4 className={`font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+          <Zap className="h-5 w-5 text-yellow-500" />
+          System-Diagnose
+        </h4>
+        <div className="flex flex-wrap gap-3">
+          <Button 
+            onClick={runComprehensiveCheck} 
+            disabled={runningComprehensive}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Play className={`h-4 w-4 mr-2 ${runningComprehensive ? 'animate-pulse' : ''}`} />
+            {runningComprehensive ? 'Prüfe alle Systeme...' : 'Umfassende Prüfung starten'}
+          </Button>
+          <Button variant="outline" onClick={testDatabaseWrite}>
+            <Database className="h-4 w-4 mr-2" />
+            Datenbank-Schreibtest
+          </Button>
+        </div>
+        
+        {/* MongoDB Details */}
+        {healthData.database?.details?.collections_count && (
+          <div className={`mt-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+            <p className={`text-sm font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              MongoDB Atlas Details
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+              <div>
+                <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Collections: </span>
+                <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                  {healthData.database.details.collections_count}
+                </span>
+              </div>
+              {healthData.database.details.document_counts && Object.entries(healthData.database.details.document_counts).map(([key, val]) => (
+                <div key={key}>
+                  <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>{key}: </span>
+                  <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Card>
+
+      {/* Comprehensive Report */}
+      {comprehensiveReport && (
+        <Card className={`p-6 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className={`font-semibold flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <FileText className="h-5 w-5" />
+              Detaillierter System-Bericht
+            </h4>
+            <Badge variant={
+              comprehensiveReport.overall_status === 'healthy' ? 'default' :
+              comprehensiveReport.overall_status === 'degraded' ? 'secondary' : 'destructive'
+            }>
+              {comprehensiveReport.overall_status === 'healthy' ? '✓ Alle Systeme OK' :
+               comprehensiveReport.overall_status === 'degraded' ? '⚠ Eingeschränkt' : '✗ Probleme'}
+            </Badge>
+          </div>
+          
+          <p className={`text-xs mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            Geprüft: {new Date(comprehensiveReport.timestamp).toLocaleString('de-DE')} | 
+            {comprehensiveReport.summary?.healthy || 0} OK, {comprehensiveReport.summary?.degraded || 0} Warnungen, {comprehensiveReport.summary?.unhealthy || 0} Fehler
+          </p>
+          
+          <div className="space-y-2">
+            {comprehensiveReport.checks?.map((check, index) => (
+              <div
+                key={index}
+                className={`flex items-center justify-between p-3 rounded-lg ${
+                  check.status === 'healthy' ? 'bg-green-500/10 border border-green-500/20' :
+                  check.status === 'degraded' ? 'bg-yellow-500/10 border border-yellow-500/20' :
+                  'bg-red-500/10 border border-red-500/20'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  {getStatusIcon(check.status)}
+                  <div>
+                    <p className={`font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {check.component}
+                    </p>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {check.message}
+                    </p>
+                  </div>
+                </div>
+                <span className={`text-xs font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  {check.latency_ms ? `${check.latency_ms}ms` : '-'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
