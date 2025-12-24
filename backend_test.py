@@ -241,15 +241,15 @@ class HealthCheckAndAPIKeysTester:
 
 def main():
     """Main test execution"""
-    tester = AssetManagementAPITester()
+    tester = HealthCheckAndAPIKeysTester()
     
     success = tester.run_tests()
     
     if success:
-        print("\n🎉 Asset Management API testing completed successfully!")
+        print("\n🎉 Health Check and API Keys Management testing completed successfully!")
         sys.exit(0)
     else:
-        print("\n💥 Asset Management API testing failed!")
+        print("\n💥 Health Check and API Keys Management testing failed!")
         sys.exit(1)
 
 if __name__ == "__main__":
