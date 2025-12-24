@@ -76,11 +76,22 @@ const APIKeysManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/portal/api-keys');
+      console.log('API Keys raw result:', result);
       
-      if (result.success && result.data && result.data.data) {
-        const keys = result.data.data.api_keys || [];
-        setApiKeys(keys);
+      // Handle different response structures
+      let keys = [];
+      if (result.success && result.data) {
+        // Check if it's wrapped in another data object
+        if (result.data.data && result.data.data.api_keys) {
+          keys = result.data.data.api_keys;
+        } else if (result.data.api_keys) {
+          keys = result.data.api_keys;
+        } else if (Array.isArray(result.data)) {
+          keys = result.data;
+        }
       }
+      console.log('Parsed API keys:', keys);
+      setApiKeys(keys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
       toast.error('Fehler beim Laden der API-Keys');
