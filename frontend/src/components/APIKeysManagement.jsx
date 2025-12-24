@@ -515,8 +515,7 @@ const APIKeysManagement = () => {
                 </div>
               </div>
             );
-          });
-        })()
+          })
         )}
       </div>
     </div>
