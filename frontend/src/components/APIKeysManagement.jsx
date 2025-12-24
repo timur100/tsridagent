@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Key, Eye, EyeOff, Plus, Trash2, CheckCircle, XCircle, Loader } from 'lucide-react';
+import { Key, Eye, EyeOff, Plus, Trash2, CheckCircle, Loader } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import toast from 'react-hot-toast';
