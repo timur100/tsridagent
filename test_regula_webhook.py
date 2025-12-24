@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get backend URL from env
-BACKEND_URL = "https://sync-mongo.preview.emergentagent.com"
+BACKEND_URL = "https://devops-central-17.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 
 # API Key from backend/.env

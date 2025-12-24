@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://sync-mongo.preview.emergentagent.com
+│   └── Lädt: https://devops-central-17.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

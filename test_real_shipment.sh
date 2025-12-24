@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://sync-mongo.preview.emergentagent.com/api/dhl"
+API_URL="https://devops-central-17.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""
