@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://desk-manager-2.preview.emergentagent.com/api/dhl"
+API_URL="https://sync-mongo.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""
