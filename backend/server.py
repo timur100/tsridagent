@@ -57,6 +57,7 @@ from routes.ticketing_proxy import router as ticketing_proxy_router
 from routes.service_mongodb_info import router as service_mongodb_info_router
 from routes.mongodb_summary import router as mongodb_summary_router
 from routes.tenants_proxy import router as tenants_proxy_router
+from routes.direct_data import router as direct_data_router
 from routes.roles_proxy import router as roles_proxy_router
 from routes.users_proxy import router as users_proxy_router
 from routes.documents import router as documents_router
