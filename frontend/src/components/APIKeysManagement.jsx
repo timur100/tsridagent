@@ -344,10 +344,15 @@ const APIKeysManagement = () => {
           </Card>
         ) : (
           /* Group keys by category */
-          apiCategories.map(category => {
+          (() => {
+            console.log('All API keys:', apiKeys.map(k => k.api_name));
+            console.log('Categories:', apiCategories.map(c => ({ cat: c.category, items: c.items.map(i => i.name) })));
+            return apiCategories.map(category => {
             const categoryKeys = apiKeys.filter(key => 
               category.items.some(item => item.name === key.api_name)
             );
+            
+            console.log(`Category ${category.category}: found ${categoryKeys.length} keys`, categoryKeys.map(k => k.api_name));
             
             if (categoryKeys.length === 0) return null;
             
