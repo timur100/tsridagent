@@ -43,6 +43,7 @@ import LicenseManagement from '../components/LicenseManagement';
 import HardwareLicenseManagement from '../components/HardwareLicenseManagement';
 import SoftwareLicenseManagement from '../components/SoftwareLicenseManagement';
 import APIKeysManagement from '../components/APIKeysManagement';
+import ServerManagement from '../components/ServerManagement';
 import ComponentsManagement from '../components/ComponentsManagement';
 import ResourcesManagement from './ResourcesManagement';
 import SettingsSidebar from '../components/SettingsSidebar';
