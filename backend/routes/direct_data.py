@@ -31,6 +31,7 @@ def get_db():
 async def get_tenants(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=500),
+    skip: int = Query(0, ge=0),
     search: Optional[str] = None
 ):
     """
@@ -53,9 +54,9 @@ async def get_tenants(
         # Get total count
         total = db.tenants.count_documents(query)
         
-        # Get paginated results
-        skip = (page - 1) * limit
-        tenants = list(db.tenants.find(query, {"_id": 0}).skip(skip).limit(limit))
+        # Use skip parameter if provided, otherwise calculate from page
+        actual_skip = skip if skip > 0 else (page - 1) * limit
+        tenants = list(db.tenants.find(query, {"_id": 0}).skip(actual_skip).limit(limit))
         
         return {
             "success": True,
@@ -68,6 +69,17 @@ async def get_tenants(
     except Exception as e:
         logger.error(f"Error fetching tenants: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/tenants/")
+async def get_tenants_trailing_slash(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=500),
+    skip: int = Query(0, ge=0),
+    search: Optional[str] = None
+):
+    """Alias with trailing slash"""
+    return await get_tenants(page, limit, skip, search)
 
 
 @router.get("/api/tenants/{tenant_id}")
