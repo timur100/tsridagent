@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:20-alpine as build
 
 WORKDIR /app
 
@@ -28,20 +28,12 @@ COPY --from=build /app/build /usr/share/nginx/html
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create non-root user
-RUN addgroup -g 1000 tsrid && \
-    adduser -D -u 1000 -G tsrid tsrid && \
-    chown -R tsrid:tsrid /usr/share/nginx/html /var/cache/nginx /var/log/nginx
-
-# Expose port
-EXPOSE 3000
+# Expose port 80 (standard nginx)
+EXPOSE 80
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1
-
-# Run as non-root
-USER tsrid
+  CMD wget --no-verbose --tries=1 --spider http://localhost || exit 1
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
