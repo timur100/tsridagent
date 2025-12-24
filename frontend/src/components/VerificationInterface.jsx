@@ -121,6 +121,9 @@ const emptyVerificationData = {
 const INACTIVITY_TIMEOUT = 2 * 60 * 1000; // 2 minutes in milliseconds
 
 const VerificationInterface = () => {
+  // Apply portal metadata (browser tab title, favicon, etc.)
+  usePortalMetadata('verification');
+  
   // PIN Protection State
   const [pinRequired, setPinRequired] = useState(false);
   const [pinAuthenticated, setPinAuthenticated] = useState(false);
