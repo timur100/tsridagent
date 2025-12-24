@@ -16,6 +16,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       icon: Building2,
       items: [
         { id: 'branding', label: 'Branding', emoji: '🎨' },
+        { id: 'portal-metadata', label: 'Portal-Metadaten', emoji: '🌐' },
         { id: 'api-keys', label: 'API Keys', emoji: '🔑' }
       ]
     },
@@ -25,7 +26,8 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       icon: Server,
       items: [
         { id: 'servers', label: 'Server', emoji: '🖥️' },
-        { id: 'deployments', label: 'Deployments', emoji: '🚀' }
+        { id: 'deployments', label: 'Deployments', emoji: '🚀' },
+        { id: 'health', label: 'Health', emoji: '💚' }
       ]
     },
     {
