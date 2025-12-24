@@ -76,21 +76,22 @@ const APIKeysManagement = () => {
     setLoading(true);
     try {
       const result = await apiCall('/api/portal/api-keys');
-      console.log('API Keys raw result:', result);
+      console.log('API Keys raw result:', JSON.stringify(result, null, 2));
       
       // Handle different response structures
       let keys = [];
-      if (result.success && result.data) {
-        // Check if it's wrapped in another data object
-        if (result.data.data && result.data.data.api_keys) {
-          keys = result.data.data.api_keys;
-        } else if (result.data.api_keys) {
-          keys = result.data.api_keys;
-        } else if (Array.isArray(result.data)) {
-          keys = result.data;
+      if (result && result.data) {
+        // The apiCall wraps the response, so result.data is the actual API response
+        const apiResponse = result.data;
+        if (apiResponse.success && apiResponse.data && apiResponse.data.api_keys) {
+          keys = apiResponse.data.api_keys;
+        } else if (apiResponse.api_keys) {
+          keys = apiResponse.api_keys;
+        } else if (Array.isArray(apiResponse)) {
+          keys = apiResponse;
         }
       }
-      console.log('Parsed API keys:', keys);
+      console.log('Parsed API keys:', keys.length, keys.map(k => k.api_name));
       setApiKeys(keys);
     } catch (error) {
       console.error('Error fetching API keys:', error);
