@@ -1,23 +1,31 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - HEALTH CHECK AND API KEYS MANAGEMENT TESTING
-Tests specific backend fixes as requested:
+Backend API Testing Suite - COMPREHENSIVE TSRID SYSTEM TESTING
+Tests comprehensive TSRID system as requested in German review:
 
 ENDPOINTS TO TEST:
-1. GET /api/health - Health check endpoint
-2. POST /api/portal/auth/login - Login authentication
-3. GET /api/portal/api-keys - API Keys Management endpoint
+1. GET /api/health - API Health check
+2. GET /api/monitor/quick - Quick System Check (public)
+3. POST /api/portal/auth/login - Authentication
+4. GET /api/monitor/comprehensive - Comprehensive System Check (Auth required)
+5. GET /api/tenants - Tenant list
+6. GET /api/portal/api-keys - API Keys (should have 6 entries)
+7. GET /api/search/global?query=test - Global search
+8. POST /api/monitor/test-write - Database write test
 
 Test Scenario:
-1. Test health check endpoint (no auth required)
+1. Test public endpoints (health, quick monitor)
 2. Login as admin@tsrid.com / admin123
-3. Test API keys management endpoint with authentication
-4. Verify all 6 API keys are returned with proper structure
+3. Test authenticated endpoints
+4. Verify MongoDB Atlas connection is "healthy"
+5. Verify API keys have 6 entries
+6. Test all communication paths between Frontend and Backend
 
 Expected behavior:
-- Health check returns 200 OK with {"status": "healthy", "service": "tsrid-backend"}
-- API keys endpoint returns 6 keys with proper structure and masked keys
-- All expected api_names present: hetzner_api, hetzner_dns, github_pat, mongodb_atlas, ssh_root, traefik_dns
+- All HTTP responses should return status 200
+- MongoDB Atlas connection should be "healthy"
+- Authentication should work
+- API Keys should have 6 entries
 """
 
 import requests
