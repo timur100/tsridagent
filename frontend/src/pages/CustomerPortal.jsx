@@ -11,6 +11,7 @@ import CustomerTickets from '../components/CustomerTickets';
 import CustomerGlobalSearch from '../components/CustomerGlobalSearch';
 import ChangeRequests from '../components/ChangeRequests';
 import HelpCenter from '../components/HelpCenter';
+import usePortalMetadata from '../hooks/usePortalMetadata';
 import toast from 'react-hot-toast';
 
 const CustomerPortal = () => {
