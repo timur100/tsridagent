@@ -19,6 +19,9 @@ const CustomerPortal = () => {
   const { theme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Apply portal metadata (browser title, favicon, etc.)
+  usePortalMetadata('customer');
 
   // Check if we're on a nested route (detail page)
   const isOnDetailPage = location.pathname !== '/portal/customer' && 
