@@ -3149,9 +3149,21 @@ const AdminPortalContent = () => {
                   </div>
                 )}
 
+                {settingsTab === 'portal-metadata' && (
+                  <div>
+                    <PortalMetadata />
+                  </div>
+                )}
+
                 {settingsTab === 'servers' && (
                   <div>
                     <ServerManagement />
+                  </div>
+                )}
+
+                {settingsTab === 'health' && (
+                  <div>
+                    <HealthDashboard />
                   </div>
                 )}
 
