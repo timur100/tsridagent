@@ -522,15 +522,7 @@ const APIKeysManagement = () => {
                 )}
               </Card>
             );
-          })}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
-  );
+          }
 };
 
 export default APIKeysManagement;
