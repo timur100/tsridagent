@@ -102,20 +102,32 @@ async def get_global_tenant_stats_route():
         tickets_count = db.tickets.count_documents({}) if "tickets" in db.list_collection_names() else 0
         orders_count = db.orders.count_documents({}) if "orders" in db.list_collection_names() else 0
         
+        total_devices = vehicles_count + europcar_vehicles + cameras_count
+        
         return {
             "success": True,
             "data": {
+                # Frontend expected fields
+                "total_tenants": tenants_count,
+                "total_customers": tenants_count,
+                "total_locations": locations_count,
+                "total_devices": total_devices,
+                "total_users": users_count,
+                "online_devices": total_devices,  # Assume all online for now
+                "offline_devices": 0,
+                "in_preparation": 0,
+                # Additional fields
                 "customers_count": tenants_count,
                 "tenants_count": tenants_count,
                 "locations_count": locations_count,
-                "devices_count": vehicles_count + europcar_vehicles + cameras_count,
+                "devices_count": total_devices,
                 "vehicles_count": vehicles_count + europcar_vehicles,
                 "cameras_count": cameras_count,
                 "users_count": users_count,
                 "hardware_sets_count": hardware_sets,
                 "tickets_count": tickets_count,
                 "orders_count": orders_count,
-                "total_assets": vehicles_count + europcar_vehicles + cameras_count + hardware_sets
+                "total_assets": total_devices + hardware_sets
             }
         }
     except Exception as e:
@@ -124,6 +136,14 @@ async def get_global_tenant_stats_route():
             "success": False,
             "error": str(e),
             "data": {
+                "total_tenants": 0,
+                "total_customers": 0,
+                "total_locations": 0,
+                "total_devices": 0,
+                "total_users": 0,
+                "online_devices": 0,
+                "offline_devices": 0,
+                "in_preparation": 0,
                 "customers_count": 0,
                 "tenants_count": 0,
                 "locations_count": 0,
