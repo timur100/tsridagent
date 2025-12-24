@@ -3147,6 +3147,12 @@ const AdminPortalContent = () => {
                   </div>
                 )}
 
+                {settingsTab === 'servers' && (
+                  <div>
+                    <ServerManagement />
+                  </div>
+                )}
+
                 {settingsTab === 'data' && (
                   <div className="space-y-8">
                     {/* Data Management & Backup */}
