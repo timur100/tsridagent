@@ -88,13 +88,23 @@ async def get_global_tenant_stats_route():
     """
     Get global statistics for the admin dashboard
     Returns data directly (not wrapped in success/data structure)
+    
+    Kunden = tenant_level 'organization' (top-level customers)
+    Standorte = tenant_level 'location' (actual locations)
     """
     try:
         db = get_db()
         
-        # Count from all relevant collections
-        tenants_count = db.tenants.count_documents({})
-        locations_count = db.key_locations.count_documents({})
+        # Count REAL customers (organization level only)
+        customers_count = db.tenants.count_documents({"tenant_level": "organization"})
+        
+        # Count locations from tenant hierarchy (tenant_level = 'location')
+        locations_count = db.tenants.count_documents({"tenant_level": "location"})
+        
+        # All tenants for reference
+        all_tenants_count = db.tenants.count_documents({})
+        
+        # Devices
         vehicles_count = db.vehicles.count_documents({}) if "vehicles" in db.list_collection_names() else 0
         europcar_vehicles = db.europcar_vehicles.count_documents({}) if "europcar_vehicles" in db.list_collection_names() else 0
         cameras_count = db.cameras.count_documents({}) if "cameras" in db.list_collection_names() else 0
