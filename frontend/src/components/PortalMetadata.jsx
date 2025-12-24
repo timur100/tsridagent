@@ -83,8 +83,11 @@ const PortalMetadata = () => {
           ...metadata[portalId]
         })
       });
+      
+      console.log('Save result:', result);
 
-      if (result?.data?.success) {
+      // Check for success in various response structures
+      if (result?.data?.data?.success || result?.data?.success || result?.success) {
         toast.success('Metadaten gespeichert!');
       } else {
         toast.error('Fehler beim Speichern');
@@ -104,8 +107,11 @@ const PortalMetadata = () => {
         method: 'PUT',
         body: JSON.stringify({ metadata })
       });
+      
+      console.log('Save all result:', result);
 
-      if (result?.data?.success) {
+      // Check for success in various response structures
+      if (result?.data?.data?.success || result?.data?.success || result?.success) {
         toast.success('Alle Metadaten gespeichert!');
       } else {
         toast.error('Fehler beim Speichern');
