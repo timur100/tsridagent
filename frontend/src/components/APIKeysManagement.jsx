@@ -444,7 +444,7 @@ const APIKeysManagement = () => {
                     <div className="flex gap-2">
                       <input
                         type={showKey[key.api_name] ? 'text' : 'password'}
-                        value={isEditing ? editValue : key.masked_key}
+                        value={isEditing ? editValue : (showKey[key.api_name] && revealedKeys[key.api_name] ? revealedKeys[key.api_name] : key.masked_key)}
                         onChange={(e) => {
                           if (isEditing) {
                             setEditValues({ ...editValues, [key.api_name]: e.target.value });
@@ -461,9 +461,16 @@ const APIKeysManagement = () => {
                         onClick={() => toggleShowKey(key.api_name)}
                         variant="outline"
                         size="sm"
+                        disabled={revealing[key.api_name]}
                         className={theme === 'dark' ? 'border-gray-700' : ''}
                       >
-                        {showKey[key.api_name] ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {revealing[key.api_name] ? (
+                          <Loader className="h-4 w-4 animate-spin" />
+                        ) : showKey[key.api_name] ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </Button>
                     </div>
                   </div>
