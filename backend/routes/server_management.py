@@ -213,7 +213,7 @@ async def execute_command(request: CommandRequest, token_data: dict = Depends(ve
         ssh = get_ssh_client(server)
         
         try:
-            stdin, stdout, stderr = ssh.exec_command(request.command, timeout=60)
+            stdin, stdout, stderr = ssh.exec_command(request.command, timeout=300)  # 5 minutes timeout
             output = stdout.read().decode()
             error = stderr.read().decode()
             exit_code = stdout.channel.recv_exit_status()
