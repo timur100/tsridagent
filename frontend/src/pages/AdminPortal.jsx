@@ -105,6 +105,9 @@ const AdminPortalContent = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
+  // Apply portal metadata (browser tab title, favicon, etc.)
+  usePortalMetadata('admin');
+  
   // Check if we're on a nested route (detail page or dedicated overview page)
   const isOnDetailPage = location.pathname !== '/portal/admin' && 
                          (location.pathname.includes('/tenants/') || 
