@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 """
-Backend API Testing Suite - ASSET MANAGEMENT APIS TESTING
-Tests Asset Management APIs after USB Device Manager integration:
+Backend API Testing Suite - HEALTH CHECK AND API KEYS MANAGEMENT TESTING
+Tests specific backend fixes as requested:
 
 ENDPOINTS TO TEST:
-- POST /api/portal/auth/login - Login
-- GET /api/assets/list?tenant_id=<tenant_id> - List assets
-- GET /api/assets/<asset_id> - Get single asset details
-- POST /api/assets/qrcode/single - Generate QR code for an asset
-- POST /api/assets/qrcode/bulk - Generate bulk QR codes
-- GET /api/search/global?query=TSR.EC.SCDE - Global search for assets
+1. GET /api/health - Health check endpoint
+2. POST /api/portal/auth/login - Login authentication
+3. GET /api/portal/api-keys - API Keys Management endpoint
 
 Test Scenario:
-1. Login as admin@tsrid.com / admin123
-2. Test asset listing with Europcar tenant
-3. Test single asset retrieval
-4. Test QR code generation (single and bulk)
-5. Test global search integration for assets
-6. Verify Asset ID generation logic
+1. Test health check endpoint (no auth required)
+2. Login as admin@tsrid.com / admin123
+3. Test API keys management endpoint with authentication
+4. Verify all 6 API keys are returned with proper structure
 
-Expected behavior: All APIs should return 200 status, QR codes should be generated successfully,
-global search should find assets by Asset ID, no regression from USB Device Manager integration.
+Expected behavior:
+- Health check returns 200 OK with {"status": "healthy", "service": "tsrid-backend"}
+- API keys endpoint returns 6 keys with proper structure and masked keys
+- All expected api_names present: hetzner_api, hetzner_dns, github_pat, mongodb_atlas, ssh_root, traefik_dns
 """
 
 import requests
