@@ -480,3 +480,211 @@ async def get_portal_locations_list(token_data: dict = Depends(verify_token)):
     except Exception as e:
         logger.error(f"Error fetching portal locations: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============== DASHBOARD STATS ==============
+
+@router.get("/api/tenants/stats")
+async def get_global_tenant_stats():
+    """
+    Get global statistics for the admin dashboard
+    """
+    try:
+        db = get_db()
+        
+        # Count from all relevant collections
+        tenants_count = db.tenants.count_documents({})
+        locations_count = db.key_locations.count_documents({})
+        vehicles_count = db.vehicles.count_documents({}) if "vehicles" in db.list_collection_names() else 0
+        europcar_vehicles = db.europcar_vehicles.count_documents({}) if "europcar_vehicles" in db.list_collection_names() else 0
+        cameras_count = db.cameras.count_documents({}) if "cameras" in db.list_collection_names() else 0
+        users_count = db.portal_users.count_documents({}) if "portal_users" in db.list_collection_names() else 0
+        hardware_sets = db.hardware_sets.count_documents({}) if "hardware_sets" in db.list_collection_names() else 0
+        tickets_count = db.tickets.count_documents({}) if "tickets" in db.list_collection_names() else 0
+        orders_count = db.orders.count_documents({}) if "orders" in db.list_collection_names() else 0
+        
+        return {
+            "success": True,
+            "data": {
+                "customers_count": tenants_count,
+                "tenants_count": tenants_count,
+                "locations_count": locations_count,
+                "devices_count": vehicles_count + europcar_vehicles + cameras_count,
+                "vehicles_count": vehicles_count + europcar_vehicles,
+                "cameras_count": cameras_count,
+                "users_count": users_count,
+                "hardware_sets_count": hardware_sets,
+                "tickets_count": tickets_count,
+                "orders_count": orders_count,
+                "total_assets": vehicles_count + europcar_vehicles + cameras_count + hardware_sets
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error fetching global stats: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "data": {
+                "customers_count": 0,
+                "tenants_count": 0,
+                "locations_count": 0,
+                "devices_count": 0,
+                "vehicles_count": 0,
+                "cameras_count": 0,
+                "users_count": 0,
+                "hardware_sets_count": 0,
+                "tickets_count": 0,
+                "orders_count": 0,
+                "total_assets": 0
+            }
+        }
+
+
+@router.get("/api/scan-stats")
+async def get_scan_stats(days: int = Query(30, ge=1, le=365)):
+    """
+    Get scan statistics for the dashboard
+    """
+    try:
+        db = get_db()
+        
+        # Check various scan-related collections
+        id_scans = db.id_scans.count_documents({}) if "id_scans" in db.list_collection_names() else 0
+        document_scans = db.document_scans.count_documents({}) if "document_scans" in db.list_collection_names() else 0
+        verification_scans = db.verification_scans.count_documents({}) if "verification_scans" in db.list_collection_names() else 0
+        
+        return {
+            "success": True,
+            "data": {
+                "success": True,
+                "data": {
+                    "total_scans": id_scans + document_scans + verification_scans,
+                    "id_scans": id_scans,
+                    "document_scans": document_scans,
+                    "verification_scans": verification_scans,
+                    "days": days
+                }
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error fetching scan stats: {e}")
+        return {
+            "success": True,
+            "data": {
+                "success": True,
+                "data": {
+                    "total_scans": 0,
+                    "id_scans": 0,
+                    "document_scans": 0,
+                    "verification_scans": 0,
+                    "days": days
+                }
+            }
+        }
+
+
+@router.get("/api/tickets/stats")
+async def get_tickets_stats():
+    """
+    Get ticket statistics
+    """
+    try:
+        db = get_db()
+        
+        if "tickets" not in db.list_collection_names():
+            return {
+                "success": True,
+                "data": {
+                    "total": 0,
+                    "open": 0,
+                    "in_progress": 0,
+                    "resolved": 0,
+                    "closed": 0
+                }
+            }
+        
+        total = db.tickets.count_documents({})
+        open_tickets = db.tickets.count_documents({"status": "open"})
+        in_progress = db.tickets.count_documents({"status": "in_progress"})
+        resolved = db.tickets.count_documents({"status": "resolved"})
+        closed = db.tickets.count_documents({"status": "closed"})
+        
+        return {
+            "success": True,
+            "data": {
+                "total": total,
+                "open": open_tickets,
+                "in_progress": in_progress,
+                "resolved": resolved,
+                "closed": closed
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error fetching ticket stats: {e}")
+        return {
+            "success": True,
+            "data": {
+                "total": 0,
+                "open": 0,
+                "in_progress": 0,
+                "resolved": 0,
+                "closed": 0
+            }
+        }
+
+
+@router.get("/api/change-requests/stats/summary")
+async def get_change_requests_stats(
+    tenant_id: Optional[str] = None
+):
+    """
+    Get change request statistics
+    """
+    try:
+        db = get_db()
+        
+        if "change_requests" not in db.list_collection_names():
+            return {
+                "success": True,
+                "data": {
+                    "total": 0,
+                    "pending": 0,
+                    "approved": 0,
+                    "rejected": 0,
+                    "implemented": 0
+                }
+            }
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        total = db.change_requests.count_documents(query)
+        pending = db.change_requests.count_documents({**query, "status": "pending"})
+        approved = db.change_requests.count_documents({**query, "status": "approved"})
+        rejected = db.change_requests.count_documents({**query, "status": "rejected"})
+        implemented = db.change_requests.count_documents({**query, "status": "implemented"})
+        
+        return {
+            "success": True,
+            "data": {
+                "total": total,
+                "pending": pending,
+                "approved": approved,
+                "rejected": rejected,
+                "implemented": implemented
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error fetching change request stats: {e}")
+        return {
+            "success": True,
+            "data": {
+                "total": 0,
+                "pending": 0,
+                "approved": 0,
+                "rejected": 0,
+                "implemented": 0
+            }
+        }
+
