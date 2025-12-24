@@ -14,6 +14,8 @@ const HealthDashboard = () => {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
   const refreshIntervalRef = useRef(null);
+  const [comprehensiveReport, setComprehensiveReport] = useState(null);
+  const [runningComprehensive, setRunningComprehensive] = useState(false);
   
   const [healthData, setHealthData] = useState({
     backend: { status: 'unknown', latency: null, message: '' },
@@ -21,6 +23,38 @@ const HealthDashboard = () => {
     services: [],
     servers: []
   });
+
+  // Quick check via public endpoint
+  const fetchQuickStatus = useCallback(async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/monitor/quick`);
+      const data = await response.json();
+      if (data.status) {
+        // Transform quick status to health data format
+        const mongoCheck = data.checks?.find(c => c.component === 'MongoDB Atlas');
+        const authCheck = data.checks?.find(c => c.component === 'Authentication');
+        const apiCheck = data.checks?.find(c => c.component?.includes('Health'));
+        
+        setHealthData(prev => ({
+          ...prev,
+          backend: {
+            status: apiCheck?.status || 'unknown',
+            latency: apiCheck?.latency_ms || null,
+            message: apiCheck?.message || ''
+          },
+          database: {
+            status: mongoCheck?.status || 'unknown',
+            latency: mongoCheck?.latency_ms || null,
+            message: mongoCheck?.message || '',
+            details: mongoCheck?.details || {}
+          }
+        }));
+      }
+      setLastUpdated(new Date());
+    } catch (error) {
+      console.error('Quick status check failed:', error);
+    }
+  }, []);
 
   useEffect(() => {
     fetchHealthStatus();
