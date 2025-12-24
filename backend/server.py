@@ -206,6 +206,7 @@ app.include_router(license_management_router)
 # Hardware licenses router
 app.include_router(hardware_licenses_router)
 app.include_router(api_keys_router)
+app.include_router(server_management_router)
 app.include_router(sla_settings_router)
 app.include_router(scan_stats_router)
 
