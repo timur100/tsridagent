@@ -271,6 +271,33 @@ backend:
           agent: "testing"
           comment: "✅ ASSETS TAB TESTING COMPLETED SUCCESSFULLY: Comprehensive testing completed with Assets tab functionality verified. ALL REVIEW REQUEST REQUIREMENTS MET: ✅ LOGIN AS ADMIN: Successfully authenticated as admin@tsrid.com with admin123 credentials and accessed Admin Portal. ✅ TENANTS TAB NAVIGATION: Successfully navigated to Tenants tab and found Europcar tenant card. ✅ TENANT SELECTION: Successfully clicked on Europcar tenant and accessed tenant management area. ✅ ASSETS TAB VISIBILITY: Assets tab found and visible in main navigation with proper positioning. ✅ ASSETS TAB FUNCTIONALITY: Successfully clicked Assets tab and accessed Asset Management interface. ✅ ASSET MANAGEMENT TITLE: 'Hardware Asset Management' title visible and properly displayed. ✅ TENANT-SPECIFIC DESCRIPTION: Description 'Verwalten Sie alle Hardware-Assets (Computer, Monitore, Drucker, etc.)' visible and contextual. ✅ SUB-TABS VERIFICATION: Found 2 primary sub-tabs working correctly - 'Hardware Assets' and 'Software Assets' both visible and functional. ✅ ACTIVE TAB STYLING: Hardware Assets tab shows red background (#c00000) when active, confirming proper styling implementation. ✅ THEME SUPPORT: Dark theme properly applied throughout the Assets interface with consistent styling. ✅ NAVIGATION FLOW: Complete navigation flow working: Login → Tenants → Tenant Selection → Assets tab access. IMPLEMENTATION STATUS: The Assets tab is implemented and functional, though it appears to be integrated with the main Assets management system rather than as a separate tenant-specific tab. The core functionality requested (Assets tab with sub-tabs, proper styling, navigation) is working correctly. Minor: Expected 4 sub-tabs (Hardware Assets, Software Assets, Lizenzen, Zuweisungen) but found 2 primary tabs (Hardware Assets, Software Assets) - this may be a different implementation approach or the other tabs may be nested within these sections. SUCCESS CRITERIA FULLY MET: Assets tab appears after navigation ✓, Tab has red background when active ✓, Asset Management title visible ✓, Tenant-specific description shows ✓, Sub-tabs are functional ✓, Dark theme works correctly ✓, Navigation flow complete ✓. The Assets tab implementation is production-ready and meets the core requirements specified in the review request."
 
+  - task: "API Keys Management Display All 6 Keys"
+    implemented: true
+    working: true
+    file: "frontend/src/components/APIKeysManagement.jsx, backend/routes/api_keys.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: false
+          agent: "main"
+          comment: "🔧 BUG IDENTIFIED: Frontend only showed 3 of 6 API keys. Backend returns all 6 correctly. Issue was in response parsing and masked_key generation."
+        - working: true
+          agent: "main"
+          comment: "✅ FIXED: 1) Backend api_keys.py - Fixed to handle both 'api_key' and 'encrypted_key' fields, properly generate masked_key. 2) Frontend APIKeysManagement.jsx - Fixed response parsing to handle double-wrapped response (result.data.data.api_keys). All 6 API keys now display: Hetzner API Token, Hetzner DNS Token, GitHub PAT, MongoDB Atlas, SSH Root, Traefik DNS. Verified via screenshot tool - 6 cards visible."
+
+  - task: "Health Check Endpoint for Docker"
+    implemented: true
+    working: true
+    file: "backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+          agent: "main"
+          comment: "✅ IMPLEMENTED: Added /api/health endpoint to server.py. Returns {'status': 'healthy', 'service': 'tsrid-backend'}. This fixes the 'unhealthy' Docker container status on Hetzner server. Verified via curl: API_URL/api/health returns 200 OK."
+
   - task: "Asset Detail Modal Testing after QR-Code Scan"
     implemented: true
     working: true
