@@ -246,10 +246,14 @@ const APIKeysManagement = () => {
                 }`}
               >
                 <option value="">API-Typ auswählen...</option>
-                {apiTypes.map(type => (
-                  <option key={type.name} value={type.name}>
-                    {type.display}
-                  </option>
+                {apiCategories.map(category => (
+                  <optgroup key={category.category} label={`${category.icon} ${category.category}`}>
+                    {category.items.map(type => (
+                      <option key={type.name} value={type.name}>
+                        {type.display}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
               {newKey.api_name && (
