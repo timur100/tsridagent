@@ -76,16 +76,37 @@ async def get_api_keys(token_data: dict = Depends(verify_token)):
         # Mask the keys and remove _id
         result = []
         for key_doc in api_keys:
-            if '_id' in key_doc:
-                del key_doc['_id']
+            doc = dict(key_doc)  # Make a copy
+            if '_id' in doc:
+                del doc['_id']
             
-            # Decrypt and mask the key
-            if 'encrypted_key' in key_doc:
-                decrypted = decrypt_key(key_doc['encrypted_key'])
-                key_doc['masked_key'] = mask_key(decrypted)
-                del key_doc['encrypted_key']
+            # Handle both 'encrypted_key' and 'api_key' fields
+            encrypted_value = doc.get('encrypted_key') or doc.get('api_key')
             
-            result.append(key_doc)
+            if encrypted_value:
+                try:
+                    # Try to decrypt (if it's encrypted)
+                    if encrypted_value.startswith('gAAAAAB'):
+                        decrypted = decrypt_key(encrypted_value)
+                        doc['masked_key'] = mask_key(decrypted)
+                    else:
+                        # Not encrypted, just mask it
+                        doc['masked_key'] = mask_key(encrypted_value)
+                except Exception as decrypt_error:
+                    print(f"Error decrypting key {doc.get('api_name')}: {decrypt_error}")
+                    doc['masked_key'] = '***'
+                
+                # Remove the encrypted/raw key from response
+                if 'encrypted_key' in doc:
+                    del doc['encrypted_key']
+                if 'api_key' in doc:
+                    del doc['api_key']
+            else:
+                doc['masked_key'] = '***'
+            
+            result.append(doc)
+        
+        print(f"[API Keys] Returning {len(result)} keys: {[k.get('api_name') for k in result]}")
         
         return {
             "success": True,
