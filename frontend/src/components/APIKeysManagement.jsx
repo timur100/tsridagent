@@ -19,16 +19,54 @@ const APIKeysManagement = () => {
   const [editValues, setEditValues] = useState({});
   const [editDescs, setEditDescs] = useState({});
 
-  // Available API types
-  const apiTypes = [
+  // Available API types - categorized
+  const apiCategories = [
     {
-      name: 'google_places',
-      display: 'Google Places API',
-      description: 'Für Standort-Autovervollständigung und Adresssuche',
-      testable: true
+      category: 'Hetzner',
+      icon: '☁️',
+      items: [
+        { name: 'hetzner_api', display: 'Hetzner API Token', description: 'Für Server-Verwaltung und Cloud-Ressourcen', testable: true },
+        { name: 'hetzner_dns', display: 'Hetzner DNS Token', description: 'Für DNS-Zonenverwaltung', testable: true },
+        { name: 'traefik_dns', display: 'Traefik DNS Token', description: 'Für automatische SSL-Zertifikate', testable: false },
+      ]
     },
-    // Add more API types here in the future
+    {
+      category: 'GitHub',
+      icon: '🐙',
+      items: [
+        { name: 'github_pat', display: 'GitHub Personal Access Token', description: 'Für Repository-Zugriff und Deployments', testable: true },
+        { name: 'github_webhook', display: 'GitHub Webhook Secret', description: 'Für automatische Deployments', testable: false },
+      ]
+    },
+    {
+      category: 'Datenbanken',
+      icon: '🗄️',
+      items: [
+        { name: 'mongodb_atlas', display: 'MongoDB Atlas Connection', description: 'MongoDB Atlas Connection String', testable: true },
+        { name: 'redis', display: 'Redis Password', description: 'Redis Cache Authentifizierung', testable: false },
+      ]
+    },
+    {
+      category: 'Server-Zugang',
+      icon: '🔐',
+      items: [
+        { name: 'ssh_root', display: 'SSH Root Credentials', description: 'SSH Zugangsdaten für Server', testable: false },
+        { name: 'traefik_admin', display: 'Traefik Admin', description: 'Traefik Dashboard Zugangsdaten', testable: false },
+      ]
+    },
+    {
+      category: 'Externe APIs',
+      icon: '🔌',
+      items: [
+        { name: 'google_places', display: 'Google Places API', description: 'Für Standort-Autovervollständigung', testable: true },
+        { name: 'teamviewer', display: 'TeamViewer API Token', description: 'Für Geräte-Fernwartung', testable: true },
+        { name: 'dhl_api', display: 'DHL API Credentials', description: 'Für Versand-Integration', testable: false },
+      ]
+    },
   ];
+
+  // Flatten for backwards compatibility
+  const apiTypes = apiCategories.flatMap(cat => cat.items);
 
   useEffect(() => {
     fetchAPIKeys();
