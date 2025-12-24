@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { ThemeContext } from '../context/ThemeContext';
+import React, { useState, useEffect } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { apiCall } from '../utils/api';
-import { Server, Plus, Trash2, RefreshCw, Terminal, Check, X, Loader, HardDrive, Cpu, Database, Container } from 'lucide-react';
+import { Server, Plus, Trash2, RefreshCw, Terminal, Check, Loader, Container } from 'lucide-react';
 
 const ServerManagement = () => {
-  const { theme } = useContext(ThemeContext);
+  const { theme } = useTheme();
+  const { apiCall } = useAuth();
   const [servers, setServers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
