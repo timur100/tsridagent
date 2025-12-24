@@ -209,8 +209,36 @@ const APIKeysManagement = () => {
     }
   };
 
-  const toggleShowKey = (apiName) => {
-    setShowKey({ ...showKey, [apiName]: !showKey[apiName] });
+  const [revealedKeys, setRevealedKeys] = useState({});
+  const [revealing, setRevealing] = useState({});
+
+  const toggleShowKey = async (apiName) => {
+    const isCurrentlyShown = showKey[apiName];
+    
+    if (!isCurrentlyShown && !revealedKeys[apiName]) {
+      // Need to fetch the full key from backend
+      setRevealing({ ...revealing, [apiName]: true });
+      try {
+        const result = await apiCall(`/api/portal/api-keys/${apiName}/reveal`);
+        if (result?.data?.data?.api_key) {
+          setRevealedKeys({ ...revealedKeys, [apiName]: result.data.data.api_key });
+          setShowKey({ ...showKey, [apiName]: true });
+        } else if (result?.data?.api_key) {
+          setRevealedKeys({ ...revealedKeys, [apiName]: result.data.api_key });
+          setShowKey({ ...showKey, [apiName]: true });
+        } else {
+          toast.error('Fehler beim Abrufen des API-Keys');
+        }
+      } catch (error) {
+        console.error('Error revealing API key:', error);
+        toast.error('Fehler beim Abrufen des API-Keys');
+      } finally {
+        setRevealing({ ...revealing, [apiName]: false });
+      }
+    } else {
+      // Just toggle visibility
+      setShowKey({ ...showKey, [apiName]: !isCurrentlyShown });
+    }
   };
 
   const getAPITypeInfo = (apiName) => {
