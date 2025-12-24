@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
   ChevronRight, ChevronDown, Settings, Building2, Database, 
-  MapPin, Wrench, Key, FileText, Menu, X
+  MapPin, Wrench, Key, FileText, Menu, X, Server
 } from 'lucide-react';
 
 const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollapse }) => {
   const { theme } = useTheme();
-  const [expandedCategories, setExpandedCategories] = useState(['company', 'data', 'locations', 'portals', 'system']);
+  const [expandedCategories, setExpandedCategories] = useState(['company', 'data', 'locations', 'portals', 'system', 'infrastructure']);
 
   const menuStructure = [
     {
@@ -17,6 +17,15 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       items: [
         { id: 'branding', label: 'Branding', emoji: '🎨' },
         { id: 'api-keys', label: 'API Keys', emoji: '🔑' }
+      ]
+    },
+    {
+      id: 'infrastructure',
+      label: 'Infrastruktur',
+      icon: Server,
+      items: [
+        { id: 'servers', label: 'Server', emoji: '🖥️' },
+        { id: 'deployments', label: 'Deployments', emoji: '🚀' }
       ]
     },
     {
