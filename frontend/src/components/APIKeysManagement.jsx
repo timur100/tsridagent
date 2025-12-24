@@ -319,17 +319,38 @@ const APIKeysManagement = () => {
         </Card>
       )}
 
-      {/* API Keys List */}
-      <div className="space-y-4">
+      {/* API Keys List - Grouped by Category */}
+      <div className="space-y-6">
         {apiKeys.length === 0 ? (
           <Card className={`p-8 text-center ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'}`}>
             <Key className={`h-12 w-12 mx-auto mb-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
             <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
               Keine API-Keys konfiguriert
             </p>
+            <p className={`text-xs mt-2 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+              Klicken Sie auf "Neuer API-Key" um Zugangsdaten hinzuzufügen
+            </p>
           </Card>
         ) : (
-          apiKeys.map((key) => {
+          /* Group keys by category */
+          apiCategories.map(category => {
+            const categoryKeys = apiKeys.filter(key => 
+              category.items.some(item => item.name === key.api_name)
+            );
+            
+            if (categoryKeys.length === 0) return null;
+            
+            return (
+              <div key={category.category}>
+                <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <span>{category.icon}</span>
+                  {category.category}
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${theme === 'dark' ? 'bg-gray-700 text-gray-400' : 'bg-gray-200 text-gray-600'}`}>
+                    {categoryKeys.length}
+                  </span>
+                </h4>
+                <div className="space-y-3">
+                  {categoryKeys.map((key) => {
             const apiInfo = getAPITypeInfo(key.api_name);
             const isEditing = editingKey === key.api_name;
             const editValue = editValues[key.api_name] || '';
