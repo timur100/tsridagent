@@ -87,6 +87,7 @@ async def get_tenants_trailing_slash(
 async def get_global_tenant_stats_route():
     """
     Get global statistics for the admin dashboard
+    Returns data directly (not wrapped in success/data structure)
     """
     try:
         db = get_db()
@@ -104,51 +105,51 @@ async def get_global_tenant_stats_route():
         
         total_devices = vehicles_count + europcar_vehicles + cameras_count
         
+        # Return data directly for dashboard compatibility
         return {
-            "success": True,
-            "data": {
-                # Frontend expected fields
-                "total_tenants": tenants_count,
-                "total_customers": tenants_count,
-                "total_locations": locations_count,
-                "total_devices": total_devices,
-                "total_users": users_count,
-                "online_devices": total_devices,  # Assume all online for now
-                "offline_devices": 0,
-                "in_preparation": 0,
-                # Additional fields
-                "customers_count": tenants_count,
-                "tenants_count": tenants_count,
-                "locations_count": locations_count,
-                "devices_count": total_devices,
-                "vehicles_count": vehicles_count + europcar_vehicles,
-                "cameras_count": cameras_count,
-                "users_count": users_count,
-                "hardware_sets_count": hardware_sets,
-                "tickets_count": tickets_count,
-                "orders_count": orders_count,
-                "total_assets": total_devices + hardware_sets
-            }
+            # Frontend expected fields
+            "total_tenants": tenants_count,
+            "total_customers": tenants_count,
+            "total_locations": locations_count,
+            "total_devices": total_devices,
+            "total_users": users_count,
+            "online_devices": total_devices,  # Assume all online for now
+            "offline_devices": 0,
+            "in_preparation": 0,
+            "total_licenses": 0,
+            "total_scans": 0,
+            "correct_scans": 0,
+            "unknown_scans": 0,
+            "failed_scans": 0,
+            # Additional fields
+            "customers_count": tenants_count,
+            "tenants_count": tenants_count,
+            "locations_count": locations_count,
+            "devices_count": total_devices,
+            "vehicles_count": vehicles_count + europcar_vehicles,
+            "cameras_count": cameras_count,
+            "users_count": users_count,
+            "hardware_sets_count": hardware_sets,
+            "tickets_count": tickets_count,
+            "orders_count": orders_count,
+            "total_assets": total_devices + hardware_sets
         }
     except Exception as e:
         logger.error(f"Error fetching global stats: {e}")
         return {
-            "success": False,
-            "error": str(e),
-            "data": {
-                "total_tenants": 0,
-                "total_customers": 0,
-                "total_locations": 0,
-                "total_devices": 0,
-                "total_users": 0,
-                "online_devices": 0,
-                "offline_devices": 0,
-                "in_preparation": 0,
-                "customers_count": 0,
-                "tenants_count": 0,
-                "locations_count": 0,
-                "devices_count": 0
-            }
+            "total_tenants": 0,
+            "total_customers": 0,
+            "total_locations": 0,
+            "total_devices": 0,
+            "total_users": 0,
+            "online_devices": 0,
+            "offline_devices": 0,
+            "in_preparation": 0,
+            "total_licenses": 0,
+            "total_scans": 0,
+            "correct_scans": 0,
+            "unknown_scans": 0,
+            "failed_scans": 0
         }
 
 
