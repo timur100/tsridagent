@@ -40,6 +40,7 @@ from routes.hardware_licenses import router as hardware_licenses_router
 from routes.api_keys import router as api_keys_router
 from routes.server_management import router as server_management_router
 from routes.health import router as health_router
+from routes.system_monitor import router as system_monitor_router
 from routes.portal_metadata import router as portal_metadata_router
 from routes.sla_settings import router as sla_settings_router
 from routes.scan_stats import router as scan_stats_router
