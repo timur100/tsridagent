@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://devops-central-17.preview.emergentagent.com/portal/admin
+https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://devops-central-17.preview.emergentagent.com/portal/admin
+**URL:** https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin

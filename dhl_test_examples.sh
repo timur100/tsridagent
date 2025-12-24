@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DHL Sandbox Testing Script
-API_URL="https://devops-central-17.preview.emergentagent.com/api/dhl"
+API_URL="https://mongo-atlas-migrate.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sandbox Testing ==="
 echo ""

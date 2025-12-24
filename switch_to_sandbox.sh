@@ -21,5 +21,5 @@ sleep 5
 
 echo ""
 echo "Test mit Sandbox..."
-curl -s "https://devops-central-17.preview.emergentagent.com/api/dhl/health" | jq '.'
+curl -s "https://mongo-atlas-migrate.preview.emergentagent.com/api/dhl/health" | jq '.'
 

@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://devops-central-17.preview.emergentagent.com/portal/admin/id-checks
+   https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

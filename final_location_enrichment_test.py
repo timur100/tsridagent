@@ -15,7 +15,7 @@ import sys
 import random
 
 # Backend URL from environment
-BACKEND_URL = "https://devops-central-17.preview.emergentagent.com"
+BACKEND_URL = "https://mongo-atlas-migrate.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class FinalLocationEnrichmentTester:

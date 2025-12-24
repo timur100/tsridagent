@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://devops-central-17.preview.emergentagent.com/api/dhl"
+API_URL="https://mongo-atlas-migrate.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

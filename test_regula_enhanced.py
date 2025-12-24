@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 
 # Configuration
-BACKEND_URL = "https://devops-central-17.preview.emergentagent.com"
+BACKEND_URL = "https://mongo-atlas-migrate.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 API_KEY = "G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg"
 
