@@ -38,6 +38,7 @@ from routes.global_search import router as global_search_router
 from routes.license_management import router as license_management_router
 from routes.hardware_licenses import router as hardware_licenses_router
 from routes.api_keys import router as api_keys_router
+from routes.server_management import router as server_management_router
 from routes.sla_settings import router as sla_settings_router
 from routes.scan_stats import router as scan_stats_router
 from routes.components import router as components_router
