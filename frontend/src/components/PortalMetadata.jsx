@@ -48,8 +48,25 @@ const PortalMetadata = () => {
   const fetchMetadata = async () => {
     try {
       const result = await apiCall('/api/portal/metadata');
-      if (result?.data?.metadata) {
-        setMetadata(prev => ({ ...prev, ...result.data.metadata }));
+      console.log('Portal Metadata fetch result:', result);
+      
+      // Handle different response structures
+      let fetchedMetadata = null;
+      
+      if (result?.data?.data?.metadata) {
+        // Double-wrapped: result.data.data.metadata
+        fetchedMetadata = result.data.data.metadata;
+      } else if (result?.data?.metadata) {
+        // Single-wrapped: result.data.metadata
+        fetchedMetadata = result.data.metadata;
+      } else if (result?.metadata) {
+        // Direct: result.metadata
+        fetchedMetadata = result.metadata;
+      }
+      
+      if (fetchedMetadata) {
+        console.log('Setting metadata:', fetchedMetadata);
+        setMetadata(prev => ({ ...prev, ...fetchedMetadata }));
       }
     } catch (error) {
       console.error('Error fetching metadata:', error);
