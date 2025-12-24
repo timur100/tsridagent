@@ -353,7 +353,7 @@ const APIKeysManagement = () => {
             if (categoryKeys.length === 0) return null;
             
             return (
-              <div key={category.category}>
+              <div key={category.category} className="mb-6">
                 <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                   <span>{category.icon}</span>
                   {category.category}
@@ -362,7 +362,17 @@ const APIKeysManagement = () => {
                   </span>
                 </h4>
                 <div className="space-y-3">
-                  {categoryKeys.map((key) => {
+                  {categoryKeys.map((key) => renderKeyCard(key))}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </div>
+  );
+  
+  function renderKeyCard(key) {
             const apiInfo = getAPITypeInfo(key.api_name);
             const isEditing = editingKey === key.api_name;
             const editValue = editValues[key.api_name] || '';
