@@ -120,6 +120,52 @@ async def get_api_keys(token_data: dict = Depends(verify_token)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/{api_name}/reveal")
+async def reveal_api_key(
+    api_name: str,
+    token_data: dict = Depends(verify_token)
+):
+    """
+    Reveal the full decrypted API key
+    Only accessible by admins
+    """
+    try:
+        # Check if user is admin
+        if token_data.get("role") != "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+        
+        # Find the API key
+        key_doc = db.api_keys.find_one({"api_name": api_name})
+        if not key_doc:
+            raise HTTPException(status_code=404, detail=f"API key for {api_name} not found")
+        
+        # Get the encrypted value
+        encrypted_value = key_doc.get('encrypted_key') or key_doc.get('api_key')
+        
+        if not encrypted_value:
+            raise HTTPException(status_code=404, detail="No key value found")
+        
+        # Decrypt if necessary
+        if encrypted_value.startswith('gAAAAAB'):
+            full_key = decrypt_key(encrypted_value)
+        else:
+            full_key = encrypted_value
+        
+        return {
+            "success": True,
+            "data": {
+                "api_name": api_name,
+                "api_key": full_key
+            }
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Error revealing API key: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("")
 async def create_api_key(
     key_data: APIKeyCreate,
