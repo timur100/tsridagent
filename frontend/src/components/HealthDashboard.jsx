@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Activity, Database, Server, Globe, CheckCircle, XCircle, AlertTriangle, RefreshCw, Clock, Cpu, HardDrive, Wifi } from 'lucide-react';
+import { Activity, Database, Server, Globe, CheckCircle, XCircle, AlertTriangle, RefreshCw, Clock, Cpu, HardDrive, Wifi, Zap, Shield, FileText, Play } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
+import { Badge } from './ui/badge';
 import toast from 'react-hot-toast';
 
 const HealthDashboard = () => {
