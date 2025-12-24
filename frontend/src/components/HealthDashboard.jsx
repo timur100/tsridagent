@@ -58,9 +58,13 @@ const HealthDashboard = () => {
 
   useEffect(() => {
     fetchHealthStatus();
+    fetchQuickStatus();
     
     if (autoRefresh) {
-      refreshIntervalRef.current = setInterval(fetchHealthStatus, 30000); // Every 30 seconds
+      refreshIntervalRef.current = setInterval(() => {
+        fetchHealthStatus();
+        fetchQuickStatus();
+      }, 30000); // Every 30 seconds
     }
     
     return () => {
@@ -68,7 +72,7 @@ const HealthDashboard = () => {
         clearInterval(refreshIntervalRef.current);
       }
     };
-  }, [autoRefresh]);
+  }, [autoRefresh, fetchQuickStatus]);
 
   const fetchHealthStatus = async () => {
     setLoading(true);
