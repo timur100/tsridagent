@@ -78,19 +78,33 @@ const APIKeysManagement = () => {
       const result = await apiCall('/api/portal/api-keys');
       console.log('API Keys raw result:', JSON.stringify(result, null, 2));
       
-      // Handle different response structures
+      // Handle different response structures - apiCall may wrap the response
       let keys = [];
-      if (result && result.data) {
-        // The apiCall wraps the response, so result.data is the actual API response
-        const apiResponse = result.data;
-        if (apiResponse.success && apiResponse.data && apiResponse.data.api_keys) {
-          keys = apiResponse.data.api_keys;
-        } else if (apiResponse.api_keys) {
-          keys = apiResponse.api_keys;
-        } else if (Array.isArray(apiResponse)) {
-          keys = apiResponse;
-        }
+      
+      // Try different paths to find api_keys array
+      if (result?.data?.data?.api_keys) {
+        // Double-wrapped: result.data.data.api_keys
+        keys = result.data.data.api_keys;
+      } else if (result?.data?.api_keys) {
+        // Single-wrapped: result.data.api_keys
+        keys = result.data.api_keys;
+      } else if (result?.api_keys) {
+        // Direct: result.api_keys
+        keys = result.api_keys;
+      } else if (Array.isArray(result?.data)) {
+        // Array in data
+        keys = result.data;
+      } else if (Array.isArray(result)) {
+        // Direct array
+        keys = result;
       }
+      
+      // Add masked_key if not present
+      keys = keys.map(key => ({
+        ...key,
+        masked_key: key.masked_key || key.api_key?.substring(0, 10) + '...' || '***'
+      }));
+      
       console.log('Parsed API keys:', keys.length, keys.map(k => k.api_name));
       setApiKeys(keys);
     } catch (error) {
