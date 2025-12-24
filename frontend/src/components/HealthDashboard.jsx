@@ -79,7 +79,10 @@ const HealthDashboard = () => {
     try {
       const result = await apiCall('/api/health/status');
       if (result?.data) {
-        setHealthData(result.data);
+        setHealthData(prev => ({
+          ...prev,
+          ...result.data
+        }));
       }
       setLastUpdated(new Date());
     } catch (error) {
@@ -88,6 +91,37 @@ const HealthDashboard = () => {
       setLastUpdated(new Date());
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runComprehensiveCheck = async () => {
+    setRunningComprehensive(true);
+    try {
+      const result = await apiCall('/api/monitor/comprehensive');
+      if (result?.success && result?.data) {
+        setComprehensiveReport(result.data);
+        toast.success('Umfassende Systemprüfung abgeschlossen');
+      } else {
+        toast.error('Systemprüfung fehlgeschlagen');
+      }
+    } catch (error) {
+      console.error('Comprehensive check failed:', error);
+      toast.error('Systemprüfung fehlgeschlagen');
+    } finally {
+      setRunningComprehensive(false);
+    }
+  };
+
+  const testDatabaseWrite = async () => {
+    try {
+      const result = await apiCall('/api/monitor/test-write', { method: 'POST' });
+      if (result?.success) {
+        toast.success('Datenbank-Schreibtest erfolgreich ✓');
+      } else {
+        toast.error(`Schreibtest fehlgeschlagen: ${result?.message}`);
+      }
+    } catch (error) {
+      toast.error('Schreibtest fehlgeschlagen');
     }
   };
 
