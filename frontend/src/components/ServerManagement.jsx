@@ -448,23 +448,61 @@ const ServerManagement = () => {
               </div>
             )}
 
-            {/* Command Input */}
-            <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
-              <div className="flex gap-2 mb-2">
+            {/* Command Input - Full Terminal Style */}
+            <div className={`rounded-lg ${theme === 'dark' ? 'bg-black' : 'bg-gray-900'}`}>
+              <div className={`flex items-center gap-2 px-4 py-2 border-b ${theme === 'dark' ? 'border-gray-800' : 'border-gray-700'}`}>
+                <div className="flex gap-1.5">
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                </div>
+                <span className="text-gray-400 text-xs ml-2">
+                  {server.username}@{server.host} - SSH Terminal
+                </span>
+              </div>
+              
+              {/* Command Output Area */}
+              <div className="p-4 font-mono text-sm min-h-[300px] max-h-[500px] overflow-auto">
+                {commandOutput[server.id] ? (
+                  <>
+                    <div className="text-gray-500 mb-2">
+                      $ {commands[server.id]}
+                    </div>
+                    {commandOutput[server.id].output && (
+                      <pre className="text-green-400 whitespace-pre-wrap mb-2">{commandOutput[server.id].output}</pre>
+                    )}
+                    {commandOutput[server.id].error && (
+                      <pre className="text-red-400 whitespace-pre-wrap mb-2">{commandOutput[server.id].error}</pre>
+                    )}
+                    <div className={`text-xs ${
+                      commandOutput[server.id].exit_code === 0 ? 'text-green-500' : 'text-red-500'
+                    }`}>
+                      [Exit Code: {commandOutput[server.id].exit_code}]
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-gray-600">
+                    Geben Sie einen Befehl ein und drücken Sie Enter...
+                  </div>
+                )}
+              </div>
+              
+              {/* Command Input */}
+              <div className={`flex items-center gap-2 px-4 py-3 border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-700'}`}>
+                <span className="text-green-400 font-mono">$</span>
                 <input
                   type="text"
                   value={commands[server.id] || ''}
                   onChange={(e) => setCommands({ ...commands, [server.id]: e.target.value })}
-                  placeholder="Befehl eingeben (z.B. docker ps)"
-                  className={`flex-1 px-3 py-2 rounded-lg border text-sm ${
-                    theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300'
-                  }`}
+                  placeholder="Befehl eingeben (z.B. docker ps, ls -la, cat /etc/os-release)"
+                  className="flex-1 bg-transparent text-green-400 font-mono text-sm outline-none placeholder-gray-600"
                   onKeyPress={(e) => e.key === 'Enter' && handleExecuteCommand(server.id)}
                 />
                 <Button
                   onClick={() => handleExecuteCommand(server.id)}
                   disabled={executing[server.id]}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
                   {executing[server.id] ? (
                     <Loader className="h-4 w-4 animate-spin" />
@@ -473,25 +511,6 @@ const ServerManagement = () => {
                   )}
                 </Button>
               </div>
-              
-              {/* Command Output */}
-              {commandOutput[server.id] && (
-                <div className={`mt-2 p-3 rounded font-mono text-xs overflow-auto max-h-48 ${
-                  theme === 'dark' ? 'bg-black text-green-400' : 'bg-gray-900 text-green-400'
-                }`}>
-                  {commandOutput[server.id].output && (
-                    <pre className="whitespace-pre-wrap">{commandOutput[server.id].output}</pre>
-                  )}
-                  {commandOutput[server.id].error && (
-                    <pre className="text-red-400 whitespace-pre-wrap">{commandOutput[server.id].error}</pre>
-                  )}
-                  <div className={`mt-2 text-xs ${
-                    commandOutput[server.id].exit_code === 0 ? 'text-green-500' : 'text-red-500'
-                  }`}>
-                    Exit Code: {commandOutput[server.id].exit_code}
-                  </div>
-                </div>
-              )}
             </div>
           </Card>
         ))
