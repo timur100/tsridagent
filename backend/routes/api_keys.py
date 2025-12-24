@@ -266,51 +266,83 @@ async def test_api_key(
         if api_name == "google_places":
             # Test Google Places API
             test_url = "https://maps.googleapis.com/maps/api/place/autocomplete/json"
-            params = {
-                "input": "Berlin",
-                "key": api_key
-            }
-            
+            params = {"input": "Berlin", "key": api_key}
             response = requests.get(test_url, params=params, timeout=10)
             
             if response.status_code == 200:
                 data = response.json()
                 if data.get("status") == "OK":
-                    return {
-                        "success": True,
-                        "message": "Google Places API key is valid and working",
-                        "data": {
-                            "status": "valid",
-                            "api_name": "Google Places API"
-                        }
-                    }
+                    return {"success": True, "message": "Google Places API key is valid", "data": {"status": "valid"}}
                 else:
-                    return {
-                        "success": False,
-                        "message": f"Google Places API returned error: {data.get('status')}",
-                        "data": {
-                            "status": "invalid",
-                            "error": data.get("error_message", "Unknown error")
-                        }
-                    }
-            else:
-                return {
-                    "success": False,
-                    "message": f"HTTP Error {response.status_code}",
-                    "data": {
-                        "status": "error",
-                        "http_status": response.status_code
-                    }
-                }
+                    return {"success": False, "message": f"Error: {data.get('status')}", "data": {"status": "invalid"}}
+            return {"success": False, "message": f"HTTP {response.status_code}", "data": {"status": "error"}}
+        
+        elif api_name == "hetzner_api":
+            # Test Hetzner Cloud API
+            headers = {"Authorization": f"Bearer {api_key}"}
+            response = requests.get("https://api.hetzner.cloud/v1/servers", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                server_count = len(data.get("servers", []))
+                return {"success": True, "message": f"Hetzner API valid - {server_count} Server gefunden", "data": {"status": "valid", "servers": server_count}}
+            elif response.status_code == 401:
+                return {"success": False, "message": "Ungültiger Hetzner API Token", "data": {"status": "invalid"}}
+            return {"success": False, "message": f"HTTP {response.status_code}", "data": {"status": "error"}}
+        
+        elif api_name == "hetzner_dns":
+            # Test Hetzner DNS API
+            headers = {"Auth-API-Token": api_key}
+            response = requests.get("https://dns.hetzner.com/api/v1/zones", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                zone_count = len(data.get("zones", []))
+                return {"success": True, "message": f"Hetzner DNS valid - {zone_count} Zonen gefunden", "data": {"status": "valid", "zones": zone_count}}
+            elif response.status_code == 401:
+                return {"success": False, "message": "Ungültiger Hetzner DNS Token", "data": {"status": "invalid"}}
+            return {"success": False, "message": f"HTTP {response.status_code}", "data": {"status": "error"}}
+        
+        elif api_name == "github_pat":
+            # Test GitHub Personal Access Token
+            headers = {"Authorization": f"token {api_key}", "Accept": "application/vnd.github.v3+json"}
+            response = requests.get("https://api.github.com/user", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                data = response.json()
+                return {"success": True, "message": f"GitHub Token valid - User: {data.get('login')}", "data": {"status": "valid", "user": data.get("login")}}
+            elif response.status_code == 401:
+                return {"success": False, "message": "Ungültiger GitHub Token", "data": {"status": "invalid"}}
+            return {"success": False, "message": f"HTTP {response.status_code}", "data": {"status": "error"}}
+        
+        elif api_name == "mongodb_atlas":
+            # Test MongoDB Atlas Connection
+            try:
+                from pymongo import MongoClient
+                client = MongoClient(api_key, serverSelectionTimeoutMS=5000)
+                client.admin.command('ping')
+                db_names = client.list_database_names()
+                return {"success": True, "message": f"MongoDB Atlas verbunden - {len(db_names)} Datenbanken", "data": {"status": "valid", "databases": len(db_names)}}
+            except Exception as e:
+                return {"success": False, "message": f"MongoDB Verbindung fehlgeschlagen: {str(e)}", "data": {"status": "invalid"}}
+        
+        elif api_name == "teamviewer":
+            # Test TeamViewer API
+            headers = {"Authorization": f"Bearer {api_key}"}
+            response = requests.get("https://webapi.teamviewer.com/api/v1/ping", headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                return {"success": True, "message": "TeamViewer API Token valid", "data": {"status": "valid"}}
+            elif response.status_code == 401:
+                return {"success": False, "message": "Ungültiger TeamViewer Token", "data": {"status": "invalid"}}
+            return {"success": False, "message": f"HTTP {response.status_code}", "data": {"status": "error"}}
         
         else:
             # Unknown API type
             return {
                 "success": False,
-                "message": f"Testing for {api_name} is not yet implemented",
-                "data": {
-                    "status": "not_implemented"
-                }
+                "message": f"Testing für {api_name} ist noch nicht implementiert",
+                "data": {"status": "not_implemented"}
             }
     
     except requests.RequestException as e:
