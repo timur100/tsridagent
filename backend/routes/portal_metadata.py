@@ -54,6 +54,43 @@ DEFAULT_METADATA = {
 }
 
 
+@router.get("/public")
+async def get_public_portal_metadata():
+    """
+    Get all portal metadata - PUBLIC endpoint (no auth required)
+    Used for setting browser tab titles, favicons, etc.
+    """
+    try:
+        # Fetch from database
+        stored_metadata = db.portal_metadata.find_one({'_id': 'metadata'})
+        
+        if stored_metadata:
+            del stored_metadata['_id']
+            # Merge with defaults to ensure all fields exist
+            metadata = {**DEFAULT_METADATA}
+            for portal_id, values in stored_metadata.items():
+                if portal_id in metadata:
+                    metadata[portal_id] = {**metadata[portal_id], **values}
+        else:
+            metadata = DEFAULT_METADATA
+        
+        return {
+            'success': True,
+            'data': {
+                'metadata': metadata
+            }
+        }
+    
+    except Exception as e:
+        print(f"Error fetching public portal metadata: {str(e)}")
+        return {
+            'success': True,
+            'data': {
+                'metadata': DEFAULT_METADATA
+            }
+        }
+
+
 @router.get("")
 async def get_portal_metadata(token_data: dict = Depends(verify_token)):
     """
