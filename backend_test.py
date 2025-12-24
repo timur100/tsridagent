@@ -356,53 +356,107 @@ class TSRIDSystemTester:
             return False
     
     def run_tests(self) -> bool:
-        """Run all Health Check and API Keys Management tests"""
-        print("🚀 Starting Health Check and API Keys Management Testing...")
-        print("=" * 70)
+        """Run all comprehensive TSRID system tests"""
+        print("🚀 Starting Comprehensive TSRID System Testing...")
+        print("=" * 80)
         
         try:
-            # Test 1: Health Check (no auth required)
-            if not self.test_health_check():
+            # Test 1: API Health (no auth required)
+            if not self.test_api_health():
                 return False
             
             print()  # Add spacing
             
-            # Test 2: Authentication
+            # Test 2: Quick Monitor (no auth required)
+            if not self.test_quick_monitor():
+                return False
+            
+            print()  # Add spacing
+            
+            # Test 3: Authentication
             if not self.login():
                 return False
             
             print()  # Add spacing
             
-            # Test 3: API Keys Management
-            if not self.test_api_keys_management():
+            # Test 4: Comprehensive Monitor (auth required)
+            if not self.test_comprehensive_monitor():
                 return False
             
-            print("\n" + "=" * 70)
-            print("✅ ALL HEALTH CHECK AND API KEYS TESTS PASSED!")
-            print("✅ Health check endpoint working correctly")
-            print("✅ Authentication working correctly")
-            print("✅ API Keys Management endpoint functional")
-            print("✅ All 6 API keys returned with proper structure")
-            print("✅ All expected api_names present")
-            print("✅ No masked keys are empty or 'MISSING'")
+            print()  # Add spacing
+            
+            # Test 5: Tenants (auth required)
+            if not self.test_tenants():
+                return False
+            
+            print()  # Add spacing
+            
+            # Test 6: API Keys (auth required)
+            if not self.test_api_keys():
+                return False
+            
+            print()  # Add spacing
+            
+            # Test 7: Global Search (auth required)
+            if not self.test_global_search():
+                return False
+            
+            print()  # Add spacing
+            
+            # Test 8: Database Write Test (auth required)
+            if not self.test_database_write():
+                return False
+            
+            # Print comprehensive summary
+            self.print_test_summary()
             
             return True
             
         except Exception as e:
             print(f"\n❌ Test suite error: {str(e)}")
             return False
+    
+    def print_test_summary(self):
+        """Print comprehensive test summary"""
+        print("\n" + "=" * 80)
+        print("📊 COMPREHENSIVE TSRID SYSTEM TEST SUMMARY")
+        print("=" * 80)
+        
+        passed_tests = [result for result in self.test_results if result["success"]]
+        failed_tests = [result for result in self.test_results if not result["success"]]
+        
+        print(f"✅ PASSED TESTS: {len(passed_tests)}/{len(self.test_results)}")
+        for result in passed_tests:
+            print(f"   ✓ {result['test']}: {result['details']}")
+        
+        if failed_tests:
+            print(f"\n❌ FAILED TESTS: {len(failed_tests)}/{len(self.test_results)}")
+            for result in failed_tests:
+                print(f"   ✗ {result['test']}: {result['details']}")
+        
+        print("\n" + "=" * 80)
+        if len(failed_tests) == 0:
+            print("🎉 ALL TSRID SYSTEM TESTS PASSED!")
+            print("✅ All communication paths between Frontend and Backend working")
+            print("✅ MongoDB Atlas connection verified")
+            print("✅ Authentication system functional")
+            print("✅ All critical API endpoints responding correctly")
+            print("✅ System ready for production use")
+        else:
+            print("⚠️ SOME TESTS FAILED - REVIEW REQUIRED")
+            print("❌ System may have issues that need attention")
 
 def main():
     """Main test execution"""
-    tester = HealthCheckAndAPIKeysTester()
+    tester = TSRIDSystemTester()
     
     success = tester.run_tests()
     
     if success:
-        print("\n🎉 Health Check and API Keys Management testing completed successfully!")
+        print("\n🎉 Comprehensive TSRID system testing completed successfully!")
         sys.exit(0)
     else:
-        print("\n💥 Health Check and API Keys Management testing failed!")
+        print("\n💥 Comprehensive TSRID system testing failed!")
         sys.exit(1)
 
 if __name__ == "__main__":
