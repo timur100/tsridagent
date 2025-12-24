@@ -3,41 +3,46 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
+import os
+from pymongo import MongoClient
 
 from routes.portal_auth import verify_token
 
 router = APIRouter(prefix="/api/portal/locations", tags=["Portal Locations"])
 
+# MongoDB connection
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
+
+
+def get_db():
+    """Get MongoDB database connection"""
+    client = MongoClient(MONGO_URL)
+    return client[DB_NAME]
+
+
 class Location(BaseModel):
-    location_id: str
-    location_name: str
+    location_id: Optional[str] = None
+    name: str
     address: str
     city: str
     country: str
-    customer_id: Optional[str] = None
+    tenant_id: Optional[str] = None
     contact_person: Optional[str] = None
     contact_email: Optional[str] = None
     contact_phone: Optional[str] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
 
-# In-memory storage (replace with MongoDB)
-locations_db = {}
 
 @router.get("/list")
 async def list_locations(token_data: dict = Depends(verify_token)):
-    """Get all locations"""
+    """Get all locations from MongoDB"""
     try:
-        # If customer, filter by customer_id
-        user_role = token_data.get("role")
-        user_email = token_data.get("sub")
+        db = get_db()
         
-        if user_role == "admin":
-            locations_list = list(locations_db.values())
-        else:
-            # Filter by customer
-            locations_list = [
-                loc for loc in locations_db.values()
-                if loc.get('customer_id') == user_email
-            ]
+        # Get locations from key_locations collection
+        locations_list = list(db.key_locations.find({}, {"_id": 0}))
         
         return {
             "success": True,
@@ -47,11 +52,44 @@ async def list_locations(token_data: dict = Depends(verify_token)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.get("")
+async def get_all_locations(
+    token_data: dict = Depends(verify_token),
+    tenant_id: Optional[str] = None
+):
+    """Get all locations, optionally filtered by tenant"""
+    try:
+        db = get_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        locations_list = list(db.key_locations.find(query, {"_id": 0}))
+        
+        return {
+            "success": True,
+            "data": {
+                "locations": locations_list,
+                "total": len(locations_list)
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/{location_id}")
 async def get_location(location_id: str, token_data: dict = Depends(verify_token)):
     """Get location by ID"""
     try:
-        location = locations_db.get(location_id)
+        db = get_db()
+        
+        location = db.key_locations.find_one(
+            {"location_id": location_id},
+            {"_id": 0}
+        )
+        
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
         
@@ -64,20 +102,31 @@ async def get_location(location_id: str, token_data: dict = Depends(verify_token
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.post("/create")
 async def create_location(location: Location, token_data: dict = Depends(verify_token)):
     """Create a new location"""
     try:
+        db = get_db()
+        
+        # Generate location_id if not provided
+        location_id = location.location_id or f"loc-{uuid.uuid4().hex[:8]}"
+        
         # Check if location already exists
-        if location.location_id in locations_db:
+        existing = db.key_locations.find_one({"location_id": location_id})
+        if existing:
             raise HTTPException(status_code=400, detail="Location already exists")
         
         location_dict = location.dict()
+        location_dict['location_id'] = location_id
         location_dict['created_at'] = datetime.now(timezone.utc).isoformat()
         location_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
         location_dict['created_by'] = token_data.get("sub")
         
-        locations_db[location.location_id] = location_dict
+        db.key_locations.insert_one(location_dict)
+        
+        # Remove MongoDB _id for response
+        location_dict.pop('_id', None)
         
         return {
             "success": True,
@@ -89,29 +138,37 @@ async def create_location(location: Location, token_data: dict = Depends(verify_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 @router.put("/{location_id}")
 async def update_location(location_id: str, location_update: dict, token_data: dict = Depends(verify_token)):
     """Update location information"""
     try:
-        if location_id not in locations_db:
+        db = get_db()
+        
+        existing = db.key_locations.find_one({"location_id": location_id})
+        if not existing:
             raise HTTPException(status_code=404, detail="Location not found")
         
-        location = locations_db[location_id]
-        location.update(location_update)
-        location['updated_at'] = datetime.now(timezone.utc).isoformat()
-        location['updated_by'] = token_data.get("sub")
+        location_update['updated_at'] = datetime.now(timezone.utc).isoformat()
+        location_update['updated_by'] = token_data.get("sub")
         
-        locations_db[location_id] = location
+        db.key_locations.update_one(
+            {"location_id": location_id},
+            {"$set": location_update}
+        )
+        
+        updated = db.key_locations.find_one({"location_id": location_id}, {"_id": 0})
         
         return {
             "success": True,
             "message": "Location updated successfully",
-            "location": location
+            "location": updated
         }
     except HTTPException:
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.delete("/{location_id}")
 async def delete_location(location_id: str, token_data: dict = Depends(verify_token)):
@@ -121,10 +178,13 @@ async def delete_location(location_id: str, token_data: dict = Depends(verify_to
         if token_data.get("role") != "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
         
-        if location_id not in locations_db:
+        db = get_db()
+        
+        existing = db.key_locations.find_one({"location_id": location_id})
+        if not existing:
             raise HTTPException(status_code=404, detail="Location not found")
         
-        del locations_db[location_id]
+        db.key_locations.delete_one({"location_id": location_id})
         
         return {
             "success": True,
