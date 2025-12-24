@@ -117,13 +117,13 @@ async def get_global_tenant_stats_route():
         
         # Return data directly for dashboard compatibility
         return {
-            # Frontend expected fields
-            "total_tenants": tenants_count,
-            "total_customers": tenants_count,
-            "total_locations": locations_count,
+            # Frontend expected fields - CORRECTED
+            "total_tenants": customers_count,  # Real customers (organizations)
+            "total_customers": customers_count,
+            "total_locations": locations_count,  # From tenant hierarchy
             "total_devices": total_devices,
             "total_users": users_count,
-            "online_devices": total_devices,  # Assume all online for now
+            "online_devices": total_devices,
             "offline_devices": 0,
             "in_preparation": 0,
             "total_licenses": 0,
@@ -131,9 +131,10 @@ async def get_global_tenant_stats_route():
             "correct_scans": 0,
             "unknown_scans": 0,
             "failed_scans": 0,
-            # Additional fields
-            "customers_count": tenants_count,
-            "tenants_count": tenants_count,
+            # Additional reference fields
+            "all_tenants_count": all_tenants_count,  # All 646 entries
+            "customers_count": customers_count,
+            "tenants_count": customers_count,
             "locations_count": locations_count,
             "devices_count": total_devices,
             "vehicles_count": vehicles_count + europcar_vehicles,
