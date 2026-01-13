@@ -467,9 +467,10 @@ async def get_tenant_locations(
         locations = []
         cursor = db.tenant_locations.find(query).sort("location_code", 1)
         
-        # Get devices for this tenant to calculate online status
+        # Get devices for this tenant (or all) to calculate online status
         devices_db = mongo_client['multi_tenant_admin']
-        devices = list(devices_db.europcar_devices.find({"tenant_id": tenant_id}))
+        device_query = {} if tenant_id == "all" else {"tenant_id": tenant_id}
+        devices = list(devices_db.europcar_devices.find(device_query))
         
         # Group devices by location code
         devices_by_location = {}
