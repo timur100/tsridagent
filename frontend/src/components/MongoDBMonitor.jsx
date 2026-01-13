@@ -38,7 +38,7 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
     console.log('[MongoDBMonitor] Starting data fetch...');
 
     // Helper function with timeout
-    const fetchWithTimeout = async (url, timeout = 30000) => {
+    const fetchWithTimeout = async (url, timeout = 15000) => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
       try {
@@ -52,9 +52,9 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
     };
 
     try {
-      // Fetch each endpoint individually to handle partial failures
+      // First fetch essential status - then show UI
       try {
-        const statusRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/status`);
+        const statusRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/status`, 10000);
         if (statusRes.ok) {
           const data = await statusRes.json();
           console.log('[MongoDBMonitor] Status:', data.status);
@@ -65,7 +65,7 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
       }
       
       try {
-        const healthRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/health-history`);
+        const healthRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/health-history`, 10000);
         if (healthRes.ok) {
           const data = await healthRes.json();
           console.log('[MongoDBMonitor] Health:', data.health_status);
@@ -75,8 +75,12 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
         console.error('[MongoDBMonitor] Health fetch failed:', e.message);
       }
       
+      // Show UI now with essential data
+      setLoading(false);
+      
+      // Then fetch slower stats in background
       try {
-        const statsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/stats`);
+        const statsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/stats`, 30000);
         if (statsRes.ok) {
           const data = await statsRes.json();
           console.log('[MongoDBMonitor] Stats DBs:', data.summary?.total_databases);
@@ -87,7 +91,7 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
       }
       
       try {
-        const opsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/operations`);
+        const opsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/operations`, 10000);
         if (opsRes.ok) {
           const data = await opsRes.json();
           console.log('[MongoDBMonitor] Ops loaded');
@@ -101,7 +105,6 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
       console.error('[MongoDBMonitor] Error fetching MongoDB data:', error);
     } finally {
       console.log('[MongoDBMonitor] Data fetch complete');
-      setLoading(false);
       setRefreshing(false);
     }
   }, []);
