@@ -461,8 +461,8 @@ const ServerManagement = () => {
                 </span>
               </div>
               
-              {/* Command Output Area */}
-              <div className="p-4 font-mono text-sm min-h-[300px] max-h-[500px] overflow-auto">
+              {/* Command Output Area - Enlarged Terminal */}
+              <div className="p-4 font-mono text-sm min-h-[500px] max-h-[800px] overflow-auto">
                 {commandOutput[server.id] ? (
                   <>
                     <div className="text-gray-500 mb-2">
