@@ -144,23 +144,16 @@ async def delete_device(device_id: str, token_data: dict = Depends(verify_token)
 async def get_devices_by_location(location_id: str, token_data: dict = Depends(verify_token)):
     """Get all devices for a specific location"""
     try:
-        location_devices = list(db.devices.find(
+        # Use europcar_devices as primary source
+        location_devices = list(db.europcar_devices.find(
             {"location_id": location_id}, 
             {"_id": 0}
         ))
-        
-        # Also check europcar_devices
-        europcar_location_devices = list(db.europcar_devices.find(
-            {"location_id": location_id}, 
-            {"_id": 0}
-        ))
-        
-        all_devices = location_devices + europcar_location_devices
         
         return {
             "success": True,
-            "devices": all_devices,
-            "total": len(all_devices)
+            "devices": location_devices,
+            "total": len(location_devices)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
