@@ -86,44 +86,45 @@ async def get_tenants_trailing_slash(
 @router.get("/api/tenants/stats")
 async def get_global_tenant_stats_route():
     """
-    Get global statistics for the admin dashboard
+    Get global statistics for the admin dashboard - OPTIMIZED
     Returns data directly (not wrapped in success/data structure)
     
     Kunden = tenant_level 'organization' (top-level customers)
     Standorte = tenant_level 'location' (actual locations)
     """
     try:
-        db = get_db()
+        from db.connection import get_db as get_pooled_db, get_multi_tenant_db
         
-        # Count REAL customers (organization level only)
-        customers_count = db.tenants.count_documents({"tenant_level": "organization"})
+        db = get_pooled_db()
+        multi_db = get_multi_tenant_db()
         
-        # Count locations from tenant hierarchy (tenant_level = 'location')
-        locations_count = db.tenants.count_documents({"tenant_level": "location"})
+        # Single aggregation for tenant counts (much faster than multiple count_documents)
+        tenant_pipeline = [
+            {"$group": {
+                "_id": "$tenant_level",
+                "count": {"$sum": 1}
+            }}
+        ]
+        tenant_counts = {doc["_id"]: doc["count"] for doc in db.tenants.aggregate(tenant_pipeline)}
         
-        # All tenants for reference
-        all_tenants_count = db.tenants.count_documents({})
+        customers_count = tenant_counts.get("organization", 0)
+        locations_count = tenant_counts.get("location", 0)
+        all_tenants_count = sum(tenant_counts.values())
         
-        # Devices
-        vehicles_count = db.vehicles.count_documents({}) if "vehicles" in db.list_collection_names() else 0
-        europcar_vehicles = db.europcar_vehicles.count_documents({}) if "europcar_vehicles" in db.list_collection_names() else 0
-        cameras_count = db.cameras.count_documents({}) if "cameras" in db.list_collection_names() else 0
-        users_count = db.portal_users.count_documents({}) if "portal_users" in db.list_collection_names() else 0
-        hardware_sets = db.hardware_sets.count_documents({}) if "hardware_sets" in db.list_collection_names() else 0
-        tickets_count = db.tickets.count_documents({}) if "tickets" in db.list_collection_names() else 0
-        orders_count = db.orders.count_documents({}) if "orders" in db.list_collection_names() else 0
+        # Get device count from multi_tenant_admin (single query)
+        devices_count = multi_db.europcar_devices.estimated_document_count()
         
-        total_devices = vehicles_count + europcar_vehicles + cameras_count
+        # Get users count (single query)
+        users_count = db.users.estimated_document_count() if "users" in db.list_collection_names() else 0
         
         # Return data directly for dashboard compatibility
         return {
-            # Frontend expected fields - CORRECTED
-            "total_tenants": customers_count,  # Real customers (organizations)
+            "total_tenants": customers_count,
             "total_customers": customers_count,
-            "total_locations": locations_count,  # From tenant hierarchy
-            "total_devices": total_devices,
+            "total_locations": locations_count,
+            "total_devices": devices_count,
             "total_users": users_count,
-            "online_devices": total_devices,
+            "online_devices": devices_count,
             "offline_devices": 0,
             "in_preparation": 0,
             "total_licenses": 0,
@@ -131,19 +132,13 @@ async def get_global_tenant_stats_route():
             "correct_scans": 0,
             "unknown_scans": 0,
             "failed_scans": 0,
-            # Additional reference fields
-            "all_tenants_count": all_tenants_count,  # All 646 entries
+            "all_tenants_count": all_tenants_count,
             "customers_count": customers_count,
             "tenants_count": customers_count,
             "locations_count": locations_count,
-            "devices_count": total_devices,
-            "vehicles_count": vehicles_count + europcar_vehicles,
-            "cameras_count": cameras_count,
+            "devices_count": devices_count,
             "users_count": users_count,
-            "hardware_sets_count": hardware_sets,
-            "tickets_count": tickets_count,
-            "orders_count": orders_count,
-            "total_assets": total_devices + hardware_sets
+            "total_assets": devices_count
         }
     except Exception as e:
         logger.error(f"Error fetching global stats: {e}")
