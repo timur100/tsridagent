@@ -30,7 +30,6 @@ async def list_devices(token_data: dict = Depends(verify_token)):
     """Get all registered devices from MongoDB - OPTIMIZED"""
     try:
         db = get_multi_tenant_db()
-        # Use europcar_devices as the primary source (most complete data)
         devices_list = list(db.europcar_devices.find({}, {"_id": 0}).limit(1000))
         
         return {
@@ -46,12 +45,8 @@ async def list_devices(token_data: dict = Depends(verify_token)):
 async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
     """Get device by ID"""
     try:
-        # Try devices collection first
-        device = db.devices.find_one({"device_id": device_id}, {"_id": 0})
-        
-        # Try europcar_devices if not found
-        if not device:
-            device = db.europcar_devices.find_one({"device_id": device_id}, {"_id": 0})
+        db = get_multi_tenant_db()
+        device = db.europcar_devices.find_one({"device_id": device_id}, {"_id": 0})
         
         if not device:
             raise HTTPException(status_code=404, detail="Device not found")
@@ -69,8 +64,8 @@ async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
 async def register_device(device: Device, token_data: dict = Depends(verify_token)):
     """Register a new device"""
     try:
-        # Check if device already exists
-        existing = db.devices.find_one({"device_id": device.device_id})
+        db = get_multi_tenant_db()
+        existing = db.europcar_devices.find_one({"device_id": device.device_id})
         if existing:
             raise HTTPException(status_code=400, detail="Device already registered")
         
@@ -78,9 +73,7 @@ async def register_device(device: Device, token_data: dict = Depends(verify_toke
         device_dict['created_at'] = datetime.now(timezone.utc).isoformat()
         device_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
         
-        db.devices.insert_one(device_dict)
-        
-        # Remove _id from response
+        db.europcar_devices.insert_one(device_dict)
         device_dict.pop('_id', None)
         
         return {
@@ -97,18 +90,19 @@ async def register_device(device: Device, token_data: dict = Depends(verify_toke
 async def update_device(device_id: str, device_update: dict, token_data: dict = Depends(verify_token)):
     """Update device information"""
     try:
-        existing = db.devices.find_one({"device_id": device_id})
+        db = get_multi_tenant_db()
+        existing = db.europcar_devices.find_one({"device_id": device_id})
         if not existing:
             raise HTTPException(status_code=404, detail="Device not found")
         
         device_update['updated_at'] = datetime.now(timezone.utc).isoformat()
         
-        db.devices.update_one(
+        db.europcar_devices.update_one(
             {"device_id": device_id},
             {"$set": device_update}
         )
         
-        updated = db.devices.find_one({"device_id": device_id}, {"_id": 0})
+        updated = db.europcar_devices.find_one({"device_id": device_id}, {"_id": 0})
         
         return {
             "success": True,
@@ -124,7 +118,8 @@ async def update_device(device_id: str, device_update: dict, token_data: dict = 
 async def delete_device(device_id: str, token_data: dict = Depends(verify_token)):
     """Delete a device"""
     try:
-        result = db.devices.delete_one({"device_id": device_id})
+        db = get_multi_tenant_db()
+        result = db.europcar_devices.delete_one({"device_id": device_id})
         
         if result.deleted_count == 0:
             raise HTTPException(status_code=404, detail="Device not found")
@@ -142,7 +137,7 @@ async def delete_device(device_id: str, token_data: dict = Depends(verify_token)
 async def get_devices_by_location(location_id: str, token_data: dict = Depends(verify_token)):
     """Get all devices for a specific location"""
     try:
-        # Use europcar_devices as primary source
+        db = get_multi_tenant_db()
         location_devices = list(db.europcar_devices.find(
             {"location_id": location_id}, 
             {"_id": 0}
