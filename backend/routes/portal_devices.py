@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import uuid
 import os
 
@@ -10,10 +9,8 @@ from routes.portal_auth import verify_token
 
 router = APIRouter(prefix="/api/portal/devices", tags=["Portal Devices"])
 
-# MongoDB connection
-mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['multi_tenant_admin']
+# Use connection pool
+from db.connection import get_multi_tenant_db
 
 class Device(BaseModel):
     device_id: str
@@ -30,8 +27,9 @@ class Device(BaseModel):
 
 @router.get("/list")
 async def list_devices(token_data: dict = Depends(verify_token)):
-    """Get all registered devices from MongoDB"""
+    """Get all registered devices from MongoDB - OPTIMIZED"""
     try:
+        db = get_multi_tenant_db()
         # Use europcar_devices as the primary source (most complete data)
         devices_list = list(db.europcar_devices.find({}, {"_id": 0}).limit(1000))
         
