@@ -114,8 +114,10 @@ async def get_global_tenant_stats_route():
         # Get device count from multi_tenant_admin (single query)
         devices_count = multi_db.europcar_devices.estimated_document_count()
         
-        # Get users count (single query)
-        users_count = db.users.estimated_document_count() if "users" in db.list_collection_names() else 0
+        # Get users count from portal_db (single query)
+        from db.connection import get_portal_db
+        portal_db = get_portal_db()
+        users_count = portal_db.portal_users.estimated_document_count()
         
         # Return data directly for dashboard compatibility
         return {
