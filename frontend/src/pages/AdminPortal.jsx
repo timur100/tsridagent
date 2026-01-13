@@ -94,6 +94,7 @@ import DriverManagement from '../components/DriverManagement';
 import DeliveryZoneManagement from '../components/DeliveryZoneManagement';
 import LicensePlateRecognition from '../components/LicensePlateRecognition';
 import USBDeviceManager from '../components/USBDeviceManager';
+import MongoDBMonitor from '../components/MongoDBMonitor';
 import toast from 'react-hot-toast';
 
 const AdminPortalContent = () => {
