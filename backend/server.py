@@ -280,6 +280,7 @@ app.include_router(mongodb_summary_router)
 # Tenants Proxy (proxy to Auth & Identity Service)
 # Direct data access routes (priority over proxy routes)
 app.include_router(direct_data_router)
+app.include_router(missing_endpoints_router)
 
 # Proxy routes (fallback if direct routes don't handle)
 # app.include_router(tenants_proxy_router)  # Disabled - using direct_data_router instead
