@@ -96,24 +96,26 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     console.log('[AllLocationsTab] fetchAllLocations called, selectedTenantId:', selectedTenantId);
     try {
       const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
+      console.log('[AllLocationsTab] Token available:', !!token);
       
       // Use the tenant-locations API directly
       const tenantId = selectedTenantId || 'all';
-      console.log('[AllLocationsTab] Loading locations for tenant:', tenantId);
+      const url = `${BACKEND_URL}/api/tenant-locations/${tenantId}`;
+      console.log('[AllLocationsTab] Fetching from:', url);
       
-      const response = await fetch(
-        `${BACKEND_URL}/api/tenant-locations/${tenantId}`,
-        {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }
-      );
+      const response = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      console.log('[AllLocationsTab] Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
         console.log('[AllLocationsTab] Loaded locations:', data.locations?.length);
         setLocations(data.locations || []);
       } else {
-        console.error('[AllLocationsTab] Failed to load locations:', response.status);
+        const errorText = await response.text();
+        console.error('[AllLocationsTab] Failed to load locations:', response.status, errorText);
         setLocations([]);
       }
     } catch (error) {
