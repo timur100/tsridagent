@@ -11,33 +11,74 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ## Was wurde implementiert
 
-### 13. Januar 2025 - Session 2
-- ✅ **MongoDB Atlas M10 Upgrade:** Cluster erfolgreich von Free auf M10 (dediziert) aktualisiert
-- ✅ **FIX: Schwarzer Bildschirm - Locations Tab:** 
-  - `tenant_locations.py`: Korrigiert, um bei `tenant_id: "all"` alle Standorte abzurufen
-  - `AllLocationsTab.jsx`: Vereinfachte Logik für direkten API-Aufruf zu `/api/tenant-locations/all`
-  - Ergebnis: 215 Standorte werden korrekt angezeigt
-- ✅ **FIX: Schwarzer Bildschirm - Devices Tab:**
-  - `portal_devices.py`: Komplett umgeschrieben, um MongoDB statt In-Memory-Dictionary zu verwenden
-  - Ergebnis: 216 Geräte werden korrekt angezeigt (141 Online, 74 Offline)
-- ✅ **FIX: Portal Users API:**
-  - `portal_users.py`: Korrigiert, um `portal_db` statt `test_database` zu verwenden
-  - Ergebnis: 3 Benutzer werden korrekt angezeigt
+### 13. Januar 2025 - Session 2 (Fortsetzung)
+
+#### ✅ MongoDB Atlas M10 Upgrade
+- Cluster erfolgreich von Free auf M10 (dediziert) aktualisiert
+- Region: AWS / Frankfurt (eu-central-1)
+- Version: MongoDB 8.0.17
+
+#### ✅ FEATURE: MongoDB Atlas Monitoring Dashboard
+- **Neuer Tab:** "Database" im Admin Portal Navigation
+- **Backend API:** `/app/backend/routes/mongodb_monitor.py` mit 5 Endpunkten:
+  - `/api/mongodb/status` - Cluster-Status und Verbindungstest
+  - `/api/mongodb/stats` - Detaillierte Datenbank-Statistiken
+  - `/api/mongodb/collections/{db_name}` - Collection-Details
+  - `/api/mongodb/health-history` - Latenz-Überwachung
+  - `/api/mongodb/operations` - Aktive Operationen
+- **Frontend:** `/app/frontend/src/components/MongoDBMonitor.jsx`
+- **Features:**
+  - Echtzeit Cluster-Status (Online/Offline)
+  - Latenz-Messung mit Min/Avg/Max
+  - Datengröße und Dokumentanzahl
+  - Datenbank-Liste mit Collection-Details
+  - Auto-Refresh Toggle (30 Sekunden)
+  - Schema-Felder Vorschau
+  - Health-Status Banner
+
+#### ✅ FEATURE: SSH Terminal vergrößert
+- Terminal-Höhe von `min-h-[300px] max-h-[500px]` auf `min-h-[500px] max-h-[800px]` erhöht
+- Datei: `/app/frontend/src/components/ServerManagement.jsx`
+
+#### ✅ FIX: Schwarzer Bildschirm - Locations Tab
+- `tenant_locations.py`: Korrigiert, um bei `tenant_id: "all"` alle Standorte abzurufen
+- `AllLocationsTab.jsx`: Vereinfachte Logik für direkten API-Aufruf
+- Ergebnis: 215 Standorte werden korrekt angezeigt
+
+#### ✅ FIX: Schwarzer Bildschirm - Devices Tab
+- `portal_devices.py`: Komplett auf MongoDB umgestellt
+- Ergebnis: 216 Geräte werden korrekt angezeigt (141 Online, 74 Offline)
+
+#### ✅ FIX: Portal Users API
+- `portal_users.py`: Korrigiert (`portal_db` statt `test_database`)
+- Ergebnis: 3 Benutzer werden korrekt angezeigt
 
 ### Frühere Sessions
 - ✅ Production Server wiederhergestellt (502 Bad Gateway behoben)
-- ✅ Dashboard-Statistiken korrigiert (Kunden: 2, Standorte: 207, Geräte: 29)
-- ✅ System Monitoring Endpoint implementiert (`/api/monitor/comprehensive`)
-- ✅ Health Dashboard UI verbessert
+- ✅ Dashboard-Statistiken korrigiert
+- ✅ System Monitoring Endpoint implementiert
 
-## Aktuelle API-Statistiken
-| API Endpoint | Status | Daten |
-|--------------|--------|-------|
+## Aktuelle Datenbank-Statistiken (MongoDB Atlas M10)
+| Metrik | Wert |
+|--------|------|
+| Datenbanken | 30 |
+| Collections | 150 |
+| Dokumente | 83,872 |
+| Datengröße | 41.19 MB |
+| Cluster Tier | M10 (Dedicated) |
+| Region | AWS / Frankfurt (eu-central-1) |
+| MongoDB Version | 8.0.17 |
+
+## API-Endpunkte Status
+| Endpoint | Status | Daten |
+|----------|--------|-------|
 | `/api/tenants/stats` | ✅ | Kunden: 2, Standorte: 207, Geräte: 29 |
 | `/api/tenant-locations/all` | ✅ | 215 Standorte |
-| `/api/tenant-devices/all/devices` | ✅ | 216 Geräte (141 Online, 74 Offline) |
+| `/api/tenant-devices/all/devices` | ✅ | 216 Geräte |
 | `/api/portal/devices/list` | ✅ | 431 Geräte |
 | `/api/portal/users/list` | ✅ | 3 Benutzer |
+| `/api/mongodb/status` | ✅ | Cluster Online |
+| `/api/mongodb/stats` | ✅ | 30 DBs, 150 Collections |
 
 ## Priorisierter Backlog
 
@@ -45,10 +86,11 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 - [x] Schwarzer Bildschirm beheben - Locations Tab
 - [x] Schwarzer Bildschirm beheben - Devices Tab
 - [x] MongoDB Atlas Upgrade (Free → M10)
+- [x] MongoDB Monitoring Dashboard
 
 ### P1 - Wichtig
+- [x] SSH Terminal vergrößern
 - [ ] Vollständige Migration zur "Single Source of Truth" (devices.py, fleet_management.py)
-- [ ] SSH Terminal Fenster vergrößern
 
 ### P2 - Mittel
 - [ ] Produktions-Deployment-Workflow stabilisieren
@@ -61,20 +103,18 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ## Architektur
 
-### Backend Routes (Geändert)
-- `/app/backend/routes/portal_devices.py` - Neu: MongoDB-basiert
-- `/app/backend/routes/portal_users.py` - Korrigiert: Richtige Datenbank
-- `/app/backend/routes/tenant_locations.py` - Korrigiert: "all" Support
-- `/app/backend/routes/missing_endpoints.py` - Neue fehlende APIs
+### Neue Backend Routes
+- `/app/backend/routes/mongodb_monitor.py` - MongoDB Monitoring APIs
+- `/app/backend/routes/portal_devices.py` - MongoDB-basiert (überarbeitet)
+- `/app/backend/routes/portal_users.py` - Korrigierte DB-Verbindung
+- `/app/backend/routes/tenant_locations.py` - "all" Support
 
-### Frontend Komponenten (Geändert)
+### Neue Frontend Komponenten
+- `/app/frontend/src/components/MongoDBMonitor.jsx` - Dashboard UI
 - `/app/frontend/src/components/AllLocationsTab.jsx` - Vereinfachte Logik
-
-### MongoDB Datenbanken
-- `tsrid_db`: Tenants, Users, Locations
-- `multi_tenant_admin`: Devices, Europcar Devices
-- `portal_db`: Portal Users, Tenant Locations
+- `/app/frontend/src/components/ServerManagement.jsx` - Vergrößertes Terminal
 
 ## Credentials
 - **Admin Login:** admin@tsrid.com / admin123
 - **Portal URL:** `/portal/admin`
+- **MongoDB Atlas:** M10 Cluster via MONGO_URL in .env
