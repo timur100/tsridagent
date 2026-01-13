@@ -952,6 +952,7 @@ const AdminPortalContent = () => {
                   { id: 'orders', label: 'Orders', icon: ShoppingCart },
                   { id: 'support', label: 'Support', icon: Headphones },
                   { id: 'licenses', label: 'Licenses', icon: Key },
+                  { id: 'database', label: 'Database', icon: Database },
                   { id: 'settings', label: 'Settings', icon: Settings },
                   { id: 'rnd', label: 'R&D', icon: FlaskConical }
                 ].map((tab) => (
