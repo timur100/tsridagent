@@ -34,6 +34,8 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
   const fetchData = useCallback(async () => {
     const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
     const headers = { 'Authorization': `Bearer ${token}` };
+    
+    console.log('[MongoDBMonitor] Starting data fetch...');
 
     try {
       const [statusRes, statsRes, healthRes, opsRes] = await Promise.all([
@@ -43,13 +45,32 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
         fetch(`${BACKEND_URL}/api/mongodb/operations`, { headers })
       ]);
 
-      if (statusRes.ok) setClusterStatus(await statusRes.json());
-      if (statsRes.ok) setDbStats(await statsRes.json());
-      if (healthRes.ok) setHealthHistory(await healthRes.json());
-      if (opsRes.ok) setOperations(await opsRes.json());
+      console.log('[MongoDBMonitor] Responses received');
+      
+      if (statusRes.ok) {
+        const data = await statusRes.json();
+        console.log('[MongoDBMonitor] Status:', data.status);
+        setClusterStatus(data);
+      }
+      if (statsRes.ok) {
+        const data = await statsRes.json();
+        console.log('[MongoDBMonitor] Stats DBs:', data.summary?.total_databases);
+        setDbStats(data);
+      }
+      if (healthRes.ok) {
+        const data = await healthRes.json();
+        console.log('[MongoDBMonitor] Health:', data.health_status);
+        setHealthHistory(data);
+      }
+      if (opsRes.ok) {
+        const data = await opsRes.json();
+        console.log('[MongoDBMonitor] Ops loaded');
+        setOperations(data);
+      }
     } catch (error) {
-      console.error('Error fetching MongoDB data:', error);
+      console.error('[MongoDBMonitor] Error fetching MongoDB data:', error);
     } finally {
+      console.log('[MongoDBMonitor] Data fetch complete');
       setLoading(false);
       setRefreshing(false);
     }
