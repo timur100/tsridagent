@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/portal/users", tags=["Portal Users"])
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = mongo_client['portal_db']
 
 class User(BaseModel):
     email: EmailStr

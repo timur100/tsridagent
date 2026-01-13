@@ -2,11 +2,18 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
+from pymongo import MongoClient
 import uuid
+import os
 
 from routes.portal_auth import verify_token
 
 router = APIRouter(prefix="/api/portal/devices", tags=["Portal Devices"])
+
+# MongoDB connection
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+mongo_client = MongoClient(mongo_url)
+db = mongo_client['multi_tenant_admin']
 
 class Device(BaseModel):
     device_id: str
@@ -20,9 +27,6 @@ class Device(BaseModel):
     app_version: Optional[str] = None
     scanner_type: Optional[str] = None
     settings: Optional[dict] = None
-
-# In-memory storage (replace with MongoDB)
-devices_db = {}
 
 @router.get("/list")
 async def list_devices(token_data: dict = Depends(verify_token)):
