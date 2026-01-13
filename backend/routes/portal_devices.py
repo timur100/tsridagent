@@ -32,19 +32,13 @@ class Device(BaseModel):
 async def list_devices(token_data: dict = Depends(verify_token)):
     """Get all registered devices from MongoDB"""
     try:
-        # Get devices from multi_tenant_admin.devices collection
-        devices_list = list(db.devices.find({}, {"_id": 0}).limit(500))
-        
-        # Also get europcar_devices for completeness
-        europcar_devices = list(db.europcar_devices.find({}, {"_id": 0}).limit(500))
-        
-        # Combine both lists
-        all_devices = devices_list + europcar_devices
+        # Use europcar_devices as the primary source (most complete data)
+        devices_list = list(db.europcar_devices.find({}, {"_id": 0}).limit(1000))
         
         return {
             "success": True,
-            "devices": all_devices,
-            "total": len(all_devices)
+            "devices": devices_list,
+            "total": len(devices_list)
         }
     except Exception as e:
         print(f"Error listing devices: {e}")
