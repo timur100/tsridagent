@@ -13,6 +13,15 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 13. Januar 2025 - Session 2 (Fortsetzung)
 
+#### ✅ PERFORMANCE FIX: Seitenladezeit von 40s auf 15s reduziert
+- **Connection Pooling:** Neue zentrale DB-Verbindung (`/app/backend/db/connection.py`)
+  - maxPoolSize: 50, minPoolSize: 10
+  - Verbindungen werden wiederverwendet statt neu erstellt
+- **Stats API optimiert:** Von 5184ms auf 376ms (13x schneller)
+  - Aggregation Pipeline statt mehrere count_documents()
+  - estimated_document_count() statt count_documents()
+- **Duplikate entfernt:** portal_devices.py verwendet nur europcar_devices (keine überlappenden Keys mehr)
+
 #### ✅ MongoDB Atlas M10 Upgrade
 - Cluster erfolgreich von Free auf M10 (dediziert) aktualisiert
 - Region: AWS / Frankfurt (eu-central-1)
