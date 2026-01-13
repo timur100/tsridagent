@@ -3059,6 +3059,10 @@ const AdminPortalContent = () => {
           );
         })()}
 
+        {activeTab === 'database' && (
+          <MongoDBMonitor theme={theme} />
+        )}
+
         {activeTab === 'settings' && (() => {
           return (
             <div className="flex h-[calc(100vh-180px)]">
