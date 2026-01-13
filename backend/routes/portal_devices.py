@@ -30,22 +30,37 @@ class Device(BaseModel):
 
 @router.get("/list")
 async def list_devices(token_data: dict = Depends(verify_token)):
-    """Get all registered devices"""
+    """Get all registered devices from MongoDB"""
     try:
-        devices_list = list(devices_db.values())
+        # Get devices from multi_tenant_admin.devices collection
+        devices_list = list(db.devices.find({}, {"_id": 0}).limit(500))
+        
+        # Also get europcar_devices for completeness
+        europcar_devices = list(db.europcar_devices.find({}, {"_id": 0}).limit(500))
+        
+        # Combine both lists
+        all_devices = devices_list + europcar_devices
+        
         return {
             "success": True,
-            "devices": devices_list,
-            "total": len(devices_list)
+            "devices": all_devices,
+            "total": len(all_devices)
         }
     except Exception as e:
+        print(f"Error listing devices: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/{device_id}")
 async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
     """Get device by ID"""
     try:
-        device = devices_db.get(device_id)
+        # Try devices collection first
+        device = db.devices.find_one({"device_id": device_id}, {"_id": 0})
+        
+        # Try europcar_devices if not found
+        if not device:
+            device = db.europcar_devices.find_one({"device_id": device_id}, {"_id": 0})
+        
         if not device:
             raise HTTPException(status_code=404, detail="Device not found")
         
@@ -63,14 +78,18 @@ async def register_device(device: Device, token_data: dict = Depends(verify_toke
     """Register a new device"""
     try:
         # Check if device already exists
-        if device.device_id in devices_db:
+        existing = db.devices.find_one({"device_id": device.device_id})
+        if existing:
             raise HTTPException(status_code=400, detail="Device already registered")
         
         device_dict = device.dict()
         device_dict['created_at'] = datetime.now(timezone.utc).isoformat()
         device_dict['updated_at'] = datetime.now(timezone.utc).isoformat()
         
-        devices_db[device.device_id] = device_dict
+        db.devices.insert_one(device_dict)
+        
+        # Remove _id from response
+        device_dict.pop('_id', None)
         
         return {
             "success": True,
@@ -86,19 +105,23 @@ async def register_device(device: Device, token_data: dict = Depends(verify_toke
 async def update_device(device_id: str, device_update: dict, token_data: dict = Depends(verify_token)):
     """Update device information"""
     try:
-        if device_id not in devices_db:
+        existing = db.devices.find_one({"device_id": device_id})
+        if not existing:
             raise HTTPException(status_code=404, detail="Device not found")
         
-        device = devices_db[device_id]
-        device.update(device_update)
-        device['updated_at'] = datetime.now(timezone.utc).isoformat()
+        device_update['updated_at'] = datetime.now(timezone.utc).isoformat()
         
-        devices_db[device_id] = device
+        db.devices.update_one(
+            {"device_id": device_id},
+            {"$set": device_update}
+        )
+        
+        updated = db.devices.find_one({"device_id": device_id}, {"_id": 0})
         
         return {
             "success": True,
             "message": "Device updated successfully",
-            "device": device
+            "device": updated
         }
     except HTTPException:
         raise
@@ -109,10 +132,10 @@ async def update_device(device_id: str, device_update: dict, token_data: dict = 
 async def delete_device(device_id: str, token_data: dict = Depends(verify_token)):
     """Delete a device"""
     try:
-        if device_id not in devices_db:
-            raise HTTPException(status_code=404, detail="Device not found")
+        result = db.devices.delete_one({"device_id": device_id})
         
-        del devices_db[device_id]
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Device not found")
         
         return {
             "success": True,
@@ -127,15 +150,23 @@ async def delete_device(device_id: str, token_data: dict = Depends(verify_token)
 async def get_devices_by_location(location_id: str, token_data: dict = Depends(verify_token)):
     """Get all devices for a specific location"""
     try:
-        location_devices = [
-            device for device in devices_db.values()
-            if device.get('location_id') == location_id
-        ]
+        location_devices = list(db.devices.find(
+            {"location_id": location_id}, 
+            {"_id": 0}
+        ))
+        
+        # Also check europcar_devices
+        europcar_location_devices = list(db.europcar_devices.find(
+            {"location_id": location_id}, 
+            {"_id": 0}
+        ))
+        
+        all_devices = location_devices + europcar_location_devices
         
         return {
             "success": True,
-            "devices": location_devices,
-            "total": len(location_devices)
+            "devices": all_devices,
+            "total": len(all_devices)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
