@@ -95,95 +95,30 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     setLoading(true);
     console.log('[AllLocationsTab] fetchAllLocations called, selectedTenantId:', selectedTenantId);
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
       
-      // If a specific tenant is selected, only load their locations
-      if (selectedTenantId && selectedTenantId !== 'all') {
-        console.log('[AllLocationsTab] Loading locations for specific tenant:', selectedTenantId);
-        // First get tenant info
-        const tenantResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
+      // Use the tenant-locations API directly
+      const tenantId = selectedTenantId || 'all';
+      console.log('[AllLocationsTab] Loading locations for tenant:', tenantId);
+      
+      const response = await fetch(
+        `${BACKEND_URL}/api/tenant-locations/${tenantId}`,
+        {
           headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        let tenantName = '';
-        if (tenantResponse.ok) {
-          const tenantsData = await tenantResponse.json();
-          // API returns array directly
-          const tenantsList = Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || tenantsData.data || []);
-          const tenant = tenantsList.find(t => t.tenant_id === selectedTenantId);
-          tenantName = tenant ? (tenant.display_name || tenant.name) : '';
         }
-        
-        const response = await fetch(
-          `${BACKEND_URL}/api/tenant-locations/${selectedTenantId}`,
-          {
-            headers: { 'Authorization': `Bearer ${token}` }
-          }
-        );
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('[AllLocationsTab] Loaded locations for tenant:', data.locations?.length);
-          // Add tenant_name to all locations
-          const locationsWithTenant = (data.locations || []).map(loc => ({
-            ...loc,
-            tenant_name: tenantName,
-            tenant_id: selectedTenantId
-          }));
-          setLocations(locationsWithTenant);
-        } else {
-          console.error('[AllLocationsTab] Failed to load locations:', response.status);
-        }
+      );
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[AllLocationsTab] Loaded locations:', data.locations?.length);
+        setLocations(data.locations || []);
       } else {
-        console.log('[AllLocationsTab] Loading locations for ALL tenants');
-        // Load all tenants and their locations
-        const tenantsResponse = await fetch(`${BACKEND_URL}/api/tenants/`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (tenantsResponse.ok) {
-          const tenantsData = await tenantsResponse.json();
-          // API returns array directly
-          const tenantsList = Array.isArray(tenantsData) ? tenantsData : (tenantsData.tenants || tenantsData.data || []);
-          
-          console.log('[AllLocationsTab] Loading locations for tenants:', tenantsList.map(t => t.name));
-          
-          // Fetch locations for each tenant
-          const allLocationsPromises = tenantsList.map(async (tenant) => {
-            try {
-              const locationsResponse = await fetch(
-                `${BACKEND_URL}/api/tenant-locations/${tenant.tenant_id}`,
-                {
-                  headers: { 'Authorization': `Bearer ${token}` }
-                }
-              );
-              
-              if (locationsResponse.ok) {
-                const locationsData = await locationsResponse.json();
-                // Add tenant info to each location
-                return (locationsData.locations || []).map(loc => ({
-                  ...loc,
-                  tenant_id: tenant.tenant_id,
-                  tenant_name: tenant.display_name || tenant.name
-                }));
-              }
-              return [];
-            } catch (error) {
-              console.error(`Error fetching locations for tenant ${tenant.tenant_id}:`, error);
-              return [];
-            }
-          });
-          
-          const allLocationsArrays = await Promise.all(allLocationsPromises);
-          const allLocations = allLocationsArrays.flat();
-          console.log('[AllLocationsTab] Total locations loaded from all tenants:', allLocations.length);
-          setLocations(allLocations);
-        } else {
-          console.error('[AllLocationsTab] Failed to fetch tenants');
-        }
+        console.error('[AllLocationsTab] Failed to load locations:', response.status);
+        setLocations([]);
       }
     } catch (error) {
       console.error('[AllLocationsTab] Error fetching locations:', error);
+      setLocations([]);
     } finally {
       setLoading(false);
     }
