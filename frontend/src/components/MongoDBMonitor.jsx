@@ -37,36 +37,66 @@ const MongoDBMonitor = ({ theme = 'dark' }) => {
     
     console.log('[MongoDBMonitor] Starting data fetch...');
 
-    try {
-      const [statusRes, statsRes, healthRes, opsRes] = await Promise.all([
-        fetch(`${BACKEND_URL}/api/mongodb/status`, { headers }),
-        fetch(`${BACKEND_URL}/api/mongodb/stats`, { headers }),
-        fetch(`${BACKEND_URL}/api/mongodb/health-history`, { headers }),
-        fetch(`${BACKEND_URL}/api/mongodb/operations`, { headers })
-      ]);
+    // Helper function with timeout
+    const fetchWithTimeout = async (url, timeout = 30000) => {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeout);
+      try {
+        const response = await fetch(url, { headers, signal: controller.signal });
+        clearTimeout(timeoutId);
+        return response;
+      } catch (error) {
+        clearTimeout(timeoutId);
+        throw error;
+      }
+    };
 
-      console.log('[MongoDBMonitor] Responses received');
+    try {
+      // Fetch each endpoint individually to handle partial failures
+      try {
+        const statusRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/status`);
+        if (statusRes.ok) {
+          const data = await statusRes.json();
+          console.log('[MongoDBMonitor] Status:', data.status);
+          setClusterStatus(data);
+        }
+      } catch (e) {
+        console.error('[MongoDBMonitor] Status fetch failed:', e.message);
+      }
       
-      if (statusRes.ok) {
-        const data = await statusRes.json();
-        console.log('[MongoDBMonitor] Status:', data.status);
-        setClusterStatus(data);
+      try {
+        const healthRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/health-history`);
+        if (healthRes.ok) {
+          const data = await healthRes.json();
+          console.log('[MongoDBMonitor] Health:', data.health_status);
+          setHealthHistory(data);
+        }
+      } catch (e) {
+        console.error('[MongoDBMonitor] Health fetch failed:', e.message);
       }
-      if (statsRes.ok) {
-        const data = await statsRes.json();
-        console.log('[MongoDBMonitor] Stats DBs:', data.summary?.total_databases);
-        setDbStats(data);
+      
+      try {
+        const statsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/stats`);
+        if (statsRes.ok) {
+          const data = await statsRes.json();
+          console.log('[MongoDBMonitor] Stats DBs:', data.summary?.total_databases);
+          setDbStats(data);
+        }
+      } catch (e) {
+        console.error('[MongoDBMonitor] Stats fetch failed:', e.message);
       }
-      if (healthRes.ok) {
-        const data = await healthRes.json();
-        console.log('[MongoDBMonitor] Health:', data.health_status);
-        setHealthHistory(data);
+      
+      try {
+        const opsRes = await fetchWithTimeout(`${BACKEND_URL}/api/mongodb/operations`);
+        if (opsRes.ok) {
+          const data = await opsRes.json();
+          console.log('[MongoDBMonitor] Ops loaded');
+          setOperations(data);
+        }
+      } catch (e) {
+        console.error('[MongoDBMonitor] Ops fetch failed:', e.message);
       }
-      if (opsRes.ok) {
-        const data = await opsRes.json();
-        console.log('[MongoDBMonitor] Ops loaded');
-        setOperations(data);
-      }
+      
     } catch (error) {
       console.error('[MongoDBMonitor] Error fetching MongoDB data:', error);
     } finally {
