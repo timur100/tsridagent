@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin
+https://single-truth.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

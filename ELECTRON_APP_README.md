@@ -69,7 +69,7 @@ yarn start
 
 ### Was passiert:
 1. Electron öffnet ein Desktop-Fenster
-2. Lädt automatisch: `https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin`
+2. Lädt automatisch: `https://single-truth.preview.emergentagent.com/portal/admin`
 3. Injiziert USB-APIs via `window.usbAPI` und `window.printerAPI`
 4. Web-App erkennt `window.isDesktopApp = true`
 

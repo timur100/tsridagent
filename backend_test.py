@@ -35,7 +35,7 @@ from typing import Dict, Any, List
 import time
 
 # Backend URL from environment (using actual deployment URL)
-BACKEND_URL = "https://mongo-atlas-migrate.preview.emergentagent.com"
+BACKEND_URL = "https://single-truth.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class TSRIDSystemTester:

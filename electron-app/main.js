@@ -7,7 +7,7 @@ const HID = require('node-hid');
 const printerWindows = require('./printer-windows');
 
 // Configuration
-const PREVIEW_URL = 'https://mongo-atlas-migrate.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://single-truth.preview.emergentagent.com/portal/admin';
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;

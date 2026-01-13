@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://mongo-atlas-migrate.preview.emergentagent.com
+│   └── Lädt: https://single-truth.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```
