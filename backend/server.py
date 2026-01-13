@@ -384,6 +384,10 @@ app.include_router(test_center_router)
 from routes.fastfood import router as fastfood_router
 app.include_router(fastfood_router)
 
+# MongoDB Monitoring Dashboard
+from routes.mongodb_monitor import router as mongodb_monitor_router
+app.include_router(mongodb_monitor_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
