@@ -429,8 +429,11 @@ async def get_tenant_locations(
 ):
     """Get all locations for a tenant with optional filters and search"""
     try:
-        # Build query
-        query = {"tenant_id": tenant_id}
+        # Build query - if 'all', don't filter by tenant_id
+        query = {}
+        if tenant_id != "all":
+            query["tenant_id"] = tenant_id
+        
         if state:
             query["state"] = state
         if main_type:
