@@ -23,28 +23,37 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-// Status color mapping
+// Status color mapping - Solid fills with dark text for better readability
 const STATUS_COLORS = {
   green: {
     bg: 'bg-green-500',
-    bgLight: 'bg-green-100 dark:bg-green-900/30',
-    text: 'text-green-600 dark:text-green-400',
-    border: 'border-green-500',
-    icon: CheckCircle
+    bgSolid: 'bg-green-100 dark:bg-green-800',
+    bgLight: 'bg-green-50 dark:bg-green-900/20',
+    text: 'text-green-700 dark:text-green-300',
+    textDark: 'text-green-900 dark:text-green-100',
+    border: 'border-green-400 dark:border-green-600',
+    icon: CheckCircle,
+    badge: 'bg-green-500 text-white'
   },
   yellow: {
     bg: 'bg-yellow-500',
-    bgLight: 'bg-yellow-100 dark:bg-yellow-900/30',
-    text: 'text-yellow-600 dark:text-yellow-400',
-    border: 'border-yellow-500',
-    icon: AlertTriangle
+    bgSolid: 'bg-yellow-100 dark:bg-yellow-800',
+    bgLight: 'bg-yellow-50 dark:bg-yellow-900/20',
+    text: 'text-yellow-700 dark:text-yellow-300',
+    textDark: 'text-yellow-900 dark:text-yellow-100',
+    border: 'border-yellow-400 dark:border-yellow-600',
+    icon: AlertTriangle,
+    badge: 'bg-yellow-500 text-black'
   },
   red: {
     bg: 'bg-red-500',
-    bgLight: 'bg-red-100 dark:bg-red-900/30',
-    text: 'text-red-600 dark:text-red-400',
-    border: 'border-red-500',
-    icon: XCircle
+    bgSolid: 'bg-red-100 dark:bg-red-800',
+    bgLight: 'bg-red-50 dark:bg-red-900/20',
+    text: 'text-red-700 dark:text-red-300',
+    textDark: 'text-red-900 dark:text-red-100',
+    border: 'border-red-400 dark:border-red-600',
+    icon: XCircle,
+    badge: 'bg-red-500 text-white'
   }
 };
 
