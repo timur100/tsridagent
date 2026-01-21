@@ -426,7 +426,7 @@ const DeviceDetailPage = () => {
                     } ${!isEditing ? 'opacity-60 cursor-not-allowed' : ''}`}
                   >
                     <option value="">Bitte wählen...</option>
-                    {availableTenants.map(tenant => (
+                    {Array.isArray(availableTenants) && availableTenants.map(tenant => (
                       <option key={tenant.tenant_id} value={tenant.tenant_id}>
                         {tenant.display_name || tenant.name || tenant.tenant_id}
                       </option>
