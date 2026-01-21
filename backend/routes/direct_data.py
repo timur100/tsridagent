@@ -408,6 +408,7 @@ async def get_stats_overview(token_data: dict = Depends(verify_token)):
 async def get_tenants_hierarchy_list():
     """
     Get tenant hierarchy as a flat list with parent-child relationships
+    Returns field names expected by frontend: tenant_id, tenant_level, parent_tenant_id
     """
     try:
         db = get_db()
@@ -415,15 +416,16 @@ async def get_tenants_hierarchy_list():
         # Get all tenants
         tenants = list(db.tenants.find({}, {"_id": 0}))
         
-        # Build hierarchy structure
+        # Build hierarchy structure with field names expected by frontend
         hierarchy = []
         for tenant in tenants:
             hierarchy.append({
-                "id": tenant.get("tenant_id") or tenant.get("id"),
+                "tenant_id": tenant.get("tenant_id") or tenant.get("id"),
                 "name": tenant.get("name") or tenant.get("display_name"),
                 "display_name": tenant.get("display_name") or tenant.get("name"),
-                "parent_id": tenant.get("parent_tenant_id"),
-                "level": tenant.get("tenant_level", 0),
+                "parent_tenant_id": tenant.get("parent_tenant_id") or tenant.get("parent_id"),
+                "tenant_level": tenant.get("tenant_level") or tenant.get("level"),
+                "tenant_type": tenant.get("tenant_type") or tenant.get("type"),
                 "country_code": tenant.get("country_code"),
                 "enabled": tenant.get("enabled", True)
             })
