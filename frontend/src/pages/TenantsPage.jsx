@@ -128,7 +128,9 @@ const TenantsPage = ({ onSelectTenant }) => {
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
-        setTenants(data);
+        // API returns { success, tenants, total } - extract the array
+        const tenantsList = Array.isArray(data) ? data : (data.tenants || data.data || []);
+        setTenants(tenantsList);
       }
     } catch (error) {
       console.error('Error fetching tenants:', error);
