@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://datahub-central-4.preview.emergentagent.com/portal/admin
+https://stability-rescue-1.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

@@ -56,7 +56,7 @@ const StockPortal = () => {
 
   const fetchOrders = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://datahub-central-4.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://stability-rescue-1.preview.emergentagent.com';
       const statusMap = {
         'pending': 'reserved',
         'picking': 'picking',
@@ -81,7 +81,7 @@ const StockPortal = () => {
   const startPicking = async (orderId) => {
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://datahub-central-4.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://stability-rescue-1.preview.emergentagent.com';
       const response = await fetch(
         `${backendUrl}/api/fulfillment/picking/start?order_id=${orderId}`,
         {
@@ -117,7 +117,7 @@ const StockPortal = () => {
 
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://datahub-central-4.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://stability-rescue-1.preview.emergentagent.com';
       const response = await fetch(
         `${backendUrl}/api/fulfillment/picking/complete?order_id=${selectedOrder.id}&eurobox_number=${euroboxNumber}`,
         {

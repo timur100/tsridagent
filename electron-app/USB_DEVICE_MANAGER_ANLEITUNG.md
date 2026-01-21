@@ -145,7 +145,7 @@ yarn build
 ### Nach dem Start:
 
 1. **Automatischer Login-Screen:**
-   - Die App lädt: `https://datahub-central-4.preview.emergentagent.com/portal/admin`
+   - Die App lädt: `https://stability-rescue-1.preview.emergentagent.com/portal/admin`
    
 2. **Einloggen:**
    - Email: `admin@tsrid.com`
@@ -190,7 +190,7 @@ const PREVIEW_URL = 'https://ihre-eigene-url.com/portal/admin';
 
 Standard ist:
 ```javascript
-const PREVIEW_URL = 'https://datahub-central-4.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://stability-rescue-1.preview.emergentagent.com/portal/admin';
 ```
 
 ### App-Name und Icon ändern

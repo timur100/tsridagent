@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://datahub-central-4.preview.emergentagent.com
+│   └── Lädt: https://stability-rescue-1.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

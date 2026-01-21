@@ -170,7 +170,7 @@ There are no partially completed tasks. All work in this session was brought to 
 **Last 10 User Messages and any pending HUMAN messages**
 1.  **User:** When I click on a tenant, a black screen appears. Fix everything and make the whole application completely usable again. - **Status: COMPLETE** (Agent fixed the crash on the Tenant Detail page and verified all other pages).
 2.  **User:** There is an error with the tenants. I only have 2 Tenants. Europcar and Puma. But here are somehow worldwide locations as tiles, although these were in the hierarchy. - **Status: COMPLETE** (Agent fixed the API to only show organization level tenants).
-3.  **User:** I get a black screen https://datahub-central-4.preview.emergentagent.com/portal/admin when I click something - **Status: COMPLETE** (Agent identified the crash was on the Tenants page and fixed it).
+3.  **User:** I get a black screen https://stability-rescue-1.preview.emergentagent.com/portal/admin when I click something - **Status: COMPLETE** (Agent identified the crash was on the Tenants page and fixed it).
 4.  **User:** The pages open very slowly... and in the end a black screen appeared - **Status: COMPLETE** (This prompted the major performance and stability investigation).
 5.  **User:** ok, go ahead and also implement the improvement suggestions - **Status: COMPLETE** (User approved implementing the MongoDB monitor and larger SSH terminal).
 6.  **User:** that was all faster before, with the free version of atlas - **Status: IN PROGRESS** (This prompted the final performance deep-dive. Verification is pending).

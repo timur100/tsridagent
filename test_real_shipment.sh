@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://datahub-central-4.preview.emergentagent.com/api/dhl"
+API_URL="https://stability-rescue-1.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""
