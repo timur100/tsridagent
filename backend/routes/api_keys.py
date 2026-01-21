@@ -65,7 +65,7 @@ async def get_api_keys(token_data: dict = Depends(verify_token)):
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Fetch all API keys
-        api_keys = list(db.api_keys.find())
+        api_keys = list(get_db().api_keys.find())
         
         # Mask the keys and remove _id
         result = []
@@ -128,7 +128,7 @@ async def reveal_api_key(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Find the API key
-        key_doc = db.api_keys.find_one({"api_name": api_name})
+        key_doc = get_db().api_keys.find_one({"api_name": api_name})
         if not key_doc:
             raise HTTPException(status_code=404, detail=f"API key for {api_name} not found")
         
@@ -173,7 +173,7 @@ async def create_api_key(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if API key with this name already exists
-        existing = db.api_keys.find_one({"api_name": key_data.api_name})
+        existing = get_db().api_keys.find_one({"api_name": key_data.api_name})
         if existing:
             raise HTTPException(status_code=400, detail=f"API key for {key_data.api_name} already exists")
         
@@ -191,7 +191,7 @@ async def create_api_key(
         }
         
         # Insert into database
-        db.api_keys.insert_one(key_doc)
+        get_db().api_keys.insert_one(key_doc)
         
         # Return masked key
         if '_id' in key_doc:
@@ -227,7 +227,7 @@ async def update_api_key(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if API key exists
-        existing = db.api_keys.find_one({"api_name": api_name})
+        existing = get_db().api_keys.find_one({"api_name": api_name})
         if not existing:
             raise HTTPException(status_code=404, detail=f"API key for {api_name} not found")
         
@@ -244,13 +244,13 @@ async def update_api_key(
             update_data["description"] = key_data.description
         
         # Update in database
-        db.api_keys.update_one(
+        get_db().api_keys.update_one(
             {"api_name": api_name},
             {"$set": update_data}
         )
         
         # Return masked key
-        result = db.api_keys.find_one({"api_name": api_name})
+        result = get_db().api_keys.find_one({"api_name": api_name})
         if '_id' in result:
             del result['_id']
         result['masked_key'] = mask_key(key_data.api_key)
@@ -283,12 +283,12 @@ async def delete_api_key(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Check if API key exists
-        existing = db.api_keys.find_one({"api_name": api_name})
+        existing = get_db().api_keys.find_one({"api_name": api_name})
         if not existing:
             raise HTTPException(status_code=404, detail=f"API key for {api_name} not found")
         
         # Delete from database
-        db.api_keys.delete_one({"api_name": api_name})
+        get_db().api_keys.delete_one({"api_name": api_name})
         
         return {
             "success": True,
@@ -429,7 +429,7 @@ async def retrieve_api_key(
             raise HTTPException(status_code=403, detail="Admin access required")
         
         # Fetch API key
-        key_doc = db.api_keys.find_one({"api_name": api_name})
+        key_doc = get_db().api_keys.find_one({"api_name": api_name})
         
         if not key_doc:
             raise HTTPException(status_code=404, detail=f"API key for {api_name} not found")
