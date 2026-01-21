@@ -318,7 +318,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                   Tenants
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {tenants.map(tenant => (
+                  {Array.isArray(tenants) && tenants.map(tenant => (
                     <label
                       key={tenant.tenant_id}
                       className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
