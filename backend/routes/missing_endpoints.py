@@ -1,50 +1,46 @@
 """
 Missing API endpoints that cause frontend crashes
 These endpoints read from multi_tenant_admin and other databases
+OPTIMIZED: Using connection pool for better performance
 """
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
 from datetime import datetime, timezone
 import os
-from pymongo import MongoClient
 from routes.portal_auth import verify_token
 import logging
+
+# Use connection pool instead of creating new connections
+from db.connection import get_mongo_client
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Missing Endpoints"])
 
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-
 
 def get_multi_tenant_db():
-    """Get multi_tenant_admin database"""
-    client = MongoClient(MONGO_URL)
-    return client['multi_tenant_admin']
+    """Get multi_tenant_admin database from pool"""
+    return get_mongo_client()['multi_tenant_admin']
 
 
 def get_portal_db():
-    """Get portal_db database"""
-    client = MongoClient(MONGO_URL)
-    return client['portal_db']
+    """Get portal_db database from pool"""
+    return get_mongo_client()['portal_db']
 
 
 def get_verification_db():
-    """Get verification_db database"""
-    client = MongoClient(MONGO_URL)
-    return client['verification_db']
+    """Get verification_db database from pool"""
+    return get_mongo_client()['verification_db']
 
 
 def get_main_db():
-    """Get main_db database"""
-    client = MongoClient(MONGO_URL)
-    return client['main_db']
+    """Get main_db database from pool"""
+    return get_mongo_client()['main_db']
 
 
 def get_ticketing_db():
-    """Get ticketing_db database"""
-    client = MongoClient(MONGO_URL)
-    return client['ticketing_db']
+    """Get ticketing_db database from pool"""
+    return get_mongo_client()['ticketing_db']
 
 
 # ============== EUROPCAR DEVICES ==============
