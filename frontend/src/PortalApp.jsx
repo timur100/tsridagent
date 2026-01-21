@@ -72,6 +72,9 @@ const PortalRoutes = () => {
   const { isImpersonating } = useImpersonation();
   const location = useLocation();
 
+  // Debug logging
+  console.log('[PortalRoutes] Current pathname:', location.pathname);
+
   // Helper function for smart routing
   const getDefaultRoute = () => {
     if (isImpersonating) {
