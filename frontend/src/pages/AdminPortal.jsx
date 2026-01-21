@@ -46,6 +46,7 @@ import SoftwareLicenseManagement from '../components/SoftwareLicenseManagement';
 import APIKeysManagement from '../components/APIKeysManagement';
 import ServerManagement from '../components/ServerManagement';
 import HealthDashboard from '../components/HealthDashboard';
+import HealthMonitor from '../components/HealthMonitor';
 import PortalMetadata from '../components/PortalMetadata';
 import ComponentsManagement from '../components/ComponentsManagement';
 import ResourcesManagement from './ResourcesManagement';
