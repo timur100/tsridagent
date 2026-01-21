@@ -66,17 +66,32 @@ const PortalLogin = () => {
           console.log('[Login] User data received:', result.user);
           console.log('[Login] Email check:', formData.email.toLowerCase(), '=== admin@tsrid.com:', isAdminUser);
           console.log('[Login] Role check:', result.user?.role);
+          console.log('[Login] Previous location state:', location.state);
           
           // Determine redirect path
           let redirectPath;
+          
+          // Check if we have a saved "from" location to return to
+          const fromPath = location.state?.from?.pathname;
+          
           if (isAdminUser) {
-            // CRITICAL: Admin always goes to /portal/admin, ignore any previous location
-            redirectPath = '/portal/admin';
-            console.log('[Login] Admin detected - redirecting to /portal/admin');
+            // Admin users: return to original URL if it was an admin route, otherwise go to /portal/admin
+            if (fromPath && fromPath.startsWith('/portal/admin')) {
+              redirectPath = fromPath;
+              console.log('[Login] Admin detected - returning to original location:', redirectPath);
+            } else {
+              redirectPath = '/portal/admin';
+              console.log('[Login] Admin detected - redirecting to /portal/admin');
+            }
           } else {
-            // All other users go to customer portal
-            redirectPath = '/portal/customer';
-            console.log('[Login] Customer detected - redirecting to /portal/customer');
+            // Customer users: return to original URL if it was a customer route, otherwise go to /portal/customer
+            if (fromPath && fromPath.startsWith('/portal/customer')) {
+              redirectPath = fromPath;
+              console.log('[Login] Customer detected - returning to original location:', redirectPath);
+            } else {
+              redirectPath = '/portal/customer';
+              console.log('[Login] Customer detected - redirecting to /portal/customer');
+            }
           }
           
           console.log('[Login] Final redirect:', redirectPath);
