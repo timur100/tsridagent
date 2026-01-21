@@ -552,7 +552,7 @@ const AssetSettings = () => {
             }`}
           >
             <option value="">-- Tenant wählen --</option>
-            {tenants.map((tenant) => (
+            {Array.isArray(tenants) && tenants.map((tenant) => (
               <option key={tenant.tenant_id} value={tenant.tenant_id}>
                 {tenant.display_name || tenant.name}
               </option>
