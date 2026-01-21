@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 import os
 from cryptography.fernet import Fernet
 import base64
@@ -14,7 +15,9 @@ router = APIRouter(prefix="/api/portal/api-keys", tags=["api-keys"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
-db = get_mongo_client()[DB_NAME]
+
+def get_db():
+    return get_mongo_client()[DB_NAME]
 
 # Encryption setup
 # Generate a key from a secret (in production, use environment variable)
