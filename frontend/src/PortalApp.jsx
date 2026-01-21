@@ -120,7 +120,7 @@ const PortalRoutes = () => {
       
       {/* Admin Portal with nested routes */}
       <Route
-        path="/admin"
+        path="admin/*"
         element={
           <ProtectedRoute adminOnly>
             <AdminPortal />
