@@ -1,605 +1,584 @@
 """
 Fleet Management System
-Umfassendes Flottenmanagement mit GPS-Tracking, Routenplanung, Kraftstoffverbrauch und Fahrtenbuch
+Flottenmanagement mit MongoDB-Integration statt Mock-Daten
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
-from datetime import datetime, timedelta
-import random
+from datetime import datetime, timezone
+from pydantic import BaseModel
+from db.connection import get_mongo_client
 from routes.portal_auth import verify_token
+import logging
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
-# Mock-Daten Generator
-def generate_mock_fleet_data(tenant_id: str):
-    """Generiert Mock-Flottendaten für Autovermietung (Europcar-spezifisch)"""
-    
-    # Fahrzeugtypen für Autovermietung
-    vehicle_types = [
-        {"type": "Kleinwagen", "models": ["VW Polo", "Opel Corsa", "Renault Clio", "Ford Fiesta"]},
-        {"type": "Kompaktklasse", "models": ["VW Golf", "Audi A3", "Mercedes A-Klasse", "BMW 1er"]},
-        {"type": "Mittelklasse", "models": ["VW Passat", "Audi A4", "Mercedes C-Klasse", "BMW 3er"]},
-        {"type": "Oberklasse", "models": ["Audi A6", "Mercedes E-Klasse", "BMW 5er"]},
-        {"type": "SUV", "models": ["VW Tiguan", "Audi Q5", "Mercedes GLC", "BMW X3"]},
-        {"type": "Transporter", "models": ["Mercedes Sprinter", "VW Crafter", "Ford Transit"]},
-    ]
-    
-    # Europcar Standorte (mehrere pro Stadt)
-    locations = [
-        {"location_id": "berlin-tegel", "city": "Berlin", "name": "Berlin Flughafen Tegel", "address": "Flughafen Tegel, 13405 Berlin", "lat": 52.5540, "lon": 13.2889},
-        {"location_id": "berlin-hbf", "city": "Berlin", "name": "Berlin Hauptbahnhof", "address": "Europaplatz 1, 10557 Berlin", "lat": 52.5250, "lon": 13.3690},
-        {"location_id": "hamburg-airport", "city": "Hamburg", "name": "Hamburg Flughafen", "address": "Flughafenstraße, 22335 Hamburg", "lat": 53.6304, "lon": 9.9882},
-        {"location_id": "hamburg-hbf", "city": "Hamburg", "name": "Hamburg Hauptbahnhof", "address": "Hachmannplatz 16, 20099 Hamburg", "lat": 53.5530, "lon": 10.0067},
-        {"location_id": "muenchen-airport", "city": "München", "name": "München Flughafen", "address": "Nordallee 25, 85356 München", "lat": 48.3537, "lon": 11.7750},
-        {"location_id": "muenchen-hbf", "city": "München", "name": "München Hauptbahnhof", "address": "Bayerstraße 10A, 80335 München", "lat": 48.1402, "lon": 11.5583},
-        {"location_id": "frankfurt-airport", "city": "Frankfurt", "name": "Frankfurt Flughafen", "address": "Hugo-Eckener-Ring, 60549 Frankfurt", "lat": 50.0379, "lon": 8.5622},
-        {"location_id": "stuttgart-airport", "city": "Stuttgart", "name": "Stuttgart Flughafen", "address": "Flughafenstraße 32, 70629 Stuttgart", "lat": 48.6899, "lon": 9.2219},
-        {"location_id": "koeln-bonn-airport", "city": "Köln", "name": "Köln/Bonn Flughafen", "address": "Kennedystraße, 51147 Köln", "lat": 50.8659, "lon": 7.1427},
-        {"location_id": "duesseldorf-airport", "city": "Düsseldorf", "name": "Düsseldorf Flughafen", "address": "Flughafenstraße 120, 40474 Düsseldorf", "lat": 51.2895, "lon": 6.7668},
-    ]
-    
-    vehicles = []
-    rentals = []  # Mietvorgänge statt trips
-    fuel_records = []
-    damage_reports = []
-    
-    # Generiere 15-20 Fahrzeuge pro Tenant (Europcar Flotte)
-    num_vehicles = random.randint(15, 20)
-    
-    for i in range(num_vehicles):
-        vehicle_cat = random.choice(vehicle_types)
-        model = random.choice(vehicle_cat["models"])
-        
-        # Kennzeichen generieren
-        prefixes = ["B", "HH", "M", "K", "F", "S", "D", "DO", "E"]
-        plate = f"{random.choice(prefixes)}-EC-{random.randint(1000, 9999)}"  # EC für Europcar
-        
-        # Zugewiesener Standort (Heimatstandort)
-        home_location = random.choice(locations)
-        
-        # Aktueller Standort (könnte anders sein wenn vermietet)
-        is_rented = random.random() < 0.4  # 40% sind aktuell vermietet
-        
-        if is_rented:
-            current_loc = random.choice(locations)
-            status = "rented"
-        else:
-            current_loc = home_location
-            status = random.choice(["available", "maintenance", "cleaning"])
-        
-        # km-Stand und km-Limit
-        initial_km = random.randint(5000, 15000)  # Neu gekauft
-        current_km = initial_km + random.randint(5000, 80000)
-        km_limit = random.choice([100000, 120000, 150000])  # Verkauf bei diesem km-Stand
-        
-        # Fahrzeug erstellen
-        vehicle = {
-            "vehicle_id": f"VEH-{tenant_id}-EC{i+1:04d}",
-            "tenant_id": tenant_id,
-            "license_plate": plate,
-            "type": vehicle_cat["type"],
-            "model": model,
-            "year": random.randint(2020, 2024),
-            "status": status,
-            "home_location": {
-                "location_id": home_location["location_id"],
-                "name": home_location["name"],
-                "city": home_location["city"],
-                "address": home_location["address"],
-                "lat": home_location["lat"],
-                "lon": home_location["lon"]
-            },
-            "current_location": {
-                "location_id": current_loc["location_id"],
-                "name": current_loc["name"],
-                "city": current_loc["city"],
-                "address": current_loc["address"],
-                "lat": current_loc["lat"],
-                "lon": current_loc["lon"],
-                "timestamp": datetime.now().isoformat()
-            },
-            "odometer": current_km,
-            "initial_odometer": initial_km,
-            "km_limit": km_limit,
-            "km_until_limit": km_limit - current_km,
-            "km_limit_percentage": round((current_km / km_limit) * 100, 1),
-            "fuel_level": random.randint(30, 95) if status != "maintenance" else 20,
-            "current_rental": None,  # Wird unten gesetzt wenn vermietet
-            "total_rentals": random.randint(50, 300),
-            "last_maintenance": (datetime.now() - timedelta(days=random.randint(10, 60))).isoformat(),
-            "next_maintenance_due": (datetime.now() + timedelta(days=random.randint(30, 90))).isoformat(),
-            "insurance_expires": (datetime.now() + timedelta(days=random.randint(180, 365))).isoformat(),
-            "tuev_expires": (datetime.now() + timedelta(days=random.randint(200, 700))).isoformat(),
-        }
-        
-        vehicles.append(vehicle)
-        
-        # Generiere Mietvorgänge für letzten Monat
-        num_rentals = random.randint(5, 15)
-        for j in range(num_rentals):
-            pickup_loc = random.choice(locations)
-            return_loc = random.choice(locations)  # Kann gleich oder anders sein
-            
-            # Mietdauer 1-14 Tage
-            rental_days = random.randint(1, 14)
-            rental_start = datetime.now() - timedelta(days=random.randint(1, 60))
-            rental_end = rental_start + timedelta(days=rental_days)
-            
-            # km bei Übergabe und Rückgabe
-            pickup_km = vehicle["initial_odometer"] + random.randint(0, current_km - vehicle["initial_odometer"] - 500)
-            km_driven = random.randint(50, 500 * rental_days)
-            return_km = pickup_km + km_driven
-            
-            # Tankfüllung
-            pickup_fuel = random.randint(85, 100)
-            return_fuel = random.randint(10, 95)
-            
-            # Mieter-Daten
-            customer_names = [
-                "Michael Schneider", "Sarah Weber", "Thomas Becker", "Julia Fischer",
-                "Daniel Koch", "Laura Meyer", "Christian Wolf", "Anna Zimmermann",
-                "Markus Hoffmann", "Sophie Schäfer", "Jan Richter", "Maria Klein"
-            ]
-            
-            # Schäden
-            has_damage = random.random() < 0.15  # 15% haben Schäden
-            
-            rental = {
-                "rental_id": f"RENT-{tenant_id}-{i+1:03d}-{j+1:04d}",
-                "vehicle_id": vehicle["vehicle_id"],
-                "tenant_id": tenant_id,
-                "customer_name": random.choice(customer_names),
-                "customer_id": f"CUST-{random.randint(10000, 99999)}",
-                "booking_reference": f"EC{random.randint(100000, 999999)}",
-                "pickup_time": rental_start.isoformat(),
-                "return_time": rental_end.isoformat() if rental_end < datetime.now() else None,
-                "rental_days": rental_days,
-                "pickup_location": pickup_loc,
-                "return_location": return_loc,
-                "pickup_odometer": pickup_km,
-                "return_odometer": return_km if rental_end < datetime.now() else None,
-                "km_driven": km_driven if rental_end < datetime.now() else None,
-                "pickup_fuel_level": pickup_fuel,
-                "return_fuel_level": return_fuel if rental_end < datetime.now() else None,
-                "status": "completed" if rental_end < datetime.now() else "active",
-                "daily_rate": round(random.uniform(45, 150), 2),
-                "total_cost": round(random.uniform(45, 150) * rental_days, 2),
-                "has_damage": has_damage if rental_end < datetime.now() else False,
-                "damage_report_id": f"DMG-{random.randint(1000, 9999)}" if has_damage and rental_end < datetime.now() else None,
-                "pre_existing_damages": random.randint(0, 3),
-                "insurance_type": random.choice(["Basic", "Premium", "Vollkasko"]),
-            }
-            
-            rentals.append(rental)
-            
-            # Schadensmeldung erstellen wenn Schaden vorhanden
-            if has_damage and rental_end < datetime.now():
-                damage_types = [
-                    "Kratzer an der Stoßstange", "Delle in der Tür", "Steinschlag Windschutzscheibe",
-                    "Kratzer am Kotflügel", "Beschädigte Felge", "Innenraum verschmutzt"
-                ]
-                
-                damage = {
-                    "damage_id": rental["damage_report_id"],
-                    "rental_id": rental["rental_id"],
-                    "vehicle_id": vehicle["vehicle_id"],
-                    "tenant_id": tenant_id,
-                    "reported_at": rental_end.isoformat(),
-                    "damage_type": random.choice(damage_types),
-                    "severity": random.choice(["minor", "moderate", "severe"]),
-                    "estimated_cost": round(random.uniform(100, 2500), 2),
-                    "reported_by": "Station Staff",
-                    "customer_liable": random.choice([True, False]),
-                    "insurance_claim": random.choice([True, False]),
-                    "repair_status": random.choice(["pending", "in_progress", "completed"]),
-                }
-                
-                damage_reports.append(damage)
-            
-            # Tankvorgang nach 3-5 Mietvorgängen
-            if j % random.randint(3, 5) == 0:
-                fuel_record = {
-                    "fuel_id": f"FUEL-{tenant_id}-{i+1:03d}-{len(fuel_records)+1:04d}",
-                    "vehicle_id": vehicle["vehicle_id"],
-                    "tenant_id": tenant_id,
-                    "timestamp": (rental_end + timedelta(hours=2)).isoformat(),
-                    "location": random.choice(locations)["city"],
-                    "liters": round(random.uniform(30, 80), 2),
-                    "cost_per_liter": round(random.uniform(1.65, 1.95), 3),
-                    "total_cost": 0,  # wird berechnet
-                    "odometer_reading": vehicle["odometer"] - random.randint(100, 1000),
-                    "card_type": random.choice(["DKV", "Shell", "Aral", "Privat"]),
-                    "card_last4": f"{random.randint(1000, 9999)}",
-                    "fuel_type": random.choice(["Diesel", "Benzin", "Super Plus", "AdBlue"]),
-                    "suspicious": random.random() < 0.05,  # 5% verdächtige Transaktionen
-                }
-                fuel_record["total_cost"] = round(fuel_record["liters"] * fuel_record["cost_per_liter"], 2)
-                fuel_records.append(fuel_record)
-    
-    # Setze aktuelle Mietvorgänge für vermietete Fahrzeuge
-    active_rentals = [r for r in rentals if r["status"] == "active"]
-    for vehicle in vehicles:
-        if vehicle["status"] == "rented":
-            matching_rentals = [r for r in active_rentals if r["vehicle_id"] == vehicle["vehicle_id"]]
-            if matching_rentals:
-                vehicle["current_rental"] = matching_rentals[0]
-    
-    return {
-        "vehicles": vehicles,
-        "rentals": rentals,  # Mietvorgänge statt trips
-        "fuel_records": fuel_records,
-        "damage_reports": damage_reports,
-        "generated_at": datetime.now().isoformat()
-    }
 
-# In-Memory Store für Mock-Daten
-fleet_data_store = {}
+# ============== PYDANTIC MODELS ==============
 
-@router.get("/fleet/{tenant_id}/locations")
-async def get_fleet_locations(
-    tenant_id: str,
+class VehicleBase(BaseModel):
+    license_plate: str
+    vehicle_type: str
+    model: str
+    brand: str
+    year: Optional[int] = None
+    color: Optional[str] = None
+    vin: Optional[str] = None
+    fuel_type: Optional[str] = "Diesel"
+    transmission: Optional[str] = "Automatik"
+    seats: Optional[int] = 5
+    home_location_id: Optional[str] = None
+    current_location_id: Optional[str] = None
+    status: str = "available"  # available, rented, maintenance, cleaning
+    mileage_km: Optional[int] = 0
+    daily_rate: Optional[float] = 0
+
+
+class VehicleCreate(VehicleBase):
+    tenant_id: str
+
+
+class RentalBase(BaseModel):
+    vehicle_id: str
+    customer_name: str
+    customer_email: Optional[str] = None
+    customer_phone: Optional[str] = None
+    pickup_location_id: str
+    dropoff_location_id: str
+    pickup_date: datetime
+    dropoff_date: datetime
+    status: str = "reserved"  # reserved, active, completed, cancelled
+
+
+class RentalCreate(RentalBase):
+    tenant_id: str
+
+
+# ============== HELPER FUNCTIONS ==============
+
+def get_fleet_db():
+    """Get fleet database from connection pool"""
+    return get_mongo_client()['fleet_db']
+
+
+def get_tenant_db():
+    """Get tenant database for locations"""
+    return get_mongo_client()['tsrid_db']
+
+
+def serialize_doc(doc):
+    """Convert MongoDB document to JSON-serializable dict"""
+    if doc is None:
+        return None
+    if '_id' in doc:
+        doc['_id'] = str(doc['_id'])
+    return doc
+
+
+# ============== FLEET STATISTICS ==============
+
+@router.get("/api/fleet/stats")
+async def get_fleet_stats(
+    tenant_id: Optional[str] = None,
     token_data: dict = Depends(verify_token)
 ):
-    """Hole alle Standorte mit Flotteninformationen (mehrere pro Stadt möglich)"""
-    
-    # Generiere Mock-Daten wenn nicht vorhanden
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    vehicles = fleet_data_store[tenant_id]["vehicles"]
-    
-    # Gruppiere Fahrzeuge nach Heimat-Standort (home_location.location_id)
-    location_map = {}
-    for vehicle in vehicles:
-        loc_id = vehicle["home_location"]["location_id"]
-        if loc_id not in location_map:
-            location_map[loc_id] = {
-                "location_id": vehicle["home_location"]["location_id"],
-                "location_name": vehicle["home_location"]["name"],
-                "city": vehicle["home_location"]["city"],
-                "address": vehicle["home_location"]["address"],
-                "vehicles": []
-            }
-        location_map[loc_id]["vehicles"].append(vehicle)
-    
-    # Erstelle Standort-Übersicht
-    locations = []
-    for loc_id, loc_data in location_map.items():
-        locations.append({
-            "location_id": loc_data["location_id"],
-            "location_name": loc_data["location_name"],
-            "city": loc_data["city"],
-            "address": loc_data["address"],
-            "vehicle_count": len(loc_data["vehicles"]),
-            "available_vehicles": len([v for v in loc_data["vehicles"] if v["status"] == "available"]),
-            "rented_vehicles": len([v for v in loc_data["vehicles"] if v["status"] == "rented"])
+    """Get fleet statistics for dashboard"""
+    try:
+        db = get_fleet_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        # Vehicle counts
+        total_vehicles = db.vehicles.count_documents(query)
+        available = db.vehicles.count_documents({**query, "status": "available"})
+        rented = db.vehicles.count_documents({**query, "status": "rented"})
+        maintenance = db.vehicles.count_documents({**query, "status": "maintenance"})
+        cleaning = db.vehicles.count_documents({**query, "status": "cleaning"})
+        
+        # Rental counts
+        active_rentals = db.rentals.count_documents({**query, "status": "active"})
+        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        pickups_today = db.rentals.count_documents({
+            **query,
+            "pickup_date": {"$gte": today, "$lt": today.replace(hour=23, minute=59)}
         })
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "locations": sorted(locations, key=lambda x: (x["city"], x["location_name"])),
-        "total": len(locations)
-    }
-
-@router.get("/fleet/{tenant_id}/vehicles")
-async def get_fleet_vehicles(
-    tenant_id: str,
-    location: Optional[str] = None,
-    status: Optional[str] = None,
-    km_limit_warning: bool = False,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole alle Fahrzeuge eines Tenants"""
-    
-    # Generiere Mock-Daten wenn nicht vorhanden
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    vehicles = fleet_data_store[tenant_id]["vehicles"]
-    
-    # Filter nach Standort (Heimatstandort)
-    if location and location != "all":
-        vehicles = [v for v in vehicles if v["home_location"]["location_id"] == location]
-    
-    # Filter nach Status
-    if status:
-        vehicles = [v for v in vehicles if v["status"] == status]
-    
-    # Filter: km-Limit Warnung (90% erreicht)
-    if km_limit_warning:
-        vehicles = [v for v in vehicles if v["km_limit_percentage"] >= 90]
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "location": location,
-        "vehicles": vehicles,
-        "total": len(vehicles),
-        "km_limit_warnings": len([v for v in vehicles if v["km_limit_percentage"] >= 90])
-    }
-
-@router.get("/fleet/{tenant_id}/rentals")
-async def get_fleet_rentals(
-    tenant_id: str,
-    location: Optional[str] = None,
-    vehicle_id: Optional[str] = None,
-    status: Optional[str] = None,
-    start_date: Optional[str] = None,
-    end_date: Optional[str] = None,
-    limit: int = 100,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole Mietvorgänge eines Tenants"""
-    
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    rentals = fleet_data_store[tenant_id]["rentals"]
-    vehicles = fleet_data_store[tenant_id]["vehicles"]
-    
-    # Filter nach Standort (über Fahrzeug-Heimatstandort)
-    if location and location != "all":
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["home_location"]["location_id"] == location]
-        rentals = [r for r in rentals if r["vehicle_id"] in location_vehicle_ids]
-    
-    # Filter
-    if vehicle_id:
-        rentals = [r for r in rentals if r["vehicle_id"] == vehicle_id]
-    
-    if status:
-        rentals = [r for r in rentals if r["status"] == status]
-    
-    if start_date:
-        rentals = [r for r in rentals if r["pickup_time"] >= start_date]
-    
-    if end_date:
-        rentals = [r for r in rentals if r["pickup_time"] <= end_date]
-    
-    # Sortiere nach Datum absteigend
-    rentals = sorted(rentals, key=lambda x: x["pickup_time"], reverse=True)
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "location": location,
-        "rentals": rentals[:limit],
-        "total": len(rentals)
-    }
-
-@router.get("/fleet/{tenant_id}/vehicle/{vehicle_id}/rental-history")
-async def get_vehicle_rental_history(
-    tenant_id: str,
-    vehicle_id: str,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole komplette Miet-Historie eines Fahrzeugs (Lifecycle)"""
-    
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    rentals = fleet_data_store[tenant_id]["rentals"]
-    vehicle_rentals = [r for r in rentals if r["vehicle_id"] == vehicle_id]
-    
-    # Sortiere chronologisch
-    vehicle_rentals = sorted(vehicle_rentals, key=lambda x: x["pickup_time"])
-    
-    # Berechne Lifecycle-Statistiken
-    total_km = sum(r["km_driven"] for r in vehicle_rentals if r["km_driven"])
-    total_rentals = len(vehicle_rentals)
-    damage_count = len([r for r in vehicle_rentals if r["has_damage"]])
-    
-    return {
-        "success": True,
-        "vehicle_id": vehicle_id,
-        "rental_history": vehicle_rentals,
-        "statistics": {
-            "total_rentals": total_rentals,
-            "total_km_rented": total_km,
-            "damage_count": damage_count,
-            "damage_rate": round((damage_count / total_rentals * 100), 1) if total_rentals > 0 else 0
-        }
-    }
-
-@router.get("/fleet/{tenant_id}/damages")
-async def get_damage_reports(
-    tenant_id: str,
-    location: Optional[str] = None,
-    vehicle_id: Optional[str] = None,
-    severity: Optional[str] = None,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole Schadensmeldungen"""
-    
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    damages = fleet_data_store[tenant_id]["damage_reports"]
-    vehicles = fleet_data_store[tenant_id]["vehicles"]
-    
-    # Filter nach Standort
-    if location and location != "all":
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["home_location"]["location_id"] == location]
-        damages = [d for d in damages if d["vehicle_id"] in location_vehicle_ids]
-    
-    if vehicle_id:
-        damages = [d for d in damages if d["vehicle_id"] == vehicle_id]
-    
-    if severity:
-        damages = [d for d in damages if d["severity"] == severity]
-    
-    # Sortiere nach Datum absteigend
-    damages = sorted(damages, key=lambda x: x["reported_at"], reverse=True)
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "location": location,
-        "damages": damages,
-        "total": len(damages),
-        "total_estimated_cost": sum(d["estimated_cost"] for d in damages)
-    }
-
-@router.get("/fleet/{tenant_id}/fuel")
-async def get_fuel_records(
-    tenant_id: str,
-    location: Optional[str] = None,
-    vehicle_id: Optional[str] = None,
-    suspicious_only: bool = False,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole Tankdaten"""
-    
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    fuel_records = fleet_data_store[tenant_id]["fuel_records"]
-    vehicles = fleet_data_store[tenant_id]["vehicles"]
-    
-    # Filter nach Standort
-    if location and location != "all":
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles if v["current_location"]["city"].lower().replace(" ", "-") == location]
-        fuel_records = [f for f in fuel_records if f["vehicle_id"] in location_vehicle_ids]
-    
-    if vehicle_id:
-        fuel_records = [f for f in fuel_records if f["vehicle_id"] == vehicle_id]
-    
-    if suspicious_only:
-        fuel_records = [f for f in fuel_records if f.get("suspicious", False)]
-    
-    # Sortiere nach Datum absteigend
-    fuel_records = sorted(fuel_records, key=lambda x: x["timestamp"], reverse=True)
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "location": location,
-        "fuel_records": fuel_records,
-        "total": len(fuel_records),
-        "total_cost": sum(f["total_cost"] for f in fuel_records),
-        "suspicious_count": len([f for f in fuel_records if f.get("suspicious", False)])
-    }
-
-@router.get("/fleet/{tenant_id}/statistics")
-async def get_fleet_statistics(
-    tenant_id: str,
-    location: Optional[str] = None,
-    token_data: dict = Depends(verify_token)
-):
-    """Hole Flottenstatistiken"""
-    
-    if tenant_id not in fleet_data_store:
-        fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    data = fleet_data_store[tenant_id]
-    all_vehicles = data["vehicles"]
-    all_rentals = data["rentals"]
-    all_fuel_records = data["fuel_records"]
-    
-    # Filter nach Standort
-    if location and location != "all":
-        vehicles = [v for v in all_vehicles if v["home_location"]["location_id"] == location]
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles]
-        rentals_data = [r for r in all_rentals if r["vehicle_id"] in location_vehicle_ids]
-        fuel_records = [f for f in all_fuel_records if f["vehicle_id"] in location_vehicle_ids]
-    else:
-        vehicles = all_vehicles
-        rentals_data = all_rentals
-        fuel_records = all_fuel_records
-    
-    # Rentals statt trips
-    rentals_data = fleet_data_store[tenant_id]["rentals"]
-    if location and location != "all":
-        location_vehicle_ids = [v["vehicle_id"] for v in vehicles]
-        rentals_data = [r for r in rentals_data if r["vehicle_id"] in location_vehicle_ids]
-    
-    # Berechne Statistiken
-    completed_rentals = [r for r in rentals_data if r["status"] == "completed" and r["km_driven"]]
-    total_distance = sum(r["km_driven"] for r in completed_rentals)
-    total_fuel_cost = sum(f["total_cost"] for f in fuel_records)
-    total_fuel_liters = sum(f["liters"] for f in fuel_records)
-    
-    avg_fuel_consumption = (total_fuel_liters / total_distance * 100) if total_distance > 0 else 0
-    
-    # Fahrzeug-Status (Europcar-spezifisch)
-    status_counts = {}
-    for v in vehicles:
-        status = v["status"]
-        status_counts[status] = status_counts.get(status, 0) + 1
-    
-    # km-Limit Warnungen
-    km_limit_warnings = len([v for v in vehicles if v["km_limit_percentage"] >= 90])
-    
-    # Schadensmeldungen
-    damages_data = fleet_data_store[tenant_id]["damage_reports"]
-    if location and location != "all":
-        damages_data = [d for d in damages_data if d["vehicle_id"] in [v["vehicle_id"] for v in vehicles]]
-    
-    # CO2-Emissionen (grobe Schätzung: 2.65kg CO2 pro Liter Diesel/Benzin)
-    total_co2_kg = total_fuel_liters * 2.65
-    
-    # Durchschnittlicher Eco-Score (aus Mietvorgängen)
-    avg_eco_score = 82.0  # Placeholder für Autovermietung
-    
-    return {
-        "success": True,
-        "tenant_id": tenant_id,
-        "location": location,
-        "statistics": {
-            "total_vehicles": len(vehicles),
-            "available_vehicles": status_counts.get("available", 0),
-            "rented_vehicles": status_counts.get("rented", 0),
-            "maintenance_vehicles": status_counts.get("maintenance", 0),
-            "cleaning_vehicles": status_counts.get("cleaning", 0),
-            "total_rentals_30d": len(rentals_data),
-            "active_rentals": len([r for r in rentals_data if r["status"] == "active"]),
-            "total_distance_km": round(total_distance, 1),
-            "total_fuel_cost": round(total_fuel_cost, 2),
-            "total_fuel_liters": round(total_fuel_liters, 1),
-            "avg_fuel_consumption_per_100km": round(avg_fuel_consumption, 2),
-            "avg_eco_score": round(avg_eco_score, 1),
-            "total_co2_emissions_kg": round(total_co2_kg, 1),
-            "cost_per_km": round(total_fuel_cost / total_distance, 3) if total_distance > 0 else 0,
-            "suspicious_fuel_transactions": len([f for f in fuel_records if f.get("suspicious", False)]),
-            "km_limit_warnings": km_limit_warnings,
-            "vehicles_near_replacement": km_limit_warnings,
-            "total_damages": len(damages_data),
-            "damage_cost": sum(d["estimated_cost"] for d in damages_data)
-        }
-    }
-
-@router.delete("/fleet/{tenant_id}/reset")
-async def reset_fleet_data(
-    tenant_id: str,
-    token_data: dict = Depends(verify_token)
-):
-    """Lösche Mock-Daten für Tenant (um echte Daten zu nutzen)"""
-    
-    if tenant_id in fleet_data_store:
-        del fleet_data_store[tenant_id]
+        returns_today = db.rentals.count_documents({
+            **query,
+            "dropoff_date": {"$gte": today, "$lt": today.replace(hour=23, minute=59)}
+        })
+        
+        # Vehicle types distribution
+        pipeline = [
+            {"$match": query} if query else {"$match": {}},
+            {"$group": {"_id": "$vehicle_type", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
+        ]
+        type_distribution = list(db.vehicles.aggregate(pipeline))
+        
         return {
             "success": True,
-            "message": f"Mock-Daten für Tenant {tenant_id} gelöscht"
+            "stats": {
+                "total_vehicles": total_vehicles,
+                "available": available,
+                "rented": rented,
+                "maintenance": maintenance,
+                "cleaning": cleaning,
+                "utilization_rate": round((rented / total_vehicles * 100) if total_vehicles > 0 else 0, 1),
+                "active_rentals": active_rentals,
+                "pickups_today": pickups_today,
+                "returns_today": returns_today,
+                "vehicle_types": [{"type": t["_id"], "count": t["count"]} for t in type_distribution]
+            }
         }
-    
-    return {
-        "success": False,
-        "message": "Keine Mock-Daten vorhanden"
-    }
+    except Exception as e:
+        logger.error(f"Error getting fleet stats: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/fleet/{tenant_id}/regenerate")
-async def regenerate_fleet_data(
-    tenant_id: str,
+
+# ============== VEHICLES ==============
+
+@router.get("/api/fleet/vehicles")
+async def get_vehicles(
+    tenant_id: Optional[str] = None,
+    status: Optional[str] = None,
+    vehicle_type: Optional[str] = None,
+    location_id: Optional[str] = None,
+    search: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
     token_data: dict = Depends(verify_token)
 ):
-    """Regeneriere Mock-Daten"""
-    
-    fleet_data_store[tenant_id] = generate_mock_fleet_data(tenant_id)
-    
-    return {
-        "success": True,
-        "message": f"Mock-Daten für Tenant {tenant_id} neu generiert",
-        "vehicles_count": len(fleet_data_store[tenant_id]["vehicles"]),
-        "rentals_count": len(fleet_data_store[tenant_id]["rentals"]),
-        "fuel_records_count": len(fleet_data_store[tenant_id]["fuel_records"])
-    }
+    """Get list of vehicles with filters"""
+    try:
+        db = get_fleet_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        if status:
+            query["status"] = status
+        if vehicle_type:
+            query["vehicle_type"] = vehicle_type
+        if location_id:
+            query["$or"] = [
+                {"home_location_id": location_id},
+                {"current_location_id": location_id}
+            ]
+        if search:
+            query["$or"] = [
+                {"license_plate": {"$regex": search, "$options": "i"}},
+                {"model": {"$regex": search, "$options": "i"}},
+                {"brand": {"$regex": search, "$options": "i"}}
+            ]
+        
+        total = db.vehicles.count_documents(query)
+        skip = (page - 1) * limit
+        
+        vehicles = list(db.vehicles.find(query, {"_id": 0}).skip(skip).limit(limit).sort("license_plate", 1))
+        
+        return {
+            "success": True,
+            "vehicles": vehicles,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "pages": (total + limit - 1) // limit
+        }
+    except Exception as e:
+        logger.error(f"Error getting vehicles: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/api/fleet/vehicles/{vehicle_id}")
+async def get_vehicle(vehicle_id: str, token_data: dict = Depends(verify_token)):
+    """Get single vehicle details"""
+    try:
+        db = get_fleet_db()
+        vehicle = db.vehicles.find_one({"vehicle_id": vehicle_id}, {"_id": 0})
+        
+        if not vehicle:
+            raise HTTPException(status_code=404, detail="Fahrzeug nicht gefunden")
+        
+        # Get rental history
+        rentals = list(db.rentals.find(
+            {"vehicle_id": vehicle_id}, 
+            {"_id": 0}
+        ).sort("pickup_date", -1).limit(10))
+        
+        # Get maintenance history
+        maintenance = list(db.maintenance.find(
+            {"vehicle_id": vehicle_id},
+            {"_id": 0}
+        ).sort("date", -1).limit(10))
+        
+        return {
+            "success": True,
+            "vehicle": vehicle,
+            "rental_history": rentals,
+            "maintenance_history": maintenance
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting vehicle {vehicle_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/fleet/vehicles")
+async def create_vehicle(vehicle: VehicleCreate, token_data: dict = Depends(verify_token)):
+    """Create a new vehicle"""
+    try:
+        db = get_fleet_db()
+        
+        # Generate vehicle ID
+        count = db.vehicles.count_documents({"tenant_id": vehicle.tenant_id})
+        vehicle_id = f"VEH-{vehicle.tenant_id[:8]}-{count + 1:04d}"
+        
+        vehicle_doc = {
+            "vehicle_id": vehicle_id,
+            **vehicle.dict(),
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        db.vehicles.insert_one(vehicle_doc)
+        del vehicle_doc["_id"]
+        
+        return {"success": True, "vehicle": vehicle_doc}
+    except Exception as e:
+        logger.error(f"Error creating vehicle: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/api/fleet/vehicles/{vehicle_id}")
+async def update_vehicle(
+    vehicle_id: str, 
+    updates: dict,
+    token_data: dict = Depends(verify_token)
+):
+    """Update vehicle"""
+    try:
+        db = get_fleet_db()
+        
+        updates["updated_at"] = datetime.now(timezone.utc)
+        
+        result = db.vehicles.update_one(
+            {"vehicle_id": vehicle_id},
+            {"$set": updates}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Fahrzeug nicht gefunden")
+        
+        vehicle = db.vehicles.find_one({"vehicle_id": vehicle_id}, {"_id": 0})
+        return {"success": True, "vehicle": vehicle}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error updating vehicle {vehicle_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/api/fleet/vehicles/{vehicle_id}")
+async def delete_vehicle(vehicle_id: str, token_data: dict = Depends(verify_token)):
+    """Delete vehicle"""
+    try:
+        db = get_fleet_db()
+        
+        # Check for active rentals
+        active_rental = db.rentals.find_one({
+            "vehicle_id": vehicle_id,
+            "status": {"$in": ["reserved", "active"]}
+        })
+        
+        if active_rental:
+            raise HTTPException(
+                status_code=400, 
+                detail="Fahrzeug hat aktive Buchungen und kann nicht gelöscht werden"
+            )
+        
+        result = db.vehicles.delete_one({"vehicle_id": vehicle_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Fahrzeug nicht gefunden")
+        
+        return {"success": True, "message": "Fahrzeug gelöscht"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting vehicle {vehicle_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============== RENTALS ==============
+
+@router.get("/api/fleet/rentals")
+async def get_rentals(
+    tenant_id: Optional[str] = None,
+    status: Optional[str] = None,
+    vehicle_id: Optional[str] = None,
+    from_date: Optional[str] = None,
+    to_date: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
+    token_data: dict = Depends(verify_token)
+):
+    """Get list of rentals with filters"""
+    try:
+        db = get_fleet_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        if status:
+            query["status"] = status
+        if vehicle_id:
+            query["vehicle_id"] = vehicle_id
+        if from_date:
+            query["pickup_date"] = {"$gte": datetime.fromisoformat(from_date)}
+        if to_date:
+            if "pickup_date" in query:
+                query["pickup_date"]["$lte"] = datetime.fromisoformat(to_date)
+            else:
+                query["pickup_date"] = {"$lte": datetime.fromisoformat(to_date)}
+        
+        total = db.rentals.count_documents(query)
+        skip = (page - 1) * limit
+        
+        rentals = list(db.rentals.find(query, {"_id": 0}).skip(skip).limit(limit).sort("pickup_date", -1))
+        
+        return {
+            "success": True,
+            "rentals": rentals,
+            "total": total,
+            "page": page,
+            "limit": limit,
+            "pages": (total + limit - 1) // limit
+        }
+    except Exception as e:
+        logger.error(f"Error getting rentals: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/fleet/rentals")
+async def create_rental(rental: RentalCreate, token_data: dict = Depends(verify_token)):
+    """Create a new rental"""
+    try:
+        db = get_fleet_db()
+        
+        # Check vehicle availability
+        vehicle = db.vehicles.find_one({"vehicle_id": rental.vehicle_id})
+        if not vehicle:
+            raise HTTPException(status_code=404, detail="Fahrzeug nicht gefunden")
+        
+        if vehicle.get("status") != "available":
+            raise HTTPException(status_code=400, detail="Fahrzeug ist nicht verfügbar")
+        
+        # Generate rental ID
+        count = db.rentals.count_documents({})
+        rental_id = f"RNT-{count + 1:06d}"
+        
+        rental_doc = {
+            "rental_id": rental_id,
+            **rental.dict(),
+            "created_at": datetime.now(timezone.utc),
+            "updated_at": datetime.now(timezone.utc)
+        }
+        
+        # Update vehicle status
+        db.vehicles.update_one(
+            {"vehicle_id": rental.vehicle_id},
+            {"$set": {"status": "rented", "current_location_id": rental.pickup_location_id}}
+        )
+        
+        db.rentals.insert_one(rental_doc)
+        del rental_doc["_id"]
+        
+        return {"success": True, "rental": rental_doc}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating rental: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/api/fleet/rentals/{rental_id}/complete")
+async def complete_rental(
+    rental_id: str,
+    dropoff_mileage: Optional[int] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Complete a rental"""
+    try:
+        db = get_fleet_db()
+        
+        rental = db.rentals.find_one({"rental_id": rental_id})
+        if not rental:
+            raise HTTPException(status_code=404, detail="Buchung nicht gefunden")
+        
+        # Update rental
+        db.rentals.update_one(
+            {"rental_id": rental_id},
+            {
+                "$set": {
+                    "status": "completed",
+                    "actual_dropoff_date": datetime.now(timezone.utc),
+                    "dropoff_mileage": dropoff_mileage,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        # Update vehicle
+        db.vehicles.update_one(
+            {"vehicle_id": rental["vehicle_id"]},
+            {
+                "$set": {
+                    "status": "cleaning",  # Nach Rückgabe erstmal reinigen
+                    "current_location_id": rental["dropoff_location_id"],
+                    "mileage_km": dropoff_mileage or rental.get("mileage_km", 0)
+                }
+            }
+        )
+        
+        return {"success": True, "message": "Buchung abgeschlossen"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error completing rental {rental_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============== LOCATIONS ==============
+
+@router.get("/api/fleet/locations")
+async def get_fleet_locations(
+    tenant_id: Optional[str] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Get all rental locations with vehicle counts"""
+    try:
+        db = get_fleet_db()
+        tenant_db = get_tenant_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        # Get locations from tenant hierarchy
+        locations = list(tenant_db.tenants.find(
+            {"tenant_level": "location", **query},
+            {"_id": 0, "tenant_id": 1, "display_name": 1, "name": 1, "city": 1, "address": 1}
+        ).limit(100))
+        
+        # Add vehicle counts
+        for loc in locations:
+            loc_id = loc.get("tenant_id")
+            loc["vehicle_count"] = db.vehicles.count_documents({
+                "$or": [
+                    {"home_location_id": loc_id},
+                    {"current_location_id": loc_id}
+                ]
+            })
+            loc["available_count"] = db.vehicles.count_documents({
+                "current_location_id": loc_id,
+                "status": "available"
+            })
+        
+        return {
+            "success": True,
+            "locations": locations,
+            "total": len(locations)
+        }
+    except Exception as e:
+        logger.error(f"Error getting fleet locations: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============== MAINTENANCE ==============
+
+@router.get("/api/fleet/maintenance")
+async def get_maintenance_records(
+    tenant_id: Optional[str] = None,
+    vehicle_id: Optional[str] = None,
+    status: Optional[str] = None,
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
+    token_data: dict = Depends(verify_token)
+):
+    """Get maintenance records"""
+    try:
+        db = get_fleet_db()
+        
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        if vehicle_id:
+            query["vehicle_id"] = vehicle_id
+        if status:
+            query["status"] = status
+        
+        total = db.maintenance.count_documents(query)
+        skip = (page - 1) * limit
+        
+        records = list(db.maintenance.find(query, {"_id": 0}).skip(skip).limit(limit).sort("date", -1))
+        
+        return {
+            "success": True,
+            "maintenance": records,
+            "total": total,
+            "page": page,
+            "limit": limit
+        }
+    except Exception as e:
+        logger.error(f"Error getting maintenance records: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/api/fleet/maintenance")
+async def create_maintenance_record(
+    vehicle_id: str,
+    maintenance_type: str,
+    description: str,
+    cost: Optional[float] = None,
+    token_data: dict = Depends(verify_token)
+):
+    """Create maintenance record"""
+    try:
+        db = get_fleet_db()
+        
+        # Get vehicle
+        vehicle = db.vehicles.find_one({"vehicle_id": vehicle_id})
+        if not vehicle:
+            raise HTTPException(status_code=404, detail="Fahrzeug nicht gefunden")
+        
+        # Create record
+        record = {
+            "maintenance_id": f"MNT-{db.maintenance.count_documents({}) + 1:06d}",
+            "vehicle_id": vehicle_id,
+            "tenant_id": vehicle.get("tenant_id"),
+            "maintenance_type": maintenance_type,
+            "description": description,
+            "cost": cost,
+            "status": "scheduled",
+            "date": datetime.now(timezone.utc),
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        db.maintenance.insert_one(record)
+        del record["_id"]
+        
+        # Update vehicle status
+        db.vehicles.update_one(
+            {"vehicle_id": vehicle_id},
+            {"$set": {"status": "maintenance"}}
+        )
+        
+        return {"success": True, "maintenance": record}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error creating maintenance record: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
