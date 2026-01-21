@@ -154,10 +154,13 @@ const UsersRolesPage = () => {
       });
       if (response.ok) {
         const data = await response.json();
-        setTenants(data);
+        // Handle both array response and object response with tenants key
+        const tenantsArray = Array.isArray(data) ? data : (data.tenants || []);
+        setTenants(tenantsArray);
       }
     } catch (error) {
       console.error('Error loading tenants:', error);
+      setTenants([]); // Ensure tenants is always an array
     }
   };
 
