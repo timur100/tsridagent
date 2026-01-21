@@ -63,8 +63,18 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // Use prop tenantId if available (from AdminPortal), otherwise use URL param (from direct route)
   const tenantId = propTenantId || paramTenantId;
   
+  // Track if we've initialized
+  const [initialized, setInitialized] = useState(false);
+  
   // React to tenant switcher changes - navigate to the new tenant
+  // But only after the component has properly initialized
   useEffect(() => {
+    // Skip navigation logic on initial render - let the page load first
+    if (!initialized) {
+      setInitialized(true);
+      return;
+    }
+    
     if (selectedTenantId && selectedTenantId !== 'all' && selectedTenantId !== tenantId) {
       console.log('[TenantDetailPage] Tenant switched to:', selectedTenantId);
       navigate(`/portal/admin/tenants/${selectedTenantId}`, { 
@@ -78,7 +88,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         replace: true 
       });
     }
-  }, [selectedTenantId, tenantId, navigate]);
+  }, [selectedTenantId, tenantId, navigate, initialized]);
   
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
