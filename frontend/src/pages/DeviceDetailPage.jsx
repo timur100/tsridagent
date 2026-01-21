@@ -229,8 +229,9 @@ const DeviceDetailPage = () => {
   if (loading) {
     return (
       <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-xl">Laden...</div>
+        <div className="flex flex-col items-center justify-center h-screen gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+          <div className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Laden...</div>
         </div>
       </div>
     );
