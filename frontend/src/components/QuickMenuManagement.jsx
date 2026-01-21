@@ -277,7 +277,7 @@ const QuickMenuManagement = ({ theme }) => {
                 : 'bg-white border-gray-300 text-gray-900'
             }`}
           >
-            {tenants.map((tenant) => (
+            {Array.isArray(tenants) && tenants.map((tenant) => (
               <option key={tenant.id} value={tenant.id}>
                 {tenant.name}
               </option>
