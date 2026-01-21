@@ -3,6 +3,7 @@ MongoDB Atlas Monitoring Service
 Überwacht Cluster-Performance, Verbindungen, und Datenbank-Statistiken
 """
 from fastapi import APIRouter, HTTPException, Depends
+from db.connection import get_mongo_client
 from datetime import datetime, timezone, timedelta
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError, OperationFailure

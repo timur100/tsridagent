@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
+from db.connection import get_mongo_client
 from typing import List, Dict, Any
 import os
 from routes.portal_auth import verify_token

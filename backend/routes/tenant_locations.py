@@ -1,5 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
+from db.connection import get_mongo_client
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from db.connection import get_mongo_client
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone

@@ -3,6 +3,7 @@ Umfassendes System-Monitoring für TSRID
 Prüft regelmäßig alle Verbindungen und Funktionalitäten
 """
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from db.connection import get_mongo_client
 from datetime import datetime, timezone
 from typing import Dict, List, Any, Optional
 import os
