@@ -13,6 +13,17 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ BUGFIX: Device-Detail-Seite schwarzer Bildschirm + fehlender Loading-Spinner
+- **Problem 1:** Device-Detail-Seite zeigte schwarzen Bildschirm
+- **Ursache:** `availableTenants.map is not a function` - API gibt Object statt Array
+- **Fix:** `/app/frontend/src/pages/DeviceDetailPage.jsx` - Tenant-API-Response korrekt verarbeitet
+- **Problem 2:** Loading-Spinner fehlte, nur "Laden..." Text
+- **Fix:** Spinner-Animation hinzugefügt
+- **Ergebnis:** Device-Detail-Seite zeigt alle Geräteinformationen korrekt an
+
+#### ✅ BUGFIX: AllLocationsTab Filter-Dropdowns
+- **Fix:** `/app/frontend/src/components/AllLocationsTab.jsx` - Alle filterOptions.*.map() Aufrufe defensiv gemacht
+
 #### ✅ BUGFIX: Location-Detail-Seite schwarzer Bildschirm
 - **Problem:** URL `/portal/admin/tenants/.../locations/...` zeigte Dashboard statt Location-Detail
 - **Ursachen (2):**
