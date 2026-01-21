@@ -88,10 +88,14 @@ const DeviceDetailPage = () => {
   const fetchAvailableTenants = async () => {
     try {
       const result = await apiCall('/api/tenants');
-      const tenantsArray = result?.data || result || [];
+      // Handle different API response structures
+      const tenantsArray = Array.isArray(result?.data) 
+        ? result.data 
+        : (result?.data?.tenants || result?.tenants || []);
       setAvailableTenants(tenantsArray);
     } catch (error) {
       console.error('Error fetching tenants:', error);
+      setAvailableTenants([]); // Ensure it's always an array
     }
   };
 
