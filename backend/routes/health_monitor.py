@@ -58,22 +58,45 @@ async def check_mongodb():
         server_info = client.server_info()
         version = server_info.get('version', 'Unknown')
         
-        # Connection pool stats
+        # Connection pool stats - check for multiple connections
         try:
-            pool_stats = client.admin.command('connPoolStats')
-            total_connections = pool_stats.get('totalAvailable', 0) + pool_stats.get('totalInUse', 0)
-        except:
-            total_connections = "N/A"
+            # Get current connections from server status
+            server_status = client.admin.command('serverStatus')
+            current_connections = server_status.get('connections', {})
+            conn_current = current_connections.get('current', 0)
+            conn_available = current_connections.get('available', 0)
+            conn_total_created = current_connections.get('totalCreated', 0)
+            
+            # Check if we're using too many connections
+            connection_warning = conn_current > 50  # Warn if more than 50 connections
+        except Exception as e:
+            logger.warning(f"Could not get connection stats: {e}")
+            conn_current = "N/A"
+            conn_available = "N/A"
+            conn_total_created = "N/A"
+            connection_warning = False
         
         status = get_status(ping_latency, THRESHOLDS["mongodb_latency"])
+        
+        # Downgrade status if connection warning
+        if connection_warning and status == "green":
+            status = "yellow"
+        
+        message = f"Latenz: {round(ping_latency, 2)}ms"
+        if status != "green":
+            message = f"Erhöhte Latenz: {round(ping_latency, 2)}ms"
+        if connection_warning:
+            message += f" - Viele Verbindungen aktiv ({conn_current})"
         
         return {
             "name": "MongoDB Verbindung",
             "status": status,
             "latency_ms": round(ping_latency, 2),
             "version": version,
-            "connections": total_connections,
-            "message": f"Latenz: {round(ping_latency, 2)}ms" if status == "green" else f"Erhöhte Latenz: {round(ping_latency, 2)}ms",
+            "connections_current": conn_current,
+            "connections_available": conn_available,
+            "connections_total_created": conn_total_created,
+            "message": message,
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
     except Exception as e:
@@ -83,7 +106,7 @@ async def check_mongodb():
             "status": "red",
             "latency_ms": None,
             "version": None,
-            "connections": None,
+            "connections_current": None,
             "message": f"Verbindungsfehler: {str(e)}",
             "timestamp": datetime.now(timezone.utc).isoformat()
         }
