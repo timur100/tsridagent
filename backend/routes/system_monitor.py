@@ -360,14 +360,12 @@ async def get_monitoring_history(
     Gibt die Historie der Monitoring-Ergebnisse zurück.
     """
     try:
-                db = get_mongo_client()[DB_NAME]
+        db = get_mongo_client()[DB_NAME]
         
         history = list(db.monitoring_history.find(
             {},
             {'_id': 0}
         ).sort('timestamp', -1).limit(limit))
-        
-        client.close()
         
         return {
             'success': True,
