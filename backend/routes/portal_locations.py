@@ -4,9 +4,9 @@ from typing import List, Optional
 from datetime import datetime, timezone
 import uuid
 import os
-from pymongo import MongoClient
 
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/portal/locations", tags=["Portal Locations"])
 
@@ -14,12 +14,9 @@ router = APIRouter(prefix="/api/portal/locations", tags=["Portal Locations"])
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 
-
 def get_db():
     """Get MongoDB database connection"""
-    client = MongoClient(MONGO_URL)
-    return client[DB_NAME]
-
+        return get_mongo_client()[DB_NAME]
 
 class Location(BaseModel):
     location_id: Optional[str] = None
@@ -33,7 +30,6 @@ class Location(BaseModel):
     contact_phone: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
-
 
 @router.get("/list")
 async def list_locations(token_data: dict = Depends(verify_token)):
@@ -51,7 +47,6 @@ async def list_locations(token_data: dict = Depends(verify_token)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("")
 async def get_all_locations(
@@ -78,7 +73,6 @@ async def get_all_locations(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/{location_id}")
 async def get_location(location_id: str, token_data: dict = Depends(verify_token)):
     """Get location by ID"""
@@ -101,7 +95,6 @@ async def get_location(location_id: str, token_data: dict = Depends(verify_token
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/create")
 async def create_location(location: Location, token_data: dict = Depends(verify_token)):
@@ -138,7 +131,6 @@ async def create_location(location: Location, token_data: dict = Depends(verify_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.put("/{location_id}")
 async def update_location(location_id: str, location_update: dict, token_data: dict = Depends(verify_token)):
     """Update location information"""
@@ -168,7 +160,6 @@ async def update_location(location_id: str, location_update: dict, token_data: d
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.delete("/{location_id}")
 async def delete_location(location_id: str, token_data: dict = Depends(verify_token)):

@@ -4,16 +4,14 @@ from typing import Optional
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/portal/sla-settings", tags=["sla-settings"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-
+db = get_mongo_client()[DB_NAME]
 
 class SLASettings(BaseModel):
     priority: str  # high, medium, low
@@ -21,12 +19,10 @@ class SLASettings(BaseModel):
     first_response_minutes: int   # Time to first response
     resolution_time_hours: int    # Time to resolve
 
-
 class SLASettingsUpdate(BaseModel):
     acceptance_time_minutes: Optional[int] = None
     first_response_minutes: Optional[int] = None
     resolution_time_hours: Optional[int] = None
-
 
 # Default SLA settings
 DEFAULT_SLA = {
@@ -46,7 +42,6 @@ DEFAULT_SLA = {
         "resolution_time_hours": 48
     }
 }
-
 
 @router.get("")
 async def get_sla_settings(token_data: dict = Depends(verify_token)):
@@ -87,7 +82,6 @@ async def get_sla_settings(token_data: dict = Depends(verify_token)):
     except Exception as e:
         print(f"Error fetching SLA settings: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.put("/{priority}")
 async def update_sla_settings(
@@ -151,7 +145,6 @@ async def update_sla_settings(
     except Exception as e:
         print(f"Error updating SLA settings: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/reset")
 async def reset_sla_settings(token_data: dict = Depends(verify_token)):

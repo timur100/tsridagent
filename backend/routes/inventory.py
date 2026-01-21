@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
 from routes.portal_auth import verify_token
@@ -11,8 +10,7 @@ router = APIRouter(prefix="/api/inventory", tags=["Inventory"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 class InventoryItem(BaseModel):
     name: str
@@ -659,7 +657,6 @@ async def delete_category(
         print(f"Delete category error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.put("/categories/{category_id}/reorder")
 async def reorder_category(
     category_id: str,
@@ -729,8 +726,6 @@ async def reorder_category(
     except Exception as e:
         print(f"Reorder category error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 # ============= WARENEINGANG & NACHBESTELLUNG =============
 
@@ -974,6 +969,7 @@ async def generate_labels(
     except Exception as e:
         print(f"Generate labels error: {str(e)}")
         import traceback
+from db.connection import get_mongo_client
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -1,17 +1,16 @@
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from fastapi.responses import FileResponse
-from pymongo import MongoClient
 import os
 import uuid
 import base64
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/branding", tags=["Branding"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 # Logo directory
 LOGO_DIR = "/app/uploads/logos"

@@ -17,10 +17,9 @@ UPLOAD_DIR = Path("/app/uploads/documents")
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
 # MongoDB connection
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['portal_db']
+db = get_mongo_client()['portal_db']
 
 class DocumentResponse(BaseModel):
     document_id: str

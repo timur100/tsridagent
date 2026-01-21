@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
 from decorators.broadcast_decorator import broadcast_changes
 from services.event_service import EventType
 
@@ -12,13 +11,11 @@ router = APIRouter(prefix="/api/tenant-devices", tags=["tenant-devices"])
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 # Force use of multi_tenant_admin database for tenant devices
 DB_NAME = 'multi_tenant_admin'
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+db = get_mongo_client()[DB_NAME]
 
 # Also connect to portal_db for locations and auth_db for tenants
-portal_db = client['portal_db']
-auth_db = client['auth_db']
-
+portal_db = get_mongo_client()['portal_db']
+auth_db = get_mongo_client()['auth_db']
 
 def enrich_devices_with_location_data(devices, tenant_id):
     """
@@ -61,7 +58,6 @@ def enrich_devices_with_location_data(devices, tenant_id):
         print(f"🔍 Sample device: {first_device.get('device_id')} - street: {first_device.get('street', 'NOT SET')}, zip: {first_device.get('zip', 'NOT SET')}")
     
     return enriched_devices
-
 
 @router.get("/{tenant_id}")
 async def get_tenant_devices(
@@ -138,7 +134,6 @@ async def get_tenant_devices(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/device/{device_id}")
 async def get_device_details(
     device_id: str,
@@ -170,7 +165,6 @@ async def get_device_details(
     except Exception as e:
         print(f"❌ Get device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.put("/device/{device_id}")
 @broadcast_changes(entity_type="device", event_type="updated", data_field="device")
@@ -238,7 +232,6 @@ async def update_device(
         print(f"❌ Update device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/device/{device_id}")
 @broadcast_changes(entity_type="device", event_type="deleted")
 async def delete_device(
@@ -277,7 +270,6 @@ async def delete_device(
     except Exception as e:
         print(f"❌ Delete device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/device/{device_id}/transfer")
 async def transfer_device_to_tenant(
@@ -351,7 +343,6 @@ async def transfer_device_to_tenant(
     except Exception as e:
         print(f"❌ Transfer device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/all/devices")
 async def get_all_devices(
@@ -431,7 +422,6 @@ async def get_all_devices(
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/all/in-preparation")
 async def get_all_in_preparation(
@@ -524,7 +514,6 @@ async def get_all_in_preparation(
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/{tenant_id}/in-preparation")
 async def get_tenant_in_preparation(
     tenant_id: str,
@@ -612,9 +601,9 @@ async def get_tenant_in_preparation(
     except Exception as e:
         print(f"❌ Get tenant in-preparation error: {str(e)}")
         import traceback
+from db.connection import get_mongo_client
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/{tenant_id}/{device_id}")
 async def get_tenant_device(

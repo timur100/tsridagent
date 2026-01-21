@@ -2,16 +2,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone, timedelta
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/scan-stats", tags=["scan-stats"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-
+db = get_mongo_client()[DB_NAME]
 
 @router.get("")
 async def get_scan_stats(
@@ -104,7 +102,6 @@ async def get_scan_stats(
     except Exception as e:
         print(f"Error getting scan stats: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/daily")
 async def get_daily_scan_stats(

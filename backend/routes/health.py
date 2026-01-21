@@ -3,8 +3,8 @@ from datetime import datetime, timezone
 import os
 import time
 import httpx
-from pymongo import MongoClient
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/health", tags=["health"])
 
@@ -25,7 +25,6 @@ MICROSERVICES = [
     {'name': 'Settings Service', 'port': 8108, 'path': '/api/health'},
     {'name': 'Verification Service', 'port': 8109, 'path': '/api/health'},
 ]
-
 
 async def check_service_health(service: dict) -> dict:
     """Check if a microservice is healthy"""
@@ -62,7 +61,6 @@ async def check_service_health(service: dict) -> dict:
             'message': str(e)
         }
 
-
 def check_database_health() -> dict:
     """Check MongoDB connection health"""
     start_time = time.time()
@@ -86,7 +84,6 @@ def check_database_health() -> dict:
             'message': str(e)
         }
 
-
 async def check_server_health(server: dict) -> dict:
     """Check external server health via SSH or ping"""
     # For now, just return the server info with status
@@ -97,7 +94,6 @@ async def check_server_health(server: dict) -> dict:
         'uptime': None,
         'message': 'Health check not implemented for external servers'
     }
-
 
 @router.get("/status")
 async def get_health_status(token_data: dict = Depends(verify_token)):
@@ -124,8 +120,7 @@ async def get_health_status(token_data: dict = Depends(verify_token)):
         # Get configured servers from database
         servers_health = []
         try:
-            client = MongoClient(MONGO_URL)
-            db = client[DB_NAME]
+                        db = get_mongo_client()[DB_NAME]
             servers = list(db.servers.find({}, {'_id': 0}))
             for server in servers:
                 server_health = await check_server_health(server)

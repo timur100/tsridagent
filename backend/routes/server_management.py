@@ -5,7 +5,6 @@ from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import paramiko
 import os
-from pymongo import MongoClient
 from io import StringIO
 
 router = APIRouter(prefix="/api/portal/servers", tags=["server-management"])
@@ -13,9 +12,7 @@ router = APIRouter(prefix="/api/portal/servers", tags=["server-management"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-
+db = get_mongo_client()[DB_NAME]
 
 class ServerConfig(BaseModel):
     name: str
@@ -26,11 +23,9 @@ class ServerConfig(BaseModel):
     ssh_key: Optional[str] = None
     description: Optional[str] = None
 
-
 class CommandRequest(BaseModel):
     server_id: str
     command: str
-
 
 class ServerUpdate(BaseModel):
     name: Optional[str] = None
@@ -40,7 +35,6 @@ class ServerUpdate(BaseModel):
     password: Optional[str] = None
     ssh_key: Optional[str] = None
     description: Optional[str] = None
-
 
 def get_ssh_client(server_config: dict) -> paramiko.SSHClient:
     """Create and return an SSH client connection"""
@@ -72,7 +66,6 @@ def get_ssh_client(server_config: dict) -> paramiko.SSHClient:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"SSH connection failed: {str(e)}")
 
-
 @router.get("")
 async def get_servers(token_data: dict = Depends(verify_token)):
     """Get all configured servers"""
@@ -89,7 +82,6 @@ async def get_servers(token_data: dict = Depends(verify_token)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("")
 async def add_server(config: ServerConfig, token_data: dict = Depends(verify_token)):
@@ -127,7 +119,6 @@ async def add_server(config: ServerConfig, token_data: dict = Depends(verify_tok
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/test-connection")
 async def test_connection(config: ServerConfig, token_data: dict = Depends(verify_token)):
@@ -196,7 +187,6 @@ async def test_connection(config: ServerConfig, token_data: dict = Depends(verif
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/execute")
 async def execute_command(request: CommandRequest, token_data: dict = Depends(verify_token)):
     """Execute a command on a server"""
@@ -235,7 +225,6 @@ async def execute_command(request: CommandRequest, token_data: dict = Depends(ve
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/{server_id}/status")
 async def get_server_status(server_id: str, token_data: dict = Depends(verify_token)):
@@ -302,7 +291,6 @@ async def get_server_status(server_id: str, token_data: dict = Depends(verify_to
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/{server_id}")
 async def delete_server(server_id: str, token_data: dict = Depends(verify_token)):
     """Delete a server configuration"""
@@ -322,7 +310,6 @@ async def delete_server(server_id: str, token_data: dict = Depends(verify_token)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/{server_id}/docker")
 async def get_docker_status(server_id: str, token_data: dict = Depends(verify_token)):
     """Get Docker container status on a server"""
@@ -331,6 +318,7 @@ async def get_docker_status(server_id: str, token_data: dict = Depends(verify_to
             raise HTTPException(status_code=403, detail="Admin access required")
         
         from bson import ObjectId
+from db.connection import get_mongo_client
         server = db.servers.find_one({"_id": ObjectId(server_id)})
         if not server:
             raise HTTPException(status_code=404, detail="Server not found")

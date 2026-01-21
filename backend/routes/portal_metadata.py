@@ -4,16 +4,14 @@ from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/portal/metadata", tags=["portal-metadata"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
-
+db = get_mongo_client()[DB_NAME]
 
 class PortalMetadataUpdate(BaseModel):
     portal: str
@@ -23,10 +21,8 @@ class PortalMetadataUpdate(BaseModel):
     logoUrl: Optional[str] = ''
     primaryColor: Optional[str] = '#c00000'
 
-
 class AllMetadataUpdate(BaseModel):
     metadata: Dict[str, Any]
-
 
 # Default metadata values
 DEFAULT_METADATA = {
@@ -52,7 +48,6 @@ DEFAULT_METADATA = {
         'primaryColor': '#c00000'
     }
 }
-
 
 @router.get("/public")
 async def get_public_portal_metadata():
@@ -90,7 +85,6 @@ async def get_public_portal_metadata():
             }
         }
 
-
 @router.get("")
 async def get_portal_metadata(token_data: dict = Depends(verify_token)):
     """
@@ -125,7 +119,6 @@ async def get_portal_metadata(token_data: dict = Depends(verify_token)):
                 'metadata': DEFAULT_METADATA
             }
         }
-
 
 @router.put("")
 async def update_portal_metadata(
@@ -171,7 +164,6 @@ async def update_portal_metadata(
     except Exception as e:
         print(f"Error updating portal metadata: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.put("/all")
 async def update_all_metadata(

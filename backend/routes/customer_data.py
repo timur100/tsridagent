@@ -2,18 +2,17 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 from routes.portal_auth import verify_token
 from europcar_data import EUROPCAR_DATA
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/portal/customer-data", tags=["Customer Data"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-multi_tenant_db = mongo_client['multi_tenant_admin']  # For devices
-portal_db = mongo_client['portal_db']  # For locations/stations
+multi_tenant_db = get_mongo_client()['multi_tenant_admin']  # For devices
+portal_db = get_mongo_client()['portal_db']  # For locations/stations
 
 @router.post("/import/{customer_email}")
 async def import_customer_data(customer_email: str, token_data: dict = Depends(verify_token)):
@@ -313,9 +312,6 @@ async def get_europcar_stations(
         print(f"Europcar stations error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
-
 @router.post("/europcar-stations")
 async def create_europcar_station(
     station_data: dict,
@@ -593,7 +589,6 @@ async def update_europcar_station(
     except Exception as e:
         print(f"Update station error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 async def get_customer_data_stats(customer_email: str, token_data: dict = Depends(verify_token)):
     """

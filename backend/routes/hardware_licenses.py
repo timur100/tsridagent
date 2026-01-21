@@ -3,21 +3,19 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone, timedelta
-from pymongo import MongoClient
 import os
 import uuid
 import csv
 import io
 import re
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 # Get database connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-client = MongoClient(mongo_url)
-db = client['test_database']
+db = get_mongo_client()['test_database']
 
 router = APIRouter(prefix="/api/hardware-licenses", tags=["hardware_licenses"])
-
 
 class HardwareLicenseImport(BaseModel):
     serial_number: str
@@ -25,11 +23,9 @@ class HardwareLicenseImport(BaseModel):
     batch_number: int
     activation_date: str
 
-
 class HardwareLicenseRenewal(BaseModel):
     serial_number: str
     months: int = 12
-
 
 def detect_scanner_type(serial_number: str) -> str:
     """
@@ -46,7 +42,6 @@ def detect_scanner_type(serial_number: str) -> str:
         return "Desko"
     else:
         return "TSRID"
-
 
 @router.post("/import")
 async def import_hardware_licenses(
@@ -185,7 +180,6 @@ async def import_hardware_licenses(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/overview")
 async def get_hardware_licenses_overview(
     token_data: dict = Depends(verify_token)
@@ -259,7 +253,6 @@ async def get_hardware_licenses_overview(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/validation")
 async def validate_hardware_licenses(
     token_data: dict = Depends(verify_token)
@@ -317,7 +310,6 @@ async def validate_hardware_licenses(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/list")
 async def list_hardware_licenses(
     scanner_type: Optional[str] = None,
@@ -353,7 +345,6 @@ async def list_hardware_licenses(
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/renew")
 async def renew_hardware_license(
@@ -422,7 +413,6 @@ async def renew_hardware_license(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/export")
 async def export_hardware_licenses(
@@ -514,7 +504,6 @@ async def export_hardware_licenses(
         raise HTTPException(status_code=500, detail=str(e))
 
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.delete("/{serial_number}")
 async def delete_hardware_license(

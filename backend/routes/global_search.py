@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Dict, Any
-from pymongo import MongoClient
 import os
 from routes.portal_auth import verify_token
 import re
@@ -9,12 +8,11 @@ router = APIRouter(prefix="/api/search", tags=["Global Search"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-admin_db = mongo_client['multi_tenant_admin']
-portal_db = mongo_client['portal_db']
-main_db = mongo_client['main_db']
-tsrid_db = mongo_client['tsrid_db']
-verification_db = mongo_client['verification_db']
+admin_db = get_mongo_client()['multi_tenant_admin']
+portal_db = get_mongo_client()['portal_db']
+main_db = get_mongo_client()['main_db']
+tsrid_db = get_mongo_client()['tsrid_db']
+verification_db = get_mongo_client()['verification_db']
 
 @router.get("/global")
 async def global_search(
@@ -315,5 +313,6 @@ async def global_search(
     except Exception as e:
         print(f"[Global Search] Error: {str(e)}")
         import traceback
+from db.connection import get_mongo_client
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

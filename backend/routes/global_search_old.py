@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends
 from typing import List, Dict, Any
-from pymongo import MongoClient
 import os
 from routes.portal_auth import verify_token
 
@@ -8,10 +7,9 @@ router = APIRouter(prefix="/api/search", tags=["Global Search"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
 # Use the correct databases
-admin_db = mongo_client['multi_tenant_admin']
-portal_db = mongo_client['portal_db']
+admin_db = get_mongo_client()['multi_tenant_admin']
+portal_db = get_mongo_client()['portal_db']
 
 @router.get("/global")
 async def global_search(
@@ -112,6 +110,7 @@ async def global_search(
             order_date = order.get('order_date', '')
             try:
                 from datetime import datetime
+from db.connection import get_mongo_client
                 dt = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
                 formatted_date = dt.strftime('%d.%m.%Y')
             except:
@@ -317,7 +316,7 @@ async def global_search(
                 ]
             }
             
-            portal_db = mongo_client['portal_db']
+            portal_db = get_mongo_client()['portal_db']
             tenants = list(portal_db.tenants.find(tenant_query).limit(10))
             for tenant in tenants:
                 if '_id' in tenant:
@@ -350,7 +349,7 @@ async def global_search(
                 ]
             }
             
-            portal_db = mongo_client['portal_db']
+            portal_db = get_mongo_client()['portal_db']
             tenant_locations = list(portal_db.tenant_locations.find(tenant_location_query).limit(10))
             for location in tenant_locations:
                 if '_id' in location:

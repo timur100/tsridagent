@@ -5,20 +5,17 @@ from datetime import datetime, timezone, timedelta
 import uuid
 from .portal_auth import verify_token
 import os
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/licenses", tags=["licenses"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
-
+db = get_mongo_client()['test_database']
 
 class LicenseAssignment(BaseModel):
     license_key: str
     device_id: str
-
 
 class LicenseCreate(BaseModel):
     customer_email: str
@@ -28,12 +25,9 @@ class LicenseCreate(BaseModel):
     duration_months: int = 12
     reminder_days: int = 30
 
-
 class LicenseExtend(BaseModel):
     license_key: str
     duration_months: int = 12
-
-
 
 # Available features
 AVAILABLE_FEATURES = [
@@ -49,7 +43,6 @@ AVAILABLE_FEATURES = [
     {"key": "backup_restore", "name": "Backup & Restore", "description": "Backup und Wiederherstellung von Einstellungen"}
 ]
 
-
 @router.get("/features")
 async def get_available_features(
     token_data: dict = Depends(verify_token)
@@ -63,8 +56,6 @@ async def get_available_features(
             "features": AVAILABLE_FEATURES
         }
     }
-
-
 
 @router.get("/overview")
 async def get_license_overview(
@@ -181,7 +172,6 @@ async def get_license_overview(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/assign")
 async def assign_license(
     assignment: LicenseAssignment,
@@ -233,7 +223,6 @@ async def assign_license(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/unassign/{license_key}")
 async def unassign_license(
     license_key: str,
@@ -277,7 +266,6 @@ async def unassign_license(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/packages")
 async def get_license_packages(
     token_data: dict = Depends(verify_token)
@@ -303,15 +291,12 @@ async def get_license_packages(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
 class PackageCreate(BaseModel):
     name: str
     description: Optional[str] = ""
     features: List[str]
     duration_months: int = 12
     price: float = 0.0
-
 
 @router.post("/packages")
 async def create_license_package(
@@ -362,7 +347,6 @@ async def create_license_package(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/packages/{package_id}")
 async def delete_license_package(
     package_id: str,
@@ -402,8 +386,6 @@ async def delete_license_package(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
 
 @router.get("/customer/{customer_email}")
 async def get_customer_licenses(
@@ -464,7 +446,6 @@ async def get_customer_licenses(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/extend")
 async def extend_license(
     extension: LicenseExtend,
@@ -519,7 +500,6 @@ async def extend_license(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/expiring-soon")
 async def get_expiring_licenses(
@@ -593,7 +573,6 @@ async def get_expiring_licenses(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/create")
 async def create_license(
     license_data: LicenseCreate,
@@ -658,7 +637,6 @@ async def create_license(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/validation")
 async def validate_assignments(

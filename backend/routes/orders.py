@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
 from routes.portal_auth import verify_token
@@ -11,8 +10,7 @@ router = APIRouter(prefix="/api/orders", tags=["Orders"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 def generate_order_number() -> str:
     """
@@ -470,7 +468,6 @@ async def get_order_statistics(token_data: dict = Depends(verify_token)):
         print(f"Order statistics error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 # ==================== Component Set Orders with Reservation ====================
 
 class ComponentSetOrderItem(BaseModel):
@@ -589,6 +586,7 @@ async def create_order_with_reservation(
                 
                 # Generate Set-ID with location code
                 from routes.components import generate_set_id
+from db.connection import get_mongo_client
                 set_id = generate_set_id(order.location_code)
                 
                 order_items.append({

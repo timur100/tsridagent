@@ -1,19 +1,18 @@
 from fastapi import APIRouter, HTTPException, Depends
 from motor.motor_asyncio import AsyncIOMotorClient
-from pymongo import MongoClient
 import os
 from datetime import datetime
 import uuid
 from typing import List, Optional
 from models.customer import Customer, CustomerCreate, CustomerUpdate
 from middleware.tenant_context import TenantContext
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/customers", tags=["customers"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-client = MongoClient(mongo_url)
-db = client['test_database']
+db = get_mongo_client()['test_database']
 
 def require_super_admin():
     """Check if current user is super admin"""

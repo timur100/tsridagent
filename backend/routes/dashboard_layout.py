@@ -5,15 +5,14 @@ from datetime import datetime
 from routes.portal_auth import verify_token
 import os
 import json
-from pymongo import MongoClient
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/dashboard", tags=["dashboard"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'verification_db')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+db = get_mongo_client()[DB_NAME]
 
 class LayoutItem(BaseModel):
     i: str  # Unique identifier for the grid item

@@ -4,7 +4,6 @@ from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
 from bson import ObjectId
 import base64
 import pytesseract
@@ -19,8 +18,7 @@ router = APIRouter(prefix="/api/parking", tags=["parking"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'verification_db')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+db = get_mongo_client()[DB_NAME]
 
 # Pydantic Models
 class ParkingEntry(BaseModel):
@@ -57,7 +55,6 @@ def calculate_penalty(duration_minutes: int, max_free_minutes: int, penalty_per_
     
     overstay_minutes = duration_minutes - max_free_minutes
     overstay_hours = overstay_minutes / 60.0
-
 
 def preprocess_image_for_ocr(image_data: bytes) -> np.ndarray:
     """
@@ -130,6 +127,7 @@ def extract_license_plate_from_image(image_data: bytes) -> dict:
     
     # Round up to next full hour
     import math
+from db.connection import get_mongo_client
     overstay_hours_rounded = math.ceil(overstay_hours)
     
     return overstay_hours_rounded * penalty_per_hour
@@ -557,7 +555,6 @@ async def remove_whitelist_entry(
         "message": "Whitelist-Eintrag entfernt"
     }
 
-
 @router.post("/recognize-plate")
 async def recognize_license_plate(
     file: UploadFile = File(...),
@@ -599,7 +596,6 @@ async def recognize_license_plate(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
-
 
 @router.post("/entry-with-ocr")
 async def parking_entry_with_ocr(
@@ -656,7 +652,6 @@ async def parking_entry_with_ocr(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
 
 @router.post("/exit-with-ocr")
 async def parking_exit_with_ocr(
@@ -719,7 +714,6 @@ async def parking_exit_with_ocr(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
-
 
 @router.get("/recognition-history")
 async def get_recognition_history(

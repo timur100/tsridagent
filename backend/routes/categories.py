@@ -2,17 +2,16 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/categories", tags=["Categories"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 class CategoryCreate(BaseModel):
     id: str  # e.g., "airport", "mainstation"

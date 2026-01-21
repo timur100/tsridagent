@@ -5,17 +5,16 @@ from typing import Optional
 import jwt
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
-from pymongo import MongoClient
 import os
 import uuid
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/portal/auth", tags=["Portal Auth"])
 
 # MongoDB connection - Use auth_db from auth service
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-auth_db = mongo_client['auth_db']  # Use auth_db for users
-portal_db = mongo_client['portal_db']  # Keep for portal-specific data
+auth_db = get_mongo_client()['auth_db']  # Use auth_db for users
+portal_db = get_mongo_client()['portal_db']  # Keep for portal-specific data
 
 # JWT Configuration
 SECRET_KEY = os.environ.get('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
@@ -307,7 +306,6 @@ async def impersonate_customer(request: ImpersonateRequest, token_data: dict = D
     except Exception as e:
         print(f"Impersonation error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # Registration management endpoints
 @router.get("/registrations")

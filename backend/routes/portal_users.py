@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import uuid
 import os
 
@@ -12,8 +11,7 @@ router = APIRouter(prefix="/api/portal/users", tags=["Portal Users"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['portal_db']
+db = get_mongo_client()['portal_db']
 
 class User(BaseModel):
     email: EmailStr
@@ -220,6 +218,7 @@ async def delete_user(email: str, token_data: dict = Depends(verify_token)):
         try:
             from websocket_manager import manager
             import asyncio
+from db.connection import get_mongo_client
             
             message = {
                 "type": "user_deleted",

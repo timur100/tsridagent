@@ -5,7 +5,6 @@ from typing import Optional, List
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
 import qrcode
 import io
 from PIL import Image, ImageDraw, ImageFont
@@ -16,8 +15,7 @@ router = APIRouter(prefix="/api/assets", tags=["Assets"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'verification_db')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+db = get_mongo_client()[DB_NAME]
 
 # Pydantic Models
 class AssetCategory(BaseModel):
@@ -311,6 +309,7 @@ async def create_rule(
     """Create a new asset rule"""
     try:
         import uuid
+from db.connection import get_mongo_client
         
         rule_data = {
             "id": str(uuid.uuid4()),
@@ -597,7 +596,6 @@ async def delete_asset(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
 
 # ===== QR CODE GENERATION =====
 @router.get("/{tenant_id}/assets/{asset_id}/qr-code")

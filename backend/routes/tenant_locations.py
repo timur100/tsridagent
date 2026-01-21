@@ -11,10 +11,8 @@ router = APIRouter(prefix="/api/tenant-locations", tags=["Tenant Locations"])
 security = HTTPBearer()
 
 # MongoDB connection
-from pymongo import MongoClient
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['portal_db']
+db = get_mongo_client()['portal_db']
 
 class TenantLocationCreate(BaseModel):
     location_code: str  # Main Code (e.g., BERN03)
@@ -135,7 +133,7 @@ async def get_location_details(
         location_code = location.get('location_code')
         
         # Get devices for this location
-        devices_db = mongo_client['multi_tenant_admin']
+        devices_db = get_mongo_client()['multi_tenant_admin']
         devices = list(devices_db.europcar_devices.find({
             "tenant_id": tenant_id,
             "locationcode": location_code
@@ -468,7 +466,7 @@ async def get_tenant_locations(
         cursor = db.tenant_locations.find(query).sort("location_code", 1)
         
         # Get devices for this tenant (or all) to calculate online status
-        devices_db = mongo_client['multi_tenant_admin']
+        devices_db = get_mongo_client()['multi_tenant_admin']
         device_query = {} if tenant_id == "all" else {"tenant_id": tenant_id}
         devices = list(devices_db.europcar_devices.find(device_query))
         
@@ -629,6 +627,7 @@ async def delete_tenant_location(
         try:
             from websocket_manager import manager
             import asyncio
+from db.connection import get_mongo_client
             
             message = {
                 "type": "location_deleted",

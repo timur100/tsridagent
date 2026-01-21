@@ -4,7 +4,6 @@ from typing import Optional, Dict, Any
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
 from cryptography.fernet import Fernet
 import base64
 import hashlib
@@ -15,8 +14,7 @@ router = APIRouter(prefix="/api/portal/api-keys", tags=["api-keys"])
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'test_database')
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+db = get_mongo_client()[DB_NAME]
 
 # Encryption setup
 # Generate a key from a secret (in production, use environment variable)
@@ -25,39 +23,32 @@ SECRET_KEY = os.environ.get('API_KEY_SECRET', 'default-secret-key-change-in-prod
 key = base64.urlsafe_b64encode(hashlib.sha256(SECRET_KEY.encode()).digest())
 cipher = Fernet(key)
 
-
 class APIKeyCreate(BaseModel):
     api_name: str
     api_key: str
     description: Optional[str] = None
 
-
 class APIKeyUpdate(BaseModel):
     api_key: str
     description: Optional[str] = None
-
 
 class APIKeyTest(BaseModel):
     api_name: str
     api_key: str
 
-
 def encrypt_key(key_value: str) -> str:
     """Encrypt an API key"""
     return cipher.encrypt(key_value.encode()).decode()
 
-
 def decrypt_key(encrypted_key: str) -> str:
     """Decrypt an API key"""
     return cipher.decrypt(encrypted_key.encode()).decode()
-
 
 def mask_key(key_value: str) -> str:
     """Mask an API key for display"""
     if len(key_value) <= 8:
         return '•' * len(key_value)
     return key_value[:4] + '•' * (len(key_value) - 8) + key_value[-4:]
-
 
 @router.get("")
 async def get_api_keys(token_data: dict = Depends(verify_token)):
@@ -119,7 +110,6 @@ async def get_api_keys(token_data: dict = Depends(verify_token)):
         print(f"Error fetching API keys: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/{api_name}/reveal")
 async def reveal_api_key(
     api_name: str,
@@ -164,7 +154,6 @@ async def reveal_api_key(
     except Exception as e:
         print(f"Error revealing API key: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("")
 async def create_api_key(
@@ -218,7 +207,6 @@ async def create_api_key(
     except Exception as e:
         print(f"Error creating API key: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.put("/{api_name}")
 async def update_api_key(
@@ -277,7 +265,6 @@ async def update_api_key(
         print(f"Error updating API key: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/{api_name}")
 async def delete_api_key(
     api_name: str,
@@ -310,7 +297,6 @@ async def delete_api_key(
     except Exception as e:
         print(f"Error deleting API key: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/test")
 async def test_api_key(
@@ -385,7 +371,7 @@ async def test_api_key(
         elif api_name == "mongodb_atlas":
             # Test MongoDB Atlas Connection
             try:
-                from pymongo import MongoClient
+                from db.connection import get_mongo_client
                 client = MongoClient(api_key, serverSelectionTimeoutMS=5000)
                 client.admin.command('ping')
                 db_names = client.list_database_names()
@@ -423,7 +409,6 @@ async def test_api_key(
     except Exception as e:
         print(f"Error testing API key: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/retrieve/{api_name}")
 async def retrieve_api_key(

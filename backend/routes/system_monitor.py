@@ -9,11 +9,11 @@ import os
 import time
 import asyncio
 import httpx
-from pymongo import MongoClient
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from routes.portal_auth import verify_token
 import logging
+from db.connection import get_mongo_client
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,6 @@ monitoring_results: Dict[str, Any] = {
     'checks': {}
 }
 
-
 class MonitoringResult(BaseModel):
     component: str
     status: str  # healthy, degraded, unhealthy
@@ -40,13 +39,11 @@ class MonitoringResult(BaseModel):
     timestamp: str
     details: Optional[Dict[str, Any]] = None
 
-
 class SystemHealthReport(BaseModel):
     overall_status: str
     timestamp: str
     checks: List[MonitoringResult]
     summary: Dict[str, int]
-
 
 async def check_mongodb_atlas() -> MonitoringResult:
     """Prüft die MongoDB Atlas Verbindung und führt Testoperationen durch"""
@@ -58,7 +55,7 @@ async def check_mongodb_atlas() -> MonitoringResult:
         await client.admin.command('ping')
         
         # Read test - check collections
-        db = client[DB_NAME]
+        db = get_mongo_client()[DB_NAME]
         collections = await db.list_collection_names()
         
         # Count documents in key collections
@@ -105,7 +102,6 @@ async def check_mongodb_atlas() -> MonitoringResult:
             timestamp=datetime.now(timezone.utc).isoformat(),
             details={'error': str(e)}
         )
-
 
 async def check_api_endpoint(name: str, path: str, method: str = 'GET', 
                               auth_token: str = None, expected_status: int = 200) -> MonitoringResult:
@@ -166,7 +162,6 @@ async def check_api_endpoint(name: str, path: str, method: str = 'GET',
             details={'error': str(e), 'path': path}
         )
 
-
 async def check_authentication() -> MonitoringResult:
     """Prüft das Authentifizierungssystem"""
     start_time = time.time()
@@ -212,7 +207,6 @@ async def check_authentication() -> MonitoringResult:
             details={'error': str(e)}
         )
 
-
 async def get_auth_token() -> Optional[str]:
     """Holt einen Auth-Token für weitere Tests"""
     try:
@@ -227,7 +221,6 @@ async def get_auth_token() -> Optional[str]:
     except:
         pass
     return None
-
 
 async def run_comprehensive_check() -> SystemHealthReport:
     """Führt alle Monitoring-Checks durch"""
@@ -277,7 +270,6 @@ async def run_comprehensive_check() -> SystemHealthReport:
         summary=status_counts
     )
 
-
 @router.get("/comprehensive")
 async def get_comprehensive_health(token_data: dict = Depends(verify_token)):
     """
@@ -294,8 +286,7 @@ async def get_comprehensive_health(token_data: dict = Depends(verify_token)):
         
         # Save to database for history
         try:
-            client = MongoClient(MONGO_URL)
-            db = client[DB_NAME]
+                        db = get_mongo_client()[DB_NAME]
             db.monitoring_history.insert_one({
                 'timestamp': datetime.now(timezone.utc),
                 'overall_status': report.overall_status,
@@ -326,7 +317,6 @@ async def get_comprehensive_health(token_data: dict = Depends(verify_token)):
                 'summary': {'error': 1}
             }
         }
-
 
 @router.get("/quick")
 async def get_quick_health():
@@ -363,7 +353,6 @@ async def get_quick_health():
         'summary': status_counts
     }
 
-
 @router.get("/history")
 async def get_monitoring_history(
     limit: int = 100,
@@ -373,8 +362,7 @@ async def get_monitoring_history(
     Gibt die Historie der Monitoring-Ergebnisse zurück.
     """
     try:
-        client = MongoClient(MONGO_URL)
-        db = client[DB_NAME]
+                db = get_mongo_client()[DB_NAME]
         
         history = list(db.monitoring_history.find(
             {},
@@ -397,7 +385,6 @@ async def get_monitoring_history(
             'data': {'history': [], 'count': 0}
         }
 
-
 @router.post("/test-write")
 async def test_database_write(token_data: dict = Depends(verify_token)):
     """
@@ -405,7 +392,7 @@ async def test_database_write(token_data: dict = Depends(verify_token)):
     """
     try:
         client = AsyncIOMotorClient(MONGO_URL)
-        db = client[DB_NAME]
+        db = get_mongo_client()[DB_NAME]
         
         test_doc = {
             'test_id': f'write_test_{int(time.time())}',

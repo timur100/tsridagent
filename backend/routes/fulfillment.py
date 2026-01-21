@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 # Optional token verification for development
 def optional_verify_token(token_data: dict = Depends(verify_token)):
@@ -19,8 +19,7 @@ router = APIRouter(prefix="/api/fulfillment", tags=["Fulfillment"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 # ==================== Models ====================
 

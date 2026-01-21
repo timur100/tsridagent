@@ -2,17 +2,14 @@ from fastapi import APIRouter, HTTPException, Depends
 from datetime import datetime, timezone
 from routes.portal_auth import verify_token
 import os
-from pymongo import MongoClient
 from decorators.broadcast_decorator import broadcast_changes
 
 router = APIRouter(prefix="/api/portal/europcar-devices", tags=["europcar-devices"])
 
 # MongoDB connection
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-client = MongoClient(MONGO_URL)
-db = client['multi_tenant_admin']  # Use multi_tenant_admin database for europcar_devices
-portal_db = client['portal_db']  # For tenant_locations
-
+db = get_mongo_client()['multi_tenant_admin']  # Use multi_tenant_admin database for europcar_devices
+portal_db = get_mongo_client()['portal_db']  # For tenant_locations
 
 def enrich_devices_with_location_data(devices, tenant_id):
     """
@@ -45,7 +42,6 @@ def enrich_devices_with_location_data(devices, tenant_id):
         enriched_devices.append(device)
     
     return enriched_devices
-
 
 @router.get("")
 async def get_devices(
@@ -173,7 +169,6 @@ async def get_devices(
         print(f"Devices error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.get("/{device_id}")
 async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
     """
@@ -210,7 +205,6 @@ async def get_device(device_id: str, token_data: dict = Depends(verify_token)):
     except Exception as e:
         print(f"Get device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.put("/{device_id}")
 @broadcast_changes(entity_type="device", event_type="updated", data_field="device")
@@ -257,6 +251,7 @@ async def update_device(
             print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
             from websocket_manager import manager
             import asyncio
+from db.connection import get_mongo_client
             delete_message = {
                 "type": "device_deleted",
                 "device_id": device_id
@@ -288,7 +283,6 @@ async def update_device(
     except Exception as e:
         print(f"Update device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("")
 @broadcast_changes(entity_type="device", event_type="created", data_field="device")
@@ -351,7 +345,6 @@ async def create_device(
         print(f"Create device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.delete("/{device_id}")
 async def delete_device(
     device_id: str,
@@ -383,7 +376,6 @@ async def delete_device(
     except Exception as e:
         print(f"Delete device error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.patch("/{device_id}/toggle-active")
 async def toggle_device_active(
@@ -426,7 +418,6 @@ async def toggle_device_active(
     except Exception as e:
         print(f"Toggle device active error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/{device_id}/location-info")
 async def get_device_location_info(

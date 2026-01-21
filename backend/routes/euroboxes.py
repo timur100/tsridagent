@@ -2,16 +2,15 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/euroboxes", tags=["Euroboxes"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 # Models
 class Eurobox(BaseModel):

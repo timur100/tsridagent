@@ -3,20 +3,19 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import subprocess
 import uuid
 import shutil
 import json
 from routes.portal_auth import verify_token
+from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/backup", tags=["Backup"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 # Backup directory
 BACKUP_DIR = "/app/backups"
@@ -261,7 +260,6 @@ async def start_scheduled_backups(token_data: dict = Depends(verify_token)):
         "success": True,
         "message": "Automatische Backups werden in einer zukünftigen Version unterstützt"
     }
-
 
 # ==================== Selective Backup & Data Management ====================
 

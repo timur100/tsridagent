@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
-from pymongo import MongoClient
 import os
 import uuid
 from routes.portal_auth import verify_token
@@ -11,8 +10,7 @@ router = APIRouter(prefix="/api/tickets", tags=["Tickets"])
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-mongo_client = MongoClient(mongo_url)
-db = mongo_client['test_database']
+db = get_mongo_client()['test_database']
 
 class TicketCreate(BaseModel):
     title: str
@@ -248,6 +246,7 @@ async def get_ticket_stats(token_data: dict = Depends(verify_token)):
         
         # Average resolution time (for closed tickets in last 30 days)
         from datetime import timedelta
+from db.connection import get_mongo_client
         thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
         
         closed_tickets = list(db.tickets.find({
@@ -496,7 +495,6 @@ async def delete_ticket(
         print(f"Delete ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/{ticket_id}/accept")
 async def accept_ticket(
     ticket_id: str,
@@ -557,7 +555,6 @@ async def accept_ticket(
     except Exception as e:
         print(f"Accept ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/{ticket_id}/start")
 async def start_work_on_ticket(
@@ -622,7 +619,6 @@ async def start_work_on_ticket(
         print(f"Start work error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/{ticket_id}/resolve")
 async def resolve_ticket(
     ticket_id: str,
@@ -678,7 +674,6 @@ async def resolve_ticket(
     except Exception as e:
         print(f"Resolve ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.post("/{ticket_id}/close")
 async def close_ticket(
@@ -746,7 +741,6 @@ async def close_ticket(
         print(f"Close ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/{ticket_id}/reopen")
 async def reopen_ticket(
     ticket_id: str,
@@ -808,7 +802,6 @@ async def reopen_ticket(
     except Exception as e:
         print(f"Reopen ticket error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @router.get("/{ticket_id}/location-details")
 async def get_ticket_location_details(
