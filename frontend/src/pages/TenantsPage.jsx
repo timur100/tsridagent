@@ -180,7 +180,7 @@ const TenantsPage = ({ onSelectTenant }) => {
     return (
       <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || styles.inactive}`}>
         {icons[status]}
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {(status || 'inactive').charAt(0).toUpperCase() + (status || 'inactive').slice(1)}
       </span>
     );
   };
@@ -194,7 +194,7 @@ const TenantsPage = ({ onSelectTenant }) => {
 
     return (
       <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[plan] || styles.basic}`}>
-        {plan.charAt(0).toUpperCase() + plan.slice(1)}
+        {(plan || 'basic').charAt(0).toUpperCase() + (plan || 'basic').slice(1)}
       </span>
     );
   };
