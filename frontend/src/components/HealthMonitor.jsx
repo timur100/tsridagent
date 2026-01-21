@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useTheme } from '../context/ThemeContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { 
   Activity, 
