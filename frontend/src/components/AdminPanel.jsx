@@ -437,7 +437,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                           log.type === 'error' ? 'destructive' :
                           'outline'
                         }>
-                          {log.type.toUpperCase()}
+                          {(log.type || 'info').toUpperCase()}
                         </Badge>
                       </div>
                     </div>
