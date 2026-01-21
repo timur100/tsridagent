@@ -356,7 +356,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}`);
       if (response.ok) {
-        const data = await response.json();
+        const responseData = await response.json();
+        // API returns {success: true, tenant: {...}} - extract tenant object
+        const data = responseData.tenant || responseData;
+        
         // Ensure all required fields have default values to prevent crashes
         const safeData = {
           ...data,
