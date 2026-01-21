@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://single-truth.preview.emergentagent.com
+│   └── Lädt: https://datahub-central-4.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

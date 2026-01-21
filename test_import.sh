@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://single-truth.preview.emergentagent.com/api/dhl"
+API_URL="https://datahub-central-4.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""
