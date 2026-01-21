@@ -367,6 +367,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           plan: data.plan || 'basic',
           display_name: data.display_name || data.name || 'Unknown',
           name: data.name || data.tenant_id || 'Unknown',
+          domain: data.domain || 'example.com',
           user_count: data.user_count || 0,
           device_count: data.device_count || 0,
           location_count: data.location_count || 0,
@@ -380,6 +381,30 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             primary_color: data.branding?.primary_color || '#c00000',
             logo_url: data.branding?.logo_url || null,
             ...(data.branding || {})
+          },
+          contact: {
+            admin_email: data.contact?.admin_email || 'admin@example.com',
+            support_email: data.contact?.support_email || 'support@example.com',
+            phone: data.contact?.phone || '',
+            fax: data.contact?.fax || '',
+            ...(data.contact || {})
+          },
+          contact_person: {
+            primary: {
+              name: data.contact_person?.primary?.name || '',
+              position: data.contact_person?.primary?.position || '',
+              email: data.contact_person?.primary?.email || '',
+              phone: data.contact_person?.primary?.phone || '',
+              ...(data.contact_person?.primary || {})
+            },
+            billing: {
+              name: data.contact_person?.billing?.name || '',
+              position: data.contact_person?.billing?.position || '',
+              email: data.contact_person?.billing?.email || '',
+              phone: data.contact_person?.billing?.phone || '',
+              ...(data.contact_person?.billing || {})
+            },
+            ...(data.contact_person || {})
           },
           settings: data.settings || {},
           metadata: data.metadata || {}
