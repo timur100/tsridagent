@@ -92,7 +92,7 @@ const PortalRoutes = () => {
   return (
     <Routes>
       <Route
-        path="/login"
+        path="login"
         element={
           // Always allow access to login page (for logout/switching accounts)
           isAuthenticated ? (
@@ -105,7 +105,7 @@ const PortalRoutes = () => {
       
       {/* Customer Portal with nested routes */}
       <Route
-        path="/customer"
+        path="customer/*"
         element={
           <ProtectedRoute>
             <CustomerPortal />
