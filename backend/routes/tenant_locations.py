@@ -627,7 +627,6 @@ async def delete_tenant_location(
         try:
             from websocket_manager import manager
             import asyncio
-from db.connection import get_mongo_client
             
             message = {
                 "type": "location_deleted",

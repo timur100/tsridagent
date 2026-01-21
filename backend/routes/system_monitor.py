@@ -13,7 +13,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
 from routes.portal_auth import verify_token
 import logging
-from db.connection import get_mongo_client
 
 logger = logging.getLogger(__name__)
 

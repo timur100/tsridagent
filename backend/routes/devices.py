@@ -251,7 +251,6 @@ async def update_device(
             print(f"📡 [Device ID Changed] Broadcasting delete for old ID {device_id}")
             from websocket_manager import manager
             import asyncio
-from db.connection import get_mongo_client
             delete_message = {
                 "type": "device_deleted",
                 "device_id": device_id

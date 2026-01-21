@@ -586,7 +586,6 @@ async def create_order_with_reservation(
                 
                 # Generate Set-ID with location code
                 from routes.components import generate_set_id
-from db.connection import get_mongo_client
                 set_id = generate_set_id(order.location_code)
                 
                 order_items.append({

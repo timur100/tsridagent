@@ -4,7 +4,6 @@ import os
 import time
 import httpx
 from routes.portal_auth import verify_token
-from db.connection import get_mongo_client
 
 router = APIRouter(prefix="/api/health", tags=["health"])
 

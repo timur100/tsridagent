@@ -313,6 +313,5 @@ async def global_search(
     except Exception as e:
         print(f"[Global Search] Error: {str(e)}")
         import traceback
-from db.connection import get_mongo_client
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

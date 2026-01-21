@@ -110,7 +110,6 @@ async def global_search(
             order_date = order.get('order_date', '')
             try:
                 from datetime import datetime
-from db.connection import get_mongo_client
                 dt = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
                 formatted_date = dt.strftime('%d.%m.%Y')
             except:

@@ -127,7 +127,6 @@ def extract_license_plate_from_image(image_data: bytes) -> dict:
     
     # Round up to next full hour
     import math
-from db.connection import get_mongo_client
     overstay_hours_rounded = math.ceil(overstay_hours)
     
     return overstay_hours_rounded * penalty_per_hour

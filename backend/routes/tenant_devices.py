@@ -601,7 +601,6 @@ async def get_tenant_in_preparation(
     except Exception as e:
         print(f"❌ Get tenant in-preparation error: {str(e)}")
         import traceback
-from db.connection import get_mongo_client
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 

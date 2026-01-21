@@ -218,7 +218,6 @@ async def delete_user(email: str, token_data: dict = Depends(verify_token)):
         try:
             from websocket_manager import manager
             import asyncio
-from db.connection import get_mongo_client
             
             message = {
                 "type": "user_deleted",

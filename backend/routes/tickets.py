@@ -246,7 +246,6 @@ async def get_ticket_stats(token_data: dict = Depends(verify_token)):
         
         # Average resolution time (for closed tickets in last 30 days)
         from datetime import timedelta
-from db.connection import get_mongo_client
         thirty_days_ago = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
         
         closed_tickets = list(db.tickets.find({

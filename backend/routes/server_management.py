@@ -318,7 +318,6 @@ async def get_docker_status(server_id: str, token_data: dict = Depends(verify_to
             raise HTTPException(status_code=403, detail="Admin access required")
         
         from bson import ObjectId
-from db.connection import get_mongo_client
         server = db.servers.find_one({"_id": ObjectId(server_id)})
         if not server:
             raise HTTPException(status_code=404, detail="Server not found")

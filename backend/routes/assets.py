@@ -309,7 +309,6 @@ async def create_rule(
     """Create a new asset rule"""
     try:
         import uuid
-from db.connection import get_mongo_client
         
         rule_data = {
             "id": str(uuid.uuid4()),
