@@ -16,7 +16,7 @@ DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 
 def get_db():
     """Get MongoDB database connection"""
-        return get_mongo_client()[DB_NAME]
+    return get_mongo_client()[DB_NAME]
 
 class Location(BaseModel):
     location_id: Optional[str] = None
