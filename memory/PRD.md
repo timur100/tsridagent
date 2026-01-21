@@ -54,6 +54,14 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
   - Latenz: 0.33ms (Grün)
   - Alle Backend-Services funktionsfähig
 
+#### ✅ BUGFIX: Tenant Dashboard Statistiken (21. Januar 2025)
+- **Problem:** Tenant-Detail-Seite (z.B. Europcar) zeigte 0 für Benutzer und Geräte
+- **Ursache:** Backend-Endpunkt `/api/tenants/{tenant_id}/dashboard-stats` lieferte nicht alle benötigten Felder
+- **Fixes:**
+  1. Backend erweitert um: `total_devices`, `total_users`, `online_devices`, `offline_devices`, `in_preparation`, Scan-Statistiken
+  2. Frontend `TenantDetailPage.jsx` korrigiert um `dashboardStats` zu verwenden
+- **Ergebnis:** Tenant Dashboard zeigt jetzt korrekte Zahlen (216 Geräte, 152 online, etc.)
+
 #### ✅ BUGFIX: TenantDetailPage Navigation-Loop
 - **Problem:** TenantDetailPage navigierte sofort zurück zum Admin-Portal nach Login
 - **Ursache:** useEffect reagierte auf initial gesetzten `selectedTenantId='all'` und navigierte zurück
