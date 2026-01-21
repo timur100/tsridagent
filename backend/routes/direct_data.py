@@ -522,9 +522,13 @@ async def get_tenant_siblings(
 async def get_tenant_dashboard_stats(tenant_id: str):
     """
     Get dashboard statistics for a specific tenant
+    Returns all stats needed for the tenant dashboard tiles
     """
     try:
-        db = get_db()
+        client = get_mongo_client()
+        db = client[DB_NAME]
+        multi_tenant_db = client["multi_tenant_admin"]
+        portal_db = client["portal_db"]
         
         # Verify tenant exists
         tenant = db.tenants.find_one(
@@ -535,18 +539,126 @@ async def get_tenant_dashboard_stats(tenant_id: str):
         if not tenant:
             raise HTTPException(status_code=404, detail="Tenant not found")
         
-        # Count related data
-        locations = db.key_locations.count_documents({"tenant_id": tenant_id})
-        vehicles = db.europcar_vehicles.count_documents({"tenant_id": tenant_id}) if "europcar_vehicles" in db.list_collection_names() else 0
-        contracts = db.europcar_contracts.count_documents({"tenant_id": tenant_id}) if "europcar_contracts" in db.list_collection_names() else 0
+        # Get tenant name for filtering
+        tenant_name = tenant.get("name", tenant.get("display_name", ""))
+        
+        # Count devices for this tenant (from europcar_devices)
+        # Filter by tenant_id or customer field matching tenant name
+        device_filter = {
+            "$or": [
+                {"tenant_id": tenant_id},
+                {"customer": {"$regex": tenant_name, "$options": "i"}} if tenant_name else {"tenant_id": tenant_id}
+            ]
+        }
+        
+        total_devices = multi_tenant_db.europcar_devices.count_documents(device_filter)
+        
+        # Count online/offline devices
+        online_filter = {
+            **device_filter,
+            "$or": [
+                {"status": "online"},
+                {"teamviewer_online": True},
+                {"online": True}
+            ]
+        }
+        online_devices = multi_tenant_db.europcar_devices.count_documents({
+            "$and": [
+                device_filter,
+                {"$or": [
+                    {"status": "online"},
+                    {"teamviewer_online": True},
+                    {"online": True}
+                ]}
+            ]
+        })
+        offline_devices = total_devices - online_devices
+        
+        # Count devices in preparation (status = 'preparation' or 'Vorbereitung')
+        in_preparation = multi_tenant_db.europcar_devices.count_documents({
+            **device_filter,
+            "$or": [
+                {"status": {"$in": ["preparation", "Vorbereitung", "in_preparation"]}},
+                {"in_preparation": True}
+            ]
+        })
+        
+        # Count locations for this tenant
+        location_filter = {
+            "$or": [
+                {"tenant_id": tenant_id},
+                {"customer": {"$regex": tenant_name, "$options": "i"}} if tenant_name else {"tenant_id": tenant_id}
+            ]
+        }
+        total_locations = multi_tenant_db.europcar_stations.count_documents(location_filter)
+        if total_locations == 0:
+            # Try key_locations as fallback
+            total_locations = db.key_locations.count_documents({"tenant_id": tenant_id})
+        
+        # Count users for this tenant
+        total_users = portal_db.portal_users.count_documents({
+            "$or": [
+                {"tenant_id": tenant_id},
+                {"tenants": tenant_id}
+            ]
+        })
+        
+        # Get scan statistics (from scan_results or id_scans collection)
+        scan_filter = {"tenant_id": tenant_id}
+        total_scans = 0
+        correct_scans = 0
+        unknown_scans = 0
+        failed_scans = 0
+        
+        try:
+            if "scan_results" in db.list_collection_names():
+                total_scans = db.scan_results.count_documents(scan_filter)
+                correct_scans = db.scan_results.count_documents({**scan_filter, "status": "success"})
+                unknown_scans = db.scan_results.count_documents({**scan_filter, "status": "unknown"})
+                failed_scans = db.scan_results.count_documents({**scan_filter, "status": "failed"})
+            elif "id_scans" in db.list_collection_names():
+                total_scans = db.id_scans.count_documents(scan_filter)
+                correct_scans = db.id_scans.count_documents({**scan_filter, "result": "valid"})
+                failed_scans = db.id_scans.count_documents({**scan_filter, "result": "invalid"})
+        except Exception as e:
+            logger.warning(f"Error fetching scan stats: {e}")
+        
+        # Get open orders and tickets
+        open_orders = 0
+        open_tickets = 0
+        try:
+            if "orders" in db.list_collection_names():
+                open_orders = db.orders.count_documents({
+                    "tenant_id": tenant_id,
+                    "status": {"$in": ["pending", "processing", "open"]}
+                })
+            if "tickets" in db.list_collection_names():
+                open_tickets = db.tickets.count_documents({
+                    "tenant_id": tenant_id,
+                    "status": {"$in": ["open", "pending", "in_progress"]}
+                })
+        except Exception as e:
+            logger.warning(f"Error fetching orders/tickets: {e}")
         
         return {
             "success": True,
+            "total_users": total_users,
+            "total_devices": total_devices,
+            "total_locations": total_locations,
+            "online_devices": online_devices,
+            "offline_devices": offline_devices,
+            "in_preparation": in_preparation,
+            "total_scans": total_scans,
+            "correct_scans": correct_scans,
+            "unknown_scans": unknown_scans,
+            "failed_scans": failed_scans,
+            "open_orders": open_orders,
+            "open_tickets": open_tickets,
             "data": {
                 "tenant": tenant,
-                "locations_count": locations,
-                "vehicles_count": vehicles,
-                "contracts_count": contracts
+                "locations_count": total_locations,
+                "devices_count": total_devices,
+                "users_count": total_users
             }
         }
     except HTTPException:
