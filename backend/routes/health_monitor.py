@@ -283,15 +283,30 @@ async def check_devices():
         db = client["multi_tenant_admin"]
         
         total = db.europcar_devices.count_documents({})
-        online = db.europcar_devices.count_documents({"online": True})
+        
+        # Check for online devices - multiple possible fields/values
+        online = db.europcar_devices.count_documents({
+            "$or": [
+                {"online": True},
+                {"status": "online"},
+                {"teamviewer_online": True}
+            ]
+        })
         offline = total - online
         
         # Check for devices without location
         no_location = db.europcar_devices.count_documents({
-            "$or": [
-                {"location_code": None},
-                {"location_code": ""},
-                {"location_code": {"$exists": False}}
+            "$and": [
+                {"$or": [
+                    {"location_code": None},
+                    {"location_code": ""},
+                    {"location_code": {"$exists": False}}
+                ]},
+                {"$or": [
+                    {"locationcode": None},
+                    {"locationcode": ""},
+                    {"locationcode": {"$exists": False}}
+                ]}
             ]
         })
         
