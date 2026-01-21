@@ -311,12 +311,9 @@ async def impersonate_customer(request: ImpersonateRequest, token_data: dict = D
 
 # Registration management endpoints
 @router.get("/registrations")
-async def get_registrations(credentials: HTTPAuthorizationCredentials = Depends(security)):
+async def get_registrations(token_data: dict = Depends(verify_token)):
     """Get all pending registrations (Admin only)"""
     try:
-        token = credentials.credentials
-        token_data = verify_token(token)
-        
         # Get all registrations
         registrations = list(portal_db.registrations.find({}, {"_id": 0}))
         
