@@ -63,15 +63,27 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   // Use prop tenantId if available (from AdminPortal), otherwise use URL param (from direct route)
   const tenantId = propTenantId || paramTenantId;
   
-  // Track if we've initialized
-  const [initialized, setInitialized] = useState(false);
+  // Track if user has actively changed the tenant (not initial load)
+  const [userChangedTenant, setUserChangedTenant] = useState(false);
+  const previousTenantId = React.useRef(selectedTenantId);
   
   // React to tenant switcher changes - navigate to the new tenant
-  // But only after the component has properly initialized
+  // But only after the user has actively changed the tenant selection
   useEffect(() => {
-    // Skip navigation logic on initial render - let the page load first
-    if (!initialized) {
-      setInitialized(true);
+    // Only react if the value actually changed from a previous value
+    if (previousTenantId.current === selectedTenantId) {
+      return;
+    }
+    
+    // Mark that the user has changed the tenant
+    if (previousTenantId.current !== undefined) {
+      setUserChangedTenant(true);
+    }
+    
+    previousTenantId.current = selectedTenantId;
+    
+    // Only navigate if user has actively changed the selection (not initial load)
+    if (!userChangedTenant && !previousTenantId.current) {
       return;
     }
     
@@ -80,15 +92,15 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       navigate(`/portal/admin/tenants/${selectedTenantId}`, { 
         replace: true 
       });
-    } else if (selectedTenantId === 'all') {
-      // Navigate back to admin portal when "Alle Kunden" is selected
+    } else if (selectedTenantId === 'all' && userChangedTenant) {
+      // Navigate back to admin portal when "Alle Kunden" is selected - but only if user changed it
       console.log('[TenantDetailPage] Switched to "Alle Kunden", navigating back');
       navigate('/portal/admin', { 
         state: { activeTab: 'tenants' },
         replace: true 
       });
     }
-  }, [selectedTenantId, tenantId, navigate, initialized]);
+  }, [selectedTenantId, tenantId, navigate, userChangedTenant]);
   
   const [tenant, setTenant] = useState(null);
   const [loading, setLoading] = useState(true);
