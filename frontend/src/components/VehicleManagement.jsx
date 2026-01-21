@@ -110,11 +110,15 @@ const VehicleManagement = ({ initialVehicleId }) => {
     try {
       const result = await apiCall('/api/tenants/');
       if (result.success) {
-        // Tenants API returns array directly, not wrapped in { success, data }
-        setTenants(result.data || []);
+        // Handle different API response structures
+        const tenantsList = Array.isArray(result.data) 
+          ? result.data 
+          : (result.data?.tenants || []);
+        setTenants(tenantsList);
       }
     } catch (error) {
       console.error('Error loading tenants:', error);
+      setTenants([]); // Ensure tenants is always an array
     }
   };
 
@@ -393,7 +397,7 @@ const VehicleManagement = ({ initialVehicleId }) => {
               }`}
             >
               <option value="">Alle Tenants</option>
-              {tenants.map((tenant) => (
+              {Array.isArray(tenants) && tenants.map((tenant) => (
                 <option key={tenant.tenant_id} value={tenant.tenant_id}>
                   {tenant.name}
                 </option>
@@ -622,7 +626,7 @@ const VehicleManagement = ({ initialVehicleId }) => {
                     }`}
                   >
                     <option value="">Tenant auswählen</option>
-                    {tenants.map((tenant) => (
+                    {Array.isArray(tenants) && tenants.map((tenant) => (
                       <option key={tenant.tenant_id} value={tenant.tenant_id}>
                         {tenant.name}
                       </option>
