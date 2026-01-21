@@ -402,7 +402,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
           >
             <option value="">Alle Kunden</option>
-            {filterOptions.tenants.map(tenant => (
+            {Array.isArray(filterOptions?.tenants) && filterOptions.tenants.map(tenant => (
               <option key={tenant} value={tenant}>{tenant}</option>
             ))}
           </select>
