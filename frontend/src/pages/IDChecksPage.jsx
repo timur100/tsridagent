@@ -394,7 +394,7 @@ const IDChecksPage = () => {
                   className="rounded"
                 />
                 <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  {column.charAt(0).toUpperCase() + column.slice(1).replace('_', ' ')}
+                  {(column || '').charAt(0).toUpperCase() + (column || '').slice(1).replace('_', ' ')}
                 </span>
               </label>
             ))}
