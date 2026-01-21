@@ -36,7 +36,23 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 - **Integration:** Settings > Infrastruktur > Health
 
 **Erkannte Probleme:**
-- ~400 aktive MongoDB-Verbindungen - Connection Pool wird nicht optimal wiederverwendet
+- ~~400 aktive MongoDB-Verbindungen - Connection Pool wird nicht optimal wiederverwendet~~ **BEHOBEN (21. Jan 2025)**
+
+#### ✅ CRITICAL FIX: MongoDB Connection Pool Optimierung (21. Januar 2025)
+- **Problem:** Health Monitor zeigte ~400 aktive MongoDB-Verbindungen
+- **Ursache:** Automatisches Refactoring-Script hatte Syntax-Fehler in 15+ Dateien verursacht:
+  - Import-Zeilen wurden an falschen Stellen eingefügt (mitten im Code)
+  - Indentation-Fehler in mehreren Dateien
+  - Globale `db = get_mongo_client()[...]` Aufrufe wurden bei Import ausgeführt
+- **Fixes:**
+  1. Syntax-Fehler in `portal_locations.py`, `health.py`, `system_monitor.py` korrigiert
+  2. Falsch platzierte Import-Zeilen in 15 Dateien entfernt
+  3. Korrekte Imports am Anfang der Dateien hinzugefügt
+  4. `api_keys.py` auf `get_db()` Pattern umgestellt
+- **Ergebnis:** 
+  - **MongoDB Verbindungen: von ~400 auf 15 reduziert** ✅
+  - Latenz: 0.33ms (Grün)
+  - Alle Backend-Services funktionsfähig
 
 #### ✅ BUGFIX: TenantDetailPage Navigation-Loop
 - **Problem:** TenantDetailPage navigierte sofort zurück zum Admin-Portal nach Login
