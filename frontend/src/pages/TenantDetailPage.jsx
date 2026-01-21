@@ -1065,7 +1065,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       Benutzer
                     </p>
                     <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {tenant.user_count}
+                      {dashboardStats.total_users || tenant.user_count || 0}
                     </p>
                     <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                       von {tenant.limits.max_users}
@@ -1086,7 +1086,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       Geräte
                     </p>
                     <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      {tenant.device_count}
+                      {dashboardStats.total_devices || tenant.device_count || 0}
                     </p>
                     <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
                       von {tenant.limits.max_devices}
