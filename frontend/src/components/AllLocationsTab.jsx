@@ -419,7 +419,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
           <option value="">Alle Kontinente</option>
-          {filterOptions.continents.map(continent => (
+          {Array.isArray(filterOptions?.continents) && filterOptions.continents.map(continent => (
             <option key={continent} value={continent}>{continent}</option>
           ))}
         </select>
@@ -435,7 +435,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
           <option value="">Alle Länder</option>
-          {filterOptions.countries.map(country => (
+          {Array.isArray(filterOptions?.countries) && filterOptions.countries.map(country => (
             <option key={country} value={country}>{country}</option>
           ))}
         </select>
@@ -451,7 +451,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
           <option value="">Alle Bundesländer</option>
-          {filterOptions.states.map(state => (
+          {Array.isArray(filterOptions?.states) && filterOptions.states.map(state => (
             <option key={state} value={state}>{getStateName(state)}</option>
           ))}
         </select>
@@ -467,7 +467,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
           <option value="">Alle Städte</option>
-          {filterOptions.cities.map(city => (
+          {Array.isArray(filterOptions?.cities) && filterOptions.cities.map(city => (
             <option key={city} value={city}>{city}</option>
           ))}
         </select>
@@ -483,7 +483,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
           <option value="">Besondere Orte</option>
-          {filterOptions.mainTypes.map(type => (
+          {Array.isArray(filterOptions?.mainTypes) && filterOptions.mainTypes.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
