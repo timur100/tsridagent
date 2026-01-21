@@ -13,6 +13,16 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ BUGFIX: Location-Detail-Seite schwarzer Bildschirm
+- **Problem:** URL `/portal/admin/tenants/.../locations/...` zeigte Dashboard statt Location-Detail
+- **Ursachen (2):**
+  1. Nach Login wurde ursprüngliche URL nicht wiederhergestellt
+  2. React Router Pfade in `PortalApp.jsx` waren absolute statt relative Pfade
+- **Fix 1:** `/app/frontend/src/components/PortalLogin.jsx` - Login speichert und verwendet `location.state.from` für Redirect
+- **Fix 2:** `/app/frontend/src/PortalApp.jsx` - Routen von `/admin` zu `admin/*` etc. geändert
+- **Fix 3:** `/app/frontend/src/pages/LocationDetailPage.jsx` - Tenant-API-Response korrekt verarbeitet
+- **Ergebnis:** Location-Detail-Seite zeigt jetzt korrekt Standort-Info, Öffnungszeiten, Statistiken, Karte
+
 #### ✅ BUGFIX: Schwarzer Bildschirm - Alle Komponenten mit Tenant-Dropdown
 - **Problem:** Mehrere Seiten (Assets, Vehicles, KeyAutomat, QuickMenu, Settings) zeigten schwarzen Bildschirm
 - **Ursache:** `tenants.map()` wurde ohne defensive Prüfung aufgerufen während `/api/tenants` ein Objekt `{tenants: [...]}` statt Array zurückgibt
