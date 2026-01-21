@@ -145,7 +145,7 @@ const PortalRoutes = () => {
       </Route>
       
       <Route
-        path="/catalog"
+        path="catalog"
         element={
           <ProtectedRoute>
             <CatalogPortal />
