@@ -13,6 +13,26 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ FEATURE: System Health Monitor mit Ampelsystem
+- **Neues Backend:** `/app/backend/routes/health_monitor.py`
+  - `/api/health/full` - Vollständiger Health-Check aller Komponenten
+  - `/api/health/check/mongodb` - MongoDB Verbindung & Latenz
+  - `/api/health/check/databases` - Alle DB-Collections prüfen
+  - `/api/health/check/api-endpoints` - API-Antwortzeiten
+  - `/api/health/check/tenants` - Tenant-Hierarchie Integrität
+  - `/api/health/check/devices` - Geräte-Status (Online/Offline)
+  - `/api/health/check/users` - Benutzer-Daten
+  - `/api/health/check/hardware-sets` - Hardware-Sets Verfügbarkeit
+  - `/api/health/check/environment` - Umgebungsvariablen
+- **Neues Frontend:** `/app/frontend/src/components/HealthMonitor.jsx`
+  - Ampelsystem: 🟢 Grün = OK, 🟡 Gelb = Warnung, 🔴 Rot = Kritisch
+  - Gesamtstatus-Karte mit Zusammenfassung
+  - Klickbare Detail-Kacheln für jeden Check
+  - Auto-Refresh Funktion (30 Sekunden)
+  - Datenbank-Collections Übersicht
+  - API-Endpunkte Antwortzeiten
+- **Integration:** Settings > Infrastruktur > Health
+
 #### ✅ BUGFIX: TenantDetailPage Navigation-Loop
 - **Problem:** TenantDetailPage navigierte sofort zurück zum Admin-Portal nach Login
 - **Ursache:** useEffect reagierte auf initial gesetzten `selectedTenantId='all'` und navigierte zurück
