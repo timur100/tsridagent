@@ -1261,7 +1261,7 @@ const LocationDetailPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {devices.map((device, index) => (
+                  {Array.isArray(devices) && devices.map((device, index) => (
                     <tr
                       key={device.device_id || index}
                       className={`border-t ${
