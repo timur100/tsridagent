@@ -84,46 +84,44 @@ const HealthCheckCard = ({ check, expanded, onToggle }) => {
   
   return (
     <div 
-      className={`rounded-xl border-2 ${statusConfig.border} ${statusConfig.bgLight} p-4 transition-all duration-200 hover:shadow-lg`}
+      className={`rounded-xl border-2 ${statusConfig.border} ${statusConfig.bgSolid} p-4 transition-all duration-200 hover:shadow-lg cursor-pointer`}
+      onClick={onToggle}
     >
-      <div 
-        className="flex items-center justify-between cursor-pointer"
-        onClick={onToggle}
-      >
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={`p-2 rounded-lg ${statusConfig.bg} bg-opacity-20`}>
-            <StatusIcon className={`w-5 h-5 ${statusConfig.text}`} />
+          <div className={`p-2 rounded-lg ${statusConfig.bg}`}>
+            <StatusIcon className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h3 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+            <h3 className={`font-semibold ${statusConfig.textDark}`}>
               {check.name}
             </h3>
-            <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            <p className={`text-sm ${statusConfig.text}`}>
               {check.message}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className={`text-xs font-medium px-2 py-1 rounded-full ${statusConfig.bg} text-white`}>
+          <span className={`text-xs font-bold px-3 py-1 rounded-full ${statusConfig.badge}`}>
             {STATUS_LABELS[check.status]}
           </span>
           {expanded ? (
-            <ChevronDown className={`w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+            <ChevronDown className={`w-5 h-5 ${statusConfig.text}`} />
           ) : (
-            <ChevronRight className={`w-5 h-5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} />
+            <ChevronRight className={`w-5 h-5 ${statusConfig.text}`} />
           )}
         </div>
       </div>
       
       {expanded && check.details && (
-        <div className={`mt-4 pt-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+        <div className={`mt-4 pt-4 border-t ${statusConfig.border}`}>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {Object.entries(check.details).map(([key, value]) => (
               <div key={key}>
-                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
+                <p className={`text-xs ${statusConfig.text}`}>
                   {key}
                 </p>
-                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <p className={`text-sm font-medium ${statusConfig.textDark}`}>
                   {value?.toString() || '-'}
                 </p>
               </div>
