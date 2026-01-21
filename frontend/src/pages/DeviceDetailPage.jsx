@@ -763,7 +763,7 @@ const DeviceDetailPage = () => {
                 }`}
               >
                 <option value="">Bitte wählen...</option>
-                {availableTenants.map(tenant => (
+                {Array.isArray(availableTenants) && availableTenants.map(tenant => (
                   <option key={tenant.tenant_id} value={tenant.tenant_id}>
                     {tenant.name || tenant.display_name}
                   </option>
