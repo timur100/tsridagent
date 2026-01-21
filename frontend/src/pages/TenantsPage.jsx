@@ -151,7 +151,9 @@ const TenantsPage = ({ onSelectTenant }) => {
       const response = await fetch(`${BACKEND_URL}/api/tenants/search?query=${encodeURIComponent(searchQuery)}`);
       if (response.ok) {
         const data = await response.json();
-        setTenants(data);
+        // API returns { success, tenants, total } - extract the array
+        const tenantsList = Array.isArray(data) ? data : (data.tenants || data.data || []);
+        setTenants(tenantsList);
       }
     } catch (error) {
       console.error('Error searching tenants:', error);
