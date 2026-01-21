@@ -83,7 +83,10 @@ const AssetSettings = () => {
     try {
       const result = await apiCall('/api/tenants');
       if (result.success) {
-        const tenantsList = result.data?.data || result.data || [];
+        // Handle different API response structures
+        const tenantsList = Array.isArray(result.data) 
+          ? result.data 
+          : (result.data?.tenants || result.data?.data || []);
         setTenants(tenantsList);
         if (tenantsList.length > 0 && !selectedTenantId) {
           setSelectedTenantId(tenantsList[0].tenant_id);
@@ -92,6 +95,7 @@ const AssetSettings = () => {
     } catch (error) {
       console.error('Error loading tenants:', error);
       toast.error('Fehler beim Laden der Tenants');
+      setTenants([]); // Ensure tenants is always an array
     } finally {
       setLoading(false);
     }
