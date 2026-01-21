@@ -583,16 +583,23 @@ async def get_tenant_dashboard_stats(tenant_id: str):
             ]
         })
         
-        # Count locations for this tenant
-        location_filter = {
-            "$or": [
-                {"tenant_id": tenant_id},
-                {"customer": {"$regex": tenant_name, "$options": "i"}} if tenant_name else {"tenant_id": tenant_id}
-            ]
-        }
-        total_locations = multi_tenant_db.europcar_stations.count_documents(location_filter)
+        # Count locations for this tenant from tenants collection
+        # Locations are stored as tenant entries with tenant_level="location" 
+        # and their tenant_id starts with the parent organization's tenant_id
+        total_locations = db.tenants.count_documents({
+            "tenant_level": "location",
+            "tenant_id": {"$regex": f"^{tenant_id}"}
+        })
+        
+        # If no locations found via tenant_id prefix, try europcar_stations or key_locations
         if total_locations == 0:
-            # Try key_locations as fallback
+            total_locations = multi_tenant_db.europcar_stations.count_documents({
+                "$or": [
+                    {"tenant_id": tenant_id},
+                    {"customer": {"$regex": tenant_name, "$options": "i"}} if tenant_name else {"tenant_id": tenant_id}
+                ]
+            })
+        if total_locations == 0:
             total_locations = db.key_locations.count_documents({"tenant_id": tenant_id})
         
         # Count users for this tenant
