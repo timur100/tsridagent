@@ -570,7 +570,7 @@ const UsersRolesPage = () => {
               } border focus:outline-none focus:border-[#c00000]`}
             >
               <option value="all">Alle Tenants</option>
-              {tenants.map(tenant => (
+              {Array.isArray(tenants) && tenants.map(tenant => (
                 <option key={tenant.tenant_id} value={tenant.tenant_id}>
                   {tenant.display_name}
                 </option>
