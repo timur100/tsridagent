@@ -3174,7 +3174,7 @@ const AdminPortalContent = () => {
 
                 {settingsTab === 'health' && (
                   <div>
-                    <HealthDashboard />
+                    <HealthMonitor />
                   </div>
                 )}
 
