@@ -120,11 +120,15 @@ const LocationDetailPage = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const tenantsArray = data?.data || data || [];
+        // Handle different API response structures
+        const tenantsArray = Array.isArray(data) 
+          ? data 
+          : (data?.tenants || data?.data || []);
         setAvailableTenants(tenantsArray);
       }
     } catch (error) {
       console.error('[LocationDetail] Error fetching tenants:', error);
+      setAvailableTenants([]); // Ensure it's always an array
     }
   };
 
