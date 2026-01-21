@@ -13,6 +13,17 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ BUGFIX: TenantDetailPage Navigation-Loop
+- **Problem:** TenantDetailPage navigierte sofort zurück zum Admin-Portal nach Login
+- **Ursache:** useEffect reagierte auf initial gesetzten `selectedTenantId='all'` und navigierte zurück
+- **Fix:** `/app/frontend/src/pages/TenantDetailPage.jsx` - useEffect trackt jetzt, ob User aktiv Tenant gewechselt hat
+- **Ergebnis:** Tenant-Detail-Seiten sind jetzt direkt per URL erreichbar
+
+#### ✅ VERIFIZIERT: Hardware-Sets Performance
+- Hardware-Sets lädt jetzt vollständig (218 Sets, 393 Geräte)
+- Ladezeit ~30s im Preview-Environment (USA↔Frankfurt Latenz)
+- Erwartete Ladezeit auf Produktions-Server: <5s
+
 #### ✅ BUGFIX: Device-Detail-Seite schwarzer Bildschirm + fehlender Loading-Spinner
 - **Problem 1:** Device-Detail-Seite zeigte schwarzen Bildschirm
 - **Ursache:** `availableTenants.map is not a function` - API gibt Object statt Array
