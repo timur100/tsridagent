@@ -13,6 +13,15 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ BUGFIX: Hierarchie-Sidebar in Tenants-Seite leer
+- **Problem:** Sidebar zeigte "Keine Hierarchie verfügbar" obwohl 646 Einträge in DB
+- **Ursache:** Backend `/api/tenants-hierarchy/list` gab falsche Feldnamen zurück (`id`, `level`, `parent_id`)
+- **Fix:** `/app/backend/routes/direct_data.py` korrigiert um die vom Frontend erwarteten Felder zu liefern:
+  - `id` → `tenant_id`
+  - `level` → `tenant_level`  
+  - `parent_id` → `parent_tenant_id`
+- **Ergebnis:** Hierarchie zeigt jetzt 2 Organisationen (Europcar: 206, Puma: 1) mit vollständiger Hierarchie
+
 #### ✅ BUGFIX: Schwarzer Bildschirm - Users & Roles Seite
 - **Problem 1:** Backend-Endpunkt `/api/portal/auth/registrations` gab 500/401 Fehler zurück
   - **Ursache:** `verify_token(token)` wurde mit String statt HTTPAuthorizationCredentials aufgerufen
