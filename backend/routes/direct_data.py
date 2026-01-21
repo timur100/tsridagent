@@ -87,10 +87,11 @@ async def get_tenants_trailing_slash(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=500),
     skip: int = Query(0, ge=0),
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    include_all: bool = Query(False)
 ):
     """Alias with trailing slash"""
-    return await get_tenants(page, limit, skip, search)
+    return await get_tenants(page, limit, skip, search, include_all)
 
 
 # IMPORTANT: Specific routes must come BEFORE /{tenant_id} to avoid being caught
