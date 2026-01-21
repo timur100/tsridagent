@@ -53,11 +53,16 @@ const KeyAutomatHierarchical = ({ theme }) => {
       setLoading(true);
       const response = await apiCall('/api/tenants/', { method: 'GET' });
       if (response.success) {
-        setTenants(response.data || []);
+        // Handle different API response structures
+        const tenantsList = Array.isArray(response.data) 
+          ? response.data 
+          : (response.data?.tenants || []);
+        setTenants(tenantsList);
       }
     } catch (error) {
       console.error('Error loading tenants:', error);
       toast.error('Fehler beim Laden der Tenants');
+      setTenants([]); // Ensure tenants is always an array
     } finally {
       setLoading(false);
     }
