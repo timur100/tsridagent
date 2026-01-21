@@ -774,7 +774,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
 
     return (
       <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${styles[status] || styles.inactive}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
+        {(status || 'inactive').charAt(0).toUpperCase() + (status || 'inactive').slice(1)}
       </span>
     );
   };
