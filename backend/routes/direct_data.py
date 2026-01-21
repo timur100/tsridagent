@@ -1,28 +1,29 @@
 """
 Direct MongoDB API routes for Tenants and Locations
 These routes read directly from MongoDB Atlas without relying on microservices
+OPTIMIZED: Using connection pool for better performance
 """
 from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
 from datetime import datetime, timezone
 import os
-from pymongo import MongoClient
 from routes.portal_auth import verify_token
 import logging
+
+# Use connection pool
+from db.connection import get_db as get_pooled_db, get_mongo_client
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["Direct Data Access"])
 
 # MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 
 
 def get_db():
-    """Get MongoDB database connection"""
-    client = MongoClient(MONGO_URL)
-    return client[DB_NAME]
+    """Get MongoDB database connection from pool"""
+    return get_pooled_db(DB_NAME)
 
 
 # ============== TENANTS ==============
