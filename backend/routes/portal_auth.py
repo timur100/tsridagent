@@ -331,12 +331,10 @@ class ApproveRegistrationRequest(BaseModel):
 @router.post("/registrations/approve")
 async def approve_registration(
     request: ApproveRegistrationRequest,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    token_data: dict = Depends(verify_token)
 ):
     """Approve a registration and create user account (Admin only)"""
     try:
-        token = credentials.credentials
-        token_data = verify_token(token)
         admin_email = token_data.get("sub")
         
         # Get registration
@@ -416,12 +414,10 @@ class RejectRegistrationRequest(BaseModel):
 @router.post("/registrations/reject")
 async def reject_registration(
     request: RejectRegistrationRequest,
-    credentials: HTTPAuthorizationCredentials = Depends(security)
+    token_data: dict = Depends(verify_token)
 ):
     """Reject a registration (Admin only)"""
     try:
-        token = credentials.credentials
-        token_data = verify_token(token)
         admin_email = token_data.get("sub")
         
         # Get registration
