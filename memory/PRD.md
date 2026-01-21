@@ -13,6 +13,37 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+#### ✅ BUGFIX: Schwarzer Bildschirm - Alle Komponenten mit Tenant-Dropdown
+- **Problem:** Mehrere Seiten (Assets, Vehicles, KeyAutomat, QuickMenu, Settings) zeigten schwarzen Bildschirm
+- **Ursache:** `tenants.map()` wurde ohne defensive Prüfung aufgerufen während `/api/tenants` ein Objekt `{tenants: [...]}` statt Array zurückgibt
+- **Fix:** Alle betroffenen Komponenten korrigiert:
+  - `/app/frontend/src/components/AssetManagement.jsx`
+  - `/app/frontend/src/components/VehicleManagement.jsx`
+  - `/app/frontend/src/components/KeyAutomatHierarchical.jsx`
+  - `/app/frontend/src/components/QuickMenuManagement.jsx`
+  - `/app/frontend/src/components/AssetSettings.jsx`
+  - `/app/frontend/src/components/UserModal.jsx`
+  - `/app/frontend/src/components/RoleModal.jsx`
+- **Änderungen:** 
+  - `loadTenants()` extrahiert jetzt `data.tenants || []`
+  - Alle `tenants.map()` Aufrufe haben jetzt `Array.isArray(tenants) &&` Prüfung
+
+#### ✅ VERIFIZIERT: Alle Menüs getestet und funktionsfähig
+- Dashboard ✓
+- Users & Roles ✓
+- Tenants (mit Hierarchie) ✓
+- ID-Checks ✓
+- Assets ✓
+- Devices ✓
+- Locations ✓
+- Inventory ✓
+- Orders ✓
+- Support ✓
+- Licenses ✓
+- Database ✓
+- Settings (inkl. Server) ✓
+- R&D ✓
+
 #### ✅ BUGFIX: Hierarchie-Sidebar in Tenants-Seite leer
 - **Problem:** Sidebar zeigte "Keine Hierarchie verfügbar" obwohl 646 Einträge in DB
 - **Ursache:** Backend `/api/tenants-hierarchy/list` gab falsche Feldnamen zurück (`id`, `level`, `parent_id`)
