@@ -65,7 +65,10 @@ const AssetManagement = () => {
     try {
       const result = await apiCall('/api/tenants');
       if (result.success) {
-        const tenantsList = result.data?.data || result.data || [];
+        // Handle different API response structures
+        const tenantsList = Array.isArray(result.data) 
+          ? result.data 
+          : (result.data?.tenants || result.data?.data || []);
         setTenants(tenantsList);
         if (tenantsList.length > 0 && !selectedTenantId) {
           setSelectedTenantId(tenantsList[0].tenant_id);
@@ -74,6 +77,7 @@ const AssetManagement = () => {
     } catch (error) {
       console.error('Error loading tenants:', error);
       toast.error('Fehler beim Laden der Tenants');
+      setTenants([]); // Ensure tenants is always an array
     } finally {
       setLoading(false);
     }
@@ -639,7 +643,7 @@ const AssetManagement = () => {
             }`}
           >
             <option value="">-- Tenant wählen --</option>
-            {tenants.map((tenant) => (
+            {Array.isArray(tenants) && tenants.map((tenant) => (
               <option key={tenant.tenant_id} value={tenant.tenant_id}>
                 {tenant.display_name || tenant.name}
               </option>
