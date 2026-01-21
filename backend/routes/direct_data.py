@@ -610,7 +610,7 @@ async def get_scan_stats(days: int = Query(30, ge=1, le=365)):
 @router.get("/api/tickets/stats")
 async def get_tickets_stats():
     """
-    Get ticket statistics
+    Get ticket statistics - OPTIMIZED with aggregation
     """
     try:
         db = get_db()
@@ -627,20 +627,25 @@ async def get_tickets_stats():
                 }
             }
         
-        total = db.tickets.count_documents({})
-        open_tickets = db.tickets.count_documents({"status": "open"})
-        in_progress = db.tickets.count_documents({"status": "in_progress"})
-        resolved = db.tickets.count_documents({"status": "resolved"})
-        closed = db.tickets.count_documents({"status": "closed"})
+        # Use aggregation for better performance (single query instead of 5)
+        pipeline = [
+            {"$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }}
+        ]
+        
+        status_counts = {doc["_id"]: doc["count"] for doc in db.tickets.aggregate(pipeline)}
+        total = sum(status_counts.values())
         
         return {
             "success": True,
             "data": {
                 "total": total,
-                "open": open_tickets,
-                "in_progress": in_progress,
-                "resolved": resolved,
-                "closed": closed
+                "open": status_counts.get("open", 0),
+                "in_progress": status_counts.get("in_progress", 0),
+                "resolved": status_counts.get("resolved", 0),
+                "closed": status_counts.get("closed", 0)
             }
         }
     except Exception as e:
