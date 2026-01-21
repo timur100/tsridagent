@@ -32,6 +32,11 @@ def get_db(db_name: str = None):
         return client[db_name]
     return client[os.environ.get('DB_NAME', 'tsrid_db')]
 
+# Alias for backward compatibility
+def get_db_connection():
+    """Get tsrid_db database from connection pool (alias for get_db)"""
+    return get_db()
+
 def get_multi_tenant_db():
     """Get multi_tenant_admin database"""
     return get_mongo_client()['multi_tenant_admin']
