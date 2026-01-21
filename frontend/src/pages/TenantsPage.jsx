@@ -556,7 +556,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                   ) : (
                     <div className="w-12 h-12 bg-gradient-to-br from-[#c00000] to-[#900000] rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-lg">
-                        {tenant.display_name.charAt(0).toUpperCase()}
+                        {(tenant.display_name || tenant.name || '?').charAt(0).toUpperCase()}
                       </span>
                     </div>
                   )}
@@ -565,11 +565,11 @@ const TenantsPage = ({ onSelectTenant }) => {
               </div>
 
               {/* Tenant Info */}
-              <h3 className={`text-lg font-semibold mb-1 truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} title={tenant.display_name}>
-                {tenant.display_name}
+              <h3 className={`text-lg font-semibold mb-1 truncate ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`} title={tenant.display_name || tenant.name}>
+                {tenant.display_name || tenant.name || 'Unnamed'}
               </h3>
               <p className={`text-sm mb-1 truncate ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`} title={tenant.name}>
-                {tenant.name}
+                {tenant.name || tenant.tenant_id}
               </p>
               {tenant.domain && (
                 <p className={`text-xs mb-3 truncate ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} title={tenant.domain}>
