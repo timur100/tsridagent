@@ -357,7 +357,31 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       const response = await fetch(`${BACKEND_URL}/api/tenants/${tenantId}`);
       if (response.ok) {
         const data = await response.json();
-        setTenant(data);
+        // Ensure all required fields have default values to prevent crashes
+        const safeData = {
+          ...data,
+          status: data.status || 'inactive',
+          plan: data.plan || 'basic',
+          display_name: data.display_name || data.name || 'Unknown',
+          name: data.name || data.tenant_id || 'Unknown',
+          user_count: data.user_count || 0,
+          device_count: data.device_count || 0,
+          location_count: data.location_count || 0,
+          limits: {
+            max_users: data.limits?.max_users || 100,
+            max_devices: data.limits?.max_devices || 1000,
+            max_locations: data.limits?.max_locations || 500,
+            ...(data.limits || {})
+          },
+          branding: {
+            primary_color: data.branding?.primary_color || '#c00000',
+            logo_url: data.branding?.logo_url || null,
+            ...(data.branding || {})
+          },
+          settings: data.settings || {},
+          metadata: data.metadata || {}
+        };
+        setTenant(safeData);
       } else {
         console.error('Tenant not found');
         if (onBack) {
