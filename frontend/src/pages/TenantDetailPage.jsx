@@ -1372,13 +1372,13 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     <div className="flex justify-between text-sm mb-2">
                       <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Benutzer</span>
                       <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                        {tenant.user_count} / {tenant.limits.max_users}
+                        {dashboardStats.total_users || tenant.user_count || 0} / {tenant.limits.max_users}
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
                         className="bg-[#c00000] h-2 rounded-full"
-                        style={{ width: `${(tenant.user_count / tenant.limits.max_users) * 100}%` }}
+                        style={{ width: `${((dashboardStats.total_users || tenant.user_count || 0) / tenant.limits.max_users) * 100}%` }}
                       />
                     </div>
                   </div>
