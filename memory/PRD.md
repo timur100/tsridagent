@@ -151,6 +151,8 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 - [x] Schwarzer Bildschirm beheben - Locations Tab
 - [x] Schwarzer Bildschirm beheben - Devices Tab
 - [x] Schwarzer Bildschirm beheben - Users & Roles Seite
+- [x] Schwarzer Bildschirm beheben - Assets und alle anderen Seiten mit Tenant-Dropdown
+- [x] Hierarchie-Sidebar repariert (Feldnamen-Mapping)
 - [x] MongoDB Atlas Upgrade (Free → M10)
 - [x] MongoDB Monitoring Dashboard
 
