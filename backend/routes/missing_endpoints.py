@@ -103,6 +103,11 @@ async def get_devices_list(token_data: dict = Depends(verify_token)):
 
 # ============== CUSTOMERS ==============
 
+def get_customer_db():
+    """Get customer_db database from pool"""
+    return get_mongo_client()['customer_db']
+
+
 @router.get("/api/customers/list")
 async def get_customers_list(
     page: int = Query(1, ge=1),
@@ -110,13 +115,11 @@ async def get_customers_list(
 ):
     """Get customers list"""
     try:
-        client = MongoClient(MONGO_URL)
-        db = client['customer_db']
+        db = get_customer_db()
         
         total = db.customers.count_documents({})
         skip = (page - 1) * limit
         customers = list(db.customers.find({}, {"_id": 0}).skip(skip).limit(limit))
-        client.close()
         
         return {
             "success": True,
@@ -149,19 +152,22 @@ async def get_users_list(token_data: dict = Depends(verify_token)):
 
 # ============== INVENTORY ==============
 
+def get_inventory_db():
+    """Get inventory_db database from pool"""
+    return get_mongo_client()['inventory_db']
+
+
 @router.get("/api/inventory/low-stock")
 async def get_low_stock_inventory():
     """Get low stock inventory items"""
     try:
-        client = MongoClient(MONGO_URL)
-        db = client['inventory_db']
+        db = get_inventory_db()
         
         # Find items with low stock (quantity < threshold)
         low_stock = list(db.inventory_items.find(
             {"$expr": {"$lt": ["$quantity", "$min_quantity"]}},
             {"_id": 0}
         ).limit(50))
-        client.close()
         
         return {
             "success": True,
@@ -322,15 +328,18 @@ async def get_scan_statistics(days: int = Query(30, ge=1, le=365)):
 
 # ============== EUROPCAR STATIONS ==============
 
+def get_tsrid_db():
+    """Get tsrid_db database from pool"""
+    return get_mongo_client()['tsrid_db']
+
+
 @router.get("/api/portal/customer-data/europcar-stations")
 async def get_europcar_stations(token_data: dict = Depends(verify_token)):
     """Get Europcar stations"""
     try:
-        client = MongoClient(MONGO_URL)
-        db = client['tsrid_db']
+        db = get_tsrid_db()
         
         stations = list(db.europcar_stations.find({}, {"_id": 0}))
-        client.close()
         
         return {
             "success": True,
