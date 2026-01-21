@@ -285,7 +285,7 @@ async def get_comprehensive_health(token_data: dict = Depends(verify_token)):
         
         # Save to database for history
         try:
-                        db = get_mongo_client()[DB_NAME]
+            db = get_mongo_client()[DB_NAME]
             db.monitoring_history.insert_one({
                 'timestamp': datetime.now(timezone.utc),
                 'overall_status': report.overall_status,
@@ -296,7 +296,6 @@ async def get_comprehensive_health(token_data: dict = Depends(verify_token)):
             db.monitoring_history.delete_many({
                 '_id': {'$nin': list(db.monitoring_history.find().sort('timestamp', -1).limit(1000).distinct('_id'))}
             })
-            client.close()
         except Exception as e:
             logger.warning(f"Could not save monitoring history: {e}")
         

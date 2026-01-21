@@ -119,12 +119,11 @@ async def get_health_status(token_data: dict = Depends(verify_token)):
         # Get configured servers from database
         servers_health = []
         try:
-                        db = get_mongo_client()[DB_NAME]
+            db = get_mongo_client()[DB_NAME]
             servers = list(db.servers.find({}, {'_id': 0}))
             for server in servers:
                 server_health = await check_server_health(server)
                 servers_health.append(server_health)
-            client.close()
         except Exception as e:
             print(f"Error fetching servers: {e}")
         
