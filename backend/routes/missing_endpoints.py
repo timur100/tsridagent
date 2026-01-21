@@ -224,25 +224,33 @@ async def save_dashboard_layout(layout: dict, token_data: dict = Depends(verify_
 
 @router.get("/api/tickets/stats")
 async def get_tickets_stats_endpoint():
-    """Get ticket statistics"""
+    """Get ticket statistics - OPTIMIZED with aggregation"""
     try:
         db = get_ticketing_db()
         
-        total = db.tickets.count_documents({})
-        open_tickets = db.tickets.count_documents({"status": "open"})
-        in_progress = db.tickets.count_documents({"status": "in_progress"})
-        resolved = db.tickets.count_documents({"status": "resolved"})
-        closed = db.tickets.count_documents({"status": "closed"})
+        # Use aggregation for better performance (single query)
+        pipeline = [
+            {"$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }}
+        ]
+        
+        status_counts = {}
+        for doc in db.tickets.aggregate(pipeline):
+            status_counts[doc["_id"]] = doc["count"]
+        
+        total = sum(status_counts.values())
         
         return {
             "success": True,
             "data": {
                 "total": total,
-                "open": open_tickets,
-                "in_progress": in_progress,
-                "resolved": resolved,
-                "closed": closed,
-                "new": open_tickets  # Alias
+                "open": status_counts.get("open", 0),
+                "in_progress": status_counts.get("in_progress", 0),
+                "resolved": status_counts.get("resolved", 0),
+                "closed": status_counts.get("closed", 0),
+                "new": status_counts.get("open", 0)  # Alias
             }
         }
     except Exception as e:
@@ -254,22 +262,31 @@ async def get_tickets_stats_endpoint():
 
 @router.get("/api/change-requests/stats/summary")
 async def get_change_requests_summary():
-    """Get change requests summary"""
+    """Get change requests summary - OPTIMIZED with aggregation"""
     try:
         db = get_ticketing_db()
         
-        total = db.change_requests.count_documents({})
-        pending = db.change_requests.count_documents({"status": "pending"})
-        approved = db.change_requests.count_documents({"status": "approved"})
-        rejected = db.change_requests.count_documents({"status": "rejected"})
+        # Use aggregation for better performance
+        pipeline = [
+            {"$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }}
+        ]
+        
+        status_counts = {}
+        for doc in db.change_requests.aggregate(pipeline):
+            status_counts[doc["_id"]] = doc["count"]
+        
+        total = sum(status_counts.values())
         
         return {
             "success": True,
             "data": {
                 "total": total,
-                "pending": pending,
-                "approved": approved,
-                "rejected": rejected
+                "pending": status_counts.get("pending", 0),
+                "approved": status_counts.get("approved", 0),
+                "rejected": status_counts.get("rejected", 0)
             }
         }
     except Exception as e:
