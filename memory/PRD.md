@@ -11,6 +11,22 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ## Was wurde implementiert
 
+### 21. Januar 2025 - Session 3
+
+#### ✅ BUGFIX: Schwarzer Bildschirm - Users & Roles Seite
+- **Problem 1:** Backend-Endpunkt `/api/portal/auth/registrations` gab 500/401 Fehler zurück
+  - **Ursache:** `verify_token(token)` wurde mit String statt HTTPAuthorizationCredentials aufgerufen
+  - **Fix:** `/app/backend/routes/portal_auth.py` - Alle Registrations-Endpunkte korrigiert um `Depends(verify_token)` zu nutzen
+- **Problem 2:** Frontend `UsersRolesPage.jsx` crashte wegen `tenants.map is not a function`
+  - **Ursache:** `/api/tenants/` gibt Objekt `{tenants: [...]}` zurück, nicht Array
+  - **Fix:** `loadTenants()` korrigiert um `data.tenants || []` zu extrahieren
+  - **Fix:** Defensive Prüfung `Array.isArray(tenants)` im JSX hinzugefügt
+
+#### ✅ BUGFIX: MongoDB Connection Pool Fehler
+- **Problem:** `MongoClient is not defined` Fehler in `missing_endpoints.py`
+- **Ursache:** Einige Endpunkte verwendeten noch alte `MongoClient(MONGO_URL)` statt Connection Pool
+- **Fix:** Alle Endpunkte in `/app/backend/routes/missing_endpoints.py` auf `get_mongo_client()` umgestellt
+
 ### 13. Januar 2025 - Session 2 (Fortsetzung)
 
 #### ✅ PERFORMANCE FIX: Seitenladezeit von 40s auf 15s reduziert
@@ -94,6 +110,7 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 ### P0 - Kritisch (Abgeschlossen)
 - [x] Schwarzer Bildschirm beheben - Locations Tab
 - [x] Schwarzer Bildschirm beheben - Devices Tab
+- [x] Schwarzer Bildschirm beheben - Users & Roles Seite
 - [x] MongoDB Atlas Upgrade (Free → M10)
 - [x] MongoDB Monitoring Dashboard
 
