@@ -886,7 +886,7 @@ const LocationDetailPage = () => {
                       } focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     >
                       <option value="">Bitte wählen...</option>
-                      {availableTenants.map(tenant => (
+                      {Array.isArray(availableTenants) && availableTenants.map(tenant => (
                         <option key={tenant.tenant_id} value={tenant.tenant_id}>
                           {tenant.display_name || tenant.name || tenant.tenant_id}
                         </option>
