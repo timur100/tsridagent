@@ -417,31 +417,31 @@ const HealthMonitor = () => {
       </div>
       
       {/* Overall Status Card */}
-      <Card className={`${overallConfig?.bgLight} border-2 ${overallConfig?.border}`}>
+      <Card className={`${overallConfig?.bgSolid} border-2 ${overallConfig?.border}`}>
         <CardContent className="py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <OverallIcon className={`w-12 h-12 ${overallConfig?.text}`} />
+              <div className={`p-3 rounded-xl ${overallConfig?.bg}`}>
+                <OverallIcon className="w-10 h-10 text-white" />
+              </div>
               <div>
-                <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                <h3 className={`text-xl font-bold ${overallConfig?.textDark}`}>
                   Gesamtstatus: {STATUS_LABELS[overallStatus]}
                 </h3>
-                <p className={`${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                <p className={overallConfig?.text}>
                   {healthData?.summary?.green || 0} OK · {healthData?.summary?.yellow || 0} Warnungen · {healthData?.summary?.red || 0} Kritisch
                 </p>
               </div>
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               {['green', 'yellow', 'red'].map(status => (
                 <div 
                   key={status}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
-                    theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl ${STATUS_COLORS[status]?.bgSolid} border ${STATUS_COLORS[status]?.border}`}
                 >
-                  <StatusIndicator status={status} pulse={status === overallStatus} />
-                  <span className={`text-2xl font-bold ${STATUS_COLORS[status]?.text}`}>
+                  <StatusIndicator status={status} pulse={status === overallStatus} size="lg" />
+                  <span className={`text-2xl font-bold ${STATUS_COLORS[status]?.textDark}`}>
                     {healthData?.summary?.[status] || 0}
                   </span>
                 </div>
