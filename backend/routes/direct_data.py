@@ -33,24 +33,34 @@ async def get_tenants(
     page: int = Query(1, ge=1),
     limit: int = Query(50, ge=1, le=500),
     skip: int = Query(0, ge=0),
-    search: Optional[str] = None
+    search: Optional[str] = None,
+    include_all: bool = Query(False, description="Include all tenant levels, not just organizations")
 ):
     """
-    Get all tenants from MongoDB Atlas
+    Get tenants from MongoDB Atlas
+    By default, only returns organizations (real customers like Europcar, Puma)
+    Use include_all=true to get all tenant levels (for hierarchy views)
     """
     try:
         db = get_db()
         
-        # Build query
+        # Build query - default to only organizations (real customers)
         query = {}
+        if not include_all:
+            query["tenant_level"] = "organization"
+        
         if search:
-            query = {
+            search_query = {
                 "$or": [
                     {"name": {"$regex": search, "$options": "i"}},
                     {"display_name": {"$regex": search, "$options": "i"}},
                     {"tenant_id": {"$regex": search, "$options": "i"}}
                 ]
             }
+            if query:
+                query = {"$and": [query, search_query]}
+            else:
+                query = search_query
         
         # Get total count
         total = db.tenants.count_documents(query)
