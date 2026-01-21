@@ -246,14 +246,14 @@ const ChangeRequests = () => {
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     {getStatusIcon(cr.status)}
-                    <h3 className="text-lg font-semibold text-foreground">{cr.title}</h3>
+                    <h3 className="text-lg font-semibold text-foreground">{cr.title || 'Untitled'}</h3>
                     <span className={`text-sm font-medium ${getPriorityColor(cr.priority)}`}>
-                      {cr.priority.toUpperCase()}
+                      {(cr.priority || 'medium').toUpperCase()}
                     </span>
                   </div>
-                  <p className="text-muted-foreground mb-3">{cr.description}</p>
+                  <p className="text-muted-foreground mb-3">{cr.description || ''}</p>
                   <div className="flex gap-4 text-sm text-muted-foreground">
-                    <span>Kategorie: {cr.category.replace('_', ' ')}</span>
+                    <span>Kategorie: {(cr.category || 'general').replace('_', ' ')}</span>
                     <span>•</span>
                     <span>Erstellt: {new Date(cr.created_at).toLocaleDateString('de-DE')}</span>
                     {cr.requested_date && (
