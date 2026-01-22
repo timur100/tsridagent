@@ -20,6 +20,54 @@ const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
 let tray;
+let currentMode = 'kiosk'; // 'kiosk', 'admin', 'setup'
+
+// Initialisiere Services beim Start
+function initializeServices() {
+  console.log('[TSRID] Initialisiere Services...');
+  
+  try {
+    // Datenbank initialisieren
+    database.initDatabase();
+    console.log('[TSRID] Datenbank initialisiert');
+    
+    // Device ID generieren/laden
+    const deviceId = deviceInfo.getDeviceId();
+    database.setConfig('device_id', deviceId);
+    console.log('[TSRID] Device ID:', deviceId);
+    
+    // App-Version speichern
+    database.setConfig('app_version', app.getVersion());
+    
+    // Mode Manager initialisieren
+    modeManager.init();
+    
+    // Offline-Standorte importieren (falls vorhanden)
+    const importedLocations = database.importLocationsFromFile();
+    if (importedLocations > 0) {
+      console.log(`[TSRID] ${importedLocations} Standorte importiert`);
+    }
+    
+    // Prüfe ob Setup erforderlich
+    if (modeManager.isSetupRequired()) {
+      currentMode = 'setup';
+      console.log('[TSRID] Setup erforderlich');
+    } else {
+      currentMode = modeManager.getCurrentMode();
+      
+      // Sync-Service starten wenn nicht im Setup
+      if (currentMode !== 'setup') {
+        syncEngine.startSyncService();
+        console.log('[TSRID] Sync-Service gestartet');
+      }
+    }
+    
+    console.log('[TSRID] Aktueller Modus:', currentMode);
+    
+  } catch (error) {
+    console.error('[TSRID] Fehler beim Initialisieren:', error);
+  }
+}
 
 // Create main window
 function createWindow() {
