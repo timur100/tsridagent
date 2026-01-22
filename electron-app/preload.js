@@ -48,7 +48,74 @@ contextBridge.exposeInMainWorld('dialogAPI', {
 // Expose App API
 contextBridge.exposeInMainWorld('appAPI', {
   getVersion: () => ipcRenderer.invoke('app:getVersion'),
-  reload: () => ipcRenderer.invoke('app:reload')
+  reload: () => ipcRenderer.invoke('app:reload'),
+  restart: () => ipcRenderer.invoke('app:restart'),
+  getPaths: () => ipcRenderer.invoke('app:getPaths')
 });
 
+// ===== NEUE APIs FÜR OFFLINE-AGENT =====
+
+// Database API
+contextBridge.exposeInMainWorld('tsridDB', {
+  // Config
+  getConfig: (key, defaultValue) => ipcRenderer.invoke('db:getConfig', key, defaultValue),
+  setConfig: (key, value) => ipcRenderer.invoke('db:setConfig', key, value),
+  getAllConfig: () => ipcRenderer.invoke('db:getAllConfig'),
+  
+  // Scans
+  saveScan: (scanData) => ipcRenderer.invoke('db:saveScan', scanData),
+  getPendingScans: (limit) => ipcRenderer.invoke('db:getPendingScans', limit),
+  getScanStats: () => ipcRenderer.invoke('db:getScanStats'),
+  
+  // Locations
+  searchLocations: (query, limit) => ipcRenderer.invoke('db:searchLocations', query, limit),
+  getAllLocations: () => ipcRenderer.invoke('db:getAllLocations')
+});
+
+// Sync API
+contextBridge.exposeInMainWorld('tsridSync', {
+  forceSyncNow: () => ipcRenderer.invoke('sync:forceSyncNow'),
+  getStatus: () => ipcRenderer.invoke('sync:getStatus'),
+  registerDevice: () => ipcRenderer.invoke('sync:registerDevice')
+});
+
+// Device Info API
+contextBridge.exposeInMainWorld('tsridDevice', {
+  getInfo: () => ipcRenderer.invoke('device:getInfo'),
+  getId: () => ipcRenderer.invoke('device:getId'),
+  getHeartbeat: () => ipcRenderer.invoke('device:getHeartbeat')
+});
+
+// Mode Manager API
+contextBridge.exposeInMainWorld('tsridMode', {
+  getCurrent: () => ipcRenderer.invoke('mode:getCurrent'),
+  getSetupStatus: () => ipcRenderer.invoke('mode:getSetupStatus'),
+  saveSetupData: (data) => ipcRenderer.invoke('mode:saveSetupData', data),
+  completeSetup: () => ipcRenderer.invoke('mode:completeSetup'),
+  verifyPassword: (password) => ipcRenderer.invoke('mode:verifyPassword', password),
+  changePassword: (newPassword) => ipcRenderer.invoke('mode:changePassword', newPassword),
+  switchToKiosk: () => ipcRenderer.invoke('mode:switchToKiosk'),
+  switchToAdmin: () => ipcRenderer.invoke('mode:switchToAdmin'),
+  getAdminMenu: () => ipcRenderer.invoke('mode:getAdminMenu')
+});
+
+// Logs API
+contextBridge.exposeInMainWorld('tsridLogs', {
+  getRecent: (limit, level) => ipcRenderer.invoke('logs:getRecent', limit, level),
+  write: (level, category, message, details) => 
+    ipcRenderer.invoke('logs:write', level, category, message, details),
+  
+  // Convenience methods
+  info: (category, message, details) => 
+    ipcRenderer.invoke('logs:write', 'info', category, message, details),
+  warn: (category, message, details) => 
+    ipcRenderer.invoke('logs:write', 'warn', category, message, details),
+  error: (category, message, details) => 
+    ipcRenderer.invoke('logs:write', 'error', category, message, details)
+});
+
+// Admin Login Dialog Helper
+window.tsridShowAdminLogin = null; // Will be set by frontend
+
 console.log('[TSRID Desktop] Preload script loaded');
+console.log('[TSRID Desktop] APIs exposed: usbAPI, printerAPI, dialogAPI, appAPI, tsridDB, tsridSync, tsridDevice, tsridMode, tsridLogs');
