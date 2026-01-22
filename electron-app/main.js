@@ -419,9 +419,161 @@ function switchToKioskMode() {
 global.mainWindow = mainWindow;
 
 app.on('window-all-closed', () => {
+  // Sync-Service stoppen
+  syncEngine.stopSyncService();
+  
+  // Shortcuts deregistrieren
+  globalShortcut.unregisterAll();
+  
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+// ===== NEUE IPC HANDLERS FÜR OFFLINE-AGENT =====
+
+// Database Config
+ipcMain.handle('db:getConfig', async (event, key, defaultValue) => {
+  return database.getConfig(key, defaultValue);
+});
+
+ipcMain.handle('db:setConfig', async (event, key, value) => {
+  database.setConfig(key, value);
+  return true;
+});
+
+ipcMain.handle('db:getAllConfig', async () => {
+  return database.getAllConfig();
+});
+
+// Scans
+ipcMain.handle('db:saveScan', async (event, scanData) => {
+  return database.saveScan(scanData);
+});
+
+ipcMain.handle('db:getPendingScans', async (event, limit) => {
+  return database.getPendingScans(limit);
+});
+
+ipcMain.handle('db:getScanStats', async () => {
+  return database.getScanStats();
+});
+
+// Locations
+ipcMain.handle('db:searchLocations', async (event, query, limit) => {
+  return database.searchLocations(query, limit);
+});
+
+ipcMain.handle('db:getAllLocations', async () => {
+  return database.getAllLocations();
+});
+
+// Sync
+ipcMain.handle('sync:forceSyncNow', async () => {
+  return await syncEngine.forceSyncNow();
+});
+
+ipcMain.handle('sync:getStatus', async () => {
+  return {
+    isRunning: syncEngine.isServiceRunning(),
+    scanStats: database.getScanStats(),
+    recentSyncLogs: database.getRecentSyncLogs(10)
+  };
+});
+
+ipcMain.handle('sync:registerDevice', async () => {
+  return await syncEngine.registerDevice();
+});
+
+// Device Info
+ipcMain.handle('device:getInfo', async () => {
+  return await deviceInfo.getFullDeviceInfo();
+});
+
+ipcMain.handle('device:getId', async () => {
+  return deviceInfo.getDeviceId();
+});
+
+ipcMain.handle('device:getHeartbeat', async () => {
+  return await deviceInfo.getHeartbeatPayload();
+});
+
+// Mode Manager
+ipcMain.handle('mode:getCurrent', async () => {
+  return modeManager.getCurrentMode();
+});
+
+ipcMain.handle('mode:getSetupStatus', async () => {
+  return modeManager.getSetupStatus();
+});
+
+ipcMain.handle('mode:saveSetupData', async (event, data) => {
+  return modeManager.saveSetupData(data);
+});
+
+ipcMain.handle('mode:completeSetup', async () => {
+  modeManager.completeSetup();
+  // Sync-Service starten nach Setup
+  syncEngine.startSyncService();
+  switchToKioskMode();
+  return true;
+});
+
+ipcMain.handle('mode:verifyPassword', async (event, password) => {
+  const isValid = modeManager.verifyAdminPassword(password);
+  if (isValid) {
+    switchToAdminMode();
+  }
+  return isValid;
+});
+
+ipcMain.handle('mode:changePassword', async (event, newPassword) => {
+  return modeManager.setAdminPassword(newPassword);
+});
+
+ipcMain.handle('mode:switchToKiosk', async () => {
+  switchToKioskMode();
+  return true;
+});
+
+ipcMain.handle('mode:switchToAdmin', async () => {
+  switchToAdminMode();
+  return true;
+});
+
+ipcMain.handle('mode:getAdminMenu', async () => {
+  return modeManager.getAdminMenuOptions();
+});
+
+// Logs
+ipcMain.handle('logs:getRecent', async (event, limit, level) => {
+  return database.getRecentLogs(limit, level);
+});
+
+ipcMain.handle('logs:write', async (event, level, category, message, details) => {
+  database.writeLog(level, category, message, details);
+  return true;
+});
+
+// App Control
+ipcMain.handle('app:restart', async () => {
+  app.relaunch();
+  app.exit();
+});
+
+ipcMain.handle('app:getVersion', async () => {
+  return app.getVersion();
+});
+
+ipcMain.handle('app:getPaths', async () => {
+  return {
+    userData: app.getPath('userData'),
+    appData: app.getPath('appData'),
+    temp: app.getPath('temp'),
+    logs: app.getPath('logs'),
+    database: database.DB_PATH,
+    offlineData: database.OFFLINE_DATA_PATH
+  };
 });
 
 console.log('[TSRID Desktop] App started');
