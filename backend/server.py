@@ -392,6 +392,10 @@ app.include_router(fastfood_router)
 from routes.mongodb_monitor import router as mongodb_monitor_router
 app.include_router(mongodb_monitor_router)
 
+# Agent API (Electron Offline-First Agent)
+from routes.agent_api import router as agent_api_router
+app.include_router(agent_api_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
