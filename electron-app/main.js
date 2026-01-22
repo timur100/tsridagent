@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu, Tray, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, Tray, dialog, globalShortcut } = require('electron');
 const path = require('path');
 const { SerialPort } = require('serialport');
 const usb = require('usb');
@@ -6,8 +6,16 @@ const HID = require('node-hid');
 // const printer = require('printer'); // Ersetzt durch PowerShell-Lösung
 const printerWindows = require('./printer-windows');
 
+// Neue Services für Offline-First Agent
+const database = require('./src/services/database');
+const deviceInfo = require('./src/services/device-info');
+const syncEngine = require('./src/services/sync-engine');
+const modeManager = require('./src/services/mode-manager');
+
 // Configuration
-const PREVIEW_URL = 'https://stability-rescue-1.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://stability-rescue-1.preview.emergentagent.com';
+const ADMIN_URL = PREVIEW_URL + '/portal/admin';
+const SCAN_URL = PREVIEW_URL + '/'; // Root = Scan App
 const isDev = process.env.NODE_ENV === 'development';
 
 let mainWindow;
