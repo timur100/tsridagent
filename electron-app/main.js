@@ -71,25 +71,43 @@ function initializeServices() {
 
 // Create main window
 function createWindow() {
+  const kioskConfig = modeManager.getKioskConfig();
+  const isKiosk = currentMode === 'kiosk';
+  
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     minWidth: 1200,
     minHeight: 700,
+    fullscreen: isKiosk && kioskConfig.fullscreen,
+    kiosk: isKiosk,
+    frame: !isKiosk, // Kein Fensterrahmen im Kiosk-Modus
+    autoHideMenuBar: isKiosk,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       enableRemoteModule: false,
       nodeIntegration: false,
-      webSecurity: true
+      webSecurity: true,
+      devTools: isDev || !isKiosk // DevTools nur in Dev oder Admin-Modus
     },
     icon: path.join(__dirname, 'assets/icon.png'),
     title: 'TSRID Admin Portal',
     backgroundColor: '#1a1a1a'
   });
-
-  // Load the preview URL
-  mainWindow.loadURL(PREVIEW_URL);
+  
+  // URL basierend auf Modus laden
+  let loadUrl = SCAN_URL; // Standard: Scan-App
+  
+  if (currentMode === 'admin') {
+    loadUrl = ADMIN_URL;
+  } else if (currentMode === 'setup') {
+    // Setup-Modus zeigt auch Admin-Portal für Konfiguration
+    loadUrl = ADMIN_URL;
+  }
+  
+  console.log('[TSRID] Lade URL:', loadUrl, '(Modus:', currentMode + ')');
+  mainWindow.loadURL(loadUrl);
 
   // Open DevTools in development
   if (isDev) {
