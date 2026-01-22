@@ -369,7 +369,25 @@ ipcMain.handle('printer:test', async (event, { port }) => {
 });
 
 app.whenReady().then(() => {
+  // Services initialisieren
+  initializeServices();
+  
+  // Fenster erstellen
   createWindow();
+  
+  // Global Shortcut für Admin-Modus (Ctrl+Shift+Alt+Q)
+  globalShortcut.register('Ctrl+Shift+Alt+Q', () => {
+    console.log('[TSRID] Admin-Shortcut gedrückt');
+    if (currentMode === 'kiosk') {
+      // Zeige Passwort-Dialog
+      mainWindow.webContents.executeJavaScript(`
+        window.tsridShowAdminLogin && window.tsridShowAdminLogin();
+      `);
+    } else {
+      // Zurück zum Kiosk-Modus
+      switchToKioskMode();
+    }
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -377,6 +395,28 @@ app.whenReady().then(() => {
     }
   });
 });
+
+// Modus wechseln
+function switchToAdminMode() {
+  console.log('[TSRID] Wechsle zu Admin-Modus');
+  currentMode = 'admin';
+  modeManager.setMode('admin');
+  mainWindow.setKiosk(false);
+  mainWindow.setFullScreen(false);
+  mainWindow.loadURL(ADMIN_URL);
+}
+
+function switchToKioskMode() {
+  console.log('[TSRID] Wechsle zu Kiosk-Modus');
+  currentMode = 'kiosk';
+  modeManager.setMode('kiosk');
+  mainWindow.loadURL(SCAN_URL);
+  mainWindow.setFullScreen(true);
+  mainWindow.setKiosk(true);
+}
+
+// Globale Referenz für Sync-Engine
+global.mainWindow = mainWindow;
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
