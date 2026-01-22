@@ -13,6 +13,58 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 
 ### 21. Januar 2025 - Session 3
 
+### 22. Januar 2025 - Session 4
+
+#### ✅ FEATURE: Electron Offline-First Agent System
+- **Neue Backend-API:** `/app/backend/routes/agent_api.py`
+  - `/api/agent/register` - Gerät registrieren
+  - `/api/agent/heartbeat` - Status-Heartbeat mit pending Commands
+  - `/api/agent/scans/batch` - Batch-Upload von Scans
+  - `/api/agent/scans` - Einzelner Scan-Upload
+  - `/api/agent/{device_id}/logs` - Log-Upload
+  - `/api/agent/{device_id}/commands` - Pending Commands abrufen
+  - `/api/agent/devices` - Liste aller registrierten Geräte
+  - `/api/agent/stats` - Agent-Statistiken
+  - `/api/agent/locations/export` - Standorte für Offline-Cache exportieren
+
+- **Neue Electron Services:**
+  - `/app/electron-app/src/services/database.js` - SQLite für Offline-First
+    - Lokale Scan-Speicherung mit Sync-Queue
+    - Config-Management
+    - Standort-Cache für Offline-Setup
+    - App-Logs
+  - `/app/electron-app/src/services/device-info.js` - Hardware/System-Info
+    - Device ID generierung/persistierung
+    - System-Info (CPU, RAM, Disk)
+    - Netzwerk-Status
+    - Internet-Verbindungs-Check
+  - `/app/electron-app/src/services/sync-engine.js` - MongoDB Atlas Sync
+    - Auto-Sync alle 30 Sekunden
+    - Heartbeat alle 60 Sekunden
+    - Retry-Logik bei Fehlern
+    - Remote-Command Verarbeitung
+  - `/app/electron-app/src/services/mode-manager.js` - Kiosk/Admin Modi
+    - Kiosk-Modus (Vollbild, gesperrt für Kunden)
+    - Admin-Modus (Passwort-geschützt: `Ctrl+Shift+Alt+Q`)
+    - Setup-Wizard für Ersteinrichtung
+
+- **Electron main.js erweitert:**
+  - Zwei Modi: Kiosk (Scan-App) und Admin (Portal)
+  - Global Shortcut `Ctrl+Shift+Alt+Q` für Admin-Zugang
+  - 40+ neue IPC Handler für DB, Sync, Device, Mode APIs
+
+- **Dokumentation erstellt:**
+  - `/app/electron-app/OFFLINE_AGENT_ARCHITEKTUR.md` - Systemarchitektur
+  - `/app/electron-app/MASTER_IMAGE_GUIDE.md` - Windows Image-Erstellung für 100 Tablets
+  - `/app/electron-app/IMPLEMENTATION_ROADMAP.md` - Implementierungsplan
+
+#### ✅ BUGFIX: Tenant Dashboard Total Devices/Locations
+- **Problem:** Geräte und Standorte zeigten 0 obwohl Online/Offline korrekt waren
+- **Fix:** Frontend `TenantDetailPage.jsx` verwendet jetzt `dashboardStats.total_devices || tenant.device_count || 0`
+- **Fix:** Backend `/api/tenants/{tenant_id}/dashboard-stats` zählt Locations aus `tenants` Collection (tenant_level="location")
+
+
+
 #### ✅ FEATURE: System Health Monitor mit Ampelsystem
 - **Neues Backend:** `/app/backend/routes/health_monitor.py`
   - `/api/health/full` - Vollständiger Health-Check aller Komponenten
