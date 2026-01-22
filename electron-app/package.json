@@ -1,10 +1,11 @@
 {
   "name": "tsrid-admin-portal",
-  "version": "1.0.0",
-  "description": "TSRID Admin Portal Desktop App with USB Device Support",
+  "version": "1.1.0",
+  "description": "TSRID Admin Portal Desktop App with USB Device Support and Offline-First Agent",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "start:dev": "NODE_ENV=development electron .",
     "build": "electron-builder",
     "build:win": "electron-builder --win",
     "build:mac": "electron-builder --mac",
@@ -17,11 +18,16 @@
     "usb": "^2.11.0",
     "node-hid": "^3.0.0",
     "escpos": "^3.0.0-alpha.6",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "better-sqlite3": "^9.2.2",
+    "electron-store": "^8.1.0",
+    "electron-updater": "^6.1.7",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1"
+    "electron-builder": "^24.9.1",
+    "electron-rebuild": "^3.2.9"
   },
   "build": {
     "appId": "com.tsrid.adminportal",
@@ -33,11 +39,31 @@
       "main.js",
       "preload.js",
       "renderer.js",
+      "printer-windows.js",
+      "src/**/*",
       "assets/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "offline-data",
+        "to": "offline-data",
+        "filter": ["**/*"]
+      }
     ],
     "win": {
       "target": ["nsis"],
-      "icon": "assets/icon.ico"
+      "icon": "assets/icon.ico",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/icon.ico",
+      "uninstallerIcon": "assets/icon.ico",
+      "installerHeaderIcon": "assets/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TSRID Agent"
     },
     "mac": {
       "target": ["dmg"],
