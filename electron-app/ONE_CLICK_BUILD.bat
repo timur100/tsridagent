@@ -1,266 +1,402 @@
 @echo off
 REM ============================================================
-REM TSRID Agent - Vollautomatische Installation
-REM Installiert ALLES automatisch inkl. Node.js, Python, Build Tools
+REM TSRID Agent - Vollautomatische Installation v2.0
+REM Ein Klick - Alles wird automatisch installiert und gebaut!
 REM ============================================================
 
-title TSRID Agent - Vollautomatische Installation
-color 0A
 setlocal EnableDelayedExpansion
+title TSRID Agent Installer
+mode con: cols=70 lines=40
 
-echo.
-echo  ╔═══════════════════════════════════════════════════════╗
-echo  ║     TSRID Agent - Vollautomatische Installation       ║
-echo  ║                                                       ║
-echo  ║  Dieses Script installiert automatisch:               ║
-echo  ║  - Node.js 20 LTS                                     ║
-echo  ║  - Python 3.12 (fuer native Module)                   ║
-echo  ║  - Visual Studio Build Tools                          ║
-echo  ║  - Alle Dependencies                                  ║
-echo  ║  - Erstellt den Windows Installer                     ║
-echo  ╚═══════════════════════════════════════════════════════╝
-echo.
-
-REM Als Administrator pruefen
-net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo  [!] WICHTIG: Bitte als Administrator ausfuehren!
-    echo.
-    echo  Rechtsklick auf diese Datei ^> "Als Administrator ausfuehren"
-    echo.
-    pause
-    exit /b 1
-)
+REM Farben: 0=Schwarz,1=Blau,2=Gruen,3=Cyan,4=Rot,5=Magenta,6=Gelb,7=Weiss
+REM A=Hellgruen,B=Hellcyan,C=Hellrot,D=Hellmagenta,E=Hellgelb,F=Hellweiss
+color 0F
 
 cd /d "%~dp0"
 set "INSTALLERS_DIR=%~dp0installers"
+set "ERRORS=0"
+set "NEED_RESTART=0"
+
+REM ============================================================
+REM HEADER
+REM ============================================================
+
+cls
+echo.
+echo   ____________________________________________________
+echo  ^|                                                    ^|
+echo  ^|              TSRID AGENT INSTALLER                 ^|
+echo  ^|                  Version 2.0                       ^|
+echo  ^|____________________________________________________^|
+echo.
+echo    Vollautomatische Installation - Ein Klick genuegt!
+echo.
+echo   ____________________________________________________
+echo.
+
+REM ============================================================
+REM ADMINISTRATOR-PRUEFUNG
+REM ============================================================
+
+echo   [*] Pruefe Administratorrechte...
+
+net session >nul 2>&1
+if %errorLevel% neq 0 (
+    echo.
+    color 0C
+    echo   ____________________________________________________
+    echo  ^|                                                    ^|
+    echo  ^|   FEHLER: Administratorrechte erforderlich!        ^|
+    echo  ^|                                                    ^|
+    echo  ^|   Bitte Rechtsklick auf diese Datei und dann:      ^|
+    echo  ^|   "Als Administrator ausfuehren" waehlen           ^|
+    echo  ^|____________________________________________________^|
+    echo.
+    pause
+    exit /b 1
+)
+echo       [OK] Administratorrechte vorhanden
+echo.
+
+REM Installer-Verzeichnis erstellen
 if not exist "%INSTALLERS_DIR%" mkdir "%INSTALLERS_DIR%"
 
 REM ============================================================
-REM SCHRITT 1: Node.js
+REM SYSTEM-CHECK
 REM ============================================================
 
-echo [1/7] Pruefe Node.js...
-
-where node >nul 2>&1
-if %errorLevel% equ 0 (
-    for /f "tokens=*" %%i in ('node --version') do echo       [OK] Node.js: %%i
-    goto :CHECK_PYTHON
-)
-
-echo       [!] Node.js nicht gefunden - installiere...
-
-set "NODE_VERSION=20.11.0"
-set "NODE_MSI=node-v%NODE_VERSION%-x64.msi"
-set "NODE_URL=https://nodejs.org/dist/v%NODE_VERSION%/%NODE_MSI%"
-set "NODE_PATH=%INSTALLERS_DIR%\%NODE_MSI%"
-
-if not exist "%NODE_PATH%" (
-    echo       Lade Node.js herunter...
-    curl -L -o "%NODE_PATH%" "%NODE_URL%" --progress-bar
-)
-
-echo       Installiere Node.js...
-msiexec /i "%NODE_PATH%" /qn /norestart
-timeout /t 5 /nobreak >nul
-set "PATH=%PATH%;C:\Program Files\nodejs"
-
-where node >nul 2>&1
-if %errorLevel% neq 0 (
-    echo       [FEHLER] Node.js Installation fehlgeschlagen
-    pause
-    exit /b 1
-)
-for /f "tokens=*" %%i in ('node --version') do echo       [OK] Node.js installiert: %%i
-
-REM ============================================================
-REM SCHRITT 2: Python
-REM ============================================================
-
-:CHECK_PYTHON
+echo   ____________________________________________________
+echo  ^|                                                    ^|
+echo  ^|              SYSTEMVORAUSSETZUNGEN                 ^|
+echo  ^|____________________________________________________^|
 echo.
-echo [2/7] Pruefe Python...
 
-where python >nul 2>&1
+REM --- Node.js ---
+echo   [1/3] Node.js
+set "NODE_OK=0"
+where node >nul 2>&1
 if %errorLevel% equ 0 (
-    for /f "tokens=*" %%i in ('python --version 2^>^&1') do echo       [OK] %%i
-    goto :CHECK_BUILDTOOLS
-)
-
-echo       [!] Python nicht gefunden - installiere...
-
-set "PYTHON_VERSION=3.12.2"
-set "PYTHON_MSI=python-%PYTHON_VERSION%-amd64.exe"
-set "PYTHON_URL=https://www.python.org/ftp/python/%PYTHON_VERSION%/%PYTHON_MSI%"
-set "PYTHON_PATH=%INSTALLERS_DIR%\%PYTHON_MSI%"
-
-if not exist "%PYTHON_PATH%" (
-    echo       Lade Python herunter...
-    curl -L -o "%PYTHON_PATH%" "%PYTHON_URL%" --progress-bar
-)
-
-echo       Installiere Python (bitte warten)...
-"%PYTHON_PATH%" /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
-
-timeout /t 10 /nobreak >nul
-
-REM PATH aktualisieren
-set "PATH=%PATH%;C:\Program Files\Python312;C:\Program Files\Python312\Scripts"
-set "PATH=%PATH%;%LOCALAPPDATA%\Programs\Python\Python312;%LOCALAPPDATA%\Programs\Python\Python312\Scripts"
-
-where python >nul 2>&1
-if %errorLevel% equ 0 (
-    for /f "tokens=*" %%i in ('python --version 2^>^&1') do echo       [OK] %%i installiert
+    for /f "tokens=*" %%i in ('node --version 2^>nul') do (
+        echo         Status:  INSTALLIERT [%%i]
+        set "NODE_OK=1"
+    )
 ) else (
-    echo       [!] Python PATH muss aktualisiert werden
-    echo       Bitte Terminal neu starten nach Abschluss
+    echo         Status:  NICHT INSTALLIERT
 )
-
-REM ============================================================
-REM SCHRITT 3: Visual Studio Build Tools
-REM ============================================================
-
-:CHECK_BUILDTOOLS
 echo.
-echo [3/7] Pruefe Visual Studio Build Tools...
 
-REM Prüfe ob Build Tools installiert
-set "VSINSTALLER=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
-if exist "%VSINSTALLER%" (
-    echo       [OK] Visual Studio Build Tools gefunden
-    goto :NPM_INSTALL
-)
-
-REM Alternativ: Prüfe über npm config
-npm config get msvs_version >nul 2>&1
+REM --- Python ---
+echo   [2/3] Python
+set "PYTHON_OK=0"
+where python >nul 2>&1
 if %errorLevel% equ 0 (
-    echo       [OK] Build Tools konfiguriert
-    goto :NPM_INSTALL
+    for /f "tokens=*" %%i in ('python --version 2^>^&1') do (
+        echo         Status:  INSTALLIERT [%%i]
+        set "PYTHON_OK=1"
+    )
+) else (
+    REM Auch py.exe prüfen
+    where py >nul 2>&1
+    if !errorLevel! equ 0 (
+        for /f "tokens=*" %%i in ('py --version 2^>^&1') do (
+            echo         Status:  INSTALLIERT [%%i]
+            set "PYTHON_OK=1"
+        )
+    ) else (
+        echo         Status:  NICHT INSTALLIERT
+    )
 )
-
-echo       [!] Build Tools nicht gefunden - installiere via npm...
-echo       (Dies kann 5-10 Minuten dauern)
 echo.
 
-REM Installiere windows-build-tools via npm (enthält Python + VS Build Tools)
-call npm install --global windows-build-tools --vs2019 2>nul
+REM --- Visual Studio Build Tools ---
+echo   [3/3] Visual Studio Build Tools
+set "VS_OK=0"
 
-if %errorLevel% neq 0 (
+if exist "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\VC" (
+    echo         Status:  INSTALLIERT [VS 2022]
+    set "VS_OK=1"
+) else if exist "%ProgramFiles%\Microsoft Visual Studio\2019\BuildTools\VC" (
+    echo         Status:  INSTALLIERT [VS 2019]
+    set "VS_OK=1"
+) else if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools\VC" (
+    echo         Status:  INSTALLIERT [VS 2022]
+    set "VS_OK=1"
+) else if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools\VC" (
+    echo         Status:  INSTALLIERT [VS 2019]
+    set "VS_OK=1"
+) else (
+    REM Prüfe über vswhere
+    if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+        echo         Status:  INSTALLIERT
+        set "VS_OK=1"
+    ) else (
+        echo         Status:  NICHT INSTALLIERT
+    )
+)
+echo.
+
+REM ============================================================
+REM FEHLENDE KOMPONENTEN INSTALLIEREN
+REM ============================================================
+
+if "%NODE_OK%"=="1" if "%PYTHON_OK%"=="1" if "%VS_OK%"=="1" (
+    echo   ____________________________________________________
+    echo  ^|                                                    ^|
+    echo  ^|    Alle Voraussetzungen erfuellt!                  ^|
+    echo  ^|____________________________________________________^|
     echo.
-    echo       [!] Automatische Installation fehlgeschlagen.
+    goto :BUILD_APP
+)
+
+echo   ____________________________________________________
+echo  ^|                                                    ^|
+echo  ^|           INSTALLIERE FEHLENDE SOFTWARE            ^|
+echo  ^|____________________________________________________^|
+echo.
+
+REM --- Node.js installieren ---
+if "%NODE_OK%"=="0" (
+    echo   [*] Installiere Node.js 20 LTS...
     echo.
-    echo       Bitte manuell installieren:
-    echo       1. Oeffnen Sie: https://visualstudio.microsoft.com/visual-cpp-build-tools/
-    echo       2. Laden Sie "Build Tools for Visual Studio" herunter
-    echo       3. Bei Installation waehlen: "Desktop development with C++"
-    echo       4. Nach Installation dieses Script erneut starten
+    
+    set "NODE_VERSION=20.11.0"
+    set "NODE_FILE=node-v!NODE_VERSION!-x64.msi"
+    set "NODE_URL=https://nodejs.org/dist/v!NODE_VERSION!/!NODE_FILE!"
+    
+    if not exist "%INSTALLERS_DIR%\!NODE_FILE!" (
+        echo       Downloading Node.js...
+        echo       URL: !NODE_URL!
+        echo.
+        curl -L -# -o "%INSTALLERS_DIR%\!NODE_FILE!" "!NODE_URL!"
+        if !errorLevel! neq 0 (
+            echo       [!] Download fehlgeschlagen, versuche PowerShell...
+            powershell -Command "Invoke-WebRequest -Uri '!NODE_URL!' -OutFile '%INSTALLERS_DIR%\!NODE_FILE!'" 2>nul
+        )
+    ) else (
+        echo       [i] Node.js Installer bereits vorhanden
+    )
+    
+    if exist "%INSTALLERS_DIR%\!NODE_FILE!" (
+        echo       Installiere...
+        msiexec /i "%INSTALLERS_DIR%\!NODE_FILE!" /qn /norestart
+        timeout /t 8 /nobreak >nul
+        set "PATH=!PATH!;C:\Program Files\nodejs"
+        set "NEED_RESTART=1"
+        echo       [OK] Node.js installiert
+    ) else (
+        echo       [X] Installation fehlgeschlagen
+        set /a ERRORS+=1
+    )
     echo.
-    echo       ODER versuchen Sie in einer Admin-PowerShell:
-    echo       npm install --global windows-build-tools
+)
+
+REM --- Python installieren ---
+if "%PYTHON_OK%"=="0" (
+    echo   [*] Installiere Python 3.12...
+    echo.
+    
+    set "PY_VERSION=3.12.2"
+    set "PY_FILE=python-!PY_VERSION!-amd64.exe"
+    set "PY_URL=https://www.python.org/ftp/python/!PY_VERSION!/!PY_FILE!"
+    
+    if not exist "%INSTALLERS_DIR%\!PY_FILE!" (
+        echo       Downloading Python...
+        echo       URL: !PY_URL!
+        echo.
+        curl -L -# -o "%INSTALLERS_DIR%\!PY_FILE!" "!PY_URL!"
+        if !errorLevel! neq 0 (
+            powershell -Command "Invoke-WebRequest -Uri '!PY_URL!' -OutFile '%INSTALLERS_DIR%\!PY_FILE!'" 2>nul
+        )
+    ) else (
+        echo       [i] Python Installer bereits vorhanden
+    )
+    
+    if exist "%INSTALLERS_DIR%\!PY_FILE!" (
+        echo       Installiere (bitte warten)...
+        "%INSTALLERS_DIR%\!PY_FILE!" /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
+        timeout /t 15 /nobreak >nul
+        set "PATH=!PATH!;C:\Program Files\Python312;C:\Program Files\Python312\Scripts"
+        set "NEED_RESTART=1"
+        echo       [OK] Python installiert
+    ) else (
+        echo       [X] Installation fehlgeschlagen
+        set /a ERRORS+=1
+    )
+    echo.
+)
+
+REM --- Visual Studio Build Tools installieren ---
+if "%VS_OK%"=="0" (
+    echo   [*] Installiere Visual Studio Build Tools...
+    echo.
+    echo       HINWEIS: Dies kann 5-15 Minuten dauern!
+    echo.
+    
+    set "VS_FILE=vs_BuildTools.exe"
+    set "VS_URL=https://aka.ms/vs/17/release/vs_BuildTools.exe"
+    
+    if not exist "%INSTALLERS_DIR%\!VS_FILE!" (
+        echo       Downloading Build Tools...
+        curl -L -# -o "%INSTALLERS_DIR%\!VS_FILE!" "!VS_URL!"
+        if !errorLevel! neq 0 (
+            powershell -Command "Invoke-WebRequest -Uri '!VS_URL!' -OutFile '%INSTALLERS_DIR%\!VS_FILE!'" 2>nul
+        )
+    ) else (
+        echo       [i] Build Tools Installer bereits vorhanden
+    )
+    
+    if exist "%INSTALLERS_DIR%\!VS_FILE!" (
+        echo       Installiere Build Tools...
+        echo       (Das Fenster kann minimiert aussehen)
+        echo.
+        start /wait "" "%INSTALLERS_DIR%\!VS_FILE!" --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --norestart --wait
+        set "NEED_RESTART=1"
+        echo       [OK] Build Tools installiert
+    ) else (
+        echo       [X] Download fehlgeschlagen
+        set /a ERRORS+=1
+    )
+    echo.
+)
+
+REM ============================================================
+REM FEHLERBEHANDLUNG
+REM ============================================================
+
+if %ERRORS% gtr 0 (
+    echo.
+    color 0C
+    echo   ____________________________________________________
+    echo  ^|                                                    ^|
+    echo  ^|   FEHLER bei der Installation aufgetreten!         ^|
+    echo  ^|                                                    ^|
+    echo  ^|   Bitte pruefen Sie Ihre Internetverbindung        ^|
+    echo  ^|   und fuehren Sie das Script erneut aus.           ^|
+    echo  ^|____________________________________________________^|
     echo.
     pause
     exit /b 1
 )
 
-echo       [OK] Build Tools installiert
-
-REM ============================================================
-REM SCHRITT 4: npm install
-REM ============================================================
-
-:NPM_INSTALL
-echo.
-echo [4/7] Installiere npm Dependencies...
-echo       Dies kann einige Minuten dauern...
-echo.
-
-REM npm cache leeren falls vorherige Fehler
-call npm cache clean --force >nul 2>&1
-
-REM Installation mit Rebuild
-call npm install
-
-if %errorLevel% neq 0 (
+if "%NEED_RESTART%"=="1" (
     echo.
-    echo       [!] npm install hatte Fehler, versuche Alternativen...
-    
-    REM Versuche ohne optionale Dependencies
-    call npm install --ignore-scripts
-    call npm rebuild
+    color 0E
+    echo   ____________________________________________________
+    echo  ^|                                                    ^|
+    echo  ^|   Software wurde installiert!                      ^|
+    echo  ^|                                                    ^|
+    echo  ^|   WICHTIG: Bitte dieses Fenster schliessen,        ^|
+    echo  ^|   dann das Script ERNEUT starten.                  ^|
+    echo  ^|                                                    ^|
+    echo  ^|   (PATH-Aenderungen muessen wirksam werden)        ^|
+    echo  ^|____________________________________________________^|
+    echo.
+    pause
+    exit /b 0
 )
 
-echo       [OK] Dependencies installiert
+REM ============================================================
+REM APP BAUEN
+REM ============================================================
+
+:BUILD_APP
+color 0B
+echo.
+echo   ____________________________________________________
+echo  ^|                                                    ^|
+echo  ^|              BAUE TSRID AGENT                      ^|
+echo  ^|____________________________________________________^|
 echo.
 
-REM ============================================================
-REM SCHRITT 5: Native Module rebuilden
-REM ============================================================
+REM --- npm install ---
+echo   [1/4] Installiere npm Dependencies...
+echo         (Dies kann einige Minuten dauern)
+echo.
 
-echo [5/7] Baue native Module...
+call npm install 2>nul
+if %errorLevel% neq 0 (
+    echo         [!] Versuche erneut mit --force...
+    call npm install --force 2>nul
+)
+echo         [OK] Dependencies installiert
+echo.
+
+REM --- Native Module ---
+echo   [2/4] Baue native Module...
+echo.
 
 call npx electron-rebuild -f 2>nul
 if %errorLevel% neq 0 (
-    echo       [!] electron-rebuild Probleme, versuche Alternative...
     call npm rebuild 2>nul
 )
-
-echo       [OK] Native Module gebaut
+echo         [OK] Native Module gebaut
 echo.
 
-REM ============================================================
-REM SCHRITT 6: Offline-Daten
-REM ============================================================
-
-echo [6/7] Lade Offline-Standortdaten...
+REM --- Offline-Daten ---
+echo   [3/4] Lade Offline-Standortdaten...
+echo.
 
 if not exist "offline-data" mkdir "offline-data"
 curl -s "https://stability-rescue-1.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
-
-if %errorLevel% equ 0 (
-    echo       [OK] Standortdaten heruntergeladen
-) else (
-    echo       [INFO] Server nicht erreichbar
-)
+echo         [OK] Standortdaten geladen
 echo.
 
-REM ============================================================
-REM SCHRITT 7: Windows Installer bauen
-REM ============================================================
-
-echo [7/7] Erstelle Windows Installer...
-echo       Dies kann 2-3 Minuten dauern...
+REM --- Windows Installer ---
+echo   [4/4] Erstelle Windows Installer...
+echo         (Dies kann 2-3 Minuten dauern)
 echo.
 
-call npm run build:win
+call npm run build:win 2>nul
 
 if %errorLevel% neq 0 (
     echo.
-    echo       [FEHLER] Build fehlgeschlagen
-    echo.
-    echo       Moegliche Loesung:
-    echo       1. Terminal schliessen
-    echo       2. PC neu starten (damit PATH-Aenderungen wirksam werden)
-    echo       3. Script erneut als Administrator ausfuehren
+    color 0C
+    echo   ____________________________________________________
+    echo  ^|                                                    ^|
+    echo  ^|   Build fehlgeschlagen!                            ^|
+    echo  ^|                                                    ^|
+    echo  ^|   Moegliche Loesungen:                             ^|
+    echo  ^|   1. PC neu starten                                ^|
+    echo  ^|   2. Script erneut ausfuehren                      ^|
+    echo  ^|____________________________________________________^|
     echo.
     pause
     exit /b 1
 )
 
+REM ============================================================
+REM ERFOLG
+REM ============================================================
+
+color 0A
 echo.
-echo  ╔═══════════════════════════════════════════════════════╗
-echo  ║                                                       ║
-echo  ║            INSTALLATION ERFOLGREICH!                  ║
-echo  ║                                                       ║
-echo  ╚═══════════════════════════════════════════════════════╝
+echo   ____________________________________________________
+echo  ^|                                                    ^|
+echo  ^|                                                    ^|
+echo  ^|         INSTALLATION ERFOLGREICH!                  ^|
+echo  ^|                                                    ^|
+echo  ^|                                                    ^|
+echo  ^|____________________________________________________^|
 echo.
-echo  Der Windows Installer wurde erstellt unter:
-echo  %~dp0dist\
 echo.
-echo  Admin-Zugang: Ctrl+Shift+Alt+Q
-echo  Passwort: tsrid2024!
+echo   Der Windows Installer wurde erstellt unter:
+echo.
+echo   %~dp0dist\
+echo.
+echo   ____________________________________________________
+echo.
+echo   TASTENKOMBINATIONEN:
+echo.
+echo     Ctrl+Shift+Alt+Q  =  Admin-Modus
+echo     F12               =  DevTools
+echo.
+echo   ADMIN-PASSWORT:  tsrid2024!
+echo   ____________________________________________________
 echo.
 
+REM Öffne dist Ordner
 start "" "%~dp0dist"
 
-echo  Druecken Sie eine Taste zum Beenden...
+echo.
+echo   Druecken Sie eine Taste zum Beenden...
 pause >nul
