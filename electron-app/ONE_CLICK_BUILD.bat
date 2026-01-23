@@ -1,14 +1,14 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-REM TSRID Agent Installer v5.3
+REM TSRID Agent Installer v6.0 - Complete Fresh Install
 
 if "%1"=="" (
     start "TSRID Installer" cmd /k "mode con: cols=85 lines=50 & color 0F & "%~f0" RUN"
     exit /b
 )
 
-title TSRID Agent Installer v5.3
+title TSRID Agent Installer v6.0
 cd /d "%~dp0"
 set "INSTALLERS_DIR=%~dp0installers"
 set "ERRORS=0"
@@ -21,9 +21,9 @@ cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.3
+echo                        TSRID AGENT INSTALLER v6.0
 echo.
-echo                        Automatic Agent Installer
+echo                      Complete Fresh Installation
 echo.
 echo  ===========================================================================
 echo.
@@ -168,17 +168,16 @@ echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 3b: SETUPTOOLS INSTALLIEREN (fuer distutils)
+REM SCHRITT 4: SETUPTOOLS (fuer Python 3.12 distutils)
 REM =========================================================================
 
+echo  ---------------------------------------------------------------------------
+echo   SCHRITT 4: Python setuptools installieren
+echo  ---------------------------------------------------------------------------
+echo.
+
 if "!PYTHON_OK!"=="1" (
-    echo  ---------------------------------------------------------------------------
-    echo   SCHRITT 3b: Python setuptools pruefen
-    echo  ---------------------------------------------------------------------------
-    echo.
-    echo   Python 3.12 benoetigt setuptools fuer node-gyp...
-    echo   Installiere/Aktualisiere setuptools...
-    echo.
+    echo   Installiere setuptools fuer node-gyp Kompatibilitaet...
     
     if "!PYTHON_CMD!"=="py -3" (
         py -3 -m pip install --upgrade setuptools pip --quiet 2>nul
@@ -187,16 +186,18 @@ if "!PYTHON_OK!"=="1" (
     )
     
     echo   [OK] setuptools installiert
-    echo.
-    echo.
+) else (
+    echo   [!] Python nicht verfuegbar - uebersprungen
 )
+echo.
+echo.
 
 REM =========================================================================
-REM SCHRITT 4: VISUAL STUDIO BUILD TOOLS
+REM SCHRITT 5: VISUAL STUDIO BUILD TOOLS
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 4: Visual Studio Build Tools pruefen
+echo   SCHRITT 5: Visual Studio Build Tools pruefen
 echo  ---------------------------------------------------------------------------
 echo.
 
@@ -259,14 +260,14 @@ if "!INSTALLED_SOMETHING!"=="1" (
 )
 
 REM =========================================================================
-REM BUILD PROZESS STARTEN
+REM SCHRITT 6: ALTE INSTALLATION LOESCHEN
 REM =========================================================================
 
 cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.3
+echo                        TSRID AGENT INSTALLER v6.0
 echo.
 echo                              BUILD PROZESS
 echo.
@@ -278,29 +279,60 @@ echo       MSVS:   !npm_config_msvs_version!
 echo.
 echo.
 
+echo  ---------------------------------------------------------------------------
+echo   SCHRITT 6: Alte Installation bereinigen
+echo  ---------------------------------------------------------------------------
+echo.
+
+if exist "node_modules" (
+    echo   Loesche node_modules...
+    rmdir /s /q "node_modules" 2>nul
+    echo   [OK] node_modules geloescht
+) else (
+    echo   [OK] Keine alte Installation vorhanden
+)
+
+if exist "dist" (
+    echo   Loesche dist...
+    rmdir /s /q "dist" 2>nul
+    echo   [OK] dist geloescht
+) else (
+    echo   [OK] Kein alter Build vorhanden
+)
+
+if exist "package-lock.json" (
+    del /f "package-lock.json" 2>nul
+    echo   [OK] package-lock.json geloescht
+)
+echo.
+echo.
+
 REM =========================================================================
-REM SCHRITT 5: NPM INSTALL
+REM SCHRITT 7: NPM INSTALL
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 5: NPM Dependencies installieren
+echo   SCHRITT 7: NPM Dependencies installieren
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte npm install --ignore-scripts...
-echo   Dies kann einige Minuten dauern...
+echo   Dies kann 2-5 Minuten dauern...
 echo.
 
 call npm install --ignore-scripts 2>&1
 set "NPM_RESULT=!errorLevel!"
 
 if !NPM_RESULT! neq 0 (
+    echo.
     echo   [!] Warnungen - versuche mit --force
     call npm install --ignore-scripts --force 2>&1
 )
 
 if exist "node_modules\electron-builder" (
+    echo.
     echo   [OK] Basis-Dependencies installiert
 ) else (
+    echo.
     echo   [X] Installation fehlgeschlagen
     pause
     exit /b 1
@@ -309,11 +341,11 @@ echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 6: NATIVE MODULE
+REM SCHRITT 8: NATIVE MODULE
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 6: Native Module fuer Electron kompilieren
+echo   SCHRITT 8: Native Module fuer Electron kompilieren
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte electron-builder install-app-deps...
@@ -333,31 +365,33 @@ echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 7: OFFLINE-DATEN
+REM SCHRITT 9: OFFLINE-DATEN
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 7: Offline-Daten herunterladen
+echo   SCHRITT 9: Offline-Daten herunterladen
 echo  ---------------------------------------------------------------------------
 echo.
 
 if not exist "offline-data" mkdir "offline-data"
+echo   Lade Standortdaten vom Server...
+
 curl -s "https://tablet-fleet-sync.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
 
 if exist "offline-data\locations_cache.json" (
     echo   [OK] Offline-Daten heruntergeladen
 ) else (
-    echo   [!] Keine Daten verfuegbar
+    echo   [!] Keine Daten verfuegbar - wird spaeter geladen
 )
 echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 8: WINDOWS INSTALLER
+REM SCHRITT 10: WINDOWS INSTALLER
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 8: Windows Installer erstellen
+echo   SCHRITT 10: Windows Installer erstellen
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte electron-builder --win...
@@ -372,7 +406,7 @@ if !BUILD_RESULT! equ 0 (
     echo   [OK] Windows Installer erstellt
 ) else (
     echo   [X] Build fehlgeschlagen
-    echo       Loeschen Sie node_modules und starten Sie erneut
+    echo       Bitte PC neu starten und erneut versuchen
     pause
     exit /b 1
 )
