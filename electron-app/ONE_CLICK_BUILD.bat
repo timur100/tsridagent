@@ -1,20 +1,20 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-REM TSRID Agent Installer v5.1
+REM TSRID Agent Installer v5.2
 
 if "%1"=="" (
     start "TSRID Installer" cmd /k "mode con: cols=85 lines=50 & color 0F & "%~f0" RUN"
     exit /b
 )
 
-title TSRID Agent Installer v5.1
+title TSRID Agent Installer v5.2
 cd /d "%~dp0"
 set "INSTALLERS_DIR=%~dp0installers"
 set "ERRORS=0"
 set "INSTALLED_SOMETHING=0"
 
-set "npm_config_python=python"
+REM Setze Umgebungsvariablen fuer node-gyp
 set "npm_config_msvs_version=2022"
 set "GYP_MSVS_VERSION=2022"
 
@@ -22,7 +22,7 @@ cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.1
+echo                        TSRID AGENT INSTALLER v5.2
 echo.
 echo                        Automatic Agent Installer
 echo.
@@ -86,23 +86,23 @@ if "!NODE_OK!"=="0" (
 )
 
 if "!NODE_OK!"=="0" (
-    echo   [X] Node.js NICHT gefunden - Installation erforderlich
+    echo   [X] Node.js NICHT gefunden
     echo.
     echo   Installiere Node.js 20 LTS...
     
     if not exist "%INSTALLERS_DIR%\node-v20.11.0-x64.msi" (
-        echo   Downloading von nodejs.org...
+        echo   Downloading...
         curl -L -# -o "%INSTALLERS_DIR%\node-v20.11.0-x64.msi" "https://nodejs.org/dist/v20.11.0/node-v20.11.0-x64.msi"
     )
     
     if exist "%INSTALLERS_DIR%\node-v20.11.0-x64.msi" (
-        echo   Fuehre Installation aus...
+        echo   Installiere...
         msiexec /i "%INSTALLERS_DIR%\node-v20.11.0-x64.msi" /qn /norestart
         timeout /t 15 /nobreak >nul
         echo   [OK] Node.js installiert
         set "INSTALLED_SOMETHING=1"
     ) else (
-        echo   [X] FEHLER: Download fehlgeschlagen
+        echo   [X] Download fehlgeschlagen
         set /a ERRORS+=1
     )
 )
@@ -119,63 +119,72 @@ echo  --------------------------------------------------------------------------
 echo.
 
 set "PYTHON_OK=0"
-set "PYTHON_EXE=python"
+set "PYTHON_PATH="
 echo   Suche Python...
 
+REM Methode 1: py launcher
 py -3 --version >nul 2>&1
 if !errorLevel! equ 0 (
     for /f "tokens=*" %%i in ('py -3 --version 2^>^&1') do (
         echo   [OK] Python gefunden: %%i
         set "PYTHON_OK=1"
-        set "PYTHON_EXE=py"
-        set "npm_config_python=py"
+    )
+    for /f "tokens=*" %%p in ('py -3 -c "import sys; print(sys.executable)"') do (
+        set "PYTHON_PATH=%%p"
+        set "npm_config_python=%%p"
     )
 )
 
+REM Methode 2: python im PATH
 if "!PYTHON_OK!"=="0" (
     where python >nul 2>&1
     if !errorLevel! equ 0 (
         for /f "tokens=*" %%i in ('python --version 2^>^&1') do (
             echo   [OK] Python gefunden: %%i
             set "PYTHON_OK=1"
-            for /f "tokens=*" %%p in ('where python 2^>nul') do (
-                set "PYTHON_EXE=%%p"
-                set "npm_config_python=%%p"
-            )
+        )
+        for /f "tokens=*" %%p in ('where python 2^>nul') do (
+            set "PYTHON_PATH=%%p"
+            set "npm_config_python=%%p"
         )
     )
 )
 
+REM Methode 3: Bekannte Pfade
 if "!PYTHON_OK!"=="0" (
     if exist "C:\Program Files\Python312\python.exe" (
-        echo   [OK] Python gefunden: C:\Program Files\Python312\python.exe
+        echo   [OK] Python gefunden: C:\Program Files\Python312
         set "PYTHON_OK=1"
-        set "PYTHON_EXE=C:\Program Files\Python312\python.exe"
+        set "PYTHON_PATH=C:\Program Files\Python312\python.exe"
         set "npm_config_python=C:\Program Files\Python312\python.exe"
     )
 )
 
 if "!PYTHON_OK!"=="0" (
-    echo   [X] Python NICHT gefunden - Installation erforderlich
+    echo   [X] Python NICHT gefunden
     echo.
     echo   Installiere Python 3.12...
     
     if not exist "%INSTALLERS_DIR%\python-3.12.2-amd64.exe" (
-        echo   Downloading von python.org...
+        echo   Downloading...
         curl -L -# -o "%INSTALLERS_DIR%\python-3.12.2-amd64.exe" "https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe"
     )
     
     if exist "%INSTALLERS_DIR%\python-3.12.2-amd64.exe" (
-        echo   Fuehre Installation aus...
+        echo   Installiere...
         "%INSTALLERS_DIR%\python-3.12.2-amd64.exe" /quiet InstallAllUsers=1 PrependPath=1 Include_pip=1
         timeout /t 20 /nobreak >nul
         echo   [OK] Python installiert
         set "INSTALLED_SOMETHING=1"
         set "npm_config_python=C:\Program Files\Python312\python.exe"
     ) else (
-        echo   [X] FEHLER: Download fehlgeschlagen
+        echo   [X] Download fehlgeschlagen
         set /a ERRORS+=1
     )
+)
+
+if defined PYTHON_PATH (
+    echo   Python-Pfad: !PYTHON_PATH!
 )
 echo.
 echo.
@@ -192,40 +201,37 @@ echo.
 set "VS_OK=0"
 echo   Suche Build Tools...
 
-REM Pruefe verschiedene Pfade ohne Klammern-Problem
 set "VSCHECK1=%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\VC"
 set "VSCHECK2=%ProgramFiles%\Microsoft Visual Studio\2019\BuildTools\VC"
 set "VSCHECK3=%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC"
+set "VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 
 if exist "!VSCHECK1!" set "VS_OK=1"
 if exist "!VSCHECK2!" set "VS_OK=1"
 if exist "!VSCHECK3!" set "VS_OK=1"
-
-REM Pruefe vswhere separat
-set "VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
 if exist "!VSWHERE!" set "VS_OK=1"
 
 if "!VS_OK!"=="1" (
     echo   [OK] Visual Studio Build Tools gefunden
 ) else (
-    echo   [X] Build Tools NICHT gefunden - Installation erforderlich
+    echo   [X] Build Tools NICHT gefunden
     echo.
-    echo   HINWEIS: Die Installation dauert 10-20 Minuten!
+    echo   HINWEIS: Installation dauert 10-20 Minuten!
     echo.
     echo   Installiere Visual Studio Build Tools...
     
     if not exist "%INSTALLERS_DIR%\vs_BuildTools.exe" (
-        echo   Downloading von Microsoft...
+        echo   Downloading...
         curl -L -# -o "%INSTALLERS_DIR%\vs_BuildTools.exe" "https://aka.ms/vs/17/release/vs_BuildTools.exe"
     )
     
     if exist "%INSTALLERS_DIR%\vs_BuildTools.exe" (
-        echo   Fuehre Installation aus - C++ Workload...
+        echo   Installiere C++ Workload...
         start /wait "" "%INSTALLERS_DIR%\vs_BuildTools.exe" --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --norestart --wait
         echo   [OK] Build Tools installiert
         set "INSTALLED_SOMETHING=1"
     ) else (
-        echo   [X] FEHLER: Download fehlgeschlagen
+        echo   [X] Download fehlgeschlagen
         set /a ERRORS+=1
     )
 )
@@ -238,12 +244,7 @@ REM =========================================================================
 
 if !ERRORS! gtr 0 (
     echo  ===========================================================================
-    echo.
-    echo   [X] INSTALLATION FEHLGESCHLAGEN
-    echo.
-    echo       Es gab !ERRORS! Fehler.
-    echo       Bitte Internetverbindung pruefen und erneut starten.
-    echo.
+    echo   [X] FEHLER - Bitte Internetverbindung pruefen
     echo  ===========================================================================
     pause
     exit /b 1
@@ -253,8 +254,6 @@ if "!INSTALLED_SOMETHING!"=="1" (
     echo  ===========================================================================
     echo.
     echo   [!] SOFTWARE WURDE INSTALLIERT
-    echo.
-    echo       Die PATH-Variablen muessen neu geladen werden.
     echo.
     echo       BITTE:
     echo       1. Dieses Fenster schliessen
@@ -266,18 +265,22 @@ if "!INSTALLED_SOMETHING!"=="1" (
 )
 
 REM =========================================================================
-REM SCHRITT 5: NPM INSTALL
+REM SCHRITT 5: NPM INSTALL (ohne native Module)
 REM =========================================================================
 
 cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.1
+echo                        TSRID AGENT INSTALLER v5.2
 echo.
 echo                              BUILD PROZESS
 echo.
 echo  ===========================================================================
+echo.
+echo   Konfiguration:
+echo       Python: !npm_config_python!
+echo       MSVS:   !npm_config_msvs_version!
 echo.
 echo.
 
@@ -285,49 +288,26 @@ echo  --------------------------------------------------------------------------
 echo   SCHRITT 5: NPM Dependencies installieren
 echo  ---------------------------------------------------------------------------
 echo.
-echo   Konfiguration:
-echo       Python:     !npm_config_python!
-echo       VS Version: !npm_config_msvs_version!
-echo.
 echo   Starte npm install...
-echo   Dies kann 2-5 Minuten dauern - bitte warten...
+echo   Dies kann einige Minuten dauern...
 echo.
 
-call npm install 2>&1
+REM Erst ohne native Module installieren
+call npm install --ignore-scripts 2>&1
 set "NPM_RESULT=!errorLevel!"
 
-echo.
 if !NPM_RESULT! neq 0 (
-    echo   [!] npm install hatte Warnungen - versuche mit --force
     echo.
-    call npm install --force 2>&1
-    set "NPM_RESULT=!errorLevel!"
-)
-
-REM Pruefe ob electron-builder existiert
-if not exist "node_modules\electron-builder" (
-    echo.
-    echo   [!] electron-builder fehlt - installiere separat...
-    call npm install electron-builder --save-dev 2>&1
-)
-
-if not exist "node_modules\electron" (
-    echo.
-    echo   [!] electron fehlt - installiere separat...
-    call npm install electron --save-dev 2>&1
+    echo   [!] Warnungen - versuche mit --force
+    call npm install --ignore-scripts --force 2>&1
 )
 
 if exist "node_modules\electron-builder" (
     echo.
-    echo   [OK] NPM Dependencies installiert
+    echo   [OK] Basis-Dependencies installiert
 ) else (
     echo.
-    echo   [X] FEHLER: Dependencies konnten nicht installiert werden
-    echo.
-    echo       Loesungsvorschlag:
-    echo       1. Loeschen Sie den Ordner: node_modules
-    echo       2. Starten Sie das Script erneut
-    echo.
+    echo   [X] Installation fehlgeschlagen
     pause
     exit /b 1
 )
@@ -335,25 +315,26 @@ echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 6: ELECTRON-REBUILD
+REM SCHRITT 6: NATIVE MODULE KOMPILIEREN
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 6: Native Module kompilieren
+echo   SCHRITT 6: Native Module fuer Electron kompilieren
 echo  ---------------------------------------------------------------------------
 echo.
-echo   Starte electron-rebuild...
-echo   Dies kann 2-5 Minuten dauern - bitte warten...
+echo   Starte electron-builder install-app-deps...
+echo   Dies kann 5-10 Minuten dauern...
 echo.
 
-call npx electron-rebuild -f 2>&1
+call npx electron-builder install-app-deps 2>&1
 set "REBUILD_RESULT=!errorLevel!"
 
 echo.
 if !REBUILD_RESULT! equ 0 (
     echo   [OK] Native Module kompiliert
 ) else (
-    echo   [!] electron-rebuild hatte Warnungen - kann normal sein
+    echo   [!] Einige Module konnten nicht kompiliert werden
+    echo       Der Build wird trotzdem versucht...
 )
 echo.
 echo.
@@ -368,20 +349,20 @@ echo  --------------------------------------------------------------------------
 echo.
 
 if not exist "offline-data" mkdir "offline-data"
-echo   Lade Standortdaten vom Server...
+echo   Lade Standortdaten...
 
 curl -s "https://tablet-fleet-sync.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
 
 if exist "offline-data\locations_cache.json" (
     echo   [OK] Offline-Daten heruntergeladen
 ) else (
-    echo   [!] Keine Offline-Daten verfuegbar - wird spaeter geladen
+    echo   [!] Keine Daten verfuegbar - wird spaeter geladen
 )
 echo.
 echo.
 
 REM =========================================================================
-REM SCHRITT 8: WINDOWS INSTALLER ERSTELLEN
+REM SCHRITT 8: WINDOWS INSTALLER
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
@@ -389,7 +370,7 @@ echo   SCHRITT 8: Windows Installer erstellen
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte electron-builder...
-echo   Dies kann 5-10 Minuten dauern - bitte warten...
+echo   Dies kann 5-10 Minuten dauern...
 echo.
 
 call npm run build:win 2>&1
@@ -399,12 +380,11 @@ echo.
 if !BUILD_RESULT! equ 0 (
     echo   [OK] Windows Installer erstellt
 ) else (
-    echo   [X] FEHLER: Build fehlgeschlagen
+    echo   [X] Build fehlgeschlagen
     echo.
     echo       Loesungsvorschlaege:
-    echo       1. PC neu starten
-    echo       2. node_modules Ordner loeschen
-    echo       3. Script erneut starten
+    echo       1. Loeschen Sie: node_modules
+    echo       2. Starten Sie das Script erneut
     echo.
     pause
     exit /b 1
@@ -425,7 +405,7 @@ echo.
 echo  ===========================================================================
 echo.
 echo.
-echo   Der Windows Installer wurde erstellt:
+echo   Der Installer wurde erstellt:
 echo.
 echo       %~dp0dist\
 echo.
