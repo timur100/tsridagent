@@ -1,120 +1,153 @@
 # ============================================================
-# TSRID Agent - PowerShell Setup & Build Script
-# Mit erweiterten Funktionen und Fehlerbehandlung
+# TSRID Agent - PowerShell Setup Script
+# Installiert automatisch alle Voraussetzungen inkl. Node.js
 # ============================================================
 
 param(
-    [switch]$Install,      # Nur installieren
-    [switch]$Build,        # Nur bauen
-    [switch]$Start,        # Nur starten
-    [switch]$All,          # Alles machen
-    [switch]$Silent,       # Keine Benutzerinteraktion
-    [switch]$Help          # Hilfe anzeigen
+    [switch]$Install,
+    [switch]$Build,
+    [switch]$Start,
+    [switch]$All,
+    [switch]$Silent,
+    [switch]$Help
 )
 
-$ErrorActionPreference = "Stop"
+$ErrorActionPreference = "Continue"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+$InstallersDir = Join-Path $ScriptDir "installers"
 
-# Farben für Output
+# Node.js Version
+$NodeVersion = "20.11.0"
+$NodeInstallerName = "node-v$NodeVersion-x64.msi"
+$NodeDownloadUrl = "https://nodejs.org/dist/v$NodeVersion/$NodeInstallerName"
+
+# Farben
 function Write-Success { Write-Host "[OK] $args" -ForegroundColor Green }
 function Write-Info { Write-Host "[INFO] $args" -ForegroundColor Cyan }
-function Write-Warn { Write-Host "[WARNUNG] $args" -ForegroundColor Yellow }
+function Write-Warn { Write-Host "[!] $args" -ForegroundColor Yellow }
 function Write-Err { Write-Host "[FEHLER] $args" -ForegroundColor Red }
 
 # Banner
 function Show-Banner {
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "  ║     TSRID Agent - Automatisches Setup     ║" -ForegroundColor Cyan
-    Write-Host "  ║           Version 1.1.0                   ║" -ForegroundColor Cyan
-    Write-Host "  ╚═══════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "  ╔═══════════════════════════════════════════════════════╗" -ForegroundColor Cyan
+    Write-Host "  ║        TSRID Agent - Automatisches Setup              ║" -ForegroundColor Cyan
+    Write-Host "  ║                   Version 1.1.0                       ║" -ForegroundColor Cyan
+    Write-Host "  ╚═══════════════════════════════════════════════════════╝" -ForegroundColor Cyan
     Write-Host ""
 }
 
-# Hilfe anzeigen
+# Hilfe
 function Show-Help {
     Write-Host "Verwendung: .\setup.ps1 [Optionen]"
     Write-Host ""
     Write-Host "Optionen:"
-    Write-Host "  -Install    Nur Dependencies installieren"
-    Write-Host "  -Build      Nur Windows Installer bauen"
-    Write-Host "  -Start      Nur App starten"
-    Write-Host "  -All        Alles ausfuehren (Install + Build)"
+    Write-Host "  -Install    Dependencies installieren"
+    Write-Host "  -Build      Windows Installer bauen"
+    Write-Host "  -Start      App starten"
+    Write-Host "  -All        Alles (Install + Build)"
     Write-Host "  -Silent     Keine Benutzerinteraktion"
-    Write-Host "  -Help       Diese Hilfe anzeigen"
+    Write-Host "  -Help       Diese Hilfe"
     Write-Host ""
     Write-Host "Beispiele:"
     Write-Host "  .\setup.ps1              # Interaktives Menue"
-    Write-Host "  .\setup.ps1 -All         # Alles automatisch"
-    Write-Host "  .\setup.ps1 -Install     # Nur installieren"
-    Write-Host "  .\setup.ps1 -Build       # Nur bauen"
+    Write-Host "  .\setup.ps1 -All         # Vollautomatisch"
+    Write-Host "  .\setup.ps1 -All -Silent # Komplett still"
     Write-Host ""
 }
 
-# Voraussetzungen prüfen
-function Test-Prerequisites {
-    Write-Info "Pruefe Voraussetzungen..."
+# Node.js Installation prüfen und ggf. installieren
+function Ensure-NodeJS {
+    Write-Info "Pruefe Node.js..."
     
-    # Node.js
-    $nodeVersion = $null
-    try {
-        $nodeVersion = (node --version 2>$null)
-    } catch {}
+    # Prüfen ob Node.js verfügbar
+    $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
     
-    if (-not $nodeVersion) {
-        Write-Err "Node.js nicht gefunden!"
-        Write-Host ""
-        Write-Host "Bitte installieren Sie Node.js 20 LTS von:" -ForegroundColor Yellow
-        Write-Host "https://nodejs.org/" -ForegroundColor White
-        Write-Host ""
+    if ($nodeCmd) {
+        $version = & node --version 2>$null
+        Write-Success "Node.js gefunden: $version"
+        return $true
+    }
+    
+    Write-Warn "Node.js nicht gefunden - wird installiert..."
+    
+    # Installer-Verzeichnis erstellen
+    if (-not (Test-Path $InstallersDir)) {
+        New-Item -ItemType Directory -Path $InstallersDir -Force | Out-Null
+    }
+    
+    $installerPath = Join-Path $InstallersDir $NodeInstallerName
+    
+    # Download falls nicht vorhanden
+    if (-not (Test-Path $installerPath)) {
+        Write-Info "Lade Node.js v$NodeVersion herunter..."
+        Write-Host "       URL: $NodeDownloadUrl" -ForegroundColor Gray
         
-        if (-not $Silent) {
-            $install = Read-Host "Node.js jetzt automatisch installieren? (j/n)"
-            if ($install -eq "j") {
-                Install-NodeJS
-            } else {
-                throw "Node.js erforderlich"
-            }
-        } else {
-            throw "Node.js nicht installiert"
+        try {
+            # Progress Bar deaktivieren für schnelleren Download
+            $ProgressPreference = 'SilentlyContinue'
+            Invoke-WebRequest -Uri $NodeDownloadUrl -OutFile $installerPath -UseBasicParsing
+            Write-Success "Download abgeschlossen"
+        } catch {
+            Write-Err "Download fehlgeschlagen: $_"
+            return $false
         }
     } else {
-        Write-Success "Node.js gefunden: $nodeVersion"
+        Write-Info "Node.js Installer bereits vorhanden"
     }
     
-    # npm
-    $npmVersion = (npm --version 2>$null)
-    if (-not $npmVersion) {
-        Write-Err "npm nicht gefunden!"
-        throw "npm nicht installiert"
-    }
-    Write-Success "npm gefunden: v$npmVersion"
+    # Installation
+    Write-Info "Installiere Node.js (bitte warten)..."
     
-    # Visual Studio Build Tools (optional check)
-    $vsWhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
-    if (Test-Path $vsWhere) {
-        Write-Success "Visual Studio Build Tools gefunden"
-    } else {
-        Write-Warn "Visual Studio Build Tools nicht gefunden"
-        Write-Host "  Native Module koennten Probleme haben." -ForegroundColor Yellow
-        Write-Host "  Download: https://visualstudio.microsoft.com/visual-cpp-build-tools/" -ForegroundColor Yellow
+    try {
+        $process = Start-Process -FilePath "msiexec.exe" -ArgumentList "/i `"$installerPath`" /qn /norestart" -Wait -PassThru
+        
+        if ($process.ExitCode -ne 0) {
+            Write-Err "Installation fehlgeschlagen (Exit Code: $($process.ExitCode))"
+            return $false
+        }
+        
+        # PATH aktualisieren
+        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        $env:Path += ";C:\Program Files\nodejs"
+        
+        # Kurz warten
+        Start-Sleep -Seconds 3
+        
+        # Verifizieren
+        $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
+        if ($nodeCmd) {
+            $version = & node --version 2>$null
+            Write-Success "Node.js erfolgreich installiert: $version"
+            return $true
+        } else {
+            Write-Warn "Node.js installiert, aber PATH muss aktualisiert werden"
+            Write-Host "       Bitte Terminal neu starten und Script erneut ausfuehren" -ForegroundColor Yellow
+            return $false
+        }
+        
+    } catch {
+        Write-Err "Installation fehlgeschlagen: $_"
+        return $false
     }
-    
-    Write-Host ""
 }
 
-# Node.js automatisch installieren (winget)
-function Install-NodeJS {
-    Write-Info "Installiere Node.js via winget..."
-    try {
-        winget install OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
-        Write-Success "Node.js installiert. Bitte Terminal neu starten und Script erneut ausfuehren."
-        exit 0
-    } catch {
-        Write-Err "Automatische Installation fehlgeschlagen."
-        Write-Host "Bitte manuell von https://nodejs.org/ installieren"
-        throw
+# npm prüfen
+function Ensure-NPM {
+    $npmCmd = Get-Command npm -ErrorAction SilentlyContinue
+    if (-not $npmCmd) {
+        $env:Path += ";C:\Program Files\nodejs"
+        $npmCmd = Get-Command npm -ErrorAction SilentlyContinue
     }
+    
+    if ($npmCmd) {
+        $version = & npm --version 2>$null
+        Write-Success "npm gefunden: v$version"
+        return $true
+    }
+    
+    Write-Err "npm nicht gefunden"
+    return $false
 }
 
 # Dependencies installieren
@@ -123,32 +156,23 @@ function Install-Dependencies {
     
     Set-Location $ScriptDir
     
-    # npm install
-    $result = npm install 2>&1
+    & npm install 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Err "npm install fehlgeschlagen"
-        Write-Host $result
-        throw "Installation fehlgeschlagen"
+        return $false
     }
     Write-Success "Dependencies installiert"
     
-    # Native Module rebuilden
-    Write-Info "Baue native Module (SQLite, USB, HID)..."
+    Write-Info "Baue native Module..."
+    & npx electron-rebuild -f 2>&1 | Out-Null
+    Write-Success "Native Module gebaut"
     
-    try {
-        npx electron-rebuild -f 2>&1 | Out-Null
-        Write-Success "Native Module gebaut"
-    } catch {
-        Write-Warn "electron-rebuild hatte Probleme, versuche npm rebuild..."
-        npm rebuild 2>&1 | Out-Null
-    }
-    
-    Write-Host ""
+    return $true
 }
 
 # Verzeichnisse erstellen
 function Initialize-Directories {
-    Write-Info "Erstelle Datenverzeichnisse..."
+    Write-Info "Erstelle Verzeichnisse..."
     
     $dirs = @(
         "$env:PROGRAMDATA\TSRID",
@@ -166,90 +190,84 @@ function Initialize-Directories {
     }
     
     Write-Success "Verzeichnisse erstellt"
-    Write-Host ""
 }
 
-# Offline-Daten herunterladen
+# Offline-Daten laden
 function Download-OfflineData {
     Write-Info "Lade Offline-Standortdaten..."
     
     $url = "https://stability-rescue-1.preview.emergentagent.com/api/agent/locations/export"
-    $outputFile = "$ScriptDir\offline-data\locations_cache.json"
+    $outputFile = Join-Path $ScriptDir "offline-data\locations_cache.json"
     
     try {
+        $ProgressPreference = 'SilentlyContinue'
         $response = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 30
         $response.Content | Out-File -FilePath $outputFile -Encoding UTF8
         
         $data = $response.Content | ConvertFrom-Json
-        $count = $data.count
-        
-        Write-Success "$count Standorte heruntergeladen"
+        Write-Success "$($data.count) Standorte heruntergeladen"
     } catch {
-        Write-Warn "Standortdaten konnten nicht geladen werden (offline?)"
+        Write-Warn "Standortdaten konnten nicht geladen werden"
     }
-    
-    Write-Host ""
 }
 
 # App starten
 function Start-App {
     Write-Info "Starte TSRID Agent..."
     Write-Host ""
-    Write-Host "  ╔═══════════════════════════════════════════╗" -ForegroundColor Yellow
-    Write-Host "  ║          TASTENKOMBINATIONEN              ║" -ForegroundColor Yellow
-    Write-Host "  ╠═══════════════════════════════════════════╣" -ForegroundColor Yellow
-    Write-Host "  ║  Ctrl+Shift+Alt+Q = Admin-Modus           ║" -ForegroundColor Yellow
-    Write-Host "  ║  F12              = DevTools              ║" -ForegroundColor Yellow
-    Write-Host "  ║  Admin-Passwort   = tsrid2024!            ║" -ForegroundColor Yellow
-    Write-Host "  ╚═══════════════════════════════════════════╝" -ForegroundColor Yellow
+    Write-Host "  ╔═══════════════════════════════════════════════════════╗" -ForegroundColor Yellow
+    Write-Host "  ║                 TASTENKOMBINATIONEN                   ║" -ForegroundColor Yellow
+    Write-Host "  ╠═══════════════════════════════════════════════════════╣" -ForegroundColor Yellow
+    Write-Host "  ║  Ctrl+Shift+Alt+Q = Admin-Modus                       ║" -ForegroundColor Yellow
+    Write-Host "  ║  F12              = DevTools                          ║" -ForegroundColor Yellow
+    Write-Host "  ║  Admin-Passwort   = tsrid2024!                        ║" -ForegroundColor Yellow
+    Write-Host "  ╚═══════════════════════════════════════════════════════╝" -ForegroundColor Yellow
     Write-Host ""
     
     Set-Location $ScriptDir
-    npm start
+    & npm start
 }
 
-# Windows Installer bauen
+# Installer bauen
 function Build-Installer {
     Write-Info "Erstelle Windows Installer..."
-    Write-Host ""
+    Write-Host "       Dies kann 2-3 Minuten dauern..." -ForegroundColor Gray
     
     Set-Location $ScriptDir
     
-    $result = npm run build:win 2>&1
+    & npm run build:win 2>&1 | Out-Null
     if ($LASTEXITCODE -ne 0) {
         Write-Err "Build fehlgeschlagen"
-        Write-Host $result
-        throw "Build fehlgeschlagen"
+        return $false
     }
     
     Write-Success "Windows Installer erstellt!"
-    Write-Host ""
     
-    $installerPath = "$ScriptDir\dist"
-    $installerFile = Get-ChildItem -Path $installerPath -Filter "*.exe" | Select-Object -First 1
+    $installerPath = Join-Path $ScriptDir "dist"
+    $installerFile = Get-ChildItem -Path $installerPath -Filter "*.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
     
     if ($installerFile) {
+        Write-Host ""
         Write-Host "  Installer: " -NoNewline
         Write-Host $installerFile.FullName -ForegroundColor Green
         Write-Host ""
         
         if (-not $Silent) {
-            # Explorer öffnen
             Start-Process explorer.exe -ArgumentList $installerPath
         }
     }
     
-    Write-Host ""
+    return $true
 }
 
-# Interaktives Menü
+# Menü
 function Show-Menu {
     Write-Host "  Was moechten Sie tun?"
     Write-Host ""
-    Write-Host "  [1] Vollstaendiges Setup (Install + Offline-Daten)"
-    Write-Host "  [2] App starten (Test-Modus)"
+    Write-Host "  [1] Vollstaendiges Setup"
+    Write-Host "  [2] App starten"
     Write-Host "  [3] Windows Installer bauen"
-    Write-Host "  [4] Alles (Setup + Test + Build)"
+    Write-Host "  [4] Alles (Setup + Build)"
     Write-Host "  [5] Beenden"
     Write-Host ""
     
@@ -257,28 +275,23 @@ function Show-Menu {
     
     switch ($choice) {
         "1" {
-            Test-Prerequisites
+            if (-not (Ensure-NodeJS)) { return }
+            if (-not (Ensure-NPM)) { return }
             Install-Dependencies
             Initialize-Directories
             Download-OfflineData
             Write-Success "Setup abgeschlossen!"
         }
-        "2" {
-            Start-App
-        }
-        "3" {
-            Build-Installer
-        }
+        "2" { Start-App }
+        "3" { Build-Installer }
         "4" {
-            Test-Prerequisites
+            if (-not (Ensure-NodeJS)) { return }
+            if (-not (Ensure-NPM)) { return }
             Install-Dependencies
             Initialize-Directories
             Download-OfflineData
-            Write-Host ""
-            Write-Info "Starte App zum Testen. Schliessen Sie die App wenn fertig..."
-            Start-App
-            Write-Host ""
             Build-Installer
+            Write-Success "Alles erledigt!"
         }
         "5" {
             Write-Host "Auf Wiedersehen!"
@@ -304,24 +317,31 @@ if ($Help) {
 
 Set-Location $ScriptDir
 
-# Parameter-gesteuerte Ausführung
+# Automatische Modi
+if ($All -or $Install -or $Build -or $Start) {
+    if (-not (Ensure-NodeJS)) {
+        Write-Err "Node.js konnte nicht installiert werden"
+        exit 1
+    }
+    if (-not (Ensure-NPM)) {
+        Write-Err "npm nicht verfuegbar"
+        exit 1
+    }
+}
+
 if ($All) {
-    Test-Prerequisites
     Install-Dependencies
     Initialize-Directories
     Download-OfflineData
     Build-Installer
-    Write-Host ""
     Write-Success "Alles erledigt!"
     exit 0
 }
 
 if ($Install) {
-    Test-Prerequisites
     Install-Dependencies
     Initialize-Directories
     Download-OfflineData
-    Write-Host ""
     Write-Success "Installation abgeschlossen!"
     exit 0
 }
@@ -336,7 +356,16 @@ if ($Start) {
     exit 0
 }
 
-# Interaktives Menü (Standard)
+# Interaktiv
+if (-not (Ensure-NodeJS)) {
+    Write-Host ""
+    Write-Host "Druecken Sie eine Taste zum Beenden..."
+    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
+    exit 1
+}
+Ensure-NPM | Out-Null
+
+Write-Host ""
 Show-Menu
 
 Write-Host ""
