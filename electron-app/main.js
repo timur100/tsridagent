@@ -371,15 +371,38 @@ app.whenReady().then(() => {
   // Global Shortcut für Admin-Modus (Ctrl+Shift+Alt+Q)
   globalShortcut.register('Ctrl+Shift+Alt+Q', () => {
     console.log('[TSRID] Admin-Shortcut gedrückt');
+    
     if (currentMode === 'kiosk') {
       // Zeige Passwort-Dialog
+      const { dialog } = require('electron');
+      
+      // Einfacher Input-Dialog via JavaScript im Renderer
       mainWindow.webContents.executeJavaScript(`
-        window.tsridShowAdminLogin && window.tsridShowAdminLogin();
+        (function() {
+          const password = prompt('Admin-Passwort eingeben:', '');
+          if (password) {
+            window.postMessage({ type: 'TSRID_ADMIN_LOGIN', password: password }, '*');
+          }
+        })();
       `);
     } else {
       // Zurück zum Kiosk-Modus
       switchToKioskMode();
     }
+  });
+  
+  // Listener für Passwort-Verifizierung
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'TSRID_ADMIN_LOGIN') {
+          // Send to main process via exposed API
+          if (window.electronAPI && window.electronAPI.verifyPassword) {
+            window.electronAPI.verifyPassword(event.data.password);
+          }
+        }
+      });
+    `);
   });
 
   app.on('activate', () => {
