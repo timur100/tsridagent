@@ -48,21 +48,17 @@ function initializeServices() {
       console.log(`[TSRID] ${importedLocations} Standorte importiert`);
     }
     
-    // Prüfe ob Setup erforderlich
-    if (modeManager.isSetupRequired()) {
-      currentMode = 'setup';
-      console.log('[TSRID] Setup erforderlich');
-    } else {
-      currentMode = modeManager.getCurrentMode();
-      
-      // Sync-Service starten wenn nicht im Setup
-      if (currentMode !== 'setup') {
-        syncEngine.startSyncService();
-        console.log('[TSRID] Sync-Service gestartet');
-      }
-    }
+    // IMMER im Kiosk-Modus starten (Scan-App mit PIN 3842)
+    currentMode = 'kiosk';
+    console.log('[TSRID] Starte im Kiosk-Modus (Scan-App)');
     
-    console.log('[TSRID] Aktueller Modus:', currentMode);
+    // Sync-Service starten
+    try {
+      syncEngine.startSyncService();
+      console.log('[TSRID] Sync-Service gestartet');
+    } catch (e) {
+      console.log('[TSRID] Sync-Service konnte nicht gestartet werden:', e.message);
+    }
     
   } catch (error) {
     console.error('[TSRID] Fehler beim Initialisieren:', error);
