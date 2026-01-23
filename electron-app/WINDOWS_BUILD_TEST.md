@@ -1,5 +1,35 @@
 # TSRID Agent - Windows Build & Test Anleitung
 
+## 🚀 Schnellstart (Ein-Klick)
+
+### Option 1: Vollautomatisch
+1. Code herunterladen ("Download Code" Button)
+2. ZIP extrahieren
+3. In `electron-app` Ordner navigieren
+4. **Doppelklick auf `ONE_CLICK_BUILD.bat`**
+5. Fertig! Installer liegt in `dist/`
+
+### Option 2: Mit Menü
+1. **Doppelklick auf `SETUP.bat`**
+2. Menü-Option wählen:
+   - [1] App testen
+   - [2] Installer bauen
+   - [3] Beides
+
+### Option 3: PowerShell (erweitert)
+```powershell
+# Alles automatisch
+.\setup.ps1 -All
+
+# Nur installieren
+.\setup.ps1 -Install
+
+# Nur bauen
+.\setup.ps1 -Build
+```
+
+---
+
 ## 📋 Voraussetzungen
 
 Auf dem Windows Test-Tablet installieren:
