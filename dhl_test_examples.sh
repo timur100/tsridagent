@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DHL Sandbox Testing Script
-API_URL="https://stability-rescue-1.preview.emergentagent.com/api/dhl"
+API_URL="https://tablet-fleet-sync.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sandbox Testing ==="
 echo ""

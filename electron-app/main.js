@@ -13,7 +13,7 @@ const syncEngine = require('./src/services/sync-engine');
 const modeManager = require('./src/services/mode-manager');
 
 // Configuration
-const PREVIEW_URL = 'https://stability-rescue-1.preview.emergentagent.com';
+const PREVIEW_URL = 'https://tablet-fleet-sync.preview.emergentagent.com';
 const ADMIN_URL = PREVIEW_URL + '/portal/admin';
 const SCAN_URL = PREVIEW_URL + '/'; // Root = Scan App
 const isDev = process.env.NODE_ENV === 'development';

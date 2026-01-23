@@ -354,7 +354,7 @@ echo   [3/4] Lade Offline-Standortdaten...
 echo.
 
 if not exist "offline-data" mkdir "offline-data"
-curl -s "https://stability-rescue-1.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
+curl -s "https://tablet-fleet-sync.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
 echo         [OK] Standortdaten geladen
 echo.
 

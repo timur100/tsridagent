@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://stability-rescue-1.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://tablet-fleet-sync.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

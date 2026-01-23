@@ -14,7 +14,7 @@ import jwt
 import pymongo
 
 # Backend URL from environment
-BACKEND_URL = "https://stability-rescue-1.preview.emergentagent.com"
+BACKEND_URL = "https://tablet-fleet-sync.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification
