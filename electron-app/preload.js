@@ -117,5 +117,10 @@ contextBridge.exposeInMainWorld('tsridLogs', {
 // Admin Login Dialog Helper
 window.tsridShowAdminLogin = null; // Will be set by frontend
 
+// Expose electronAPI for admin login from main process
+contextBridge.exposeInMainWorld('electronAPI', {
+  verifyPassword: (password) => ipcRenderer.invoke('mode:verifyPassword', password)
+});
+
 console.log('[TSRID Desktop] Preload script loaded');
-console.log('[TSRID Desktop] APIs exposed: usbAPI, printerAPI, dialogAPI, appAPI, tsridDB, tsridSync, tsridDevice, tsridMode, tsridLogs');
+console.log('[TSRID Desktop] APIs exposed: usbAPI, printerAPI, dialogAPI, appAPI, tsridDB, tsridSync, tsridDevice, tsridMode, tsridLogs, electronAPI');
