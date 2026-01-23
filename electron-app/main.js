@@ -93,12 +93,9 @@ function createWindow() {
   });
   
   // URL basierend auf Modus laden
-  let loadUrl = SCAN_URL; // Standard: Scan-App
+  let loadUrl = SCAN_URL; // Standard: Scan-App (Root mit PIN 3842)
   
   if (currentMode === 'admin') {
-    loadUrl = ADMIN_URL;
-  } else if (currentMode === 'setup') {
-    // Setup-Modus zeigt auch Admin-Portal für Konfiguration
     loadUrl = ADMIN_URL;
   }
   
