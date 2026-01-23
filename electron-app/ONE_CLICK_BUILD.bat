@@ -1,14 +1,14 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-REM TSRID Agent Installer v5.0
+REM TSRID Agent Installer v5.1
 
 if "%1"=="" (
     start "TSRID Installer" cmd /k "mode con: cols=85 lines=50 & color 0F & "%~f0" RUN"
     exit /b
 )
 
-title TSRID Agent Installer v5.0
+title TSRID Agent Installer v5.1
 cd /d "%~dp0"
 set "INSTALLERS_DIR=%~dp0installers"
 set "ERRORS=0"
@@ -22,7 +22,7 @@ cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.0
+echo                        TSRID AGENT INSTALLER v5.1
 echo.
 echo                        Automatic Agent Installer
 echo.
@@ -192,10 +192,18 @@ echo.
 set "VS_OK=0"
 echo   Suche Build Tools...
 
-if exist "%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\VC" set "VS_OK=1"
-if exist "%ProgramFiles%\Microsoft Visual Studio\2019\BuildTools\VC" set "VS_OK=1"
-if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC" set "VS_OK=1"
-if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" set "VS_OK=1"
+REM Pruefe verschiedene Pfade ohne Klammern-Problem
+set "VSCHECK1=%ProgramFiles%\Microsoft Visual Studio\2022\BuildTools\VC"
+set "VSCHECK2=%ProgramFiles%\Microsoft Visual Studio\2019\BuildTools\VC"
+set "VSCHECK3=%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC"
+
+if exist "!VSCHECK1!" set "VS_OK=1"
+if exist "!VSCHECK2!" set "VS_OK=1"
+if exist "!VSCHECK3!" set "VS_OK=1"
+
+REM Pruefe vswhere separat
+set "VSWHERE=C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe"
+if exist "!VSWHERE!" set "VS_OK=1"
 
 if "!VS_OK!"=="1" (
     echo   [OK] Visual Studio Build Tools gefunden
@@ -212,7 +220,7 @@ if "!VS_OK!"=="1" (
     )
     
     if exist "%INSTALLERS_DIR%\vs_BuildTools.exe" (
-        echo   Fuehre Installation aus (C++ Workload)...
+        echo   Fuehre Installation aus - C++ Workload...
         start /wait "" "%INSTALLERS_DIR%\vs_BuildTools.exe" --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --passive --norestart --wait
         echo   [OK] Build Tools installiert
         set "INSTALLED_SOMETHING=1"
@@ -265,7 +273,7 @@ cls
 echo.
 echo  ===========================================================================
 echo.
-echo                        TSRID AGENT INSTALLER v5.0
+echo                        TSRID AGENT INSTALLER v5.1
 echo.
 echo                              BUILD PROZESS
 echo.
@@ -282,7 +290,7 @@ echo       Python:     !npm_config_python!
 echo       VS Version: !npm_config_msvs_version!
 echo.
 echo   Starte npm install...
-echo   (Dies kann 2-5 Minuten dauern)
+echo   Dies kann 2-5 Minuten dauern - bitte warten...
 echo.
 
 call npm install 2>&1
@@ -290,7 +298,7 @@ set "NPM_RESULT=!errorLevel!"
 
 echo.
 if !NPM_RESULT! neq 0 (
-    echo   [!] npm install hatte Warnungen/Fehler - versuche mit --force
+    echo   [!] npm install hatte Warnungen - versuche mit --force
     echo.
     call npm install --force 2>&1
     set "NPM_RESULT=!errorLevel!"
@@ -299,23 +307,26 @@ if !NPM_RESULT! neq 0 (
 REM Pruefe ob electron-builder existiert
 if not exist "node_modules\electron-builder" (
     echo.
-    echo   [X] FEHLER: electron-builder nicht installiert!
-    echo.
-    echo   Versuche einzelne Installation...
+    echo   [!] electron-builder fehlt - installiere separat...
     call npm install electron-builder --save-dev 2>&1
+)
+
+if not exist "node_modules\electron" (
+    echo.
+    echo   [!] electron fehlt - installiere separat...
+    call npm install electron --save-dev 2>&1
 )
 
 if exist "node_modules\electron-builder" (
     echo.
     echo   [OK] NPM Dependencies installiert
-    echo       electron-builder: vorhanden
 ) else (
     echo.
     echo   [X] FEHLER: Dependencies konnten nicht installiert werden
     echo.
-    echo       Moegliche Loesung:
-    echo       1. node_modules Ordner loeschen
-    echo       2. Script erneut starten
+    echo       Loesungsvorschlag:
+    echo       1. Loeschen Sie den Ordner: node_modules
+    echo       2. Starten Sie das Script erneut
     echo.
     pause
     exit /b 1
@@ -328,11 +339,11 @@ REM SCHRITT 6: ELECTRON-REBUILD
 REM =========================================================================
 
 echo  ---------------------------------------------------------------------------
-echo   SCHRITT 6: Native Module kompilieren (electron-rebuild)
+echo   SCHRITT 6: Native Module kompilieren
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte electron-rebuild...
-echo   (Dies kann 2-5 Minuten dauern)
+echo   Dies kann 2-5 Minuten dauern - bitte warten...
 echo.
 
 call npx electron-rebuild -f 2>&1
@@ -342,7 +353,7 @@ echo.
 if !REBUILD_RESULT! equ 0 (
     echo   [OK] Native Module kompiliert
 ) else (
-    echo   [!] electron-rebuild hatte Warnungen (kann normal sein)
+    echo   [!] electron-rebuild hatte Warnungen - kann normal sein
 )
 echo.
 echo.
@@ -364,7 +375,7 @@ curl -s "https://tablet-fleet-sync.preview.emergentagent.com/api/agent/locations
 if exist "offline-data\locations_cache.json" (
     echo   [OK] Offline-Daten heruntergeladen
 ) else (
-    echo   [!] Keine Offline-Daten verfuegbar (wird spaeter geladen)
+    echo   [!] Keine Offline-Daten verfuegbar - wird spaeter geladen
 )
 echo.
 echo.
@@ -378,7 +389,7 @@ echo   SCHRITT 8: Windows Installer erstellen
 echo  ---------------------------------------------------------------------------
 echo.
 echo   Starte electron-builder...
-echo   (Dies kann 5-10 Minuten dauern)
+echo   Dies kann 5-10 Minuten dauern - bitte warten...
 echo.
 
 call npm run build:win 2>&1
@@ -390,7 +401,7 @@ if !BUILD_RESULT! equ 0 (
 ) else (
     echo   [X] FEHLER: Build fehlgeschlagen
     echo.
-    echo       Moegliche Loesungen:
+    echo       Loesungsvorschlaege:
     echo       1. PC neu starten
     echo       2. node_modules Ordner loeschen
     echo       3. Script erneut starten
