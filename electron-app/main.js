@@ -336,6 +336,33 @@ ipcMain.handle('window:isMaximized', () => {
   return mainWindow ? mainWindow.isMaximized() : false;
 });
 
+// ===== AGENT INFO API =====
+ipcMain.handle('agent:getSystemInfo', () => {
+  if (backgroundAgent && backgroundAgent.systemInfo) {
+    return backgroundAgent.systemInfo;
+  }
+  return null;
+});
+
+ipcMain.handle('agent:getDeviceId', () => {
+  if (backgroundAgent && backgroundAgent.deviceId) {
+    return backgroundAgent.deviceId;
+  }
+  return null;
+});
+
+ipcMain.handle('agent:getStatus', () => {
+  if (backgroundAgent) {
+    return {
+      status: backgroundAgent.status,
+      isRunning: backgroundAgent.isRunning,
+      lastHeartbeat: backgroundAgent.lastHeartbeat,
+      deviceId: backgroundAgent.deviceId
+    };
+  }
+  return null;
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {
