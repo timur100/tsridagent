@@ -1179,6 +1179,13 @@ const VerificationInterface = () => {
   };
 
   const handleAdminClick = () => {
+    // Wenn bereits als Admin eingeloggt, direkt AdminPanel öffnen
+    const isAdmin = sessionStorage.getItem('isAdmin') === 'true';
+    if (isAdmin) {
+      setIsAdminPanelOpen(true);
+      return;
+    }
+    // Sonst PIN-Eingabe anfordern
     setPinPadPurpose('admin');
     setIsPinPadOpen(true);
   };
