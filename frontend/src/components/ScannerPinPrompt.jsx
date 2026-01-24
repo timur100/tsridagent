@@ -212,11 +212,6 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
             );
           })}
         </div>
-
-        {/* Demo PIN Text */}
-        <p className="text-xs text-gray-600 text-center mt-6">
-          Demo PIN: 1234
-        </p>
       </div>
       
       {/* Logo unter dem PIN-Feld - klar sichtbar */}
