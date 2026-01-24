@@ -69,6 +69,10 @@ contextBridge.exposeInMainWorld('agentAPI', {
   getSystemInfo: () => ipcRenderer.invoke('agent:getSystemInfo'),
   getDeviceId: () => ipcRenderer.invoke('agent:getDeviceId'),
   getStatus: () => ipcRenderer.invoke('agent:getStatus'),
+  getDatabaseStats: () => ipcRenderer.invoke('agent:getDatabaseStats'),
+  getSyncLogs: () => ipcRenderer.invoke('agent:getSyncLogs'),
+  enableKioskMode: (pin) => ipcRenderer.invoke('agent:enableKioskMode', pin),
+  disableKioskMode: (pin) => ipcRenderer.invoke('agent:disableKioskMode', pin),
   isElectron: () => true
 });
 
