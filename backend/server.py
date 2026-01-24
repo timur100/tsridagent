@@ -396,6 +396,10 @@ app.include_router(mongodb_monitor_router)
 from routes.agent_api import router as agent_api_router
 app.include_router(agent_api_router)
 
+# Agent Registration API (Geräteregistrierung mit Stationscode)
+from routes.agent_registration import router as agent_registration_router
+app.include_router(agent_registration_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
