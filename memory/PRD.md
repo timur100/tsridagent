@@ -319,3 +319,36 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 - **Admin Login:** admin@tsrid.com / admin123
 - **Portal URL:** `/portal/admin`
 - **MongoDB Atlas:** M10 Cluster via MONGO_URL in .env
+- **Scan App User PIN:** 3842
+- **Scan App Admin PIN:** 9988
+- **Electron Exit Password:** tsrid2024!
+
+## 24. Januar 2025 - Rollenbasierte Zugriffskontrolle (RBAC)
+
+### ✅ FEATURE: Rollenbasierte Zugriffskontrolle für Agent-Informationen
+- **Problem:** System-/Agent-Informationen (TeamViewer-ID, Scanner-Seriennummern, MAC, IP, SQLite-DB-Statistiken, Sync-Status) waren für alle Benutzer im SideMenu sichtbar - sollte nur für Admins zugänglich sein.
+- **Lösung:**
+  1. **Neues Admin-Only Komponente erstellt:** `/app/frontend/src/components/AgentDeviceInfo.jsx`
+     - Zeigt alle Agent/System-Informationen in kollabierbare Sektionen
+     - Nur im Electron Agent verfügbar (zeigt Hinweis in Webbrowser)
+     - Erfordert Admin-Zugang (PIN 9988) im Admin Portal
+  2. **SideMenu bereinigt:** `/app/frontend/src/components/SideMenu.jsx`
+     - Alle Geräteinformationen-Anzeige entfernt
+     - Button "Administrator-Bereich (PIN: 9988)" für Admin-Zugang behalten
+  3. **RnDSidebar erweitert:** `/app/frontend/src/components/RnDSidebar.jsx`
+     - Neuer Menüpunkt "Agent/Geräteinformationen" unter "Test Center"
+  4. **AdminPortal.jsx aktualisiert:** Import und Rendering der neuen Komponente
+  5. **ScannerPinSettings.jsx aktualisiert:**
+     - "Demo PIN: 1234" durch korrekte PIN-Hinweise ersetzt
+     - Zeigt jetzt: "Benutzer-PIN: 3842" und "Admin-PIN: 9988"
+
+### Geänderte Dateien:
+- `/app/frontend/src/components/AgentDeviceInfo.jsx` (NEU)
+- `/app/frontend/src/components/SideMenu.jsx` (BEREINIGT)
+- `/app/frontend/src/components/RnDSidebar.jsx` (ERWEITERT)
+- `/app/frontend/src/pages/AdminPortal.jsx` (IMPORT HINZUGEFÜGT)
+- `/app/frontend/src/components/ScannerPinSettings.jsx` (PIN-TEXT AKTUALISIERT)
+
+### Neues ZIP-Archiv erstellt:
+- `/app/downloads/TSRID-Agent_2026-01-24_13-08.zip`
+
