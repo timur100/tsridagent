@@ -160,11 +160,13 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick, onShowPinPad 
           {/* Agent-Admin Button - zeigt PIN-Pad oder öffnet AdminPanel wenn bereits Admin */}
           <Button
             onClick={() => {
-              if (isAdmin) {
+              // Prüfe Admin-Status direkt aus sessionStorage
+              const currentlyAdmin = sessionStorage.getItem('isAdmin') === 'true';
+              
+              if (currentlyAdmin) {
                 // Bereits als Admin eingeloggt - direkt AdminPanel öffnen
                 onClose();
                 if (onAdminClick) {
-                  // Kleiner Delay damit das Menü erst schließt
                   setTimeout(() => onAdminClick(), 100);
                 }
               } else {
