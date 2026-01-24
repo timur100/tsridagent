@@ -1,15 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor } from 'lucide-react';
+import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor, Server, Database, RefreshCw, Clock, Scan } from 'lucide-react';
+import { Card } from './ui/card';
 import { Button } from './ui/button';
 
 const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showDeviceInfo, setShowDeviceInfo] = useState(false);
+  const [agentInfo, setAgentInfo] = useState(null);
+  const [dbStats, setDbStats] = useState(null);
+  const [isElectron, setIsElectron] = useState(false);
 
   useEffect(() => {
     // Prüfe ob User als Admin eingeloggt ist
     const adminStatus = sessionStorage.getItem('isAdmin') === 'true';
     setIsAdmin(adminStatus);
+    
+    // Prüfe ob Electron
+    if (window.agentAPI && window.agentAPI.isElectron) {
+      setIsElectron(true);
+    }
   }, [isOpen]);
+
+  const loadDeviceInfo = async () => {
+    if (!window.agentAPI) return;
+    
+    try {
+      const [systemInfo, status, dbStatsData] = await Promise.all([
+        window.agentAPI.getSystemInfo ? window.agentAPI.getSystemInfo() : Promise.resolve({}),
+        window.agentAPI.getStatus ? window.agentAPI.getStatus() : Promise.resolve({}),
+        window.agentAPI.getDatabaseStats ? window.agentAPI.getDatabaseStats() : Promise.resolve(null)
+      ]);
+      setAgentInfo({ ...systemInfo, ...status });
+      setDbStats(dbStatsData);
+    } catch (e) {
+      console.log('Agent Info nicht verfügbar:', e);
+    }
+  };
 
   const handleAdminLogin = async () => {
     const pin = prompt('Admin-PIN eingeben:');
@@ -106,6 +132,28 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
               );
             })}
           </div>
+          
+          {/* Admin-Only: Geräteinformationen */}
+          {isAdmin && isElectron && (
+            <div className="mb-4">
+              <Button
+                onClick={() => {
+                  setShowDeviceInfo(!showDeviceInfo);
+                  if (!showDeviceInfo && !agentInfo) loadDeviceInfo();
+                }}
+                variant="outline"
+                className="w-full gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
+              >
+                <Server className="h-4 w-4" />
+                Geräteinformationen
+                <span className="ml-auto">{showDeviceInfo ? '▲' : '▼'}</span>
+              </Button>
+              
+              {showDeviceInfo && (
+                <DeviceInfoPanel agentInfo={agentInfo} dbStats={dbStats} onRefresh={loadDeviceInfo} />
+              )}
+            </div>
+          )}
         </div>
         
         {/* Footer */}
@@ -124,6 +172,7 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
                 sessionStorage.removeItem('isAdmin');
                 sessionStorage.setItem('userRole', 'user');
                 setIsAdmin(false);
+                setShowDeviceInfo(false);
                 alert('Admin-Modus beendet');
               }}
               variant="outline"
@@ -150,6 +199,106 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
       </div>
     </>
   );
+};
+
+// Geräteinformationen Panel - NUR für Admins sichtbar
+const DeviceInfoPanel = ({ agentInfo, dbStats, onRefresh }) => {
+  if (!agentInfo) {
+    return (
+      <div className="mt-3 p-4 bg-muted/30 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground text-center">Lade Geräteinformationen...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 space-y-3">
+      {/* Agent Status */}
+      <div className="p-3 bg-muted/30 rounded-lg border border-border">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-semibold text-foreground flex items-center gap-1">
+            <Server className="h-3 w-3" /> Agent Status
+          </span>
+          <span className={`px-2 py-0.5 text-xs rounded-full ${
+            agentInfo.status === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {agentInfo.status === 'running' ? '● Online' : '○ Offline'}
+          </span>
+        </div>
+        <div className="space-y-1 text-xs">
+          <InfoRow label="Device ID" value={agentInfo.deviceId} mono />
+          <InfoRow label="Hostname" value={agentInfo.hostname} />
+          <InfoRow label="IP-Adresse" value={agentInfo.ipAddresses?.[0] || agentInfo.ipAddresses?.ipv4?.[0]} />
+          <InfoRow label="MAC-Adresse" value={agentInfo.macAddresses?.[0]} mono />
+          <InfoRow label="TeamViewer-ID" value={agentInfo.teamviewerId} mono />
+          <InfoRow label="PC-Serial" value={agentInfo.pcSerial} mono />
+          <InfoRow label="Scanner-Serial" value={agentInfo.connectedScanners?.[0]?.serial || 'Kein Scanner'} mono />
+          <InfoRow label="Heartbeat" value={agentInfo.lastHeartbeat} />
+        </div>
+      </div>
+
+      {/* SQLite Stats */}
+      {dbStats && (
+        <div className="p-3 bg-muted/30 rounded-lg border border-border">
+          <span className="text-xs font-semibold text-foreground flex items-center gap-1 mb-2">
+            <Database className="h-3 w-3" /> SQLite Datenbank
+          </span>
+          <div className="space-y-1 text-xs">
+            <InfoRow label="Größe" value={dbStats.dbSizeFormatted} />
+            <InfoRow label="Scans" value={dbStats.tables?.scans || 0} />
+            <InfoRow label="Standorte" value={dbStats.tables?.locations_cache || 0} />
+            <InfoRow label="Configs" value={dbStats.tables?.device_config || 0} />
+            {dbStats.unsyncedScans > 0 && (
+              <div className="mt-1 p-1.5 bg-yellow-500/20 rounded text-yellow-400 text-center">
+                ⚠ {dbStats.unsyncedScans} unsynced
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Atlas Sync */}
+      <div className="p-3 bg-muted/30 rounded-lg border border-border">
+        <span className="text-xs font-semibold text-foreground flex items-center gap-1 mb-2">
+          <RefreshCw className="h-3 w-3" /> Atlas Sync
+        </span>
+        {dbStats?.lastSync ? (
+          <div className="space-y-1 text-xs">
+            <InfoRow label="Letzter Sync" value={formatDate(dbStats.lastSync.completedAt)} />
+            <InfoRow label="Datensätze" value={dbStats.lastSync.recordsCount} />
+            <div className="mt-1 p-1.5 bg-green-500/20 rounded text-green-400 text-center">
+              ✓ Synchronisiert
+            </div>
+          </div>
+        ) : (
+          <div className="p-1.5 bg-yellow-500/20 rounded text-yellow-400 text-center text-xs">
+            ⚠ Noch nie synchronisiert
+          </div>
+        )}
+      </div>
+
+      {/* Refresh Button */}
+      <Button onClick={onRefresh} variant="outline" size="sm" className="w-full gap-2">
+        <RefreshCw className="h-3 w-3" /> Aktualisieren
+      </Button>
+    </div>
+  );
+};
+
+const InfoRow = ({ label, value, mono = false }) => (
+  <div className="flex items-center justify-between">
+    <span className="text-muted-foreground">{label}:</span>
+    <span className={`text-foreground truncate max-w-[150px] ${mono ? 'font-mono text-[10px]' : ''}`}>
+      {value || 'N/A'}
+    </span>
+  </div>
+);
+
+const formatDate = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  try {
+    return new Date(dateStr).toLocaleString('de-DE');
+  } catch { return dateStr; }
 };
 
 export default SideMenu;
