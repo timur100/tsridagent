@@ -6,7 +6,7 @@ import { useImpersonation } from '../contexts/ImpersonationContext';
 import { useTenant } from '../contexts/TenantContext';
 import { CustomerFilterProvider, useCustomerFilter } from '../contexts/CustomerFilterContext';
 import usePortalMetadata from '../hooks/usePortalMetadata';
-import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen, Fingerprint, Ticket, AlertTriangle, RefreshCw, Circle, MessageSquare, Lightbulb, FlaskConical, Car, ParkingCircle, Clock, CreditCard, Truck, TrendingUp, Eye, CheckCircle, DollarSign, Video, Radio, Activity, Grid3x3, UtensilsCrossed, Bike, Navigation, Calendar, Cpu, ChefHat, Database } from 'lucide-react';
+import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen, Fingerprint, Ticket, AlertTriangle, RefreshCw, Circle, MessageSquare, Lightbulb, FlaskConical, Car, ParkingCircle, Clock, CreditCard, Truck, TrendingUp, Eye, CheckCircle, DollarSign, Video, Radio, Activity, Grid3x3, UtensilsCrossed, Bike, Navigation, Calendar, Cpu, ChefHat, Database, Maximize2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import ThemeToggle from '../components/ThemeToggle';
