@@ -3,21 +3,42 @@ import { X, Delete } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+
 const PinPad = ({ isOpen, onClose, onSuccess }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
-  const correctPin = '1234'; // Demo PIN
+  const [loading, setLoading] = useState(false);
 
-  const handleNumberClick = (num) => {
-    if (pin.length < 4) {
+  const checkPinWithBackend = async (pinToCheck) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/scanner-pin/check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: pinToCheck })
+      });
+      
+      const data = await response.json();
+      return data.valid === true;
+    } catch (e) {
+      console.error('PIN check failed:', e);
+      // Fallback: Akzeptiere Admin-PIN lokal
+      return pinToCheck === '9988' || pinToCheck === '3842';
+    }
+  };
+
+  const handleNumberClick = async (num) => {
+    if (pin.length < 4 && !loading) {
       const newPin = pin + num;
       setPin(newPin);
       setError(false);
       
       // Auto-check when 4 digits entered
       if (newPin.length === 4) {
-        setTimeout(() => {
-          if (newPin === correctPin) {
+        setLoading(true);
+        setTimeout(async () => {
+          const isValid = await checkPinWithBackend(newPin);
+          if (isValid) {
             onSuccess();
             setPin('');
           } else {
@@ -27,6 +48,7 @@ const PinPad = ({ isOpen, onClose, onSuccess }) => {
               setError(false);
             }, 1000);
           }
+          setLoading(false);
         }, 200);
       }
     }
@@ -50,87 +72,87 @@ const PinPad = ({ isOpen, onClose, onSuccess }) => {
       onClick={onClose}
     >
       <Card 
-        className="bg-card border-4 border-primary/40 p-8 max-w-md w-full animate-in zoom-in duration-300"
+        className="w-full max-w-sm bg-card p-6 rounded-2xl border-2 border-border"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-foreground">PIN Eingabe</h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
-            <X className="h-6 w-6 text-foreground" />
+          <h2 className="text-lg font-bold text-foreground">PIN eingeben</h2>
+          <button onClick={onClose} className="p-2 hover:bg-muted rounded-lg transition-colors">
+            <X className="h-5 w-5 text-foreground" />
           </button>
         </div>
-        
+
         {/* PIN Display */}
-        <div className="mb-8">
-          <div className={`flex justify-center gap-4 mb-4 transition-all ${
-            error ? 'animate-shake' : ''
-          }`}>
+        <div className="mb-6">
+          <div className={`flex justify-center gap-3 p-4 rounded-xl ${error ? 'bg-red-500/20' : 'bg-muted/50'}`}>
             {[0, 1, 2, 3].map((i) => (
               <div
                 key={i}
-                className={`w-16 h-16 rounded-lg border-4 flex items-center justify-center transition-all ${
+                className={`w-4 h-4 rounded-full border-2 transition-colors ${
                   error 
-                    ? 'border-destructive bg-destructive/10' 
-                    : pin.length > i 
-                    ? 'border-primary bg-primary/20' 
-                    : 'border-border bg-muted/30'
+                    ? 'border-red-500 bg-red-500' 
+                    : i < pin.length 
+                      ? 'border-primary bg-primary' 
+                      : 'border-muted-foreground'
                 }`}
-              >
-                {pin.length > i && (
-                  <div className={`w-4 h-4 rounded-full ${
-                    error ? 'bg-destructive' : 'bg-primary'
-                  }`} />
-                )}
-              </div>
+              />
             ))}
           </div>
           {error && (
-            <p className="text-center text-destructive font-semibold animate-in fade-in duration-200">
-              Falsche PIN!
+            <p className="text-center text-red-500 text-sm mt-2 animate-pulse">
+              Falsche PIN. Bitte erneut versuchen.
+            </p>
+          )}
+          {loading && (
+            <p className="text-center text-muted-foreground text-sm mt-2">
+              Prüfe PIN...
             </p>
           )}
         </div>
-        
+
         {/* Number Pad */}
-        <div className="grid grid-cols-3 gap-3 mb-4">
+        <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
             <Button
               key={num}
-              onClick={() => handleNumberClick(num.toString())}
-              className="h-16 text-2xl font-bold bg-muted hover:bg-primary/20 text-foreground"
-              disabled={pin.length >= 4}
+              onClick={() => handleNumberClick(String(num))}
+              variant="outline"
+              disabled={loading}
+              className="h-14 text-xl font-bold hover:bg-primary/10 border-2"
             >
               {num}
             </Button>
           ))}
           <Button
             onClick={handleClear}
-            className="h-16 text-lg font-semibold bg-muted hover:bg-destructive/20 text-foreground"
+            variant="outline"
+            disabled={loading}
+            className="h-14 text-sm font-medium hover:bg-red-500/10 text-red-500 border-2"
           >
-            C
+            Löschen
           </Button>
           <Button
             onClick={() => handleNumberClick('0')}
-            className="h-16 text-2xl font-bold bg-muted hover:bg-primary/20 text-foreground"
-            disabled={pin.length >= 4}
+            variant="outline"
+            disabled={loading}
+            className="h-14 text-xl font-bold hover:bg-primary/10 border-2"
           >
             0
           </Button>
           <Button
             onClick={handleDelete}
-            className="h-16 bg-muted hover:bg-destructive/20 text-foreground"
+            variant="outline"
+            disabled={loading}
+            className="h-14 hover:bg-yellow-500/10 text-yellow-500 border-2"
           >
-            <Delete className="h-6 w-6" />
+            <Delete className="h-5 w-5" />
           </Button>
         </div>
-        
+
         {/* Hint */}
-        <p className="text-center text-xs text-muted-foreground">
-          Demo PIN: 1234
+        <p className="text-xs text-muted-foreground text-center mt-4">
+          Benutzer-PIN: 3842 | Admin-PIN: 9988
         </p>
       </Card>
     </div>
