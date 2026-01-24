@@ -63,7 +63,7 @@ const TechnicianPortal = () => {
 
   const fetchOrders = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://tablet-fleet-sync.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://agent-hub-77.preview.emergentagent.com';
       const statusMap = {
         'ready': 'picked',
         'inProgress': 'configuration',
@@ -88,7 +88,7 @@ const TechnicianPortal = () => {
   const startConfiguration = async (orderId) => {
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://tablet-fleet-sync.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://agent-hub-77.preview.emergentagent.com';
       const response = await fetch(
         `${backendUrl}/api/fulfillment/configuration/start?order_id=${orderId}`,
         {
@@ -122,7 +122,7 @@ const TechnicianPortal = () => {
 
     setLoading(true);
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://tablet-fleet-sync.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://agent-hub-77.preview.emergentagent.com';
       const response = await fetch(
         `${backendUrl}/api/fulfillment/configuration/complete`,
         {

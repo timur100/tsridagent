@@ -1,67 +1,58 @@
 <analysis>**original_problem_statement:**
-The user's initial goal was to stabilize a highly unstable application, fix severe performance issues, and migrate the entire stack to a shared MongoDB Atlas cluster to create a Single Source of Truth.
-
-During the previous session, the agent fixed numerous black screen crashes and implemented a System Health dashboard which identified a critical database connection leak.
-
-In this session, the user's focus shifted twice. First, they reported that the dashboard tiles on the tenant-specific page were showing incorrect data (zeros). After this was fixed, the user initiated a major new feature request: an Offline-First Agent with Kiosk-Mode.
+The user's initial goal was to stabilize an unstable application, fix performance issues, and migrate the entire stack to a shared MongoDB Atlas cluster. After these were addressed, the user requested a major new feature: an Offline-First Agent with Kiosk-Mode.
 
 PRODUCT REQUIREMENTS:
-- Fix the bug where tenant-specific dashboard tiles show incorrect statistics.
-- Architect and begin implementation of a new Offline-First Electron Agent for customer tablets. This agent must:
-    - Run on Windows 11.
-    - Access hardware like USB scanners (Regula, Desko).
-    - Have a password-protected admin area (, ).
-    - Use a local SQLite database for offline data storage.
-    - Synchronize data in real-time with the central MongoDB Atlas database.
-    - Be configurable for specific locations.
-    - Support remote updates.
-- Create a fully automated, one-click build script () for the Electron app that handles the entire installation process on a fresh Windows machine, including installing all prerequisites (Node.js, Python, VS Build Tools).
+- An Electron-based agent application for Windows 11 tablets.
+- The agent must access hardware like USB scanners (Regula, Desko).
+- It must have a role-based access system:
+    - **Normal User (PIN: 3842):** Access to the scanning application.
+    - **Admin (PIN: 9988):** Access to an administrative area with detailed system information and configuration options.
+- The agent must run as a background process, accessible via a System Tray icon.
+- It must collect and display extensive system information: TeamViewer ID, PC/Scanner serial numbers, MAC addresses, IP, hardware hash, GPS, etc.
+- Use a local SQLite database for offline data storage, which synchronizes with a central MongoDB Atlas database.
+- Create a fully automated, one-click build script () for the Electron app that handles the entire installation process on a fresh Windows machine, including prerequisites (Node.js, Python, VS Build Tools).
 - Create a downloadable ZIP archive containing the Electron app source and the automated build scripts.
 
 **User's preferred language**: German
 
 **what currently exists?**
-The main web application is stable. The critical P0 issue from the last fork—a massive MongoDB connection pool leak—has been successfully resolved by fixing syntax and logic errors in over 30 backend files. This was verified via the Health Monitor, which showed active connections dropping from ~400 to 15.
+The main web application is stable, with critical bugs (DB connection leaks, incorrect dashboard data) having been fixed.
 
-The subsequent bug with the tenant dashboard tiles showing incorrect data has also been fixed. The agent corrected both the backend API () to provide accurate, tenant-specific counts and the frontend () to display them.
+The primary focus has been building the Offline-First Electron Agent. A robust, one-click build script () has been created and successfully debugged through many iterations, solving complex environment and compilation issues on Windows.
 
-A new major feature, the Offline-First Electron Agent, is now underway. The agent has created the foundational architecture, file structure, backend APIs (), and initial Electron modules for SQLite, device info, and data synchronization.
+The Electron application itself has been built out significantly. It now functions as a wrapper for the existing web application and includes a background agent process. This background agent runs in the Windows System Tray, sends status heartbeats, and collects a wide range of system/hardware information. UI controls for switching between the Scan App and Admin Portal, and for toggling fullscreen mode, have been added directly into the web application's header. The application and installer are now correctly branded with a custom TSRID icon.
 
-Most recently, the agent created and iteratively improved an automated one-click build script () designed to set up the Electron app on Windows, complete with prerequisite installation. A downloadable ZIP file containing the app's source and these scripts has been provided to the user.
+The agent was in the process of a major refactoring to implement a strict role-based access system as requested by the user.
 
 **Last working item**:
-- **Last item agent was working:** Iterating on the  script for the new Electron-based Offline Agent. The user ran the script and provided an error log showing it failed during the 
-added 3 packages, and audited 7 packages in 2s
-
-found 0 vulnerabilities step because it couldn't find a Python installation, which is required to compile native dependencies like . The user also requested a more user-friendly UI for the script, including a progress bar.
+- **Last item agent was working:** Refactoring the application to implement a clear role-based access system based on PINs. The goal is to separate normal user (PIN 3842) functionality from admin (PIN 9988) functionality. The agent was modifying the backend, frontend, and Electron code to ensure that detailed system, database, and sync information is only visible to users logged in as an admin, within a dedicated section of the admin portal.
 - **Status:** IN PROGRESS
 - **Agent Testing Done:** N
-- **Which testing method agent to use?** N/A. The user is performing the tests on their local Windows environment. The next step is for the agent to debug the batch script using the error log provided by the user.
-- **User Testing Done:** Y
+- **Which testing method agent to use?** N/A. The next agent must first complete the implementation. Afterward, a new ZIP archive must be created for the user to perform manual testing on their Windows machine.
+- **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
-- **Issue 1:** Fix the  script (P0)
+- **Issue 1:** Complete Role-Based Access Control and Information Display (P0)
 - **Issue 2:** Complete Single Source of Truth migration by removing mock data from  (P2)
 - **Issue 3:** Complete the implementation of the Offline-First Electron Agent (Phases 2-4) (P1)
-- **Issue 4:** Verify performance on the production server (P2)
-- **Issue 5:** Debug and Finalize Printer Support in Electron App (P3)
+- **Issue 4:** Debug and Finalize Printer Support in Electron App (P3)
 
 **Issues Detail:**
-- **Issue 1: Fix the  script**
-    - **Attempted fixes:** The agent created a batch script to check for and install Node.js, Python, and VS Build Tools using , then build the app. The script's command-line UI was also improved based on feedback.
+- **Issue 1: Complete Role-Based Access Control and Information Display**
+    - **Attempted fixes:** The agent started modifying  to return user roles,  to handle roles, and  to conditionally show information. The work is incomplete.
     - **Next debug checklist:**
-        1. Analyze the user's error log from . The key errors are  and a confusing Python status message, indicating the  installation didn't correctly update the  for the current script session.
-        2. Modify :
-            - Improve the prerequisite check logic. The script must reliably detect Python and the VS Build Tools *after* their installation, potentially by restarting itself or launching the build step in a new process to refresh environment variables.
-            - Change the UI text from Vollautomatische Installation - Ein Klick genuegt to Automatic Agent Installer as requested.
-            - Implement a visual progress indicator for lengthy operations like downloads and 
-up to date, audited 7 packages in 555ms
-
-found 0 vulnerabilities. This can be simulated in a batch file by echoing progress steps or using a loop to print dots.
-    - **Why fix this issue and what will be achieved with the fix?** This is critical for the user to deploy the agent across 100+ tablets. A reliable, automated installer is a core requirement.
+        1.  Finalize the backend logic in  to correctly validate both PINs ( -> 'user',  -> 'admin').
+        2.  Update the frontend to store the user's role after login.
+        3.  Create a new dedicated Agent/Device Info page/component within the Administrator-Bereich.
+        4.  Move all agent/system/db/sync information display logic from  to this new admin-only page.
+        5.  Ensure  is clean and no longer contains this logic.
+        6.  Remove the Demo PIN: 1234 text from .
+        7.  Verify scanner serial numbers are being correctly collected and displayed on the new admin page.
+        8.  Create a new, complete ZIP archive for user testing.
+    - **Why fix this issue and what will be achieved with the fix?** This is a critical security and usability requirement from the user to protect sensitive system information and provide a clear separation between user and admin roles.
     - **Status:** IN PROGRESS
     - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** N/A (User tests the script locally).
+    - **Should Test frontend/backend/both after fix?** The Electron App (user-tested).
     - **Blocked on other issue:** None.
 
 - **Issue 2: Complete Single Source of Truth migration**
@@ -74,25 +65,25 @@ found 0 vulnerabilities. This can be simulated in a batch file by echoing progre
     - **Blocked on other issue:** None.
 
 - **Issue 3: Complete the implementation of the Offline-First Electron Agent (Phases 2-4)**
-    - **Next debug checklist:** Follow the plan in . Phase 2 is Scanner Integration, followed by UI Implementation and Sync Engine refinement.
-    - **Why fix this issue and what will be achieved with the fix?** This will deliver the main feature requested by the user in this session.
-    - **Status:** NOT STARTED
+    - **Next debug checklist:** Follow the plan in . This includes full scanner integration (Regula/Desko), UI polishing, and activating the sync engine.
+    - **Why fix this issue and what will be achieved with the fix?** This will deliver the main feature requested by the user.
+    - **Status:** PARTIALLY STARTED
     - **Is recurring issue?** N
     - **Should Test frontend/backend/both after fix?** The Electron App and its backend APIs.
-    - **Blocked on other issue:** Issue 1. The user wants to build and test the current version before development continues.
+    - **Blocked on other issue:** Blocked on Issue 1.
 
 **In progress Task List**:
-- **Task 1: Create a robust, one-click installer for the Electron Agent**
-    - **Where to resume:** Modifying  to correctly handle the installation of Python and other build dependencies on Windows and to provide better user feedback (UI text, progress bar).
-    - **What will be achieved with this?** A working, user-friendly deployment script for the new Electron agent.
+- **Task 1: Complete the Role-Based Access Control feature**
+    - **Where to resume:** The task is mid-implementation. Resume by reviewing the files modified in the last few steps (, , ) and completing the checklist outlined in Issue 1 above.
+    - **What will be achieved with this?** A clear, secure separation of user and admin roles, with sensitive system information protected behind the admin PIN.
     - **Status:** IN PROGRESS
-    - **Should Test frontend/backend/both after fix?** N/A.
-    - **Blocked on something:** User feedback and local testing.
+    - **Should Test frontend/backend/both after fix?** The Electron App (user-tested).
+    - **Blocked on something:** None.
 
 **Upcoming and Future Tasks**
 *   **Upcoming Tasks:**
-    *   **P1 - Phase 2: Scanner Integration:** Integrate Regula & Desko USB scanners into the Electron app.
-    *   **P1 - Phase 3: UI Implementation:** Build the Kiosk and Admin interfaces for the Electron app.
+    *   **P1 - Full Scanner Integration:** Deeply integrate Regula & Desko USB scanners, ensuring data from scans is correctly captured and processed by the agent.
+    *   **P1 - Sync Engine Activation:** Activate and test the SQLite-to-MongoDB data synchronization engine ().
     *   **P2 -  Refactoring:** Complete the migration from mock data to MongoDB.
 *   **Future Tasks:**
     *   Webcam for Asset Photos
@@ -101,19 +92,15 @@ found 0 vulnerabilities. This can be simulated in a batch file by echoing progre
     *   **P3 - Printer Support in Electron App**
 
 **Completed work in this session**
-- **CRITICAL FIX - MongoDB Connection Pool Leak:**
-    - Repaired syntax and logic errors in over 30 backend route files caused by a faulty refactoring script.
-    - Successfully reduced active MongoDB connections from **~400 to 15**, stabilizing the backend.
-- **BUGFIX - Tenant Dashboard Stats:**
-    - Corrected the  endpoint to return accurate, tenant-specific data.
-    - Updated the  component to consume the new data fields, fixing all incorrect 0 counts on the dashboard tiles.
-- **FEATURE - Offline-First Electron Agent (Phase 1 - Scaffolding):**
-    - Created detailed architecture and planning documents (, , etc.).
-    - Implemented the backend API () for agent communication.
-    - Built the initial Electron application structure with services for database (), device info, and a mode manager for switching between Kiosk and Admin modes.
-- **FEATURE - Automated Electron App Installer:**
-    - Developed and iterated on , a script to fully automate the setup and build process on Windows.
-    - Created a downloadable ZIP archive containing the source code and build scripts for the user.
+- **FEATURE - Automated Electron App Installer ():** Iteratively debugged and fixed numerous complex build issues (Python PATH,  compilation,  dependency, missing icons), resulting in a reliable one-click build script.
+- **FEATURE - Background Agent Service:** Implemented an agent that runs in the System Tray, collects extensive system/hardware information (TeamViewer ID, serials, MAC, etc.), and sends status heartbeats.
+- **FEATURE - Kiosk/Admin Mode Switching & UI Controls:**
+    - Added buttons in the web UI header () and side menu () for seamless switching between the Scan App and Admin Portal.
+    - Added a button in the Admin Portal to toggle fullscreen mode.
+- **FEATURE - Enhanced Window/App Controls:**
+    - Made the application window movable, resizable, and minimizable.
+    - Implemented a password-protected exit mechanism via the System Tray icon to prevent accidental closure.
+- **FEATURE - Branding:** Created and integrated a professional TSRID logo for the installer, application , and System Tray icon.
 
 **Earlier issues found/mentioned but not fixed**
 None.
@@ -127,79 +114,77 @@ None.
 
 
 **Key Technical Concepts**
-- **Batch Scripting ():** Extensive use of advanced batch commands to create a robust installer, including admin rights checks, using  for silent package installation, and managing environment variables.
-- **Electron App Architecture:** Established a clear separation of concerns in the Electron app with a main process handling system-level tasks (DB, hardware) and exposing a secure API to the renderer process via .
-- **Backend Refactoring & Debugging:** The session involved a major cleanup of the Python backend, fixing dozens of files to resolve a critical performance issue, demonstrating systematic debugging of a large codebase.
-- **API-Driven UI Development:** The tenant dashboard fix was a classic example of identifying a UI bug, tracing it to an API data gap, fixing the API, and then updating the UI component to consume the correct data.
+- **Electron Main/Renderer Communication:** Using , , and  to expose Node.js functionality (window controls, system info, quitting the app) to the React frontend in a secure way.
+- **Batch Scripting ():** Advanced scripting to create a robust installer, handling prerequisite installation (), environment variable configuration (), and step-by-step error checking.
+- ** & Native Modules:** Debugging the compilation of native C++ modules like , which required specific build commands () and fixing Python environment issues (Looking in indexes: https://pypi.org/simple, https://d33sy5i8bnduwe.cloudfront.net/simple/
+Requirement already satisfied: setuptools in /root/.venv/lib/python3.11/site-packages (80.9.0) for ).
+- **Role-Based Access Control (RBAC):** Implementing a simple RBAC system in the frontend and backend based on different PINs to control access to features and information.
 
 **key DB schema**
-No new collections were added. Logic for querying the existing  and  collections was improved to provide accurate dashboard statistics.
+- **SQLite ():** A  function was added to query local DB statistics (table counts, file size).
+- **MongoDB:** No schema changes.
 
 **All files of reference**
-- : The primary script currently being debugged and developed.
-- : Was modified to fix tenant dashboard stats.
-- : Was modified to fix tenant dashboard stats.
-- : The architectural blueprint for the new agent.
-- : The step-by-step plan for building the new agent.
-- : The latest downloadable artifact for the user.
+- : The automated installer script.
+- : Main Electron process, handles windowing, tray icon, and background tasks.
+- : Logic for the system tray agent, heartbeats, and data collection.
+- : Gathers detailed hardware/software information.
+- : The UI for PIN entry.
+- : The burger menu in the scan app.
+- : The API endpoint for validating PINs.
 
 **Areas that need refactoring**:
-- The  script needs to be refactored to be more resilient, especially concerning how it handles environment variable changes after installing new software like Python.
+- The current task is a refactor to move agent information from  into a new, admin-only component.
 
 **key api endpoints**
-- : (NEW) Allows a new Electron agent to register itself with the backend.
-- : (NEW) A heartbeat endpoint for agents to send status updates.
-- : (MODIFIED) Now returns comprehensive statistics for a specific tenant.
+- : (MODIFIED) This endpoint now needs to be finalized to return a user  ('user' or 'admin') based on the PIN provided.
+- **IPC Handlers:** , , , .
 
 **Critical Info for New Agent**
 - **Speak German.** The user communicates exclusively in German.
-- **Current Priority:** The immediate and highest priority task (P0) is to fix the  script. Use the user's error log in  as the starting point. The script fails because it cannot find Python to compile native Node.js modules. You must solve this and also add the requested UI improvements (text change, progress bar).
-- **User Is Testing:** The user is the one testing the build scripts on their local Windows machine. Your role is to provide a new ZIP file with the updated script for them to test. Do not proceed with other features until the user confirms the build process is working.
-- **New Feature Focus:** The user has deprioritized all previous tasks in favor of the new Offline-First Electron Agent. Your main goal after fixing the installer is to follow the .
+- **Current P0 Priority:** Immediately resume and complete the role-based access refactoring. The user wants a strict separation between the normal user (PIN 3842) and the admin (PIN 9988). All system/agent information must be moved to a new, dedicated page accessible only by admins.
+- **Test with a clean slate:** The user wants every new ZIP to work from a clean state. The  script now handles this by deleting old  and  folders before building.
+- **The Agent is a dual concept:** It's both the visible Electron window (showing the web app) AND the background process running in the system tray. Both are part of the same .
+- **Frontend changes are live:** Changes to the React app are deployed automatically and will be reflected inside the Electron app on the next launch. You only need to create a new Electron  package if you change files inside the  directory.
 
 **documents and test reports created in this job**
-- **/app/memory/PRD.md** (Updated)
-- **/app/electron-app/OFFLINE_AGENT_ARCHITEKTUR.md**
-- **/app/electron-app/MASTER_IMAGE_GUIDE.md**
-- **/app/electron-app/IMPLEMENTATION_ROADMAP.md**
-- **/app/electron-app/WINDOWS_BUILD_TEST.md**
-- **/app/electron-app/ONE_CLICK_BUILD.bat** (and other helper scripts)
-- **/app/downloads/TSRID-Agent_2025-01-23_19-55.zip**
+-  (and many previous versions)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1. **User:** total devices and total locations are wrong - **Status: COMPLETE**. Agent fixed the backend counting logic.
-2. **User:** total devices on tenant europcar shows 0... - **Status: COMPLETE**. Agent fixed the frontend data binding.
-3. **User:** Asks to create an offline-first Electron agent for tablets. - **Status: COMPLETE**. Agent created an architectural plan.
-4. **User:** Provides hardware and OS specifics for the agent. - **Status: COMPLETE**. Agent refined the plan.
-5. **User:** Confirms deployment scale (100 tablets) and asks to proceed. - **Status: COMPLETE**. Agent created deployment guides.
-6. **User:** Approves the plan and asks to begin implementation. - **Status: COMPLETE**. Agent started Phase 1.
-7. **User:** Requests that the manual build steps be automated. - **Status: COMPLETE**. Agent created build scripts.
-8. **User:** Provides an error log showing the build script failed (). - **Status: COMPLETE**. Agent updated the script to install prerequisites.
-9. **User:** Asks to merge the prerequisite installer into the main script and improve the UI. - **Status: COMPLETE**. Agent provided a new, improved script.
-10. **User:** Provides a new error log from the improved script, showing it still fails to find Python and lacks a progress bar. - **Status: PENDING**. This is the current task to be resolved.
+1.  **User:** Asks for a button in the Admin Portal header to switch back to the Scan App. **Status: COMPLETE.**
+2.  **User:** Asks what/where the background agent is. **Status: COMPLETE.** Agent explained the concept and then implemented the background agent with a system tray icon and data collection.
+3.  **User:** Asks to collect more specific data like TeamViewer-ID, serials, MAC, IP, hash, GPS. **Status: COMPLETE.**
+4.  **User:** Reports the new tray icon and background features are not visible/working. **Status: COMPLETE.** Agent created a more robust version with better error handling and UI feedback.
+5.  **User:** Asks for a fullscreen toggle button in the Admin Portal header and clarification on the agent architecture. **Status: COMPLETE.**
+6.  **User:** Reports the installer and tray are missing the TSRID logo/icon. **Status: COMPLETE.** Agent created and integrated professional icons.
+7.  **User:** Requests window be movable/minimizable, exit be password-protected via tray, and all tray info be visible in the agent's burger menu. **Status: COMPLETE.**
+8.  **User:** Requests Kiosk mode only be enabled with admin PIN , and that SQLite/Atlas sync info be added to the display. **Status: COMPLETE.**
+9.  **User:** Clarifies that all the agent/system info should ONLY be visible to admins (PIN 9988) in a separate menu, NOT for normal users (PIN 3842). **Status: PENDING.** This initiated the current refactoring task.
+10. **User:** Asks for the scanner serial number to be included in the collected data. **Status: PENDING.** This was added to the scope of the current task.
 
 **Project Health Check:**
-- **Broken:** The automated build script () for the new Electron app is broken and fails on the user's machine. The main web application is stable.
-- **Mocked:** Yes,  still uses mock data.
+- **Broken:** The application is in a mid-refactoring state. The agent/system information is visible to all users in the side menu, which contradicts the latest user requirement. This must be fixed before the next release.
+- **Mocked:** The  endpoints still use mock data instead of querying the database.
 
 **3rd Party Integrations**
 *   MongoDB Atlas
 *   Electron
-*   Paramiko
-*   **New:**  (for local DB in Electron)
+*    (for local DB in Electron)
+*    (for collecting system data)
+*    /  (for USB device detection)
 
 **Testing status**
 - **Testing agent used after significant changes:** NO
 - **Troubleshoot agent used after agent stuck in loop:** NO
 - **Test files created:** []
-- **Known regressions:** None in the web app.
+- **Known regressions:** None.
 
 **Credentials to test flow:**
-*   **Web Portal URL:** 
-*   **Username:** 
-*   **Password:** 
-*   **Electron Agent Admin PIN:** 
-*   **Electron Agent Admin Password:** 
+*   **Web Portal Login:**  / 
+*   **Scan App User PIN:** 
+*   **Scan App Admin PIN:** 
+*   **Electron Admin Portal Password (for shortcut):** 
+*   **Electron Exit Password:** 
 
 **What agent forgot to execute**
-The agent correctly prioritized user requests and did not forget to execute any tasks. The previously planned work on  was appropriately deferred.</analysis>
+The agent has followed the user's requests closely and has not forgotten to execute any tasks. Priorities were shifted according to user feedback.</analysis>
