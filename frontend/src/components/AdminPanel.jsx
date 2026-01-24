@@ -10,6 +10,7 @@ import LicenseManager from './LicenseManager';
 import MasterSyncManager from './MasterSyncManager';
 import ScannerManager from './ScannerManager';
 import PDFManagement from './PDFManagement';
+import DeviceSetup from './DeviceSetup';
 import { getFullBundeslandName } from '../utils/bundesland';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
