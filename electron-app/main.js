@@ -403,6 +403,60 @@ ipcMain.handle('agent:disableKioskMode', (event, pin) => {
   return { success: false, message: 'Falscher PIN' };
 });
 
+// Neue Handler für Geräteeinrichtung
+ipcMain.handle('agent:getDeviceConfig', async () => {
+  try {
+    const configPath = path.join(app.getPath('userData'), 'device-config.json');
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+      return config;
+    }
+    return null;
+  } catch (e) {
+    console.error('Error reading device config:', e);
+    return null;
+  }
+});
+
+ipcMain.handle('agent:saveDeviceConfig', async (event, config) => {
+  try {
+    const configPath = path.join(app.getPath('userData'), 'device-config.json');
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 2));
+    return { success: true };
+  } catch (e) {
+    console.error('Error saving device config:', e);
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('agent:syncLocations', async (event, locations) => {
+  try {
+    // Speichere Standorte in SQLite für Offline-Zugriff
+    if (db && db.syncLocations) {
+      db.syncLocations(locations);
+    }
+    // Speichere auch als JSON-Backup
+    const locationsPath = path.join(app.getPath('userData'), 'locations-cache.json');
+    fs.writeFileSync(locationsPath, JSON.stringify({
+      locations,
+      synced_at: new Date().toISOString()
+    }, null, 2));
+    return { success: true, count: locations.length };
+  } catch (e) {
+    console.error('Error syncing locations:', e);
+    return { success: false, error: e.message };
+  }
+});
+
+ipcMain.handle('agent:quitApp', async () => {
+  try {
+    app.quit();
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {
