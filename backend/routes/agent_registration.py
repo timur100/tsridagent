@@ -7,14 +7,20 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorClient
+from dotenv import load_dotenv
+from pathlib import Path
 import os
 import uuid
+
+# Load .env file first
+ROOT_DIR = Path(__file__).parent.parent
+load_dotenv(ROOT_DIR / '.env')
 
 router = APIRouter(prefix="/api/agent", tags=["Agent Registration"])
 
 # MongoDB connection (gleiche wie locations.py)
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-DB_NAME = os.environ.get('DB_NAME', 'test_database')
+DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
 
