@@ -53,6 +53,7 @@ import ResourcesManagement from './ResourcesManagement';
 import SettingsSidebar from '../components/SettingsSidebar';
 import RnDSidebar from '../components/RnDSidebar';
 import VehicleManagement from '../components/VehicleManagement';
+import AgentDeviceInfo from '../components/AgentDeviceInfo';
 import QuickMenuManagement from '../components/QuickMenuManagement';
 import CustomerSwitcher from '../components/CustomerSwitcher';
 import ServicesConfiguration from '../components/ServicesConfiguration';
