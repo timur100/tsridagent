@@ -1,84 +1,72 @@
 /**
- * TSRID Background Agent Service
- * Läuft im Hintergrund, sammelt Daten und synchronisiert mit Backend
+ * TSRID Background Agent Service - Simplified & Robust
  */
 
-const { app, Tray, Menu, nativeImage, Notification } = require('electron');
+const { app, Tray, Menu, nativeImage, Notification, dialog } = require('electron');
 const path = require('path');
+const os = require('os');
+const { exec } = require('child_process');
+const crypto = require('crypto');
 const https = require('https');
-const http = require('http');
-const systemInfoCollector = require('./system-info-collector');
-const database = require('./database');
 
 class BackgroundAgent {
   constructor() {
     this.tray = null;
+    this.mainWindow = null;
     this.isRunning = false;
     this.heartbeatInterval = null;
-    this.syncInterval = null;
-    this.config = {
-      serverUrl: 'https://tablet-fleet-sync.preview.emergentagent.com',
-      heartbeatIntervalMs: 30000,  // 30 Sekunden
-      fullSyncIntervalMs: 300000,  // 5 Minuten
-      retryDelayMs: 10000          // 10 Sekunden bei Fehler
-    };
     this.deviceId = null;
+    this.systemInfo = null;
     this.lastHeartbeat = null;
-    this.lastSync = null;
     this.status = 'initializing';
-    this.errorCount = 0;
+    this.serverUrl = 'https://tablet-fleet-sync.preview.emergentagent.com';
   }
 
   /**
    * Agent initialisieren
    */
   async init(mainWindow) {
-    console.log('[BackgroundAgent] Initialisiere...');
+    console.log('[Agent] ========================================');
+    console.log('[Agent] TSRID Background Agent wird gestartet...');
+    console.log('[Agent] ========================================');
+    
     this.mainWindow = mainWindow;
     
     try {
-      // Device ID laden oder generieren
-      this.deviceId = database.getConfig('device_id');
-      if (!this.deviceId) {
-        this.deviceId = this.generateDeviceId();
-        database.setConfig('device_id', this.deviceId);
-      }
+      // Device ID generieren
+      this.deviceId = this.generateDeviceId();
+      console.log('[Agent] Device ID:', this.deviceId);
       
-      console.log('[BackgroundAgent] Device ID:', this.deviceId);
+      // System-Info sammeln
+      console.log('[Agent] Sammle System-Informationen...');
+      this.systemInfo = await this.collectSystemInfo();
+      console.log('[Agent] System-Info gesammelt:', JSON.stringify(this.systemInfo, null, 2));
       
-      // System-Informationen sammeln
-      const systemInfo = await systemInfoCollector.collectAll();
-      console.log('[BackgroundAgent] System-Info gesammelt:', {
-        hostname: systemInfo.hostname,
-        pcSerial: systemInfo.pcSerial,
-        teamviewerId: systemInfo.teamviewerId,
-        macAddresses: systemInfo.macAddresses,
-        hardwareHash: systemInfo.hardwareHash
-      });
-      
-      // In lokale DB speichern
-      this.saveSystemInfo(systemInfo);
-      
-      // Beim Server registrieren
-      await this.registerDevice(systemInfo);
-      
-      // System Tray erstellen
+      // Tray erstellen
+      console.log('[Agent] Erstelle System Tray...');
       this.createTray();
       
       // Heartbeat starten
+      console.log('[Agent] Starte Heartbeat...');
       this.startHeartbeat();
       
-      // Sync starten
-      this.startSync();
+      // Status anzeigen im Fenster
+      this.showStatusInWindow();
       
       this.isRunning = true;
       this.status = 'running';
-      console.log('[BackgroundAgent] Erfolgreich gestartet');
+      console.log('[Agent] ✓ Agent erfolgreich gestartet!');
       
     } catch (error) {
-      console.error('[BackgroundAgent] Initialisierung fehlgeschlagen:', error);
+      console.error('[Agent] ✗ Fehler beim Initialisieren:', error);
       this.status = 'error';
-      this.errorCount++;
+      
+      // Zeige Fehlermeldung im Fenster
+      if (this.mainWindow) {
+        this.mainWindow.webContents.executeJavaScript(`
+          console.error('TSRID Agent Fehler:', '${error.message}');
+        `);
+      }
     }
   }
 
@@ -86,35 +74,159 @@ class BackgroundAgent {
    * Device ID generieren
    */
   generateDeviceId() {
-    const { v4: uuidv4 } = require('uuid');
-    return `TSRID-${uuidv4()}`;
+    const hostname = os.hostname();
+    const macs = this.getMacAddresses();
+    const hash = crypto.createHash('md5')
+      .update(hostname + macs.join(''))
+      .digest('hex')
+      .substring(0, 12);
+    return `TSRID-${hash}`;
   }
 
   /**
-   * System Tray Icon erstellen
+   * MAC-Adressen sammeln
+   */
+  getMacAddresses() {
+    const interfaces = os.networkInterfaces();
+    const macs = [];
+    for (const addrs of Object.values(interfaces)) {
+      for (const addr of addrs) {
+        if (addr.mac && addr.mac !== '00:00:00:00:00:00') {
+          macs.push(addr.mac);
+        }
+      }
+    }
+    return [...new Set(macs)];
+  }
+
+  /**
+   * IP-Adressen sammeln
+   */
+  getIPAddresses() {
+    const interfaces = os.networkInterfaces();
+    const ips = [];
+    for (const addrs of Object.values(interfaces)) {
+      for (const addr of addrs) {
+        if (!addr.internal && addr.family === 'IPv4') {
+          ips.push(addr.address);
+        }
+      }
+    }
+    return ips;
+  }
+
+  /**
+   * System-Informationen sammeln
+   */
+  async collectSystemInfo() {
+    const info = {
+      // Basis
+      hostname: os.hostname(),
+      platform: os.platform(),
+      arch: os.arch(),
+      osVersion: os.release(),
+      
+      // Netzwerk
+      macAddresses: this.getMacAddresses(),
+      ipAddresses: this.getIPAddresses(),
+      
+      // Hardware
+      cpuModel: os.cpus()[0]?.model || 'Unknown',
+      cpuCores: os.cpus().length,
+      totalMemory: Math.round(os.totalmem() / 1024 / 1024 / 1024) + ' GB',
+      freeMemory: Math.round(os.freemem() / 1024 / 1024 / 1024) + ' GB',
+      
+      // User
+      username: os.userInfo().username,
+      
+      // Timestamps
+      collectedAt: new Date().toISOString()
+    };
+
+    // Windows-spezifische Infos
+    if (process.platform === 'win32') {
+      info.pcSerial = await this.getWmicValue('bios get serialnumber');
+      info.motherboardSerial = await this.getWmicValue('baseboard get serialnumber');
+      info.windowsProductId = await this.getWmicValue('os get serialnumber');
+      info.teamviewerId = await this.getTeamViewerId();
+    }
+
+    // Hardware Hash
+    info.hardwareHash = crypto.createHash('sha256')
+      .update(JSON.stringify({
+        hostname: info.hostname,
+        mac: info.macAddresses[0],
+        pcSerial: info.pcSerial
+      }))
+      .digest('hex').substring(0, 16);
+
+    return info;
+  }
+
+  /**
+   * WMIC Wert auslesen
+   */
+  getWmicValue(command) {
+    return new Promise((resolve) => {
+      exec(`wmic ${command}`, { timeout: 5000 }, (error, stdout) => {
+        if (error) {
+          resolve(null);
+          return;
+        }
+        const lines = stdout.trim().split('\n');
+        const value = lines[1]?.trim();
+        resolve(value && value !== '' ? value : null);
+      });
+    });
+  }
+
+  /**
+   * TeamViewer ID auslesen
+   */
+  getTeamViewerId() {
+    return new Promise((resolve) => {
+      const regPaths = [
+        'HKLM\\SOFTWARE\\TeamViewer',
+        'HKLM\\SOFTWARE\\WOW6432Node\\TeamViewer'
+      ];
+      
+      const tryPath = (index) => {
+        if (index >= regPaths.length) {
+          resolve(null);
+          return;
+        }
+        
+        exec(`reg query "${regPaths[index]}" /v ClientID 2>nul`, { timeout: 3000 }, (error, stdout) => {
+          if (!error && stdout.includes('ClientID')) {
+            const match = stdout.match(/ClientID\s+REG_DWORD\s+0x([0-9a-fA-F]+)/);
+            if (match) {
+              resolve(parseInt(match[1], 16).toString());
+              return;
+            }
+          }
+          tryPath(index + 1);
+        });
+      };
+      
+      tryPath(0);
+    });
+  }
+
+  /**
+   * System Tray erstellen
    */
   createTray() {
     try {
-      // Icon erstellen (16x16 für Tray)
-      const iconPath = path.join(__dirname, '../../assets/icon.png');
+      // Erstelle ein einfaches Icon
+      const icon = this.createIcon();
       
-      // Fallback: Leeres Icon wenn Datei nicht existiert
-      let icon;
-      try {
-        icon = nativeImage.createFromPath(iconPath);
-        if (icon.isEmpty()) {
-          icon = this.createDefaultIcon();
-        }
-      } catch {
-        icon = this.createDefaultIcon();
-      }
-      
-      this.tray = new Tray(icon.resize({ width: 16, height: 16 }));
+      this.tray = new Tray(icon);
       this.tray.setToolTip('TSRID Agent - Aktiv');
       
+      // Kontextmenü
       this.updateTrayMenu();
       
-      // Doppelklick öffnet Hauptfenster
+      // Events
       this.tray.on('double-click', () => {
         if (this.mainWindow) {
           this.mainWindow.show();
@@ -122,28 +234,38 @@ class BackgroundAgent {
         }
       });
       
-      console.log('[BackgroundAgent] System Tray erstellt');
+      console.log('[Agent] ✓ System Tray erstellt');
+      
     } catch (error) {
-      console.error('[BackgroundAgent] Tray-Erstellung fehlgeschlagen:', error);
+      console.error('[Agent] ✗ Tray Fehler:', error);
     }
   }
 
   /**
-   * Default Icon erstellen
+   * Icon erstellen
    */
-  createDefaultIcon() {
-    // Einfaches 16x16 farbiges Icon
-    const size = 16;
-    const canvas = Buffer.alloc(size * size * 4);
-    
-    for (let i = 0; i < size * size; i++) {
-      canvas[i * 4] = 192;     // R
-      canvas[i * 4 + 1] = 0;   // G
-      canvas[i * 4 + 2] = 0;   // B
-      canvas[i * 4 + 3] = 255; // A
+  createIcon() {
+    // Versuche PNG zu laden
+    const iconPath = path.join(__dirname, '../../assets/icon.png');
+    try {
+      const icon = nativeImage.createFromPath(iconPath);
+      if (!icon.isEmpty()) {
+        return icon.resize({ width: 16, height: 16 });
+      }
+    } catch (e) {
+      console.log('[Agent] Icon nicht gefunden, erstelle Standard-Icon');
     }
     
-    return nativeImage.createFromBuffer(canvas, { width: size, height: size });
+    // Fallback: Erstelle einfaches rotes Icon
+    const size = 16;
+    const buffer = Buffer.alloc(size * size * 4);
+    for (let i = 0; i < size * size; i++) {
+      buffer[i * 4] = 200;     // R
+      buffer[i * 4 + 1] = 0;   // G
+      buffer[i * 4 + 2] = 0;   // B
+      buffer[i * 4 + 3] = 255; // A
+    }
+    return nativeImage.createFromBuffer(buffer, { width: size, height: size });
   }
 
   /**
@@ -152,45 +274,36 @@ class BackgroundAgent {
   updateTrayMenu() {
     if (!this.tray) return;
     
-    const statusText = this.status === 'running' ? '● Online' : 
-                       this.status === 'error' ? '● Fehler' : '○ Offline';
+    const statusIcon = this.status === 'running' ? '●' : '○';
+    const statusText = this.status === 'running' ? 'Online' : 'Offline';
     
-    const contextMenu = Menu.buildFromTemplate([
-      { label: `TSRID Agent - ${statusText}`, enabled: false },
+    const menu = Menu.buildFromTemplate([
+      { label: `TSRID Agent ${statusIcon} ${statusText}`, enabled: false },
       { type: 'separator' },
-      { label: `Device: ${this.deviceId?.substring(0, 20)}...`, enabled: false },
-      { label: `Letzter Heartbeat: ${this.lastHeartbeat ? new Date(this.lastHeartbeat).toLocaleTimeString() : 'Nie'}`, enabled: false },
+      { label: `Device: ${this.deviceId}`, enabled: false },
+      { label: `IP: ${this.systemInfo?.ipAddresses?.[0] || 'N/A'}`, enabled: false },
+      { label: `TeamViewer: ${this.systemInfo?.teamviewerId || 'N/A'}`, enabled: false },
       { type: 'separator' },
       { 
-        label: 'Scan App öffnen', 
-        click: () => {
-          if (this.mainWindow) {
-            this.mainWindow.loadURL(this.config.serverUrl);
-            this.mainWindow.show();
-          }
-        }
+        label: '📱 Scan App öffnen', 
+        click: () => this.openUrl('/') 
       },
       { 
-        label: 'Admin Portal öffnen', 
-        click: () => {
-          if (this.mainWindow) {
-            this.mainWindow.loadURL(`${this.config.serverUrl}/portal/admin`);
-            this.mainWindow.show();
-          }
-        }
+        label: '⚙️ Admin Portal öffnen', 
+        click: () => this.openUrl('/portal/admin') 
       },
       { type: 'separator' },
       { 
-        label: 'Jetzt synchronisieren', 
-        click: () => this.forceSync()
+        label: '🔄 Jetzt synchronisieren', 
+        click: () => this.sendHeartbeat(true) 
       },
       { 
-        label: 'System-Info anzeigen', 
-        click: () => this.showSystemInfo()
+        label: 'ℹ️ System-Info anzeigen', 
+        click: () => this.showSystemInfoDialog() 
       },
       { type: 'separator' },
       { 
-        label: 'Beenden', 
+        label: '❌ Beenden', 
         click: () => {
           this.stop();
           app.quit();
@@ -198,295 +311,164 @@ class BackgroundAgent {
       }
     ]);
     
-    this.tray.setContextMenu(contextMenu);
+    this.tray.setContextMenu(menu);
   }
 
   /**
-   * System-Info in Datenbank speichern
+   * URL öffnen
    */
-  saveSystemInfo(info) {
-    try {
-      database.setConfig('system_info', JSON.stringify(info));
-      database.setConfig('system_info_updated', new Date().toISOString());
-      database.setConfig('hardware_hash', info.hardwareHash);
-      
-      // Wichtige Einzelwerte auch separat speichern
-      if (info.teamviewerId) {
-        database.setConfig('teamviewer_id', info.teamviewerId);
-      }
-      if (info.pcSerial) {
-        database.setConfig('pc_serial', info.pcSerial);
-      }
-      if (info.macAddresses?.length > 0) {
-        database.setConfig('mac_address', info.macAddresses[0]);
-      }
-      if (info.ipAddresses?.ipv4?.length > 0) {
-        database.setConfig('ip_address', info.ipAddresses.ipv4[0]);
-      }
-      if (info.gpsCoordinates) {
-        database.setConfig('gps_coordinates', JSON.stringify(info.gpsCoordinates));
-      }
-      
-    } catch (error) {
-      console.error('[BackgroundAgent] Fehler beim Speichern:', error);
+  openUrl(path) {
+    if (this.mainWindow) {
+      this.mainWindow.loadURL(this.serverUrl + path);
+      this.mainWindow.show();
+      this.mainWindow.focus();
     }
   }
 
   /**
-   * Gerät beim Server registrieren
+   * Status im Fenster anzeigen
    */
-  async registerDevice(systemInfo) {
-    console.log('[BackgroundAgent] Registriere Gerät...');
+  showStatusInWindow() {
+    if (!this.mainWindow) return;
     
-    const payload = {
-      device_id: this.deviceId,
-      hostname: systemInfo.hostname,
-      platform: systemInfo.platform,
-      os_version: systemInfo.osVersion,
-      hardware_hash: systemInfo.hardwareHash,
-      
-      // Seriennummern
-      pc_serial: systemInfo.pcSerial,
-      bios_serial: systemInfo.biosSerial,
-      motherboard_serial: systemInfo.motherboardSerial,
-      
-      // TeamViewer
-      teamviewer_id: systemInfo.teamviewerId,
-      teamviewer_remote_id: systemInfo.teamviewerRemoteControlId,
-      
-      // Netzwerk
-      mac_addresses: systemInfo.macAddresses,
-      ip_addresses: systemInfo.ipAddresses,
-      
-      // Scanner
-      connected_scanners: systemInfo.connectedScanners,
-      
-      // GPS
-      gps_coordinates: systemInfo.gpsCoordinates,
-      
-      // Windows
-      windows_product_id: systemInfo.windowsProductId,
-      windows_version: systemInfo.windowsVersion,
-      
-      // Zusätzliche Hardware-Info
-      cpu_model: systemInfo.cpuModel,
-      cpu_cores: systemInfo.cpuCores,
-      total_memory: systemInfo.totalMemory,
-      
-      // Meta
-      agent_version: app.getVersion(),
-      registered_at: new Date().toISOString()
-    };
+    // Zeige kurze Benachrichtigung
+    this.mainWindow.webContents.executeJavaScript(`
+      (function() {
+        const div = document.createElement('div');
+        div.id = 'tsrid-agent-status';
+        div.style.cssText = 'position:fixed;bottom:10px;right:10px;background:#1a1a1a;color:#4ade80;padding:10px 15px;border-radius:8px;font-family:system-ui;font-size:12px;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.3);';
+        div.innerHTML = '● TSRID Agent aktiv<br><small style="color:#888">Device: ${this.deviceId}</small>';
+        document.body.appendChild(div);
+        setTimeout(() => {
+          div.style.transition = 'opacity 0.5s';
+          div.style.opacity = '0';
+          setTimeout(() => div.remove(), 500);
+        }, 5000);
+      })();
+    `);
+  }
+
+  /**
+   * System-Info Dialog
+   */
+  showSystemInfoDialog() {
+    const info = this.systemInfo;
+    const message = `
+TSRID Agent System-Informationen
+================================
+
+Device ID: ${this.deviceId}
+Status: ${this.status}
+Letzter Heartbeat: ${this.lastHeartbeat || 'Nie'}
+
+HARDWARE
+--------
+Hostname: ${info?.hostname || 'N/A'}
+PC-Serial: ${info?.pcSerial || 'N/A'}
+Motherboard: ${info?.motherboardSerial || 'N/A'}
+CPU: ${info?.cpuModel || 'N/A'}
+RAM: ${info?.totalMemory || 'N/A'}
+
+NETZWERK
+--------
+MAC: ${info?.macAddresses?.[0] || 'N/A'}
+IP: ${info?.ipAddresses?.join(', ') || 'N/A'}
+
+SOFTWARE
+--------
+TeamViewer-ID: ${info?.teamviewerId || 'Nicht installiert'}
+Windows-ID: ${info?.windowsProductId || 'N/A'}
+OS: ${info?.platform || 'N/A'} ${info?.osVersion || ''}
+
+Hash: ${info?.hardwareHash || 'N/A'}
+    `.trim();
     
-    try {
-      const response = await this.httpPost('/api/agent/register-device', payload);
-      console.log('[BackgroundAgent] Registrierung erfolgreich:', response);
-      database.setConfig('registration_status', 'registered');
-      database.setConfig('registration_date', new Date().toISOString());
-      return response;
-    } catch (error) {
-      console.error('[BackgroundAgent] Registrierung fehlgeschlagen:', error);
-      database.setConfig('registration_status', 'failed');
-      throw error;
-    }
+    dialog.showMessageBox({
+      type: 'info',
+      title: 'TSRID Agent',
+      message: 'System-Informationen',
+      detail: message,
+      buttons: ['OK', 'Kopieren']
+    }).then(result => {
+      if (result.response === 1) {
+        require('electron').clipboard.writeText(message);
+      }
+    });
   }
 
   /**
    * Heartbeat starten
    */
   startHeartbeat() {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-    }
-    
-    // Sofort ersten Heartbeat senden
+    // Sofort ersten Heartbeat
     this.sendHeartbeat();
     
-    // Regelmäßigen Heartbeat starten
+    // Alle 30 Sekunden
     this.heartbeatInterval = setInterval(() => {
       this.sendHeartbeat();
-    }, this.config.heartbeatIntervalMs);
+    }, 30000);
     
-    console.log('[BackgroundAgent] Heartbeat gestartet (alle', this.config.heartbeatIntervalMs / 1000, 'Sekunden)');
+    console.log('[Agent] ✓ Heartbeat gestartet (alle 30 Sek.)');
   }
 
   /**
    * Heartbeat senden
    */
-  async sendHeartbeat() {
-    const payload = {
+  async sendHeartbeat(showNotification = false) {
+    const data = {
       device_id: this.deviceId,
-      status: 'online',
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      memory_usage: process.memoryUsage(),
+      status: 'online',
+      system_info: this.systemInfo,
       app_version: app.getVersion()
     };
     
     try {
-      await this.httpPost('/api/agent/heartbeat', payload);
-      this.lastHeartbeat = Date.now();
-      this.errorCount = 0;
+      await this.httpPost('/api/agent/heartbeat', data);
+      this.lastHeartbeat = new Date().toLocaleTimeString();
       this.status = 'running';
       this.updateTrayMenu();
+      
+      if (showNotification) {
+        this.showNotification('Sync erfolgreich', 'Daten wurden synchronisiert');
+      }
+      
+      console.log('[Agent] ✓ Heartbeat gesendet');
     } catch (error) {
-      console.error('[BackgroundAgent] Heartbeat fehlgeschlagen:', error.message);
-      this.errorCount++;
-      if (this.errorCount > 5) {
-        this.status = 'error';
-        this.updateTrayMenu();
+      console.error('[Agent] ✗ Heartbeat Fehler:', error.message);
+      
+      if (showNotification) {
+        this.showNotification('Sync Fehler', error.message);
       }
     }
   }
 
   /**
-   * Sync starten
-   */
-  startSync() {
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
-    }
-    
-    // Regelmäßigen Sync starten
-    this.syncInterval = setInterval(() => {
-      this.performSync();
-    }, this.config.fullSyncIntervalMs);
-    
-    console.log('[BackgroundAgent] Sync gestartet (alle', this.config.fullSyncIntervalMs / 60000, 'Minuten)');
-  }
-
-  /**
-   * Vollständigen Sync durchführen
-   */
-  async performSync() {
-    console.log('[BackgroundAgent] Starte Sync...');
-    
-    try {
-      // Aktuelle System-Info sammeln
-      const systemInfo = await systemInfoCollector.collectAll();
-      
-      // Mit Server synchronisieren
-      const payload = {
-        device_id: this.deviceId,
-        system_info: systemInfo,
-        local_scans: database.getUnsynced ? database.getUnsynced() : [],
-        synced_at: new Date().toISOString()
-      };
-      
-      const response = await this.httpPost('/api/agent/sync', payload);
-      
-      this.lastSync = Date.now();
-      console.log('[BackgroundAgent] Sync erfolgreich');
-      
-      // Lokale Daten aktualisieren
-      this.saveSystemInfo(systemInfo);
-      
-      return response;
-    } catch (error) {
-      console.error('[BackgroundAgent] Sync fehlgeschlagen:', error.message);
-      throw error;
-    }
-  }
-
-  /**
-   * Sync erzwingen
-   */
-  async forceSync() {
-    try {
-      await this.performSync();
-      this.showNotification('Sync erfolgreich', 'Alle Daten wurden synchronisiert.');
-    } catch (error) {
-      this.showNotification('Sync fehlgeschlagen', error.message);
-    }
-  }
-
-  /**
-   * System-Info Dialog anzeigen
-   */
-  async showSystemInfo() {
-    const info = await systemInfoCollector.getCached();
-    
-    const message = `
-TSRID Agent System-Informationen
-
-Device ID: ${this.deviceId}
-Hostname: ${info.hostname}
-Hardware-Hash: ${info.hardwareHash?.substring(0, 16)}...
-
-PC-Serial: ${info.pcSerial || 'N/A'}
-TeamViewer-ID: ${info.teamviewerId || 'N/A'}
-MAC-Adresse: ${info.macAddresses?.[0] || 'N/A'}
-IP-Adresse: ${info.ipAddresses?.ipv4?.[0] || 'N/A'}
-
-Scanner: ${info.connectedScanners?.length || 0} verbunden
-GPS: ${info.gpsCoordinates ? `${info.gpsCoordinates.latitude}, ${info.gpsCoordinates.longitude}` : 'N/A'}
-
-Status: ${this.status}
-Letzter Heartbeat: ${this.lastHeartbeat ? new Date(this.lastHeartbeat).toLocaleString() : 'Nie'}
-Letzter Sync: ${this.lastSync ? new Date(this.lastSync).toLocaleString() : 'Nie'}
-    `.trim();
-    
-    const { dialog } = require('electron');
-    dialog.showMessageBox(this.mainWindow, {
-      type: 'info',
-      title: 'TSRID Agent - System-Info',
-      message: 'System-Informationen',
-      detail: message,
-      buttons: ['OK', 'In Zwischenablage kopieren']
-    }).then(result => {
-      if (result.response === 1) {
-        const { clipboard } = require('electron');
-        clipboard.writeText(message);
-      }
-    });
-  }
-
-  /**
-   * Benachrichtigung anzeigen
-   */
-  showNotification(title, body) {
-    if (Notification.isSupported()) {
-      new Notification({ title, body }).show();
-    }
-  }
-
-  /**
-   * HTTP POST Request
+   * HTTP POST
    */
   httpPost(endpoint, data) {
     return new Promise((resolve, reject) => {
-      const url = new URL(endpoint, this.config.serverUrl);
-      const isHttps = url.protocol === 'https:';
-      const lib = isHttps ? https : http;
-      
+      const url = new URL(endpoint, this.serverUrl);
       const postData = JSON.stringify(data);
       
-      const options = {
+      const req = https.request({
         hostname: url.hostname,
-        port: url.port || (isHttps ? 443 : 80),
+        port: 443,
         path: url.pathname,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Content-Length': Buffer.byteLength(postData),
-          'X-Device-ID': this.deviceId,
-          'X-Agent-Version': app.getVersion()
+          'Content-Length': Buffer.byteLength(postData)
         },
         timeout: 10000
-      };
-      
-      const req = lib.request(options, (res) => {
+      }, (res) => {
         let body = '';
         res.on('data', chunk => body += chunk);
         res.on('end', () => {
           if (res.statusCode >= 200 && res.statusCode < 300) {
-            try {
-              resolve(JSON.parse(body));
-            } catch {
-              resolve(body);
-            }
+            resolve(body);
           } else {
-            reject(new Error(`HTTP ${res.statusCode}: ${body}`));
+            reject(new Error(`HTTP ${res.statusCode}`));
           }
         });
       });
@@ -494,7 +476,7 @@ Letzter Sync: ${this.lastSync ? new Date(this.lastSync).toLocaleString() : 'Nie'
       req.on('error', reject);
       req.on('timeout', () => {
         req.destroy();
-        reject(new Error('Request timeout'));
+        reject(new Error('Timeout'));
       });
       
       req.write(postData);
@@ -503,17 +485,22 @@ Letzter Sync: ${this.lastSync ? new Date(this.lastSync).toLocaleString() : 'Nie'
   }
 
   /**
+   * Benachrichtigung
+   */
+  showNotification(title, body) {
+    if (Notification.isSupported()) {
+      new Notification({ title: `TSRID Agent: ${title}`, body }).show();
+    }
+  }
+
+  /**
    * Agent stoppen
    */
   stop() {
-    console.log('[BackgroundAgent] Stoppe...');
+    console.log('[Agent] Stoppe...');
     
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
-    }
-    
-    if (this.syncInterval) {
-      clearInterval(this.syncInterval);
     }
     
     if (this.tray) {
@@ -521,9 +508,7 @@ Letzter Sync: ${this.lastSync ? new Date(this.lastSync).toLocaleString() : 'Nie'
     }
     
     this.isRunning = false;
-    this.status = 'stopped';
-    
-    console.log('[BackgroundAgent] Gestoppt');
+    console.log('[Agent] Gestoppt');
   }
 }
 
