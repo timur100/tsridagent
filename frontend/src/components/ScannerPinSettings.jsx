@@ -138,9 +138,9 @@ const ScannerPinSettings = () => {
                 </p>
                 <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
                   <li>• Die PIN wird beim Start der Scanner-Oberfläche abgefragt</li>
-                  <li>• Standard-PIN ist: 1234</li>
+                  <li>• Benutzer-PIN: 3842 (Standard-Zugang)</li>
+                  <li>• Admin-PIN: 9988 (Vollzugriff auf Systeminfos)</li>
                   <li>• Ändern Sie die PIN regelmäßig für mehr Sicherheit</li>
-                  <li>• Wenn deaktiviert, ist kein PIN-Schutz vorhanden</li>
                 </ul>
               </div>
             </div>
