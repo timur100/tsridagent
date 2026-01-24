@@ -645,5 +645,8 @@ module.exports = {
     
     // App Logs
     writeLog,
-    getRecentLogs
+    getRecentLogs,
+    
+    // Stats
+    getDatabaseStats
 };
