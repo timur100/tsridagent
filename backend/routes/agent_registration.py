@@ -22,31 +22,13 @@ db = client[DB_NAME]
 class DeviceRegistration(BaseModel):
     station_code: str  # z.B. "BERN01"
     device_number: str  # z.B. "01", "02"
-    device_id: Optional[str] = None  # Hardware-ID des Geräts
+    device_id: Optional[str] = None
     hostname: Optional[str] = None
     mac_address: Optional[str] = None
     ip_address: Optional[str] = None
     pc_serial: Optional[str] = None
     scanner_serial: Optional[str] = None
     teamviewer_id: Optional[str] = None
-
-
-class StationInfo(BaseModel):
-    station_code: str
-    device_number: str
-    location_name: str
-    street: str
-    zip: str
-    city: str
-    state: str
-    country: str
-    continent: str
-    phone: Optional[str] = None
-    email: Optional[str] = None
-    tvid: Optional[str] = None
-    sn_station: Optional[str] = None
-    sn_scanner: Optional[str] = None
-    settings: Optional[dict] = None
 
 
 @router.post("/register")
@@ -56,16 +38,14 @@ async def register_device(registration: DeviceRegistration):
     Gibt die vollständigen Standortinformationen zurück.
     """
     try:
-        db = get_db()
-        
         # Suche nach dem Standort
-        location = db.locations.find_one({
+        location = await db.locations.find_one({
             "locationCode": registration.station_code
         })
         
         if not location:
             # Versuche auch in key_locations zu suchen
-            location = db.key_locations.find_one({
+            location = await db.key_locations.find_one({
                 "$or": [
                     {"location_id": registration.station_code},
                     {"locationCode": registration.station_code},
@@ -101,7 +81,7 @@ async def register_device(registration: DeviceRegistration):
         }
         
         # Upsert das Gerät
-        db.registered_devices.update_one(
+        await db.registered_devices.update_one(
             {
                 "station_code": registration.station_code,
                 "device_number": registration.device_number
@@ -148,13 +128,11 @@ async def get_station_info(station_code: str, device_number: Optional[str] = Non
     Gibt die Standortinformationen für einen Stationscode zurück.
     """
     try:
-        db = get_db()
-        
         # Suche nach dem Standort
-        location = db.locations.find_one({"locationCode": station_code})
+        location = await db.locations.find_one({"locationCode": station_code})
         
         if not location:
-            location = db.key_locations.find_one({
+            location = await db.key_locations.find_one({
                 "$or": [
                     {"location_id": station_code},
                     {"locationCode": station_code},
@@ -197,13 +175,13 @@ async def list_all_stations():
     Gibt alle verfügbaren Stationen zurück (für Offline-Cache).
     """
     try:
-        db = get_db()
-        
         # Hole alle Standorte
-        locations = list(db.locations.find({}, {"_id": 0}))
+        cursor = db.locations.find({}, {"_id": 0})
+        locations = await cursor.to_list(length=1000)
         
         # Hole auch aus key_locations
-        key_locations = list(db.key_locations.find({}, {"_id": 0}))
+        cursor2 = db.key_locations.find({}, {"_id": 0})
+        key_locations = await cursor2.to_list(length=1000)
         
         # Kombiniere und formatiere
         stations = []
@@ -247,9 +225,8 @@ async def list_registered_devices():
     Gibt alle registrierten Geräte zurück.
     """
     try:
-        db = get_db()
-        
-        devices = list(db.registered_devices.find({}, {"_id": 0}))
+        cursor = db.registered_devices.find({}, {"_id": 0})
+        devices = await cursor.to_list(length=1000)
         
         return {
             "success": True,
@@ -267,8 +244,6 @@ async def device_heartbeat(data: dict):
     Empfängt einen Heartbeat von einem registrierten Gerät.
     """
     try:
-        db = get_db()
-        
         device_id = data.get("device_id")
         station_code = data.get("station_code")
         
@@ -298,7 +273,7 @@ async def device_heartbeat(data: dict):
         if data.get("db_stats"):
             update_data["db_stats"] = data["db_stats"]
         
-        result = db.registered_devices.update_one(query, {"$set": update_data})
+        result = await db.registered_devices.update_one(query, {"$set": update_data})
         
         if result.matched_count == 0:
             return {
@@ -325,13 +300,12 @@ async def sync_locations(since: Optional[str] = None):
     Optional gefiltert nach Änderungsdatum.
     """
     try:
-        db = get_db()
-        
         query = {}
         if since:
             query["updated_at"] = {"$gte": since}
         
-        locations = list(db.locations.find(query, {"_id": 0}))
+        cursor = db.locations.find(query, {"_id": 0})
+        locations = await cursor.to_list(length=1000)
         
         return {
             "success": True,
