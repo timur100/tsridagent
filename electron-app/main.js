@@ -363,6 +363,46 @@ ipcMain.handle('agent:getStatus', () => {
   return null;
 });
 
+ipcMain.handle('agent:getDatabaseStats', () => {
+  try {
+    return database.getDatabaseStats();
+  } catch (e) {
+    console.error('[TSRID] DB Stats Fehler:', e);
+    return null;
+  }
+});
+
+ipcMain.handle('agent:getSyncLogs', () => {
+  try {
+    return database.getRecentSyncLogs(10);
+  } catch (e) {
+    return [];
+  }
+});
+
+// Kiosk-Modus mit Admin-PIN 9988
+ipcMain.handle('agent:enableKioskMode', (event, pin) => {
+  if (pin === '9988') {
+    if (mainWindow) {
+      mainWindow.setKiosk(true);
+      mainWindow.setFullScreen(true);
+      return { success: true, message: 'Kiosk-Modus aktiviert' };
+    }
+  }
+  return { success: false, message: 'Falscher PIN' };
+});
+
+ipcMain.handle('agent:disableKioskMode', (event, pin) => {
+  if (pin === '9988') {
+    if (mainWindow) {
+      mainWindow.setKiosk(false);
+      mainWindow.setFullScreen(false);
+      return { success: true, message: 'Kiosk-Modus deaktiviert' };
+    }
+  }
+  return { success: false, message: 'Falscher PIN' };
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {
