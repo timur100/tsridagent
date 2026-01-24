@@ -368,8 +368,8 @@ app.whenReady().then(() => {
   // Fenster erstellen
   createWindow();
   
-  // Global Shortcut für Admin-Modus (Ctrl+Shift+Alt+Q)
-  globalShortcut.register('Ctrl+Shift+Alt+Q', () => {
+  // Shortcut-Handler Funktion
+  const handleAdminShortcut = () => {
     console.log('[TSRID] Admin-Shortcut gedrückt, aktueller Modus:', currentMode);
     
     if (currentMode === 'kiosk') {
@@ -402,7 +402,28 @@ app.whenReady().then(() => {
         }
       });
     }
+  };
+  
+  // Registriere mehrere Shortcuts als Fallback
+  const shortcuts = [
+    'Ctrl+Shift+Alt+Q',
+    'Ctrl+Shift+F12',
+    'F10'
+  ];
+  
+  shortcuts.forEach(shortcut => {
+    const success = globalShortcut.register(shortcut, handleAdminShortcut);
+    if (success) {
+      console.log('[TSRID] Shortcut registriert:', shortcut);
+    } else {
+      console.log('[TSRID] Shortcut FEHLGESCHLAGEN:', shortcut);
+    }
   });
+  
+  // Zeige registrierte Shortcuts
+  console.log('[TSRID] Alle Shortcuts:', globalShortcut.isRegistered('Ctrl+Shift+Alt+Q'), 
+              globalShortcut.isRegistered('Ctrl+Shift+F12'),
+              globalShortcut.isRegistered('F10'));
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
