@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor, Server, Database, RefreshCw, Clock, Scan } from 'lucide-react';
+import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor, Server, Database, RefreshCw, Clock, Scan, Power } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 
-const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
+const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick, onShowPinPad }) => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showDeviceInfo, setShowDeviceInfo] = useState(false);
   const [agentInfo, setAgentInfo] = useState(null);
@@ -37,30 +37,29 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
     }
   };
 
-  const handleAdminLogin = async () => {
-    const pin = prompt('Admin-PIN eingeben:');
-    if (!pin) return;
-    
-    try {
-      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-      const response = await fetch(`${BACKEND_URL}/api/scanner-pin/check`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin })
-      });
-      
-      const data = await response.json();
-      
-      if (data.valid && data.role === 'admin') {
-        sessionStorage.setItem('isAdmin', 'true');
-        sessionStorage.setItem('userRole', 'admin');
-        setIsAdmin(true);
-        alert('Admin-Zugang aktiviert');
-      } else {
-        alert('Falscher Admin-PIN');
+  const handleShowPinPad = () => {
+    // Zeige das ursprüngliche PIN-Pad (ScannerPinPrompt) für Admin-Login
+    if (onShowPinPad) {
+      onShowPinPad();
+    }
+    onClose();
+  };
+
+  const handleQuitApp = async () => {
+    // Bestätigung vor dem Beenden
+    const confirmed = window.confirm('Möchten Sie die Anwendung wirklich komplett beenden?');
+    if (!confirmed) return;
+
+    // Versuche über Electron API zu beenden
+    if (window.agentAPI && window.agentAPI.quitApp) {
+      try {
+        await window.agentAPI.quitApp();
+      } catch (e) {
+        console.error('Fehler beim Beenden:', e);
+        alert('Die Anwendung konnte nicht beendet werden. Bitte schließen Sie das Fenster manuell.');
       }
-    } catch (e) {
-      alert('Fehler: ' + e.message);
+    } else {
+      alert('Diese Funktion ist nur im TSRID Agent verfügbar.');
     }
   };
 
@@ -173,29 +172,43 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
           </Button>
           
           {!isAdmin ? (
+            /* Admin-Modus aktivieren - zeigt das ursprüngliche PIN-Pad */
             <Button
-              onClick={handleAdminLogin}
+              onClick={handleShowPinPad}
               variant="outline"
               className="w-full gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
             >
               <Shield className="h-5 w-5" />
-              Admin-Modus aktivieren (PIN: 9988)
+              Admin-Modus aktivieren
             </Button>
           ) : (
-            <Button
-              onClick={() => {
-                sessionStorage.removeItem('isAdmin');
-                sessionStorage.setItem('userRole', 'user');
-                setIsAdmin(false);
-                setShowDeviceInfo(false);
-                alert('Admin-Modus beendet');
-              }}
-              variant="outline"
-              className="w-full gap-2 border-red-500/50 text-red-400 hover:bg-red-500/10"
-            >
-              <Lock className="h-5 w-5" />
-              Admin-Modus beenden
-            </Button>
+            /* Admin ist eingeloggt - zeige Beenden Button */
+            <>
+              <Button
+                onClick={() => {
+                  sessionStorage.removeItem('isAdmin');
+                  sessionStorage.setItem('userRole', 'user');
+                  setIsAdmin(false);
+                  setShowDeviceInfo(false);
+                  alert('Admin-Modus beendet');
+                }}
+                variant="outline"
+                className="w-full gap-2 border-yellow-500/50 text-yellow-400 hover:bg-yellow-500/10"
+              >
+                <Lock className="h-5 w-5" />
+                Admin-Modus beenden
+              </Button>
+              
+              {/* Applikation beenden - nur für Admins */}
+              <Button
+                onClick={handleQuitApp}
+                variant="outline"
+                className="w-full gap-2 border-red-500/50 text-red-500 hover:bg-red-500/10 font-semibold"
+              >
+                <Power className="h-5 w-5" />
+                Applikation beenden
+              </Button>
+            </>
           )}
           
           <Button
