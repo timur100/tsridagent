@@ -853,6 +853,29 @@ const AdminPortalContent = () => {
               </div>
               <CustomerSwitcher />
               
+              {/* Fullscreen Toggle Button (nur in Electron) */}
+              {window.windowAPI && (
+                <Button
+                  onClick={async () => {
+                    try {
+                      await window.windowAPI.toggleFullscreen();
+                    } catch (e) {
+                      console.log('Fullscreen toggle not available');
+                    }
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className={`flex items-center space-x-2 ${
+                    theme === 'dark'
+                      ? 'border-white/50 text-white hover:bg-white/10'
+                      : 'border-gray-300 text-gray-700 hover:bg-gray-100'
+                  }`}
+                  title="Vollbild umschalten (Fenster/Fullscreen)"
+                >
+                  <Maximize2 className="h-4 w-4" />
+                </Button>
+              )}
+              
               {/* Scan App Button */}
               <Button
                 onClick={() => window.location.href = '/'}
