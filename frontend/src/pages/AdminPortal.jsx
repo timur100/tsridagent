@@ -3051,6 +3051,11 @@ const AdminPortalContent = () => {
                       <DataCheckPage />
                     )}
 
+                    {/* Agent/Geräteinformationen - Nur für Admins */}
+                    {rndTab === 'agent-device-info' && (
+                      <AgentDeviceInfo />
+                    )}
+
                     {/* USB Device Manager */}
                     {rndTab === 'usb-devices' && (
                       <div className="w-full">
