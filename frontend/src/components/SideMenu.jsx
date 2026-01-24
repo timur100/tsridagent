@@ -87,13 +87,22 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
             Administrator-Bereich
           </Button>
           
+          {/* Admin Portal Button */}
+          <Button
+            onClick={() => {
+              window.location.href = '/portal/admin';
+            }}
+            variant="outline"
+            className="w-full gap-2 border-2 border-primary/50 hover:bg-primary/10"
+          >
+            <Settings className="h-5 w-5" />
+            Admin Portal öffnen
+          </Button>
+          
           {/* Version Info */}
-          <Card className="bg-muted/50 p-4">
-            <p className="text-xs text-muted-foreground text-center">
-              TSRID GmbH<br />
-              Version 1.2
-            </p>
-          </Card>
+          <p className="text-xs text-muted-foreground text-center pt-2">
+            TSRID GmbH - Version 1.2
+          </p>
         </div>
       </div>
     </>
