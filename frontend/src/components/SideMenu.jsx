@@ -1,61 +1,63 @@
 import React, { useState, useEffect } from 'react';
-import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor, Cpu, Wifi, Server, Database, RefreshCw, HardDrive, Clock } from 'lucide-react';
+import { X, Home, Settings, Users, FileText, BarChart, Shield, Lock, Monitor, Cpu, Wifi, Server, Database, RefreshCw, HardDrive, Clock, Scan } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 
 const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showDeviceInfo, setShowDeviceInfo] = useState(false);
   const [agentInfo, setAgentInfo] = useState(null);
   const [dbStats, setDbStats] = useState(null);
-  const [syncLogs, setSyncLogs] = useState([]);
   const [isElectron, setIsElectron] = useState(false);
-  const [kioskMode, setKioskMode] = useState(false);
 
   useEffect(() => {
-    const loadAgentData = async () => {
-      if (window.agentAPI && window.agentAPI.isElectron) {
-        setIsElectron(true);
-        try {
-          const [systemInfo, status, dbStatsData, logs] = await Promise.all([
-            window.agentAPI.getSystemInfo(),
-            window.agentAPI.getStatus(),
-            window.agentAPI.getDatabaseStats(),
-            window.agentAPI.getSyncLogs()
-          ]);
-          setAgentInfo({ ...systemInfo, ...status });
-          setDbStats(dbStatsData);
-          setSyncLogs(logs || []);
-        } catch (e) {
-          console.log('Agent Info nicht verfügbar:', e);
-        }
-      }
-    };
+    // Prüfe ob User als Admin eingeloggt ist
+    const adminStatus = sessionStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(adminStatus);
     
-    if (isOpen) {
-      loadAgentData();
+    // Prüfe ob Electron
+    if (window.agentAPI && window.agentAPI.isElectron) {
+      setIsElectron(true);
     }
   }, [isOpen]);
 
-  const toggleKioskMode = async () => {
-    const pin = prompt('Admin-PIN für Kiosk-Modus eingeben:');
+  const loadDeviceInfo = async () => {
+    if (!window.agentAPI) return;
+    
+    try {
+      const [systemInfo, status, dbStatsData] = await Promise.all([
+        window.agentAPI.getSystemInfo(),
+        window.agentAPI.getStatus(),
+        window.agentAPI.getDatabaseStats()
+      ]);
+      setAgentInfo({ ...systemInfo, ...status });
+      setDbStats(dbStatsData);
+    } catch (e) {
+      console.log('Agent Info nicht verfügbar:', e);
+    }
+  };
+
+  const handleAdminLogin = async () => {
+    const pin = prompt('Admin-PIN eingeben:');
     if (!pin) return;
     
     try {
-      if (kioskMode) {
-        const result = await window.agentAPI.disableKioskMode(pin);
-        if (result.success) {
-          setKioskMode(false);
-          alert('Kiosk-Modus deaktiviert');
-        } else {
-          alert(result.message);
-        }
+      const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const response = await fetch(`${BACKEND_URL}/api/scanner-pin/check`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin })
+      });
+      
+      const data = await response.json();
+      
+      if (data.valid && data.role === 'admin') {
+        sessionStorage.setItem('isAdmin', 'true');
+        sessionStorage.setItem('userRole', 'admin');
+        setIsAdmin(true);
+        alert('Admin-Zugang aktiviert');
       } else {
-        const result = await window.agentAPI.enableKioskMode(pin);
-        if (result.success) {
-          setKioskMode(true);
-          alert('Kiosk-Modus aktiviert');
-        } else {
-          alert(result.message);
-        }
+        alert('Falscher Admin-PIN');
       }
     } catch (e) {
       alert('Fehler: ' + e.message);
@@ -73,8 +75,6 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
 
   if (!isOpen) return null;
 
-  const lastSync = syncLogs.find(l => l.status === 'completed');
-
   return (
     <>
       {/* Overlay */}
@@ -84,15 +84,12 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
       />
       
       {/* Slide Menu */}
-      <div className="fixed left-0 top-0 bottom-0 w-96 bg-card border-r-2 border-border z-50 animate-in slide-in-from-left duration-300 flex flex-col">
-        {/* Header with Logo */}
+      <div className="fixed left-0 top-0 bottom-0 w-80 bg-card border-r-2 border-border z-50 animate-in slide-in-from-left duration-300 flex flex-col">
+        {/* Header */}
         <div className="flex flex-col gap-4 p-6 border-b border-border">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold text-foreground">Menü</h2>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-muted rounded-lg transition-colors"
-            >
+            <button onClick={onClose} className="p-2 hover:bg-muted rounded-lg transition-colors">
               <X className="h-6 w-6 text-foreground" />
             </button>
           </div>
@@ -105,6 +102,13 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
               className="h-16 w-auto"
             />
           </div>
+          
+          {/* Admin Badge */}
+          {isAdmin && (
+            <div className="bg-green-500/20 text-green-400 text-xs font-semibold px-3 py-1.5 rounded-full text-center">
+              ✓ Administrator-Modus aktiv
+            </div>
+          )}
         </div>
         
         {/* Scrollable Content */}
@@ -117,153 +121,69 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
                 <button
                   key={item.id}
                   onClick={() => {
-                    if (item.id === 'verifications') {
-                      onHistoryClick();
-                    }
+                    if (item.id === 'verifications') onHistoryClick();
                     onClose();
                   }}
-                  className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-primary/10 hover:border-primary/30 border-2 border-transparent transition-all group"
+                  className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-primary/10 border-2 border-transparent transition-all"
                 >
-                  <Icon className="h-5 w-5 text-primary group-hover:text-primary" />
-                  <span className="text-sm font-medium text-foreground group-hover:text-foreground">
-                    {item.label}
-                  </span>
+                  <Icon className="h-5 w-5 text-primary" />
+                  <span className="text-sm font-medium text-foreground">{item.label}</span>
                 </button>
               );
             })}
           </div>
           
-          {/* Agent System Info (nur in Electron) */}
-          {isElectron && agentInfo && (
-            <div className="space-y-4">
-              {/* Agent Status */}
-              <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                <div className="flex items-center gap-2 mb-3">
-                  <Server className="h-5 w-5 text-primary" />
-                  <h3 className="font-semibold text-foreground">Agent Status</h3>
-                  <span className={`ml-auto px-2 py-0.5 text-xs rounded-full ${
-                    agentInfo.status === 'running' 
-                      ? 'bg-green-500/20 text-green-400' 
-                      : 'bg-red-500/20 text-red-400'
-                  }`}>
-                    {agentInfo.status === 'running' ? '● Online' : '○ Offline'}
-                  </span>
-                </div>
-                
-                <div className="space-y-1.5 text-xs">
-                  <InfoRow icon={Monitor} label="Device" value={agentInfo.deviceId} mono />
-                  <InfoRow icon={Cpu} label="Hostname" value={agentInfo.hostname} />
-                  <InfoRow icon={Wifi} label="IP" value={agentInfo.ipAddresses?.[0]} />
-                  {agentInfo.teamviewerId && (
-                    <InfoRow icon={Monitor} label="TeamViewer" value={agentInfo.teamviewerId} mono />
-                  )}
-                  {agentInfo.pcSerial && (
-                    <InfoRow icon={Server} label="PC-Serial" value={agentInfo.pcSerial} mono />
-                  )}
-                  {agentInfo.macAddresses?.[0] && (
-                    <InfoRow icon={Wifi} label="MAC" value={agentInfo.macAddresses[0]} mono />
-                  )}
-                  {agentInfo.lastHeartbeat && (
-                    <InfoRow icon={Clock} label="Heartbeat" value={agentInfo.lastHeartbeat} />
-                  )}
-                </div>
-              </div>
-
-              {/* SQLite Database Stats */}
-              {dbStats && (
-                <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Database className="h-5 w-5 text-blue-400" />
-                    <h3 className="font-semibold text-foreground">SQLite Datenbank</h3>
-                  </div>
-                  
-                  <div className="space-y-1.5 text-xs">
-                    <InfoRow icon={HardDrive} label="Größe" value={dbStats.dbSizeFormatted || '0 B'} />
-                    <InfoRow icon={FileText} label="Scans" value={dbStats.tables?.scans || 0} />
-                    <InfoRow icon={Server} label="Standorte" value={dbStats.tables?.locations_cache || 0} />
-                    <InfoRow icon={Settings} label="Configs" value={dbStats.tables?.device_config || 0} />
-                    <InfoRow icon={FileText} label="Logs" value={dbStats.tables?.app_logs || 0} />
-                    
-                    {dbStats.unsyncedScans > 0 && (
-                      <div className="mt-2 p-2 bg-yellow-500/20 rounded text-yellow-400">
-                        ⚠ {dbStats.unsyncedScans} unsynced Scans
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Atlas Sync Status */}
-              <div className="p-4 bg-muted/50 rounded-lg border border-border">
-                <div className="flex items-center gap-2 mb-3">
-                  <RefreshCw className="h-5 w-5 text-green-400" />
-                  <h3 className="font-semibold text-foreground">Atlas Sync</h3>
-                </div>
-                
-                <div className="space-y-1.5 text-xs">
-                  {lastSync ? (
-                    <>
-                      <InfoRow icon={Clock} label="Letzte Sync" value={formatDate(lastSync.completed_at)} />
-                      <InfoRow icon={FileText} label="Aktion" value={lastSync.action} />
-                      <InfoRow icon={Database} label="Datensätze" value={lastSync.records_count} />
-                      <div className="mt-2 p-2 bg-green-500/20 rounded text-green-400 text-center">
-                        ✓ Synchronisiert mit MongoDB Atlas
-                      </div>
-                    </>
-                  ) : (
-                    <div className="p-2 bg-yellow-500/20 rounded text-yellow-400 text-center">
-                      ⚠ Noch nie synchronisiert
-                    </div>
-                  )}
-                </div>
-                
-                {syncLogs.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-border">
-                    <p className="text-xs text-muted-foreground mb-2">Letzte Sync-Aktivitäten:</p>
-                    <div className="space-y-1 max-h-24 overflow-y-auto">
-                      {syncLogs.slice(0, 5).map((log, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">{log.action}</span>
-                          <span className={log.status === 'completed' ? 'text-green-400' : 'text-red-400'}>
-                            {log.status === 'completed' ? '✓' : '✗'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Kiosk Mode Toggle */}
+          {/* Admin-Only: Geräteinformationen */}
+          {isAdmin && isElectron && (
+            <div className="mb-4">
               <Button
-                onClick={toggleKioskMode}
+                onClick={() => {
+                  setShowDeviceInfo(!showDeviceInfo);
+                  if (!showDeviceInfo && !agentInfo) loadDeviceInfo();
+                }}
                 variant="outline"
-                className="w-full gap-2"
+                className="w-full gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
               >
-                <Monitor className="h-4 w-4" />
-                {kioskMode ? 'Kiosk-Modus deaktivieren (PIN: 9988)' : 'Kiosk-Modus aktivieren (PIN: 9988)'}
+                <Server className="h-4 w-4" />
+                Geräteinformationen
+                <span className="ml-auto">{showDeviceInfo ? '▲' : '▼'}</span>
               </Button>
+              
+              {showDeviceInfo && (
+                <DeviceInfoPanel agentInfo={agentInfo} dbStats={dbStats} onRefresh={loadDeviceInfo} />
+              )}
             </div>
           )}
         </div>
         
         {/* Footer */}
         <div className="p-4 border-t border-border space-y-3">
-          <Button
-            onClick={() => {
-              onAdminClick();
-              onClose();
-            }}
-            className="w-full gap-2 bg-primary hover:bg-primary/90"
-          >
-            <Lock className="h-5 w-5" />
-            Administrator-Bereich
-          </Button>
+          {!isAdmin ? (
+            <Button
+              onClick={handleAdminLogin}
+              className="w-full gap-2 bg-primary hover:bg-primary/90"
+            >
+              <Lock className="h-5 w-5" />
+              Administrator-Bereich (PIN: 9988)
+            </Button>
+          ) : (
+            <Button
+              onClick={() => {
+                sessionStorage.removeItem('isAdmin');
+                sessionStorage.setItem('userRole', 'user');
+                setIsAdmin(false);
+                alert('Admin-Modus beendet');
+              }}
+              variant="outline"
+              className="w-full gap-2 border-red-500/50 text-red-400 hover:bg-red-500/10"
+            >
+              <Lock className="h-5 w-5" />
+              Admin-Modus beenden
+            </Button>
+          )}
           
           <Button
-            onClick={() => {
-              window.location.href = '/portal/admin';
-            }}
+            onClick={() => window.location.href = '/portal/admin'}
             variant="outline"
             className="w-full gap-2 border-2 border-primary/50 hover:bg-primary/10"
           >
@@ -280,32 +200,104 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
   );
 };
 
-// Hilfskomponente für Info-Zeilen
-const InfoRow = ({ icon: Icon, label, value, mono = false }) => (
-  <div className="flex items-center gap-2">
-    <Icon className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
+// Geräteinformationen Panel
+const DeviceInfoPanel = ({ agentInfo, dbStats, onRefresh }) => {
+  if (!agentInfo) {
+    return (
+      <div className="mt-3 p-4 bg-muted/30 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground text-center">Lade Geräteinformationen...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-3 space-y-3">
+      {/* Agent Status */}
+      <div className="p-3 bg-muted/30 rounded-lg border border-border">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-semibold text-foreground flex items-center gap-1">
+            <Server className="h-3 w-3" /> Agent Status
+          </span>
+          <span className={`px-2 py-0.5 text-xs rounded-full ${
+            agentInfo.status === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {agentInfo.status === 'running' ? '● Online' : '○ Offline'}
+          </span>
+        </div>
+        <div className="space-y-1 text-xs">
+          <InfoRow label="Device ID" value={agentInfo.deviceId} mono />
+          <InfoRow label="Hostname" value={agentInfo.hostname} />
+          <InfoRow label="IP-Adresse" value={agentInfo.ipAddresses?.[0]} />
+          <InfoRow label="MAC-Adresse" value={agentInfo.macAddresses?.[0]} mono />
+          <InfoRow label="TeamViewer-ID" value={agentInfo.teamviewerId} mono />
+          <InfoRow label="PC-Serial" value={agentInfo.pcSerial} mono />
+          <InfoRow label="Scanner-Serial" value={agentInfo.connectedScanners?.[0]?.serial || 'Kein Scanner'} mono />
+          <InfoRow label="Heartbeat" value={agentInfo.lastHeartbeat} />
+        </div>
+      </div>
+
+      {/* SQLite Stats */}
+      {dbStats && (
+        <div className="p-3 bg-muted/30 rounded-lg border border-border">
+          <span className="text-xs font-semibold text-foreground flex items-center gap-1 mb-2">
+            <Database className="h-3 w-3" /> SQLite Datenbank
+          </span>
+          <div className="space-y-1 text-xs">
+            <InfoRow label="Größe" value={dbStats.dbSizeFormatted} />
+            <InfoRow label="Scans" value={dbStats.tables?.scans || 0} />
+            <InfoRow label="Standorte" value={dbStats.tables?.locations_cache || 0} />
+            <InfoRow label="Configs" value={dbStats.tables?.device_config || 0} />
+            {dbStats.unsyncedScans > 0 && (
+              <div className="mt-1 p-1.5 bg-yellow-500/20 rounded text-yellow-400 text-center">
+                ⚠ {dbStats.unsyncedScans} unsynced
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Atlas Sync */}
+      <div className="p-3 bg-muted/30 rounded-lg border border-border">
+        <span className="text-xs font-semibold text-foreground flex items-center gap-1 mb-2">
+          <RefreshCw className="h-3 w-3" /> Atlas Sync
+        </span>
+        {dbStats?.lastSync ? (
+          <div className="space-y-1 text-xs">
+            <InfoRow label="Letzter Sync" value={formatDate(dbStats.lastSync.completedAt)} />
+            <InfoRow label="Datensätze" value={dbStats.lastSync.recordsCount} />
+            <div className="mt-1 p-1.5 bg-green-500/20 rounded text-green-400 text-center">
+              ✓ Synchronisiert
+            </div>
+          </div>
+        ) : (
+          <div className="p-1.5 bg-yellow-500/20 rounded text-yellow-400 text-center text-xs">
+            ⚠ Noch nie synchronisiert
+          </div>
+        )}
+      </div>
+
+      {/* Refresh Button */}
+      <Button onClick={onRefresh} variant="outline" size="sm" className="w-full gap-2">
+        <RefreshCw className="h-3 w-3" /> Aktualisieren
+      </Button>
+    </div>
+  );
+};
+
+const InfoRow = ({ label, value, mono = false }) => (
+  <div className="flex items-center justify-between">
     <span className="text-muted-foreground">{label}:</span>
-    <span className={`text-foreground truncate ${mono ? 'font-mono text-xs' : ''}`}>
+    <span className={`text-foreground truncate max-w-[150px] ${mono ? 'font-mono text-[10px]' : ''}`}>
       {value || 'N/A'}
     </span>
   </div>
 );
 
-// Datum formatieren
 const formatDate = (dateStr) => {
   if (!dateStr) return 'N/A';
   try {
-    const date = new Date(dateStr);
-    return date.toLocaleString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  } catch {
-    return dateStr;
-  }
+    return new Date(dateStr).toLocaleString('de-DE');
+  } catch { return dateStr; }
 };
 
 export default SideMenu;
