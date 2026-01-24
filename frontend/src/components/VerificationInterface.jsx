@@ -1339,7 +1339,13 @@ const VerificationInterface = () => {
   if (pinRequired && !pinAuthenticated) {
     return (
       <ScannerPinPrompt 
-        onSuccess={() => setPinAuthenticated(true)}
+        onSuccess={(role) => {
+          setPinAuthenticated(true);
+          // Bei Admin-PIN sofort AdminPanel öffnen
+          if (role === 'admin') {
+            setTimeout(() => setIsAdminPanelOpen(true), 300);
+          }
+        }}
         onCancel={null} // No cancel button - must enter PIN
       />
     );
