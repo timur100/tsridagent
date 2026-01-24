@@ -53,6 +53,17 @@ contextBridge.exposeInMainWorld('appAPI', {
   getPaths: () => ipcRenderer.invoke('app:getPaths')
 });
 
+// Window Control API (für Fullscreen-Toggle)
+contextBridge.exposeInMainWorld('windowAPI', {
+  toggleFullscreen: () => ipcRenderer.invoke('window:toggleFullscreen'),
+  setFullscreen: (flag) => ipcRenderer.invoke('window:setFullscreen', flag),
+  isFullscreen: () => ipcRenderer.invoke('window:isFullscreen'),
+  minimize: () => ipcRenderer.invoke('window:minimize'),
+  maximize: () => ipcRenderer.invoke('window:maximize'),
+  restore: () => ipcRenderer.invoke('window:restore'),
+  isMaximized: () => ipcRenderer.invoke('window:isMaximized')
+});
+
 // ===== NEUE APIs FÜR OFFLINE-AGENT =====
 
 // Database API
