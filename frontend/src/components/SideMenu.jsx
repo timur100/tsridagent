@@ -158,13 +158,28 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick }) => {
         
         {/* Footer */}
         <div className="p-4 border-t border-border space-y-3">
+          {/* Administrator-Bereich Button - öffnet AdminPanel */}
+          <Button
+            onClick={() => {
+              if (onAdminClick) {
+                onAdminClick();
+              }
+              onClose();
+            }}
+            className="w-full gap-2 bg-primary hover:bg-primary/90"
+          >
+            <Lock className="h-5 w-5" />
+            Administrator-Bereich
+          </Button>
+          
           {!isAdmin ? (
             <Button
               onClick={handleAdminLogin}
-              className="w-full gap-2 bg-primary hover:bg-primary/90"
+              variant="outline"
+              className="w-full gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
             >
-              <Lock className="h-5 w-5" />
-              Administrator-Bereich (PIN: 9988)
+              <Shield className="h-5 w-5" />
+              Admin-Modus aktivieren (PIN: 9988)
             </Button>
           ) : (
             <Button
