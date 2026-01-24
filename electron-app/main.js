@@ -273,6 +273,50 @@ ipcMain.handle('printer:printImage', async (event, { printerName, imageData }) =
   }
 });
 
+// ===== WINDOW CONTROL API =====
+ipcMain.handle('window:toggleFullscreen', () => {
+  if (mainWindow) {
+    const isFullScreen = mainWindow.isFullScreen();
+    mainWindow.setFullScreen(!isFullScreen);
+    return !isFullScreen;
+  }
+  return false;
+});
+
+ipcMain.handle('window:setFullscreen', (event, flag) => {
+  if (mainWindow) {
+    mainWindow.setFullScreen(flag);
+    return flag;
+  }
+  return false;
+});
+
+ipcMain.handle('window:isFullscreen', () => {
+  return mainWindow ? mainWindow.isFullScreen() : false;
+});
+
+ipcMain.handle('window:minimize', () => {
+  if (mainWindow) mainWindow.minimize();
+});
+
+ipcMain.handle('window:maximize', () => {
+  if (mainWindow) {
+    if (mainWindow.isMaximized()) {
+      mainWindow.unmaximize();
+    } else {
+      mainWindow.maximize();
+    }
+  }
+});
+
+ipcMain.handle('window:restore', () => {
+  if (mainWindow) mainWindow.restore();
+});
+
+ipcMain.handle('window:isMaximized', () => {
+  return mainWindow ? mainWindow.isMaximized() : false;
+});
+
 // Print to USB printer
 ipcMain.handle('printer:print', async (event, { port, data }) => {
   try {
