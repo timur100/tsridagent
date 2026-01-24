@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { Shield, LogOut, User, Lightbulb } from 'lucide-react';
+import { Shield, LogOut, User, Lightbulb, Scan } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import IdeasModal from './IdeasModal';
 
@@ -20,6 +20,10 @@ const AdminLayout = ({ children }) => {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handleScanApp = () => {
+    window.location.href = '/';
   };
 
   return (
@@ -54,6 +58,20 @@ const AdminLayout = ({ children }) => {
             </div>
 
             <div className="flex items-center space-x-4">
+              {/* Scan App Button */}
+              <button
+                onClick={handleScanApp}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                  theme === 'dark'
+                    ? 'bg-white text-[#c00000] hover:bg-gray-100'
+                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                }`}
+                title="Zur Scan App / Agent wechseln"
+              >
+                <Scan className="h-5 w-5" />
+                <span>Scan App</span>
+              </button>
+              
               {/* Ideas Button */}
               <button
                 onClick={() => setShowIdeasModal(true)}
