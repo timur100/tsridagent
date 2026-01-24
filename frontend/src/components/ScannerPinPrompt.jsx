@@ -69,7 +69,10 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
       const data = await response.json();
 
       if (data.valid) {
-        onSuccess();
+        // Speichere Rolle im sessionStorage
+        sessionStorage.setItem('userRole', data.role || 'user');
+        sessionStorage.setItem('isAdmin', data.role === 'admin' ? 'true' : 'false');
+        onSuccess(data.role);
       } else {
         setError('Falsche PIN. Bitte erneut versuchen.');
         setPin(['', '', '', '']);
