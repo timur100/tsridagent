@@ -531,6 +531,85 @@ function getRecentLogs(limit = 100, level = null) {
     return stmt.all(...params);
 }
 
+/**
+ * Holt Datenbank-Statistiken
+ */
+function getDatabaseStats() {
+    if (!db) initDatabase();
+    
+    try {
+        const stats = {
+            dbPath: DB_PATH,
+            dbSize: 0,
+            tables: {}
+        };
+        
+        // DB Dateigröße
+        if (fs.existsSync(DB_PATH)) {
+            const fileStat = fs.statSync(DB_PATH);
+            stats.dbSize = fileStat.size;
+            stats.dbSizeFormatted = formatBytes(fileStat.size);
+        }
+        
+        // Tabellen-Statistiken
+        const tables = ['device_config', 'scans', 'locations_cache', 'sync_log', 'app_logs', 'remote_commands'];
+        
+        for (const table of tables) {
+            try {
+                const countStmt = db.prepare(`SELECT COUNT(*) as count FROM ${table}`);
+                const result = countStmt.get();
+                stats.tables[table] = result.count;
+            } catch (e) {
+                stats.tables[table] = 0;
+            }
+        }
+        
+        // Letzter Sync
+        try {
+            const syncStmt = db.prepare(`
+                SELECT * FROM sync_log 
+                WHERE status = 'completed' 
+                ORDER BY completed_at DESC 
+                LIMIT 1
+            `);
+            const lastSync = syncStmt.get();
+            if (lastSync) {
+                stats.lastSync = {
+                    action: lastSync.action,
+                    completedAt: lastSync.completed_at,
+                    recordsCount: lastSync.records_count
+                };
+            }
+        } catch (e) {
+            stats.lastSync = null;
+        }
+        
+        // Unsynced Scans
+        try {
+            const unsyncedStmt = db.prepare(`SELECT COUNT(*) as count FROM scans WHERE sync_status = 'pending'`);
+            stats.unsyncedScans = unsyncedStmt.get().count;
+        } catch (e) {
+            stats.unsyncedScans = 0;
+        }
+        
+        return stats;
+    } catch (error) {
+        console.error('[DB] Fehler beim Holen der Stats:', error);
+        return null;
+    }
+}
+
+/**
+ * Formatiert Bytes in lesbare Größe
+ */
+function formatBytes(bytes) {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
 // ==================== EXPORT ====================
 
 module.exports = {
