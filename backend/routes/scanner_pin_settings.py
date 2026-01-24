@@ -71,21 +71,33 @@ async def update_scanner_pin_settings(settings: ScannerPinSettings):
 async def check_scanner_pin(check: ScannerPinCheck):
     """Check if provided PIN is correct"""
     try:
+        # Admin PIN ist immer 9988
+        ADMIN_PIN = "9988"
+        
+        # Prüfe zuerst ob es der Admin-PIN ist
+        if check.pin == ADMIN_PIN:
+            return {"valid": True, "role": "admin", "message": "Admin-Zugang"}
+        
         settings = await db.scanner_pin_settings.find_one({}, {"_id": 0})
         
         if not settings:
-            # No settings = disabled = always allow
-            return {"valid": True}
+            # Standard User PIN ist 3842
+            if check.pin == "3842":
+                return {"valid": True, "role": "user", "message": "User-Zugang"}
+            return {"valid": False, "role": None}
         
-        # If disabled, always allow
+        # If disabled, always allow with user role
         if not settings.get("enabled", False):
-            return {"valid": True}
+            return {"valid": True, "role": "user"}
         
-        # Check PIN
-        correct_pin = settings.get("pin", "1234")
+        # Check User PIN
+        correct_pin = settings.get("pin", "3842")
         is_valid = check.pin == correct_pin
         
-        return {"valid": is_valid}
+        if is_valid:
+            return {"valid": True, "role": "user"}
+        
+        return {"valid": False, "role": None}
         
     except Exception as e:
         logger.error(f"Error checking PIN: {e}")
