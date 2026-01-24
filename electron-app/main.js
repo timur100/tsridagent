@@ -81,22 +81,27 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    minWidth: 1200,
-    minHeight: 700,
+    minWidth: 800,
+    minHeight: 600,
     fullscreen: isKiosk && kioskConfig.fullscreen,
-    kiosk: isKiosk,
-    frame: !isKiosk, // Kein Fensterrahmen im Kiosk-Modus
-    autoHideMenuBar: isKiosk,
+    kiosk: false, // NICHT im Kiosk-Modus starten (erlaubt Minimieren/Bewegen)
+    frame: true,  // IMMER Fensterrahmen anzeigen
+    resizable: true,
+    movable: true,
+    minimizable: true,
+    maximizable: true,
+    closable: true, // Wird durch Event-Handler kontrolliert
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       enableRemoteModule: false,
       nodeIntegration: false,
       webSecurity: true,
-      devTools: isDev || !isKiosk // DevTools nur in Dev oder Admin-Modus
+      devTools: true
     },
-    icon: path.join(__dirname, 'assets/icon.png'),
-    title: 'TSRID Admin Portal',
+    icon: path.join(__dirname, 'assets/icon.ico'),
+    title: 'TSRID Agent',
     backgroundColor: '#1a1a1a'
   });
   
@@ -114,6 +119,20 @@ function createWindow() {
   if (isDev) {
     mainWindow.webContents.openDevTools();
   }
+  
+  // Verhindere Schließen ohne Passwort (minimiert stattdessen ins Tray)
+  mainWindow.on('close', (event) => {
+    // Wenn nicht gerade beendet wird, ins Tray minimieren
+    if (!app.isQuitting) {
+      event.preventDefault();
+      mainWindow.hide();
+      
+      // Zeige Hinweis
+      if (backgroundAgent && backgroundAgent.showNotification) {
+        backgroundAgent.showNotification('Minimiert', 'Agent läuft weiter im Hintergrund. Beenden über Tray-Icon.');
+      }
+    }
+  });
 
   // Handle window close
   mainWindow.on('closed', () => {
