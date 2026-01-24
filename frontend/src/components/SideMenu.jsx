@@ -162,10 +162,11 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick, onShowPinPad 
             onClick={() => {
               if (isAdmin) {
                 // Bereits als Admin eingeloggt - direkt AdminPanel öffnen
-                if (onAdminClick) {
-                  onAdminClick();
-                }
                 onClose();
+                if (onAdminClick) {
+                  // Kleiner Delay damit das Menü erst schließt
+                  setTimeout(() => onAdminClick(), 100);
+                }
               } else {
                 // Nicht als Admin - zeige PIN-Pad
                 if (onShowPinPad) {
