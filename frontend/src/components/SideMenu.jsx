@@ -157,32 +157,31 @@ const SideMenu = ({ isOpen, onClose, onAdminClick, onHistoryClick, onShowPinPad 
         
         {/* Footer */}
         <div className="p-4 border-t border-border space-y-3">
-          {/* Administrator-Bereich Button - öffnet AdminPanel */}
+          {/* Agent-Admin Button - zeigt PIN-Pad oder öffnet AdminPanel wenn bereits Admin */}
           <Button
             onClick={() => {
-              if (onAdminClick) {
-                onAdminClick();
+              if (isAdmin) {
+                // Bereits als Admin eingeloggt - direkt AdminPanel öffnen
+                if (onAdminClick) {
+                  onAdminClick();
+                }
+                onClose();
+              } else {
+                // Nicht als Admin - zeige PIN-Pad
+                if (onShowPinPad) {
+                  onShowPinPad();
+                }
+                onClose();
               }
-              onClose();
             }}
             className="w-full gap-2 bg-primary hover:bg-primary/90"
           >
             <Lock className="h-5 w-5" />
-            Administrator-Bereich
+            Agent-Admin
           </Button>
           
-          {!isAdmin ? (
-            /* Admin-Modus aktivieren - zeigt das ursprüngliche PIN-Pad */
-            <Button
-              onClick={handleShowPinPad}
-              variant="outline"
-              className="w-full gap-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10"
-            >
-              <Shield className="h-5 w-5" />
-              Admin-Modus aktivieren
-            </Button>
-          ) : (
-            /* Admin ist eingeloggt - zeige Beenden Button */
+          {/* Admin ist eingeloggt - zeige Beenden Button */}
+          {isAdmin && (
             <>
               <Button
                 onClick={() => {
