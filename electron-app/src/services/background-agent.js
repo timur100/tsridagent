@@ -245,16 +245,27 @@ class BackgroundAgent {
    * Icon erstellen
    */
   createIcon() {
-    // Versuche PNG zu laden
-    const iconPath = path.join(__dirname, '../../assets/icon.png');
-    try {
-      const icon = nativeImage.createFromPath(iconPath);
-      if (!icon.isEmpty()) {
-        return icon.resize({ width: 16, height: 16 });
+    // Versuche verschiedene Icon-Pfade
+    const iconPaths = [
+      path.join(__dirname, '../../assets/tray-icon.png'),
+      path.join(__dirname, '../../assets/tray-icon-32.png'),
+      path.join(__dirname, '../../assets/icon.png'),
+      path.join(__dirname, '../../assets/icon.ico')
+    ];
+    
+    for (const iconPath of iconPaths) {
+      try {
+        const icon = nativeImage.createFromPath(iconPath);
+        if (!icon.isEmpty()) {
+          console.log('[Agent] Icon geladen:', iconPath);
+          return icon.resize({ width: 16, height: 16 });
+        }
+      } catch (e) {
+        // Weiter zum nächsten
       }
-    } catch (e) {
-      console.log('[Agent] Icon nicht gefunden, erstelle Standard-Icon');
     }
+    
+    console.log('[Agent] Kein Icon gefunden, erstelle Standard-Icon');
     
     // Fallback: Erstelle einfaches rotes Icon
     const size = 16;
