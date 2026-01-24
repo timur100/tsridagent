@@ -73,7 +73,12 @@ contextBridge.exposeInMainWorld('agentAPI', {
   getSyncLogs: () => ipcRenderer.invoke('agent:getSyncLogs'),
   enableKioskMode: (pin) => ipcRenderer.invoke('agent:enableKioskMode', pin),
   disableKioskMode: (pin) => ipcRenderer.invoke('agent:disableKioskMode', pin),
-  isElectron: () => true
+  // Neue Funktionen für Geräteeinrichtung
+  getDeviceConfig: () => ipcRenderer.invoke('agent:getDeviceConfig'),
+  saveDeviceConfig: (config) => ipcRenderer.invoke('agent:saveDeviceConfig', config),
+  syncLocations: (locations) => ipcRenderer.invoke('agent:syncLocations', locations),
+  quitApp: () => ipcRenderer.invoke('agent:quitApp'),
+  isElectron: true
 });
 
 // ===== NEUE APIs FÜR OFFLINE-AGENT =====
