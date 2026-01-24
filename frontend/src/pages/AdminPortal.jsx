@@ -853,6 +853,20 @@ const AdminPortalContent = () => {
               </div>
               <CustomerSwitcher />
               
+              {/* Scan App Button */}
+              <Button
+                onClick={() => window.location.href = '/'}
+                className={`flex items-center space-x-2 ${
+                  theme === 'dark'
+                    ? 'bg-white text-[#c00000] hover:bg-gray-100'
+                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                }`}
+                title="Zur Scan App / Agent wechseln"
+              >
+                <Monitor className="h-4 w-4" />
+                <span>Scan App</span>
+              </Button>
+              
               {/* Ideas Button - Navigate to Ideas Page */}
               <button
                 onClick={() => navigate('/portal/admin/ideas')}
