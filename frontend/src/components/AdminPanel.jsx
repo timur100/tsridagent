@@ -1217,7 +1217,20 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
             <div className="space-y-6">
               <h2 className="text-xl font-bold text-foreground">Geräte & Scanner</h2>
               
-              <Accordion type="single" collapsible className="space-y-4">
+              <Accordion type="single" collapsible defaultValue="device-setup" className="space-y-4">
+                {/* Geräteeinrichtung */}
+                <AccordionItem value="device-setup" className="border border-border rounded-lg px-4">
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-primary" />
+                      <span className="font-semibold">Geräteeinrichtung & Standort</span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="pt-4">
+                    <DeviceSetup />
+                  </AccordionContent>
+                </AccordionItem>
+
                 {/* Scanner Management */}
                 <AccordionItem value="scanner" className="border border-border rounded-lg px-4">
                   <AccordionTrigger className="hover:no-underline">
