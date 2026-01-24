@@ -314,15 +314,48 @@ class BackgroundAgent {
       },
       { type: 'separator' },
       { 
-        label: '❌ Beenden', 
-        click: () => {
-          this.stop();
-          app.quit();
-        }
+        label: '❌ Beenden (Passwort erforderlich)', 
+        click: () => this.exitWithPassword()
       }
     ]);
     
     this.tray.setContextMenu(menu);
+  }
+
+  /**
+   * Beenden mit Passwort
+   */
+  exitWithPassword() {
+    // Zeige Passwort-Dialog
+    if (this.mainWindow) {
+      this.mainWindow.show();
+      this.mainWindow.focus();
+      
+      this.mainWindow.webContents.executeJavaScript(`
+        (function() {
+          const password = prompt('Admin-Passwort zum Beenden eingeben:');
+          if (password === 'tsrid2024!') {
+            return 'VALID';
+          } else if (password !== null) {
+            alert('Falsches Passwort!');
+            return 'INVALID';
+          }
+          return 'CANCELLED';
+        })();
+      `).then((result) => {
+        if (result === 'VALID') {
+          console.log('[Agent] Beenden mit gültigem Passwort');
+          this.stop();
+          app.isQuitting = true;
+          app.quit();
+        }
+      });
+    } else {
+      // Fallback wenn kein Fenster
+      this.stop();
+      app.isQuitting = true;
+      app.quit();
+    }
   }
 
   /**
