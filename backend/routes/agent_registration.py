@@ -6,20 +6,17 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import uuid
 
-from db.connection import get_mongo_client
-
 router = APIRouter(prefix="/api/agent", tags=["Agent Registration"])
 
-# MongoDB connection
-MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
-
-def get_db():
-    """Get MongoDB database connection"""
-    return get_mongo_client()[DB_NAME]
+# MongoDB connection (gleiche wie locations.py)
+MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
+DB_NAME = os.environ.get('DB_NAME', 'test_database')
+client = AsyncIOMotorClient(MONGO_URL)
+db = client[DB_NAME]
 
 
 class DeviceRegistration(BaseModel):
