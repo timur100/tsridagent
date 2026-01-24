@@ -1,9 +1,16 @@
 const { app, BrowserWindow, ipcMain, Menu, Tray, dialog, globalShortcut } = require('electron');
 const path = require('path');
-const { SerialPort } = require('serialport');
-const usb = require('usb');
-const HID = require('node-hid');
-// const printer = require('printer'); // Ersetzt durch PowerShell-Lösung
+let SerialPort, usb, HID;
+try {
+  SerialPort = require('serialport').SerialPort;
+} catch (e) { console.log('[TSRID] SerialPort nicht verfügbar'); }
+try {
+  usb = require('usb');
+} catch (e) { console.log('[TSRID] USB nicht verfügbar'); }
+try {
+  HID = require('node-hid');
+} catch (e) { console.log('[TSRID] HID nicht verfügbar'); }
+
 const printerWindows = require('./printer-windows');
 
 // Neue Services für Offline-First Agent
@@ -11,6 +18,7 @@ const database = require('./src/services/database');
 const deviceInfo = require('./src/services/device-info');
 const syncEngine = require('./src/services/sync-engine');
 const modeManager = require('./src/services/mode-manager');
+const backgroundAgent = require('./src/services/background-agent');
 
 // Configuration
 const PREVIEW_URL = 'https://tablet-fleet-sync.preview.emergentagent.com';
