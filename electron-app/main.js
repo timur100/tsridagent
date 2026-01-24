@@ -369,12 +369,20 @@ ipcMain.handle('printer:test', async (event, { port }) => {
   }
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   // Services initialisieren
   initializeServices();
   
   // Fenster erstellen
   createWindow();
+  
+  // Background Agent starten
+  try {
+    await backgroundAgent.init(mainWindow);
+    console.log('[TSRID] Background Agent gestartet');
+  } catch (error) {
+    console.error('[TSRID] Background Agent Fehler:', error);
+  }
   
   // Shortcut-Handler Funktion
   const handleAdminShortcut = () => {
