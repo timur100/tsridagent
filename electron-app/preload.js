@@ -64,6 +64,14 @@ contextBridge.exposeInMainWorld('windowAPI', {
   isMaximized: () => ipcRenderer.invoke('window:isMaximized')
 });
 
+// Agent System Info API
+contextBridge.exposeInMainWorld('agentAPI', {
+  getSystemInfo: () => ipcRenderer.invoke('agent:getSystemInfo'),
+  getDeviceId: () => ipcRenderer.invoke('agent:getDeviceId'),
+  getStatus: () => ipcRenderer.invoke('agent:getStatus'),
+  isElectron: () => true
+});
+
 // ===== NEUE APIs FÜR OFFLINE-AGENT =====
 
 // Database API
