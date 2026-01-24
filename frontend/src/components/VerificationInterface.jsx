@@ -1539,6 +1539,7 @@ const VerificationInterface = () => {
         onClose={() => setIsMenuOpen(false)}
         onAdminClick={handleAdminClick}
         onHistoryClick={() => setIsHistoryOpen(true)}
+        onShowPinPad={handleShowPinPad}
       />
       
       <PinPad
