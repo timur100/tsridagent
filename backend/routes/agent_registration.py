@@ -44,19 +44,19 @@ async def register_device(registration: DeviceRegistration):
     Gibt die vollständigen Standortinformationen zurück.
     """
     try:
-        # Suche nach dem Standort
-        location = await db.locations.find_one({
-            "locationCode": registration.station_code
+        # Suche zuerst in key_locations (primäre Standort-Collection)
+        location = await db.key_locations.find_one({
+            "$or": [
+                {"location_id": registration.station_code},
+                {"locationCode": registration.station_code},
+                {"station_code": registration.station_code}
+            ]
         })
         
+        # Falls nicht gefunden, versuche in locations
         if not location:
-            # Versuche auch in key_locations zu suchen
-            location = await db.key_locations.find_one({
-                "$or": [
-                    {"location_id": registration.station_code},
-                    {"locationCode": registration.station_code},
-                    {"station_code": registration.station_code}
-                ]
+            location = await db.locations.find_one({
+                "locationCode": registration.station_code
             })
         
         if not location:
