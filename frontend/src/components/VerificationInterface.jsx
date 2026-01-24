@@ -1183,6 +1183,11 @@ const VerificationInterface = () => {
     setIsPinPadOpen(true);
   };
 
+  // Zeigt das ursprüngliche PIN-Pad für Admin-Login
+  const handleShowPinPad = () => {
+    setPinAuthenticated(false);
+  };
+
   const handleLockClick = () => {
     if (securityUser) {
       // Logout security user
