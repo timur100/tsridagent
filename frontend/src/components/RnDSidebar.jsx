@@ -140,6 +140,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       label: 'Test Center',
       icon: FlaskConical,
       items: [
+        { id: 'agent-device-info', label: 'Agent/Geräteinformationen', emoji: '🖥️' },
         { id: 'data-check', label: 'Daten Check', emoji: '🔍' },
         { id: 'usb-devices', label: 'USB Device Manager', emoji: '🔌' }
       ]
