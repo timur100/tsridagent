@@ -134,27 +134,29 @@ async def get_station_info(station_code: str, device_number: Optional[str] = Non
     Gibt die Standortinformationen für einen Stationscode zurück.
     """
     try:
-        # Suche nach dem Standort
-        location = await db.locations.find_one({"locationCode": station_code})
+        # Suche zuerst in key_locations (primäre Standort-Collection)
+        location = await db.key_locations.find_one({
+            "$or": [
+                {"location_id": station_code},
+                {"locationCode": station_code},
+                {"station_code": station_code}
+            ]
+        })
         
+        # Falls nicht gefunden, versuche in locations
         if not location:
-            location = await db.key_locations.find_one({
-                "$or": [
-                    {"location_id": station_code},
-                    {"locationCode": station_code},
-                    {"station_code": station_code}
-                ]
-            })
+            location = await db.locations.find_one({"locationCode": station_code})
         
         if not location:
             raise HTTPException(status_code=404, detail=f"Station '{station_code}' nicht gefunden")
         
+        # Extrahiere die Felder (key_locations hat andere Feldnamen)
         return {
             "success": True,
             "station": {
-                "station_code": station_code,
+                "station_code": location.get("location_id") or location.get("locationCode") or station_code,
                 "device_number": device_number or location.get("deviceNumber", "01"),
-                "location_name": location.get("locationName") or location.get("name", ""),
+                "location_name": location.get("name") or location.get("locationName", ""),
                 "street": location.get("street", ""),
                 "zip": location.get("zip", ""),
                 "city": location.get("city", ""),
