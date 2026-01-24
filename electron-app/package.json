@@ -34,7 +34,7 @@
   },
   "build": {
     "appId": "com.tsrid.adminportal",
-    "productName": "TSRID Admin Portal",
+    "productName": "TSRID Agent",
     "directories": {
       "output": "dist"
     },
@@ -55,7 +55,7 @@
     ],
     "win": {
       "target": ["nsis"],
-      "icon": "assets/icon.png",
+      "icon": "assets/icon.ico",
       "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
