@@ -363,15 +363,38 @@ const DeviceSetup = ({ onComplete }) => {
           Standort auswählen
         </h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          {/* Kontinent Dropdown */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+              <Map className="h-4 w-4" /> Kontinent
+            </label>
+            <Select value={selectedContinent} onValueChange={handleContinentChange}>
+              <SelectTrigger data-testid="continent-select">
+                <SelectValue placeholder="Kontinent wählen..." />
+              </SelectTrigger>
+              <SelectContent>
+                {continents.map((continent) => (
+                  <SelectItem key={continent} value={continent}>
+                    {continent}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Land Dropdown */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
               <Globe className="h-4 w-4" /> Land
             </label>
-            <Select value={selectedCountry} onValueChange={handleCountryChange}>
+            <Select 
+              value={selectedCountry} 
+              onValueChange={handleCountryChange}
+              disabled={!selectedContinent}
+            >
               <SelectTrigger data-testid="country-select">
-                <SelectValue placeholder="Land wählen..." />
+                <SelectValue placeholder={selectedContinent ? "Land wählen..." : "Erst Kontinent wählen"} />
               </SelectTrigger>
               <SelectContent>
                 {countries.map((country) => (
