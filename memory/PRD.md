@@ -508,3 +508,49 @@ Neue Komponente `/app/frontend/src/components/ConnectionStatusIndicators.jsx` mi
 ### P3 - Drucker-Support
 - [ ] Silent Printing zu USB-Drucker im Electron App
 
+---
+
+### 25. Januar 2025 - Session 6 (Fortsetzung)
+
+#### ✅ FEATURE: Echtzeit-Standortdetails aus Admin-Portal
+**Problem:** Nur ein Standort (BERT01) hatte vollständige Details in `station_details` Collection.
+
+**Lösung:** Echtzeit-Datenabfrage aus `portal_db.tenant_locations` (215 vollständige Standortdatensätze)
+
+**Backend-Änderungen:** `/app/backend/routes/unified_locations.py`
+1. **Überarbeiteter `/station-details/{location_code}` Endpoint:**
+   - Primär: Echtzeit aus `tenant_locations` (Portal)
+   - Sekundär: Cache aus `station_details`
+   - Fallback: Aggregation aus `europcar_devices`
+   - Response enthält `source` Feld zur Identifikation der Datenquelle
+
+2. **Neuer Bulk-Endpoint:** `GET /station-details-bulk?location_codes=BERT01,FRAT01,...`
+   - Lädt Details für bis zu 50 Standorte gleichzeitig
+
+3. **Überarbeiteter `/by-city` Endpoint:**
+   - Liefert jetzt vollständige Details direkt mit
+   - Angereichert mit Daten aus `tenant_locations`
+
+**Datenverfügbarkeit:**
+- 215 Standorte mit vollständigen Details in `tenant_locations`
+- 161 verschiedene Städte abgedeckt
+- 6 Städte noch ohne Details (Edge Cases)
+
+#### ✅ FEATURE: Verbesserte Standortlisten-UI
+**Problem:** Stationscode war klein und wenig Details sichtbar.
+
+**Lösung:** Komplett überarbeitete Standortkarten in `DeviceSetup.jsx`
+
+**UI-Verbesserungen:**
+- **Stationscode:** Jetzt `text-2xl font-bold` in Primary-Farbe (rot)
+- **Geräte-Badge:** Zeigt Anzahl der Geräte am Standort
+- **Vollständiger Name:** Als separate Zeile unter dem Code
+- **Adresse:** Straße, PLZ, Stadt
+- **Kontakt-Zeile:** Manager-Icon + Name, Telefon-Icon + Nummer
+- **Typ-Badge:** Zeigt Station-Typ (CSS, IKC, C, CRR, etc.)
+- **Erweiterte Höhe:** `max-h-64` statt `max-h-48` für bessere Übersicht
+
+**Geänderte Dateien:**
+- `/app/backend/routes/unified_locations.py`
+- `/app/frontend/src/components/DeviceSetup.jsx`
+
