@@ -400,6 +400,10 @@ app.include_router(agent_api_router)
 from routes.agent_registration import router as agent_registration_router
 app.include_router(agent_registration_router)
 
+# Unified Locations API (Single Point of Truth)
+from routes.unified_locations import router as unified_locations_router
+app.include_router(unified_locations_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
