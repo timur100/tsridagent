@@ -397,7 +397,7 @@ const DeviceSetup = ({ onComplete }) => {
 
       {/* Sync-Status */}
       <Card className="p-4 bg-muted/30">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-3">
             <Database className="h-5 w-5 text-primary" />
             <div>
@@ -408,19 +408,40 @@ const DeviceSetup = ({ onComplete }) => {
                 {lastSyncTime 
                   ? `Letzte Sync: ${new Date(lastSyncTime).toLocaleString('de-DE')}`
                   : 'Noch nicht synchronisiert'}
+                {selectedTenant && ` • Filter: ${selectedTenant}`}
               </p>
             </div>
           </div>
-          <Button 
-            onClick={syncLocationsFromAtlas} 
-            disabled={syncing || !isOnline}
-            variant="outline" 
-            size="sm"
-            className="gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-            {syncing ? 'Sync...' : 'Sync'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Tenant-Dropdown */}
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <select
+                value={selectedTenant}
+                onChange={(e) => setSelectedTenant(e.target.value)}
+                disabled={loadingTenants}
+                className="h-9 px-3 rounded-md border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring"
+                data-testid="tenant-filter-dropdown"
+              >
+                {tenants.map((tenant) => (
+                  <option key={tenant.tenant_id} value={tenant.tenant_id}>
+                    {tenant.display_name || tenant.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button 
+              onClick={syncLocationsFromAtlas} 
+              disabled={syncing || !isOnline}
+              variant="outline" 
+              size="sm"
+              className="gap-2"
+              data-testid="sync-locations-btn"
+            >
+              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Sync...' : 'Sync'}
+            </Button>
+          </div>
         </div>
       </Card>
 
