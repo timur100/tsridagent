@@ -386,7 +386,7 @@ const DeviceSetup = ({ onComplete }) => {
             <div className="bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground">
               Verfügbare Standorte ({filteredLocations.length})
             </div>
-            <div className="max-h-48 overflow-y-auto">
+            <div className="max-h-64 overflow-y-auto">
               {loading ? (
                 <div className="p-4 text-center text-muted-foreground">
                   <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2" />
@@ -400,23 +400,58 @@ const DeviceSetup = ({ onComplete }) => {
                 filteredLocations.map((location) => (
                   <div
                     key={location.station_code}
-                    className={`p-3 border-b border-border last:border-0 cursor-pointer hover:bg-muted/50 transition-colors ${
-                      selectedLocation?.station_code === location.station_code ? 'bg-primary/10 border-l-2 border-l-primary' : ''
+                    className={`p-4 border-b border-border last:border-0 cursor-pointer hover:bg-muted/50 transition-colors ${
+                      selectedLocation?.station_code === location.station_code ? 'bg-primary/10 border-l-4 border-l-primary' : ''
                     }`}
                     onClick={() => handleLocationSelect(location)}
                     data-testid={`location-${location.station_code}`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="font-mono font-semibold text-primary">{location.station_code}</span>
-                        <span className="mx-2 text-muted-foreground">-</span>
-                        <span className="text-foreground">{location.name}</span>
+                    <div className="flex items-start justify-between gap-4">
+                      {/* Linke Seite: Stationscode groß + Details */}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-mono text-2xl font-bold text-primary tracking-wide">
+                            {location.station_code}
+                          </span>
+                          {location.device_count > 0 && (
+                            <span className="text-xs px-2 py-0.5 bg-muted rounded-full text-muted-foreground">
+                              {location.device_count} {location.device_count === 1 ? 'Gerät' : 'Geräte'}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium text-foreground mb-1">
+                          {location.name || `Europcar ${location.station_code}`}
+                        </p>
+                        {/* Adresse */}
+                        {(location.street || location.city) && (
+                          <p className="text-xs text-muted-foreground">
+                            {location.street && <span>{location.street}, </span>}
+                            {location.zip && <span>{location.zip} </span>}
+                            {location.city}
+                          </p>
+                        )}
+                        {/* Kontakt & Manager */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-muted-foreground">
+                          {location.manager && (
+                            <span className="flex items-center gap-1">
+                              <span className="text-primary">👤</span> {location.manager}
+                            </span>
+                          )}
+                          {location.phone && (
+                            <span className="flex items-center gap-1">
+                              <span className="text-primary">📞</span> {location.phone}
+                            </span>
+                          )}
+                          {location.main_typ && (
+                            <span className="px-1.5 py-0.5 bg-primary/10 text-primary rounded text-[10px] font-medium">
+                              {location.main_typ}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      {/* Rechte Seite: Pfeil */}
+                      <ChevronRight className="h-5 w-5 text-muted-foreground mt-2 flex-shrink-0" />
                     </div>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {location.street}, {location.zip} {location.city}
-                    </p>
                   </div>
                 ))
               )}
