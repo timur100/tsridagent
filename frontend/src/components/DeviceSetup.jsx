@@ -66,9 +66,17 @@ const DeviceSetup = ({ onComplete }) => {
       loadSavedConfig();
     }
     
-    // Lade Standorte
+    // Lade Tenants und Standorte
+    loadTenants();
     loadLocations();
   }, []);
+
+  // Wenn Tenant geändert wird, lade Standorte neu
+  useEffect(() => {
+    if (selectedTenant !== undefined) {
+      loadLocations();
+    }
+  }, [selectedTenant]);
 
   // Suchfilter
   useEffect(() => {
