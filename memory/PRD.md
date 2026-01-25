@@ -379,3 +379,31 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 ### Neues ZIP-Archiv erstellt:
 - `/app/downloads/TSRID-Agent_2026-01-24_13-08.zip`
 
+
+### 25. Januar 2025 - Session 5
+
+#### ✅ FEATURE: Multi-Tenant Filterung (P0)
+Implementierung der Tenant-Auswahl im Agent-Admin Bereich zur Filterung von Standorten nach Tenant (z.B. Europcar).
+
+**Backend-Änderungen:** `/app/backend/routes/unified_locations.py`
+1. **Neue Endpoints:**
+   - `GET /api/unified-locations/tenants` - Alle Tenants abrufen (mit optionalem `level` und `parent_id` Filter)
+   - `GET /api/unified-locations/tenants/hierarchy` - Hierarchische Struktur (Kontinent -> Land -> Station)
+   - `GET /api/unified-locations/tenants/top-level` - Top-Level Tenants für Haupt-Dropdown
+2. **Erweiterter Endpoint:**
+   - `GET /api/unified-locations/all?tenant_id=<tenant>` - Filterung nach tenant_id
+
+**Frontend-Änderungen:** `/app/frontend/src/components/DeviceSetup.jsx`
+1. **Neuer State:** `tenants`, `selectedTenant`, `loadingTenants`
+2. **Neue Funktion:** `loadTenants()` - Lädt Tenant-Hierarchie beim Mount
+3. **UI-Komponente:** Dropdown mit Filter-Icon (`data-testid="tenant-filter-dropdown"`)
+4. **Filterlogik:** Bei Tenant-Auswahl werden Standorte automatisch neu geladen
+
+**Test-Ergebnisse:** 100% Backend, 100% Frontend
+- `/app/test_reports/iteration_2.json`
+- `/app/backend/tests/test_tenant_filtering.py`
+
+**Datenbank-Schema:**
+- `tenants` Collection: 646 Einträge mit `tenant_id`, `name`, `display_name`, `parent_tenant_id`, `tenant_level`
+- `key_locations` enthält `tenant_id` Feld für Filterung
+
