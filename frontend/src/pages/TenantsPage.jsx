@@ -571,7 +571,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     </div>
                   )}
                 </div>
-                {getStatusBadge(tenant.status)}
+                {getStatusBadge(tenant.status, tenant.enabled)}
               </div>
 
               {/* Tenant Info */}
