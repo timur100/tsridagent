@@ -323,6 +323,33 @@ Das Hauptziel des Benutzers ist die Etablierung einer "Single Source of Truth" d
 - **Scan App Admin PIN:** 9988
 - **Electron Exit Password:** tsrid2024!
 
+## 24. Januar 2025 - Standortverwaltung & Geräteeinrichtung
+
+### ✅ FEATURE: Geräteregistrierung mit Stationscode
+- **Backend API** (`/app/backend/routes/agent_registration.py`):
+  - `GET /api/agent/station/{station_code}` - Standortinfos abrufen
+  - `POST /api/agent/register` - Gerät registrieren
+  - `GET /api/agent/stations` - Alle Standorte (Offline-Cache)
+  - `POST /api/agent/heartbeat` - Geräte-Heartbeat
+- **Frontend** (`/app/frontend/src/components/DeviceSetup.jsx`):
+  - Eingabe Stationscode + Gerätenummer
+  - Validierung gegen MongoDB Atlas
+  - Standorte-Sync für Offline-Betrieb
+- **Electron IPC** (neue Handler in `main.js`):
+  - `agent:getDeviceConfig`, `agent:saveDeviceConfig`
+  - `agent:syncLocations`, `agent:quitApp`
+
+### ✅ FEATURE: Neues Fingerabdruck-Icon
+- Extrahiert aus TSRID_Logo2.png
+- Alle Icon-Größen erstellt (16-256px)
+- `icon.ico` für Windows Installer
+
+### ✅ FEATURE: Agent-Admin Flow optimiert
+- "Administrator-Bereich" → "Agent-Admin" umbenannt
+- PIN 9988 öffnet sofort AdminPanel
+- "Admin-Modus aktivieren" Button entfernt
+- "Applikation beenden" Button für Admins
+
 ## 24. Januar 2025 - Rollenbasierte Zugriffskontrolle (RBAC)
 
 ### ✅ FEATURE: Rollenbasierte Zugriffskontrolle für Agent-Informationen
