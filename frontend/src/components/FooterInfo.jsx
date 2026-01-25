@@ -41,18 +41,24 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     try {
       const deviceConfig = localStorage.getItem('deviceConfig');
       if (!deviceConfig) {
-        setLicenseStatus({ active: false, message: 'No License' });
+        setLicenseStatus({ active: false, message: 'No License', validUntil: null });
         return;
       }
       const config = JSON.parse(deviceConfig);
       // Wenn Gerät gekoppelt ist, gilt es als lizenziert
       if (config.coupled_at || config.registered_at) {
-        setLicenseStatus({ active: true, message: 'Aktiv' });
+        // Lizenz gültig bis Ende des Jahres + 1 (oder aus config)
+        const validUntil = config.license_valid_until || '2026-12-31';
+        setLicenseStatus({ 
+          active: true, 
+          message: 'Aktiv', 
+          validUntil: validUntil
+        });
       } else {
-        setLicenseStatus({ active: false, message: 'No License' });
+        setLicenseStatus({ active: false, message: 'No License', validUntil: null });
       }
     } catch {
-      setLicenseStatus({ active: false, message: 'No License' });
+      setLicenseStatus({ active: false, message: 'No License', validUntil: null });
     }
   }, []);
 
