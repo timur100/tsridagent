@@ -188,70 +188,70 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
       
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-card border-t border-border px-6 py-3 cursor-pointer hover:bg-card/80 transition-colors relative"
+        className="bg-card border-t border-border px-4 py-1.5 cursor-pointer hover:bg-card/80 transition-colors relative"
       >
         <div className="flex items-center justify-between">
           {/* Left Side - Location Info */}
-          <div className="flex items-center gap-6">
-            <div className="font-bold text-foreground text-lg">
+          <div className="flex items-center gap-4">
+            <div className="font-bold text-foreground text-sm">
               {locationInfo.location}
             </div>
-            <div className="text-muted-foreground text-sm">
+            <div className="text-muted-foreground text-xs">
               {locationInfo.stationName}
             </div>
           </div>
           
           {/* Right Side - Status, DateTime, User, Lock */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             {/* 2 Status Indikatoren ÜBEREINANDER mit Text */}
-            <div className="flex flex-col gap-1 px-2 py-1 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
+            <div className="flex flex-col gap-0.5 px-2 py-0.5 bg-muted/30 rounded border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
-              <div className="flex items-center gap-1.5" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
+              <div className="flex items-center gap-1" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
                 <div className="relative">
                   {scannerOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Scan className={`h-3 w-3 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
-                <span className={`text-[10px] font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
+                <Scan className={`h-2.5 w-2.5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-[9px] font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
                   {scannerOnline ? 'Scan Online' : 'Scan Offline'}
                 </span>
               </div>
               {/* Portal Status */}
-              <div className="flex items-center gap-1.5" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
+              <div className="flex items-center gap-1" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
                 <div className="relative">
                   {portalOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Globe className={`h-3 w-3 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
-                <span className={`text-[10px] font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
+                <Globe className={`h-2.5 w-2.5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-[9px] font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
                   {portalOnline ? 'Portal Online' : 'Portal Offline'}
                 </span>
               </div>
             </div>
             
             {/* Datum und Uhrzeit - gleiche Höhe wie Status-Box */}
-            <div className="flex flex-col justify-center py-1">
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                <span className="text-lg font-bold text-foreground">{formatTime(currentTime)}</span>
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1">
+                <Clock className="h-3 w-3 text-muted-foreground" />
+                <span className="text-sm font-bold text-foreground">{formatTime(currentTime)}</span>
               </div>
-              <span className="text-sm text-muted-foreground text-right">{formatDate(currentTime)}</span>
+              <span className="text-[10px] text-muted-foreground text-right">{formatDate(currentTime)}</span>
             </div>
             
             {/* Version */}
-            <span className="text-muted-foreground text-xs">
+            <span className="text-muted-foreground text-[10px]">
               v{data.version}
             </span>
             
             {/* Security User Info */}
             {securityUser && (
-              <div className="flex items-center gap-2 px-3 py-1 bg-verification-success/20 rounded-lg border border-verification-success/40">
-                <User className="h-4 w-4 text-verification-success" />
-                <span className="text-sm font-medium text-foreground">
+              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-verification-success/20 rounded border border-verification-success/40">
+                <User className="h-3 w-3 text-verification-success" />
+                <span className="text-xs font-medium text-foreground">
                   {securityUser.name} ({securityUser.employeeNumber})
                 </span>
               </div>
@@ -263,20 +263,20 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 e.stopPropagation();
                 onLockClick();
               }}
-              className="flex items-center gap-2 text-foreground font-medium hover:text-primary transition-colors p-2 hover:bg-primary/10 rounded-lg cursor-pointer"
+              className="flex items-center text-foreground font-medium hover:text-primary transition-colors p-1 hover:bg-primary/10 rounded cursor-pointer"
             >
               {securityUser ? (
-                <LockOpen className="h-6 w-6 text-verification-success" />
+                <LockOpen className="h-5 w-5 text-verification-success" />
               ) : (
-                <Lock className="h-6 w-6 text-muted-foreground" />
+                <Lock className="h-5 w-5 text-muted-foreground" />
               )}
             </button>
             
             {/* Expand/Collapse Indicator */}
             {isExpanded ? (
-              <ChevronDown className="h-4 w-4 text-primary" />
+              <ChevronDown className="h-3 w-3 text-primary" />
             ) : (
-              <ChevronUp className="h-4 w-4 text-primary" />
+              <ChevronUp className="h-3 w-3 text-primary" />
             )}
           </div>
         </div>
@@ -286,7 +286,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
           <img 
             src="https://customer-assets.emergentagent.com/job_id-tablet-app/artifacts/1angt2am_TSRID_Logo1_white.svg"
             alt="TSRID GmbH"
-            className="h-10 w-auto"
+            className="h-7 w-auto"
           />
         </div>
       </div>
