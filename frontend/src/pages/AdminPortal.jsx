@@ -987,6 +987,7 @@ const AdminPortalContent = () => {
                   { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
                   { id: 'assets', label: 'Assets', icon: Boxes },
                   { id: 'devices', label: 'Devices', icon: Monitor },
+                  { id: 'activation', label: 'Activation Codes', icon: Key },
                   { id: 'locations', label: 'Locations', icon: MapPin },
                   { id: 'inventory', label: 'Inventory', icon: Package },
                   { id: 'orders', label: 'Orders', icon: ShoppingCart },
