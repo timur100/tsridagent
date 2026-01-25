@@ -182,17 +182,23 @@ const DeviceSetup = ({ onComplete }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Speichere Kopplung lokal
+        // Speichere Kopplung lokal mit allen verfügbaren Daten
         const config = {
           device_id: selectedDevice.device_id,
           station_code: selectedLocation.station_code,
+          location_code: selectedDevice.locationcode || selectedLocation.station_code,
           location_name: selectedLocation.name,
-          city: selectedLocation.city,
-          country: selectedLocation.country,
+          street: selectedDevice.street || selectedLocation.street || '',
+          zip: selectedDevice.plz || selectedLocation.zip || '',
+          city: selectedDevice.city || selectedLocation.city,
+          country: selectedDevice.country || selectedLocation.country,
           customer: selectedDevice.customer,
-          tvid: selectedDevice.tvid,
-          sn_pc: selectedDevice.sn_pc,
-          sn_sc: selectedDevice.sn_sc,
+          tvid: selectedDevice.tvid || selectedDevice.teamviewer_id || '',
+          sn_pc: selectedDevice.sn_pc || '',
+          sn_sc: selectedDevice.sn_sc || '',
+          phone: selectedDevice.phone || selectedDevice.telefon || '',
+          email: selectedDevice.email || '',
+          status: selectedDevice.status || 'unknown',
           coupled_at: new Date().toISOString(),
           registered_at: new Date().toISOString()
         };
@@ -210,13 +216,16 @@ const DeviceSetup = ({ onComplete }) => {
       }
     } catch (e) {
       console.error('Kopplungsfehler:', e);
-      // Offline-Modus: Speichere trotzdem lokal
+      // Offline-Modus: Speichere trotzdem lokal mit allen verfügbaren Daten
       const config = {
         device_id: selectedDevice.device_id,
         station_code: selectedLocation.station_code,
+        location_code: selectedDevice.locationcode || selectedLocation.station_code,
         location_name: selectedLocation.name,
-        city: selectedLocation.city,
-        country: selectedLocation.country,
+        street: selectedDevice.street || selectedLocation.street || '',
+        zip: selectedDevice.plz || selectedLocation.zip || '',
+        city: selectedDevice.city || selectedLocation.city,
+        country: selectedDevice.country || selectedLocation.country,
         customer: selectedDevice.customer,
         tvid: selectedDevice.tvid,
         sn_pc: selectedDevice.sn_pc,
