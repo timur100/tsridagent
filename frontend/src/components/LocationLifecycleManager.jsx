@@ -66,8 +66,14 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
       const response = await fetch(url, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
+      
+      if (!response.ok) {
+        console.error('[LocationLifecycleManager] Response not OK:', response.status, response.statusText);
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
       const data = await response.json();
-      console.log('[LocationLifecycleManager] Response:', data.success, data.locations?.length);
+      console.log('[LocationLifecycleManager] Response success:', data.success, 'locations:', data.locations?.length);
 
       if (data.success) {
         setLocations(data.locations || []);
