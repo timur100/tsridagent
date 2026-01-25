@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Lock, Wifi, WifiOff, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User, Scan, Globe, Key } from 'lucide-react';
-import { Badge } from './ui/badge';
+import { Lock, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User, Scan, Globe, Key, Clock } from 'lucide-react';
 import { Card } from './ui/card';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, scannerOnline = false }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   // Portal und Lizenz Status
   const [portalOnline, setPortalOnline] = useState(false);
@@ -14,6 +14,14 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     active: false,
     message: 'Prüfe...'
   });
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Portal Health Check
   const checkPortalStatus = useCallback(async () => {
@@ -57,6 +65,21 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     return () => clearInterval(interval);
   }, [checkPortalStatus, checkLicenseStatus]);
 
+  // Format date and time
+  const formatDate = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}.${month}.${year}`;
+  };
+
+  const formatTime = (date) => {
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    return `${hours}:${minutes}:${seconds}`;
+  };
+
   // Use settings for location info, fallback to data
   const locationInfo = {
     location: settings?.deviceId || data.location,
@@ -70,6 +93,19 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     snStation: settings?.snStation || data.snStation,
     snScanner: settings?.snScanner || data.snScanner
   };
+
+  // Status Indicator Component
+  const StatusIndicator = ({ online, label, icon: Icon }) => (
+    <div className="flex items-center gap-1.5" title={label}>
+      <div className="relative">
+        {online && (
+          <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+        )}
+        <span className={`relative inline-flex rounded-full h-2 w-2 ${online ? 'bg-green-500' : 'bg-red-500'}`}></span>
+      </div>
+      <Icon className={`h-3 w-3 ${online ? 'text-green-500' : 'text-red-500'}`} />
+    </div>
+  );
 
   return (
     <>
@@ -165,38 +201,22 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
             </div>
           </div>
           
-          {/* Right Side - Status Indicators, Version, User, Lock */}
+          {/* Right Side - Status, DateTime, User, Lock */}
           <div className="flex items-center gap-4">
-            {/* 3 Status Indikatoren horizontal */}
-            <div className="flex items-center gap-3 px-3 py-1.5 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
+            {/* 3 Status Indikatoren ÜBEREINANDER */}
+            <div className="flex flex-col gap-0.5 px-2 py-1 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
-              <div className="flex items-center gap-1.5" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
-                <div className="relative">
-                  {scannerOnline && (
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
-                  )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                </div>
-                <Scan className={`h-3.5 w-3.5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
-              </div>
-              
-              {/* Trennstrich */}
-              <div className="h-4 w-px bg-border"></div>
-              
+              <StatusIndicator 
+                online={scannerOnline} 
+                label={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}
+                icon={Scan}
+              />
               {/* Portal Status */}
-              <div className="flex items-center gap-1.5" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
-                <div className="relative">
-                  {portalOnline && (
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
-                  )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                </div>
-                <Globe className={`h-3.5 w-3.5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
-              </div>
-              
-              {/* Trennstrich */}
-              <div className="h-4 w-px bg-border"></div>
-              
+              <StatusIndicator 
+                online={portalOnline} 
+                label={portalOnline ? 'Portal Online' : 'Portal Offline'}
+                icon={Globe}
+              />
               {/* License Status */}
               <div className="flex items-center gap-1.5" title={licenseStatus.active ? 'Lizenz Aktiv' : 'Keine Lizenz'}>
                 <div className="relative">
@@ -205,13 +225,23 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                   )}
                   <span className={`relative inline-flex rounded-full h-2 w-2 ${licenseStatus.active ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Key className={`h-3.5 w-3.5 ${licenseStatus.active ? 'text-green-500' : 'text-red-500'}`} />
+                <Key className={`h-3 w-3 ${licenseStatus.active ? 'text-green-500' : 'text-red-500'}`} />
                 {!licenseStatus.active && (
-                  <span className="text-xs text-red-500 font-medium">No License</span>
+                  <span className="text-[10px] text-red-500 font-medium leading-none">No License</span>
                 )}
               </div>
             </div>
             
+            {/* Datum und Uhrzeit */}
+            <div className="flex flex-col items-end text-muted-foreground">
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3 w-3" />
+                <span className="text-xs font-medium text-foreground">{formatTime(currentTime)}</span>
+              </div>
+              <span className="text-[10px]">{formatDate(currentTime)}</span>
+            </div>
+            
+            {/* Version */}
             <span className="text-muted-foreground text-xs">
               v{data.version}
             </span>
