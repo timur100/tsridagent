@@ -383,9 +383,12 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         const data = responseData.tenant || responseData;
         
         // Ensure all required fields have default values to prevent crashes
+        // Use 'enabled' field as fallback for status if not present
+        const effectiveStatus = data.status || (data.enabled !== false ? 'active' : 'inactive');
+        
         const safeData = {
           ...data,
-          status: data.status || 'inactive',
+          status: effectiveStatus,
           plan: data.plan || 'basic',
           display_name: data.display_name || data.name || 'Unknown',
           name: data.name || data.tenant_id || 'Unknown',
