@@ -448,6 +448,30 @@ ipcMain.handle('agent:syncLocations', async (event, locations) => {
   }
 });
 
+ipcMain.handle('agent:getCachedLocations', async () => {
+  try {
+    // Versuche zuerst SQLite
+    if (db && db.getCachedLocations) {
+      const locations = db.getCachedLocations();
+      if (locations && locations.length > 0) {
+        return locations;
+      }
+    }
+    
+    // Fallback auf JSON-Cache
+    const locationsPath = path.join(app.getPath('userData'), 'locations-cache.json');
+    if (fs.existsSync(locationsPath)) {
+      const data = JSON.parse(fs.readFileSync(locationsPath, 'utf-8'));
+      return data.locations || [];
+    }
+    
+    return [];
+  } catch (e) {
+    console.error('Error getting cached locations:', e);
+    return [];
+  }
+});
+
 ipcMain.handle('agent:quitApp', async () => {
   try {
     app.quit();
