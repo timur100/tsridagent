@@ -120,25 +120,8 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
             </div>
           </div>
           
-          {/* Right Side - Status, User, Lock */}
+          {/* Right Side - Version, User, Lock */}
           <div className="flex items-center gap-4">
-            <Badge 
-              variant="outline" 
-              className={`gap-1.5 ${data.online ? 'border-verification-success' : 'border-destructive'}`}
-            >
-              {data.online ? (
-                <>
-                  <Wifi className="h-3 w-3 text-verification-success" />
-                  <span className="text-verification-success font-semibold">ONLINE</span>
-                </>
-              ) : (
-                <>
-                  <WifiOff className="h-3 w-3 text-destructive" />
-                  <span className="text-destructive font-semibold">OFFLINE</span>
-                </>
-              )}
-            </Badge>
-            
             <span className="text-muted-foreground text-xs">
               Version {data.version}
             </span>
