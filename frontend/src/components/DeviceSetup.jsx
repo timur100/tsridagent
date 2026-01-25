@@ -1,18 +1,23 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, Building2, Globe, Map, Search, Monitor, Link2, Check, AlertTriangle, RefreshCw, ChevronRight } from 'lucide-react';
+import { MapPin, Building2, Globe, Map, Search, Monitor, Link2, Check, AlertTriangle, RefreshCw, ChevronRight, Key, QrCode } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import toast from 'react-hot-toast';
+import ActivationCodeEntry from './ActivationCodeEntry';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 /**
  * DeviceSetup - Hierarchische Standort- und Geräteauswahl
  * Flow: Kontinent → Land → Stadt → Standort → Gerät auswählen → Koppeln
+ * ODER: Aktivierungscode / QR-Code scannen
  */
 const DeviceSetup = ({ onComplete }) => {
+  // Setup-Modus: 'activation' oder 'manual'
+  const [setupMode, setSetupMode] = useState('activation');
   // Hierarchische Auswahl States
   const [continents, setContinents] = useState([]);
   const [countries, setCountries] = useState([]);
