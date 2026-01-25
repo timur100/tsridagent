@@ -993,6 +993,11 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
             </div>
           )}
 
+          {/* Aktivierungscodes Tab */}
+          {activeTab === 'activation' && (
+            <ActivationCodeManager />
+          )}
+
           {/* Lizenzverwaltung Tab */}
           {activeTab === 'license' && (
             <div className="space-y-6">
