@@ -990,6 +990,7 @@ const AdminPortalContent = () => {
                   { id: 'devices', label: 'Devices', icon: Monitor },
                   { id: 'activation', label: 'Activation Codes', icon: Key },
                   { id: 'locations', label: 'Locations', icon: MapPin },
+                  { id: 'lifecycle', label: 'Lifecycle', icon: RefreshCw },
                   { id: 'inventory', label: 'Inventory', icon: Package },
                   { id: 'orders', label: 'Orders', icon: ShoppingCart },
                   { id: 'support', label: 'Support', icon: Headphones },
