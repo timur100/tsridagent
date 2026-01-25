@@ -41,6 +41,7 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
   });
 
   const fetchLocations = useCallback(async () => {
+    console.log('[LocationLifecycleManager] fetchLocations called, BACKEND_URL:', BACKEND_URL);
     setLoading(true);
     try {
       let url = `${BACKEND_URL}/api/locations/list?limit=500`;
@@ -57,8 +58,10 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
         url += `&tenant_id=${selectedTenantId}`;
       }
 
+      console.log('[LocationLifecycleManager] Fetching:', url);
       const response = await fetch(url);
       const data = await response.json();
+      console.log('[LocationLifecycleManager] Response:', data.success, data.locations?.length);
 
       if (data.success) {
         setLocations(data.locations || []);
