@@ -70,7 +70,7 @@ mongosh mongodb://localhost:27017/main_db --quiet --eval "
 ## 📝 **Webhook-Endpunkt**
 
 ```
-POST https://agent-hub-77.preview.emergentagent.com/api/webhooks/regula-scan
+POST https://tenant-manager-58.preview.emergentagent.com/api/webhooks/regula-scan
 Header: X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
 ```
 

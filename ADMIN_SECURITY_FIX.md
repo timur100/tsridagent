@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://agent-hub-77.preview.emergentagent.com/portal/admin
+https://tenant-manager-58.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
