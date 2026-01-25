@@ -173,12 +173,6 @@ const DeviceSetup = ({ onComplete }) => {
     }
   };
 
-  // Handler für Land-Auswahl
-  const handleCountryChange = (country) => {
-    setSelectedCountry(country);
-    loadCities(country);
-  };
-
   // Handler für Stadt-Auswahl
   const handleCityChange = (city) => {
     setSelectedCity(city);
