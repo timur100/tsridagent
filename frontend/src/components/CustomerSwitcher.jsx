@@ -17,20 +17,7 @@ const CustomerSwitcher = () => {
     try {
       let allCustomers = [];
       
-      // Try to fetch customers from old system (may not exist)
-      try {
-        console.log('[CustomerSwitcher] Fetching from /api/customers/list...');
-        const customersResult = await apiCall('/api/customers/list');
-        console.log('[CustomerSwitcher] Customers result:', customersResult);
-        if (customersResult && customersResult.success && customersResult.data) {
-          allCustomers = [...(customersResult.data.customers || [])];
-        }
-      } catch (error) {
-        // Customers endpoint doesn't exist, that's ok
-        console.log('[CustomerSwitcher] Customers endpoint not available:', error);
-      }
-      
-      // Fetch tenants from new system
+      // Fetch tenants from new system (primary source)
       try {
         console.log('[CustomerSwitcher] Fetching from /api/tenants/...');
         const tenantsResult = await apiCall('/api/tenants/');
@@ -43,13 +30,20 @@ const CustomerSwitcher = () => {
         
         if (tenantsList && Array.isArray(tenantsList)) {
           console.log('[CustomerSwitcher] Tenants found:', tenantsList.length);
-          const tenants = tenantsList.map(tenant => ({
-            id: tenant.tenant_id,
-            name: tenant.display_name || tenant.name,
-            type: 'tenant' // Mark as tenant for identification
-          }));
-          console.log('[CustomerSwitcher] Mapped tenants:', tenants);
-          allCustomers = [...allCustomers, ...tenants];
+          // Filter: nur aktive Tenants mit Namen
+          const tenants = tenantsList
+            .filter(tenant => {
+              const hasName = tenant.display_name || tenant.name;
+              const isEnabled = tenant.enabled !== false; // Default to true if not specified
+              return hasName && isEnabled;
+            })
+            .map(tenant => ({
+              id: tenant.tenant_id,
+              name: tenant.display_name || tenant.name,
+              type: 'tenant'
+            }));
+          console.log('[CustomerSwitcher] Filtered tenants:', tenants);
+          allCustomers = [...tenants];
         } else {
           console.log('[CustomerSwitcher] No tenants in result. ResponseData structure:', responseData);
         }
