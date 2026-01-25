@@ -322,6 +322,14 @@ const DeviceSetup = ({ onComplete }) => {
     loc.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Handler für erfolgreiche Aktivierung via Code
+  const handleActivationComplete = (deviceConfig) => {
+    setCoupledDevice(deviceConfig);
+    if (onComplete) {
+      onComplete(deviceConfig);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Aktuell gekoppeltes Gerät */}
@@ -340,6 +348,7 @@ const DeviceSetup = ({ onComplete }) => {
                 <p className="text-xs text-muted-foreground">
                   Gekoppelt: {new Date(coupledDevice.coupled_at).toLocaleString('de-DE')}
                   {coupledDevice.offline_coupled && ' (Offline)'}
+                  {coupledDevice.activation_code && ` | Code: ${coupledDevice.activation_code}`}
                 </p>
               </div>
             </div>
@@ -355,24 +364,45 @@ const DeviceSetup = ({ onComplete }) => {
         </Card>
       )}
 
-      {/* Hierarchische Auswahl */}
-      <Card className="p-4">
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-primary" />
-          Standort auswählen
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          {/* Kontinent Dropdown */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
-              <Map className="h-4 w-4" /> Kontinent
-            </label>
-            <Select value={selectedContinent} onValueChange={handleContinentChange}>
-              <SelectTrigger data-testid="continent-select">
-                <SelectValue placeholder="Kontinent wählen..." />
-              </SelectTrigger>
-              <SelectContent>
+      {/* Setup-Modus Tabs */}
+      {!coupledDevice && (
+        <Tabs value={setupMode} onValueChange={setSetupMode} className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="activation" className="flex items-center gap-2">
+              <QrCode className="h-4 w-4" />
+              Aktivierungscode / QR
+            </TabsTrigger>
+            <TabsTrigger value="manual" className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Manuelle Auswahl
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Aktivierungscode Tab */}
+          <TabsContent value="activation" className="mt-4">
+            <ActivationCodeEntry onActivationComplete={handleActivationComplete} />
+          </TabsContent>
+
+          {/* Manuelle Auswahl Tab */}
+          <TabsContent value="manual" className="mt-4">
+            {/* Hierarchische Auswahl */}
+            <Card className="p-4">
+              <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-primary" />
+                Standort manuell auswählen
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                {/* Kontinent Dropdown */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+                    <Map className="h-4 w-4" /> Kontinent
+                  </label>
+                  <Select value={selectedContinent} onValueChange={handleContinentChange}>
+                    <SelectTrigger data-testid="continent-select">
+                      <SelectValue placeholder="Kontinent wählen..." />
+                    </SelectTrigger>
+                    <SelectContent>
                 {continents.map((continent) => (
                   <SelectItem key={continent} value={continent}>
                     {continent}
