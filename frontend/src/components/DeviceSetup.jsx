@@ -1,633 +1,489 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Server, MapPin, Save, RefreshCw, Check, AlertTriangle, Wifi, WifiOff, Database, Settings, Download, Search, Plus, Building2, Filter } from 'lucide-react';
+import { MapPin, Building2, Globe, Map, Search, Monitor, Link2, Check, AlertTriangle, RefreshCw, ChevronRight } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
 
 /**
- * DeviceSetup - Komponente zur Geräteeinrichtung mit Offline-Support
- * - Lädt Standorte von Atlas (unified_locations)
- * - Speichert in SQLite für Offline-Zugriff
- * - Unterstützt Multi-Tenant-Filterung
- * - Echtzeit-Sync wenn Internet verfügbar
+ * DeviceSetup - Hierarchische Standort- und Geräteauswahl
+ * Flow: Kontinent → Land → Stadt → Standort → Gerät auswählen → Koppeln
  */
 const DeviceSetup = ({ onComplete }) => {
-  const [stationCode, setStationCode] = useState('');
-  const [deviceNumber, setDeviceNumber] = useState('01');
+  // Hierarchische Auswahl States
+  const [countries, setCountries] = useState([]);
+  const [cities, setCities] = useState([]);
+  const [locations, setLocations] = useState([]);
+  const [devices, setDevices] = useState([]);
+  
+  // Ausgewählte Werte
+  const [selectedCountry, setSelectedCountry] = useState('');
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [selectedDevice, setSelectedDevice] = useState(null);
+  
+  // UI States
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [stationInfo, setStationInfo] = useState(null);
-  const [registeredDevice, setRegisteredDevice] = useState(null);
-  const [error, setError] = useState(null);
-  const [isElectron, setIsElectron] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [systemInfo, setSystemInfo] = useState(null);
-  const [allLocations, setAllLocations] = useState([]);
-  const [filteredLocations, setFilteredLocations] = useState([]);
+  const [coupling, setCoupling] = useState(false);
+  const [coupledDevice, setCoupledDevice] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [lastSyncTime, setLastSyncTime] = useState(null);
-  const [showLocationPicker, setShowLocationPicker] = useState(false);
-  
-  // Multi-Tenant State
-  const [tenants, setTenants] = useState([]);
-  const [selectedTenant, setSelectedTenant] = useState('');
-  const [loadingTenants, setLoadingTenants] = useState(false);
 
-  // Online/Offline Status überwachen
+  // Lade gespeicherte Kopplung beim Start
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast.success('Verbindung wiederhergestellt - Synchronisiere...');
-      syncLocationsFromAtlas();
-    };
-    
-    const handleOffline = () => {
-      setIsOnline(false);
-      toast.error('Offline-Modus aktiviert');
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
+    const saved = localStorage.getItem('deviceConfig');
+    if (saved) {
+      try {
+        const config = JSON.parse(saved);
+        if (config.coupled_at) {
+          setCoupledDevice(config);
+        }
+      } catch (e) {
+        console.error('Fehler beim Laden der Konfiguration:', e);
+      }
+    }
+    // Lade Länder beim Start
+    loadCountries();
   }, []);
 
-  useEffect(() => {
-    // Prüfe ob Electron
-    if (window.agentAPI && window.agentAPI.isElectron) {
-      setIsElectron(true);
-      loadSystemInfo();
-      loadSavedConfig();
-    }
-    
-    // Lade Tenants und Standorte
-    loadTenants();
-    loadLocations();
-  }, []);
-
-  // Wenn Tenant geändert wird, lade Standorte neu
-  useEffect(() => {
-    if (selectedTenant !== undefined) {
-      loadLocations();
-    }
-  }, [selectedTenant]);
-
-  // Suchfilter
-  useEffect(() => {
-    if (!searchQuery.trim()) {
-      setFilteredLocations(allLocations);
-    } else {
-      const query = searchQuery.toLowerCase();
-      setFilteredLocations(
-        allLocations.filter(loc => 
-          loc.name?.toLowerCase().includes(query) ||
-          loc.station_code?.toLowerCase().includes(query) ||
-          loc.city?.toLowerCase().includes(query)
-        )
-      );
-    }
-  }, [searchQuery, allLocations]);
-
-  const loadSystemInfo = async () => {
-    try {
-      if (window.agentAPI && window.agentAPI.getSystemInfo) {
-        const info = await window.agentAPI.getSystemInfo();
-        setSystemInfo(info);
-      }
-    } catch (e) {
-      console.error('Fehler beim Laden der Systeminfo:', e);
-    }
-  };
-
-  const loadSavedConfig = async () => {
-    try {
-      if (window.agentAPI && window.agentAPI.getDeviceConfig) {
-        const config = await window.agentAPI.getDeviceConfig();
-        if (config && config.station_code) {
-          setStationCode(config.station_code);
-          setDeviceNumber(config.device_number || '01');
-          setRegisteredDevice(config);
-        }
-      }
-    } catch (e) {
-      console.error('Fehler beim Laden der Konfiguration:', e);
-    }
-  };
-
-  const loadTenants = async () => {
-    setLoadingTenants(true);
-    try {
-      // Lade zuerst die Root-Organisationen (Europcar, Puma, etc.)
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/tenants/top-level`);
-      const data = await response.json();
-      
-      if (data.success && data.tenants) {
-        // "Alle anzeigen" Option + Root-Organisationen
-        const topLevel = [
-          { tenant_id: '', name: 'Alle Tenants', display_name: 'Alle anzeigen' },
-          ...data.tenants
-        ];
-        setTenants(topLevel);
-        console.log('Loaded tenants:', topLevel.length);
-      }
-    } catch (e) {
-      console.error('Fehler beim Laden der Tenants:', e);
-      // Fallback: Setze Standard-Optionen
-      setTenants([
-        { tenant_id: '', name: 'Alle Tenants', display_name: 'Alle anzeigen' },
-        { tenant_id: '1d3653db-86cb-4dd1-9ef5-0236b116def8', name: 'Europcar', display_name: 'Europcar' }
-      ]);
-    } finally {
-      setLoadingTenants(false);
-    }
-  };
-
-  const loadLocations = async () => {
-    // Versuche zuerst von Atlas zu laden
-    if (isOnline) {
-      await syncLocationsFromAtlas();
-    } else {
-      // Offline: Lade von SQLite/LocalStorage
-      await loadLocationsFromCache();
-    }
-  };
-
-  const syncLocationsFromAtlas = async () => {
-    setSyncing(true);
-    try {
-      // Baue URL mit optionalem Tenant-Filter
-      let url = `${BACKEND_URL}/api/unified-locations/all`;
-      if (selectedTenant) {
-        url += `?tenant_id=${encodeURIComponent(selectedTenant)}`;
-      }
-      
-      const response = await fetch(url);
-      const data = await response.json();
-
-      if (data.success && data.locations) {
-        setAllLocations(data.locations);
-        setFilteredLocations(data.locations);
-        setLastSyncTime(new Date().toISOString());
-        
-        // Speichere in Cache (Electron SQLite oder LocalStorage)
-        if (window.agentAPI && window.agentAPI.syncLocations) {
-          await window.agentAPI.syncLocations(data.locations);
-        } else {
-          localStorage.setItem('cachedLocations', JSON.stringify({
-            locations: data.locations,
-            syncTime: new Date().toISOString(),
-            tenant: selectedTenant
-          }));
-        }
-        
-        const tenantInfo = selectedTenant ? ` (${selectedTenant})` : '';
-        toast.success(`${data.total} Standorte synchronisiert${tenantInfo}`);
-      }
-    } catch (e) {
-      console.error('Sync fehlgeschlagen:', e);
-      // Fallback auf Cache
-      await loadLocationsFromCache();
-    } finally {
-      setSyncing(false);
-    }
-  };
-
-  const loadLocationsFromCache = async () => {
-    try {
-      // Electron: SQLite
-      if (window.agentAPI && window.agentAPI.getCachedLocations) {
-        const cached = await window.agentAPI.getCachedLocations();
-        if (cached && cached.length > 0) {
-          setAllLocations(cached);
-          setFilteredLocations(cached);
-          toast.success(`${cached.length} Standorte aus Cache geladen`);
-          return;
-        }
-      }
-      
-      // Web: LocalStorage
-      const cached = localStorage.getItem('cachedLocations');
-      if (cached) {
-        const data = JSON.parse(cached);
-        setAllLocations(data.locations || []);
-        setFilteredLocations(data.locations || []);
-        setLastSyncTime(data.syncTime);
-        toast.success(`${data.locations?.length || 0} Standorte aus Cache geladen`);
-      }
-    } catch (e) {
-      console.error('Cache laden fehlgeschlagen:', e);
-    }
-  };
-
-  const handleSelectLocation = (location) => {
-    setStationCode(location.station_code);
-    setStationInfo(location);
-    setShowLocationPicker(false);
-    toast.success(`${location.name} ausgewählt`);
-  };
-
-  const handleLookupStation = async () => {
-    if (!stationCode.trim()) {
-      setError('Bitte geben Sie einen Stationscode ein');
-      return;
-    }
-
+  // Lade alle verfügbaren Länder
+  const loadCountries = async () => {
     setLoading(true);
-    setError(null);
-    setStationInfo(null);
-
     try {
-      // Zuerst im lokalen Cache suchen
-      const localMatch = allLocations.find(l => 
-        l.station_code?.toLowerCase() === stationCode.toLowerCase()
-      );
-      
-      if (localMatch) {
-        setStationInfo(localMatch);
-        toast.success('Station gefunden (Cache)');
-        setLoading(false);
-        return;
-      }
-
-      // Falls online, von Atlas laden
-      if (isOnline) {
-        const response = await fetch(`${BACKEND_URL}/api/unified-locations/station/${stationCode.toUpperCase()}`);
-        const data = await response.json();
-
-        if (data.success) {
-          setStationInfo(data.station);
-          toast.success('Station gefunden (Atlas)');
-        } else {
-          setError(data.detail || 'Station nicht gefunden');
-          toast.error('Station nicht gefunden');
-        }
-      } else {
-        setError('Station nicht im Offline-Cache gefunden');
-        toast.error('Offline: Station nicht im Cache');
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/countries`);
+      const data = await response.json();
+      if (data.success) {
+        setCountries(data.countries || []);
       }
     } catch (e) {
-      setError('Verbindungsfehler: ' + e.message);
-      toast.error('Verbindungsfehler');
+      console.error('Fehler beim Laden der Länder:', e);
+      // Fallback
+      setCountries(['Deutschland', 'Österreich', 'Schweiz']);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRegisterDevice = async () => {
-    if (!stationInfo) {
-      setError('Bitte suchen Sie zuerst eine Station');
+  // Lade Städte für ausgewähltes Land
+  const loadCities = async (country) => {
+    if (!country) return;
+    setLoading(true);
+    setCities([]);
+    setLocations([]);
+    setDevices([]);
+    setSelectedCity('');
+    setSelectedLocation(null);
+    setSelectedDevice(null);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
+      const data = await response.json();
+      if (data.success) {
+        setCities(data.cities || []);
+      }
+    } catch (e) {
+      console.error('Fehler beim Laden der Städte:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lade Standorte für ausgewählte Stadt
+  const loadLocations = async (city) => {
+    if (!city) return;
+    setLoading(true);
+    setLocations([]);
+    setDevices([]);
+    setSelectedLocation(null);
+    setSelectedDevice(null);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/by-city?city=${encodeURIComponent(city)}&country=${encodeURIComponent(selectedCountry)}`);
+      const data = await response.json();
+      if (data.success) {
+        setLocations(data.locations || []);
+      }
+    } catch (e) {
+      console.error('Fehler beim Laden der Standorte:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lade Geräte für ausgewählten Standort
+  const loadDevices = async (locationCode) => {
+    if (!locationCode) return;
+    setLoading(true);
+    setDevices([]);
+    setSelectedDevice(null);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/devices?location_code=${encodeURIComponent(locationCode)}`);
+      const data = await response.json();
+      if (data.success) {
+        setDevices(data.devices || []);
+      }
+    } catch (e) {
+      console.error('Fehler beim Laden der Geräte:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handler für Land-Auswahl
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    loadCities(country);
+  };
+
+  // Handler für Stadt-Auswahl
+  const handleCityChange = (city) => {
+    setSelectedCity(city);
+    loadLocations(city);
+  };
+
+  // Handler für Standort-Auswahl
+  const handleLocationSelect = (location) => {
+    setSelectedLocation(location);
+    loadDevices(location.station_code);
+  };
+
+  // Handler für Gerät-Auswahl
+  const handleDeviceSelect = (device) => {
+    setSelectedDevice(device);
+  };
+
+  // Gerät koppeln/zuweisen
+  const handleCoupleDevice = async () => {
+    if (!selectedDevice || !selectedLocation) {
+      toast.error('Bitte wählen Sie einen Standort und ein Gerät aus');
       return;
     }
-
-    setLoading(true);
-    setError(null);
-
+    
+    setCoupling(true);
     try {
-      const registrationData = {
-        station_code: stationCode.toUpperCase(),
-        device_number: deviceNumber,
-        device_id: systemInfo?.deviceId,
-        hostname: systemInfo?.hostname,
-        mac_address: systemInfo?.macAddresses?.[0],
-        ip_address: systemInfo?.ipAddresses?.ipv4?.[0] || systemInfo?.ipAddresses?.[0],
-        pc_serial: systemInfo?.pcSerial,
-        scanner_serial: systemInfo?.connectedScanners?.[0]?.serial,
-        teamviewer_id: systemInfo?.teamviewerId
-      };
-
-      // Online: Bei Atlas registrieren
-      if (isOnline) {
-        const response = await fetch(`${BACKEND_URL}/api/agent/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(registrationData)
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          setRegisteredDevice(data);
-          await saveDeviceConfig(data);
-          toast.success('Gerät erfolgreich registriert!');
-          
-          if (onComplete) {
-            onComplete(data);
-          }
-        } else {
-          setError(data.detail || 'Registrierung fehlgeschlagen');
-          toast.error('Registrierung fehlgeschlagen');
-        }
-      } else {
-        // Offline: Lokal speichern, später synchronisieren
-        const offlineData = {
-          ...registrationData,
-          station: stationInfo,
-          registered_offline: true,
+      // Sende Kopplungsanfrage an Backend
+      const response = await fetch(`${BACKEND_URL}/api/agent/couple-device`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          device_id: selectedDevice.device_id,
+          location_code: selectedLocation.station_code,
+          location_name: selectedLocation.name,
+          city: selectedLocation.city,
+          country: selectedLocation.country,
+          customer: selectedDevice.customer
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Speichere Kopplung lokal
+        const config = {
+          device_id: selectedDevice.device_id,
+          station_code: selectedLocation.station_code,
+          location_name: selectedLocation.name,
+          city: selectedLocation.city,
+          country: selectedLocation.country,
+          customer: selectedDevice.customer,
+          tvid: selectedDevice.tvid,
+          sn_pc: selectedDevice.sn_pc,
+          sn_sc: selectedDevice.sn_sc,
+          coupled_at: new Date().toISOString(),
           registered_at: new Date().toISOString()
         };
         
-        await saveDeviceConfig(offlineData);
-        setRegisteredDevice(offlineData);
-        toast.success('Gerät lokal registriert (Sync bei Verbindung)');
+        localStorage.setItem('deviceConfig', JSON.stringify(config));
+        setCoupledDevice(config);
+        
+        toast.success(`Gerät ${selectedDevice.device_id} erfolgreich gekoppelt!`);
+        
+        if (onComplete) {
+          onComplete(config);
+        }
+      } else {
+        toast.error(data.message || 'Kopplung fehlgeschlagen');
       }
     } catch (e) {
-      setError('Fehler: ' + e.message);
-      toast.error('Registrierung fehlgeschlagen');
+      console.error('Kopplungsfehler:', e);
+      // Offline-Modus: Speichere trotzdem lokal
+      const config = {
+        device_id: selectedDevice.device_id,
+        station_code: selectedLocation.station_code,
+        location_name: selectedLocation.name,
+        city: selectedLocation.city,
+        country: selectedLocation.country,
+        customer: selectedDevice.customer,
+        tvid: selectedDevice.tvid,
+        sn_pc: selectedDevice.sn_pc,
+        sn_sc: selectedDevice.sn_sc,
+        coupled_at: new Date().toISOString(),
+        offline_coupled: true
+      };
+      
+      localStorage.setItem('deviceConfig', JSON.stringify(config));
+      setCoupledDevice(config);
+      toast.success('Gerät lokal gekoppelt (Offline-Modus)');
     } finally {
-      setLoading(false);
+      setCoupling(false);
     }
   };
 
-  const saveDeviceConfig = async (data) => {
-    const config = {
-      station_code: stationCode.toUpperCase(),
-      device_number: deviceNumber,
-      device_id: data.device_id,
-      station: data.station || stationInfo,
-      registered_at: new Date().toISOString()
-    };
-    
-    // Electron: SQLite
-    if (window.agentAPI && window.agentAPI.saveDeviceConfig) {
-      await window.agentAPI.saveDeviceConfig(config);
-    }
-    
-    // Web: LocalStorage
-    localStorage.setItem('deviceConfig', JSON.stringify(config));
+  // Kopplung aufheben
+  const handleUncoupleDevice = () => {
+    localStorage.removeItem('deviceConfig');
+    setCoupledDevice(null);
+    setSelectedDevice(null);
+    toast.success('Kopplung aufgehoben');
   };
+
+  // Gefilterte Standorte basierend auf Suche
+  const filteredLocations = locations.filter(loc => 
+    !searchQuery || 
+    loc.station_code?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    loc.name?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
-      {/* Header mit Online-Status */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Server className="h-6 w-6 text-primary" />
-          <div>
-            <h2 className="text-xl font-bold text-foreground">Geräteeinrichtung</h2>
-            <p className="text-sm text-muted-foreground">
-              Registrieren Sie dieses Gerät mit dem Stationscode
-            </p>
-          </div>
-        </div>
-        
-        {/* Online/Offline Badge */}
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
-          isOnline 
-            ? 'bg-green-500/20 text-green-600' 
-            : 'bg-yellow-500/20 text-yellow-600'
-        }`}>
-          {isOnline ? (
-            <>
-              <Wifi className="h-4 w-4" />
-              Online
-            </>
-          ) : (
-            <>
-              <WifiOff className="h-4 w-4" />
-              Offline
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Sync-Status */}
-      <Card className="p-4 bg-muted/30">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-3">
-            <Database className="h-5 w-5 text-primary" />
-            <div>
-              <p className="font-medium text-foreground">
-                {allLocations.length} Standorte verfügbar
-              </p>
-              <p className="text-xs text-muted-foreground">
-                {lastSyncTime 
-                  ? `Letzte Sync: ${new Date(lastSyncTime).toLocaleString('de-DE')}`
-                  : 'Noch nicht synchronisiert'}
-                {selectedTenant && ` • Filter: ${selectedTenant}`}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {/* Tenant-Dropdown */}
-            <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <select
-                value={selectedTenant}
-                onChange={(e) => setSelectedTenant(e.target.value)}
-                disabled={loadingTenants}
-                className="h-9 px-3 rounded-md border border-input bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-ring"
-                data-testid="tenant-filter-dropdown"
-              >
-                {tenants.map((tenant) => (
-                  <option key={tenant.tenant_id} value={tenant.tenant_id}>
-                    {tenant.display_name || tenant.name}
-                  </option>
-                ))}
-              </select>
+      {/* Aktuell gekoppeltes Gerät */}
+      {coupledDevice && (
+        <Card className="p-4 bg-green-500/10 border-green-500/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-green-500/20 rounded-full">
+                <Check className="h-5 w-5 text-green-500" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Gekoppeltes Gerät</p>
+                <p className="text-sm text-muted-foreground">
+                  {coupledDevice.device_id} @ {coupledDevice.station_code} - {coupledDevice.location_name}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Gekoppelt: {new Date(coupledDevice.coupled_at).toLocaleString('de-DE')}
+                  {coupledDevice.offline_coupled && ' (Offline)'}
+                </p>
+              </div>
             </div>
             <Button 
-              onClick={syncLocationsFromAtlas} 
-              disabled={syncing || !isOnline}
               variant="outline" 
-              size="sm"
-              className="gap-2"
-              data-testid="sync-locations-btn"
+              size="sm" 
+              onClick={handleUncoupleDevice}
+              className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
             >
-              <RefreshCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-              {syncing ? 'Sync...' : 'Sync'}
+              Entkoppeln
             </Button>
-          </div>
-        </div>
-      </Card>
-
-      {/* Bereits registriert */}
-      {registeredDevice && (
-        <Card className="p-4 bg-green-500/10 border-green-500/30">
-          <div className="flex items-center gap-3">
-            <Check className="h-6 w-6 text-green-500" />
-            <div>
-              <p className="font-semibold text-green-600">Gerät registriert</p>
-              <p className="text-sm text-muted-foreground">
-                {registeredDevice.station?.name || registeredDevice.station_code} - Gerät {registeredDevice.device_number || deviceNumber}
-                {registeredDevice.registered_offline && ' (Offline)'}
-              </p>
-            </div>
           </div>
         </Card>
       )}
 
-      {/* Eingabeformular */}
-      <Card className="p-6 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Stationscode mit Picker */}
+      {/* Hierarchische Auswahl */}
+      <Card className="p-4">
+        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <MapPin className="h-5 w-5 text-primary" />
+          Standort auswählen
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          {/* Land Dropdown */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              Stationscode *
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+              <Globe className="h-4 w-4" /> Land
             </label>
-            <div className="flex gap-2">
-              <Input
-                type="text"
-                value={stationCode}
-                onChange={(e) => setStationCode(e.target.value.toUpperCase())}
-                placeholder="z.B. BERN01"
-                className="font-mono text-lg"
-                maxLength={20}
-              />
-              <Button
-                onClick={() => setShowLocationPicker(true)}
-                variant="outline"
-                title="Station auswählen"
-              >
-                <Search className="h-4 w-4" />
-              </Button>
-            </div>
+            <Select value={selectedCountry} onValueChange={handleCountryChange}>
+              <SelectTrigger data-testid="country-select">
+                <SelectValue placeholder="Land wählen..." />
+              </SelectTrigger>
+              <SelectContent>
+                {countries.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Gerätenummer */}
+          {/* Stadt Dropdown */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              Gerätenummer *
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+              <Building2 className="h-4 w-4" /> Stadt
+            </label>
+            <Select 
+              value={selectedCity} 
+              onValueChange={handleCityChange}
+              disabled={!selectedCountry || cities.length === 0}
+            >
+              <SelectTrigger data-testid="city-select">
+                <SelectValue placeholder={selectedCountry ? "Stadt wählen..." : "Erst Land wählen"} />
+              </SelectTrigger>
+              <SelectContent>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Suche */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-muted-foreground flex items-center gap-1">
+              <Search className="h-4 w-4" /> Suche
             </label>
             <Input
-              type="text"
-              value={deviceNumber}
-              onChange={(e) => setDeviceNumber(e.target.value)}
-              placeholder="z.B. 01"
-              className="font-mono text-lg"
-              maxLength={3}
+              placeholder="Standort suchen..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              data-testid="location-search"
             />
           </div>
         </div>
 
-        {/* Buttons */}
-        <div className="flex gap-3 pt-2">
-          <Button
-            onClick={handleLookupStation}
-            disabled={loading || !stationCode.trim()}
-            variant="outline"
-            className="gap-2"
-          >
-            {loading ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <MapPin className="h-4 w-4" />
-            )}
-            Station suchen
-          </Button>
-
-          <Button
-            onClick={handleRegisterDevice}
-            disabled={loading || !stationInfo}
-            className="gap-2"
-          >
-            {loading ? (
-              <RefreshCw className="h-4 w-4 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4" />
-            )}
-            Gerät registrieren
-          </Button>
-        </div>
-
-        {/* Fehler */}
-        {error && (
-          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-2 text-red-500">
-            <AlertTriangle className="h-4 w-4" />
-            <span className="text-sm">{error}</span>
+        {/* Standortliste */}
+        {selectedCity && (
+          <div className="border border-border rounded-lg overflow-hidden">
+            <div className="bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground">
+              Verfügbare Standorte ({filteredLocations.length})
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              {loading ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2" />
+                  Lade Standorte...
+                </div>
+              ) : filteredLocations.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  Keine Standorte gefunden
+                </div>
+              ) : (
+                filteredLocations.map((location) => (
+                  <div
+                    key={location.station_code}
+                    className={`p-3 border-b border-border last:border-0 cursor-pointer hover:bg-muted/50 transition-colors ${
+                      selectedLocation?.station_code === location.station_code ? 'bg-primary/10 border-l-2 border-l-primary' : ''
+                    }`}
+                    onClick={() => handleLocationSelect(location)}
+                    data-testid={`location-${location.station_code}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="font-mono font-semibold text-primary">{location.station_code}</span>
+                        <span className="mx-2 text-muted-foreground">-</span>
+                        <span className="text-foreground">{location.name}</span>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {location.street}, {location.zip} {location.city}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
       </Card>
 
-      {/* Station Info */}
-      {stationInfo && (
-        <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-2 text-primary">
-            <MapPin className="h-5 w-5" />
-            <h3 className="font-semibold">Standortinformationen</h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <InfoField label="Standortname" value={stationInfo.name} />
-            <InfoField label="Stationscode" value={stationInfo.station_code} mono />
-            <InfoField label="Straße" value={stationInfo.street} />
-            <InfoField label="PLZ / Stadt" value={`${stationInfo.zip || ''} ${stationInfo.city || ''}`} />
-            <InfoField label="Bundesland" value={stationInfo.state} />
-            <InfoField label="Land" value={stationInfo.country} />
-            <InfoField label="Telefon" value={stationInfo.phone} />
-            <InfoField label="E-Mail" value={stationInfo.email} />
-            <InfoField label="TeamViewer-ID" value={stationInfo.tvid} mono />
-            <InfoField label="Quelle" value={stationInfo.source} />
+      {/* Geräteauswahl */}
+      {selectedLocation && (
+        <Card className="p-4">
+          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Monitor className="h-5 w-5 text-primary" />
+            Gerät auswählen
+            <span className="text-sm font-normal text-muted-foreground">
+              ({selectedLocation.station_code})
+            </span>
+          </h3>
+          
+          <div className="border border-border rounded-lg overflow-hidden">
+            <div className="bg-muted/30 px-3 py-2 text-sm font-medium text-muted-foreground">
+              Verfügbare Geräte ({devices.length})
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              {loading ? (
+                <div className="p-4 text-center text-muted-foreground">
+                  <RefreshCw className="h-5 w-5 animate-spin mx-auto mb-2" />
+                  Lade Geräte...
+                </div>
+              ) : devices.length === 0 ? (
+                <div className="p-4 text-center text-muted-foreground flex flex-col items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-yellow-500" />
+                  Keine Geräte an diesem Standort registriert
+                </div>
+              ) : (
+                devices.map((device) => (
+                  <div
+                    key={device.device_id}
+                    className={`p-3 border-b border-border last:border-0 cursor-pointer hover:bg-muted/50 transition-colors ${
+                      selectedDevice?.device_id === device.device_id ? 'bg-primary/10 border-l-2 border-l-primary' : ''
+                    }`}
+                    onClick={() => handleDeviceSelect(device)}
+                    data-testid={`device-${device.device_id}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`h-2 w-2 rounded-full ${device.status === 'online' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <span className="font-mono font-semibold text-foreground">{device.device_id}</span>
+                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        device.status === 'online' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+                      }`}>
+                        {device.status === 'online' ? 'Online' : 'Offline'}
+                      </span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1 grid grid-cols-2 gap-2">
+                      <span>SN-PC: {device.sn_pc || '-'}</span>
+                      <span>SN-SC: {device.sn_sc || '-'}</span>
+                      <span>TVID: {device.tvid || '-'}</span>
+                      <span>Kunde: {device.customer || '-'}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </Card>
       )}
 
-      {/* Location Picker Modal */}
-      {showLocationPicker && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-          <Card className="w-full max-w-2xl max-h-[80vh] flex flex-col">
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <h3 className="font-semibold text-lg">Standort auswählen</h3>
-              <Button variant="ghost" size="sm" onClick={() => setShowLocationPicker(false)}>
-                ✕
-              </Button>
+      {/* Koppeln Button */}
+      {selectedDevice && (
+        <Card className="p-4 bg-primary/5 border-primary/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-semibold text-foreground">Ausgewähltes Gerät</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedDevice.device_id} @ {selectedLocation.station_code} - {selectedLocation.name}
+              </p>
             </div>
-            
-            <div className="p-4 border-b border-border">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Suchen nach Name, Code oder Stadt..."
-                className="w-full"
-              />
-            </div>
-            
-            <div className="flex-1 overflow-y-auto p-2">
-              {filteredLocations.length === 0 ? (
-                <div className="p-8 text-center text-muted-foreground">
-                  Keine Standorte gefunden
-                </div>
+            <Button 
+              onClick={handleCoupleDevice}
+              disabled={coupling}
+              className="gap-2"
+              data-testid="couple-device-btn"
+            >
+              {coupling ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Koppeln...
+                </>
               ) : (
-                <div className="space-y-1">
-                  {filteredLocations.map((loc, i) => (
-                    <button
-                      key={loc.station_code || i}
-                      onClick={() => handleSelectLocation(loc)}
-                      className="w-full p-3 text-left hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-3"
-                    >
-                      <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-foreground truncate">{loc.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {loc.station_code} • {loc.city}, {loc.country}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                <>
+                  <Link2 className="h-4 w-4" />
+                  Koppeln / Zuweisen
+                </>
               )}
-            </div>
-          </Card>
-        </div>
+            </Button>
+          </div>
+        </Card>
       )}
     </div>
   );
 };
-
-// Hilfskomponente für Info-Felder
-const InfoField = ({ label, value, mono = false }) => (
-  <div className="space-y-1">
-    <label className="text-xs text-muted-foreground">{label}</label>
-    <p className={`text-sm text-foreground ${mono ? 'font-mono' : ''}`}>
-      {value || '-'}
-    </p>
-  </div>
-);
 
 export default DeviceSetup;
