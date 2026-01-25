@@ -626,7 +626,7 @@ const TenantsPage = ({ onSelectTenant }) => {
               {/* Footer */}
               <div className={`mt-3 pt-3 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                 <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  Erstellt: {new Date(tenant.created_at).toLocaleDateString('de-DE')}
+                  Erstellt: {tenant.created_at ? new Date(tenant.created_at).toLocaleDateString('de-DE') : '-'}
                 </p>
               </div>
             </Card>
