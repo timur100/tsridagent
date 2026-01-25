@@ -158,7 +158,7 @@ const ActivationCodeManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header mit Tenant-Anzeige */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-primary/20 rounded-lg">
@@ -171,17 +171,47 @@ const ActivationCodeManager = () => {
             </p>
           </div>
         </div>
-        <Button onClick={() => setShowGenerateForm(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Neuen Code generieren
-        </Button>
+        <div className="flex items-center gap-4">
+          {/* Aktueller Tenant Badge */}
+          <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">
+            <Building2 className="h-5 w-5 text-primary" />
+            <div>
+              <span className="text-xs text-muted-foreground block">Aktueller Tenant:</span>
+              <span className="font-semibold text-primary">
+                {selectedTenantId === 'all' ? 'Alle Tenants' : selectedTenantName}
+              </span>
+            </div>
+          </div>
+          <Button 
+            onClick={() => setShowGenerateForm(true)} 
+            className="gap-2"
+            disabled={selectedTenantId === 'all'}
+          >
+            <Plus className="h-4 w-4" />
+            Neuen Code generieren
+          </Button>
+        </div>
       </div>
+
+      {/* Warnung wenn kein Tenant ausgewählt */}
+      {selectedTenantId === 'all' && (
+        <Card className="p-4 bg-yellow-500/10 border-yellow-500/30">
+          <div className="flex items-center gap-3">
+            <Building2 className="h-5 w-5 text-yellow-500" />
+            <p className="text-sm text-yellow-600">
+              Bitte wählen Sie einen Tenant im Header aus, um Aktivierungscodes zu generieren oder zu filtern.
+            </p>
+          </div>
+        </Card>
+      )}
 
       {/* Generierungs-Formular */}
       {showGenerateForm && (
         <Card className="p-4 border-primary/30 bg-primary/5">
-          <h4 className="font-semibold text-foreground mb-4">Neuen Aktivierungscode generieren</h4>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <h4 className="font-semibold text-foreground mb-4">
+            Neuen Aktivierungscode generieren für <span className="text-primary">{selectedTenantName}</span>
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">Device-ID *</label>
               <Input
@@ -198,6 +228,7 @@ const ActivationCodeManager = () => {
                 onChange={(e) => setLocationCode(e.target.value)}
                 placeholder="z.B. BERT01"
                 className="font-mono"
+              />
               />
             </div>
             <div className="space-y-2">
