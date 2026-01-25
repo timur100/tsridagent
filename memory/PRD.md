@@ -434,3 +434,77 @@ Neue Komponente `/app/frontend/src/components/ConnectionStatusIndicators.jsx` mi
 - `tenants` Collection: 646 Einträge mit `tenant_id`, `name`, `display_name`, `parent_tenant_id`, `tenant_level`
 - `key_locations` enthält `tenant_id` Feld für Filterung
 
+#### ✅ BUGFIX: Korrekte Anzeige aller Geräte-/Standortdaten nach Kopplung (P0)
+**Problem:** Die Fußzeile zeigte nach der Gerätekopplung falsche oder unvollständige Informationen (z.B. fehlende Adresse, Telefon, E-Mail).
+
+**Ursache:** 
+1. Detaillierte Standortdaten (Straße, PLZ, Telefon, E-Mail, Manager) waren nicht in der `europcar_devices` Collection gespeichert
+2. Es fehlte eine zentrale Quelle für diese Daten
+
+**Lösung:**
+1. **Neue Collection:** `station_details` in `tsrid_db` mit allen Standortdetails
+2. **Neuer API-Endpoint:** `GET /api/unified-locations/station-details/{location_code}`
+   - Holt Daten aus `station_details` Collection
+   - Fallback auf `europcar_devices` wenn nicht gefunden
+3. **Frontend-Update:** `DeviceSetup.jsx` ruft beim Koppeln zuerst `station-details` ab und speichert alle Felder in localStorage
+
+**Geänderte Dateien:**
+- `/app/backend/routes/unified_locations.py` - Neuer `station-details` Endpoint
+- `/app/frontend/src/components/DeviceSetup.jsx` - Syntax-Fehler behoben, `station_details` Integration
+- `/app/frontend/src/components/FooterInfo.jsx` - Liest und zeigt `coupledDevice` aus localStorage
+
+**Station Details Collection Schema:**
+```json
+{
+  "location_code": "BERT01",
+  "name": "BERLIN BRANDENBURG AIRPORT -IKC-",
+  "street": "FLUGHAFEN BERLIN BRANDENBURG",
+  "plz": "12529",
+  "city": "BERLIN",
+  "bundesland": "BB",
+  "country": "Deutschland",
+  "continent": "Europa",
+  "tenant": "Europcar",
+  "manager": "Sascha Seelhoff",
+  "phone": "+49 (3063) 49160",
+  "phone_intern": "-",
+  "email": "destBERT01@europcar.com",
+  "opening_hours": { "monday": "08:00 - 18:00", ... },
+  "main_typ": "CAP",
+  "switch": "ECARBERT01AZS01",
+  "port": "7 +12"
+}
+```
+
+**Test-Ergebnisse:**
+- ✅ Health Endpoint: `/api/health` - OK
+- ✅ Countries: 2 Länder gefunden
+- ✅ Cities für Deutschland: 153 Städte
+- ✅ Locations in BERLIN: BERC01, BERE02, BERE03, BERL01, BERN01
+- ✅ Devices bei BERT01: BERT01-01, BERT01-02
+- ✅ Station Details für BERT01: Name, Straße, PLZ, Stadt, Telefon, E-Mail - KORREKT
+- ✅ Gerätekopplung: Erfolgreich
+- ✅ localStorage enthält alle Daten nach Kopplung
+- ✅ Fußzeile zeigt BERT01-01, BERLIN BRANDENBURG AIRPORT -IKC-, Europcar
+- ✅ Erweiterte Fußzeile zeigt Straße, Stadt, Telefon, E-Mail korrekt
+
+---
+
+## Offene Aufgaben (Priorisiert)
+
+### P1 - Status-Indikatoren Echtzeit-Logik
+- [ ] Portal Online Status bereits implementiert via `/api/health` (alle 30s)
+- [ ] Scanner Online Status benötigt echte Hardware-Integration
+- [ ] Lizenz-Status basiert auf gekoppeltem Gerät
+
+### P1 - Scanner-Integration
+- [ ] Regula & Desko USB-Scanner tiefe Integration
+- [ ] `sync-engine.js` aktivieren und testen
+
+### P2 - fleet_management.py Refactoring
+- [ ] Mock-Daten durch MongoDB-Abfragen ersetzen
+- [ ] Single Source of Truth vollständig implementieren
+
+### P3 - Drucker-Support
+- [ ] Silent Printing zu USB-Drucker im Electron App
+
