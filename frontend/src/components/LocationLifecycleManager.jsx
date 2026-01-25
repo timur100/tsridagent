@@ -64,16 +64,34 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
       const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
       
       const response = await fetch(url, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        }
       });
+      
+      // Check content type first
+      const contentType = response.headers.get('content-type');
+      console.log('[LocationLifecycleManager] Response status:', response.status, 'Content-Type:', contentType);
       
       if (!response.ok) {
         console.error('[LocationLifecycleManager] Response not OK:', response.status, response.statusText);
         throw new Error(`HTTP ${response.status}`);
       }
       
-      const data = await response.json();
-      console.log('[LocationLifecycleManager] Response success:', data.success, 'locations:', data.locations?.length);
+      // Read response text first for debugging
+      const text = await response.text();
+      console.log('[LocationLifecycleManager] Response text (first 200 chars):', text.substring(0, 200));
+      
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        console.error('[LocationLifecycleManager] JSON parse error:', parseError.message);
+        throw new Error('Invalid JSON response');
+      }
+      
+      console.log('[LocationLifecycleManager] Parsed data success:', data.success, 'locations:', data.locations?.length);
 
       if (data.success) {
         setLocations(data.locations || []);
