@@ -364,7 +364,7 @@ const DeviceLifecycleManager = ({ theme }) => {
                   <tr key={d.id} onClick={() => openDetailModal(d)} className={`border-t cursor-pointer transition-colors ${isDark ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-100 hover:bg-gray-50'}`}>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        {React.createElement(TYPE_ICONS[d.device_type] || Monitor, { className: 'w-4 h-4 text-gray-500' })}
+                        <Monitor className="w-4 h-4 text-gray-500" />
                         <span className="text-xs text-gray-500">{deviceTypes[d.device_type]?.label || d.device_type}</span>
                       </div>
                     </td>
