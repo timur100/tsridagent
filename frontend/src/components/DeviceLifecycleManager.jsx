@@ -8,12 +8,10 @@ import {
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin || 'http://localhost:8001';
@@ -321,7 +319,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
       const date = new Date(dateStr);
       const now = new Date();
       const diff = date - now;
-      return diff > 0 && diff < 30 * 24 * 60 * 60 * 1000; // 30 days
+      return diff > 0 && diff < 30 * 24 * 60 * 60 * 1000;
     } catch {
       return false;
     }
@@ -389,7 +387,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
           return (
             <Card 
               key={key}
-              className={`p-4 cursor-pointer transition-all ${statusFilter === key ? `ring-2 ring-${config.color}-500` : ''} ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}
+              className={`p-4 cursor-pointer transition-all ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white'}`}
               onClick={() => setStatusFilter(statusFilter === key ? 'all' : key)}
             >
               <div className="flex items-center gap-3">
@@ -410,7 +408,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
       {(stats.warranty_expiring_soon > 0 || stats.license_expiring_soon > 0) && (
         <div className="flex gap-4">
           {stats.warranty_expiring_soon > 0 && (
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30`}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30">
               <AlertTriangle className="w-4 h-4 text-yellow-500" />
               <span className={`text-sm ${theme === 'dark' ? 'text-yellow-400' : 'text-yellow-600'}`}>
                 {stats.warranty_expiring_soon} Geräte mit bald ablaufender Garantie
@@ -418,7 +416,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
             </div>
           )}
           {stats.license_expiring_soon > 0 && (
-            <div className={`flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30`}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/30">
               <Key className="w-4 h-4 text-red-500" />
               <span className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
                 {stats.license_expiring_soon} Geräte mit bald ablaufender Lizenz
@@ -559,185 +557,99 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
           </DialogHeader>
 
           {selectedDevice && (
-            <Tabs defaultValue="details" className="mt-4">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="details">Stammdaten</TabsTrigger>
-                <TabsTrigger value="timeline">Timeline / Historie</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="details" className="space-y-4 mt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Basic Info */}
-                  <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
-                    <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Geräteinformationen</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Typ:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{deviceTypes[selectedDevice.device_type]?.label}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Hersteller:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.manufacturer || '-'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Modell:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.model || '-'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Inventarnr.:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.inventory_number || '-'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>QR-Code:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.qr_code || '-'}</span>
-                      </div>
+            <div className="space-y-4 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                {/* Basic Info */}
+                <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
+                  <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Geräteinformationen</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Typ:</span>
+                      <span className={theme === 'dark' ? 'text-white' : ''}>{deviceTypes[selectedDevice.device_type]?.label}</span>
                     </div>
-                  </Card>
-
-                  {/* Software Info */}
-                  <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
-                    <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Software & System</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Betriebssystem:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.os_name || '-'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>OS Version:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.os_version || '-'}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Scansoftware:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.software_version || '-'}</span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Hersteller:</span>
+                      <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.manufacturer || '-'}</span>
                     </div>
-                  </Card>
-
-                  {/* Purchase & Warranty */}
-                  <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
-                    <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Kauf & Garantie</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Kaufdatum:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{formatDate(selectedDevice.purchase_date)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Kaufpreis:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>
-                          {selectedDevice.purchase_price ? `${selectedDevice.purchase_price.toFixed(2)} €` : '-'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Garantie bis:</span>
-                        <span className={`${isExpired(selectedDevice.warranty_end) ? 'text-red-500' : isExpiringSoon(selectedDevice.warranty_end) ? 'text-yellow-500' : theme === 'dark' ? 'text-white' : ''}`}>
-                          {formatDate(selectedDevice.warranty_end)}
-                        </span>
-                      </div>
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Modell:</span>
+                      <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.model || '-'}</span>
                     </div>
-                  </Card>
+                  </div>
+                </Card>
 
-                  {/* License & Location */}
-                  <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
-                    <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Lizenz & Standort</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lizenz gültig bis:</span>
-                        <span className={`${isExpired(selectedDevice.license_valid_until) ? 'text-red-500' : isExpiringSoon(selectedDevice.license_valid_until) ? 'text-yellow-500' : theme === 'dark' ? 'text-white' : ''}`}>
-                          {formatDate(selectedDevice.license_valid_until)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Standort:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>
-                          {selectedDevice.assigned_location_code || 'Nicht zugewiesen'}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Techniker:</span>
-                        <span className={theme === 'dark' ? 'text-white' : ''}>{selectedDevice.responsible_technician || '-'}</span>
-                      </div>
+                {/* Purchase & Warranty */}
+                <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
+                  <h4 className={`font-semibold mb-3 ${theme === 'dark' ? 'text-white' : ''}`}>Kauf & Garantie</h4>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Kaufdatum:</span>
+                      <span className={theme === 'dark' ? 'text-white' : ''}>{formatDate(selectedDevice.purchase_date)}</span>
                     </div>
-                  </Card>
-                </div>
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Garantie bis:</span>
+                      <span className={`${isExpired(selectedDevice.warranty_end) ? 'text-red-500' : theme === 'dark' ? 'text-white' : ''}`}>
+                        {formatDate(selectedDevice.warranty_end)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>Lizenz bis:</span>
+                      <span className={`${isExpired(selectedDevice.license_valid_until) ? 'text-red-500' : theme === 'dark' ? 'text-white' : ''}`}>
+                        {formatDate(selectedDevice.license_valid_until)}
+                      </span>
+                    </div>
+                  </div>
+                </Card>
+              </div>
 
-                {/* Notes */}
-                {selectedDevice.notes && (
-                  <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
-                    <h4 className={`font-semibold mb-2 ${theme === 'dark' ? 'text-white' : ''}`}>Notizen</h4>
-                    <p className={`text-sm whitespace-pre-wrap ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {selectedDevice.notes}
-                    </p>
-                  </Card>
-                )}
-
-                {/* Actions */}
-                <div className="flex gap-2 justify-end">
-                  <Button variant="outline" onClick={() => openEditModal(selectedDevice)} className="gap-2">
-                    <Edit2 className="w-4 h-4" />
-                    Bearbeiten
-                  </Button>
-                  <Button variant="destructive" onClick={() => handleDeleteDevice(selectedDevice.id)} className="gap-2">
-                    <Trash2 className="w-4 h-4" />
-                    Löschen
-                  </Button>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="timeline" className="mt-4">
-                <div className="flex justify-between items-center mb-4">
+              {/* Timeline */}
+              <Card className={`p-4 ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}`}>
+                <div className="flex justify-between items-center mb-3">
                   <h4 className={`font-semibold ${theme === 'dark' ? 'text-white' : ''}`}>Ereignis-Historie</h4>
-                  <Button size="sm" variant="outline" onClick={() => { setEventData({ event_type: '', description: '' }); setShowEventModal(true); }} className="gap-1">
+                  <Button size="sm" variant="outline" onClick={() => setShowEventModal(true)} className="gap-1">
                     <Plus className="w-4 h-4" />
-                    Event hinzufügen
+                    Event
                   </Button>
                 </div>
 
                 {loadingTimeline ? (
-                  <div className="flex justify-center py-8">
-                    <RefreshCw className="w-6 h-6 animate-spin text-primary" />
+                  <div className="flex justify-center py-4">
+                    <RefreshCw className="w-5 h-5 animate-spin" />
                   </div>
                 ) : timeline.length === 0 ? (
-                  <div className={`text-center py-8 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Keine Ereignisse vorhanden
-                  </div>
+                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>Keine Ereignisse</p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
                     {timeline.map((event, idx) => {
                       const EventIcon = EVENT_ICONS[event.event_type] || Clock;
                       return (
-                        <div key={idx} className={`flex gap-4 p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                          <div className={`p-2 rounded-full ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'}`}>
-                            <EventIcon className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`} />
-                          </div>
+                        <div key={idx} className={`flex gap-3 p-2 rounded ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                          <EventIcon className={`w-4 h-4 mt-0.5 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} />
                           <div className="flex-1">
-                            <div className="flex justify-between items-start">
-                              <div>
-                                <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                  {event.description}
-                                </p>
-                                {event.old_value && event.new_value && (
-                                  <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    {event.old_value} → {event.new_value}
-                                  </p>
-                                )}
-                              </div>
-                              <div className="text-right">
-                                <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                                  {formatDate(event.timestamp)}
-                                </p>
-                                <p className={`text-xs ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`}>
-                                  {event.performed_by}
-                                </p>
-                              </div>
-                            </div>
+                            <p className={`text-sm ${theme === 'dark' ? 'text-white' : ''}`}>{event.description}</p>
+                            <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                              {formatDate(event.timestamp)} - {event.performed_by}
+                            </p>
                           </div>
                         </div>
                       );
                     })}
                   </div>
                 )}
-              </TabsContent>
-            </Tabs>
+              </Card>
+
+              {/* Actions */}
+              <div className="flex gap-2 justify-end">
+                <Button variant="outline" onClick={() => openEditModal(selectedDevice)} className="gap-2">
+                  <Edit2 className="w-4 h-4" />
+                  Bearbeiten
+                </Button>
+                <Button variant="destructive" onClick={() => handleDeleteDevice(selectedDevice.id)} className="gap-2">
+                  <Trash2 className="w-4 h-4" />
+                  Löschen
+                </Button>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>
@@ -754,7 +666,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Gerätetyp *</Label>
-              <Select value={formData.device_type} onValueChange={(v) => setFormData({...formData, device_type: v})}>
+              <Select value={formData.device_type || 'tablet'} onValueChange={(v) => setFormData({...formData, device_type: v})}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {Object.entries(deviceTypes).map(([key, type]) => (
@@ -766,147 +678,68 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Seriennummer *</Label>
-              <Input 
+              <input 
                 value={formData.serial_number || ''} 
                 onChange={(e) => setFormData({...formData, serial_number: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Hersteller</Label>
-              <Input 
+              <input 
                 value={formData.manufacturer || ''} 
                 onChange={(e) => setFormData({...formData, manufacturer: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Modell</Label>
-              <Input 
+              <input 
                 value={formData.model || ''} 
                 onChange={(e) => setFormData({...formData, model: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Inventarnummer</Label>
-              <Input 
-                value={formData.inventory_number || ''} 
-                onChange={(e) => setFormData({...formData, inventory_number: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>QR-Code</Label>
-              <Input 
-                value={formData.qr_code || ''} 
-                onChange={(e) => setFormData({...formData, qr_code: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Betriebssystem</Label>
-              <Input 
-                value={formData.os_name || ''} 
-                onChange={(e) => setFormData({...formData, os_name: e.target.value})}
-                placeholder="z.B. Windows 11"
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>OS Version</Label>
-              <Input 
-                value={formData.os_version || ''} 
-                onChange={(e) => setFormData({...formData, os_version: e.target.value})}
-                placeholder="z.B. 23H2"
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Scansoftware Version</Label>
-              <Input 
-                value={formData.software_version || ''} 
-                onChange={(e) => setFormData({...formData, software_version: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Status</Label>
-              <Select value={formData.status} onValueChange={(v) => setFormData({...formData, status: v})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {Object.entries(DEVICE_STATUSES).map(([key, status]) => (
-                    <SelectItem key={key} value={key}>{status.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Kaufdatum</Label>
-              <Input 
+              <input 
                 type="date"
                 value={formData.purchase_date || ''} 
                 onChange={(e) => setFormData({...formData, purchase_date: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Kaufpreis (€)</Label>
-              <Input 
-                type="number"
-                step="0.01"
-                value={formData.purchase_price || ''} 
-                onChange={(e) => setFormData({...formData, purchase_price: parseFloat(e.target.value) || null})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Garantie bis</Label>
-              <Input 
+              <input 
                 type="date"
                 value={formData.warranty_end || ''} 
                 onChange={(e) => setFormData({...formData, warranty_end: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Lizenz gültig bis</Label>
-              <Input 
+              <input 
                 type="date"
                 value={formData.license_valid_until || ''} 
                 onChange={(e) => setFormData({...formData, license_valid_until: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Standort-Code</Label>
-              <Input 
+              <input 
                 value={formData.assigned_location_code || ''} 
                 onChange={(e) => setFormData({...formData, assigned_location_code: e.target.value})}
                 placeholder="z.B. BERE01"
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Verantwortlicher Techniker</Label>
-              <Input 
-                value={formData.responsible_technician || ''} 
-                onChange={(e) => setFormData({...formData, responsible_technician: e.target.value})}
-                className={theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : ''}
+                className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-200'}`}
               />
             </div>
 
@@ -940,7 +773,7 @@ const DeviceLifecycleManager = ({ theme, selectedTenantId }) => {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label className={theme === 'dark' ? 'text-gray-300' : ''}>Event-Typ *</Label>
-              <Select value={eventData.event_type} onValueChange={(v) => setEventData({...eventData, event_type: v})}>
+              <Select value={eventData.event_type || ''} onValueChange={(v) => setEventData({...eventData, event_type: v})}>
                 <SelectTrigger><SelectValue placeholder="Auswählen..." /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="note_added">Notiz hinzufügen</SelectItem>
