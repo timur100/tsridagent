@@ -88,12 +88,52 @@ def normalize_location(doc: dict, source: str = "unified") -> dict:
 # HIERARCHISCHE LOCATION ENDPOINTS
 # =====================
 
-@router.get("/countries")
-async def get_countries():
-    """Holt alle verfügbaren Länder aus den Geräte-Daten"""
+@router.get("/continents")
+async def get_continents():
+    """Holt alle verfügbaren Kontinente aus den Standort-Daten"""
     try:
-        # Aus europcar_devices in multi_tenant_admin
-        countries = await multi_tenant_db.europcar_devices.distinct("country")
+        portal_db = client['portal_db']
+        # Aus tenant_locations
+        continents = await portal_db.tenant_locations.distinct("continent")
+        # Fallback aus europcar_devices
+        if not continents:
+            continents = await multi_tenant_db.europcar_devices.distinct("continent")
+        
+        # Filtere leere Werte und sortiere
+        continents = [c for c in continents if c]
+        continents.sort()
+        
+        # Falls keine Kontinente gefunden, Standard-Liste
+        if not continents:
+            continents = ["Europa"]
+        
+        return {
+            "success": True,
+            "continents": continents,
+            "total": len(continents)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/countries")
+async def get_countries(continent: str = Query(None, description="Kontinent (optional)")):
+    """Holt alle verfügbaren Länder, optional gefiltert nach Kontinent"""
+    try:
+        portal_db = client['portal_db']
+        
+        # Query basierend auf Kontinent
+        query = {}
+        if continent:
+            query["continent"] = {"$regex": f"^{continent}$", "$options": "i"}
+        
+        # Primär aus tenant_locations (hat continent Feld)
+        countries = await portal_db.tenant_locations.distinct("country", query)
+        
+        # Fallback aus europcar_devices
+        if not countries:
+            countries = await multi_tenant_db.europcar_devices.distinct("country", query)
+        
         # Filtere leere Werte und normalisiere
         countries = [c for c in countries if c]
         countries = list(set([c.title() if c.isupper() else c for c in countries]))
@@ -102,7 +142,8 @@ async def get_countries():
         return {
             "success": True,
             "countries": countries,
-            "total": len(countries)
+            "total": len(countries),
+            "continent": continent
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
