@@ -119,6 +119,18 @@ const DeviceSetup = ({ onComplete }) => {
     }
   };
 
+  // Handler für Kontinent-Auswahl
+  const handleContinentChange = (continent) => {
+    setSelectedContinent(continent);
+    loadCountries(continent);
+  };
+
+  // Handler für Land-Auswahl
+  const handleCountryChange = (country) => {
+    setSelectedCountry(country);
+    loadCities(country);
+  };
+
   // Lade Standorte für ausgewählte Stadt
   const loadLocations = async (city) => {
     if (!city) return;
