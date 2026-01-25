@@ -162,7 +162,10 @@ const TenantsPage = ({ onSelectTenant }) => {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, enabled) => {
+    // If no status but enabled=true, treat as active
+    const effectiveStatus = status || (enabled !== false ? 'active' : 'inactive');
+    
     const styles = {
       active: 'bg-green-100 text-green-800 border-green-200',
       trial: 'bg-blue-100 text-blue-800 border-blue-200',
@@ -177,10 +180,17 @@ const TenantsPage = ({ onSelectTenant }) => {
       inactive: <XCircle className="w-4 h-4" />
     };
 
+    const labels = {
+      active: 'Aktiv',
+      trial: 'Trial',
+      suspended: 'Gesperrt',
+      inactive: 'Inaktiv'
+    };
+
     return (
-      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[status] || styles.inactive}`}>
-        {icons[status]}
-        {(status || 'inactive').charAt(0).toUpperCase() + (status || 'inactive').slice(1)}
+      <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${styles[effectiveStatus] || styles.active}`}>
+        {icons[effectiveStatus]}
+        {labels[effectiveStatus] || 'Aktiv'}
       </span>
     );
   };
