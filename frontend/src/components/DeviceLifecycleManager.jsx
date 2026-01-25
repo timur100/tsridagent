@@ -2,8 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Monitor, Search, RefreshCw, Plus, Edit2, Trash2, Clock, MapPin, 
   Key, Download, ShoppingCart, Tool, XCircle, MessageSquare, Shield,
-  ChevronRight, Calendar, Package, Printer, Tablet, Box, Scan,
-  AlertTriangle, CheckCircle, Archive, Power
+  ChevronRight, Package, Printer, Tablet, Box,
+  AlertTriangle, CheckCircle, Archive
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
