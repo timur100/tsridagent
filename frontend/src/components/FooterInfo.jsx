@@ -234,11 +234,16 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
           {/* Left Side - Location Info */}
           <div className="flex items-center gap-4">
             <div className="font-bold text-foreground text-sm">
-              {locationInfo.location}
+              {locationInfo.location || 'Nicht konfiguriert'}
             </div>
             <div className="text-muted-foreground text-xs">
-              {locationInfo.stationName}
+              {locationInfo.stationName || '-'}
             </div>
+            {locationInfo.customer && (
+              <div className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+                {locationInfo.customer}
+              </div>
+            )}
           </div>
           
           {/* Right Side - Status, DateTime, User, Lock */}
