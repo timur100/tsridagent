@@ -234,12 +234,12 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
             </div>
             
             {/* Datum und Uhrzeit */}
-            <div className="flex flex-col items-end text-muted-foreground">
+            <div className="flex flex-col items-end">
               <div className="flex items-center gap-1.5">
-                <Clock className="h-3 w-3" />
-                <span className="text-xs font-medium text-foreground">{formatTime(currentTime)}</span>
+                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-sm font-semibold text-foreground">{formatTime(currentTime)}</span>
               </div>
-              <span className="text-[10px]">{formatDate(currentTime)}</span>
+              <span className="text-xs text-muted-foreground">{formatDate(currentTime)}</span>
             </div>
             
             {/* Version */}
