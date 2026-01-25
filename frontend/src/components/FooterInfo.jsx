@@ -263,6 +263,20 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                   <span>Gekoppelt:</span>
                   <span className="text-foreground font-medium">{locationInfo.coupledAt || '-'}</span>
                 </div>
+                <div className="flex justify-between pt-2 border-t border-border mt-2">
+                  <span>Lizenz:</span>
+                  <span className={`font-medium ${licenseStatus.active ? 'text-green-500' : 'text-red-500'}`}>
+                    {licenseStatus.active ? 'Aktiv' : 'Inaktiv'}
+                  </span>
+                </div>
+                {licenseStatus.validUntil && (
+                  <div className="flex justify-between">
+                    <span>Gültig bis:</span>
+                    <span className="text-foreground font-medium">
+                      {new Date(licenseStatus.validUntil).toLocaleDateString('de-DE')}
+                    </span>
+                  </div>
+                )}
               </div>
             </Card>
           </div>
