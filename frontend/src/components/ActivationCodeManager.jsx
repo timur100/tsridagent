@@ -229,20 +229,6 @@ const ActivationCodeManager = () => {
                 placeholder="z.B. BERT01"
                 className="font-mono"
               />
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Tenant</label>
-              <Select value={tenantId} onValueChange={setTenantId}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="europcar">Europcar</SelectItem>
-                  <SelectItem value="sixt">Sixt</SelectItem>
-                  <SelectItem value="hertz">Hertz</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
             <div className="flex items-end gap-2">
               <Button onClick={generateCode} disabled={generating} className="flex-1">
