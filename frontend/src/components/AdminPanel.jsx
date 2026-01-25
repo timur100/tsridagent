@@ -103,42 +103,17 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     }
   };
 
-  // Fetch states when country changes
+  // Fetch cities when country changes (skip states - not available in unified API)
   useEffect(() => {
     if (selectedCountry) {
-      fetchStates(selectedContinent, selectedCountry);
+      fetchCities(selectedCountry);
     } else {
-      setStates([]);
       setCities([]);
       setLocations([]);
     }
   }, [selectedCountry]);
 
-  const fetchStates = async (continent, country) => {
-    // Unified Locations API doesn't have states - skip directly to cities
-    // Set states to empty and auto-fetch cities for selected country
-    setStates([]);
-    try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
-      const data = await response.json();
-      setCities(data.cities || []);
-    } catch (error) {
-      console.error('Error fetching cities:', error);
-      toast.error('Fehler beim Laden der Städte');
-    }
-  };
-
-  // Fetch cities when state changes
-  useEffect(() => {
-    if (selectedState) {
-      fetchCities(selectedContinent, selectedCountry, selectedState);
-    } else {
-      setCities([]);
-      setLocations([]);
-    }
-  }, [selectedState]);
-
-  const fetchCities = async (continent, country, state) => {
+  const fetchCities = async (country) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
       const data = await response.json();
