@@ -59,7 +59,13 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
       }
 
       console.log('[LocationLifecycleManager] Fetching:', url);
-      const response = await fetch(url);
+      
+      // Get auth token
+      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
+      
+      const response = await fetch(url, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
       const data = await response.json();
       console.log('[LocationLifecycleManager] Response:', data.success, data.locations?.length);
 
