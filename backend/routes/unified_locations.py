@@ -159,14 +159,14 @@ async def get_tenant_hierarchy():
 @router.get("/tenants/top-level")
 async def get_top_level_tenants():
     """
-    Holt nur die obersten Tenants (Kontinente/Hauptorganisationen).
+    Holt nur die obersten Tenants (Organisationen wie Europcar, Puma).
     Ideal für das Haupt-Dropdown.
     """
     try:
-        # Finde Tenants ohne parent oder auf continent-Level
+        # Finde Root-Organisationen (tenant_level: organization oder ohne parent)
         cursor = db.tenants.find(
             {"$or": [
-                {"tenant_level": "continent"},
+                {"tenant_level": "organization"},
                 {"parent_tenant_id": {"$exists": False}},
                 {"parent_tenant_id": None},
                 {"parent_tenant_id": ""}
@@ -175,29 +175,32 @@ async def get_top_level_tenants():
         )
         tenants = await cursor.to_list(length=100)
         
-        # Falls keine gefunden, gib die unique "root" tenants zurück
-        if not tenants:
+        # Filter auf echte Organisationen (nicht Kontinente oder Länder)
+        org_tenants = [t for t in tenants if t.get("tenant_level") == "organization" or not t.get("tenant_level")]
+        
+        # Falls keine gefunden, extrahiere aus allen Tenants
+        if not org_tenants:
             cursor = db.tenants.find({}, {"_id": 0, "tenant_id": 1, "name": 1, "display_name": 1})
             all_tenants = await cursor.to_list(length=1000)
-            # Extrahiere eindeutige Präfixe
-            seen_prefixes = set()
-            tenants = []
+            # Extrahiere eindeutige Root-IDs (vor dem ersten Bindestrich mit Suffix)
+            seen_roots = set()
+            org_tenants = []
             for t in all_tenants:
-                prefix = t.get("tenant_id", "").split("-")[0] if t.get("tenant_id") else ""
-                if prefix and prefix not in seen_prefixes:
-                    seen_prefixes.add(prefix)
-                    tenants.append({
-                        "tenant_id": prefix,
-                        "name": t.get("name", "").split(" ")[0] if t.get("name") else prefix,
-                        "display_name": t.get("display_name", prefix)
-                    })
+                tid = t.get("tenant_id", "")
+                # UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+                # Root tenant hat nur die UUID, Kinder haben UUID-suffix
+                parts = tid.split("-")
+                if len(parts) == 5:  # Reine UUID = Root Organisation
+                    if tid not in seen_roots:
+                        seen_roots.add(tid)
+                        org_tenants.append(t)
         
-        tenants.sort(key=lambda x: x.get("name", ""))
+        org_tenants.sort(key=lambda x: x.get("name", ""))
         
         return {
             "success": True,
-            "tenants": tenants,
-            "total": len(tenants)
+            "tenants": org_tenants,
+            "total": len(org_tenants)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
