@@ -236,28 +236,28 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
       
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-card border-t border-border px-4 py-1.5 cursor-pointer hover:bg-card/80 transition-colors relative"
+        className="bg-card border-t border-border px-4 py-1 cursor-pointer hover:bg-card/80 transition-colors relative"
       >
         <div className="flex items-center justify-between">
           {/* Left Side - Location Info */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="font-bold text-foreground text-sm">
               {locationInfo.location || 'Nicht konfiguriert'}
             </div>
-            <div className="text-muted-foreground text-xs">
+            <div className="text-muted-foreground text-xs hidden sm:block">
               {locationInfo.stationName || '-'}
             </div>
             {locationInfo.customer && (
-              <div className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded">
+              <div className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded">
                 {locationInfo.customer}
               </div>
             )}
           </div>
           
           {/* Right Side - Status, DateTime, User, Lock */}
-          <div className="flex items-center gap-3">
-            {/* 2 Status Indikatoren ÜBEREINANDER mit Text */}
-            <div className="flex flex-col gap-0.5 px-2 py-0.5 bg-muted/30 rounded border border-border" data-testid="footer-status-indicators">
+          <div className="flex items-center gap-2">
+            {/* 2 Status Indikatoren NEBENEINANDER */}
+            <div className="flex items-center gap-2 px-2 py-0.5 bg-muted/30 rounded border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
               <div className="flex items-center gap-1" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
                 <div className="relative">
@@ -268,9 +268,11 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 </div>
                 <Scan className={`h-2.5 w-2.5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
                 <span className={`text-[9px] font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
-                  {scannerOnline ? 'Scan Online' : 'Scan Offline'}
+                  Scan
                 </span>
               </div>
+              {/* Trennlinie */}
+              <div className="w-px h-3 bg-border"></div>
               {/* Portal Status */}
               <div className="flex items-center gap-1" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
                 <div className="relative">
@@ -281,18 +283,16 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 </div>
                 <Globe className={`h-2.5 w-2.5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
                 <span className={`text-[9px] font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
-                  {portalOnline ? 'Portal Online' : 'Portal Offline'}
+                  Portal
                 </span>
               </div>
             </div>
             
-            {/* Datum und Uhrzeit - gleiche Höhe wie Status-Box */}
-            <div className="flex flex-col justify-center">
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3 text-muted-foreground" />
-                <span className="text-sm font-bold text-foreground">{formatTime(currentTime)}</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground text-right">{formatDate(currentTime)}</span>
+            {/* Datum und Uhrzeit - kompakter */}
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-3 w-3 text-muted-foreground" />
+              <span className="text-xs font-bold text-foreground">{formatTime(currentTime)}</span>
+              <span className="text-[9px] text-muted-foreground">{formatDate(currentTime)}</span>
             </div>
             
             {/* Version */}
