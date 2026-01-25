@@ -85,8 +85,112 @@ def normalize_location(doc: dict, source: str = "unified") -> dict:
 
 
 # =====================
-# TENANT ENDPOINTS
+# HIERARCHISCHE LOCATION ENDPOINTS
 # =====================
+
+@router.get("/countries")
+async def get_countries():
+    """Holt alle verfügbaren Länder aus den Geräte-Daten"""
+    try:
+        # Aus europcar_devices in multi_tenant_admin
+        countries = await multi_tenant_db.europcar_devices.distinct("country")
+        # Filtere leere Werte und normalisiere
+        countries = [c for c in countries if c]
+        countries = list(set([c.title() if c.isupper() else c for c in countries]))
+        countries.sort()
+        
+        return {
+            "success": True,
+            "countries": countries,
+            "total": len(countries)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/cities")
+async def get_cities(country: str = Query(..., description="Land")):
+    """Holt alle Städte für ein bestimmtes Land"""
+    try:
+        # Suche case-insensitive
+        cities = await multi_tenant_db.europcar_devices.distinct(
+            "city",
+            {"country": {"$regex": f"^{country}$", "$options": "i"}}
+        )
+        cities = [c for c in cities if c]
+        cities.sort()
+        
+        return {
+            "success": True,
+            "cities": cities,
+            "total": len(cities),
+            "country": country
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/by-city")
+async def get_locations_by_city(
+    city: str = Query(..., description="Stadt"),
+    country: str = Query(None, description="Land (optional)")
+):
+    """Holt alle Standorte in einer bestimmten Stadt"""
+    try:
+        query = {"city": {"$regex": f"^{city}$", "$options": "i"}}
+        if country:
+            query["country"] = {"$regex": f"^{country}$", "$options": "i"}
+        
+        # Gruppiere nach locationcode um eindeutige Standorte zu bekommen
+        pipeline = [
+            {"$match": query},
+            {"$group": {
+                "_id": "$locationcode",
+                "station_code": {"$first": "$locationcode"},
+                "name": {"$first": {"$concat": ["$customer", " ", "$locationcode"]}},
+                "city": {"$first": "$city"},
+                "country": {"$first": "$country"},
+                "street": {"$first": "$street"},
+                "zip": {"$first": "$plz"},
+                "customer": {"$first": "$customer"},
+                "device_count": {"$sum": 1}
+            }},
+            {"$sort": {"station_code": 1}}
+        ]
+        
+        cursor = multi_tenant_db.europcar_devices.aggregate(pipeline)
+        locations = await cursor.to_list(length=500)
+        
+        return {
+            "success": True,
+            "locations": locations,
+            "total": len(locations),
+            "city": city
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/devices")
+async def get_devices_at_location(
+    location_code: str = Query(..., description="Standort-Code (locationcode)")
+):
+    """Holt alle Geräte an einem bestimmten Standort"""
+    try:
+        cursor = multi_tenant_db.europcar_devices.find(
+            {"locationcode": {"$regex": f"^{location_code}$", "$options": "i"}},
+            {"_id": 0}
+        )
+        devices = await cursor.to_list(length=100)
+        
+        return {
+            "success": True,
+            "devices": devices,
+            "total": len(devices),
+            "location_code": location_code
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/tenants")
 async def get_all_tenants(
