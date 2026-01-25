@@ -412,6 +412,10 @@ app.include_router(activation_codes_router)
 from routes.location_management import router as location_management_router
 app.include_router(location_management_router)
 
+# Device Lifecycle Management API (Geräte-Lifecycle-Management)
+from routes.device_lifecycle import router as device_lifecycle_router
+app.include_router(device_lifecycle_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
