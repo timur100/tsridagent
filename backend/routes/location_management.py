@@ -57,6 +57,10 @@ class LocationUpdate(BaseModel):
     main_type: Optional[str] = None
 
 
+class BulkStatusRequest(BaseModel):
+    location_codes: List[str]
+
+
 @router.get("/statuses")
 async def get_location_statuses():
     """Gibt alle verfügbaren Status-Typen zurück"""
@@ -64,6 +68,37 @@ async def get_location_statuses():
         "success": True,
         "statuses": LOCATION_STATUSES
     }
+
+
+@router.post("/statuses-bulk")
+async def get_bulk_statuses(request: BulkStatusRequest):
+    """Gibt Status-Information für mehrere Standorte auf einmal zurück"""
+    try:
+        if not request.location_codes:
+            return {"success": True, "statuses": {}}
+        
+        # Hole alle Status-Einträge für die angegebenen Codes
+        cursor = db.location_status.find(
+            {"location_code": {"$in": request.location_codes}},
+            {"_id": 0}
+        )
+        status_list = await cursor.to_list(length=len(request.location_codes))
+        
+        # Erstelle Map: location_code -> status_info
+        statuses = {}
+        for s in status_list:
+            statuses[s["location_code"]] = {
+                "status": s.get("status", "active"),
+                "status_changed_at": s.get("status_changed_at"),
+                "status_reason": s.get("status_reason")
+            }
+        
+        return {
+            "success": True,
+            "statuses": statuses
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/list")
