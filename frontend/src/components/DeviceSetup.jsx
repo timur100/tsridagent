@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Server, MapPin, Save, RefreshCw, Check, AlertTriangle, Wifi, WifiOff, Database, Settings, Download, Search, Plus } from 'lucide-react';
+import { Server, MapPin, Save, RefreshCw, Check, AlertTriangle, Wifi, WifiOff, Database, Settings, Download, Search, Plus, Building2, Filter } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -11,6 +11,7 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
  * DeviceSetup - Komponente zur Geräteeinrichtung mit Offline-Support
  * - Lädt Standorte von Atlas (unified_locations)
  * - Speichert in SQLite für Offline-Zugriff
+ * - Unterstützt Multi-Tenant-Filterung
  * - Echtzeit-Sync wenn Internet verfügbar
  */
 const DeviceSetup = ({ onComplete }) => {
@@ -29,6 +30,11 @@ const DeviceSetup = ({ onComplete }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [lastSyncTime, setLastSyncTime] = useState(null);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  
+  // Multi-Tenant State
+  const [tenants, setTenants] = useState([]);
+  const [selectedTenant, setSelectedTenant] = useState('');
+  const [loadingTenants, setLoadingTenants] = useState(false);
 
   // Online/Offline Status überwachen
   useEffect(() => {
