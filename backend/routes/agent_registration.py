@@ -23,6 +23,8 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
+# Multi-tenant database for devices
+multi_tenant_db = client['multi_tenant_admin']
 
 
 class DeviceRegistration(BaseModel):
