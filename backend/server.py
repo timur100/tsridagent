@@ -404,6 +404,10 @@ app.include_router(agent_registration_router)
 from routes.unified_locations import router as unified_locations_router
 app.include_router(unified_locations_router)
 
+# Activation Codes API (QR-Code basierte Geräteaktivierung)
+from routes.activation_codes import router as activation_codes_router
+app.include_router(activation_codes_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
