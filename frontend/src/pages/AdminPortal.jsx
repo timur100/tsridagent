@@ -1610,6 +1610,13 @@ const AdminPortalContent = () => {
           />
         )}
 
+        {activeTab === 'lifecycle' && (
+          <LocationLifecycleManager 
+            theme={theme}
+            selectedTenantId={selectedTenantId}
+          />
+        )}
+
         {activeTab === 'employees' && (
           <div>
             {/* Header with Search and Add Button in one row */}
