@@ -123,24 +123,25 @@ const DeviceSetup = ({ onComplete }) => {
   const loadTenants = async () => {
     setLoadingTenants(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/tenants/hierarchy`);
+      // Lade zuerst die Root-Organisationen (Europcar, Puma, etc.)
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/tenants/top-level`);
       const data = await response.json();
       
-      if (data.success && data.hierarchy) {
-        // Kombiniere Top-Level Tenants (Kontinente) mit einer "Alle"-Option
+      if (data.success && data.tenants) {
+        // "Alle anzeigen" Option + Root-Organisationen
         const topLevel = [
           { tenant_id: '', name: 'Alle Tenants', display_name: 'Alle anzeigen' },
-          ...data.hierarchy.continents,
-          ...data.hierarchy.countries.slice(0, 20) // Zeige auch wichtige Länder
+          ...data.tenants
         ];
         setTenants(topLevel);
+        console.log('Loaded tenants:', topLevel.length);
       }
     } catch (e) {
       console.error('Fehler beim Laden der Tenants:', e);
       // Fallback: Setze Standard-Optionen
       setTenants([
         { tenant_id: '', name: 'Alle Tenants', display_name: 'Alle anzeigen' },
-        { tenant_id: 'europcar', name: 'Europcar', display_name: 'Europcar' }
+        { tenant_id: '1d3653db-86cb-4dd1-9ef5-0236b116def8', name: 'Europcar', display_name: 'Europcar' }
       ]);
     } finally {
       setLoadingTenants(false);
