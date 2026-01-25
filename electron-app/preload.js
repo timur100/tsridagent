@@ -73,10 +73,13 @@ contextBridge.exposeInMainWorld('agentAPI', {
   getSyncLogs: () => ipcRenderer.invoke('agent:getSyncLogs'),
   enableKioskMode: (pin) => ipcRenderer.invoke('agent:enableKioskMode', pin),
   disableKioskMode: (pin) => ipcRenderer.invoke('agent:disableKioskMode', pin),
-  // Neue Funktionen für Geräteeinrichtung
+  // Geräteeinrichtung
   getDeviceConfig: () => ipcRenderer.invoke('agent:getDeviceConfig'),
   saveDeviceConfig: (config) => ipcRenderer.invoke('agent:saveDeviceConfig', config),
+  // Standorte-Sync
   syncLocations: (locations) => ipcRenderer.invoke('agent:syncLocations', locations),
+  getCachedLocations: () => ipcRenderer.invoke('agent:getCachedLocations'),
+  // App-Steuerung
   quitApp: () => ipcRenderer.invoke('agent:quitApp'),
   isElectron: true
 });
