@@ -204,17 +204,27 @@ async def get_top_level_tenants():
 
 
 @router.get("/all")
-async def get_all_locations():
+async def get_all_locations(
+    tenant_id: Optional[str] = Query(None, description="Filter by tenant_id")
+):
     """
     Holt ALLE Standorte aus allen relevanten Collections und normalisiert sie.
     Dies ist der Single-Point-of-Truth für den Agent.
+    Optional kann nach tenant_id gefiltert werden.
     """
     try:
         all_locations = []
         seen_codes = set()
         
         # 1. Unified Locations (primäre Quelle)
-        cursor = db.unified_locations.find({})
+        query = {}
+        if tenant_id:
+            # Suche nach Standorten, deren tenant_id mit dem Filter beginnt oder übereinstimmt
+            query["$or"] = [
+                {"tenant_id": tenant_id},
+                {"tenant_id": {"$regex": f"^{tenant_id}", "$options": "i"}}
+            ]
+        cursor = db.unified_locations.find(query)
         async for doc in cursor:
             loc = normalize_location(doc, "unified")
             if loc["station_code"] and loc["station_code"] not in seen_codes:
@@ -222,7 +232,13 @@ async def get_all_locations():
                 seen_codes.add(loc["station_code"])
         
         # 2. Key Locations
-        cursor = db.key_locations.find({})
+        key_query = {}
+        if tenant_id:
+            key_query["$or"] = [
+                {"tenant_id": tenant_id},
+                {"tenant_id": {"$regex": f"^{tenant_id}", "$options": "i"}}
+            ]
+        cursor = db.key_locations.find(key_query)
         async for doc in cursor:
             loc = normalize_location(doc, "key_locations")
             code = loc["station_code"]
@@ -230,18 +246,28 @@ async def get_all_locations():
                 all_locations.append(loc)
                 seen_codes.add(code)
         
-        # 3. Europcar Stations
-        cursor = db.europcar_stations.find({})
-        async for doc in cursor:
-            loc = normalize_location(doc, "europcar_stations")
-            code = loc["station_code"] or doc.get("name", "").replace(" ", "_")[:20]
-            if code and code not in seen_codes:
-                loc["station_code"] = code
-                all_locations.append(loc)
-                seen_codes.add(code)
+        # 3. Europcar Stations (nur wenn kein tenant_id oder tenant_id enthält 'europcar')
+        if not tenant_id or "europcar" in tenant_id.lower():
+            cursor = db.europcar_stations.find({})
+            async for doc in cursor:
+                loc = normalize_location(doc, "europcar_stations")
+                code = loc["station_code"] or doc.get("name", "").replace(" ", "_")[:20]
+                if code and code not in seen_codes:
+                    loc["station_code"] = code
+                    # Markiere als Europcar-Tenant wenn kein tenant_id vorhanden
+                    if not loc.get("tenant_id"):
+                        loc["tenant_id"] = "europcar"
+                    all_locations.append(loc)
+                    seen_codes.add(code)
         
         # 4. Legacy Locations
-        cursor = db.locations.find({})
+        legacy_query = {}
+        if tenant_id:
+            legacy_query["$or"] = [
+                {"tenant_id": tenant_id},
+                {"tenant_id": {"$regex": f"^{tenant_id}", "$options": "i"}}
+            ]
+        cursor = db.locations.find(legacy_query)
         async for doc in cursor:
             loc = normalize_location(doc, "locations")
             if loc["station_code"] and loc["station_code"] not in seen_codes:
@@ -255,6 +281,7 @@ async def get_all_locations():
             "success": True,
             "locations": all_locations,
             "total": len(all_locations),
+            "filtered_by_tenant": tenant_id,
             "sync_timestamp": datetime.now(timezone.utc).isoformat()
         }
         
