@@ -74,11 +74,133 @@ def normalize_location(doc: dict, source: str = "unified") -> dict:
         "tvid": doc.get("tvid") or doc.get("teamviewer_id") or "",
         "sn_station": doc.get("sn_station") or doc.get("snStation") or "",
         "sn_scanner": doc.get("sn_scanner") or doc.get("snScanner") or "",
-        "latitude": doc.get("latitude"),
-        "longitude": doc.get("longitude"),
+        "latitude": doc.get("latitude") or doc.get("lat"),
+        "longitude": doc.get("longitude") or doc.get("lng"),
+        "tenant_id": doc.get("tenant_id") or "",
         "source": source,
         "updated_at": doc.get("updated_at") or datetime.now(timezone.utc).isoformat()
     }
+
+
+# =====================
+# TENANT ENDPOINTS
+# =====================
+
+@router.get("/tenants")
+async def get_all_tenants(
+    level: Optional[str] = Query(None, description="Filter by tenant_level (e.g., 'station', 'country', 'continent')"),
+    parent_id: Optional[str] = Query(None, description="Filter by parent_tenant_id")
+):
+    """
+    Holt alle verfügbaren Tenants aus der tenants Collection.
+    Kann nach Level (station, country, continent) oder Parent gefiltert werden.
+    """
+    try:
+        query = {}
+        if level:
+            query["tenant_level"] = level
+        if parent_id:
+            query["parent_tenant_id"] = parent_id
+            
+        cursor = db.tenants.find(query, {"_id": 0})
+        tenants = await cursor.to_list(length=1000)
+        
+        # Sortiere nach Name
+        tenants.sort(key=lambda x: x.get("name", ""))
+        
+        return {
+            "success": True,
+            "tenants": tenants,
+            "total": len(tenants)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/tenants/hierarchy")
+async def get_tenant_hierarchy():
+    """
+    Gibt eine hierarchische Struktur der Tenants zurück (Kontinent -> Land -> Station).
+    Nützlich für verschachtelte Dropdown-Menüs.
+    """
+    try:
+        cursor = db.tenants.find({}, {"_id": 0})
+        all_tenants = await cursor.to_list(length=1000)
+        
+        # Gruppiere nach Level
+        hierarchy = {
+            "continents": [],
+            "countries": [],
+            "stations": []
+        }
+        
+        for tenant in all_tenants:
+            level = tenant.get("tenant_level", "")
+            if level == "continent":
+                hierarchy["continents"].append(tenant)
+            elif level == "country":
+                hierarchy["countries"].append(tenant)
+            else:
+                hierarchy["stations"].append(tenant)
+        
+        # Sortiere jede Ebene
+        for key in hierarchy:
+            hierarchy[key].sort(key=lambda x: x.get("name", ""))
+        
+        return {
+            "success": True,
+            "hierarchy": hierarchy,
+            "total": len(all_tenants)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/tenants/top-level")
+async def get_top_level_tenants():
+    """
+    Holt nur die obersten Tenants (Kontinente/Hauptorganisationen).
+    Ideal für das Haupt-Dropdown.
+    """
+    try:
+        # Finde Tenants ohne parent oder auf continent-Level
+        cursor = db.tenants.find(
+            {"$or": [
+                {"tenant_level": "continent"},
+                {"parent_tenant_id": {"$exists": False}},
+                {"parent_tenant_id": None},
+                {"parent_tenant_id": ""}
+            ]},
+            {"_id": 0}
+        )
+        tenants = await cursor.to_list(length=100)
+        
+        # Falls keine gefunden, gib die unique "root" tenants zurück
+        if not tenants:
+            cursor = db.tenants.find({}, {"_id": 0, "tenant_id": 1, "name": 1, "display_name": 1})
+            all_tenants = await cursor.to_list(length=1000)
+            # Extrahiere eindeutige Präfixe
+            seen_prefixes = set()
+            tenants = []
+            for t in all_tenants:
+                prefix = t.get("tenant_id", "").split("-")[0] if t.get("tenant_id") else ""
+                if prefix and prefix not in seen_prefixes:
+                    seen_prefixes.add(prefix)
+                    tenants.append({
+                        "tenant_id": prefix,
+                        "name": t.get("name", "").split(" ")[0] if t.get("name") else prefix,
+                        "display_name": t.get("display_name", prefix)
+                    })
+        
+        tenants.sort(key=lambda x: x.get("name", ""))
+        
+        return {
+            "success": True,
+            "tenants": tenants,
+            "total": len(tenants)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/all")
