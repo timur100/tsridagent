@@ -160,7 +160,13 @@ const DeviceSetup = ({ onComplete }) => {
   const syncLocationsFromAtlas = async () => {
     setSyncing(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/all`);
+      // Baue URL mit optionalem Tenant-Filter
+      let url = `${BACKEND_URL}/api/unified-locations/all`;
+      if (selectedTenant) {
+        url += `?tenant_id=${encodeURIComponent(selectedTenant)}`;
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
 
       if (data.success && data.locations) {
@@ -174,11 +180,13 @@ const DeviceSetup = ({ onComplete }) => {
         } else {
           localStorage.setItem('cachedLocations', JSON.stringify({
             locations: data.locations,
-            syncTime: new Date().toISOString()
+            syncTime: new Date().toISOString(),
+            tenant: selectedTenant
           }));
         }
         
-        toast.success(`${data.total} Standorte synchronisiert`);
+        const tenantInfo = selectedTenant ? ` (${selectedTenant})` : '';
+        toast.success(`${data.total} Standorte synchronisiert${tenantInfo}`);
       }
     } catch (e) {
       console.error('Sync fehlgeschlagen:', e);
