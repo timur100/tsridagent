@@ -1597,6 +1597,10 @@ const AdminPortalContent = () => {
           </div>
         )}
 
+        {activeTab === 'activation' && (
+          <ActivationCodeManager />
+        )}
+
         {activeTab === 'locations' && (
           <AllLocationsTab 
             theme={theme}
