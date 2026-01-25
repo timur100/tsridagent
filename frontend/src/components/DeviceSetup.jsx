@@ -225,10 +225,6 @@ const DeviceSetup = ({ onComplete }) => {
           coupled_at: new Date().toISOString(),
           registered_at: new Date().toISOString()
         };
-          status: selectedDevice.status || 'unknown',
-          coupled_at: new Date().toISOString(),
-          registered_at: new Date().toISOString()
-        };
         
         localStorage.setItem('deviceConfig', JSON.stringify(config));
         setCoupledDevice(config);
