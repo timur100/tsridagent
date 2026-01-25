@@ -64,10 +64,8 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
       const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
       
       const response = await fetch(url, {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-        }
+        method: 'GET',
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       
       // Check content type first
