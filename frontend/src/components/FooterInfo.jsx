@@ -174,10 +174,55 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
             </div>
           </div>
           
-          {/* Right Side - Version, User, Lock */}
+          {/* Right Side - Status Indicators, Version, User, Lock */}
           <div className="flex items-center gap-4">
+            {/* 3 Status Indikatoren horizontal */}
+            <div className="flex items-center gap-3 px-3 py-1.5 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
+              {/* Scanner Status */}
+              <div className="flex items-center gap-1.5">
+                <div className="relative">
+                  {scannerOnline && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                </div>
+                <Scan className={`h-3.5 w-3.5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
+              </div>
+              
+              {/* Trennstrich */}
+              <div className="h-4 w-px bg-border"></div>
+              
+              {/* Portal Status */}
+              <div className="flex items-center gap-1.5">
+                <div className="relative">
+                  {portalOnline && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                </div>
+                <Globe className={`h-3.5 w-3.5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
+              </div>
+              
+              {/* Trennstrich */}
+              <div className="h-4 w-px bg-border"></div>
+              
+              {/* License Status */}
+              <div className="flex items-center gap-1.5">
+                <div className="relative">
+                  {licenseStatus.active && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${licenseStatus.active ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                </div>
+                <Key className={`h-3.5 w-3.5 ${licenseStatus.active ? 'text-green-500' : 'text-red-500'}`} />
+                {!licenseStatus.active && (
+                  <span className="text-xs text-red-500 font-medium">No License</span>
+                )}
+              </div>
+            </div>
+            
             <span className="text-muted-foreground text-xs">
-              Version {data.version}
+              v{data.version}
             </span>
             
             {/* Security User Info */}
