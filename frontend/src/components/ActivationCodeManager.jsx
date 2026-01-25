@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { QrCode, Plus, Trash2, Copy, Download, Check, Loader2, Search, RefreshCw } from 'lucide-react';
+import { QrCode, Plus, Trash2, Copy, Download, Check, Loader2, Search, RefreshCw, Building2 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
@@ -11,8 +12,10 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 /**
  * ActivationCodeManager - Admin-UI für Aktivierungscode-Verwaltung
  * Ermöglicht das Generieren, Anzeigen und Verwalten von Aktivierungscodes
+ * Gefiltert nach dem aktuell ausgewählten Tenant
  */
 const ActivationCodeManager = () => {
+  const { selectedTenantId, selectedTenantName } = useTenant();
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
@@ -26,12 +29,16 @@ const ActivationCodeManager = () => {
   const [showGenerateForm, setShowGenerateForm] = useState(false);
   const [deviceId, setDeviceId] = useState('');
   const [locationCode, setLocationCode] = useState('');
-  const [tenantId, setTenantId] = useState('europcar');
+  
+  // Tenant ID für API-Calls (lowercase, ohne UUID)
+  const tenantIdForApi = selectedTenantId === 'all' 
+    ? '' 
+    : (selectedTenantName?.toLowerCase() || 'europcar');
 
-  // Lade alle Codes beim Start
+  // Lade alle Codes beim Start und bei Tenant-Wechsel
   useEffect(() => {
     loadCodes();
-  }, [statusFilter]);
+  }, [statusFilter, selectedTenantId]);
 
   const loadCodes = async () => {
     setLoading(true);
@@ -39,6 +46,10 @@ const ActivationCodeManager = () => {
       let url = `${BACKEND_URL}/api/activation/list?limit=100`;
       if (statusFilter !== 'all') {
         url += `&status=${statusFilter}`;
+      }
+      // Filter by tenant if not "all"
+      if (tenantIdForApi) {
+        url += `&tenant_id=${tenantIdForApi}`;
       }
       
       const response = await fetch(url);
@@ -60,6 +71,11 @@ const ActivationCodeManager = () => {
       toast.error('Bitte Device-ID und Location-Code eingeben');
       return;
     }
+    
+    if (selectedTenantId === 'all') {
+      toast.error('Bitte wählen Sie zuerst einen Tenant aus');
+      return;
+    }
 
     setGenerating(true);
     try {
@@ -69,7 +85,7 @@ const ActivationCodeManager = () => {
         body: JSON.stringify({
           device_id: deviceId.trim().toUpperCase(),
           location_code: locationCode.trim().toUpperCase(),
-          tenant_id: tenantId
+          tenant_id: tenantIdForApi
         })
       });
       const data = await response.json();
