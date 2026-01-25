@@ -302,10 +302,10 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
             
             {/* Security User Info */}
             {securityUser && (
-              <div className="flex items-center gap-1.5 px-2 py-0.5 bg-verification-success/20 rounded border border-verification-success/40">
-                <User className="h-3 w-3 text-verification-success" />
-                <span className="text-xs font-medium text-foreground">
-                  {securityUser.name} ({securityUser.employeeNumber})
+              <div className="flex items-center gap-1 px-1.5 py-0.5 bg-verification-success/20 rounded border border-verification-success/40">
+                <User className="h-2.5 w-2.5 text-verification-success" />
+                <span className="text-[10px] font-medium text-foreground">
+                  {securityUser.name}
                 </span>
               </div>
             )}
@@ -316,12 +316,12 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 e.stopPropagation();
                 onLockClick();
               }}
-              className="flex items-center text-foreground font-medium hover:text-primary transition-colors p-1 hover:bg-primary/10 rounded cursor-pointer"
+              className="flex items-center text-foreground font-medium hover:text-primary transition-colors p-0.5 hover:bg-primary/10 rounded cursor-pointer"
             >
               {securityUser ? (
-                <LockOpen className="h-5 w-5 text-verification-success" />
+                <LockOpen className="h-4 w-4 text-verification-success" />
               ) : (
-                <Lock className="h-5 w-5 text-muted-foreground" />
+                <Lock className="h-4 w-4 text-muted-foreground" />
               )}
             </button>
             
@@ -339,7 +339,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
           <img 
             src="https://customer-assets.emergentagent.com/job_id-tablet-app/artifacts/1angt2am_TSRID_Logo1_white.svg"
             alt="TSRID GmbH"
-            className="h-7 w-auto"
+            className="h-5 w-auto"
           />
         </div>
       </div>
