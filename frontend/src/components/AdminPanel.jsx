@@ -115,13 +115,16 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
   }, [selectedCountry]);
 
   const fetchStates = async (continent, country) => {
+    // Unified Locations API doesn't have states - skip directly to cities
+    // Set states to empty and auto-fetch cities for selected country
+    setStates([]);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/locations/states?continent=${encodeURIComponent(continent)}&country=${encodeURIComponent(country)}`);
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
       const data = await response.json();
-      setStates(data.states || []);
+      setCities(data.cities || []);
     } catch (error) {
-      console.error('Error fetching states:', error);
-      toast.error('Fehler beim Laden der Bundesländer');
+      console.error('Error fetching cities:', error);
+      toast.error('Fehler beim Laden der Städte');
     }
   };
 
@@ -137,7 +140,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
 
   const fetchCities = async (continent, country, state) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/locations/cities?continent=${encodeURIComponent(continent)}&country=${encodeURIComponent(country)}&state=${encodeURIComponent(state)}`);
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
       const data = await response.json();
       setCities(data.cities || []);
     } catch (error) {
@@ -158,13 +161,8 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
   const searchLocations = async () => {
     setLoadingLocations(true);
     try {
-      const params = new URLSearchParams({
-        continent: selectedContinent,
-        country: selectedCountry,
-        state: selectedState,
-        city: selectedCity
-      });
-      const response = await fetch(`${BACKEND_URL}/api/locations/search?${params}`);
+      // Use unified-locations by-city endpoint
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/by-city?city=${encodeURIComponent(selectedCity)}&country=${encodeURIComponent(selectedCountry)}`);
       const data = await response.json();
       setLocations(data.locations || []);
     } catch (error) {
