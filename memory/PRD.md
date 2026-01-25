@@ -65,10 +65,11 @@ Two methods implemented:
 - ✅ Fixed: "Fehler beim Laden der Kontinente" - Wrong API endpoints in `AdminPanel.jsx`
   - Changed `/api/locations/*` → `/api/unified-locations/*`
 
-#### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - COMPLETE
-- **Status:** COMPLETE
+#### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_3.json`
 - **Files:** 
-  - `/app/backend/routes/device_lifecycle.py` - Backend API
+  - `/app/backend/routes/device_lifecycle.py` - Backend API (15+ endpoints)
   - `/app/frontend/src/components/DeviceLifecycleManager.jsx` - Frontend UI
 - **Features Implemented:**
   1. ✅ Status-Dashboard with 5 stat cards (Gesamt, Aktiv, Im Lager, Defekt, Außer Betrieb)
@@ -76,11 +77,13 @@ Two methods implemented:
   3. ✅ Device creation/edit modal with all fields
   4. ✅ Device detail modal with full info display
   5. ✅ Timeline with automatic events (purchase, assign) and manual events (repair, SW update, etc.)
-  6. ✅ Edit and Delete functionality
-  7. ✅ Color-coded warranty/license expiration warnings (red/yellow)
-  8. ✅ Backend APIs: GET /list, POST /create, PUT /{id}, DELETE /{id}, GET /{id}/timeline, POST /{id}/event
-  9. ✅ Device types: Scanner (Regula/Desko), Tablet/PC, Printer, 4x Docking Stations
-- **Tested:** 2 devices with timeline, detail modal, edit/delete verified
+  6. ✅ Edit and Delete functionality with confirmation dialog
+  7. ✅ "+ Event" button to add manual timeline events
+  8. ✅ Color-coded warranty/license expiration warnings (red/yellow)
+  9. ✅ Backend APIs: GET /list, POST /create, PUT /{id}, DELETE /{id}, GET /{id}/timeline, POST /{id}/event
+  10. ✅ Device types: Scanner (Regula/Desko), Tablet/PC, Printer, 4x Docking Stations
+- **Existing Devices:** DESKO-SCN-001 (Scanner, MUCC01), TSRID-TAB-001 (Tablet, BERE01)
+- **Test Coverage:** Backend 16/16 tests, Frontend UI fully validated
 
 ### ⏳ Pending Issues
 
