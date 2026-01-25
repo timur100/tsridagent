@@ -12,12 +12,14 @@ import string
 import qrcode
 import io
 import base64
-from db.connection import get_database
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
 
 router = APIRouter(prefix="/api/activation", tags=["activation"])
 
 # Database connections
-client = get_database()
+mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+client = AsyncIOMotorClient(mongo_url)
 db = client['tsrid_db']
 multi_tenant_db = client['multi_tenant_admin']
 portal_db = client['portal_db']
