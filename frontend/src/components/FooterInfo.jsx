@@ -316,20 +316,20 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 e.stopPropagation();
                 onLockClick();
               }}
-              className="flex items-center text-foreground font-medium hover:text-primary transition-colors p-0.5 hover:bg-primary/10 rounded cursor-pointer"
+              className="flex items-center text-foreground font-medium hover:text-primary transition-colors p-1 hover:bg-primary/10 rounded cursor-pointer"
             >
               {securityUser ? (
-                <LockOpen className="h-4 w-4 text-verification-success" />
+                <LockOpen className="h-8 w-8 text-verification-success" />
               ) : (
-                <Lock className="h-4 w-4 text-muted-foreground" />
+                <Lock className="h-8 w-8 text-muted-foreground" />
               )}
             </button>
             
             {/* Expand/Collapse Indicator */}
             {isExpanded ? (
-              <ChevronDown className="h-3 w-3 text-primary" />
+              <ChevronDown className="h-6 w-6 text-primary" />
             ) : (
-              <ChevronUp className="h-3 w-3 text-primary" />
+              <ChevronUp className="h-6 w-6 text-primary" />
             )}
           </div>
         </div>
@@ -339,7 +339,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
           <img 
             src="https://customer-assets.emergentagent.com/job_id-tablet-app/artifacts/1angt2am_TSRID_Logo1_white.svg"
             alt="TSRID GmbH"
-            className="h-5 w-auto"
+            className="h-10 w-auto"
           />
         </div>
       </div>
