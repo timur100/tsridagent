@@ -78,6 +78,7 @@ import DHLShipping from '../components/DHLShipping';
 import DocumentScanPage from '../components/DocumentScanPage';
 import TimeTrackingPage from '../components/TimeTrackingPage';
 import PlacetelManagement from '../components/PlacetelManagement';
+import ActivationCodeManager from '../components/ActivationCodeManager';
 import FleetManagement from '../components/FleetManagement';
 import AIAnalysisManagement from '../components/AIAnalysisManagement';
 import AISearchManagement from '../components/AISearchManagement';
