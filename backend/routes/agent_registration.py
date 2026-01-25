@@ -39,6 +39,71 @@ class DeviceRegistration(BaseModel):
     teamviewer_id: Optional[str] = None
 
 
+class DeviceCoupling(BaseModel):
+    device_id: str
+    location_code: str
+    location_name: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    customer: Optional[str] = None
+
+
+@router.post("/couple-device")
+async def couple_device(coupling: DeviceCoupling):
+    """
+    Koppelt ein Gerät mit einem Standort und dem Admin-Portal.
+    Speichert die Kopplung in der Datenbank.
+    """
+    try:
+        # Prüfe ob Gerät existiert
+        device = await multi_tenant_db.europcar_devices.find_one({
+            "device_id": coupling.device_id
+        })
+        
+        if not device:
+            # Gerät nicht gefunden - trotzdem Kopplung erlauben für neue Geräte
+            pass
+        
+        # Erstelle Kopplungs-Eintrag
+        coupling_data = {
+            "device_id": coupling.device_id,
+            "location_code": coupling.location_code,
+            "location_name": coupling.location_name,
+            "city": coupling.city,
+            "country": coupling.country,
+            "customer": coupling.customer,
+            "coupled_at": datetime.now(timezone.utc).isoformat(),
+            "status": "active",
+            "last_seen": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Upsert in coupled_devices Collection
+        await db.coupled_devices.update_one(
+            {"device_id": coupling.device_id},
+            {"$set": coupling_data},
+            upsert=True
+        )
+        
+        # Update Status im europcar_devices
+        if device:
+            await multi_tenant_db.europcar_devices.update_one(
+                {"device_id": coupling.device_id},
+                {"$set": {
+                    "coupled": True,
+                    "coupled_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+        
+        return {
+            "success": True,
+            "message": f"Gerät {coupling.device_id} erfolgreich mit {coupling.location_code} gekoppelt",
+            "coupling": coupling_data
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/register")
 async def register_device(registration: DeviceRegistration):
     """
