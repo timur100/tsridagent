@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText } from 'lucide-react';
+import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText, QrCode } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -11,6 +11,7 @@ import MasterSyncManager from './MasterSyncManager';
 import ScannerManager from './ScannerManager';
 import PDFManagement from './PDFManagement';
 import DeviceSetup from './DeviceSetup';
+import ActivationCodeManager from './ActivationCodeManager';
 import { getFullBundeslandName } from '../utils/bundesland';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
