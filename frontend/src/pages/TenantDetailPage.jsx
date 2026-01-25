@@ -849,9 +849,18 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       inactive: 'bg-gray-100 text-gray-800 border-gray-200'
     };
 
+    const labels = {
+      active: 'Aktiv',
+      trial: 'Trial',
+      suspended: 'Gesperrt',
+      inactive: 'Inaktiv'
+    };
+
+    const effectiveStatus = status || 'active';
+
     return (
-      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${styles[status] || styles.inactive}`}>
-        {(status || 'inactive').charAt(0).toUpperCase() + (status || 'inactive').slice(1)}
+      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${styles[effectiveStatus] || styles.active}`}>
+        {labels[effectiveStatus] || 'Aktiv'}
       </span>
     );
   };
