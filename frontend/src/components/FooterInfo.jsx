@@ -36,7 +36,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     }
   }, []);
 
-  // License Check
+  // License Check - auch basierend auf gekoppeltem Gerät
   const checkLicenseStatus = useCallback(async () => {
     try {
       const deviceConfig = localStorage.getItem('deviceConfig');
@@ -45,7 +45,8 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
         return;
       }
       const config = JSON.parse(deviceConfig);
-      if (config.registered_at) {
+      // Wenn Gerät gekoppelt ist, gilt es als lizenziert
+      if (config.coupled_at || config.registered_at) {
         setLicenseStatus({ active: true, message: 'Aktiv' });
       } else {
         setLicenseStatus({ active: false, message: 'No License' });
