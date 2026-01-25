@@ -164,19 +164,19 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 </div>
                 <div className="flex justify-between">
                   <span>IP:</span>
-                  <span className="text-foreground font-medium">{data.ipAddress || '10.102.111.14'}</span>
+                  <span className="text-foreground font-medium">{data.ipAddress || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>TVID:</span>
-                  <span className="text-foreground font-medium">{locationInfo.tvid || '528168516'}</span>
+                  <span className="text-foreground font-medium">{locationInfo.tvid || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>SN-Station:</span>
-                  <span className="text-foreground font-medium">{locationInfo.snStation || '047926771453'}</span>
+                  <span className="text-foreground font-medium">{locationInfo.snStation || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>SN-Scanner:</span>
-                  <span className="text-foreground font-medium">{locationInfo.snScanner || '201734 00732'}</span>
+                  <span className="text-foreground font-medium">{locationInfo.snScanner || '-'}</span>
                 </div>
               </div>
             </Card>
@@ -189,19 +189,19 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
               <div className="space-y-2 text-xs text-muted-foreground">
                 <div className="flex justify-between">
                   <span>Station:</span>
-                  <span className="text-foreground font-medium">{locationInfo.location}</span>
+                  <span className="text-foreground font-medium">{locationInfo.location || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Straße:</span>
-                  <span className="text-foreground font-medium">{locationInfo.street}</span>
+                  <span className="text-foreground font-medium">{locationInfo.street || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Stadt:</span>
-                  <span className="text-foreground font-medium">{locationInfo.city}</span>
+                  <span className="text-foreground font-medium">{locationInfo.city || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Land:</span>
-                  <span className="text-foreground font-medium">{locationInfo.country}</span>
+                  <span className="text-foreground font-medium">{locationInfo.country || '-'}</span>
                 </div>
               </div>
             </Card>
@@ -214,11 +214,11 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
               <div className="space-y-2 text-xs text-muted-foreground">
                 <div className="flex justify-between">
                   <span>Telefon:</span>
-                  <span className="text-foreground font-medium">{locationInfo.phone}</span>
+                  <span className="text-foreground font-medium">{locationInfo.phone || '-'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>E-Mail:</span>
-                  <span className="text-foreground font-medium break-all">{locationInfo.email}</span>
+                  <span className="text-foreground font-medium break-all">{locationInfo.email || '-'}</span>
                 </div>
               </div>
             </Card>
