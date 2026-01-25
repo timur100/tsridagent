@@ -408,6 +408,10 @@ app.include_router(unified_locations_router)
 from routes.activation_codes import router as activation_codes_router
 app.include_router(activation_codes_router)
 
+# Location Management API (Standort-Lifecycle-Management)
+from routes.location_management import router as location_management_router
+app.include_router(location_management_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
