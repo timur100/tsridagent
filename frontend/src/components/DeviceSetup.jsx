@@ -165,6 +165,21 @@ const DeviceSetup = ({ onComplete }) => {
     
     setCoupling(true);
     try {
+      // Hole zuerst die detaillierten Standortdaten vom Server
+      let stationDetails = {};
+      try {
+        const detailsResponse = await fetch(
+          `${BACKEND_URL}/api/unified-locations/station-details/${selectedLocation.station_code}`
+        );
+        const detailsData = await detailsResponse.json();
+        if (detailsData.success && detailsData.details) {
+          stationDetails = detailsData.details;
+          console.log('Station details loaded:', stationDetails);
+        }
+      } catch (e) {
+        console.warn('Konnte Standortdetails nicht laden:', e);
+      }
+      
       // Sende Kopplungsanfrage an Backend
       const response = await fetch(`${BACKEND_URL}/api/agent/couple-device`, {
         method: 'POST',
@@ -172,9 +187,9 @@ const DeviceSetup = ({ onComplete }) => {
         body: JSON.stringify({
           device_id: selectedDevice.device_id,
           location_code: selectedLocation.station_code,
-          location_name: selectedLocation.name,
-          city: selectedLocation.city,
-          country: selectedLocation.country,
+          location_name: stationDetails.name || selectedLocation.name,
+          city: stationDetails.city || selectedLocation.city,
+          country: stationDetails.country || selectedLocation.country,
           customer: selectedDevice.customer
         })
       });
@@ -182,22 +197,34 @@ const DeviceSetup = ({ onComplete }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Speichere Kopplung lokal mit allen verfügbaren Daten
+        // Speichere Kopplung lokal mit allen verfügbaren Daten (Station Details haben Priorität)
         const config = {
           device_id: selectedDevice.device_id,
           station_code: selectedLocation.station_code,
-          location_code: selectedDevice.locationcode || selectedLocation.station_code,
-          location_name: selectedLocation.name,
-          street: selectedDevice.street || selectedLocation.street || '',
-          zip: selectedDevice.plz || selectedLocation.zip || '',
-          city: selectedDevice.city || selectedLocation.city,
-          country: selectedDevice.country || selectedLocation.country,
-          customer: selectedDevice.customer,
-          tvid: selectedDevice.tvid || selectedDevice.teamviewer_id || '',
-          sn_pc: selectedDevice.sn_pc || '',
-          sn_sc: selectedDevice.sn_sc || '',
-          phone: selectedDevice.phone || selectedDevice.telefon || '',
-          email: selectedDevice.email || '',
+          location_code: stationDetails.location_code || selectedDevice.locationcode || selectedLocation.station_code,
+          location_name: stationDetails.name || selectedLocation.name,
+          street: stationDetails.street || selectedDevice.street || '',
+          zip: stationDetails.plz || selectedDevice.plz || '',
+          city: stationDetails.city || selectedDevice.city || selectedLocation.city,
+          bundesland: stationDetails.bundesland || '',
+          country: stationDetails.country || selectedDevice.country || selectedLocation.country,
+          continent: stationDetails.continent || 'Europa',
+          customer: stationDetails.tenant || selectedDevice.customer,
+          manager: stationDetails.manager || '',
+          phone: stationDetails.phone || selectedDevice.phone || '',
+          phone_intern: stationDetails.phone_intern || '',
+          email: stationDetails.email || selectedDevice.email || '',
+          tvid: selectedDevice.tvid || selectedDevice.teamviewer_id || stationDetails.tv_id || '',
+          sn_pc: selectedDevice.sn_pc || stationDetails.sn_pc || '',
+          sn_sc: selectedDevice.sn_sc || stationDetails.sn_sc || '',
+          main_typ: stationDetails.main_typ || '',
+          switch: stationDetails.switch || '',
+          port: stationDetails.port || '',
+          opening_hours: stationDetails.opening_hours || null,
+          status: selectedDevice.status || 'unknown',
+          coupled_at: new Date().toISOString(),
+          registered_at: new Date().toISOString()
+        };
           status: selectedDevice.status || 'unknown',
           coupled_at: new Date().toISOString(),
           registered_at: new Date().toISOString()
