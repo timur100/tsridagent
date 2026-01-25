@@ -1619,7 +1619,7 @@ const AdminPortalContent = () => {
           />
         )}
 
-        {activeTab === 'devices' && (
+        {activeTab === 'device-lifecycle' && (
           <DeviceLifecycleManager 
             theme={theme}
             selectedTenantId={selectedTenantId}
