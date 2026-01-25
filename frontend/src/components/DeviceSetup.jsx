@@ -227,9 +227,12 @@ const DeviceSetup = ({ onComplete }) => {
         city: selectedDevice.city || selectedLocation.city,
         country: selectedDevice.country || selectedLocation.country,
         customer: selectedDevice.customer,
-        tvid: selectedDevice.tvid,
-        sn_pc: selectedDevice.sn_pc,
-        sn_sc: selectedDevice.sn_sc,
+        tvid: selectedDevice.tvid || selectedDevice.teamviewer_id || '',
+        sn_pc: selectedDevice.sn_pc || '',
+        sn_sc: selectedDevice.sn_sc || '',
+        phone: selectedDevice.phone || selectedDevice.telefon || '',
+        email: selectedDevice.email || '',
+        status: selectedDevice.status || 'unknown',
         coupled_at: new Date().toISOString(),
         offline_coupled: true
       };
