@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Lock, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User, Scan, Globe, Key, Clock } from 'lucide-react';
+import { Lock, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User, Scan, Globe, Key, Clock, Info } from 'lucide-react';
 import { Card } from './ui/card';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
