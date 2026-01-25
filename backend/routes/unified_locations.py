@@ -197,10 +197,51 @@ async def get_devices_at_location(
 async def get_station_details(location_code: str):
     """
     Holt die detaillierten Standortdaten (Adresse, Telefon, E-Mail, Manager, etc.)
-    aus der station_details Collection.
+    Primär aus tenant_locations (Echtzeit), dann station_details Cache.
     """
     try:
-        # Suche in station_details
+        # Portal DB für tenant_locations
+        portal_db = client['portal_db']
+        
+        # 1. PRIMÄR: Echtzeit aus tenant_locations (Portal)
+        tenant_loc = await portal_db.tenant_locations.find_one(
+            {"location_code": {"$regex": f"^{location_code}$", "$options": "i"}},
+            {"_id": 0}
+        )
+        
+        if tenant_loc:
+            # Transformiere tenant_locations Format zu station_details Format
+            details = {
+                "location_code": tenant_loc.get("location_code", location_code),
+                "name": tenant_loc.get("station_name", f"Europcar {location_code}"),
+                "street": tenant_loc.get("street", ""),
+                "plz": tenant_loc.get("postal_code", ""),
+                "city": tenant_loc.get("city", ""),
+                "bundesland": tenant_loc.get("state", ""),
+                "country": tenant_loc.get("country", "Deutschland"),
+                "continent": tenant_loc.get("continent", "Europa"),
+                "tenant": "Europcar",
+                "manager": tenant_loc.get("manager", ""),
+                "phone": tenant_loc.get("phone", ""),
+                "phone_intern": tenant_loc.get("phone_internal", ""),
+                "email": tenant_loc.get("email", f"dest{location_code}@europcar.com"),
+                "main_typ": tenant_loc.get("main_type", ""),
+                "switch": tenant_loc.get("switch_info", ""),
+                "port": tenant_loc.get("port", ""),
+                "id_checker": tenant_loc.get("id_checker", ""),
+                "it_kommentar": tenant_loc.get("it_comment", ""),
+                "tsr_bemerkungen": tenant_loc.get("tsr_remarks", ""),
+                "sn_pc": tenant_loc.get("sn_pc", ""),
+                "sn_sc": tenant_loc.get("sn_sc", ""),
+                "tv_id": tenant_loc.get("tv_id", "")
+            }
+            return {
+                "success": True,
+                "details": details,
+                "source": "tenant_locations_realtime"
+            }
+        
+        # 2. SEKUNDÄR: Aus station_details Cache
         details = await db.station_details.find_one(
             {"location_code": {"$regex": f"^{location_code}$", "$options": "i"}},
             {"_id": 0}
@@ -209,10 +250,11 @@ async def get_station_details(location_code: str):
         if details:
             return {
                 "success": True,
-                "details": details
+                "details": details,
+                "source": "station_details_cache"
             }
         
-        # Fallback: Versuche aus europcar_devices zu aggregieren
+        # 3. FALLBACK: Aus europcar_devices aggregieren
         device = await multi_tenant_db.europcar_devices.find_one(
             {"locationcode": {"$regex": f"^{location_code}$", "$options": "i"}},
             {"_id": 0}
@@ -227,11 +269,10 @@ async def get_station_details(location_code: str):
                     "city": device.get("city", ""),
                     "country": device.get("country", ""),
                     "tenant": device.get("customer", ""),
-                    # Diese Felder sind nicht in europcar_devices verfügbar
                     "street": "",
                     "plz": "",
                     "phone": "",
-                    "email": f"dest{location_code}@europcar.com",  # Geschätztes Format
+                    "email": f"dest{location_code}@europcar.com",
                     "manager": ""
                 },
                 "source": "device_fallback"
@@ -242,6 +283,44 @@ async def get_station_details(location_code: str):
             "message": f"Keine Standortdetails für {location_code} gefunden"
         }
         
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/station-details-bulk")
+async def get_station_details_bulk(location_codes: str = Query(..., description="Komma-separierte Liste von Location Codes")):
+    """
+    Holt Standortdetails für mehrere Standorte auf einmal (für UI Performance).
+    """
+    try:
+        codes = [c.strip().upper() for c in location_codes.split(",") if c.strip()]
+        portal_db = client['portal_db']
+        
+        results = {}
+        for code in codes[:50]:  # Max 50 auf einmal
+            tenant_loc = await portal_db.tenant_locations.find_one(
+                {"location_code": {"$regex": f"^{code}$", "$options": "i"}},
+                {"_id": 0}
+            )
+            if tenant_loc:
+                results[code] = {
+                    "location_code": tenant_loc.get("location_code", code),
+                    "name": tenant_loc.get("station_name", f"Europcar {code}"),
+                    "street": tenant_loc.get("street", ""),
+                    "plz": tenant_loc.get("postal_code", ""),
+                    "city": tenant_loc.get("city", ""),
+                    "phone": tenant_loc.get("phone", ""),
+                    "email": tenant_loc.get("email", ""),
+                    "manager": tenant_loc.get("manager", ""),
+                    "main_typ": tenant_loc.get("main_type", "")
+                }
+        
+        return {
+            "success": True,
+            "details": results,
+            "found": len(results),
+            "requested": len(codes)
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
