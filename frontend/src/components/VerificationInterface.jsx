@@ -1540,6 +1540,7 @@ const VerificationInterface = () => {
         onLockClick={handleLockClick}
         isUnlocked={isUnlocked}
         securityUser={securityUser}
+        scannerOnline={scannerOnline}
       />
       
       {/* Modals */}
