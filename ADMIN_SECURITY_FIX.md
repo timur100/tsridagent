@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://device-portal-4.preview.emergentagent.com/portal/admin
+https://offline-agent.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

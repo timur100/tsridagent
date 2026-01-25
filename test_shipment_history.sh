@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://device-portal-4.preview.emergentagent.com/api/dhl"
+API_URL="https://offline-agent.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

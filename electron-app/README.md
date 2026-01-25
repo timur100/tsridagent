@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://device-portal-4.preview.emergentagent.com
+│   └── Lädt: https://offline-agent.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

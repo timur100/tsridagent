@@ -65,23 +65,22 @@ Two methods implemented:
 - ✅ Fixed: "Fehler beim Laden der Kontinente" - Wrong API endpoints in `AdminPanel.jsx`
   - Changed `/api/locations/*` → `/api/unified-locations/*`
 
-#### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025)
-- **Status:** COMPLETE (Basic Version)
+#### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - COMPLETE
+- **Status:** COMPLETE
 - **Files:** 
   - `/app/backend/routes/device_lifecycle.py` - Backend API
   - `/app/frontend/src/components/DeviceLifecycleManager.jsx` - Frontend UI
 - **Features Implemented:**
   1. ✅ Status-Dashboard with 5 stat cards (Gesamt, Aktiv, Im Lager, Defekt, Außer Betrieb)
-  2. ✅ Device table with type, serial, model, location, status, warranty columns
-  3. ✅ Device creation modal
-  4. ✅ Backend APIs: GET /api/device-lifecycle/list, POST /create, GET /stats, GET /types
-  5. ✅ Lifecycle event tracking (automatic events on create, assign, status change)
-  6. ✅ Device types: Scanner (Regula/Desko), Tablet/PC, Printer, 4x Docking Stations
-- **Pending:**
-  - Detail modal with full timeline view
-  - Edit/Delete functionality in UI
-  - Device assignment UI
-- **Tested:** 2 test devices created via API, displayed correctly in UI
+  2. ✅ Device table with type, serial, model, location, status, warranty, license columns
+  3. ✅ Device creation/edit modal with all fields
+  4. ✅ Device detail modal with full info display
+  5. ✅ Timeline with automatic events (purchase, assign) and manual events (repair, SW update, etc.)
+  6. ✅ Edit and Delete functionality
+  7. ✅ Color-coded warranty/license expiration warnings (red/yellow)
+  8. ✅ Backend APIs: GET /list, POST /create, PUT /{id}, DELETE /{id}, GET /{id}/timeline, POST /{id}/event
+  9. ✅ Device types: Scanner (Regula/Desko), Tablet/PC, Printer, 4x Docking Stations
+- **Tested:** 2 devices with timeline, detail modal, edit/delete verified
 
 ### ⏳ Pending Issues
 

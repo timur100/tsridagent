@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://device-portal-4.preview.emergentagent.com';
+    this.serverUrl = 'https://offline-agent.preview.emergentagent.com';
   }
 
   /**
