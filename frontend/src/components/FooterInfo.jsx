@@ -119,11 +119,19 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     };
   }, []);
 
+  // Debug: Log coupled device data
+  useEffect(() => {
+    if (coupledDevice) {
+      console.log('FooterInfo: Coupled device loaded:', coupledDevice);
+    }
+  }, [coupledDevice]);
+
   // Use coupled device data first, then settings, then data as fallback
   const locationInfo = {
     location: coupledDevice?.device_id || coupledDevice?.station_code || settings?.deviceId || data.location,
     stationName: coupledDevice?.location_name || settings?.stationName || data.stationName,
     street: coupledDevice?.street || settings?.street || data.street,
+    zip: coupledDevice?.zip || '',
     city: coupledDevice?.city || settings?.city || data.city,
     country: coupledDevice?.country || settings?.country || data.countryLocation,
     phone: coupledDevice?.phone || settings?.phone || data.phone,
