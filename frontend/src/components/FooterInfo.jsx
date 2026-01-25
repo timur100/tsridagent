@@ -159,7 +159,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     <>
       {isExpanded && (
         <div className="bg-card border-t border-border px-6 py-4 animate-in slide-in-from-bottom duration-300">
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-4 gap-6">
             <Card className="bg-muted/20 border-border p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Server className="h-4 w-4 text-primary" />
@@ -227,6 +227,31 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
                 <div className="flex justify-between">
                   <span>E-Mail:</span>
                   <span className="text-foreground font-medium break-all">{locationInfo.email || '-'}</span>
+                </div>
+              </div>
+            </Card>
+            
+            <Card className="bg-muted/20 border-border p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Info className="h-4 w-4 text-primary" />
+                <h4 className="text-sm font-semibold text-foreground">Sonstiges</h4>
+              </div>
+              <div className="space-y-2 text-xs text-muted-foreground">
+                <div className="flex justify-between">
+                  <span>Typ:</span>
+                  <span className="text-foreground font-medium">{locationInfo.mainTyp || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Manager:</span>
+                  <span className="text-foreground font-medium">{locationInfo.manager || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Kunde:</span>
+                  <span className="text-foreground font-medium">{locationInfo.customer || '-'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Gekoppelt:</span>
+                  <span className="text-foreground font-medium">{locationInfo.coupledAt || '-'}</span>
                 </div>
               </div>
             </Card>
