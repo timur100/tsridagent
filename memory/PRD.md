@@ -65,20 +65,23 @@ Two methods implemented:
 - ✅ Fixed: "Fehler beim Laden der Kontinente" - Wrong API endpoints in `AdminPanel.jsx`
   - Changed `/api/locations/*` → `/api/unified-locations/*`
 
-### ✅ Completed (Jan 25, 2025)
-
-#### P0 - Standort-Lifecycle-Management System
-- **Status:** COMPLETE
+#### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025)
+- **Status:** COMPLETE (Basic Version)
 - **Files:** 
-  - `/app/backend/routes/location_management.py` - Backend API
-  - `/app/frontend/src/components/LocationLifecycleManager.jsx` - Frontend UI
+  - `/app/backend/routes/device_lifecycle.py` - Backend API
+  - `/app/frontend/src/components/DeviceLifecycleManager.jsx` - Frontend UI
 - **Features Implemented:**
-  1. ✅ Status-Dashboard with 4 clickable stat cards (Gesamt, Aktiv, In Vorbereitung, Deaktiviert)
-  2. ✅ Location table with status badges, filters, and search
-  3. ✅ Status change modal with reason field
-  4. ✅ Backend APIs: GET /api/locations/statuses, POST /api/locations/statuses-bulk, PUT /api/locations/{code}/status
-  5. ✅ New "Lifecycle" tab in Admin Portal navigation
-- **Tested:** Status change verified via API and UI
+  1. ✅ Status-Dashboard with 5 stat cards (Gesamt, Aktiv, Im Lager, Defekt, Außer Betrieb)
+  2. ✅ Device table with type, serial, model, location, status, warranty columns
+  3. ✅ Device creation modal
+  4. ✅ Backend APIs: GET /api/device-lifecycle/list, POST /create, GET /stats, GET /types
+  5. ✅ Lifecycle event tracking (automatic events on create, assign, status change)
+  6. ✅ Device types: Scanner (Regula/Desko), Tablet/PC, Printer, 4x Docking Stations
+- **Pending:**
+  - Detail modal with full timeline view
+  - Edit/Delete functionality in UI
+  - Device assignment UI
+- **Tested:** 2 test devices created via API, displayed correctly in UI
 
 ### ⏳ Pending Issues
 
