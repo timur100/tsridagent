@@ -80,18 +80,57 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     return `${hours}:${minutes}:${seconds}`;
   };
 
-  // Use settings for location info, fallback to data
+  // Lade gekoppelte Gerätedaten aus localStorage
+  const [coupledDevice, setCoupledDevice] = useState(null);
+  
+  useEffect(() => {
+    const loadCoupledDevice = () => {
+      try {
+        const saved = localStorage.getItem('deviceConfig');
+        if (saved) {
+          const config = JSON.parse(saved);
+          if (config.coupled_at || config.registered_at) {
+            setCoupledDevice(config);
+          }
+        }
+      } catch (e) {
+        console.error('Fehler beim Laden der Gerätekonfiguration:', e);
+      }
+    };
+    
+    loadCoupledDevice();
+    
+    // Listener für Storage-Änderungen (wenn in anderem Tab/Fenster gekoppelt wird)
+    const handleStorageChange = (e) => {
+      if (e.key === 'deviceConfig') {
+        loadCoupledDevice();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Prüfe regelmäßig auf Änderungen (für gleichen Tab)
+    const interval = setInterval(loadCoupledDevice, 2000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Use coupled device data first, then settings, then data as fallback
   const locationInfo = {
-    location: settings?.deviceId || data.location,
-    stationName: settings?.stationName || data.stationName,
-    street: settings?.street || data.street,
-    city: settings?.city || data.city,
-    country: settings?.country || data.countryLocation,
-    phone: settings?.phone || data.phone,
-    email: settings?.email || data.email,
-    tvid: settings?.tvid || data.tvid,
-    snStation: settings?.snStation || data.snStation,
-    snScanner: settings?.snScanner || data.snScanner
+    location: coupledDevice?.device_id || coupledDevice?.station_code || settings?.deviceId || data.location,
+    stationName: coupledDevice?.location_name || settings?.stationName || data.stationName,
+    street: coupledDevice?.street || settings?.street || data.street,
+    city: coupledDevice?.city || settings?.city || data.city,
+    country: coupledDevice?.country || settings?.country || data.countryLocation,
+    phone: coupledDevice?.phone || settings?.phone || data.phone,
+    email: coupledDevice?.email || settings?.email || data.email,
+    tvid: coupledDevice?.tvid || settings?.tvid || data.tvid,
+    snStation: coupledDevice?.sn_pc || settings?.snStation || data.snStation,
+    snScanner: coupledDevice?.sn_sc || settings?.snScanner || data.snScanner,
+    customer: coupledDevice?.customer || ''
   };
 
   // Status Indicator Component
