@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://multitenantapp-4.preview.emergentagent.com/api/dhl"
+API_URL="https://device-portal-4.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

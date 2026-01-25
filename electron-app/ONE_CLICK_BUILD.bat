@@ -376,7 +376,7 @@ echo.
 if not exist "offline-data" mkdir "offline-data"
 echo   Lade Standortdaten vom Server...
 
-curl -s "https://multitenantapp-4.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
+curl -s "https://device-portal-4.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
 
 if exist "offline-data\locations_cache.json" (
     echo   [OK] Offline-Daten heruntergeladen

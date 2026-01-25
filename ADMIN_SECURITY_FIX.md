@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://multitenantapp-4.preview.emergentagent.com/portal/admin
+https://device-portal-4.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**
