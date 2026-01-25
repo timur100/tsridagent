@@ -644,6 +644,9 @@ const DeviceSetup = ({ onComplete }) => {
           </div>
         </Card>
       )}
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };
