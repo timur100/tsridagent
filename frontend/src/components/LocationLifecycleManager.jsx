@@ -295,12 +295,12 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
           />
         </div>
 
-        <Select value={cityFilter} onValueChange={setCityFilter}>
+        <Select value={cityFilter || 'all'} onValueChange={(v) => setCityFilter(v === 'all' ? '' : v)}>
           <SelectTrigger className="w-[180px]" data-testid="city-filter">
             <SelectValue placeholder="Stadt filtern..." />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Alle Städte</SelectItem>
+            <SelectItem value="all">Alle Städte</SelectItem>
             {cities.map(city => (
               <SelectItem key={city} value={city}>{city}</SelectItem>
             ))}
