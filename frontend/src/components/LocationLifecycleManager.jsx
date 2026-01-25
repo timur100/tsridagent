@@ -60,12 +60,9 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
 
       console.log('[LocationLifecycleManager] Fetching:', url);
       
-      // Get auth token
-      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
-      
+      // Note: No auth headers needed for this public endpoint
       const response = await fetch(url, {
-        method: 'GET',
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        method: 'GET'
       });
       
       // Check content type first
