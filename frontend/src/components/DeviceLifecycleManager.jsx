@@ -28,8 +28,8 @@ const DEVICE_STATUSES = {
 
 // Device Type Icons
 const TYPE_ICONS = {
-  scanner_regula: Scan,
-  scanner_desko: Scan,
+  scanner_regula: Monitor,
+  scanner_desko: Monitor,
   tablet: Tablet,
   printer: Printer,
   docking_type1: Box,
@@ -41,7 +41,7 @@ const TYPE_ICONS = {
 // Event Icons
 const EVENT_ICONS = {
   purchased: ShoppingCart,
-  activated: Power,
+  activated: CheckCircle,
   assigned: MapPin,
   reassigned: RefreshCw,
   license_activated: Key,
