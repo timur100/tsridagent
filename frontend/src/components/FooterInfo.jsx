@@ -1,7 +1,61 @@
-import React, { useState } from 'react';
-import { Lock, Wifi, WifiOff, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Lock, Wifi, WifiOff, ChevronUp, ChevronDown, Shield, Server, Activity, LockOpen, User, Scan, Globe, Key } from 'lucide-react';
 import { Badge } from './ui/badge';
 import { Card } from './ui/card';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+
+const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, scannerOnline = false }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Portal und Lizenz Status
+  const [portalOnline, setPortalOnline] = useState(false);
+  const [licenseStatus, setLicenseStatus] = useState({
+    active: false,
+    message: 'Prüfe...'
+  });
+
+  // Portal Health Check
+  const checkPortalStatus = useCallback(async () => {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const response = await fetch(`${BACKEND_URL}/api/health`, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      setPortalOnline(response.ok);
+    } catch {
+      setPortalOnline(false);
+    }
+  }, []);
+
+  // License Check
+  const checkLicenseStatus = useCallback(async () => {
+    try {
+      const deviceConfig = localStorage.getItem('deviceConfig');
+      if (!deviceConfig) {
+        setLicenseStatus({ active: false, message: 'No License' });
+        return;
+      }
+      const config = JSON.parse(deviceConfig);
+      if (config.registered_at) {
+        setLicenseStatus({ active: true, message: 'Aktiv' });
+      } else {
+        setLicenseStatus({ active: false, message: 'No License' });
+      }
+    } catch {
+      setLicenseStatus({ active: false, message: 'No License' });
+    }
+  }, []);
+
+  useEffect(() => {
+    checkPortalStatus();
+    checkLicenseStatus();
+    const interval = setInterval(() => {
+      checkPortalStatus();
+      checkLicenseStatus();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [checkPortalStatus, checkLicenseStatus]);
 
 const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) => {
   const [isExpanded, setIsExpanded] = useState(false);
