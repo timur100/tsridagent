@@ -135,8 +135,11 @@ async def get_locations_by_city(
     city: str = Query(..., description="Stadt"),
     country: str = Query(None, description="Land (optional)")
 ):
-    """Holt alle Standorte in einer bestimmten Stadt"""
+    """Holt alle Standorte in einer bestimmten Stadt MIT vollständigen Details"""
     try:
+        portal_db = client['portal_db']
+        
+        # Query für europcar_devices (um Standort-Codes zu finden)
         query = {"city": {"$regex": f"^{city}$", "$options": "i"}}
         if country:
             query["country"] = {"$regex": f"^{country}$", "$options": "i"}
@@ -147,11 +150,8 @@ async def get_locations_by_city(
             {"$group": {
                 "_id": "$locationcode",
                 "station_code": {"$first": "$locationcode"},
-                "name": {"$first": {"$concat": ["$customer", " ", "$locationcode"]}},
                 "city": {"$first": "$city"},
                 "country": {"$first": "$country"},
-                "street": {"$first": "$street"},
-                "zip": {"$first": "$plz"},
                 "customer": {"$first": "$customer"},
                 "device_count": {"$sum": 1}
             }},
@@ -159,12 +159,57 @@ async def get_locations_by_city(
         ]
         
         cursor = multi_tenant_db.europcar_devices.aggregate(pipeline)
-        locations = await cursor.to_list(length=500)
+        base_locations = await cursor.to_list(length=500)
+        
+        # Anreichern mit Details aus tenant_locations (Echtzeit)
+        enriched_locations = []
+        for loc in base_locations:
+            code = loc.get("station_code", "")
+            
+            # Hole Details aus tenant_locations
+            tenant_loc = await portal_db.tenant_locations.find_one(
+                {"location_code": {"$regex": f"^{code}$", "$options": "i"}},
+                {"_id": 0}
+            )
+            
+            if tenant_loc:
+                enriched_locations.append({
+                    "station_code": code,
+                    "name": tenant_loc.get("station_name", f"Europcar {code}"),
+                    "street": tenant_loc.get("street", ""),
+                    "zip": tenant_loc.get("postal_code", ""),
+                    "city": tenant_loc.get("city", loc.get("city", "")),
+                    "country": tenant_loc.get("country", loc.get("country", "")),
+                    "customer": loc.get("customer", "Europcar"),
+                    "device_count": loc.get("device_count", 0),
+                    "phone": tenant_loc.get("phone", ""),
+                    "email": tenant_loc.get("email", ""),
+                    "manager": tenant_loc.get("manager", ""),
+                    "main_typ": tenant_loc.get("main_type", ""),
+                    "has_details": True
+                })
+            else:
+                # Fallback ohne Details
+                enriched_locations.append({
+                    "station_code": code,
+                    "name": f"Europcar {code}",
+                    "street": "",
+                    "zip": "",
+                    "city": loc.get("city", ""),
+                    "country": loc.get("country", ""),
+                    "customer": loc.get("customer", "Europcar"),
+                    "device_count": loc.get("device_count", 0),
+                    "phone": "",
+                    "email": "",
+                    "manager": "",
+                    "main_typ": "",
+                    "has_details": False
+                })
         
         return {
             "success": True,
-            "locations": locations,
-            "total": len(locations),
+            "locations": enriched_locations,
+            "total": len(enriched_locations),
             "city": city
         }
     except Exception as e:
