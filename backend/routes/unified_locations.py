@@ -2,8 +2,9 @@
 Unified Locations API - Single Point of Truth
 Konsolidiert alle Standortdaten aus verschiedenen Collections in Atlas
 und synchronisiert sie mit dem Agent (SQLite)
+Unterstützt Multi-Tenant-Filterung
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime, timezone
