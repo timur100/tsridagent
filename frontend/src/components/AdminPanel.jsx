@@ -253,6 +253,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     { id: 'logs', label: 'System-Logs', icon: Database },
     { id: 'settings', label: 'Einstellungen', icon: Settings },
     { id: 'devices', label: 'Geräte & Scanner', icon: Monitor },
+    { id: 'activation', label: 'Aktivierungscodes', icon: QrCode },
     { id: 'license', label: 'Lizenzverwaltung', icon: Key },
     { id: 'users', label: 'Benutzerverwaltung', icon: Users }
   ];
