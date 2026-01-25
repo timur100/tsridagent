@@ -45,77 +45,111 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
     console.log('[LocationLifecycleManager] fetchLocations called, BACKEND_URL:', BACKEND_URL);
     setLoading(true);
     try {
-      let url = `${BACKEND_URL}/api/locations/list?limit=500`;
-      if (statusFilter && statusFilter !== 'all') {
-        url += `&status=${statusFilter}`;
-      }
-      if (cityFilter) {
-        url += `&city=${encodeURIComponent(cityFilter)}`;
-      }
-      if (searchTerm) {
-        url += `&search=${encodeURIComponent(searchTerm)}`;
-      }
-      if (selectedTenantId && selectedTenantId !== 'all') {
-        url += `&tenant_id=${selectedTenantId}`;
-      }
-
+      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
+      
+      // Use the working tenant-locations API
+      const tenantId = selectedTenantId || 'all';
+      let url = `${BACKEND_URL}/api/tenant-locations/${tenantId}`;
+      
       console.log('[LocationLifecycleManager] Fetching:', url);
       
-      // Note: No auth headers needed for this public endpoint
       const response = await fetch(url, {
-        method: 'GET'
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       
-      // Check content type first
-      const contentType = response.headers.get('content-type');
-      console.log('[LocationLifecycleManager] Response status:', response.status, 'Content-Type:', contentType);
+      console.log('[LocationLifecycleManager] Response status:', response.status);
       
       if (!response.ok) {
-        console.error('[LocationLifecycleManager] Response not OK:', response.status, response.statusText);
         throw new Error(`HTTP ${response.status}`);
       }
       
-      // Read response text first for debugging
-      const text = await response.text();
-      console.log('[LocationLifecycleManager] Response text (first 200 chars):', text.substring(0, 200));
+      const data = await response.json();
+      let locationsData = data.locations || [];
+      console.log('[LocationLifecycleManager] Loaded locations:', locationsData.length);
       
-      let data;
+      // Apply search filter
+      if (searchTerm) {
+        const search = searchTerm.toLowerCase();
+        locationsData = locationsData.filter(loc => 
+          loc.station_code?.toLowerCase().includes(search) ||
+          loc.location_code?.toLowerCase().includes(search) ||
+          loc.station_name?.toLowerCase().includes(search) ||
+          loc.name?.toLowerCase().includes(search) ||
+          loc.city?.toLowerCase().includes(search)
+        );
+      }
+      
+      // Apply city filter
+      if (cityFilter && cityFilter !== 'all') {
+        locationsData = locationsData.filter(loc => 
+          loc.city?.toLowerCase() === cityFilter.toLowerCase()
+        );
+      }
+      
+      // Fetch status information for these locations
+      const locationCodes = locationsData.map(l => l.station_code || l.location_code).filter(Boolean);
+      let statusMap = {};
+      
       try {
-        data = JSON.parse(text);
-      } catch (parseError) {
-        console.error('[LocationLifecycleManager] JSON parse error:', parseError.message);
-        throw new Error('Invalid JSON response');
+        const statusResponse = await fetch(`${BACKEND_URL}/api/locations/statuses-bulk`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ location_codes: locationCodes })
+        });
+        if (statusResponse.ok) {
+          const statusData = await statusResponse.json();
+          statusMap = statusData.statuses || {};
+        }
+      } catch (e) {
+        console.log('[LocationLifecycleManager] Could not fetch statuses, using defaults');
       }
       
-      console.log('[LocationLifecycleManager] Parsed data success:', data.success, 'locations:', data.locations?.length);
-
-      if (data.success) {
-        setLocations(data.locations || []);
-        
-        // Berechne Stats
-        const newStats = {
-          active: 0,
-          in_preparation: 0,
-          deactivated: 0,
-          total: data.locations?.length || 0
+      // Merge status into locations
+      const enrichedLocations = locationsData.map(loc => {
+        const code = loc.station_code || loc.location_code;
+        return {
+          location_code: code,
+          name: loc.station_name || loc.name || '',
+          street: loc.street || '',
+          city: loc.city || '',
+          country: loc.country || 'Deutschland',
+          phone: loc.phone || '',
+          email: loc.email || '',
+          manager: loc.manager || '',
+          status: statusMap[code]?.status || 'active',
+          device_count: loc.device_count || 0
         };
-        data.locations?.forEach(loc => {
-          if (newStats[loc.status] !== undefined) {
-            newStats[loc.status]++;
-          } else {
-            newStats.active++; // Default
-          }
-        });
-        setStats(newStats);
-
-        // Extrahiere Städte für Filter
-        const uniqueCities = [...new Set(data.locations?.map(l => l.city).filter(Boolean))].sort();
-        setCities(uniqueCities);
-      } else {
-        toast.error('Fehler beim Laden der Standorte');
+      });
+      
+      // Apply status filter
+      let filteredLocations = enrichedLocations;
+      if (statusFilter && statusFilter !== 'all') {
+        filteredLocations = enrichedLocations.filter(loc => loc.status === statusFilter);
       }
+      
+      setLocations(filteredLocations);
+      
+      // Berechne Stats
+      const newStats = {
+        active: 0,
+        in_preparation: 0,
+        deactivated: 0,
+        total: enrichedLocations.length
+      };
+      enrichedLocations.forEach(loc => {
+        if (newStats[loc.status] !== undefined) {
+          newStats[loc.status]++;
+        } else {
+          newStats.active++;
+        }
+      });
+      setStats(newStats);
+
+      // Extrahiere Städte für Filter
+      const uniqueCities = [...new Set(enrichedLocations.map(l => l.city).filter(Boolean))].sort();
+      setCities(uniqueCities);
     } catch (error) {
-      console.error('Error fetching locations:', error);
+      console.error('[LocationLifecycleManager] Error:', error);
       toast.error('Verbindungsfehler');
     } finally {
       setLoading(false);
