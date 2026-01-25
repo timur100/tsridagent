@@ -221,10 +221,47 @@ async def get_all_locations(
         all_locations = []
         seen_codes = set()
         
-        # 1. Unified Locations (primäre Quelle)
+        # 1. HAUPTQUELLE: Europcar Devices aus multi_tenant_admin DB
+        # Diese enthalten die echten 200+ Standorte
+        device_query = {}
+        if tenant_id:
+            device_query["$or"] = [
+                {"tenant_id": tenant_id},
+                {"tenant_id": {"$regex": f"^{tenant_id}", "$options": "i"}}
+            ]
+        
+        cursor = multi_tenant_db.europcar_devices.find(device_query)
+        async for doc in cursor:
+            # Extrahiere Standort aus Device
+            location_code = doc.get("locationcode", "")
+            if location_code and location_code not in seen_codes:
+                loc = {
+                    "station_code": location_code,
+                    "name": f"{doc.get('customer', 'Europcar')} {location_code}",
+                    "street": doc.get("street", doc.get("strasse", "")),
+                    "zip": doc.get("plz", ""),
+                    "city": doc.get("city", ""),
+                    "state": doc.get("bundesland", ""),
+                    "country": doc.get("country", "Deutschland"),
+                    "continent": "Europe",
+                    "phone": doc.get("phone", doc.get("telefon", "")),
+                    "email": doc.get("email", ""),
+                    "tvid": doc.get("tvid", ""),
+                    "sn_station": doc.get("sn_pc", ""),
+                    "sn_scanner": doc.get("sn_sc", ""),
+                    "latitude": doc.get("latitude"),
+                    "longitude": doc.get("longitude"),
+                    "tenant_id": doc.get("tenant_id", ""),
+                    "customer": doc.get("customer", ""),
+                    "source": "europcar_devices",
+                    "updated_at": doc.get("updated_at") or datetime.now(timezone.utc).isoformat()
+                }
+                all_locations.append(loc)
+                seen_codes.add(location_code)
+        
+        # 2. Unified Locations (sekundäre Quelle)
         query = {}
         if tenant_id:
-            # Suche nach Standorten, deren tenant_id mit dem Filter beginnt oder übereinstimmt
             query["$or"] = [
                 {"tenant_id": tenant_id},
                 {"tenant_id": {"$regex": f"^{tenant_id}", "$options": "i"}}
@@ -236,7 +273,7 @@ async def get_all_locations(
                 all_locations.append(loc)
                 seen_codes.add(loc["station_code"])
         
-        # 2. Key Locations
+        # 3. Key Locations
         key_query = {}
         if tenant_id:
             key_query["$or"] = [
@@ -251,7 +288,7 @@ async def get_all_locations(
                 all_locations.append(loc)
                 seen_codes.add(code)
         
-        # 3. Europcar Stations (nur wenn kein tenant_id oder tenant_id enthält 'europcar')
+        # 4. Europcar Stations (nur wenn kein tenant_id oder tenant_id enthält 'europcar')
         if not tenant_id or "europcar" in tenant_id.lower():
             cursor = db.europcar_stations.find({})
             async for doc in cursor:
@@ -259,13 +296,12 @@ async def get_all_locations(
                 code = loc["station_code"] or doc.get("name", "").replace(" ", "_")[:20]
                 if code and code not in seen_codes:
                     loc["station_code"] = code
-                    # Markiere als Europcar-Tenant wenn kein tenant_id vorhanden
                     if not loc.get("tenant_id"):
                         loc["tenant_id"] = "europcar"
                     all_locations.append(loc)
                     seen_codes.add(code)
         
-        # 4. Legacy Locations
+        # 5. Legacy Locations
         legacy_query = {}
         if tenant_id:
             legacy_query["$or"] = [
