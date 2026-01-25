@@ -36,8 +36,10 @@ const CustomerSwitcher = () => {
         const tenantsResult = await apiCall('/api/tenants/');
         console.log('[CustomerSwitcher] Tenants result:', tenantsResult);
         
-        // Check if tenants are in 'data' or 'tenants' field
-        const tenantsList = tenantsResult?.tenants || tenantsResult?.data;
+        // apiCall wraps response in { success, data, status }
+        // So tenants are in tenantsResult.data.tenants
+        const responseData = tenantsResult?.data || tenantsResult;
+        const tenantsList = responseData?.tenants || responseData?.data;
         
         if (tenantsList && Array.isArray(tenantsList)) {
           console.log('[CustomerSwitcher] Tenants found:', tenantsList.length);
@@ -49,7 +51,7 @@ const CustomerSwitcher = () => {
           console.log('[CustomerSwitcher] Mapped tenants:', tenants);
           allCustomers = [...allCustomers, ...tenants];
         } else {
-          console.log('[CustomerSwitcher] No tenants in result. Result structure:', tenantsResult);
+          console.log('[CustomerSwitcher] No tenants in result. ResponseData structure:', responseData);
         }
       } catch (error) {
         console.error('[CustomerSwitcher] Error fetching tenants:', error);
