@@ -404,6 +404,33 @@ Implementierung der Tenant-Auswahl im Agent-Admin Bereich zur Filterung von Stan
 - `/app/backend/tests/test_tenant_filtering.py`
 
 **Datenbank-Schema:**
+
+#### ✅ FEATURE: 3 Status-Indikatoren für Verbindungsstatus
+Neue Komponente `/app/frontend/src/components/ConnectionStatusIndicators.jsx` mit 3 übereinander liegenden Status-Indikatoren (oben rechts in der Scan-Oberfläche):
+
+1. **Scanner Online/Offline**
+   - Grün = USB-Scanner angeschlossen und kommuniziert
+   - Rot = Kein Scanner oder keine Verbindung
+
+2. **Portal Online/Offline**
+   - Grün (mit Ping-Animation) = Verbindung zum Admin-Portal aktiv
+   - Rot = Keine Verbindung zum Portal
+
+3. **License Status**
+   - Grün = Aktive Lizenz
+   - Gelb = Lizenz läuft bald ab (< 30 Tage)
+   - Rot = Keine Lizenz / "No License"
+
+**Technische Details:**
+- Portal-Health-Check alle 30 Sekunden via `/api/health`
+- Lizenz-Check basierend auf lokaler Device-Konfiguration
+- Automatische Updates bei Statusänderungen
+
+**Geänderte Dateien:**
+- `/app/frontend/src/components/ConnectionStatusIndicators.jsx` (NEU)
+- `/app/frontend/src/components/VerificationInterface.jsx` (Import + Integration)
+- `/app/frontend/src/components/FooterInfo.jsx` (Altes ONLINE Badge entfernt)
+
 - `tenants` Collection: 646 Einträge mit `tenant_id`, `name`, `display_name`, `parent_tenant_id`, `tenant_level`
 - `key_locations` enthält `tenant_id` Feld für Filterung
 
