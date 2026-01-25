@@ -71,7 +71,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
   // Fetch continents
   const fetchContinents = async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/locations/continents`);
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/continents`);
       const data = await response.json();
       setContinents(data.continents || []);
     } catch (error) {
@@ -94,7 +94,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
 
   const fetchCountries = async (continent) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/locations/countries?continent=${encodeURIComponent(continent)}`);
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/countries?continent=${encodeURIComponent(continent)}`);
       const data = await response.json();
       setCountries(data.countries || []);
     } catch (error) {
