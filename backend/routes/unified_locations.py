@@ -192,6 +192,59 @@ async def get_devices_at_location(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
+@router.get("/station-details/{location_code}")
+async def get_station_details(location_code: str):
+    """
+    Holt die detaillierten Standortdaten (Adresse, Telefon, E-Mail, Manager, etc.)
+    aus der station_details Collection.
+    """
+    try:
+        # Suche in station_details
+        details = await db.station_details.find_one(
+            {"location_code": {"$regex": f"^{location_code}$", "$options": "i"}},
+            {"_id": 0}
+        )
+        
+        if details:
+            return {
+                "success": True,
+                "details": details
+            }
+        
+        # Fallback: Versuche aus europcar_devices zu aggregieren
+        device = await multi_tenant_db.europcar_devices.find_one(
+            {"locationcode": {"$regex": f"^{location_code}$", "$options": "i"}},
+            {"_id": 0}
+        )
+        
+        if device:
+            return {
+                "success": True,
+                "details": {
+                    "location_code": device.get("locationcode", location_code),
+                    "name": f"{device.get('customer', 'Europcar')} {location_code}",
+                    "city": device.get("city", ""),
+                    "country": device.get("country", ""),
+                    "tenant": device.get("customer", ""),
+                    # Diese Felder sind nicht in europcar_devices verfügbar
+                    "street": "",
+                    "plz": "",
+                    "phone": "",
+                    "email": f"dest{location_code}@europcar.com",  # Geschätztes Format
+                    "manager": ""
+                },
+                "source": "device_fallback"
+            }
+        
+        return {
+            "success": False,
+            "message": f"Keine Standortdetails für {location_code} gefunden"
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get("/tenants")
 async def get_all_tenants(
     level: Optional[str] = Query(None, description="Filter by tenant_level (e.g., 'station', 'country', 'continent')"),
