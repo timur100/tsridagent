@@ -8,7 +8,7 @@ import json
 import jwt
 
 # Backend URL from environment
-BACKEND_URL = "https://tenant-manager-58.preview.emergentagent.com"
+BACKEND_URL = "https://multitenantapp-4.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():

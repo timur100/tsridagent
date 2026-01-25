@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tenant-manager-58.preview.emergentagent.com/portal/admin/id-checks
+   https://multitenantapp-4.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://tenant-manager-58.preview.emergentagent.com
+│   └── Lädt: https://multitenantapp-4.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

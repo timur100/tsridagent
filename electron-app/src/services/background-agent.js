@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tenant-manager-58.preview.emergentagent.com';
+    this.serverUrl = 'https://multitenantapp-4.preview.emergentagent.com';
   }
 
   /**
