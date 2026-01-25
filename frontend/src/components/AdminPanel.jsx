@@ -474,7 +474,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                   </AccordionContent>
                 </AccordionItem>
 
-                {/* 2. Standort & Gerät */}
+                {/* 2. Standort & Gerät - Hinweis auf Geräte & Scanner Tab */}
                 <AccordionItem value="location" className="border border-border rounded-lg px-4">
                   <AccordionTrigger className="hover:no-underline">
                     <div className="flex items-center gap-2">
@@ -482,299 +482,27 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                       <span className="font-semibold">Standort & Gerät</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="pt-4 space-y-6">
-                    {/* Location Selection */}
-                    <Card className="p-6">
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <MapPin className="h-5 w-5" />
-                        Standort-Auswahl
-                      </h3>
-                      <div className="space-y-4">
-                        <p className="text-sm text-muted-foreground mb-4">
-                          Wählen Sie einen Standort aus, um alle Einstellungen automatisch zu laden.
-                        </p>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                          {/* Continent */}
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Kontinent
-                            </label>
-                            <select
-                              value={selectedContinent}
-                              onChange={(e) => {
-                                setSelectedContinent(e.target.value);
-                                setSelectedCountry('');
-                                setSelectedState('');
-                                setSelectedCity('');
-                              }}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                            >
-                              <option value="">-- Kontinent wählen --</option>
-                              {continents.map((continent) => (
-                                <option key={continent} value={continent}>
-                                  {continent}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* Country */}
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Land
-                            </label>
-                            <select
-                              value={selectedCountry}
-                              onChange={(e) => {
-                                setSelectedCountry(e.target.value);
-                                setSelectedState('');
-                                setSelectedCity('');
-                              }}
-                              disabled={!selectedContinent}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">-- Land wählen --</option>
-                              {countries.map((country) => (
-                                <option key={country} value={country}>
-                                  {country}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* State */}
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Bundesland
-                            </label>
-                            <select
-                              value={selectedState}
-                              onChange={(e) => {
-                                setSelectedState(e.target.value);
-                                setSelectedCity('');
-                              }}
-                              disabled={!selectedCountry}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">-- Bundesland wählen --</option>
-                              {states.map((state) => (
-                                <option key={state} value={state}>
-                                  {getFullBundeslandName(state)}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
-
-                          {/* City */}
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Stadt
-                            </label>
-                            <select
-                              value={selectedCity}
-                              onChange={(e) => setSelectedCity(e.target.value)}
-                              disabled={!selectedState}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              <option value="">-- Stadt wählen --</option>
-                              {cities.map((city) => (
-                                <option key={city} value={city}>
-                                  {city}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
+                  <AccordionContent className="pt-4">
+                    <Card className="p-6 bg-muted/30">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-primary/10 rounded-full">
+                          <Monitor className="h-6 w-6 text-primary" />
                         </div>
-
-                        {/* Location Results */}
-                        {selectedCity && (
-                          <div className="mt-6">
-                            <h4 className="text-sm font-semibold text-foreground mb-3">
-                              Verfügbare Standorte
-                            </h4>
-                            {loadingLocations ? (
-                              <div className="p-4 text-center text-muted-foreground">
-                                Lade Standorte...
-                              </div>
-                            ) : locations.length === 0 ? (
-                              <div className="p-4 text-center text-muted-foreground border border-border rounded-lg">
-                                Keine Standorte gefunden
-                              </div>
-                            ) : (
-                              <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {locations.map((location) => (
-                                  <div
-                                    key={location._id}
-                                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                                      selectedLocation?.locationCode === location.locationCode
-                                        ? 'border-primary bg-primary/10'
-                                        : 'border-border hover:border-primary/50 hover:bg-muted/50'
-                                    }`}
-                                    onClick={() => handleSelectLocation(location)}
-                                  >
-                                    <div className="flex items-center justify-between">
-                                      <div>
-                                        <p className="font-semibold text-foreground">
-                                          {location.locationCode}-{location.deviceNumber}
-                                        </p>
-                                        <p className="text-sm text-muted-foreground">
-                                          {location.locationName}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground mt-1">
-                                          {location.street}, {location.zip} {location.city}
-                                        </p>
-                                      </div>
-                                      {selectedLocation?.locationCode === location.locationCode && (
-                                        <div className="text-primary font-bold">✓</div>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </Card>
-
-                    {/* Geräte-Einstellungen */}
-                    <Card className="p-6">
-                      <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Monitor className="h-5 w-5" />
-                        Geräte-Einstellungen
-                      </h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            Geräte-ID
-                          </label>
-                          <input
-                            type="text"
-                            value={localSettings.deviceId}
-                            onChange={(e) => setLocalSettings({ ...localSettings, deviceId: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                          />
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-foreground">Geräteeinrichtung verschoben</h3>
+                          <p className="text-sm text-muted-foreground mt-1">
+                            Die Standort- und Geräteauswahl finden Sie jetzt im Tab <strong>"Geräte & Scanner"</strong>.
+                            Dort können Sie Standorte hierarchisch auswählen und Geräte koppeln.
+                          </p>
                         </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            Station Name
-                          </label>
-                          <input
-                            type="text"
-                            value={localSettings.stationName}
-                            onChange={(e) => setLocalSettings({ ...localSettings, stationName: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                            placeholder="Berlin North Reinickendorf -IKC-"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-foreground mb-2">
-                            Straße
-                          </label>
-                          <input
-                            type="text"
-                            value={localSettings.street}
-                            onChange={(e) => setLocalSettings({ ...localSettings, street: e.target.value })}
-                            className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                            placeholder="Kapweg 4"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              PLZ & Stadt
-                            </label>
-                            <input
-                              type="text"
-                              value={localSettings.city}
-                              onChange={(e) => setLocalSettings({ ...localSettings, city: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                              placeholder="13405 Berlin"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Land
-                            </label>
-                            <input
-                              type="text"
-                              value={localSettings.country}
-                              onChange={(e) => setLocalSettings({ ...localSettings, country: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                              placeholder="Germany"
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Telefon
-                            </label>
-                            <input
-                              type="text"
-                              value={localSettings.phone}
-                              onChange={(e) => setLocalSettings({ ...localSettings, phone: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                              placeholder="+49 (30) 4548920"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-foreground mb-2">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              value={localSettings.email}
-                              onChange={(e) => setLocalSettings({ ...localSettings, email: e.target.value })}
-                              className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                              placeholder="destBERN01@europcar.com"
-                            />
-                          </div>
-                        </div>
-                        <div className="pt-4 border-t border-border">
-                          <h4 className="text-sm font-semibold text-foreground mb-3">Technische Informationen</h4>
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium text-foreground mb-2">
-                                TVID
-                              </label>
-                              <input
-                                type="text"
-                                value={localSettings.tvid}
-                                onChange={(e) => setLocalSettings({ ...localSettings, tvid: e.target.value })}
-                                className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                                placeholder="528168516"
-                              />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                  SN-Station
-                                </label>
-                                <input
-                                  type="text"
-                                  value={localSettings.snStation}
-                                  onChange={(e) => setLocalSettings({ ...localSettings, snStation: e.target.value })}
-                                  className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                                  placeholder="047926771453"
-                                />
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium text-foreground mb-2">
-                                  SN-Scanner
-                                </label>
-                                <input
-                                  type="text"
-                                  value={localSettings.snScanner}
-                                  onChange={(e) => setLocalSettings({ ...localSettings, snScanner: e.target.value })}
-                                  className="w-full px-4 py-2 rounded-lg border border-border bg-background text-foreground"
-                                  placeholder="201734 00732"
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <Button
+                          onClick={() => setActiveTab('devices')}
+                          variant="default"
+                          className="gap-2"
+                        >
+                          <Monitor className="h-4 w-4" />
+                          Zu Geräte & Scanner
+                        </Button>
                       </div>
                     </Card>
                   </AccordionContent>
