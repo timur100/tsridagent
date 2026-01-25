@@ -139,7 +139,11 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     tvid: coupledDevice?.tvid || settings?.tvid || data.tvid,
     snStation: coupledDevice?.sn_pc || settings?.snStation || data.snStation,
     snScanner: coupledDevice?.sn_sc || settings?.snScanner || data.snScanner,
-    customer: coupledDevice?.customer || ''
+    customer: coupledDevice?.customer || '',
+    // Neue Felder für "Sonstiges"
+    mainTyp: coupledDevice?.main_typ || settings?.mainTyp || '',
+    manager: coupledDevice?.manager || settings?.manager || '',
+    coupledAt: coupledDevice?.coupled_at ? new Date(coupledDevice.coupled_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''
   };
 
   // Status Indicator Component
