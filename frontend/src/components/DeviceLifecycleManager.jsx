@@ -392,7 +392,7 @@ const DeviceLifecycleManager = ({ theme }) => {
             <>
               <DialogHeader>
                 <DialogTitle className={`flex items-center gap-3 ${isDark ? 'text-white' : ''}`}>
-                  {React.createElement(TYPE_ICONS[selectedDevice.device_type] || Monitor, { className: 'w-5 h-5' })}
+                  <Monitor className="w-5 h-5" />
                   <span className="font-mono">{selectedDevice.serial_number}</span>
                   {getStatusBadge(selectedDevice.status)}
                 </DialogTitle>
