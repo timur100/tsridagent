@@ -203,32 +203,33 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
           
           {/* Right Side - Status, DateTime, User, Lock */}
           <div className="flex items-center gap-4">
-            {/* 3 Status Indikatoren ÜBEREINANDER */}
-            <div className="flex flex-col gap-0.5 px-2 py-1 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
+            {/* 2 Status Indikatoren ÜBEREINANDER mit Text */}
+            <div className="flex flex-col gap-1 px-2 py-1 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
-              <StatusIndicator 
-                online={scannerOnline} 
-                label={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}
-                icon={Scan}
-              />
-              {/* Portal Status */}
-              <StatusIndicator 
-                online={portalOnline} 
-                label={portalOnline ? 'Portal Online' : 'Portal Offline'}
-                icon={Globe}
-              />
-              {/* License Status */}
-              <div className="flex items-center gap-1.5" title={licenseStatus.active ? 'Lizenz Aktiv' : 'Keine Lizenz'}>
+              <div className="flex items-center gap-1.5" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
                 <div className="relative">
-                  {licenseStatus.active && (
+                  {scannerOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-2 w-2 ${licenseStatus.active ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Key className={`h-3 w-3 ${licenseStatus.active ? 'text-green-500' : 'text-red-500'}`} />
-                {!licenseStatus.active && (
-                  <span className="text-[10px] text-red-500 font-medium leading-none">No License</span>
-                )}
+                <Scan className={`h-3 w-3 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-[10px] font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
+                  {scannerOnline ? 'Scan Online' : 'Scan Offline'}
+                </span>
+              </div>
+              {/* Portal Status */}
+              <div className="flex items-center gap-1.5" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
+                <div className="relative">
+                  {portalOnline && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
+                  )}
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                </div>
+                <Globe className={`h-3 w-3 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-[10px] font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
+                  {portalOnline ? 'Portal Online' : 'Portal Offline'}
+                </span>
               </div>
             </div>
             
