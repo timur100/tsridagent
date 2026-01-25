@@ -65,17 +65,20 @@ Two methods implemented:
 - ✅ Fixed: "Fehler beim Laden der Kontinente" - Wrong API endpoints in `AdminPanel.jsx`
   - Changed `/api/locations/*` → `/api/unified-locations/*`
 
-### 🔄 In Progress
+### ✅ Completed (Jan 25, 2025)
 
 #### P0 - Standort-Lifecycle-Management System
-- **Status:** Route file created, not functional
-- **Files:** `/app/backend/routes/location_management.py`
-- **Next Steps:**
-  1. Register router in `server.py`
-  2. Implement API endpoints for status changes
-  3. Add `status` field to `tenant_locations` collection
-  4. Update Admin Portal UI with status badges
-  5. Implement status-aware activation code generation
+- **Status:** COMPLETE
+- **Files:** 
+  - `/app/backend/routes/location_management.py` - Backend API
+  - `/app/frontend/src/components/LocationLifecycleManager.jsx` - Frontend UI
+- **Features Implemented:**
+  1. ✅ Status-Dashboard with 4 clickable stat cards (Gesamt, Aktiv, In Vorbereitung, Deaktiviert)
+  2. ✅ Location table with status badges, filters, and search
+  3. ✅ Status change modal with reason field
+  4. ✅ Backend APIs: GET /api/locations/statuses, POST /api/locations/statuses-bulk, PUT /api/locations/{code}/status
+  5. ✅ New "Lifecycle" tab in Admin Portal navigation
+- **Tested:** Status change verified via API and UI
 
 ### ⏳ Pending Issues
 
