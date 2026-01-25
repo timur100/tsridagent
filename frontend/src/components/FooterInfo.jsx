@@ -233,13 +233,13 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
               </div>
             </div>
             
-            {/* Datum und Uhrzeit */}
-            <div className="flex flex-col items-end">
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="text-sm font-semibold text-foreground">{formatTime(currentTime)}</span>
+            {/* Datum und Uhrzeit - gleiche Höhe wie Status-Box */}
+            <div className="flex flex-col justify-center py-1">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span className="text-lg font-bold text-foreground">{formatTime(currentTime)}</span>
               </div>
-              <span className="text-xs text-muted-foreground">{formatDate(currentTime)}</span>
+              <span className="text-sm text-muted-foreground text-right">{formatDate(currentTime)}</span>
             </div>
             
             {/* Version */}
