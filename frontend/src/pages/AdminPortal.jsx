@@ -1619,6 +1619,13 @@ const AdminPortalContent = () => {
           />
         )}
 
+        {activeTab === 'devices' && (
+          <DeviceLifecycleManager 
+            theme={theme}
+            selectedTenantId={selectedTenantId}
+          />
+        )}
+
         {activeTab === 'employees' && (
           <div>
             {/* Header with Search and Add Button in one row */}
