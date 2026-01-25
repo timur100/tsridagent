@@ -14,12 +14,14 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
  */
 const DeviceSetup = ({ onComplete }) => {
   // Hierarchische Auswahl States
+  const [continents, setContinents] = useState([]);
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [locations, setLocations] = useState([]);
   const [devices, setDevices] = useState([]);
   
   // Ausgewählte Werte
+  const [selectedContinent, setSelectedContinent] = useState('');
   const [selectedCountry, setSelectedCountry] = useState('');
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -45,22 +47,48 @@ const DeviceSetup = ({ onComplete }) => {
         console.error('Fehler beim Laden der Konfiguration:', e);
       }
     }
-    // Lade Länder beim Start
-    loadCountries();
+    // Lade Kontinente beim Start
+    loadContinents();
   }, []);
 
-  // Lade alle verfügbaren Länder
-  const loadCountries = async () => {
+  // Lade alle verfügbaren Kontinente
+  const loadContinents = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/countries`);
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/continents`);
+      const data = await response.json();
+      if (data.success) {
+        setContinents(data.continents || []);
+      }
+    } catch (e) {
+      console.error('Fehler beim Laden der Kontinente:', e);
+      setContinents(['Europa']);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Lade Länder für ausgewählten Kontinent
+  const loadCountries = async (continent) => {
+    if (!continent) return;
+    setLoading(true);
+    setCountries([]);
+    setCities([]);
+    setLocations([]);
+    setDevices([]);
+    setSelectedCountry('');
+    setSelectedCity('');
+    setSelectedLocation(null);
+    setSelectedDevice(null);
+    
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/unified-locations/countries?continent=${encodeURIComponent(continent)}`);
       const data = await response.json();
       if (data.success) {
         setCountries(data.countries || []);
       }
     } catch (e) {
       console.error('Fehler beim Laden der Länder:', e);
-      // Fallback
       setCountries(['Deutschland', 'Österreich', 'Schweiz']);
     } finally {
       setLoading(false);
