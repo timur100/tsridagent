@@ -177,18 +177,18 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     setSelectedLocation(location);
     setLocalSettings({
       ...localSettings,
-      deviceId: `${location.locationCode}-${location.deviceNumber}`,
-      stationName: location.locationName,
-      street: location.street,
-      city: `${location.zip} ${location.city}`,
-      country: location.country,
+      deviceId: location.station_code || location.locationCode,
+      stationName: location.name || location.locationName,
+      street: location.street || '',
+      city: `${location.zip || ''} ${location.city || ''}`.trim(),
+      country: location.country || '',
       phone: location.phone || '',
       email: location.email || '',
       tvid: location.tvid || '',
-      snStation: location.snStation || '',
-      snScanner: location.snScanner || ''
+      snStation: location.sn_station || location.snStation || '',
+      snScanner: location.sn_scanner || location.snScanner || ''
     });
-    toast.success(`Standort ${location.locationCode} ausgewählt`);
+    toast.success(`Standort ${location.station_code || location.locationCode} ausgewählt`);
   };
 
   const handleSaveSettings = () => {
