@@ -57,9 +57,6 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
     return () => clearInterval(interval);
   }, [checkPortalStatus, checkLicenseStatus]);
 
-const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
   // Use settings for location info, fallback to data
   const locationInfo = {
     location: settings?.deviceId || data.location,
@@ -114,21 +111,21 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
                 <h4 className="text-sm font-semibold text-foreground">Standort</h4>
               </div>
               <div className="space-y-2 text-xs text-muted-foreground">
-                <div>
-                  <span className="text-foreground font-medium">{locationInfo.stationName || 'Berlin North Reinickendorf -IKC-'}</span>
+                <div className="flex justify-between">
+                  <span>Station:</span>
+                  <span className="text-foreground font-medium">{locationInfo.location}</span>
                 </div>
-                <div>
-                  <span className="text-foreground font-medium">{locationInfo.street || 'Kapweg 4'}</span>
+                <div className="flex justify-between">
+                  <span>Straße:</span>
+                  <span className="text-foreground font-medium">{locationInfo.street}</span>
                 </div>
-                <div>
-                  <span className="text-foreground font-medium">{locationInfo.city || '13405 Berlin'}</span>
+                <div className="flex justify-between">
+                  <span>Stadt:</span>
+                  <span className="text-foreground font-medium">{locationInfo.city}</span>
                 </div>
-                <div>
-                  <span className="text-foreground font-medium">{locationInfo.country || ''}</span>
-                </div>
-                <div className="pt-2 border-t border-border">
-                  <div className="text-foreground font-medium">Tel: {locationInfo.phone || '+49 (30) 4548920'}</div>
-                  <div className="text-foreground font-medium">Email: {locationInfo.email || 'destBERN01@europcar.com'}</div>
+                <div className="flex justify-between">
+                  <span>Land:</span>
+                  <span className="text-foreground font-medium">{locationInfo.country}</span>
                 </div>
               </div>
             </Card>
@@ -136,22 +133,16 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
             <Card className="bg-muted/20 border-border p-4">
               <div className="flex items-center gap-2 mb-3">
                 <Activity className="h-4 w-4 text-primary" />
-                <h4 className="text-sm font-semibold text-foreground">Status</h4>
+                <h4 className="text-sm font-semibold text-foreground">Kontakt</h4>
               </div>
               <div className="space-y-2 text-xs text-muted-foreground">
                 <div className="flex justify-between">
-                  <span>Verbindung:</span>
-                  <Badge variant={data.online ? 'success' : 'destructive'} className="text-[10px] h-5">
-                    {data.online ? 'ONLINE' : 'OFFLINE'}
-                  </Badge>
+                  <span>Telefon:</span>
+                  <span className="text-foreground font-medium">{locationInfo.phone}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Letzter Scan:</span>
-                  <span className="text-foreground font-medium">vor 2 Min</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Scans heute:</span>
-                  <span className="text-foreground font-medium">247</span>
+                  <span>E-Mail:</span>
+                  <span className="text-foreground font-medium break-all">{locationInfo.email}</span>
                 </div>
               </div>
             </Card>
@@ -179,7 +170,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
             {/* 3 Status Indikatoren horizontal */}
             <div className="flex items-center gap-3 px-3 py-1.5 bg-muted/30 rounded-lg border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
                 <div className="relative">
                   {scannerOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
@@ -193,7 +184,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
               <div className="h-4 w-px bg-border"></div>
               
               {/* Portal Status */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
                 <div className="relative">
                   {portalOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
@@ -207,7 +198,7 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
               <div className="h-4 w-px bg-border"></div>
               
               {/* License Status */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5" title={licenseStatus.active ? 'Lizenz Aktiv' : 'Keine Lizenz'}>
                 <div className="relative">
                   {licenseStatus.active && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
@@ -246,10 +237,11 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser }) =
               {securityUser ? (
                 <LockOpen className="h-6 w-6 text-verification-success" />
               ) : (
-                <Lock className="h-6 w-6 text-primary" />
+                <Lock className="h-6 w-6 text-muted-foreground" />
               )}
-              <span>{data.timestamp}</span>
             </button>
+            
+            {/* Expand/Collapse Indicator */}
             {isExpanded ? (
               <ChevronDown className="h-4 w-4 text-primary" />
             ) : (
