@@ -236,75 +236,75 @@ const FooterInfo = ({ data, settings, onLockClick, isUnlocked, securityUser, sca
       
       <div 
         onClick={() => setIsExpanded(!isExpanded)}
-        className="bg-card border-t border-border px-4 py-1 cursor-pointer hover:bg-card/80 transition-colors relative"
+        className="bg-card border-t border-border px-8 py-2 cursor-pointer hover:bg-card/80 transition-colors relative"
       >
         <div className="flex items-center justify-between">
           {/* Left Side - Location Info */}
-          <div className="flex items-center gap-3">
-            <div className="font-bold text-foreground text-sm">
+          <div className="flex items-center gap-6">
+            <div className="font-bold text-foreground text-lg">
               {locationInfo.location || 'Nicht konfiguriert'}
             </div>
-            <div className="text-muted-foreground text-xs hidden sm:block">
+            <div className="text-muted-foreground text-sm hidden sm:block">
               {locationInfo.stationName || '-'}
             </div>
             {locationInfo.customer && (
-              <div className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded">
+              <div className="text-xs px-3 py-1 bg-primary/10 text-primary rounded">
                 {locationInfo.customer}
               </div>
             )}
           </div>
           
           {/* Right Side - Status, DateTime, User, Lock */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             {/* 2 Status Indikatoren NEBENEINANDER */}
-            <div className="flex items-center gap-2 px-2 py-0.5 bg-muted/30 rounded border border-border" data-testid="footer-status-indicators">
+            <div className="flex items-center gap-4 px-4 py-1 bg-muted/30 rounded border border-border" data-testid="footer-status-indicators">
               {/* Scanner Status */}
-              <div className="flex items-center gap-1" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
+              <div className="flex items-center gap-2" title={scannerOnline ? 'Scanner Online' : 'Scanner Offline'}>
                 <div className="relative">
                   {scannerOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-3 w-3 ${scannerOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Scan className={`h-2.5 w-2.5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
-                <span className={`text-[9px] font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
+                <Scan className={`h-5 w-5 ${scannerOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-sm font-medium ${scannerOnline ? 'text-green-500' : 'text-red-500'}`}>
                   Scan
                 </span>
               </div>
               {/* Trennlinie */}
-              <div className="w-px h-3 bg-border"></div>
+              <div className="w-px h-6 bg-border"></div>
               {/* Portal Status */}
-              <div className="flex items-center gap-1" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
+              <div className="flex items-center gap-2" title={portalOnline ? 'Portal Online' : 'Portal Offline'}>
                 <div className="relative">
                   {portalOnline && (
                     <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping"></span>
                   )}
-                  <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                  <span className={`relative inline-flex rounded-full h-3 w-3 ${portalOnline ? 'bg-green-500' : 'bg-red-500'}`}></span>
                 </div>
-                <Globe className={`h-2.5 w-2.5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
-                <span className={`text-[9px] font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
+                <Globe className={`h-5 w-5 ${portalOnline ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-sm font-medium ${portalOnline ? 'text-green-500' : 'text-red-500'}`}>
                   Portal
                 </span>
               </div>
             </div>
             
-            {/* Datum und Uhrzeit - kompakter */}
-            <div className="flex items-center gap-1.5">
-              <Clock className="h-3 w-3 text-muted-foreground" />
-              <span className="text-xs font-bold text-foreground">{formatTime(currentTime)}</span>
-              <span className="text-[9px] text-muted-foreground">{formatDate(currentTime)}</span>
+            {/* Datum und Uhrzeit */}
+            <div className="flex items-center gap-3">
+              <Clock className="h-6 w-6 text-muted-foreground" />
+              <span className="text-base font-bold text-foreground">{formatTime(currentTime)}</span>
+              <span className="text-sm text-muted-foreground">{formatDate(currentTime)}</span>
             </div>
             
             {/* Version */}
-            <span className="text-muted-foreground text-[10px]">
+            <span className="text-muted-foreground text-xs">
               v{data.version}
             </span>
             
             {/* Security User Info */}
             {securityUser && (
-              <div className="flex items-center gap-1 px-1.5 py-0.5 bg-verification-success/20 rounded border border-verification-success/40">
-                <User className="h-2.5 w-2.5 text-verification-success" />
-                <span className="text-[10px] font-medium text-foreground">
+              <div className="flex items-center gap-2 px-3 py-1 bg-verification-success/20 rounded border border-verification-success/40">
+                <User className="h-5 w-5 text-verification-success" />
+                <span className="text-xs font-medium text-foreground">
                   {securityUser.name}
                 </span>
               </div>
