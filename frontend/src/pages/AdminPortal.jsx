@@ -992,7 +992,7 @@ const AdminPortalContent = () => {
                   { id: 'activation', label: 'Activation Codes', icon: Key },
                   { id: 'locations', label: 'Locations', icon: MapPin },
                   { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
-                  { id: 'devices', label: 'Geräte-Lifecycle', icon: Monitor },
+                  { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
                   { id: 'inventory', label: 'Inventory', icon: Package },
                   { id: 'orders', label: 'Orders', icon: ShoppingCart },
                   { id: 'support', label: 'Support', icon: Headphones },
