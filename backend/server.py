@@ -105,6 +105,10 @@ app = FastAPI(redirect_slashes=False)
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
+# Create downloads directory if it doesn't exist
+DOWNLOADS_DIR = Path(__file__).parent.parent / "downloads"
+DOWNLOADS_DIR.mkdir(exist_ok=True)
+
 
 # Define Models
 class StatusCheck(BaseModel):
