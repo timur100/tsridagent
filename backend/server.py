@@ -132,6 +132,31 @@ async def health_check():
     """Health check endpoint for container orchestration"""
     return {"status": "healthy", "service": "tsrid-backend"}
 
+# Downloads endpoint for Electron App ZIP files
+@api_router.get("/downloads/{filename}")
+async def download_file(filename: str):
+    """Download Electron App ZIP files"""
+    file_path = DOWNLOADS_DIR / filename
+    if not file_path.exists():
+        return {"error": "File not found", "filename": filename}
+    return FileResponse(
+        path=file_path,
+        filename=filename,
+        media_type="application/zip"
+    )
+
+@api_router.get("/downloads")
+async def list_downloads():
+    """List available downloads"""
+    files = []
+    for f in DOWNLOADS_DIR.glob("*.zip"):
+        files.append({
+            "filename": f.name,
+            "size_mb": round(f.stat().st_size / (1024*1024), 2),
+            "download_url": f"/api/downloads/{f.name}"
+        })
+    return {"downloads": sorted(files, key=lambda x: x["filename"], reverse=True)}
+
 @api_router.post("/status", response_model=StatusCheck)
 async def create_status_check(input: StatusCheckCreate):
     status_dict = input.model_dump()
