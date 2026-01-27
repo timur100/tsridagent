@@ -701,7 +701,7 @@ const LocationsTabEnhanced = ({
                     <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                     }`}>
-                      {location.country || 'Germany'}
+                      {location.country || 'Deutschland'}
                     </td>
                     <td className={`px-4 py-3 text-sm font-mono ${
                       theme === 'dark' ? 'text-gray-400' : 'text-gray-600'

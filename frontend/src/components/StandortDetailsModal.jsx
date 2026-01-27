@@ -448,7 +448,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                 <div className="grid grid-cols-2 gap-3">
                   <InfoField 
                     label="Land" 
-                    value="Germany" 
+                    value="Deutschland" 
                     theme={theme} 
                     isEditing={false} 
                   />
@@ -478,7 +478,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                   frameBorder="0"
                   style={{ border: 0 }}
                   src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(
-                    `${standort.str}, ${standort.plz} ${standort.ort}, Germany`
+                    `${standort.str}, ${standort.plz} ${standort.ort}, Deutschland`
                   )}&zoom=15`}
                   allowFullScreen
                   title="Standortkarte"
@@ -901,7 +901,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                           Land
                         </p>
                         <p className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                          {device.country || 'Germany'}
+                          {device.country || 'Deutschland'}
                         </p>
                       </div>
                     </div>
