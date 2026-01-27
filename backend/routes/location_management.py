@@ -76,20 +76,22 @@ async def assign_locations_to_tenant(request: BulkTenantAssignRequest):
         if not request.location_ids or not request.tenant_id:
             raise HTTPException(status_code=400, detail="location_ids und tenant_id sind erforderlich")
         
-        # Hole Tenant-Informationen
-        tenant = await portal_db.tenants.find_one(
-            {"tenant_id": request.tenant_id},
-            {"_id": 0, "tenant_id": 1, "name": 1}
-        )
+        # Tenant-Name Mapping (bekannte Tenants)
+        known_tenants = {
+            "1d3653db-86cb-4dd1-9ef5-0236b116def8": "Europcar",
+            "94317b6b-a478-4df5-9a81-d1fd3c5983c8": "Puma"
+        }
         
-        if not tenant:
-            # Versuche es in multi_tenant_admin
-            tenant = await multi_tenant_db.tenants.find_one(
+        tenant_name = known_tenants.get(request.tenant_id)
+        
+        # Falls nicht bekannt, suche in tsrid_db.tenants
+        if not tenant_name:
+            tsrid_db = multi_tenant_db.client['tsrid_db']
+            tenant = await tsrid_db.tenants.find_one(
                 {"tenant_id": request.tenant_id},
-                {"_id": 0, "tenant_id": 1, "name": 1}
+                {"_id": 0, "name": 1}
             )
-        
-        tenant_name = tenant.get("name", request.tenant_id) if tenant else request.tenant_id
+            tenant_name = tenant.get("name") if tenant else request.tenant_id
         
         # Aktualisiere alle Standorte
         update_result = await portal_db.tenant_locations.update_many(
