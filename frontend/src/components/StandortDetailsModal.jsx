@@ -478,7 +478,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                   frameBorder="0"
                   style={{ border: 0 }}
                   src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${encodeURIComponent(
-                    `${standort.str}, ${standort.plz} ${standort.ort}, Deutschland`
+                    `${standort.str}, ${standort.plz} ${standort.ort}, Germany`
                   )}&zoom=15`}
                   allowFullScreen
                   title="Standortkarte"
