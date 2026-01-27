@@ -174,7 +174,7 @@ const LocationModal = ({
                   name="country"
                   value={formData.country || ''}
                   onChange={handleChange}
-                  placeholder="z.B. Deutschland"
+                  placeholder="z.B. Germany"
                   className={inputClass}
                 />
               </div>
