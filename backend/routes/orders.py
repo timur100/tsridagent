@@ -245,7 +245,7 @@ async def create_order(
                 "street": location.get('str', ''),
                 "postal_code": location.get('plz', ''),
                 "city": location.get('ort', ''),
-                "country": location.get('land', 'Deutschland')
+                "country": location.get('land', 'Germany')
             }
         
         # Create order document
@@ -679,7 +679,7 @@ async def create_order_with_reservation(
                 "street": location.get('str', ''),
                 "postal_code": location.get('plz', ''),
                 "city": location.get('ort', ''),
-                "country": location.get('land', 'Deutschland')
+                "country": location.get('land', 'Germany')
             }
         
         # Create order document
