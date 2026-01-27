@@ -3349,7 +3349,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       type="text"
                       required
                       defaultValue={editingLocation?.country || ''}
-                      placeholder="z.B. Deutschland"
+                      placeholder="z.B. Germany"
                       className={`w-full px-3 py-2 rounded-lg border ${
                         theme === 'dark'
                           ? 'bg-[#1f1f1f] border-gray-600 text-white'
