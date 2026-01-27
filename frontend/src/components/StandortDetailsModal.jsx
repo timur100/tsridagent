@@ -448,7 +448,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                 <div className="grid grid-cols-2 gap-3">
                   <InfoField 
                     label="Land" 
-                    value="Deutschland" 
+                    value="Germany" 
                     theme={theme} 
                     isEditing={false} 
                   />
