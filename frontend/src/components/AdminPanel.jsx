@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText } from 'lucide-react';
+import { X, Settings, BarChart, Database, Users, Download, Shield, Wifi, Monitor, MapPin, Key, Save, Plus, Trash2, Clock, Timer, AlertTriangle, Upload, HardDrive, Lock, Camera, FileText, ExternalLink } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
