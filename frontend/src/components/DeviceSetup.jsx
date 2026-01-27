@@ -182,7 +182,7 @@ const DeviceSetup = ({ onComplete }) => {
     loadCities(country);
   };
 
-  // Lade Standorte für ausgewählte Stadt
+  // Lade Standorte für ausgewählte Stadt (mit Tenant-Filterung)
   const loadLocations = async (city) => {
     if (!city) return;
     setLoading(true);
@@ -192,7 +192,12 @@ const DeviceSetup = ({ onComplete }) => {
     setSelectedDevice(null);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/by-city?city=${encodeURIComponent(city)}&country=${encodeURIComponent(selectedCountry)}`);
+      // Mit Tenant-ID filtern wenn vorhanden
+      let url = `${BACKEND_URL}/api/unified-locations/by-city?city=${encodeURIComponent(city)}&country=${encodeURIComponent(selectedCountry)}`;
+      if (selectedTenant) {
+        url += `&tenant_id=${encodeURIComponent(selectedTenant.tenant_id)}`;
+      }
+      const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
         setLocations(data.locations || []);
