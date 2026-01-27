@@ -61,6 +61,61 @@ class BulkStatusRequest(BaseModel):
     location_codes: List[str]
 
 
+class BulkTenantAssignRequest(BaseModel):
+    location_ids: List[str]
+    tenant_id: str
+
+
+@router.post("/assign-tenant")
+async def assign_locations_to_tenant(request: BulkTenantAssignRequest):
+    """
+    Weist mehrere Standorte einem Tenant zu.
+    Aktualisiert tenant_id und tenant_name in der tenant_locations Collection.
+    """
+    try:
+        if not request.location_ids or not request.tenant_id:
+            raise HTTPException(status_code=400, detail="location_ids und tenant_id sind erforderlich")
+        
+        # Hole Tenant-Informationen
+        tenant = await portal_db.tenants.find_one(
+            {"tenant_id": request.tenant_id},
+            {"_id": 0, "tenant_id": 1, "name": 1}
+        )
+        
+        if not tenant:
+            # Versuche es in multi_tenant_admin
+            tenant = await multi_tenant_db.tenants.find_one(
+                {"tenant_id": request.tenant_id},
+                {"_id": 0, "tenant_id": 1, "name": 1}
+            )
+        
+        tenant_name = tenant.get("name", request.tenant_id) if tenant else request.tenant_id
+        
+        # Aktualisiere alle Standorte
+        update_result = await portal_db.tenant_locations.update_many(
+            {"location_id": {"$in": request.location_ids}},
+            {
+                "$set": {
+                    "tenant_id": request.tenant_id,
+                    "tenant_name": tenant_name,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"{update_result.modified_count} Standort(e) wurden {tenant_name} zugewiesen",
+            "modified_count": update_result.modified_count,
+            "tenant_id": request.tenant_id,
+            "tenant_name": tenant_name
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/statuses")
 async def get_location_statuses():
     """Gibt alle verfügbaren Status-Typen zurück"""
