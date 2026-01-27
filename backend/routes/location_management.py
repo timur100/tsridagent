@@ -223,6 +223,7 @@ async def list_locations(
                 "manager": loc.get("manager", ""),
                 "main_type": loc.get("main_type", ""),
                 "tenant_id": loc.get("tenant_id", "europcar"),
+                "tenant_name": loc.get("tenant_name", ""),
                 "status": status_info.get("status", "active"),  # Default: active
                 "status_changed_at": status_info.get("status_changed_at"),
                 "status_changed_by": status_info.get("status_changed_by"),
