@@ -36,6 +36,11 @@ DEVICE_TYPES = {
     "docking_type2": {"label": "Dockingstation Typ 2", "category": "docking", "icon": "box"},
     "docking_type3": {"label": "Dockingstation Typ 3", "category": "docking", "icon": "box"},
     "docking_type4": {"label": "Dockingstation Typ 4", "category": "docking", "icon": "box"},
+    "switch": {"label": "Netzwerk-Switch", "category": "network", "icon": "network"},
+    "router": {"label": "Router", "category": "network", "icon": "wifi"},
+    "access_point": {"label": "Access Point", "category": "network", "icon": "wifi"},
+    "cable": {"label": "Kabel/Adapter", "category": "accessory", "icon": "cable"},
+    "other": {"label": "Sonstiges", "category": "other", "icon": "box"},
 }
 
 # Lifecycle Event Types
@@ -44,6 +49,10 @@ EVENT_TYPES = {
     "activated": {"label": "Aktiviert", "icon": "power"},
     "assigned": {"label": "Standort zugewiesen", "icon": "map-pin"},
     "reassigned": {"label": "Standort gewechselt", "icon": "repeat"},
+    "added_to_kit": {"label": "Zu Kit hinzugefügt", "icon": "package"},
+    "removed_from_kit": {"label": "Aus Kit entfernt", "icon": "package-minus"},
+    "kit_deployed": {"label": "Kit installiert", "icon": "check-circle"},
+    "kit_returned": {"label": "Kit zurückgegeben", "icon": "undo"},
     "license_activated": {"label": "Lizenz aktiviert", "icon": "key"},
     "license_renewed": {"label": "Lizenz erneuert", "icon": "refresh-cw"},
     "software_updated": {"label": "Software aktualisiert", "icon": "download"},
