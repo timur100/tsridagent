@@ -73,6 +73,8 @@ async def assign_locations_to_tenant(request: BulkTenantAssignRequest):
     Aktualisiert tenant_id und tenant_name in der tenant_locations Collection.
     """
     try:
+        from db.connection import get_mongo_client as get_sync_client
+        
         if not request.location_ids or not request.tenant_id:
             raise HTTPException(status_code=400, detail="location_ids und tenant_id sind erforderlich")
         
@@ -86,15 +88,18 @@ async def assign_locations_to_tenant(request: BulkTenantAssignRequest):
         
         # Falls nicht bekannt, suche in tsrid_db.tenants
         if not tenant_name:
-            tsrid_db = multi_tenant_db.client['tsrid_db']
-            tenant = await tsrid_db.tenants.find_one(
+            sync_client = get_sync_client()
+            tenant = sync_client['tsrid_db'].tenants.find_one(
                 {"tenant_id": request.tenant_id},
                 {"_id": 0, "name": 1}
             )
             tenant_name = tenant.get("name") if tenant else request.tenant_id
         
-        # Aktualisiere alle Standorte
-        update_result = await portal_db.tenant_locations.update_many(
+        # Aktualisiere alle Standorte mit dem SYNC client (gleicher wie tenant_locations.py)
+        sync_client = get_sync_client()
+        sync_portal_db = sync_client['portal_db']
+        
+        update_result = sync_portal_db.tenant_locations.update_many(
             {"location_id": {"$in": request.location_ids}},
             {
                 "$set": {
