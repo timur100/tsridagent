@@ -617,4 +617,473 @@ async def assign_device_to_location(
     except HTTPException:
         raise
     except Exception as e:
+
+
+# =====================================================
+# KIT / SET MANAGEMENT ENDPOINTS
+# =====================================================
+
+@router.get("/kits/list")
+async def list_kits(
+    tenant_id: str = Query(None, description="Filter nach Tenant"),
+    location_code: str = Query(None, description="Filter nach Standort"),
+    status: str = Query(None, description="Filter nach Status"),
+    limit: int = Query(100, description="Max. Anzahl"),
+    skip: int = Query(0, description="Offset")
+):
+    """Listet alle Kits/Sets mit Filteroptionen"""
+    try:
+        query = {}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        if location_code:
+            query["location_code"] = location_code
+        if status:
+            query["status"] = status
+        
+        cursor = db.device_kits.find(query).skip(skip).limit(limit).sort("created_at", -1)
+        kits = await cursor.to_list(length=limit)
+        
+        # Enrich with device details
+        enriched_kits = []
+        for kit in kits:
+            kit["id"] = str(kit["_id"])
+            del kit["_id"]
+            
+            # Get device details for each device in kit
+            if kit.get("device_ids"):
+                devices = []
+                for dev_id in kit["device_ids"]:
+                    try:
+                        device = await db.device_inventory.find_one({"_id": ObjectId(dev_id)})
+                        if device:
+                            devices.append({
+                                "id": str(device["_id"]),
+                                "device_type": device.get("device_type"),
+                                "serial_number": device.get("serial_number"),
+                                "model": device.get("model"),
+                                "status": device.get("status")
+                            })
+                    except:
+                        pass
+                kit["devices"] = devices
+                kit["device_count"] = len(devices)
+            
+            enriched_kits.append(kit)
+        
+        total = await db.device_kits.count_documents(query)
+        
+        return {
+            "success": True,
+            "kits": enriched_kits,
+            "total": total
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/create")
+async def create_kit(kit: KitCreate):
+    """Erstellt ein neues Hardware-Kit/Set"""
+    try:
+        # Generate kit name if not provided properly
+        kit_name = kit.kit_name
+        if not kit_name:
+            kit_name = f"{kit.location_code}-{kit.device_number:02d}-KIT"
+        
+        # Check if kit with same name already exists
+        existing = await db.device_kits.find_one({"kit_name": kit_name})
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Kit '{kit_name}' existiert bereits")
+        
+        kit_doc = {
+            "kit_name": kit_name,
+            "tenant_id": kit.tenant_id,
+            "location_code": kit.location_code,
+            "device_number": kit.device_number,
+            "description": kit.description,
+            "device_ids": kit.device_ids or [],
+            "status": "assembled",  # assembled, deployed, returned, disassembled
+            "assigned_location_code": None,
+            "assigned_location_name": None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "deployment_history": []
+        }
+        
+        result = await db.device_kits.insert_one(kit_doc)
+        kit_id = str(result.inserted_id)
+        
+        # Update devices to link them to this kit
+        if kit.device_ids:
+            for dev_id in kit.device_ids:
+                try:
+                    await db.device_inventory.update_one(
+                        {"_id": ObjectId(dev_id)},
+                        {"$set": {"kit_id": kit_id, "kit_name": kit_name}}
+                    )
+                    # Add event to device timeline
+                    event = {
+                        "device_id": dev_id,
+                        "event_type": "added_to_kit",
+                        "description": f"Zu Kit '{kit_name}' hinzugefügt",
+                        "new_value": kit_name,
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "performed_by": "Admin"
+                    }
+                    await db.device_lifecycle_events.insert_one(event)
+                except:
+                    pass
+        
+        return {
+            "success": True,
+            "kit_id": kit_id,
+            "kit_name": kit_name,
+            "message": f"Kit '{kit_name}' erstellt mit {len(kit.device_ids or [])} Geräten"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kits/{kit_id}")
+async def get_kit(kit_id: str):
+    """Gibt Details eines Kits zurück"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        kit["id"] = str(kit["_id"])
+        del kit["_id"]
+        
+        # Get device details
+        devices = []
+        for dev_id in kit.get("device_ids", []):
+            try:
+                device = await db.device_inventory.find_one({"_id": ObjectId(dev_id)})
+                if device:
+                    device["id"] = str(device["_id"])
+                    del device["_id"]
+                    devices.append(device)
+            except:
+                pass
+        
+        kit["devices"] = devices
+        
+        return {"success": True, "kit": kit}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/add-device/{device_id}")
+async def add_device_to_kit(kit_id: str, device_id: str):
+    """Fügt ein Gerät zu einem Kit hinzu"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        device = await db.device_inventory.find_one({"_id": ObjectId(device_id)})
+        if not device:
+            raise HTTPException(status_code=404, detail="Gerät nicht gefunden")
+        
+        # Check if device already in another kit
+        if device.get("kit_id") and device.get("kit_id") != kit_id:
+            raise HTTPException(status_code=400, detail=f"Gerät ist bereits in Kit '{device.get('kit_name')}'")
+        
+        # Add device to kit
+        device_ids = kit.get("device_ids", [])
+        if device_id not in device_ids:
+            device_ids.append(device_id)
+            
+            await db.device_kits.update_one(
+                {"_id": ObjectId(kit_id)},
+                {"$set": {"device_ids": device_ids, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            
+            # Update device
+            await db.device_inventory.update_one(
+                {"_id": ObjectId(device_id)},
+                {"$set": {"kit_id": kit_id, "kit_name": kit.get("kit_name")}}
+            )
+            
+            # Add event
+            event = {
+                "device_id": device_id,
+                "event_type": "added_to_kit",
+                "description": f"Zu Kit '{kit.get('kit_name')}' hinzugefügt",
+                "new_value": kit.get("kit_name"),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "performed_by": "Admin"
+            }
+            await db.device_lifecycle_events.insert_one(event)
+        
+        return {
+            "success": True,
+            "message": f"Gerät {device.get('serial_number')} zu Kit '{kit.get('kit_name')}' hinzugefügt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/kits/{kit_id}/remove-device/{device_id}")
+async def remove_device_from_kit(kit_id: str, device_id: str):
+    """Entfernt ein Gerät aus einem Kit"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        device_ids = kit.get("device_ids", [])
+        if device_id in device_ids:
+            device_ids.remove(device_id)
+            
+            await db.device_kits.update_one(
+                {"_id": ObjectId(kit_id)},
+                {"$set": {"device_ids": device_ids, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+            
+            # Remove kit reference from device
+            await db.device_inventory.update_one(
+                {"_id": ObjectId(device_id)},
+                {"$unset": {"kit_id": "", "kit_name": ""}}
+            )
+            
+            # Add event
+            event = {
+                "device_id": device_id,
+                "event_type": "removed_from_kit",
+                "description": f"Aus Kit '{kit.get('kit_name')}' entfernt",
+                "old_value": kit.get("kit_name"),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "performed_by": "Admin"
+            }
+            await db.device_lifecycle_events.insert_one(event)
+        
+        return {
+            "success": True,
+            "message": f"Gerät aus Kit '{kit.get('kit_name')}' entfernt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/deploy")
+async def deploy_kit(kit_id: str, assignment: KitAssignment):
+    """Installiert ein Kit an einem Standort"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        old_location = kit.get("assigned_location_code")
+        
+        # Update kit
+        deployment_entry = {
+            "action": "deployed",
+            "tenant_id": assignment.tenant_id,
+            "location_code": assignment.location_code,
+            "location_name": assignment.location_name,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "notes": assignment.notes
+        }
+        
+        await db.device_kits.update_one(
+            {"_id": ObjectId(kit_id)},
+            {
+                "$set": {
+                    "status": "deployed",
+                    "assigned_location_code": assignment.location_code,
+                    "assigned_location_name": assignment.location_name,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                },
+                "$push": {"deployment_history": deployment_entry}
+            }
+        )
+        
+        # Update all devices in kit
+        for dev_id in kit.get("device_ids", []):
+            try:
+                await db.device_inventory.update_one(
+                    {"_id": ObjectId(dev_id)},
+                    {"$set": {
+                        "assigned_location_code": assignment.location_code,
+                        "assigned_location_name": assignment.location_name,
+                        "status": "active"
+                    }}
+                )
+                # Add event
+                event = {
+                    "device_id": dev_id,
+                    "event_type": "kit_deployed",
+                    "description": f"Kit '{kit.get('kit_name')}' installiert an {assignment.location_name or assignment.location_code}",
+                    "old_value": old_location,
+                    "new_value": assignment.location_code,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "performed_by": "Admin"
+                }
+                await db.device_lifecycle_events.insert_one(event)
+            except:
+                pass
+        
+        return {
+            "success": True,
+            "message": f"Kit '{kit.get('kit_name')}' installiert an {assignment.location_code}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/return")
+async def return_kit(kit_id: str, notes: str = ""):
+    """Gibt ein Kit zurück (ins Lager)"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        old_location = kit.get("assigned_location_code")
+        
+        # Update kit
+        return_entry = {
+            "action": "returned",
+            "from_location": old_location,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "notes": notes
+        }
+        
+        await db.device_kits.update_one(
+            {"_id": ObjectId(kit_id)},
+            {
+                "$set": {
+                    "status": "returned",
+                    "assigned_location_code": None,
+                    "assigned_location_name": None,
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                },
+                "$push": {"deployment_history": return_entry}
+            }
+        )
+        
+        # Update all devices
+        for dev_id in kit.get("device_ids", []):
+            try:
+                await db.device_inventory.update_one(
+                    {"_id": ObjectId(dev_id)},
+                    {"$set": {
+                        "assigned_location_code": None,
+                        "assigned_location_name": None,
+                        "status": "in_storage"
+                    }}
+                )
+                event = {
+                    "device_id": dev_id,
+                    "event_type": "kit_returned",
+                    "description": f"Kit '{kit.get('kit_name')}' zurückgegeben von {old_location}",
+                    "old_value": old_location,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "performed_by": "Admin"
+                }
+                await db.device_lifecycle_events.insert_one(event)
+            except:
+                pass
+        
+        return {
+            "success": True,
+            "message": f"Kit '{kit.get('kit_name')}' zurückgegeben"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/kits/{kit_id}")
+async def delete_kit(kit_id: str):
+    """Löscht ein Kit (Geräte werden NICHT gelöscht, nur die Verknüpfung)"""
+    try:
+        kit = await db.device_kits.find_one({"_id": ObjectId(kit_id)})
+        if not kit:
+            raise HTTPException(status_code=404, detail="Kit nicht gefunden")
+        
+        # Remove kit reference from all devices
+        for dev_id in kit.get("device_ids", []):
+            try:
+                await db.device_inventory.update_one(
+                    {"_id": ObjectId(dev_id)},
+                    {"$unset": {"kit_id": "", "kit_name": ""}}
+                )
+            except:
+                pass
+        
+        await db.device_kits.delete_one({"_id": ObjectId(kit_id)})
+        
+        return {
+            "success": True,
+            "message": f"Kit '{kit.get('kit_name')}' gelöscht"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kits/stats/overview")
+async def get_kit_stats():
+    """Gibt Statistiken über alle Kits zurück"""
+    try:
+        total = await db.device_kits.count_documents({})
+        by_status = {}
+        for status in ["assembled", "deployed", "returned", "disassembled"]:
+            count = await db.device_kits.count_documents({"status": status})
+            by_status[status] = count
+        
+        return {
+            "success": True,
+            "stats": {
+                "total": total,
+                "by_status": by_status
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/locations/{location_code}/next-device-number")
+async def get_next_device_number(location_code: str):
+    """Gibt die nächste verfügbare Geräte-Nummer für einen Standort zurück"""
+    try:
+        # Find highest device_number for this location
+        cursor = db.device_kits.find(
+            {"location_code": location_code}
+        ).sort("device_number", -1).limit(1)
+        
+        kits = await cursor.to_list(length=1)
+        
+        if kits:
+            next_number = kits[0].get("device_number", 0) + 1
+        else:
+            next_number = 1
+        
+        suggested_kit_name = f"{location_code}-{next_number:02d}-KIT"
+        
+        return {
+            "success": True,
+            "location_code": location_code,
+            "next_device_number": next_number,
+            "suggested_kit_name": suggested_kit_name
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
         raise HTTPException(status_code=500, detail=str(e))
