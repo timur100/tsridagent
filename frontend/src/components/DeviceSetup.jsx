@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { MapPin, Building2, Globe, Map, Search, Monitor, Link2, Check, AlertTriangle, RefreshCw, ChevronRight, Key, QrCode } from 'lucide-react';
+import { MapPin, Building2, Globe, Map, Search, Monitor, Link2, Check, AlertTriangle, RefreshCw, ChevronRight, Key, QrCode, Users } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -12,12 +12,17 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001'
 
 /**
  * DeviceSetup - Hierarchische Standort- und Geräteauswahl
- * Flow: Kontinent → Land → Stadt → Standort → Gerät auswählen → Koppeln
+ * Flow: Tenant → Kontinent → Land → Stadt → Standort → Gerät auswählen → Koppeln
  * ODER: Aktivierungscode / QR-Code scannen
  */
 const DeviceSetup = ({ onComplete }) => {
   // Setup-Modus: 'activation' oder 'manual'
   const [setupMode, setSetupMode] = useState('activation');
+  
+  // Tenant-Auswahl (NEU)
+  const [tenants, setTenants] = useState([]);
+  const [selectedTenant, setSelectedTenant] = useState(null);
+  
   // Hierarchische Auswahl States
   const [continents, setContinents] = useState([]);
   const [countries, setCountries] = useState([]);
@@ -39,7 +44,7 @@ const DeviceSetup = ({ onComplete }) => {
   const [coupledDevice, setCoupledDevice] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Lade gespeicherte Kopplung beim Start
+  // Lade gespeicherte Kopplung und Tenants beim Start
   useEffect(() => {
     const saved = localStorage.getItem('deviceConfig');
     if (saved) {
@@ -52,9 +57,38 @@ const DeviceSetup = ({ onComplete }) => {
         console.error('Fehler beim Laden der Konfiguration:', e);
       }
     }
-    // Lade Kontinente beim Start
+    // Lade Tenants und Kontinente beim Start
+    loadTenants();
     loadContinents();
   }, []);
+
+  // Lade verfügbare Tenants
+  const loadTenants = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/tenants`);
+      const data = await response.json();
+      if (data.success) {
+        setTenants(data.tenants || []);
+      }
+    } catch (e) {
+      console.error('Fehler beim Laden der Tenants:', e);
+    }
+  };
+
+  // Handler für Tenant-Auswahl
+  const handleTenantChange = (tenantId) => {
+    const tenant = tenants.find(t => t.tenant_id === tenantId);
+    setSelectedTenant(tenant);
+    // Reset alle nachfolgenden Auswahlen
+    setSelectedCountry('');
+    setSelectedCity('');
+    setCities([]);
+    setLocations([]);
+    setDevices([]);
+    setSelectedLocation(null);
+    setSelectedDevice(null);
+    toast.success(`Tenant "${tenant?.name}" ausgewählt`);
+  };
 
   // Lade alle verfügbaren Kontinente
   const loadContinents = async () => {
@@ -100,9 +134,16 @@ const DeviceSetup = ({ onComplete }) => {
     }
   };
 
-  // Lade Städte für ausgewähltes Land
+  // Lade Städte für ausgewähltes Land (mit Tenant-Filterung)
   const loadCities = async (country) => {
     if (!country) return;
+    
+    // Warnung wenn kein Tenant ausgewählt
+    if (!selectedTenant) {
+      toast.error('Bitte zuerst einen Kunden (Tenant) auswählen!');
+      return;
+    }
+    
     setLoading(true);
     setCities([]);
     setLocations([]);
@@ -112,10 +153,15 @@ const DeviceSetup = ({ onComplete }) => {
     setSelectedDevice(null);
     
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
+      // Mit Tenant-ID filtern
+      const url = `${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}&tenant_id=${encodeURIComponent(selectedTenant.tenant_id)}`;
+      const response = await fetch(url);
       const data = await response.json();
       if (data.success) {
         setCities(data.cities || []);
+        if (data.cities?.length === 0) {
+          toast.info(`Keine Standorte für "${selectedTenant.name}" in ${country} gefunden`);
+        }
       }
     } catch (e) {
       console.error('Fehler beim Laden der Städte:', e);
