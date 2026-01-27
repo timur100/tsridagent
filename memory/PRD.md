@@ -100,6 +100,46 @@ Two methods implemented:
   - Standorte werden nach Tenant gefiltert
   - UI fordert Tenant-Auswahl vor Standortsuche
 
+#### P0 - Standort-Kacheln & Kit-Verwaltung (Jan 27, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_6.json`
+
+**Feature 1: Standort-Kacheln (Grid-Layout)**
+- **File:** `/app/frontend/src/components/DeviceSetup.jsx`
+- **Änderung:** Liste ersetzt durch 3-spaltiges Grid mit Kacheln
+- **Kachel-Felder:**
+  - Station-Code (groß, font-mono)
+  - Geräte-Badge (z.B. "2 Geräte")
+  - Standortname
+  - Adresse (Straße, PLZ, Stadt)
+  - Manager + Telefon
+  - Typ-Badge
+
+**Feature 2: Kit-Verwaltung (Hardware-Sets)**
+- **Files:**
+  - `/app/backend/routes/device_lifecycle.py` - 10+ neue Kit-Endpoints
+  - `/app/frontend/src/components/KitManager.jsx` - Neue Komponente
+  - `/app/frontend/src/pages/AdminPortal.jsx` - Tab "Kit-Verwaltung" hinzugefügt
+- **Collection:** `device_kits` (MongoDB)
+- **Kit-Name-Format:** `{STATION}-{NR}-KIT` z.B. `MUCC01-01-KIT`
+- **Workflow:**
+  1. ✅ Kit erstellen (Tenant → Stadt → Standort → Geräte auswählen)
+  2. ✅ Automatische Geräte-Nummer (nächste verfügbare für Standort)
+  3. ✅ Kit installieren (Deploy an Standort)
+  4. ✅ Kit zurückgeben (Return ins Lager)
+  5. ✅ Deployment-Historie
+- **Kit-Status:** assembled, deployed, returned, disassembled
+- **API-Endpoints:**
+  - GET `/api/device-lifecycle/kits/list`
+  - POST `/api/device-lifecycle/kits/create`
+  - GET `/api/device-lifecycle/kits/{id}`
+  - POST `/api/device-lifecycle/kits/{id}/add-device/{device_id}`
+  - DELETE `/api/device-lifecycle/kits/{id}/remove-device/{device_id}`
+  - POST `/api/device-lifecycle/kits/{id}/deploy`
+  - POST `/api/device-lifecycle/kits/{id}/return`
+  - DELETE `/api/device-lifecycle/kits/{id}`
+  - GET `/api/device-lifecycle/locations/{code}/next-device-number`
+
 #### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Tests bestanden
 - **Test Report:** `/app/test_reports/iteration_3.json`
