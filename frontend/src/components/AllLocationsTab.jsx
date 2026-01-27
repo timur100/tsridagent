@@ -459,106 +459,33 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   return (
     <div className="space-y-4">
-      {/* Header with selection actions and column settings */}
-      <div className="flex items-center justify-between">
+      {/* Header with selection actions */}
+      {selectedIds.size > 0 && (
         <div className="flex items-center gap-3">
-          {selectedIds.size > 0 && (
-            <div className={`flex items-center gap-3 px-4 py-2 rounded-lg ${
-              theme === 'dark' ? 'bg-[#c00000]/20 border border-[#c00000]/40' : 'bg-red-50 border border-red-200'
-            }`}>
-              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                {selectedIds.size} ausgewählt
-              </span>
-              <button
-                onClick={() => setShowAssignModal(true)}
-                className="flex items-center gap-2 px-3 py-1.5 bg-[#c00000] text-white text-sm rounded-lg hover:bg-[#a00000] transition-colors"
-              >
-                <Users className="w-4 h-4" />
-                Tenant zuweisen
-              </button>
-              <button
-                onClick={() => setSelectedIds(new Set())}
-                className={`px-2 py-1.5 text-sm rounded-lg transition-colors ${
-                  theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                }`}
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-          )}
+          <div className={`flex items-center gap-3 px-4 py-2 rounded-lg ${
+            theme === 'dark' ? 'bg-[#c00000]/20 border border-[#c00000]/40' : 'bg-red-50 border border-red-200'
+          }`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {selectedIds.size} ausgewählt
+            </span>
+            <button
+              onClick={() => setShowAssignModal(true)}
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#c00000] text-white text-sm rounded-lg hover:bg-[#a00000] transition-colors"
+            >
+              <Users className="w-4 h-4" />
+              Tenant zuweisen
+            </button>
+            <button
+              onClick={() => setSelectedIds(new Set())}
+              className={`px-2 py-1.5 text-sm rounded-lg transition-colors ${
+                theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-        
-        {/* Column Settings Button */}
-        <div className="relative">
-          <button
-            onClick={() => setShowColumnSettings(!showColumnSettings)}
-            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
-              theme === 'dark'
-                ? 'bg-[#2a2a2a] border-gray-700 text-gray-300 hover:bg-[#333]'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span className="text-sm">Spalten</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showColumnSettings ? 'rotate-180' : ''}`} />
-          </button>
-          
-          {/* Column Settings Dropdown */}
-          {showColumnSettings && (
-            <div className={`absolute right-0 top-full mt-2 w-72 rounded-xl border shadow-xl z-50 ${
-              theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
-            }`}>
-              <div className={`px-4 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Spalten konfigurieren
-                  </span>
-                  <button
-                    onClick={resetColumns}
-                    className="text-xs text-[#c00000] hover:underline"
-                  >
-                    Zurücksetzen
-                  </button>
-                </div>
-                <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Ziehen zum Neuordnen, klicken zum Ein-/Ausblenden
-                </p>
-              </div>
-              <div className="max-h-80 overflow-y-auto p-2">
-                {columns.filter(col => col.id !== 'select').map((column, index) => (
-                  <div
-                    key={column.id}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragEnd={handleDragEnd}
-                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-move transition-colors ${
-                      draggedColumn === index
-                        ? 'bg-[#c00000]/20'
-                        : theme === 'dark' ? 'hover:bg-[#333]' : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <GripVertical className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
-                    <button
-                      onClick={() => toggleColumnVisibility(column.id)}
-                      className={`flex-1 flex items-center justify-between ${
-                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
-                      }`}
-                    >
-                      <span className="text-sm">{column.label}</span>
-                      {column.visible ? (
-                        <Eye className="w-4 h-4 text-green-500" />
-                      ) : (
-                        <EyeOff className="w-4 h-4 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+      )}
 
       {/* Search and Filters */}
       <div className="flex flex-wrap gap-3">
