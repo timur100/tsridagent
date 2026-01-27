@@ -781,6 +781,8 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                         {renderCellValue(location, column.id)}
                       </td>
                     ))}
+                    {/* Empty cell for settings column alignment */}
+                    <td className="w-10"></td>
                   </tr>
                 ))}
               </tbody>
