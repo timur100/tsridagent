@@ -483,7 +483,7 @@ const LocationDetailPage = () => {
                     <p className="font-semibold mb-1">Adresse:</p>
                     <p>{locationData.street}</p>
                     <p>{locationData.postal_code} {locationData.city}</p>
-                    <p>{locationData.country || 'Germany'}</p>
+                    <p>{locationData.country || 'Deutschland'}</p>
                   </div>
                 </div>
               </div>

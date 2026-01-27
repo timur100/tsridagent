@@ -916,7 +916,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
-                  placeholder="Germany"
+                  placeholder="Deutschland"
                 />
               </div>
 
