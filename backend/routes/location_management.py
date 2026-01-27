@@ -162,7 +162,7 @@ async def list_locations(
                 "street": loc.get("street", ""),
                 "postal_code": loc.get("postal_code", ""),
                 "city": loc.get("city", ""),
-                "country": loc.get("country", "Deutschland"),
+                "country": loc.get("country", "Germany"),
                 "phone": loc.get("phone", ""),
                 "email": loc.get("email", ""),
                 "manager": loc.get("manager", ""),
