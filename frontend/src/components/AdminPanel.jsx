@@ -1296,6 +1296,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
             </div>
           )}
 
+          </div>
         </div>
       </div>
     </div>
