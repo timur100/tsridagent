@@ -443,6 +443,35 @@ const DeviceSetup = ({ onComplete }) => {
                 Standort manuell auswählen
               </h3>
               
+              {/* Tenant-Auswahl (Pflichtfeld) */}
+              <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
+                  <Users className="h-4 w-4 text-primary" /> 
+                  Kunde (Tenant) auswählen
+                  <span className="text-destructive">*</span>
+                </label>
+                <Select 
+                  value={selectedTenant?.tenant_id || ''} 
+                  onValueChange={handleTenantChange}
+                >
+                  <SelectTrigger data-testid="tenant-select" className="bg-background">
+                    <SelectValue placeholder="Bitte Kunden wählen..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tenants.map((tenant) => (
+                      <SelectItem key={tenant.tenant_id} value={tenant.tenant_id}>
+                        {tenant.display_name || tenant.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {!selectedTenant && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Wählen Sie zuerst einen Kunden, um dessen Standorte anzuzeigen
+                  </p>
+                )}
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 {/* Kontinent Dropdown */}
                 <div className="space-y-2">
