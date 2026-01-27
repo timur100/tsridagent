@@ -65,6 +65,24 @@ Two methods implemented:
 - ✅ Fixed: "Fehler beim Laden der Kontinente" - Wrong API endpoints in `AdminPanel.jsx`
   - Changed `/api/locations/*` → `/api/unified-locations/*`
 
+#### P0 - Admin-Panel Schwarzer Bildschirm (Jan 27, 2025) - ✅ BEHOBEN & GETESTET
+- **Status:** BEHOBEN - 100% Frontend-Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_4.json`
+- **Bugs behoben:**
+  1. ✅ **React Hooks Regelverstoß in `AdminPanel.jsx`:** 
+     - Problem: `useState(getActiveCategory())` wurde NACH dem bedingten `return null` aufgerufen
+     - Lösung: `useState` und `menuStructure` VOR das `if (!isOpen) return null;` verschoben
+     - Ergebnis: Admin-Panel zeigt jetzt korrekt Tab/Sidebar-Navigation statt schwarzem Bildschirm
+  2. ✅ **Fehlender Icon-Import in `DeviceLifecycleManager.jsx`:**
+     - Problem: `Tool` Icon existiert nicht in `lucide-react`
+     - Lösung: `Tool` durch `Wrench` ersetzt
+     - Ergebnis: DeviceLifecycleManager Seite lädt ohne Kompilierfehler
+- **Verifizierte Features:**
+  - PIN 9988 Login → Admin-Panel öffnet direkt
+  - Tab-Navigation: Übersicht, Konfiguration, Verwaltung
+  - Sidebar-Navigation: Alle Untermenüpunkte funktionsfähig
+  - DeviceLifecycleManager Seite vollständig funktional
+
 #### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Tests bestanden
 - **Test Report:** `/app/test_reports/iteration_3.json`
