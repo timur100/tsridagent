@@ -331,7 +331,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                   name: '',
                   address: '',
                   city: '',
-                  country: 'Germany',
+                  country: 'Deutschland',
                   tenant_id: selectedTenant?.tenant_id || selectedTenant?.id
                 });
                 setShowLocationModal(true);

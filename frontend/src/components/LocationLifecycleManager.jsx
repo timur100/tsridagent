@@ -112,7 +112,7 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
           name: loc.station_name || loc.name || '',
           street: loc.street || '',
           city: loc.city || '',
-          country: loc.country || 'Germany',
+          country: loc.country || 'Deutschland',
           phone: loc.phone || '',
           email: loc.email || '',
           manager: loc.manager || '',
