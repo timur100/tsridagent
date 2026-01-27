@@ -218,9 +218,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     toast.success('Security-Mitarbeiter gelöscht');
   };
 
-  if (!isOpen) return null;
-
-  // Hauptmenü-Kategorien mit Untermenüs
+  // Hauptmenü-Kategorien mit Untermenüs (MUSS vor bedingtem return stehen)
   const menuStructure = {
     overview: {
       label: 'Übersicht',
@@ -258,7 +256,8 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     return 'overview';
   };
 
-  const [activeCategory, setActiveCategory] = useState(getActiveCategory());
+  // useState Hook MUSS vor jedem bedingten return aufgerufen werden
+  const [activeCategory, setActiveCategory] = useState('overview');
 
   // Aktualisiere activeTab wenn Kategorie wechselt
   const handleCategoryChange = (catId) => {
@@ -269,6 +268,8 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
       setActiveTab(firstSubItem.id);
     }
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
