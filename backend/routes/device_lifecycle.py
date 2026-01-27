@@ -127,6 +127,33 @@ class DeviceTypeCreate(BaseModel):
     custom_fields_schema: Optional[List[Dict[str, Any]]] = []
 
 
+# Kit/Set Models
+class KitCreate(BaseModel):
+    """Erstellt ein neues Hardware-Kit/Set"""
+    kit_name: str  # z.B. "MUCC01-01-KIT"
+    tenant_id: str
+    location_code: str  # z.B. "MUCC01"
+    device_number: int  # z.B. 1 für "01"
+    description: Optional[str] = ""
+    device_ids: Optional[List[str]] = []  # Liste von Geräte-IDs die zum Kit gehören
+
+
+class KitUpdate(BaseModel):
+    """Aktualisiert ein Kit"""
+    description: Optional[str] = None
+    status: Optional[str] = None  # "assembled", "deployed", "returned", "disassembled"
+    assigned_location_code: Optional[str] = None
+    assigned_location_name: Optional[str] = None
+
+
+class KitAssignment(BaseModel):
+    """Weist ein Kit einem Standort zu"""
+    tenant_id: str
+    location_code: str
+    location_name: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
 # API Endpoints
 
 @router.get("/statuses")
