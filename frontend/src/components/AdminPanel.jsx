@@ -241,10 +241,24 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
               <p className="text-sm text-muted-foreground">Nur für Betreiber</p>
             </div>
           </div>
-          <Button onClick={onClose} variant="outline" className="gap-2">
-            <X className="h-5 w-5" />
-            Schließen
-          </Button>
+          <div className="flex items-center gap-3">
+            {/* Admin-Portal Button */}
+            <Button 
+              onClick={() => {
+                const portalUrl = `${BACKEND_URL.replace('/api', '')}/portal/admin`;
+                window.open(portalUrl, '_blank');
+              }} 
+              variant="default" 
+              className="gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+            >
+              <ExternalLink className="h-4 w-4" />
+              Admin-Portal
+            </Button>
+            <Button onClick={onClose} variant="outline" className="gap-2">
+              <X className="h-5 w-5" />
+              Schließen
+            </Button>
+          </div>
         </div>
       </div>
 
