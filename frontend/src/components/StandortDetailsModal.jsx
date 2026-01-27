@@ -901,7 +901,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                           Land
                         </p>
                         <p className={`font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                          {device.country || 'Deutschland'}
+                          {device.country || 'Germany'}
                         </p>
                       </div>
                     </div>
