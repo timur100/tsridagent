@@ -90,7 +90,7 @@ const LocationEditorModal = ({ theme, locationData, onSave, onClose }) => {
                     ? 'bg-[#1a1a1a] border-gray-700 text-white'
                     : 'bg-white border-gray-300 text-gray-900'
                 }`}
-                placeholder="Deutschland"
+                placeholder="Germany"
               />
             </div>
           </div>
