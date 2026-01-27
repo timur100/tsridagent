@@ -330,7 +330,7 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
               name: '',
               address: '',
               city: '',
-              country: 'Deutschland',
+              country: 'Germany',
               tenant_id: 'tenant-europcar'
             });
             setShowLocationModal(true);
