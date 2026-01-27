@@ -14,7 +14,7 @@ EUROPCAR_DATA = {
             "address": "Washingtonplatz 1",
             "city": "Berlin",
             "postal_code": "10557",
-            "country": "Germany",
+            "country": "Deutschland",
             "phone": "+49 30 12345678",
             "opening_hours": "Mo-Fr: 08:00-18:00, Sa-So: 09:00-16:00"
         },
@@ -24,7 +24,7 @@ EUROPCAR_DATA = {
             "address": "Nordallee 25",
             "city": "München",
             "postal_code": "85356",
-            "country": "Germany",
+            "country": "Deutschland",
             "phone": "+49 89 98765432",
             "opening_hours": "Mo-So: 06:00-23:00"
         },
@@ -34,7 +34,7 @@ EUROPCAR_DATA = {
             "address": "Mainzer Landstraße 123",
             "city": "Frankfurt am Main",
             "postal_code": "60329",
-            "country": "Germany",
+            "country": "Deutschland",
             "phone": "+49 69 11223344",
             "opening_hours": "Mo-Fr: 07:00-19:00, Sa: 09:00-14:00"
         }
