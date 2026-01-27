@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://offline-agent.preview.emergentagent.com/portal/admin
+https://electron-sync.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://offline-agent.preview.emergentagent.com/portal/admin
+**URL:** https://electron-sync.preview.emergentagent.com/portal/admin

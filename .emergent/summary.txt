@@ -17,64 +17,55 @@ PRODUCT REQUIREMENTS:
 **User's preferred language**: German
 
 **what currently exists?**
-A full-stack application with a React frontend and FastAPI backend. It features an Electron-based scan-app and a web-based admin portal.
+A full-stack application with a React frontend and a FastAPI backend, which serves both a web-based Admin Portal and an Electron-based Scan App.
 
-Key implemented features:
--   **Device Coupling:** Supports manual hierarchical selection and an Activation Code/QR system.
--   **Admin Portal ():** A comprehensive portal for administrators with role-based access.
--   **Location Lifecycle Management:** A fully functional UI and backend to manage location statuses (Active, In Preparation, Deactivated) with statistics, filters, and a modification history.
--   **Device Lifecycle Management (V1 & V2):** A complete system for managing hardware assets. It includes a dashboard with statistics, a detailed list of all devices, and filters. A full-featured detail modal for each device shows all properties, an editable timeline of its history, and highlights expiring warranties/licenses.
--   **Dynamic Footer:** The scan-app footer dynamically displays coupled device details and status indicators.
--   **Bug Fixes:** A critical bug preventing the loading of continents in the admin panel has been resolved.
+Key implemented features include:
+-   **Device & Location Lifecycle Management:** Fully functional web portals for managing devices and locations, including status changes, history, and detailed views.
+-   **Interactive Locations Table:** The main locations table in the admin portal () has been significantly enhanced with checkboxes for bulk selection, a feature to assign selected locations to a specific tenant, and a dynamic column configuration manager (show/hide/reorder columns).
+-   **Admin Panel Enhancements:** A button was added to the Electron app's admin view to directly open the web-based Admin Portal. The navigation within this panel was being refactored to a tab-and-sidebar layout.
+-   **Electron App Artifact:** A ZIP file of the Electron application has been created and is available for download via a newly created static API endpoint.
+-   **Data Integrity Fixes:** Multiple bugs related to inconsistent data display (e.g., Inactive status, missing tenant names) have been resolved by correcting frontend logic and backend API responses. A critical bug related to using different database clients ( vs ) causing data sync issues was identified and fixed for the tenant assignment feature.
 
 **Last working item**:
--   **Last item agent was working:** The agent was expanding the newly built **Geräte-Lifecycle-Management** (Device Lifecycle Management) system. The initial version with a list view and creation modal was completed. The agent then successfully implemented the V2 expansion, which includes a detailed modal view for each device, complete with a historical timeline and UI buttons for editing and deleting.
+-   **Last item agent was working:** The agent was refactoring the navigation within the Electron App's Administrator-Bereich (Admin Panel). The goal was to implement a combined top-tab layout for main categories and a vertical sidebar for sub-menu items to better organize a growing number of options, as requested by the user.
 -   **Status:** IN PROGRESS
--   **Agent Testing Done:** Y
--   **Which testing method agent to use?** both
+-   **Agent Testing Done:** N
+-   **Which testing method agent to use?** Frontend testing agent. The agent should start by taking a screenshot of the Electron app after logging in with the Admin PIN to confirm the black screen issue. Then, it should inspect the browser console logs for errors. The issue is very likely a React rendering error in .
 -   **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** Finalize Device-Lifecycle-Management Interactivity (P0)
--   **Issue 2:** Implement Real-time Logic for Footer Status Indicators (P1)
--   **Issue 3:** Complete the implementation of the Offline-First Electron Agent (Phases 2-4) (P1)
--   **Issue 4:** Complete Single Source of Truth Migration for  (P2)
--   **Issue 5:** Debug and Finalize Printer Support in Electron App (P3)
+-   **Issue 1:** Fix Admin Panel Rendering Error (P0)
+-   **Issue 2:** Implement Agent Status Overview (P1)
+-   **Issue 3:** Complete Single Source of Truth Migration for  (P2)
+-   **Issue 4:** Debug and Finalize Printer Support in Electron App (P3)
 
 **Issues Detail:**
--   **Issue 1: Finalize Device-Lifecycle-Management Interactivity**
-    -   **Attempted fixes:** The full UI for the detail modal, including the timeline view and Edit, Delete, and + Event buttons, has been successfully implemented and rendered in .
+-   **Issue 1: Fix Admin Panel Rendering Error**
+    -   **Attempted fixes:** The agent refactored the layout of  to use a flexbox layout with a top tab bar and a side navigation bar. The last screenshot taken of the app after this change was completely black, indicating a critical rendering error.
     -   **Next debug checklist:**
-        1.  **Backend:** Implement the logic for the  and  endpoints in  to handle editing and deleting devices.
-        2.  **Backend:** Implement the  endpoint to allow adding new events to a device's timeline.
-        3.  **Frontend:** Wire up the Edit button in  to open the creation/edit modal pre-filled with the selected device's data.
-        4.  **Frontend:** Wire up the Delete button to call the DELETE API, including a confirmation dialog.
-        5.  **Frontend:** Wire up the + Event button to open a modal for adding a new timeline event.
-    -   **Why fix this issue and what will be achieved with the fix?** To complete the user's P0 request for a fully interactive and editable asset management system.
+        1.  Start the app and log in with the Admin PIN ().
+        2.  Take a screenshot to confirm the UI is not rendering.
+        3.  Examine the frontend console logs for React errors (e.g., invalid element type, cannot read properties of undefined).
+        4.  Review the latest changes in , specifically the new JSX structure for the tab/sidebar layout. The error likely stems from an incorrect component usage, a missing closing tag, or faulty state logic introduced during the refactor.
+    -   **Why fix this issue and what will be achieved with the fix?** This is a blocker. The entire Admin Panel in the Electron app is currently unusable. Fixing it will restore admin functionality and complete the user's navigation improvement request.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** both
+    -   **Should Test frontend/backend/both after fix?** frontend
     -   **Blocked on other issue:** None
 
--   **Issue 2: Implement Real-time Logic for Footer Status Indicators**
-    -   **Attempted fixes:** The UI is complete, but the portal status is hardcoded ().
-    -   **Next debug checklist:** In , use a  to periodically call the  endpoint and update the  state based on the success of the API call.
-    -   **Why fix this issue and what will be achieved with the fix?** The status indicators will provide real-time feedback on the agent's connectivity to the backend portal.
+-   **Issue 2: Implement Agent Status Overview**
+    -   **Attempted fixes:** None. This is a new user request. The user asked: how can I see which agents are installed and active? And can receive commands or messages?.
+    -   **Next debug checklist:**
+        1.  Design a new backend model and API endpoint to track active agent instances. This might involve a heartbeat mechanism from the Electron agent or using WebSockets for real-time presence.
+        2.  Create a new UI component in the Admin Portal () to display the list of active agents, their status (online/offline), last seen time, and potentially other metadata.
+        3.  Implement a mechanism for sending commands/messages (this part of the request needs further clarification from the user).
+    -   **Why fix this issue and what will be achieved with the fix?** This will provide administrators with critical visibility into the deployed fleet of agents, enabling remote monitoring and management.
     -   **Status:** NOT STARTED
     -   **Is recurring issue?** N
     -   **Should Test frontend/backend/both after fix?** both
     -   **Blocked on other issue:** None
 
--   **Issue 3: Complete the implementation of the Offline-First Electron Agent (Phases 2-4)**
-    -   **Attempted fixes:** Phase 1 (core structure, UI/UX flow) is largely complete.
-    -   **Next debug checklist:** Follow the plan in , focusing on full scanner integration (Regula/Desko) and activating the sync engine.
-    -   **Why fix this issue and what will be achieved with the fix?** This will deliver the main offline functionality requested by the user.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on other issue:** None
-
--   **Issue 4: Complete Single Source of Truth Migration for **
+-   **Issue 3: Complete Single Source of Truth Migration for **
     -   **Attempted fixes:** None.
     -   **Next debug checklist:** Rewrite all endpoints in  to use MongoDB instead of mock data and test the corresponding frontend features.
     -   **Why fix this issue and what will be achieved with the fix?** Ensures data consistency and fulfills a core original requirement.
@@ -83,9 +74,399 @@ Key implemented features:
     -   **Should Test frontend/backend/both after fix?** both
     -   **Blocked on other issue:** None
 
--   **Issue 5: Debug and Finalize Printer Support in Electron App**
+-   **Issue 4: Debug and Finalize Printer Support in Electron App**
     -   **Attempted fixes:** None in recent sessions.
-    -   **Next debug checklist:** Investigate previous attempts using commit cb2886725a1994c46e9cddaec5a6b01e8ed8a807
+    -   **Next debug checklist:** Investigate previous attempts using commit 22d6d1f5188eeeba40de654ec3b679315ff2360b
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:50:02 2026 +0000
+
+    auto-commit for cc3a48a3-61db-493d-baab-3e9fa1f230bc
+
+commit 7ccf43f507bf7fea5b1abf2f26c94c686942fc20
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:49:15 2026 +0000
+
+    auto-commit for b5086441-36f3-4a34-835a-c00a9350d65b
+
+commit 81584251e8ece812c57ed1bdfa46a1cefc1fb10d
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:37:03 2026 +0000
+
+    auto-commit for e94092e5-3801-4baa-9a37-5c50f1059bff
+
+commit e561fb677e0726a19846dc5f931eba21837d402a
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:36:50 2026 +0000
+
+    auto-commit for 4348fce4-1c33-43df-8bd4-eb7128dc5a80
+
+commit 9dc12fd0c47f1846c9985d3ed733e410571392eb
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:28:49 2026 +0000
+
+    auto-commit for ed649c98-5e0f-4372-8266-2e4b49c88861
+
+commit 2a9557a3ce17bb890ab23b34095fe045ed096eb4
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:28:37 2026 +0000
+
+    auto-commit for 6033644a-a5c6-4b1b-a8ba-0703c22ed51e
+
+commit 48495ac9a9c8e0273e057a25b26da99447dec830
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:14:40 2026 +0000
+
+    auto-commit for fc3cb8cd-3b69-4df2-b67e-d14767b4081f
+
+commit adca6ca353514e47e333036af718847530a2b965
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:14:16 2026 +0000
+
+    auto-commit for 70a77f43-bc99-4648-862d-48e34c3014eb
+
+commit cc1e47c7207e6243b32e441dae4f4a01c2d700cf
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 21:13:42 2026 +0000
+
+    auto-commit for ebf33b23-d2a1-4fd7-a8e6-6bf6a9abebd4
+
+commit f898743f7c821f234f91315e51966b89e5bd5284
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 20:49:20 2026 +0000
+
+    auto-commit for 4d2ff54c-54aa-4b4f-9ec5-045a47ce6b73
+
+commit d256469781e5ff91a5a65bfdf043a010ba7a4da7
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 20:48:23 2026 +0000
+
+    auto-commit for 60e9aaf2-0215-49db-96ad-6242f0625271
+
+commit 8425bd03924a734df6042a7c9f2a1849b1c3455f
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 20:45:50 2026 +0000
+
+    auto-commit for a7024ab9-2f55-432e-af1c-07531b551ed1
+
+commit 17ac9a6a777250f233c782d79b18023781013297
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 20:10:32 2026 +0000
+
+    auto-commit for 9f190756-8d34-4bda-ad5d-e22e84445d51
+
+commit aec2e6954192e262080f3759e5bde2dddcf80959
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 19:47:30 2026 +0000
+
+    auto-commit for 40a1bd28-ec61-4dfd-bbc5-7034b8a138f0
+
+commit 2966850e1413791274e47d481e3bff70e348ea4e
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 19:46:43 2026 +0000
+
+    auto-commit for 47d8e5e8-7783-4bce-b176-5deeefac4922
+
+commit d19455c8147448bac229db170b73bca0f3c5d2c7
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:05:10 2026 +0000
+
+    auto-commit for 73d865b6-861d-4a03-b790-bc89330eda84
+
+commit 13c2376dc2628b2eb9d92e1c24520591b6240710
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:04:49 2026 +0000
+
+    auto-commit for 77fe8909-c249-4c94-a637-b3db794283c2
+
+commit 27dc4c03367de32e1d81d5f6d1f7950492c43a90
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:04:28 2026 +0000
+
+    auto-commit for fea6baed-60b2-44b0-b238-37fb83daa8eb
+
+commit f12a7a13c3ad93b5d5f6a49f2bd96ac031c4fa7c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:04:15 2026 +0000
+
+    auto-commit for 4e9a30b5-4272-4a8a-a9cb-64310485e1c5
+
+commit ef7ce964a2417b2aaafd1e20d6897290d0c22a74
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:04:01 2026 +0000
+
+    auto-commit for 93a25cd7-6480-447e-a007-6d786ee5dbae
+
+commit dc4f56a387caa1c9699d791f049bb7b88adb801c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:03:22 2026 +0000
+
+    auto-commit for 2df85ac3-7577-4f5f-a3f9-32d0aa711190
+
+commit f982ea828378e5f2aacc90a3a3485035fc185951
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:03:08 2026 +0000
+
+    auto-commit for f7fac797-e190-4642-8b01-7abe0d0f57b0
+
+commit bc369761d42f5edee1b18054510093685e776dbc
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 17:02:52 2026 +0000
+
+    auto-commit for 6897f3f3-a5e1-4edb-bd30-80bfd5067326
+
+commit 688c9a9df116cc1c895d21b5818026f7db28703c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:12:21 2026 +0000
+
+    auto-commit for 254da0ae-9626-43cc-870c-aed1a326e0b6
+
+commit b3606e6fe3460dc889a99d2faf55ba49d7ea22d0
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:11:56 2026 +0000
+
+    auto-commit for d24e1820-79e9-45ed-88c3-afb8533a146d
+
+commit 6f8524a5a93e6f04ac9a960c6fad0e8f763fa887
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:11:38 2026 +0000
+
+    auto-commit for aa9368f4-a9d2-495c-8773-8636b9b4a233
+
+commit d23886b29f3c3a20216107c1c1aff28ffa822683
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:11:23 2026 +0000
+
+    auto-commit for 0e2d7d08-047e-4f52-8b5a-890f67caed48
+
+commit 36547eacb571b4a5ce4320212074294adbd2a1c5
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:11:01 2026 +0000
+
+    auto-commit for c363c9d1-145f-44b5-be5e-82cd419e64e0
+
+commit 4c21a673c996d4b7bc72be637796aef55d5d4626
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:10:45 2026 +0000
+
+    auto-commit for 033ad234-a331-4c5a-9adb-9c7f8623b86d
+
+commit 3b44d6e2f6305e2839be415dc14af2fd1994b826
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:10:28 2026 +0000
+
+    auto-commit for 42c62d20-b42f-4638-8438-ff28811d0928
+
+commit 045fd816afb00be086a14e83d266c86f33fb41e3
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:09:34 2026 +0000
+
+    auto-commit for 1340643b-fafd-4271-b165-17416fa5233c
+
+commit 7545c75d434e1398036308acb6531007ccc9ba93
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:09:12 2026 +0000
+
+    auto-commit for 82d9bff2-1cab-4448-927f-7d14069cbd2f
+
+commit f2a12735e1e25926d93cc81372601772872fdd91
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:08:57 2026 +0000
+
+    auto-commit for e102c390-7683-45aa-a5ed-ca8257502f02
+
+commit 3debcce14da8d2c3762b0212bb37512b4f543b6f
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:08:43 2026 +0000
+
+    auto-commit for 256db81b-ff49-4108-adcc-99f647ae16f5
+
+commit da39682cf75785eb4dbc74c1bf81ef36b7d186e0
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:08:28 2026 +0000
+
+    auto-commit for ecc6a3bf-d64b-4eae-aac5-96237b4b0e52
+
+commit e249ead676016bfe1907cf19bfc04034a5430a26
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:08:13 2026 +0000
+
+    auto-commit for 22cfa138-907b-4dcb-be3e-139fb2c91873
+
+commit f391afa360ab2e9681e4ef6e76a9447784093276
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:07:58 2026 +0000
+
+    auto-commit for 00999463-1406-425c-b322-3950037c448b
+
+commit 545b89d9b47edf4f01f8f98843e9586ea172c735
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:07:43 2026 +0000
+
+    auto-commit for dda4b0ca-5337-42ed-92ac-7763d3fb0152
+
+commit 9877ec60f944f50caad9257ac5d7371f8a906fb1
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:07:26 2026 +0000
+
+    auto-commit for f7f4bae7-d0a2-4157-867d-f55c7ae3e84c
+
+commit 1df2f047a933f1d61cafeb1870db57d1f950e9d0
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:07:09 2026 +0000
+
+    auto-commit for 99c9d81a-92be-4898-8569-adfbeadf1f45
+
+commit bbb44f1db3dddb9a14369fce3291bc097ca49d46
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:06:51 2026 +0000
+
+    auto-commit for 9403ed84-f516-4ac9-873f-9f77a9ae87f6
+
+commit 69b5098eac70c69f752e7d797251a2f104313e60
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:06:35 2026 +0000
+
+    auto-commit for 19781a56-d5f7-4ea4-be65-994ed976deec
+
+commit 071b55859b2d8af8a7437250f8f186de043394f5
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:06:25 2026 +0000
+
+    auto-commit for c058a04f-14e1-440c-8d8e-92ad272d2e42
+
+commit a8f2b4534a24facb114cb1094721a1960a25e286
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:06:15 2026 +0000
+
+    auto-commit for 9b002023-87ef-4fb9-8bbb-5eb822236d29
+
+commit abac3d698836da44738a6b67801e865b34c6b7f4
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:06:01 2026 +0000
+
+    auto-commit for d08c3c36-d76f-473c-8fc3-297ec8109e97
+
+commit bf4b16cb94842eb61fdfffa9cb14315aba92d8d4
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:05:46 2026 +0000
+
+    auto-commit for 7b98c230-bece-4e69-8547-25893a1e9b85
+
+commit cc37787bfd0f473efd2f5a934e347ac472b6182c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:05:30 2026 +0000
+
+    auto-commit for 6d9b7698-0a4c-4732-a43d-22fbe267d93e
+
+commit fcc3c2ad2acf446384fbdadc53591d56d7235147
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:05:21 2026 +0000
+
+    auto-commit for cb97b41e-f26f-4957-8d6a-27e872b254dd
+
+commit 35cfcb23249601fd482b5fbb7b8f76311339eaa9
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:05:14 2026 +0000
+
+    auto-commit for d5c6bd88-f2ff-457c-a404-ed0de6e59fe5
+
+commit cf6df7a8047fda0bbdf39e0ae005862c82d64343
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Jan 27 10:04:59 2026 +0000
+
+    auto-commit for f2d1fedd-d4cb-40bd-8cbe-28db36ee8270
+
+commit c7fc55d513eb0d1ae6acae179f0df02f0f7879a8
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Mon Jan 26 23:52:14 2026 +0000
+
+    auto-commit for fe312a7a-0b45-4955-8efa-6fe4c5587d9c
+
+commit 9e6b0b56942ca91ea1e572c151fc699907799cba
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Mon Jan 26 23:51:58 2026 +0000
+
+    auto-commit for 7e973a19-475b-4d85-a691-a83b5740024d
+
+commit 2c2bd73081a5df3e050f1356270a2595259e2780
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Mon Jan 26 23:51:44 2026 +0000
+
+    auto-commit for 0817d518-c7e6-4c7f-b3fc-42faa4e4e6db
+
+commit 1dba1a4c673b0efa025f7815f093e7f4a5339d98
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:52:37 2026 +0000
+
+    auto-commit for b7b46c16-d4bc-4140-b105-fdb9d39fa834
+
+commit 6ff70e074de131f09d75974f7a4dcf417c6215ac
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:52:13 2026 +0000
+
+    auto-commit for ced4e361-5368-4cce-b1a6-eb29aacf5383
+
+commit 500f41b2ebc5406ebe7a3cd3042a02d08cb3eb32
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:49:43 2026 +0000
+
+    auto-commit for 8340d2c5-7feb-4a70-b017-b6fbb7974e96
+
+commit 3bda67f8f1beb33d8dd118e7193464d3b66f28cb
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:49:16 2026 +0000
+
+    auto-commit for e136b8f7-a189-4e4c-a917-9e859fabc713
+
+commit 70c82f6e8b55120ebc9d5e8fd6c9507f845c67d3
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:49:06 2026 +0000
+
+    auto-commit for a2523f7d-873e-495d-ba5d-5bc72bec8b21
+
+commit 0b9e27fb5eb82963ef8c2605f8a392ef02ef114d
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:42:41 2026 +0000
+
+    auto-commit for 3d644ad9-75ee-4956-bfe3-a1fc4b5119fa
+
+commit 6601b98e668dab82b7236f9d907a26b00381abda
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:42:32 2026 +0000
+
+    auto-commit for 29aa848b-601f-4158-9f4d-b88fec3bb663
+
+commit b3af62dab022f56740b3201f0cd5b73a8f38a8a7
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:41:41 2026 +0000
+
+    auto-commit for 8690a221-626d-433d-b3fe-22092c32e1fb
+
+commit b7dbc8e3d82cb318165fe9aee8067b4d433d0f6c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:37:37 2026 +0000
+
+    auto-commit for 4cb85ac8-cc49-4881-bb35-ef15c8175915
+
+commit 05b1da69ecf2fc4319a389d911b3425e36ea204d
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:37:18 2026 +0000
+
+    auto-commit for 1d1de077-374f-4f89-a1c7-1e0dda38833e
+
+commit b364658924d108c1cb3822779a9e293f2ff4fa37
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:35:36 2026 +0000
+
+    Auto-commit before changes
+
+commit 5ce1b2dca3a09530367acd8914d41e0568108d0b
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Jan 25 23:32:36 2026 +0000
+
+    auto-commit for 98812c92-8408-42cf-8d6e-d1498397f0a3
+
+commit cb2886725a1994c46e9cddaec5a6b01e8ed8a807
 Author: emergent-agent-e1 <github@emergent.sh>
 Date:   Sun Jan 25 23:19:42 2026 +0000
 
@@ -27858,12 +28239,12 @@ Date:   Thu Nov 6 12:23:48 2025 +0000
     -   **Blocked on other issue:** None
 
 **In progress Task List**:
--   **Task 1: Finalize Device-Lifecycle-Management Interactivity (P0)**
-    -   **Where to resume:** The frontend component  now correctly displays the detailed device modal. The next step is to implement the backend logic for the Edit, Delete, and Add History Event APIs in  and then connect them to the frontend buttons.
-    -   **What will be achieved with this?** A fully interactive device management system with CRUD operations and history tracking, fulfilling the user's latest request.
+-   **Task 1: Refactor Admin Panel Navigation**
+    -   **Where to resume:** The implementation in  is complete but has introduced a rendering bug. The immediate next step is to debug and fix the black screen issue.
+    -   **What will be achieved with this?** A more scalable and user-friendly navigation system for the Electron app's admin area.
     -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on something:** No
+    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Blocked on something:** Blocked by the rendering error (Issue 1).
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
@@ -27875,16 +28256,13 @@ Date:   Thu Nov 6 12:23:48 2025 +0000
     *   Production deployment verification.
 
 **Completed work in this session**
--   **BUGFIX - Continent Loading Error:** Fixed a 404 error in the Admin Panel's Manual Selection tab that prevented continents from loading. The issue was in  and was resolved by correcting API endpoints to use the  prefix.
--   **FEATURE - Standort-Lifecycle-Management (P0):** Fully implemented the location lifecycle system. This involved creating the backend API () and a new frontend component () integrated as a new Lifecycle tab in the Admin Portal. The feature is fully tested and functional.
--   **FEATURE - Geräte-Lifecycle-Management (P0):** Fully implemented a comprehensive device management system in response to a new user request.
-    -   **Backend:** Created a new API in  for device CRUD and history tracking.
-    -   **Frontend:** Created a new component  with status cards, filters, and a detailed device list.
-    -   **Detail Modal & Timeline:** Implemented a detail modal that opens when a device is clicked, showing all properties and a complete historical timeline of events for that device.
-    -   **Debugging:** Resolved a persistent and complex React rendering error (Element type is invalid) by incrementally rebuilding the component and isolating a faulty icon import.
-
-**Earlier issues found/mentioned but not fixed**
-None.
+-   **FEATURE - Locations Table Enhancements:** Fully implemented a new set of features for the locations table () in the Admin Portal, including checkbox selection, bulk tenant assignment, and a customizable column manager (show/hide, reorder).
+-   **BUGFIX - Tenant Assignment Logic:** Fixed a critical bug where assigning a location to a new tenant failed. The root cause was inconsistent database clients ( async vs.  sync) being used across different API endpoints, which was resolved by unifying the update logic to use the sync client.
+-   **BUGFIX - Missing Tenant Name:** Fixed a bug where the Kunde (Customer) column in the locations table showed Nicht zugewiesen (Unassigned) even for assigned locations. This was resolved by updating multiple API endpoints (, ) to correctly query and return the  field and by running a data migration script to populate the field for all existing locations.
+-   **BUGFIX - Inactive Tenant Status:** Fixed a UI bug on  and  where tenants were incorrectly displayed as Inactive. The logic was updated to use the  field as a fallback.
+-   **FEATURE - Electron App ZIP Archive:** Created a ZIP archive of the Electron application and exposed it for download via a new static files endpoint () in the FastAPI backend.
+-   **UI/UX - Admin Panel Improvements:** Added a button in the Electron App's admin section to link directly to the web portal. Refactored the location table's column settings into a more compact gear-icon menu, repositioning it twice based on user feedback.
+-   **DATA - Reverted Germany Migration:** Performed a comprehensive migration of all Deutschland strings to Germany across the database and codebase, and then fully reverted the entire change back to Deutschland at the user's request.
 
 **Known issue recurrence from previous fork**
 -   **Issue recurrence:** Electron app printer support issue.
@@ -27895,61 +28273,58 @@ None.
 
 
 **Key Technical Concepts**
--   **CORS & Preflight Debugging:** Faced and resolved a complex CORS issue where OPTIONS requests succeeded but subsequent GET requests failed. The issue was traced to the browser blocking the request and was fixed by aligning the frontend API call strategy with the application's existing authenticated  wrapper, ensuring headers and routing were handled correctly.
--   **Component-Based Feature Implementation:** New features (Location Lifecycle, Device Lifecycle) were encapsulated in dedicated React components and integrated into the  via tabs, promoting modularity and separation of concerns.
--   **Incremental Debugging:** Resolved a critical React rendering error () by creating a minimal, barebones version of the breaking component and then systematically re-introducing features and imports to isolate the root cause. This pinpointed an issue with icon component imports.
+-   **Database Client Inconsistency:** A critical bug was discovered and resolved, stemming from the simultaneous use of an   client and a   client. Updates made by one client were not immediately visible to the other, causing data integrity issues. The fix involved refactoring the write operation to use the same  client as the read operations, ensuring consistency.
+-   **Complex State Management in React:** The  component uses multiple  hooks to manage a complex UI, including column visibility, column order (drag-and-drop), row selection (using ), filter states, and modal visibility.
+-   **API Endpoint Creation and Modification:** New endpoints were added (, ), and existing endpoints were modified to include previously missing data fields (, ) to support new frontend features.
 
 **key DB schema**
--   ****: Modified to include a  field (, , ) and a  array for status changes.
--   ** (NEW):** Stores comprehensive device details: , , , , , , , , , , , , etc.
--   ** (NEW):** Stores a timeline of events for each device, linked by . Includes , , , and .
-
-**changes in tech stack**
-None.
+-   ****: This collection was the focus of significant work. It was confirmed to have  and  fields. A data backfill script was run to ensure  was populated for all 215 documents.
 
 **All files of reference**
--    (New)
--    (New)
--    (New)
--    (New)
--    (Modified)
--    (Modified for bugfix)
--    (Modified)
+-    (New component for location management)
+-    (Modified for navigation, currently broken)
+-    (Modified for tenant assignment)
+-    (Modified for file downloads)
+-    (Modified for status bug)
+-    (Modified for status bug)
+-    (Investigated for data consistency issues)
 
 **Areas that need refactoring**:
--   The  state in  is hardcoded. This is tracked as a pending issue.
+-   The  component is broken and needs to be fixed immediately.
 -   The  file still uses mock data. This is tracked as a pending issue.
+-   There are multiple database clients in use (, ). While the immediate bug was fixed, a project-wide consolidation to a single client instance would prevent future data consistency issues.
 
 **key api endpoints**
--   : List all locations with their current status.
--   : Bulk-fetch statuses for multiple locations.
--   : Change the status of a specific location.
--   : List all devices with filters.
--   : Get all valid device types.
--   : Get full details and history for one device.
--   : Create a new device.
--   : Update an existing device.
--   : Delete a device.
--   : Add an event to a device's timeline.
+-   : (New) Assigns a list of locations to a new tenant.
+-   : (New) Allows downloading of static files from the  directory.
+-   : (Modified) Updated to include  and .
+-   : (Investigated) Primary endpoint used by the locations table. Confirmed it now returns .
 
 **Critical Info for New Agent**
--   **Speak German:** The user communicates exclusively in German. All responses must be in German.
--   **P0 Priority - Device Lifecycle Interactivity:** Your immediate task is to complete the Device Lifecycle Management system by making the Edit, Delete, and + Event buttons in the detail modal fully functional. This requires implementing the backend logic and wiring up the frontend.
--   **Admin Portal vs. Scan App:** Be mindful of the strict separation. Administrative/management features belong in the web-based Admin Portal (). Device operation and setup features belong in the main app (Scan App).
--   **Tenant Context is Key:** The  () is crucial for the Admin Portal. Ensure any new features respect the globally selected tenant for filtering data and controlling UI access.
+-   **Speak German:** The user communicates exclusively in German. All responses, plans, and summaries MUST be in German.
+-   **P0 Blocker - Fix Admin Panel:** Your immediate and highest priority task is to fix the black screen rendering error in the Electron App's Admin Panel. The error occurred after refactoring the navigation in . This area of the app is currently unusable.
+-   **DB Client Inconsistency:** Be aware that the project uses both  (async) and  (sync) MongoDB clients. This has already caused one major bug. When performing database writes, ensure the change is visible to all parts of the application that need to read it, and prefer using the established  client for consistency if possible.
+-   **New User Request:** The user has asked for a way to see which agents are installed and active. This is a new feature request that should be planned after the P0 blocker is resolved.
 
 **documents and test reports created in this job**
 -    (Updated)
+-   
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Reports Fehler beim Laden der Kontinente (Error loading continents) in the admin area. **Status: COMPLETE.**
-2.  **User:** Requests a lifecycle management system for devices, similar to the one for locations, detailing numerous fields to track (purchase date, warranty, assignments, OS, etc.). **Status: IN PROGRESS.**
-3.  **User:** Confirms the agent's plan for device management, adds docking stations as a device type, and states that all fields should be editable and extensible. **Status: IN PROGRESS.**
-4.  **User:** Gives the final go-ahead: fang an (start). **Status: IN PROGRESS.**
+1.  **User:** Requests to change the gear icon's position in the locations table to be next to the main checkbox. **Status: COMPLETE.**
+2.  **User:** Requests to add a button in the Electron app's admin area to open the web admin portal. **Status: COMPLETE.**
+3.  **User:** Asks for a way to better organize many menu items in the Electron admin area. **Status: IN PROGRESS.**
+4.  **User:** Suggests a specific layout: top tabs for main menu items and a dynamic vertical sidebar for sub-items. **Status: IN PROGRESS (but caused a bug).**
+5.  **User:** Reports the tenant assignment feature is not working; the assigned location is not moving to the new tenant's view. **Status: COMPLETE.**
+6.  **User:** Reports that after assigning a location to the Puma tenant, the Kunde column is still empty. **Status: COMPLETE.**
+7.  **User:** Requests a new feature: an enhanced locations table with checkboxes, tenant assignment, and column configuration. **Status: COMPLETE.**
+8.  **User:** Reverses a previous decision, asking for all Germany strings to be changed back to Deutschland. **Status: COMPLETE.**
+9.  **User:** Requests that the Testland country be deleted and all instances of Deutschland be changed to Germany. **Status: COMPLETE (and then reverted).**
+10. **User:** Asks how to see which agents are installed/active and can receive commands. **Status: NOT STARTED.**
 
 **Project Health Check:**
--   **Broken:** The Edit, Delete, and + Event functionalities in the  component are not yet implemented. The UI buttons exist, but they are not wired to any backend logic.
--   **Mocked:** The  status indicator in the scan app footer remains hardcoded. Several routes in  still use mock data.
+-   **Broken:** The Admin Panel in the Electron app () is not rendering due to a JavaScript error introduced during a navigation refactor.
+-   **Mocked:** The  file still serves mock data instead of querying the database.
 
 **3rd Party Integrations**
 -   MongoDB Atlas
@@ -27964,7 +28339,7 @@ None.
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
 -   **Test files created:** []
--   **Known regressions:** None.
+-   **Known regressions:** The Admin Panel UI is non-functional.
 
 **Credentials to test flow:**
 -   **Web Portal Login:**  / 
@@ -27972,4 +28347,4 @@ None.
 -   **Scan App Admin PIN:** 
 
 **What agent forgot to execute**
-The agent correctly prioritized the user's immediate requests (a critical bugfix followed by two high-priority feature requests). It did not forget older backlog items but correctly deferred them in favor of the user's active focus.</analysis>
+The agent did not forget to execute any direct tasks but was interrupted while starting to investigate a new user request: creating a view to monitor active/installed agents. This request has been captured as a new pending issue.</analysis>

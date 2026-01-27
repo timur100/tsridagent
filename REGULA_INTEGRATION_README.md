@@ -120,7 +120,7 @@ WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
 
 **Verwendung im Request:**
 ```bash
-curl -X POST https://offline-agent.preview.emergentagent.com/api/webhooks/regula-scan \
+curl -X POST https://electron-sync.preview.emergentagent.com/api/webhooks/regula-scan \
   -H "Content-Type: application/json" \
   -H "X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg" \
   -d @regula_scan_data.json
@@ -178,7 +178,7 @@ scan_data = {
 
 # Webhook aufrufen
 response = requests.post(
-    "https://offline-agent.preview.emergentagent.com/api/webhooks/regula-scan",
+    "https://electron-sync.preview.emergentagent.com/api/webhooks/regula-scan",
     json=scan_data,
     headers={"X-API-Key": "G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg"}
 )
@@ -266,7 +266,7 @@ mongosh mongodb://localhost:27017/main_db --eval "db.id_scans.find().sort({creat
 ### Test mit curl
 
 ```bash
-curl -X POST https://offline-agent.preview.emergentagent.com/api/webhooks/regula-scan \
+curl -X POST https://electron-sync.preview.emergentagent.com/api/webhooks/regula-scan \
   -H "Content-Type: application/json" \
   -H "X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg" \
   -d '{
