@@ -2555,10 +2555,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                           <tbody className="font-mono">
                             {/* Mock Data Rows */}
                             {[
-                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Auto', keyNr: 'KEY-001', available: 'Ja' },
-                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Büro', keyNr: 'KEY-002', available: 'Nein' },
-                              { continent: 'Europa', country: 'Deutschland', city: 'München', street: 'Marienplatz 5', zip: '80331', kiosk: 'KIOSK-002', status: 'Online', dispenser: 'KD-A02', keyType: 'Auto', keyNr: 'KEY-003', available: 'Ja' },
-                              { continent: 'Europa', country: 'Frankreich', city: 'Paris', street: 'Rue de Rivoli 12', zip: '75001', kiosk: 'KIOSK-003', status: 'Offline', dispenser: 'KD-A03', keyType: 'Hotel', keyNr: 'KEY-004', available: 'Ja' },
+                              { continent: 'Europa', country: 'Germany', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Auto', keyNr: 'KEY-001', available: 'Ja' },
+                              { continent: 'Europa', country: 'Germany', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Büro', keyNr: 'KEY-002', available: 'Nein' },
+                              { continent: 'Europa', country: 'Germany', city: 'München', street: 'Marienplatz 5', zip: '80331', kiosk: 'KIOSK-002', status: 'Online', dispenser: 'KD-A02', keyType: 'Auto', keyNr: 'KEY-003', available: 'Ja' },
+                              { continent: 'Europa', country: 'France', city: 'Paris', street: 'Rue de Rivoli 12', zip: '75001', kiosk: 'KIOSK-003', status: 'Offline', dispenser: 'KD-A03', keyType: 'Hotel', keyNr: 'KEY-004', available: 'Ja' },
                               { continent: 'Nordamerika', country: 'USA', city: 'New York', street: '5th Avenue 123', zip: '10001', kiosk: 'KIOSK-004', status: 'Online', dispenser: 'KD-A04', keyType: 'Auto', keyNr: 'KEY-005', available: 'Nein' },
                             ].filter(row => {
                               if (filterContinent && row.continent !== filterContinent) return false;
