@@ -39,7 +39,6 @@ export const COUNTRIES_BY_LETTER = {
   ],
   D: [
     { name: 'Dänemark', code: 'DK' },
-    { name: 'Deutschland', code: 'DE' },
     { name: 'Dominica', code: 'DM' },
     { name: 'Dominikanische Republik', code: 'DO' },
     { name: 'Dschibuti', code: 'DJ' },
