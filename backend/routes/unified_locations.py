@@ -304,7 +304,7 @@ async def get_station_details(location_code: str):
                 "plz": tenant_loc.get("postal_code", ""),
                 "city": tenant_loc.get("city", ""),
                 "bundesland": tenant_loc.get("state", ""),
-                "country": tenant_loc.get("country", "Deutschland"),
+                "country": tenant_loc.get("country", "Germany"),
                 "continent": tenant_loc.get("continent", "Europa"),
                 "tenant": "Europcar",
                 "manager": tenant_loc.get("manager", ""),
