@@ -214,6 +214,7 @@ async def list_locations(
             status_info = status_map.get(code, {})
             
             location_data = {
+                "location_id": loc.get("location_id", ""),
                 "location_code": code,
                 "name": loc.get("station_name", ""),
                 "street": loc.get("street", ""),
