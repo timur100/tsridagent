@@ -59,6 +59,7 @@ export const COUNTRIES_BY_LETTER = {
     { name: 'Gabun', code: 'GA' },
     { name: 'Gambia', code: 'GM' },
     { name: 'Georgien', code: 'GE' },
+    { name: 'Germany', code: 'DE' },
     { name: 'Ghana', code: 'GH' },
     { name: 'Grenada', code: 'GD' },
     { name: 'Griechenland', code: 'GR' },
