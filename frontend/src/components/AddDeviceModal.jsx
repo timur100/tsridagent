@@ -264,9 +264,9 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
                 onChange={handleChange}
                 theme={theme}
                 options={[
-                  { value: 'Germany', label: 'Germany' },
-                  { value: 'Austria', label: 'Austria' },
-                  { value: 'Switzerland', label: 'Switzerland' }
+                  { value: 'GERMANY', label: 'Deutschland' },
+                  { value: 'AUSTRIA', label: 'Österreich' },
+                  { value: 'SWITZERLAND', label: 'Schweiz' }
                 ]}
               />
             </div>

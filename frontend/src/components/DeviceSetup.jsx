@@ -94,7 +94,7 @@ const DeviceSetup = ({ onComplete }) => {
       }
     } catch (e) {
       console.error('Fehler beim Laden der Länder:', e);
-      setCountries(['Germany', 'Austria', 'Switzerland']);
+      setCountries(['Deutschland', 'Österreich', 'Schweiz']);
     } finally {
       setLoading(false);
     }

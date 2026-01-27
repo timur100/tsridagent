@@ -29,11 +29,11 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
   ];
 
   const suggestedCountries = {
-    retail: ['Germany', 'France', 'Spain', 'Italy', 'Netherlands', 'Belgium', 'Austria', 'Switzerland'],
-    automotive: ['Germany', 'France', 'Spain', 'Italy', 'UK', 'USA', 'Australia'],
-    sports: ['Germany', 'UK', 'France', 'Spain', 'Italy', 'USA', 'China', 'Japan'],
-    logistics: ['Germany', 'USA', 'UK', 'France', 'China', 'India', 'Brazil'],
-    hospitality: ['USA', 'Germany', 'UK', 'France', 'China', 'Japan', 'Australia'],
+    retail: ['Deutschland', 'Frankreich', 'Spanien', 'Italien', 'Niederlande', 'Belgien', 'Österreich', 'Schweiz'],
+    automotive: ['Deutschland', 'Frankreich', 'Spanien', 'Italien', 'UK', 'USA', 'Australien'],
+    sports: ['Deutschland', 'UK', 'Frankreich', 'Spanien', 'Italien', 'USA', 'China', 'Japan'],
+    logistics: ['Deutschland', 'USA', 'UK', 'Frankreich', 'China', 'Indien', 'Brasilien'],
+    hospitality: ['USA', 'Deutschland', 'UK', 'Frankreich', 'China', 'Japan', 'Australien'],
     custom: []
   };
 
