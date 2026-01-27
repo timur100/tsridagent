@@ -191,20 +191,57 @@ async def get_cities(
 @router.get("/by-city")
 async def get_locations_by_city(
     city: str = Query(..., description="Stadt"),
-    country: str = Query(None, description="Land (optional)")
+    country: str = Query(None, description="Land (optional)"),
+    tenant_id: str = Query(None, description="Tenant-ID für Filterung")
 ):
     """Holt alle Standorte in einer bestimmten Stadt MIT vollständigen Details"""
     try:
         portal_db = client['portal_db']
         
-        # Query für europcar_devices (um Standort-Codes zu finden)
+        # Query basierend auf Stadt, Land und optional Tenant
         query = {"city": {"$regex": f"^{city}$", "$options": "i"}}
         if country:
             query["country"] = {"$regex": f"^{country}$", "$options": "i"}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
         
+        # Wenn tenant_id angegeben, hole direkt aus tenant_locations
+        if tenant_id:
+            cursor = portal_db.tenant_locations.find(query, {"_id": 0})
+            tenant_locs = await cursor.to_list(length=500)
+            
+            enriched_locations = []
+            for loc in tenant_locs:
+                enriched_locations.append({
+                    "station_code": loc.get("location_code", ""),
+                    "name": loc.get("station_name", ""),
+                    "street": loc.get("street", ""),
+                    "zip": loc.get("postal_code", ""),
+                    "city": loc.get("city", ""),
+                    "country": loc.get("country", ""),
+                    "customer": loc.get("tenant_name", ""),
+                    "device_count": 0,  # TODO: Zähle Geräte
+                    "phone": loc.get("phone", ""),
+                    "email": loc.get("email", ""),
+                    "manager": loc.get("manager", ""),
+                    "main_typ": loc.get("main_type", ""),
+                    "has_details": True,
+                    "tenant_id": loc.get("tenant_id", ""),
+                    "tenant_name": loc.get("tenant_name", "")
+                })
+            
+            return {
+                "success": True,
+                "locations": enriched_locations,
+                "total": len(enriched_locations),
+                "city": city,
+                "tenant_id": tenant_id
+            }
+        
+        # Fallback: Alte Logik ohne Tenant-Filterung
         # Gruppiere nach locationcode um eindeutige Standorte zu bekommen
         pipeline = [
-            {"$match": query},
+            {"$match": {"city": {"$regex": f"^{city}$", "$options": "i"}}},
             {"$group": {
                 "_id": "$locationcode",
                 "station_code": {"$first": "$locationcode"},
