@@ -4,22 +4,22 @@
 
 // Bundesländer zu Regionen/Kontinent
 export const BUNDESLAND_TO_REGION = {
-  'Baden-Württemberg': { kontinent: 'Europa', land: 'Germany', region: 'Südwesten' },
-  'Bayern': { kontinent: 'Europa', land: 'Germany', region: 'Süden' },
-  'Berlin': { kontinent: 'Europa', land: 'Germany', region: 'Osten' },
-  'Brandenburg': { kontinent: 'Europa', land: 'Germany', region: 'Osten' },
-  'Bremen': { kontinent: 'Europa', land: 'Germany', region: 'Norden' },
-  'Hamburg': { kontinent: 'Europa', land: 'Germany', region: 'Norden' },
-  'Hessen': { kontinent: 'Europa', land: 'Germany', region: 'Mitte' },
-  'Mecklenburg-Vorpommern': { kontinent: 'Europa', land: 'Germany', region: 'Nordosten' },
-  'Niedersachsen': { kontinent: 'Europa', land: 'Germany', region: 'Norden' },
-  'Nordrhein-Westfalen': { kontinent: 'Europa', land: 'Germany', region: 'Westen' },
-  'Rheinland-Pfalz': { kontinent: 'Europa', land: 'Germany', region: 'Südwesten' },
-  'Saarland': { kontinent: 'Europa', land: 'Germany', region: 'Südwesten' },
-  'Sachsen': { kontinent: 'Europa', land: 'Germany', region: 'Osten' },
-  'Sachsen-Anhalt': { kontinent: 'Europa', land: 'Germany', region: 'Osten' },
-  'Schleswig-Holstein': { kontinent: 'Europa', land: 'Germany', region: 'Norden' },
-  'Thüringen': { kontinent: 'Europa', land: 'Germany', region: 'Mitte' }
+  'Baden-Württemberg': { kontinent: 'Europa', land: 'Deutschland', region: 'Südwesten' },
+  'Bayern': { kontinent: 'Europa', land: 'Deutschland', region: 'Süden' },
+  'Berlin': { kontinent: 'Europa', land: 'Deutschland', region: 'Osten' },
+  'Brandenburg': { kontinent: 'Europa', land: 'Deutschland', region: 'Osten' },
+  'Bremen': { kontinent: 'Europa', land: 'Deutschland', region: 'Norden' },
+  'Hamburg': { kontinent: 'Europa', land: 'Deutschland', region: 'Norden' },
+  'Hessen': { kontinent: 'Europa', land: 'Deutschland', region: 'Mitte' },
+  'Mecklenburg-Vorpommern': { kontinent: 'Europa', land: 'Deutschland', region: 'Nordosten' },
+  'Niedersachsen': { kontinent: 'Europa', land: 'Deutschland', region: 'Norden' },
+  'Nordrhein-Westfalen': { kontinent: 'Europa', land: 'Deutschland', region: 'Westen' },
+  'Rheinland-Pfalz': { kontinent: 'Europa', land: 'Deutschland', region: 'Südwesten' },
+  'Saarland': { kontinent: 'Europa', land: 'Deutschland', region: 'Südwesten' },
+  'Sachsen': { kontinent: 'Europa', land: 'Deutschland', region: 'Osten' },
+  'Sachsen-Anhalt': { kontinent: 'Europa', land: 'Deutschland', region: 'Osten' },
+  'Schleswig-Holstein': { kontinent: 'Europa', land: 'Deutschland', region: 'Norden' },
+  'Thüringen': { kontinent: 'Europa', land: 'Deutschland', region: 'Mitte' }
 };
 
 // Besondere Orte Kategorien (Legacy - wird durch API ersetzt)
