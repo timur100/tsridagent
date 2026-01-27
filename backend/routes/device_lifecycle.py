@@ -617,6 +617,7 @@ async def assign_device_to_location(
     except HTTPException:
         raise
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # =====================================================
