@@ -231,7 +231,7 @@ async def validate_activation_code(code: str):
                     "street": location.get("street", "") if location else activation.get("location_data", {}).get("street", ""),
                     "postal_code": location.get("postal_code", "") if location else activation.get("location_data", {}).get("postal_code", ""),
                     "city": location.get("city", "") if location else activation.get("location_data", {}).get("city", ""),
-                    "country": device.get("country", "Germany") if device else "Germany",
+                    "country": device.get("country", "Deutschland") if device else "Deutschland",
                     "phone": location.get("phone", "") if location else activation.get("location_data", {}).get("phone", ""),
                     "email": location.get("email", "") if location else activation.get("location_data", {}).get("email", ""),
                     "manager": location.get("manager", "") if location else activation.get("location_data", {}).get("manager", "")
@@ -311,7 +311,7 @@ async def activate_device_with_code(data: ActivationCodeActivate):
             "street": location.get("street", "") if location else "",
             "zip": location.get("postal_code", "") if location else "",
             "city": location.get("city", "") if location else "",
-            "country": device.get("country", "Germany") if device else "Germany",
+            "country": device.get("country", "Deutschland") if device else "Deutschland",
             "phone": location.get("phone", "") if location else "",
             "email": location.get("email", "") if location else "",
             "manager": location.get("manager", "") if location else "",

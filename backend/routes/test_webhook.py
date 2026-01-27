@@ -53,7 +53,7 @@ async def simulate_scan():
             "images": [],
             "extracted_data": {
                 "document_class": "Personalausweis",
-                "country": "Germany",
+                "country": "Deutschland",
                 "document_number": "T220001293",
                 "first_name": "Max",
                 "last_name": "Mustermann",
