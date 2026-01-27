@@ -83,6 +83,23 @@ Two methods implemented:
   - Sidebar-Navigation: Alle Untermenüpunkte funktionsfähig
   - DeviceLifecycleManager Seite vollständig funktional
 
+#### P0 - Stadt-Dropdown falsche Daten (Jan 27, 2025) - ✅ BEHOBEN & GETESTET
+- **Status:** BEHOBEN - 100% Backend & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_5.json`
+- **Problem:** Stadt-Dropdown in DeviceSetup zeigte falsche/kleingeschriebene Städte aus `europcar_devices` statt `tenant_locations`
+- **Lösung:**
+  1. ✅ **Neuer Tenant-Selektor im Frontend (`DeviceSetup.jsx`):**
+     - Pflichtfeld-Auswahl vor Kontinent/Land/Stadt
+     - Zeigt alle verfügbaren Tenants (Europcar, Puma, etc.)
+  2. ✅ **Backend APIs erweitert (`unified_locations.py`):**
+     - `/cities` Endpoint unterstützt jetzt `tenant_id` Parameter
+     - `/by-city` Endpoint unterstützt jetzt `tenant_id` Parameter
+     - Daten kommen aus `tenant_locations` Collection (nicht mehr `europcar_devices`)
+- **Ergebnis:**
+  - 158 korrekte Städte in GROSSBUCHSTABEN für Europcar in Deutschland
+  - Standorte werden nach Tenant gefiltert
+  - UI fordert Tenant-Auswahl vor Standortsuche
+
 #### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Tests bestanden
 - **Test Report:** `/app/test_reports/iteration_3.json`
