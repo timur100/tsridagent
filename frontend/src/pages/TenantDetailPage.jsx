@@ -1568,7 +1568,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {renderEditableField('PLZ', 'address.postal_code', tenant.address?.postal_code || '12345')}
                 {renderEditableField('Stadt', 'address.city', tenant.address?.city || 'Berlin')}
                 {renderEditableField('Bundesland', 'address.state', tenant.address?.state || 'Berlin')}
-                {renderEditableField('Land', 'address.country', tenant.address?.country || 'Deutschland')}
+                {renderEditableField('Land', 'address.country', tenant.address?.country || 'Germany')}
               </div>
             </Card>
 
