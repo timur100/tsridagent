@@ -1568,7 +1568,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 {renderEditableField('PLZ', 'address.postal_code', tenant.address?.postal_code || '12345')}
                 {renderEditableField('Stadt', 'address.city', tenant.address?.city || 'Berlin')}
                 {renderEditableField('Bundesland', 'address.state', tenant.address?.state || 'Berlin')}
-                {renderEditableField('Land', 'address.country', tenant.address?.country || 'Germany')}
+                {renderEditableField('Land', 'address.country', tenant.address?.country || 'Deutschland')}
               </div>
             </Card>
 
@@ -2443,8 +2443,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                             }`}
                           >
                             <option value="">Alle</option>
-                            <option value="Germany">Germany</option>
-                            <option value="France">France</option>
+                            <option value="Deutschland">Deutschland</option>
+                            <option value="Frankreich">Frankreich</option>
                             <option value="USA">USA</option>
                           </select>
                         </div>
@@ -2555,10 +2555,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                           <tbody className="font-mono">
                             {/* Mock Data Rows */}
                             {[
-                              { continent: 'Europa', country: 'Germany', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Auto', keyNr: 'KEY-001', available: 'Ja' },
-                              { continent: 'Europa', country: 'Germany', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Büro', keyNr: 'KEY-002', available: 'Nein' },
-                              { continent: 'Europa', country: 'Germany', city: 'München', street: 'Marienplatz 5', zip: '80331', kiosk: 'KIOSK-002', status: 'Online', dispenser: 'KD-A02', keyType: 'Auto', keyNr: 'KEY-003', available: 'Ja' },
-                              { continent: 'Europa', country: 'France', city: 'Paris', street: 'Rue de Rivoli 12', zip: '75001', kiosk: 'KIOSK-003', status: 'Offline', dispenser: 'KD-A03', keyType: 'Hotel', keyNr: 'KEY-004', available: 'Ja' },
+                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Auto', keyNr: 'KEY-001', available: 'Ja' },
+                              { continent: 'Europa', country: 'Deutschland', city: 'Berlin', street: 'Hauptstr. 1', zip: '10115', kiosk: 'KIOSK-001', status: 'Online', dispenser: 'KD-A01', keyType: 'Büro', keyNr: 'KEY-002', available: 'Nein' },
+                              { continent: 'Europa', country: 'Deutschland', city: 'München', street: 'Marienplatz 5', zip: '80331', kiosk: 'KIOSK-002', status: 'Online', dispenser: 'KD-A02', keyType: 'Auto', keyNr: 'KEY-003', available: 'Ja' },
+                              { continent: 'Europa', country: 'Frankreich', city: 'Paris', street: 'Rue de Rivoli 12', zip: '75001', kiosk: 'KIOSK-003', status: 'Offline', dispenser: 'KD-A03', keyType: 'Hotel', keyNr: 'KEY-004', available: 'Ja' },
                               { continent: 'Nordamerika', country: 'USA', city: 'New York', street: '5th Avenue 123', zip: '10001', kiosk: 'KIOSK-004', status: 'Online', dispenser: 'KD-A04', keyType: 'Auto', keyNr: 'KEY-005', available: 'Nein' },
                             ].filter(row => {
                               if (filterContinent && row.continent !== filterContinent) return false;
@@ -3349,7 +3349,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       type="text"
                       required
                       defaultValue={editingLocation?.country || ''}
-                      placeholder="z.B. Germany"
+                      placeholder="z.B. Deutschland"
                       className={`w-full px-3 py-2 rounded-lg border ${
                         theme === 'dark'
                           ? 'bg-[#1f1f1f] border-gray-600 text-white'
