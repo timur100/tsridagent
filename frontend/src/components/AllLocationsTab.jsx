@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, MapPin, Circle, Search, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus, Edit, Trash2, MapPin, Circle, Search, ArrowUpDown, ArrowUp, ArrowDown, Check, X, Settings, GripVertical, Eye, EyeOff, Users, ChevronDown } from 'lucide-react';
 import { Card } from './ui/card';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,12 +24,32 @@ const STATE_NAMES = {
   'TH': 'Thüringen'
 };
 
+// Default column configuration
+const DEFAULT_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false, width: 'w-10' },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'tenant_name', label: 'Kunde', visible: true, sortable: true },
+  { id: 'location_code', label: 'Code', visible: true, sortable: true },
+  { id: 'station_name', label: 'Stationsname', visible: true, sortable: true },
+  { id: 'street', label: 'Straße', visible: true, sortable: true },
+  { id: 'postal_code', label: 'PLZ', visible: true, sortable: true },
+  { id: 'city', label: 'Stadt', visible: true, sortable: true },
+  { id: 'state', label: 'Bundesland', visible: true, sortable: true },
+  { id: 'country', label: 'Land', visible: false, sortable: true },
+  { id: 'manager', label: 'Manager', visible: true, sortable: true },
+  { id: 'phone', label: 'Telefon', visible: false, sortable: true },
+  { id: 'email', label: 'E-Mail', visible: false, sortable: true },
+  { id: 'sn_pc', label: 'SN-PC', visible: true, sortable: true },
+  { id: 'sn_sc', label: 'SN-SC', visible: true, sortable: true },
+  { id: 'tv_id', label: 'TeamViewer', visible: false, sortable: true },
+];
+
 const AllLocationsTab = ({ theme, selectedTenantId }) => {
   const navigate = useNavigate();
   const { apiCall } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'location_code', direction: 'asc' });
-  const [onlineStatusFilter, setOnlineStatusFilter] = useState('all'); // 'all', 'online', 'offline'
+  const [onlineStatusFilter, setOnlineStatusFilter] = useState('all');
   const [filters, setFilters] = useState({
     continent: '',
     country: '',
@@ -48,15 +68,32 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
   });
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Selection state
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [availableTenants, setAvailableTenants] = useState([]);
+  const [assigningTenant, setAssigningTenant] = useState(null);
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('allLocationsColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_COLUMNS;
+  });
+  const [showColumnSettings, setShowColumnSettings] = useState(false);
+  const [draggedColumn, setDraggedColumn] = useState(null);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Hilfsfunktion um Bundesland-Namen zu bekommen
+  // Save columns to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('allLocationsColumns', JSON.stringify(columns));
+  }, [columns]);
+
   const getStateName = (stateCode) => {
     return STATE_NAMES[stateCode] || stateCode;
   };
 
-  // Hilfsfunktion um besondere Orte zu identifizieren
   const getSpecialLocationType = (location) => {
     const stationName = (location.station_name || '').toUpperCase();
     const locationCode = (location.location_code || '').toUpperCase();
@@ -86,36 +123,27 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     return types;
   };
 
-  // Fetch all locations from all tenants or specific tenant
+  // Fetch all locations
   useEffect(() => {
     fetchAllLocations();
+    fetchAvailableTenants();
   }, [selectedTenantId]);
 
   const fetchAllLocations = async () => {
     setLoading(true);
-    console.log('[AllLocationsTab] fetchAllLocations called, selectedTenantId:', selectedTenantId);
     try {
       const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
-      console.log('[AllLocationsTab] Token available:', !!token);
-      
-      // Use the tenant-locations API directly
       const tenantId = selectedTenantId || 'all';
       const url = `${BACKEND_URL}/api/tenant-locations/${tenantId}`;
-      console.log('[AllLocationsTab] Fetching from:', url);
       
       const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
-      console.log('[AllLocationsTab] Response status:', response.status);
-      
       if (response.ok) {
         const data = await response.json();
-        console.log('[AllLocationsTab] Loaded locations:', data.locations?.length);
         setLocations(data.locations || []);
       } else {
-        const errorText = await response.text();
-        console.error('[AllLocationsTab] Failed to load locations:', response.status, errorText);
         setLocations([]);
       }
     } catch (error) {
@@ -123,6 +151,22 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       setLocations([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchAvailableTenants = async () => {
+    try {
+      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
+      const response = await fetch(`${BACKEND_URL}/api/tenants/`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableTenants(data.tenants || []);
+      }
+    } catch (error) {
+      console.error('[AllLocationsTab] Error fetching tenants:', error);
     }
   };
 
@@ -140,17 +184,14 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       return;
     }
 
-    // Get unique continents
     const uniqueContinents = [...new Set(locations.map(loc => loc.continent).filter(Boolean))].sort();
     
-    // Get unique countries (filtered by selected continent if applicable)
     let filteredForCountries = locations;
     if (filters.continent) {
       filteredForCountries = locations.filter(loc => loc.continent === filters.continent);
     }
     const uniqueCountries = [...new Set(filteredForCountries.map(loc => loc.country).filter(Boolean))].sort();
     
-    // Get unique states
     let filteredForStates = locations;
     if (filters.continent) {
       filteredForStates = filteredForStates.filter(loc => loc.continent === filters.continent);
@@ -160,7 +201,6 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     }
     const uniqueStates = [...new Set(filteredForStates.map(loc => loc.state).filter(Boolean))].sort();
     
-    // Get unique cities
     let filteredForCities = locations;
     if (filters.continent) {
       filteredForCities = filteredForCities.filter(loc => loc.continent === filters.continent);
@@ -173,7 +213,6 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     }
     const uniqueCities = [...new Set(filteredForCities.map(loc => loc.city).filter(Boolean))].sort();
     
-    // Get special location types
     const allSpecialTypes = new Set();
     locations.forEach(loc => {
       const types = getSpecialLocationType(loc);
@@ -181,7 +220,6 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     });
     const specialTypes = Array.from(allSpecialTypes).sort();
     
-    // Get unique tenants
     const uniqueTenants = [...new Set(locations.map(loc => loc.tenant_name).filter(Boolean))].sort();
     
     setFilterOptions({
@@ -208,14 +246,12 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     );
   };
 
-  // Filter locations based on search and filters
+  // Filter and sort locations
   const filteredLocations = locations.filter(location => {
-    // Online/Offline status filter
     const isOnline = location.id_checker !== null;
     if (onlineStatusFilter === 'online' && !isOnline) return false;
     if (onlineStatusFilter === 'offline' && isOnline) return false;
 
-    // Search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
@@ -236,14 +272,12 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       if (!matchesSearch) return false;
     }
 
-    // Dropdown filters
     if (filters.continent && location.continent !== filters.continent) return false;
     if (filters.country && location.country !== filters.country) return false;
     if (filters.state && location.state !== filters.state) return false;
     if (filters.city && location.city !== filters.city) return false;
     if (filters.tenant && location.tenant_name !== filters.tenant) return false;
     
-    // Special location type filter
     if (filters.mainType) {
       const specialTypes = getSpecialLocationType(location);
       if (!specialTypes.includes(filters.mainType)) return false;
@@ -252,9 +286,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     return true;
   });
 
-  // Sort locations
   const sortedLocations = [...filteredLocations].sort((a, b) => {
-    // Special handling for online status sorting
     if (sortConfig.key === 'status') {
       const aOnline = a.id_checker !== null ? 1 : 0;
       const bOnline = b.id_checker !== null ? 1 : 0;
@@ -264,12 +296,8 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     const aValue = a[sortConfig.key] || '';
     const bValue = b[sortConfig.key] || '';
 
-    if (aValue < bValue) {
-      return sortConfig.direction === 'asc' ? -1 : 1;
-    }
-    if (aValue > bValue) {
-      return sortConfig.direction === 'asc' ? 1 : -1;
-    }
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;
   });
 
@@ -289,7 +317,9 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       : <ArrowDown className="w-3 h-3 ml-1" />;
   };
 
-  const handleRowClick = (location) => {
+  const handleRowClick = (location, e) => {
+    // Don't navigate if clicking on checkbox
+    if (e.target.type === 'checkbox' || e.target.closest('.checkbox-cell')) return;
     navigate(`/portal/admin/locations/${location.location_id}`);
   };
 
@@ -297,7 +327,6 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     setFilters(prev => {
       const newFilters = { ...prev, [filterType]: value };
       
-      // Reset dependent filters
       if (filterType === 'continent') {
         newFilters.country = '';
         newFilters.state = '';
@@ -313,27 +342,234 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     });
   };
 
+  // Selection handlers
+  const handleSelectAll = (checked) => {
+    if (checked) {
+      setSelectedIds(new Set(sortedLocations.map(loc => loc.location_id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  const handleSelectOne = (locationId, checked) => {
+    setSelectedIds(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(locationId);
+      } else {
+        newSet.delete(locationId);
+      }
+      return newSet;
+    });
+  };
+
+  const isAllSelected = sortedLocations.length > 0 && selectedIds.size === sortedLocations.length;
+  const isSomeSelected = selectedIds.size > 0 && selectedIds.size < sortedLocations.length;
+
+  // Assign locations to tenant
+  const handleAssignToTenant = async (tenantId) => {
+    if (!tenantId || selectedIds.size === 0) return;
+    
+    setAssigningTenant(tenantId);
+    try {
+      const token = localStorage.getItem('portal_token') || localStorage.getItem('token');
+      const locationIds = Array.from(selectedIds);
+      
+      const response = await fetch(`${BACKEND_URL}/api/locations/assign-tenant`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          location_ids: locationIds,
+          tenant_id: tenantId
+        })
+      });
+      
+      if (response.ok) {
+        // Refresh locations and clear selection
+        await fetchAllLocations();
+        setSelectedIds(new Set());
+        setShowAssignModal(false);
+      } else {
+        console.error('Failed to assign locations');
+      }
+    } catch (error) {
+      console.error('Error assigning locations:', error);
+    } finally {
+      setAssigningTenant(null);
+    }
+  };
+
+  // Column visibility toggle
+  const toggleColumnVisibility = (columnId) => {
+    setColumns(prev => prev.map(col => 
+      col.id === columnId ? { ...col, visible: !col.visible } : col
+    ));
+  };
+
+  // Column drag handlers
+  const handleDragStart = (e, index) => {
+    setDraggedColumn(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedColumn === null || draggedColumn === index) return;
+    
+    setColumns(prev => {
+      const newColumns = [...prev];
+      const draggedItem = newColumns[draggedColumn];
+      newColumns.splice(draggedColumn, 1);
+      newColumns.splice(index, 0, draggedItem);
+      setDraggedColumn(index);
+      return newColumns;
+    });
+  };
+
+  const handleDragEnd = () => {
+    setDraggedColumn(null);
+  };
+
+  const resetColumns = () => {
+    setColumns(DEFAULT_COLUMNS);
+    localStorage.removeItem('allLocationsColumns');
+  };
+
+  // Get visible columns
+  const visibleColumns = columns.filter(col => col.visible);
+
+  // Render cell value based on column id
+  const renderCellValue = (location, columnId) => {
+    switch (columnId) {
+      case 'status':
+        return getStatusBadge(location);
+      case 'tenant_name':
+        return location.tenant_name || <span className="text-gray-400 italic">Nicht zugewiesen</span>;
+      case 'location_code':
+        return <span className="font-semibold">{location.location_code}</span>;
+      case 'state':
+        return location.state ? getStateName(location.state) : '-';
+      default:
+        return location[columnId] || '-';
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Header with Title, Search and Add Button */}
-      <div className="flex items-center gap-4">
-        <div className="flex-shrink-0">
-          <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-            Standorte
-          </h3>
-          <p className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-            {sortedLocations.length} von {locations.length} {locations.length === 1 ? 'Standort' : 'Standorte'}
-          </p>
+    <div className="space-y-4">
+      {/* Header with selection actions and column settings */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          {selectedIds.size > 0 && (
+            <div className={`flex items-center gap-3 px-4 py-2 rounded-lg ${
+              theme === 'dark' ? 'bg-[#c00000]/20 border border-[#c00000]/40' : 'bg-red-50 border border-red-200'
+            }`}>
+              <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                {selectedIds.size} ausgewählt
+              </span>
+              <button
+                onClick={() => setShowAssignModal(true)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-[#c00000] text-white text-sm rounded-lg hover:bg-[#a00000] transition-colors"
+              >
+                <Users className="w-4 h-4" />
+                Tenant zuweisen
+              </button>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className={`px-2 py-1.5 text-sm rounded-lg transition-colors ${
+                  theme === 'dark' ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                }`}
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
         
-        {/* Search Bar */}
-        <div className="relative flex-1">
+        {/* Column Settings Button */}
+        <div className="relative">
+          <button
+            onClick={() => setShowColumnSettings(!showColumnSettings)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
+              theme === 'dark'
+                ? 'bg-[#2a2a2a] border-gray-700 text-gray-300 hover:bg-[#333]'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+            }`}
+          >
+            <Settings className="w-4 h-4" />
+            <span className="text-sm">Spalten</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showColumnSettings ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {/* Column Settings Dropdown */}
+          {showColumnSettings && (
+            <div className={`absolute right-0 top-full mt-2 w-72 rounded-xl border shadow-xl z-50 ${
+              theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <div className={`px-4 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                <div className="flex items-center justify-between">
+                  <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Spalten konfigurieren
+                  </span>
+                  <button
+                    onClick={resetColumns}
+                    className="text-xs text-[#c00000] hover:underline"
+                  >
+                    Zurücksetzen
+                  </button>
+                </div>
+                <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Ziehen zum Neuordnen, klicken zum Ein-/Ausblenden
+                </p>
+              </div>
+              <div className="max-h-80 overflow-y-auto p-2">
+                {columns.filter(col => col.id !== 'select').map((column, index) => (
+                  <div
+                    key={column.id}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-move transition-colors ${
+                      draggedColumn === index
+                        ? 'bg-[#c00000]/20'
+                        : theme === 'dark' ? 'hover:bg-[#333]' : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <GripVertical className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                    <button
+                      onClick={() => toggleColumnVisibility(column.id)}
+                      className={`flex-1 flex items-center justify-between ${
+                        theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                      }`}
+                    >
+                      <span className="text-sm">{column.label}</span>
+                      {column.visible ? (
+                        <Eye className="w-4 h-4 text-green-500" />
+                      ) : (
+                        <EyeOff className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Search and Filters */}
+      <div className="flex flex-wrap gap-3">
+        {/* Search */}
+        <div className="relative flex-1 min-w-[300px]">
           <Search className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 ${
             theme === 'dark' ? 'text-gray-500' : 'text-gray-400'
           }`} />
           <input
             type="text"
-            placeholder="Suche nach Code, Name, Stadt, Manager, Tenant..."
+            placeholder="Suchen nach Code, Name, Adresse, Manager..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className={`w-full pl-10 pr-4 py-2 rounded-lg border ${
@@ -343,76 +579,27 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
           />
         </div>
-      </div>
 
-      {/* All Filters in One Row */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* Online/Offline Status Buttons */}
-        <button
-          onClick={() => setOnlineStatusFilter('all')}
-          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-            onlineStatusFilter === 'all'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
-              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-          }`}
+        {/* Status Filter */}
+        <select
+          value={onlineStatusFilter}
+          onChange={(e) => setOnlineStatusFilter(e.target.value)}
+          className={`px-4 py-2 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
         >
-          Alle ({locations.length})
-        </button>
-        <button
-          onClick={() => setOnlineStatusFilter('online')}
-          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-            onlineStatusFilter === 'online'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
-              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-          Online ({locations.filter(loc => loc.id_checker !== null).length})
-        </button>
-        <button
-          onClick={() => setOnlineStatusFilter('offline')}
-          className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-            onlineStatusFilter === 'offline'
-              ? 'bg-[#c00000] text-white'
-              : theme === 'dark'
-              ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
-              : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          <Circle className="w-2 h-2 fill-gray-400 text-gray-400" />
-          Offline ({locations.filter(loc => loc.id_checker === null).length})
-        </button>
-
-        {/* Divider */}
-        <div className={`h-8 w-px ${theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
-
-        {/* Tenant Filter - only show when "Alle Kunden" selected */}
-        {!selectedTenantId || selectedTenantId === 'all' ? (
-          <select
-            value={filters.tenant}
-            onChange={(e) => handleFilterChange('tenant', e.target.value)}
-            className={`px-3 py-2 rounded-lg border ${
-              theme === 'dark'
-                ? 'bg-[#2a2a2a] border-gray-700 text-white'
-                : 'bg-white border-gray-200 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
-          >
-            <option value="">Alle Kunden</option>
-            {Array.isArray(filterOptions?.tenants) && filterOptions.tenants.map(tenant => (
-              <option key={tenant} value={tenant}>{tenant}</option>
-            ))}
-          </select>
-        ) : null}
+          <option value="all">Alle Status</option>
+          <option value="online">Online</option>
+          <option value="offline">Offline</option>
+        </select>
 
         {/* Continent Filter */}
         <select
           value={filters.continent}
           onChange={(e) => handleFilterChange('continent', e.target.value)}
-          className={`px-3 py-2 rounded-lg border ${
+          className={`px-4 py-2 rounded-lg border ${
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
@@ -428,7 +615,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         <select
           value={filters.country}
           onChange={(e) => handleFilterChange('country', e.target.value)}
-          className={`px-3 py-2 rounded-lg border ${
+          className={`px-4 py-2 rounded-lg border ${
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
@@ -444,7 +631,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         <select
           value={filters.state}
           onChange={(e) => handleFilterChange('state', e.target.value)}
-          className={`px-3 py-2 rounded-lg border ${
+          className={`px-4 py-2 rounded-lg border ${
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
@@ -460,7 +647,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         <select
           value={filters.city}
           onChange={(e) => handleFilterChange('city', e.target.value)}
-          className={`px-3 py-2 rounded-lg border ${
+          className={`px-4 py-2 rounded-lg border ${
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
@@ -472,11 +659,11 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           ))}
         </select>
 
-        {/* Main Type Filter (Besondere Orte) */}
+        {/* Special Places Filter */}
         <select
           value={filters.mainType}
           onChange={(e) => handleFilterChange('mainType', e.target.value)}
-          className={`px-3 py-2 rounded-lg border ${
+          className={`px-4 py-2 rounded-lg border ${
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
@@ -487,6 +674,27 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             <option key={type} value={type}>{type}</option>
           ))}
         </select>
+
+        {/* Tenant Filter */}
+        <select
+          value={filters.tenant}
+          onChange={(e) => handleFilterChange('tenant', e.target.value)}
+          className={`px-4 py-2 rounded-lg border ${
+            theme === 'dark'
+              ? 'bg-[#2a2a2a] border-gray-700 text-white'
+              : 'bg-white border-gray-200 text-gray-900'
+          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+        >
+          <option value="">Alle Kunden</option>
+          {Array.isArray(filterOptions?.tenants) && filterOptions.tenants.map(tenant => (
+            <option key={tenant} value={tenant}>{tenant}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Results count */}
+      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+        {sortedLocations.length} von {locations.length} Standorten
       </div>
 
       {/* Locations Table */}
@@ -511,193 +719,66 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             <table className="w-full">
               <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                 <tr>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('status')}
-                  >
-                    <div className="flex items-center">
-                      Status
-                      {getSortIcon('status')}
-                    </div>
+                  {/* Checkbox header */}
+                  <th className={`px-3 py-3 w-10 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      ref={el => {
+                        if (el) el.indeterminate = isSomeSelected;
+                      }}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                    />
                   </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('tenant_name')}
-                  >
-                    <div className="flex items-center">
-                      Kunde
-                      {getSortIcon('tenant_name')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('location_code')}
-                  >
-                    <div className="flex items-center">
-                      Code
-                      {getSortIcon('location_code')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('station_name')}
-                  >
-                    <div className="flex items-center">
-                      Stationsname
-                      {getSortIcon('station_name')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('street')}
-                  >
-                    <div className="flex items-center">
-                      Straße
-                      {getSortIcon('street')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('postal_code')}
-                  >
-                    <div className="flex items-center">
-                      PLZ
-                      {getSortIcon('postal_code')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('city')}
-                  >
-                    <div className="flex items-center">
-                      Stadt
-                      {getSortIcon('city')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('state')}
-                  >
-                    <div className="flex items-center">
-                      Bundesland
-                      {getSortIcon('state')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('manager')}
-                  >
-                    <div className="flex items-center">
-                      Manager
-                      {getSortIcon('manager')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('sn_pc')}
-                  >
-                    <div className="flex items-center">
-                      SN-PC
-                      {getSortIcon('sn_pc')}
-                    </div>
-                  </th>
-                  <th 
-                    className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase cursor-pointer hover:bg-opacity-80 ${
-                      theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'
-                    }`}
-                    onClick={() => handleSort('sn_sc')}
-                  >
-                    <div className="flex items-center">
-                      SN-SC
-                      {getSortIcon('sn_sc')}
-                    </div>
-                  </th>
+                  {visibleColumns.filter(col => col.id !== 'select').map(column => (
+                    <th
+                      key={column.id}
+                      className={`px-4 py-3 text-left text-xs font-semibold font-mono uppercase ${
+                        column.sortable ? 'cursor-pointer hover:bg-opacity-80' : ''
+                      } ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                      onClick={() => column.sortable && handleSort(column.id)}
+                    >
+                      <div className="flex items-center">
+                        {column.label}
+                        {column.sortable && getSortIcon(column.id)}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
                 {sortedLocations.map((location) => (
                   <tr
                     key={location.location_id}
-                    onClick={() => handleRowClick(location)}
+                    onClick={(e) => handleRowClick(location, e)}
                     className={`border-t cursor-pointer transition-colors ${
-                      theme === 'dark' 
-                        ? 'border-gray-700 hover:bg-[#1a1a1a]' 
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
+                      selectedIds.has(location.location_id)
+                        ? theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+                        : theme === 'dark' ? 'hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'
+                    } ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                   >
-                    <td className="px-4 py-3">
-                      {getStatusBadge(location)}
+                    {/* Checkbox cell */}
+                    <td className="px-3 py-3 checkbox-cell" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(location.location_id)}
+                        onChange={(e) => handleSelectOne(location.location_id, e.target.checked)}
+                        className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                      />
                     </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.tenant_name || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono font-semibold ${
-                      theme === 'dark' ? 'text-white' : 'text-gray-900'
-                    }`}>
-                      {location.location_code}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.station_name}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.street || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.postal_code || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.city || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.state ? getStateName(location.state) : '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.manager || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.sn_pc || '-'}
-                    </td>
-                    <td className={`px-4 py-3 text-sm font-mono ${
-                      theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                    }`}>
-                      {location.sn_sc || '-'}
-                    </td>
+                    {visibleColumns.filter(col => col.id !== 'select').map(column => (
+                      <td
+                        key={column.id}
+                        className={`px-4 py-3 text-sm font-mono ${
+                          column.id === 'location_code'
+                            ? theme === 'dark' ? 'text-white' : 'text-gray-900'
+                            : theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                        }`}
+                      >
+                        {renderCellValue(location, column.id)}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
@@ -705,6 +786,58 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           </div>
         )}
       </Card>
+
+      {/* Assign Tenant Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAssignModal(false)}>
+          <div
+            className={`w-full max-w-md rounded-xl p-6 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className={`text-lg font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Tenant zuweisen
+            </h3>
+            <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              {selectedIds.size} Standort(e) ausgewählt. Wählen Sie einen Tenant:
+            </p>
+            
+            <div className="space-y-2 max-h-60 overflow-y-auto">
+              {availableTenants.map(tenant => (
+                <button
+                  key={tenant.tenant_id}
+                  onClick={() => handleAssignToTenant(tenant.tenant_id)}
+                  disabled={assigningTenant !== null}
+                  className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
+                    assigningTenant === tenant.tenant_id
+                      ? 'bg-[#c00000] text-white border-[#c00000]'
+                      : theme === 'dark'
+                        ? 'bg-[#2a2a2a] border-gray-700 text-white hover:bg-[#333]'
+                        : 'bg-white border-gray-200 text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="font-medium">{tenant.name || tenant.tenant_id}</span>
+                  {assigningTenant === tenant.tenant_id && (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowAssignModal(false)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  theme === 'dark'
+                    ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
+                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Abbrechen
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
