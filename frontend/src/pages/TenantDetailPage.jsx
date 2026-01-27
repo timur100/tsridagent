@@ -2443,8 +2443,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                             }`}
                           >
                             <option value="">Alle</option>
-                            <option value="Deutschland">Deutschland</option>
-                            <option value="Frankreich">Frankreich</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
                             <option value="USA">USA</option>
                           </select>
                         </div>
