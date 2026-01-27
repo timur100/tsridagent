@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Monitor, Search, RefreshCw, Plus, Edit2, Trash2, Clock, MapPin, Key, Download, ShoppingCart, Tool, XCircle, ChevronRight, Printer, Tablet, Box, AlertTriangle, CheckCircle, Archive, MessageSquare, Shield } from 'lucide-react';
+import { Monitor, Search, RefreshCw, Plus, Edit2, Trash2, Clock, MapPin, Key, Download, ShoppingCart, Wrench, XCircle, ChevronRight, Printer, Tablet, Box, AlertTriangle, CheckCircle, Archive, MessageSquare, Shield } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -19,7 +19,7 @@ const DEVICE_STATUSES = {
 const EVENT_ICONS = {
   purchased: ShoppingCart, activated: CheckCircle, assigned: MapPin,
   reassigned: RefreshCw, license_activated: Key, license_renewed: RefreshCw,
-  software_updated: Download, repaired: Tool, decommissioned: XCircle,
+  software_updated: Download, repaired: Wrench, decommissioned: XCircle,
   note_added: MessageSquare, warranty_claimed: Shield, status_changed: RefreshCw
 };
 
