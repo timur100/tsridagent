@@ -250,7 +250,7 @@ async def get_location_details(location_code: str):
                 "street": location.get("street", ""),
                 "postal_code": location.get("postal_code", ""),
                 "city": location.get("city", ""),
-                "country": location.get("country", "Deutschland"),
+                "country": location.get("country", "Germany"),
                 "phone": location.get("phone", ""),
                 "email": location.get("email", ""),
                 "manager": location.get("manager", ""),
@@ -520,7 +520,7 @@ async def assign_device_to_location(location_code: str, device_id: str):
                     "$set": {
                         "locationcode": location_code.upper(),
                         "city": location.get("city", ""),
-                        "country": location.get("country", "Deutschland"),
+                        "country": location.get("country", "Germany"),
                         "customer": location.get("tenant_id", "Europcar"),
                         "assigned_at": now
                     }
@@ -532,7 +532,7 @@ async def assign_device_to_location(location_code: str, device_id: str):
                 "device_id": device_id.upper(),
                 "locationcode": location_code.upper(),
                 "city": location.get("city", ""),
-                "country": location.get("country", "Deutschland"),
+                "country": location.get("country", "Germany"),
                 "customer": location.get("tenant_id", "Europcar"),
                 "status": "pending",
                 "created_at": now,
