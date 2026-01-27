@@ -929,7 +929,7 @@ const StandorteManagement = ({ searchTerm: externalSearchTerm, onSearchChange, a
                     {getFullBundeslandName(station.bundesl) || '-'}
                   </td>
                   <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {station.land || 'Deutschland'}
+                    {station.land || 'Germany'}
                   </td>
                   <td className={`px-2 py-2 text-sm font-mono ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     {station.kontinent || 'Europa'}
