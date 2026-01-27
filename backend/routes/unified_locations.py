@@ -150,14 +150,30 @@ async def get_countries(continent: str = Query(None, description="Kontinent (opt
 
 
 @router.get("/cities")
-async def get_cities(country: str = Query(..., description="Land")):
-    """Holt alle Städte für ein bestimmtes Land"""
+async def get_cities(
+    country: str = Query(..., description="Land"),
+    tenant_id: str = Query(None, description="Tenant-ID für Filterung")
+):
+    """Holt alle Städte für ein bestimmtes Land, optional gefiltert nach Tenant"""
     try:
-        # Suche case-insensitive
-        cities = await multi_tenant_db.europcar_devices.distinct(
-            "city",
-            {"country": {"$regex": f"^{country}$", "$options": "i"}}
-        )
+        portal_db = client['portal_db']
+        
+        # Query basierend auf Land und optional Tenant
+        query = {"country": {"$regex": f"^{country}$", "$options": "i"}}
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        # Primär aus tenant_locations (hat korrekte Städtenamen)
+        cities = await portal_db.tenant_locations.distinct("city", query)
+        
+        # Fallback zu europcar_devices nur wenn keine tenant_id angegeben
+        if not cities and not tenant_id:
+            cities = await multi_tenant_db.europcar_devices.distinct(
+                "city",
+                {"country": {"$regex": f"^{country}$", "$options": "i"}}
+            )
+        
+        # Filtere leere Werte und sortiere
         cities = [c for c in cities if c]
         cities.sort()
         
@@ -165,7 +181,8 @@ async def get_cities(country: str = Query(..., description="Land")):
             "success": True,
             "cities": cities,
             "total": len(cities),
-            "country": country
+            "country": country,
+            "tenant_id": tenant_id
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
