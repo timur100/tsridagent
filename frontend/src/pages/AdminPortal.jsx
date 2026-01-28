@@ -1044,6 +1044,8 @@ const AdminPortalContent = () => {
               </nav>
             </div>
           </div>
+        </div>
+        {/* End of sticky container for normal view */}
 
           {/* Content - only show when not on detail page and not on specific routes */}
           {!isOnDetailPage && 
