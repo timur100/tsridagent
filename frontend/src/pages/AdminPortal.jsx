@@ -720,7 +720,7 @@ const AdminPortalContent = () => {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-      {/* Sticky Header Container */}
+      {/* Sticky Header + Navigation Container */}
       <div className="sticky top-0 z-40">
         {/* Header */}
         <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
