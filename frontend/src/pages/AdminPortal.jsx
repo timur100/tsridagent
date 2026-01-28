@@ -935,7 +935,7 @@ const AdminPortalContent = () => {
       {/* Conditional Content: Show Customer Portal View when impersonating */}
       {isImpersonating ? (
         <>
-          {/* Customer Navigation Tabs */}
+          {/* Customer Navigation Tabs - inside sticky container */}
           <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
             <div className="px-4 sm:px-6 lg:px-8">
               <nav className="flex space-x-8">
@@ -970,6 +970,8 @@ const AdminPortalContent = () => {
               </nav>
             </div>
           </div>
+        </div>
+        {/* End of sticky container for impersonating view */}
 
           {/* Customer Portal Content */}
           <main className="px-4 sm:px-6 lg:px-8 py-8">
@@ -982,7 +984,7 @@ const AdminPortalContent = () => {
         </>
       ) : (
         <>
-          {/* Navigation Tabs */}
+          {/* Navigation Tabs - inside sticky container */}
           <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
             <div className="px-4 sm:px-6 lg:px-8">
               <nav className="flex space-x-8 overflow-x-auto">{[
