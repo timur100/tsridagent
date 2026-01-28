@@ -140,6 +140,21 @@ Two methods implemented:
   - DELETE `/api/device-lifecycle/kits/{id}`
   - GET `/api/device-lifecycle/locations/{code}/next-device-number`
 
+#### Devices Tab - Checkboxes & Spalten-Einstellungen (Jan 27, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_7.json`
+- **File:** `/app/frontend/src/components/DeviceManagement.jsx`
+- **Features (gleich wie Locations Tab):**
+  1. ✅ Checkbox-Spalte für Bulk-Auswahl (Header + jede Zeile)
+  2. ✅ "X von Y Geräten ausgewählt" Anzeige
+  3. ✅ Zahnrad-Icon für Spalteneinstellungen
+  4. ✅ 14 konfigurierbare Spalten (ein/ausblenden)
+  5. ✅ Spalten per Drag & Drop neuanordnen
+  6. ✅ Zurücksetzen-Button für Standard-Konfiguration
+  7. ✅ localStorage-Persistenz (`deviceManagementColumns`)
+- **Sichtbare Spalten (Standard):** Device-ID, Status, Kunde, Location, Straße, PLZ, Stadt, Land, SN-PC, SN-SC, Set
+- **Ausgeblendete Spalten (Standard):** TVID, IP, Version
+
 #### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Tests bestanden
 - **Test Report:** `/app/test_reports/iteration_3.json`
