@@ -973,18 +973,18 @@ const AdminPortalContent = () => {
         </div>
         {/* End of sticky container for impersonating view */}
 
-          {/* Customer Portal Content */}
-          <main className="px-4 sm:px-6 lg:px-8 py-8">
-            <CustomerPortalContent 
-              isImpersonation={true} 
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
-          </main>
-        </>
+        {/* Customer Portal Content */}
+        <main className="px-4 sm:px-6 lg:px-8 py-8">
+          <CustomerPortalContent 
+            isImpersonation={true} 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+        </main>
+      </>
       ) : (
         <>
-          {/* Navigation Tabs - inside sticky container */}
+        {/* Sticky container continues with Navigation Tabs */}
           <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
             <div className="px-4 sm:px-6 lg:px-8">
               <nav className="flex space-x-8 overflow-x-auto">{[
