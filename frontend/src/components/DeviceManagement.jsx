@@ -679,89 +679,14 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
       </div>
 
       {/* Results count and Selection Info */}
-      <div className="flex items-center justify-between">
-        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-          {selectedIds.size > 0 ? (
-            <span className="font-medium text-primary">
-              {selectedIds.size} von {filteredDevices.length} Geräten ausgewählt
-            </span>
-          ) : (
-            `Zeige ${filteredDevices.length} von ${devices.length} Geräten`
-          )}
-        </div>
-        
-        {/* Column Settings Gear Icon */}
-        <div className="relative">
-          <button
-            onClick={() => setShowColumnSettings(!showColumnSettings)}
-            className={`p-2 rounded-lg transition-colors ${
-              theme === 'dark' 
-                ? 'hover:bg-gray-700 text-gray-400 hover:text-white' 
-                : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
-            }`}
-            title="Spalten konfigurieren"
-          >
-            <Settings className="h-5 w-5" />
-          </button>
-          
-          {/* Column Settings Dropdown */}
-          {showColumnSettings && (
-            <div className={`absolute right-0 top-full mt-2 w-72 rounded-lg shadow-xl border z-50 ${
-              theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
-            }`}>
-              <div className="p-3 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <span className={`font-semibold text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    Spalten konfigurieren
-                  </span>
-                  <button
-                    onClick={resetColumns}
-                    className="text-xs text-primary hover:underline"
-                  >
-                    Zurücksetzen
-                  </button>
-                </div>
-                <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Ziehen zum Neuanordnen • Klicken zum Ein/Ausblenden
-                </p>
-              </div>
-              <div className="p-2 max-h-80 overflow-y-auto">
-                {columns.filter(col => col.id !== 'select').map(col => (
-                  <div
-                    key={col.id}
-                    draggable={col.id !== 'select'}
-                    onDragStart={(e) => handleDragStart(e, col.id)}
-                    onDragOver={(e) => handleDragOver(e, col.id)}
-                    onDragEnd={handleDragEnd}
-                    onClick={() => toggleColumnVisibility(col.id)}
-                    className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer transition-colors ${
-                      draggedColumn === col.id ? 'opacity-50' : ''
-                    } ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-                  >
-                    <GripVertical className={`h-4 w-4 flex-shrink-0 ${
-                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
-                    }`} />
-                    <div className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center ${
-                      col.visible 
-                        ? 'bg-primary border-primary' 
-                        : theme === 'dark' ? 'border-gray-600' : 'border-gray-300'
-                    }`}>
-                      {col.visible && <Check className="h-3 w-3 text-white" />}
-                    </div>
-                    <span className={`text-sm flex-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {col.label}
-                    </span>
-                    {col.visible ? (
-                      <Eye className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
-                    ) : (
-                      <EyeOff className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
+      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+        {selectedIds.size > 0 ? (
+          <span className="font-medium text-primary">
+            {selectedIds.size} von {filteredDevices.length} Geräten ausgewählt
+          </span>
+        ) : (
+          `Zeige ${filteredDevices.length} von ${devices.length} Geräten`
+        )}
       </div>
 
       {/* Devices Table */}
@@ -769,17 +694,92 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
         <table className="w-full">
           <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-              {/* Checkbox column */}
-              {columns.find(c => c.id === 'select')?.visible && (
-                <th className="w-10 px-2 py-3">
+              {/* Checkbox + Settings header (like Locations) */}
+              <th className={`px-3 py-3 w-20 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div className="flex items-center gap-2">
                   <input
                     type="checkbox"
                     checked={selectedIds.size === filteredDevices.length && filteredDevices.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
                   />
-                </th>
-              )}
+                  {/* Settings gear icon */}
+                  <div className="relative">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowColumnSettings(!showColumnSettings);
+                      }}
+                      className={`p-1 rounded transition-colors ${
+                        showColumnSettings
+                          ? 'bg-[#c00000] text-white'
+                          : theme === 'dark' ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-gray-200 text-gray-400'
+                      }`}
+                      title="Spalten konfigurieren"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                    </button>
+                    
+                    {/* Column Settings Dropdown */}
+                    {showColumnSettings && (
+                      <div 
+                        className={`absolute left-0 top-full mt-1 w-72 rounded-xl border shadow-xl z-50 ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+                        }`}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className={`px-4 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                          <div className="flex items-center justify-between">
+                            <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                              Spalten konfigurieren
+                            </span>
+                            <button
+                              onClick={resetColumns}
+                              className="text-xs text-[#c00000] hover:underline"
+                            >
+                              Zurücksetzen
+                            </button>
+                          </div>
+                          <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Ziehen zum Neuordnen, klicken zum Ein-/Ausblenden
+                          </p>
+                        </div>
+                        <div className="max-h-80 overflow-y-auto p-2">
+                          {columns.filter(col => col.id !== 'select').map((column, index) => (
+                            <div
+                              key={column.id}
+                              draggable
+                              onDragStart={(e) => handleDragStart(e, column.id)}
+                              onDragOver={(e) => handleDragOver(e, column.id)}
+                              onDragEnd={handleDragEnd}
+                              className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-move transition-colors ${
+                                draggedColumn === column.id
+                                  ? 'bg-[#c00000]/20'
+                                  : theme === 'dark' ? 'hover:bg-[#333]' : 'hover:bg-gray-50'
+                              }`}
+                            >
+                              <GripVertical className={`w-4 h-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                              <button
+                                onClick={() => toggleColumnVisibility(column.id)}
+                                className={`flex-1 flex items-center justify-between ${
+                                  theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
+                                }`}
+                              >
+                                <span className="text-sm">{column.label}</span>
+                                {column.visible ? (
+                                  <Eye className="w-4 h-4 text-green-500" />
+                                ) : (
+                                  <EyeOff className="w-4 h-4 text-gray-400" />
+                                )}
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </th>
               {columns.filter(c => c.id !== 'select' && c.visible).map(col => (
                 <th 
                   key={col.id}
@@ -804,7 +804,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                 }}
                 className={`border-t cursor-pointer transition-colors ${
                   selectedIds.has(device.device_id || device._id) 
-                    ? theme === 'dark' ? 'bg-primary/10' : 'bg-primary/5'
+                    ? theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
                     : ''
                 } ${theme === 'dark' 
                     ? 'border-gray-700 hover:bg-[#1a1a1a]' 
@@ -812,16 +812,14 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                 }`}
               >
                 {/* Checkbox cell */}
-                {columns.find(c => c.id === 'select')?.visible && (
-                  <td className="px-2 py-2" onClick={e => e.stopPropagation()}>
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(device.device_id || device._id)}
-                      onChange={() => toggleSelectDevice(device.device_id || device._id)}
-                      className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
-                    />
-                  </td>
-                )}
+                <td className="px-3 py-3" onClick={e => e.stopPropagation()}>
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(device.device_id || device._id)}
+                    onChange={() => toggleSelectDevice(device.device_id || device._id)}
+                    className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                  />
+                </td>
                 {/* Dynamic columns */}
                 {columns.filter(c => c.id !== 'select' && c.visible).map(col => {
                   const cellClass = `px-2 py-2 text-sm font-mono whitespace-nowrap ${
