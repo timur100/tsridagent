@@ -678,9 +678,90 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
         </button>
       </div>
 
-      {/* Results count */}
-      <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-        Zeige {filteredDevices.length} von {devices.length} Geräten
+      {/* Results count and Selection Info */}
+      <div className="flex items-center justify-between">
+        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+          {selectedIds.size > 0 ? (
+            <span className="font-medium text-primary">
+              {selectedIds.size} von {filteredDevices.length} Geräten ausgewählt
+            </span>
+          ) : (
+            `Zeige ${filteredDevices.length} von ${devices.length} Geräten`
+          )}
+        </div>
+        
+        {/* Column Settings Gear Icon */}
+        <div className="relative">
+          <button
+            onClick={() => setShowColumnSettings(!showColumnSettings)}
+            className={`p-2 rounded-lg transition-colors ${
+              theme === 'dark' 
+                ? 'hover:bg-gray-700 text-gray-400 hover:text-white' 
+                : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+            }`}
+            title="Spalten konfigurieren"
+          >
+            <Settings className="h-5 w-5" />
+          </button>
+          
+          {/* Column Settings Dropdown */}
+          {showColumnSettings && (
+            <div className={`absolute right-0 top-full mt-2 w-72 rounded-lg shadow-xl border z-50 ${
+              theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
+            }`}>
+              <div className="p-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <span className={`font-semibold text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    Spalten konfigurieren
+                  </span>
+                  <button
+                    onClick={resetColumns}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Zurücksetzen
+                  </button>
+                </div>
+                <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Ziehen zum Neuanordnen • Klicken zum Ein/Ausblenden
+                </p>
+              </div>
+              <div className="p-2 max-h-80 overflow-y-auto">
+                {columns.filter(col => col.id !== 'select').map(col => (
+                  <div
+                    key={col.id}
+                    draggable={col.id !== 'select'}
+                    onDragStart={(e) => handleDragStart(e, col.id)}
+                    onDragOver={(e) => handleDragOver(e, col.id)}
+                    onDragEnd={handleDragEnd}
+                    onClick={() => toggleColumnVisibility(col.id)}
+                    className={`flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer transition-colors ${
+                      draggedColumn === col.id ? 'opacity-50' : ''
+                    } ${theme === 'dark' ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                  >
+                    <GripVertical className={`h-4 w-4 flex-shrink-0 ${
+                      theme === 'dark' ? 'text-gray-600' : 'text-gray-400'
+                    }`} />
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center ${
+                      col.visible 
+                        ? 'bg-primary border-primary' 
+                        : theme === 'dark' ? 'border-gray-600' : 'border-gray-300'
+                    }`}>
+                      {col.visible && <Check className="h-3 w-3 text-white" />}
+                    </div>
+                    <span className={`text-sm flex-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {col.label}
+                    </span>
+                    {col.visible ? (
+                      <Eye className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`} />
+                    ) : (
+                      <EyeOff className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-300'}`} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Devices Table */}
@@ -688,178 +769,126 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
         <table className="w-full">
           <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-              <th 
-                onClick={() => handleSort('device_id')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Device-ID {getSortIcon('device_id')}
-              </th>
-              <th 
-                onClick={() => handleSort('status')}
-                className={`w-20 px-2 py-3 text-center text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Status {getSortIcon('status')}
-              </th>
-              {selectedCustomer === 'all' && (
-                <th 
-                  onClick={() => handleSort('customer')}
-                  className={`w-32 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-                >
-                  Kunde {getSortIcon('customer')}
+              {/* Checkbox column */}
+              {columns.find(c => c.id === 'select')?.visible && (
+                <th className="w-10 px-2 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === filteredDevices.length && filteredDevices.length > 0}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                  />
                 </th>
               )}
-              <th 
-                onClick={() => handleSort('locationcode')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Location {getSortIcon('locationcode')}
-              </th>
-              <th 
-                onClick={() => handleSort('street')}
-                className={`w-48 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Straße {getSortIcon('street')}
-              </th>
-              <th 
-                onClick={() => handleSort('zip')}
-                className={`w-16 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                PLZ {getSortIcon('zip')}
-              </th>
-              <th 
-                onClick={() => handleSort('city')}
-                className={`w-32 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Stadt {getSortIcon('city')}
-              </th>
-              <th 
-                onClick={() => handleSort('country')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Land {getSortIcon('country')}
-              </th>
-              <th 
-                onClick={() => handleSort('sn_pc')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                SN-PC {getSortIcon('sn_pc')}
-              </th>
-              <th 
-                onClick={() => handleSort('sn_sc')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                SN-SC {getSortIcon('sn_sc')}
-              </th>
-              <th 
-                onClick={() => handleSort('set_id')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Set {getSortIcon('set_id')}
-              </th>
-              <th 
-                onClick={() => handleSort('tvid')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                TVID {getSortIcon('tvid')}
-              </th>
-              <th 
-                onClick={() => handleSort('ip')}
-                className={`w-24 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                IP {getSortIcon('ip')}
-              </th>
-              <th 
-                onClick={() => handleSort('sw_version')}
-                className={`w-20 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                SW Vers. {getSortIcon('sw_version')}
-              </th>
-              <th 
-                onClick={() => handleSort('hardware_model')}
-                className={`w-28 px-2 py-3 text-left text-xs font-semibold font-mono cursor-pointer hover:bg-opacity-80 whitespace-nowrap ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
-              >
-                Hardware {getSortIcon('hardware_model')}
-              </th>
+              {columns.filter(c => c.id !== 'select' && c.visible).map(col => (
+                <th 
+                  key={col.id}
+                  onClick={() => col.sortable && handleSort(col.id)}
+                  className={`${col.width || 'w-auto'} px-2 py-3 text-left text-xs font-semibold font-mono whitespace-nowrap ${
+                    col.sortable ? 'cursor-pointer hover:bg-opacity-80' : ''
+                  } ${theme === 'dark' ? 'text-gray-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+                >
+                  {col.label} {col.sortable && getSortIcon(col.id)}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-            {filteredDevices.map((device, index) => (
+            {filteredDevices.map((device) => (
               <tr 
                 key={device.device_id}
-                onClick={() => handleDeviceClick(device)}
+                onClick={(e) => {
+                  // Don't navigate if clicking checkbox
+                  if (e.target.type === 'checkbox') return;
+                  handleDeviceClick(device);
+                }}
                 className={`border-t cursor-pointer transition-colors ${
-                  theme === 'dark' 
+                  selectedIds.has(device.device_id || device._id) 
+                    ? theme === 'dark' ? 'bg-primary/10' : 'bg-primary/5'
+                    : ''
+                } ${theme === 'dark' 
                     ? 'border-gray-700 hover:bg-[#1a1a1a]' 
                     : 'border-gray-200 hover:bg-gray-50'
                 }`}
               >
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  {device.device_id}
-                </td>
-                <td className="px-2 py-2 text-center whitespace-nowrap">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
-                    device.status === 'online' 
-                      ? 'bg-green-500/20 text-green-400'
-                      : device.status === 'offline'
-                      ? 'bg-red-500/20 text-red-400'
-                      : 'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {device.status === 'online' && (
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                      </span>
-                    )}
-                    {device.status === 'offline' && (
-                      <span className="h-2 w-2 rounded-full bg-red-500"></span>
-                    )}
-                    {device.status !== 'online' && device.status !== 'offline' && (
-                      <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
-                    )}
-                    {device.status === 'online' ? 'Online' : device.status === 'offline' ? 'Offline' : 'Vorbereitung'}
-                  </span>
-                </td>
-                {selectedCustomer === 'all' && (
-                  <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                    {device.customer || 'Europcar'}
+                {/* Checkbox cell */}
+                {columns.find(c => c.id === 'select')?.visible && (
+                  <td className="px-2 py-2" onClick={e => e.stopPropagation()}>
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(device.device_id || device._id)}
+                      onChange={() => toggleSelectDevice(device.device_id || device._id)}
+                      className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                    />
                   </td>
                 )}
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.locationcode}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.street || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.zip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.city || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.country || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_pc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sn_sc || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.set_id || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.tvid || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.ip || '-'}
-                </td>
-                <td className={`px-2 py-2 text-sm font-mono whitespace-nowrap ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
-                  {device.sw_version || '-'}
-                </td>
-                <td className={`px-2 py-2 text-xs whitespace-nowrap ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
-                  {device.hardware_model || '-'}
-                </td>
+                {/* Dynamic columns */}
+                {columns.filter(c => c.id !== 'select' && c.visible).map(col => {
+                  const cellClass = `px-2 py-2 text-sm font-mono whitespace-nowrap ${
+                    theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
+                  }`;
+                  
+                  switch(col.id) {
+                    case 'device_id':
+                      return (
+                        <td key={col.id} className={`${cellClass} ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {device.device_id}
+                        </td>
+                      );
+                    case 'status':
+                      return (
+                        <td key={col.id} className="px-2 py-2 text-center whitespace-nowrap">
+                          <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-semibold ${
+                            device.status === 'online' 
+                              ? 'bg-green-500/20 text-green-400'
+                              : device.status === 'offline'
+                              ? 'bg-red-500/20 text-red-400'
+                              : 'bg-yellow-500/20 text-yellow-400'
+                          }`}>
+                            {device.status === 'online' && (
+                              <span className="relative flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                              </span>
+                            )}
+                            {device.status === 'offline' && <span className="h-2 w-2 rounded-full bg-red-500"></span>}
+                            {device.status !== 'online' && device.status !== 'offline' && (
+                              <span className="h-2 w-2 rounded-full bg-yellow-500 animate-pulse"></span>
+                            )}
+                            {device.status === 'online' ? 'Online' : device.status === 'offline' ? 'Offline' : 'Vorbereitung'}
+                          </span>
+                        </td>
+                      );
+                    case 'customer':
+                      return selectedCustomer === 'all' ? (
+                        <td key={col.id} className={cellClass}>{device.customer || 'Europcar'}</td>
+                      ) : null;
+                    case 'locationcode':
+                      return <td key={col.id} className={cellClass}>{device.locationcode}</td>;
+                    case 'street':
+                      return <td key={col.id} className={cellClass}>{device.street || '-'}</td>;
+                    case 'zip':
+                      return <td key={col.id} className={cellClass}>{device.zip || '-'}</td>;
+                    case 'city':
+                      return <td key={col.id} className={cellClass}>{device.city || '-'}</td>;
+                    case 'country':
+                      return <td key={col.id} className={cellClass}>{device.country || '-'}</td>;
+                    case 'sn_pc':
+                      return <td key={col.id} className={cellClass}>{device.sn_pc || '-'}</td>;
+                    case 'sn_sc':
+                      return <td key={col.id} className={cellClass}>{device.sn_sc || '-'}</td>;
+                    case 'set_id':
+                      return <td key={col.id} className={cellClass}>{device.set_id || '-'}</td>;
+                    case 'tvid':
+                      return <td key={col.id} className={cellClass}>{device.tvid || '-'}</td>;
+                    case 'ip':
+                      return <td key={col.id} className={cellClass}>{device.ip || '-'}</td>;
+                    case 'sw_version':
+                      return <td key={col.id} className={cellClass}>{device.sw_version || '-'}</td>;
+                    default:
+                      return <td key={col.id} className={cellClass}>-</td>;
+                  }
+                })}
               </tr>
             ))}
           </tbody>
