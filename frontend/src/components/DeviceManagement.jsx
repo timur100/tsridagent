@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCustomerFilter } from '../contexts/CustomerFilterContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
-import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown } from 'lucide-react';
+import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Settings, Eye, EyeOff, GripVertical, Check } from 'lucide-react';
 import DeviceDetailsModal from './DeviceDetailsModal';
 import toast from 'react-hot-toast';
 import { getFullBundeslandName } from '../utils/bundesland';
@@ -17,6 +17,25 @@ import {
   getAvailableCities,
   SPECIAL_PLACE_TAGS 
 } from '../utils/geoFilters';
+
+// Default column configuration for Devices
+const DEFAULT_DEVICE_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false, width: 'w-10' },
+  { id: 'device_id', label: 'Device-ID', visible: true, sortable: true, width: 'w-28' },
+  { id: 'status', label: 'Status', visible: true, sortable: true, width: 'w-20' },
+  { id: 'customer', label: 'Kunde', visible: true, sortable: true, width: 'w-32' },
+  { id: 'locationcode', label: 'Location', visible: true, sortable: true, width: 'w-20' },
+  { id: 'street', label: 'Straße', visible: true, sortable: true, width: 'w-48' },
+  { id: 'zip', label: 'PLZ', visible: true, sortable: true, width: 'w-16' },
+  { id: 'city', label: 'Stadt', visible: true, sortable: true, width: 'w-32' },
+  { id: 'country', label: 'Land', visible: true, sortable: true, width: 'w-20' },
+  { id: 'sn_pc', label: 'SN-PC', visible: true, sortable: true, width: 'w-24' },
+  { id: 'sn_sc', label: 'SN-SC', visible: true, sortable: true, width: 'w-24' },
+  { id: 'set_id', label: 'Set', visible: true, sortable: true, width: 'w-28' },
+  { id: 'tvid', label: 'TVID', visible: false, sortable: true, width: 'w-20' },
+  { id: 'ip', label: 'IP', visible: false, sortable: true, width: 'w-24' },
+  { id: 'sw_version', label: 'Version', visible: false, sortable: true, width: 'w-20' },
+];
 
 const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, initialStatusFilter }) => {
   const navigate = useNavigate();
@@ -43,10 +62,85 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
     key: 'device_id',
     direction: 'asc'
   });
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('deviceManagementColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_DEVICE_COLUMNS;
+  });
+  const [showColumnSettings, setShowColumnSettings] = useState(false);
+  const [draggedColumn, setDraggedColumn] = useState(null);
 
   // Use external searchTerm if provided, otherwise use internal
   const searchTerm = externalSearchTerm !== undefined ? externalSearchTerm : internalSearchTerm;
   const setSearchTerm = onSearchChange || setInternalSearchTerm;
+  
+  // Save columns to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('deviceManagementColumns', JSON.stringify(columns));
+  }, [columns]);
+  
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredDevices.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredDevices.map(d => d.device_id || d._id)));
+    }
+  };
+  
+  const toggleSelectDevice = (deviceId) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(deviceId)) {
+      newSelected.delete(deviceId);
+    } else {
+      newSelected.add(deviceId);
+    }
+    setSelectedIds(newSelected);
+  };
+  
+  // Column visibility toggle
+  const toggleColumnVisibility = (columnId) => {
+    if (columnId === 'select') return; // Cannot hide checkbox column
+    setColumns(prev => prev.map(col => 
+      col.id === columnId ? { ...col, visible: !col.visible } : col
+    ));
+  };
+  
+  // Column drag & drop handlers
+  const handleDragStart = (e, columnId) => {
+    if (columnId === 'select') return;
+    setDraggedColumn(columnId);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  const handleDragOver = (e, columnId) => {
+    e.preventDefault();
+    if (columnId === 'select' || columnId === draggedColumn) return;
+    
+    const dragIndex = columns.findIndex(c => c.id === draggedColumn);
+    const hoverIndex = columns.findIndex(c => c.id === columnId);
+    
+    if (dragIndex === -1 || hoverIndex === -1) return;
+    
+    const newColumns = [...columns];
+    const [removed] = newColumns.splice(dragIndex, 1);
+    newColumns.splice(hoverIndex, 0, removed);
+    setColumns(newColumns);
+  };
+  
+  const handleDragEnd = () => {
+    setDraggedColumn(null);
+  };
+  
+  // Reset columns to default
+  const resetColumns = () => {
+    setColumns(DEFAULT_DEVICE_COLUMNS);
+    localStorage.removeItem('deviceManagementColumns');
+  };
 
   // Check if user has access to Europcar devices
   const hasAccess = user?.role === 'admin' || (user?.company && user.company.toLowerCase().includes('europcar'));
