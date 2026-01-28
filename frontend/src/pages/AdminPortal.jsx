@@ -929,51 +929,109 @@ const AdminPortalContent = () => {
         </div>
       </header>
 
-      {/* Impersonation Banner */}
+      {/* Impersonation Banner - inside sticky container */}
       {isImpersonating && <ImpersonationBanner />}
 
-      {/* Conditional Content: Show Customer Portal View when impersonating */}
+      {/* Navigation Tabs - inside sticky container */}
       {isImpersonating ? (
-        <>
-          {/* Customer Navigation Tabs - inside sticky container */}
-          <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <div className="px-4 sm:px-6 lg:px-8">
-              <nav className="flex space-x-8">
-                {(() => {
-                  console.log('[AdminPortal Impersonation] User object:', user);
-                  console.log('[AdminPortal Impersonation] shop_enabled:', user?.shop_enabled);
-                  const tabs = [
-                    { id: 'dashboard', label: 'Dashboard', icon: Monitor },
-                    { id: 'devices', label: 'Geräte', icon: Monitor },
-                    { id: 'locations', label: 'Standorte', icon: MapPin }
-                  ];
-                  if (user?.shop_enabled) {
-                    tabs.push({ id: 'shop', label: 'Shop', icon: Package });
-                  }
-                  return tabs;
-                })().map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      activeTab === tab.id
-                        ? 'border-[#c00000] text-[#c00000]'
-                        : theme === 'dark'
-                        ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
-              </nav>
-            </div>
+        <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <nav className="flex space-x-8">
+              {(() => {
+                console.log('[AdminPortal Impersonation] User object:', user);
+                console.log('[AdminPortal Impersonation] shop_enabled:', user?.shop_enabled);
+                const tabs = [
+                  { id: 'dashboard', label: 'Dashboard', icon: Monitor },
+                  { id: 'devices', label: 'Geräte', icon: Monitor },
+                  { id: 'locations', label: 'Standorte', icon: MapPin }
+                ];
+                if (user?.shop_enabled) {
+                  tabs.push({ id: 'shop', label: 'Shop', icon: Package });
+                }
+                return tabs;
+              })().map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-[#c00000] text-[#c00000]'
+                      : theme === 'dark'
+                      ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </nav>
           </div>
         </div>
-        {/* End of sticky container for impersonating view */}
+      ) : (
+        <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <nav className="flex space-x-8 overflow-x-auto">{[
+                { id: 'dashboard', label: 'Dashboard', icon: Monitor },
+                { id: 'users-roles', label: 'Users & Roles', icon: Users },
+                { id: 'tenants', label: 'Tenants', icon: Users },
+                { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
+                { id: 'assets', label: 'Assets', icon: Boxes },
+                { id: 'devices', label: 'Devices', icon: Monitor },
+                { id: 'activation', label: 'Activation Codes', icon: Key },
+                { id: 'locations', label: 'Locations', icon: MapPin },
+                { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
+                { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
+                { id: 'kits', label: 'Kit-Verwaltung', icon: Package },
+                { id: 'inventory', label: 'Inventory', icon: Package },
+                { id: 'orders', label: 'Orders', icon: ShoppingCart },
+                { id: 'support', label: 'Support', icon: Headphones },
+                { id: 'licenses', label: 'Licenses', icon: Key },
+                { id: 'database', label: 'Database', icon: Database },
+                { id: 'settings', label: 'Settings', icon: Settings },
+                { id: 'rnd', label: 'R&D', icon: FlaskConical }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => {
+                    // Special handling for certain tabs
+                    if (tab.id === 'id-checks') {
+                      navigate('/portal/admin/id-checks');
+                    } else {
+                      setActiveTab(tab.id);
+                    }
+                  }}
+                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === tab.id
+                      ? 'border-[#c00000] text-[#c00000]'
+                      : theme === 'dark'
+                      ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <tab.icon className="h-4 w-4" />
+                  <span>{tab.label}</span>
+                  {tab.id === 'orders' && newOrdersCount > 0 && (
+                    <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
+                      {newOrdersCount > 9 ? '9+' : newOrdersCount}
+                    </span>
+                  )}
+                  {tab.id === 'support' && newTicketsCount > 0 && (
+                    <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
+                      {newTicketsCount > 9 ? '9+' : newTicketsCount}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+      )}
+      </div>
+      {/* End of sticky container */}
 
-        {/* Customer Portal Content */}
+      {/* Main Content Area */}
+      {isImpersonating ? (
         <main className="px-4 sm:px-6 lg:px-8 py-8">
           <CustomerPortalContent 
             isImpersonation={true} 
@@ -981,72 +1039,8 @@ const AdminPortalContent = () => {
             setActiveTab={setActiveTab}
           />
         </main>
-      </>
       ) : (
         <>
-        {/* Sticky container continues with Navigation Tabs */}
-          <div className={`border-b ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <div className="px-4 sm:px-6 lg:px-8">
-              <nav className="flex space-x-8 overflow-x-auto">{[
-                  { id: 'dashboard', label: 'Dashboard', icon: Monitor },
-                  { id: 'users-roles', label: 'Users & Roles', icon: Users },
-                  { id: 'tenants', label: 'Tenants', icon: Users },
-                  { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
-                  { id: 'assets', label: 'Assets', icon: Boxes },
-                  { id: 'devices', label: 'Devices', icon: Monitor },
-                  { id: 'activation', label: 'Activation Codes', icon: Key },
-                  { id: 'locations', label: 'Locations', icon: MapPin },
-                  { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
-                  { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
-                  { id: 'kits', label: 'Kit-Verwaltung', icon: Package },
-                  { id: 'inventory', label: 'Inventory', icon: Package },
-                  { id: 'orders', label: 'Orders', icon: ShoppingCart },
-                  { id: 'support', label: 'Support', icon: Headphones },
-                  { id: 'licenses', label: 'Licenses', icon: Key },
-                  { id: 'database', label: 'Database', icon: Database },
-                  { id: 'settings', label: 'Settings', icon: Settings },
-                  { id: 'rnd', label: 'R&D', icon: FlaskConical }
-                ].map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      // Navigate to nested routes for certain tabs
-                      if (tab.id === 'id-checks') {
-                        navigate('/portal/admin/id-checks');
-                      } else if (location.pathname !== '/portal/admin') {
-                        // Navigate back to /portal/admin if we're on a nested route
-                        navigate('/portal/admin');
-                      }
-                    }}
-                    className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                      activeTab === tab.id
-                        ? 'border-[#c00000] text-[#c00000]'
-                        : theme === 'dark'
-                        ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
-                  >
-                    <tab.icon className="h-4 w-4" />
-                    <span>{tab.label}</span>
-                    {tab.id === 'orders' && newOrdersCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
-                        {newOrdersCount > 9 ? '9+' : newOrdersCount}
-                      </span>
-                    )}
-                    {tab.id === 'support' && newTicketsCount > 0 && (
-                      <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full animate-heartbeat">
-                        {newTicketsCount > 9 ? '9+' : newTicketsCount}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </nav>
-            </div>
-          </div>
-        </div>
-        {/* End of sticky container for normal view */}
-
           {/* Content - only show when not on detail page and not on specific routes */}
           {!isOnDetailPage && 
            !location.pathname.includes('/id-checks') && 
