@@ -720,19 +720,21 @@ const AdminPortalContent = () => {
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-      {/* Header */}
-      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
-        <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div 
-              className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={() => setActiveTab('dashboard')}
-            >
-              {(theme === 'dark' ? companyLogoDark : companyLogoLight) ? (
-                // Show logo + "Admin Portal" text (no Shield, no company name)
-                <>
-                  <img 
-                    src={theme === 'dark' ? companyLogoDark : companyLogoLight} 
+      {/* Sticky Header Container */}
+      <div className="sticky top-0 z-40">
+        {/* Header */}
+        <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex justify-between items-center h-16">
+              <div 
+                className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+                onClick={() => setActiveTab('dashboard')}
+              >
+                {(theme === 'dark' ? companyLogoDark : companyLogoLight) ? (
+                  // Show logo + "Admin Portal" text (no Shield, no company name)
+                  <>
+                    <img 
+                      src={theme === 'dark' ? companyLogoDark : companyLogoLight} 
                     alt={companyName} 
                     className="h-12 w-auto max-w-[200px] object-contain"
                   />
