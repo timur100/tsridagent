@@ -38,7 +38,41 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [summary, setSummary] = useState({ total: 0, pending: 0, processing: 0, shipped: 0, delivered: 0 });
-  const [activeTab, setActiveTab] = useState('orders'); // orders, commissioning, or euroboxes
+  const [activeTab, setActiveTab] = useState('orders');
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('ordersColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_ORDER_COLUMNS;
+  });
+
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredOrders.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredOrders.map(order => order.id)));
+    }
+  };
+
+  const toggleSelectOrder = (orderId) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(orderId)) {
+      newSelected.delete(orderId);
+    } else {
+      newSelected.add(orderId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  // Handle import
+  const handleImport = async (importedData) => {
+    console.log('Imported orders:', importedData);
+    toast.success(`${importedData.length} Bestellungen bereit zum Import`);
+  };
 
   const statusOptions = [
     { value: 'pending', label: 'Offen', icon: Clock, color: 'yellow' },
