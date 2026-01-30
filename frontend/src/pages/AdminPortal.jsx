@@ -778,8 +778,8 @@ const AdminPortalContent = () => {
               )}
             </div>
 
-            {/* Global Search */}
-            <div className="flex-1 max-w-md mx-8">
+            {/* Global Search - Enlarged */}
+            <div className="flex-1 max-w-3xl mx-8">
               <GlobalSearch 
                 onResultSelect={(result) => {
                   if (result.type === 'asset') {
@@ -835,20 +835,6 @@ const AdminPortalContent = () => {
             </div>
 
             <div className="flex items-center space-x-4">
-              <Button
-                onClick={handleSync}
-                disabled={loading}
-                className={`flex items-center space-x-1.5 px-3 py-2 ${
-                  theme === 'dark'
-                    ? 'bg-white text-[#c00000] hover:bg-red-50'
-                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
-                }`}
-                size="sm"
-              >
-                <Zap className="h-4 w-4" />
-                <span className="text-sm font-medium">Sync</span>
-              </Button>
-              
               {/* Bell Icon for New Orders */}
               <button
                 onClick={() => setActiveTab('orders')}
