@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://electron-sync.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://syncagent.preview.emergentagent.com');
 }
 
 /**

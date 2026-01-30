@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://electron-sync.preview.emergentagent.com';
+    this.serverUrl = 'https://syncagent.preview.emergentagent.com';
   }
 
   /**

@@ -10,7 +10,7 @@ import os
 router = APIRouter(tags=["Testing"], prefix="/test")
 
 WEBHOOK_API_KEY = os.environ.get('WEBHOOK_API_KEY', 'G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg')
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://electron-sync.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://syncagent.preview.emergentagent.com')
 
 
 @router.post("/simulate-scan", response_model=dict)

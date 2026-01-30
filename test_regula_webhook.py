@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get backend URL from env
-BACKEND_URL = "https://electron-sync.preview.emergentagent.com"
+BACKEND_URL = "https://syncagent.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 
 # API Key from backend/.env
