@@ -80,14 +80,23 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
   
   // Close column settings when clicking outside
   useEffect(() => {
+    if (!showColumnSettings) return; // Only add listener when dropdown is open
+    
     const handleClickOutside = (event) => {
-      if (showColumnSettings && !event.target.closest('[data-column-settings]')) {
+      if (!event.target.closest('[data-column-settings]')) {
         setShowColumnSettings(false);
       }
     };
     
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    // Use setTimeout to avoid immediate close on the same click that opened it
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleClickOutside);
+    }, 0);
+    
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleClickOutside);
+    };
   }, [showColumnSettings]);
   
   // Save columns to localStorage when changed
