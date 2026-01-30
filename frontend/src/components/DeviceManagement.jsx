@@ -78,6 +78,18 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
   const searchTerm = externalSearchTerm !== undefined ? externalSearchTerm : internalSearchTerm;
   const setSearchTerm = onSearchChange || setInternalSearchTerm;
   
+  // Close column settings when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showColumnSettings && !event.target.closest('[data-column-settings]')) {
+        setShowColumnSettings(false);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showColumnSettings]);
+  
   // Save columns to localStorage when changed
   useEffect(() => {
     localStorage.setItem('deviceManagementColumns', JSON.stringify(columns));
