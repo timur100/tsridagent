@@ -175,13 +175,25 @@ Two methods implemented:
 - **Existing Devices:** DESKO-SCN-001 (Scanner, MUCC01), TSRID-TAB-001 (Tablet, BERE01)
 - **Test Coverage:** Backend 16/16 tests, Frontend UI fully validated
 
+#### P0 - Admin Portal Navigation Bug (Jan 31, 2025) - ✅ BEHOBEN & GETESTET
+- **Status:** BEHOBEN - 100% Frontend-Tests bestanden (19/19 Tab-Klicks erfolgreich)
+- **Test Report:** `/app/test_reports/iteration_8.json`
+- **Problem:** Die Tabs im Admin Portal reagierten nach einigen Klicks nicht mehr. Die URL wurde nicht aktualisiert, was zu Konflikten mit Sub-Routes führte.
+- **Lösung:** Tab-Klick Handler aktualisiert - jetzt wird `navigate('/portal/admin', { replace: true })` aufgerufen, bevor `setActiveTab(tab.id)` gesetzt wird
+- **Datei:** `/app/frontend/src/pages/AdminPortal.jsx` (Zeilen ~1010-1030)
+- **Verifizierte Features:**
+  - 14 verschiedene Tab-Klicks erfolgreich
+  - Schnelle aufeinanderfolgende Klicks funktionieren
+  - Rückkehr von Sub-Routes (z.B. ID-Checks) funktioniert
+  - URL bleibt konsistent bei `/portal/admin`
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
 |----------|-------|--------|
+| P1 | Agent Status Overview (Heartbeat-Mechanismus) | NOT STARTED |
 | P1 | Real-time Footer Status (`portalOnline` hardcoded) | NOT STARTED |
 | P2 | "Single Source of Truth" Migration for `fleet_management.py` | NOT STARTED |
-| P1 | Offline-First Electron Agent (Phases 2-4) | IN PROGRESS |
 | P3 | Printer Support in Electron App | NOT STARTED (Recurring) |
 
 ### 📋 Backlog/Future Tasks
