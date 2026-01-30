@@ -908,25 +908,6 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                   Aktionen
                 </th>
               )}
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Barcode
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Bestand
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Status
-                </th>
-                <th className={`px-6 py-3 text-right text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Aktionen
-                </th>
               </tr>
             </thead>
             <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
@@ -934,30 +915,140 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                 <tr 
                   key={item.id} 
                   onClick={() => handleOpenModal(item)}
-                  className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
+                  className={`border-t cursor-pointer transition-colors ${
+                    selectedIds.has(item.id)
+                      ? theme === 'dark' ? 'bg-[#c00000]/10 border-gray-700' : 'bg-red-50 border-gray-200'
+                      : theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
-                  <td className="px-6 py-4">
-                    {item.image_url ? (
-                      <img 
-                        src={item.image_url} 
-                        alt={item.name}
-                        className="h-12 w-12 object-cover rounded"
+                  {/* Checkbox */}
+                  {columns.find(c => c.id === 'select')?.visible && (
+                    <td className="px-4 py-4 w-10" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(item.id)}
+                        onChange={() => toggleSelectItem(item.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
                       />
-                    ) : (
-                      <div className={`h-12 w-12 rounded flex items-center justify-center ${
-                        theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
-                      }`}>
-                        <ImageIcon className="h-6 w-6 text-gray-400" />
+                    </td>
+                  )}
+                  {/* Image */}
+                  {columns.find(c => c.id === 'image')?.visible && (
+                    <td className="px-6 py-4">
+                      {item.image_url ? (
+                        <img 
+                          src={item.image_url} 
+                          alt={item.name}
+                          className="h-12 w-12 object-cover rounded"
+                        />
+                      ) : (
+                        <div className={`h-12 w-12 rounded flex items-center justify-center ${
+                          theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                        }`}>
+                          <ImageIcon className="h-6 w-6 text-gray-400" />
+                        </div>
+                      )}
+                    </td>
+                  )}
+                  {/* Name */}
+                  {columns.find(c => c.id === 'name')?.visible && (
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {item.name}
+                        </div>
+                        {columns.find(c => c.id === 'description')?.visible && item.description && (
+                          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                            {item.description}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {item.name}
+                    </td>
+                  )}
+                  {/* Category */}
+                  {columns.find(c => c.id === 'category')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {item.category}
+                    </td>
+                  )}
+                  {/* Barcode */}
+                  {columns.find(c => c.id === 'barcode')?.visible && (
+                    <td className="px-6 py-4">
+                      <div className="flex items-center space-x-2">
+                        <Barcode className="h-4 w-4 text-gray-400" />
+                        <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}>
+                          {item.barcode}
+                        </span>
                       </div>
-                      {item.description && (
-                        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                    </td>
+                  )}
+                  {/* Quantity */}
+                  {columns.find(c => c.id === 'quantity_in_stock')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {item.quantity_in_stock} {item.unit}
+                    </td>
+                  )}
+                  {/* Min Stock Level */}
+                  {columns.find(c => c.id === 'min_stock_level')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {item.min_stock_level}
+                    </td>
+                  )}
+                  {/* Status */}
+                  {columns.find(c => c.id === 'status')?.visible && (
+                    <td className="px-6 py-4">
+                      {item.quantity_in_stock === 0 ? (
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                          Nicht verfügbar
+                        </span>
+                      ) : item.is_low_stock ? (
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                          Niedriger Bestand
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          Verfügbar
+                        </span>
+                      )}
+                    </td>
+                  )}
+                  {/* Actions */}
+                  {columns.find(c => c.id === 'actions')?.visible && (
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleOpenModal(item);
+                          }}
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+                          title="Bearbeiten"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDuplicate(item);
+                          }}
+                          className="p-2 text-green-600 hover:bg-green-50 rounded"
+                          title="Duplizieren"
+                        >
+                          <Copy className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item.id);
+                          }}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded"
+                          title="Löschen"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  )}>
                           {item.description}
                         </div>
                       )}
