@@ -72,6 +72,32 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
     parent_id: null
   });
 
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredItems.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredItems.map(item => item.id)));
+    }
+  };
+
+  const toggleSelectItem = (itemId) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(itemId)) {
+      newSelected.delete(itemId);
+    } else {
+      newSelected.add(itemId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  // Handle import
+  const handleImport = async (importedData) => {
+    console.log('Imported data:', importedData);
+    // For now, just log - could implement actual import logic
+    toast.success(`${importedData.length} Einträge bereit zum Import`);
+  };
+
   useEffect(() => {
     fetchItems();
     fetchCategories();
