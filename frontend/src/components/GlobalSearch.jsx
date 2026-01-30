@@ -298,9 +298,9 @@ const GlobalSearch = ({ onResultSelect }) => {
         )}
       </div>
 
-      {/* Search Results Dropdown */}
+      {/* Search Results Dropdown - Double width */}
       {showResults && results && results.total > 0 && (
-        <div className={`absolute top-full mt-2 w-full rounded-lg shadow-lg border max-h-96 overflow-y-auto z-50 ${
+        <div className={`absolute top-full mt-2 w-[200%] -left-[50%] rounded-lg shadow-xl border max-h-96 overflow-y-auto z-50 ${
           theme === 'dark'
             ? 'bg-[#2d2d2d] border-gray-700'
             : 'bg-white border-gray-200'
