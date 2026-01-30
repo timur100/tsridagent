@@ -265,11 +265,16 @@ Two methods implemented:
 
 ---
 
-Last Updated: January 26, 2025
+Last Updated: January 31, 2025
 
 ---
 
 ## Test Reports
 | Date | Feature | Result | Report |
 |------|---------|--------|--------|
+| Jan 31, 2025 | Admin Portal Navigation Bug Fix | ✅ 100% PASS | `/app/test_reports/iteration_8.json` |
+| Jan 27, 2025 | Devices Tab Checkboxes & Spalten | ✅ 100% PASS | `/app/test_reports/iteration_7.json` |
+| Jan 27, 2025 | Standort-Kacheln & Kit-Verwaltung | ✅ 100% PASS | `/app/test_reports/iteration_6.json` |
+| Jan 27, 2025 | Stadt-Dropdown Tenant-Filter | ✅ 100% PASS | `/app/test_reports/iteration_5.json` |
+| Jan 27, 2025 | Admin-Panel Schwarzer Bildschirm | ✅ 100% PASS | `/app/test_reports/iteration_4.json` |
 | Jan 26, 2025 | Geräte-Lifecycle-Management | ✅ 100% PASS | `/app/test_reports/iteration_3.json` |
