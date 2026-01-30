@@ -1012,16 +1012,10 @@ const AdminPortalContent = () => {
                   key={tab.id}
                   onClick={() => {
                     console.log('[AdminPortal] Tab clicked:', tab.id);
-                    // Special handling for certain tabs
-                    if (tab.id === 'id-checks') {
-                      navigate('/portal/admin/id-checks');
-                    } else {
-                      // Navigate back to /portal/admin if we're on a sub-route
-                      if (location.pathname !== '/portal/admin') {
-                        navigate('/portal/admin');
-                      }
-                      setActiveTab(tab.id);
-                    }
+                    // ALWAYS navigate to base admin route and set the tab
+                    // This ensures URL is updated and state is synced
+                    navigate('/portal/admin', { replace: true });
+                    setActiveTab(tab.id);
                   }}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
