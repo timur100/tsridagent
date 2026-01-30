@@ -716,7 +716,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                     className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
                   />
                   {/* Settings gear icon */}
-                  <div className="relative">
+                  <div className="relative" data-column-settings>
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -738,7 +738,6 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                         className={`absolute left-0 top-full mt-1 w-72 rounded-xl border shadow-xl z-50 ${
                           theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'
                         }`}
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <div className={`px-4 py-3 border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                           <div className="flex items-center justify-between">
