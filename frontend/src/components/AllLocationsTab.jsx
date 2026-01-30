@@ -539,9 +539,10 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   return (
     <div className="space-y-4">
-      {/* Header with selection actions */}
-      {selectedIds.size > 0 && (
-        <div className="flex items-center gap-3">
+      {/* Header with Add Button and selection actions */}
+      <div className="flex items-center justify-between gap-3">
+        {/* Left: Selection actions (when items selected) */}
+        {selectedIds.size > 0 ? (
           <div className={`flex items-center gap-3 px-4 py-2 rounded-lg ${
             theme === 'dark' ? 'bg-[#c00000]/20 border border-[#c00000]/40' : 'bg-red-50 border border-red-200'
           }`}>
@@ -564,8 +565,21 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
               <X className="w-4 h-4" />
             </button>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+            {sortedLocations.length} Standorte
+          </div>
+        )}
+        
+        {/* Right: Add Location Button */}
+        <button
+          onClick={() => setShowAddLocationModal(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-medium"
+        >
+          <Plus className="w-5 h-5" />
+          Standort hinzufügen
+        </button>
+      </div>
 
       {/* Search and Filters */}
       <div className="flex flex-wrap gap-3">
