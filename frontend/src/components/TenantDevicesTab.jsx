@@ -61,7 +61,8 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
   const loadAvailableTenants = async () => {
     try {
       const result = await apiCall('/api/tenants');
-      const tenantsArray = result?.data || result || [];
+      // API returns { success: true, tenants: [...] }
+      const tenantsArray = result?.data?.tenants || result?.tenants || [];
       console.log('[TenantDevicesTab] Loaded tenants:', tenantsArray);
       setAvailableTenants(tenantsArray);
     } catch (error) {
