@@ -1016,6 +1016,10 @@ const AdminPortalContent = () => {
                     if (tab.id === 'id-checks') {
                       navigate('/portal/admin/id-checks');
                     } else {
+                      // Navigate back to /portal/admin if we're on a sub-route
+                      if (location.pathname !== '/portal/admin') {
+                        navigate('/portal/admin');
+                      }
                       setActiveTab(tab.id);
                     }
                   }}
