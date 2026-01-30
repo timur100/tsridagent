@@ -1048,79 +1048,11 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                         </button>
                       </div>
                     </td>
-                  )}>
-                          {item.description}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                    {item.category}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2">
-                      <Barcode className="h-4 w-4 text-gray-400" />
-                      <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}>
-                        {item.barcode}
-                      </span>
-                    </div>
-                  </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                    {item.quantity_in_stock} {item.unit}
-                  </td>
-                  <td className="px-6 py-4">
-                    {item.quantity_in_stock === 0 ? (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                        Nicht verfügbar
-                      </span>
-                    ) : item.is_low_stock ? (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                        Niedriger Bestand
-                      </span>
-                    ) : (
-                      <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
-                        Verfügbar
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end space-x-2">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenModal(item);
-                        }}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                        title="Bearbeiten"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDuplicate(item);
-                        }}
-                        className="p-2 text-green-600 hover:bg-green-50 rounded"
-                        title="Duplizieren"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(item.id);
-                        }}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded"
-                        title="Löschen"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </td>
+                  )}
                 </tr>
               ))}
             </tbody>
-        </table>
+        </table>>
         
         {filteredItems.length === 0 && (
           <div className="text-center py-12">
