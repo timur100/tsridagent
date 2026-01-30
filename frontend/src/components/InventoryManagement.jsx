@@ -39,8 +39,17 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
   const [editingItem, setEditingItem] = useState(null);
   const [summary, setSummary] = useState({ total: 0, low_stock: 0, out_of_stock: 0 });
   const [categories, setCategories] = useState([]);
-  const [categoriesExpanded, setCategoriesExpanded] = useState(true); // Expanded by default to show visibility toggles
+  const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('inventoryColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_INVENTORY_COLUMNS;
+  });
   
   const [formData, setFormData] = useState({
     name: '',
