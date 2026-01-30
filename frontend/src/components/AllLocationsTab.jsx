@@ -421,6 +421,67 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
     }
   };
 
+  // Add new location
+  const handleAddLocation = async () => {
+    if (!newLocation.tenant_id || !newLocation.location_code || !newLocation.station_name) {
+      alert('Bitte füllen Sie alle Pflichtfelder aus (Tenant, Code, Name)');
+      return;
+    }
+    
+    setAddingLocation(true);
+    try {
+      const token = localStorage.getItem('token');
+      const tenant = availableTenants.find(t => t.tenant_id === newLocation.tenant_id);
+      
+      const locationData = {
+        ...newLocation,
+        tenant_name: tenant?.name || tenant?.display_name || '',
+        location_id: `${newLocation.location_code}-${Date.now()}`,
+        status: 'active',
+        created_at: new Date().toISOString()
+      };
+      
+      const response = await fetch(`${BACKEND_URL}/api/tenant-locations`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(locationData)
+      });
+      
+      if (response.ok) {
+        // Refresh locations
+        await fetchAllLocations();
+        setShowAddLocationModal(false);
+        // Reset form
+        setNewLocation({
+          tenant_id: '',
+          location_code: '',
+          station_name: '',
+          street: '',
+          postal_code: '',
+          city: '',
+          state: '',
+          country: 'Deutschland',
+          continent: 'Europa',
+          manager: '',
+          phone: '',
+          email: '',
+          main_type: 'C'
+        });
+      } else {
+        const error = await response.json();
+        alert('Fehler beim Hinzufügen: ' + (error.detail || 'Unbekannter Fehler'));
+      }
+    } catch (error) {
+      console.error('Error adding location:', error);
+      alert('Fehler beim Hinzufügen des Standorts');
+    } finally {
+      setAddingLocation(false);
+    }
+  };
+
   // Column visibility toggle
   const toggleColumnVisibility = (columnId) => {
     setColumns(prev => prev.map(col => 
