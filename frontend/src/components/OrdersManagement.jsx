@@ -409,38 +409,71 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
 
       {/* Filter */}
       <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
-        <div className="flex items-center space-x-2">
-          <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Filter:</span>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setStatusFilter('all')}
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                statusFilter === 'all'
-                  ? 'bg-[#c00000] text-white'
-                  : theme === 'dark'
-                  ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3d3d3d]'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Alle ({summary.total})
-            </button>
-            {statusOptions.map(status => (
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center space-x-2">
+            <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Filter:</span>
+            <div className="flex flex-wrap gap-2">
               <button
-                key={status.value}
-                onClick={() => setStatusFilter(status.value)}
+                onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1 rounded-full text-sm font-medium ${
-                  statusFilter === status.value
+                  statusFilter === 'all'
                     ? 'bg-[#c00000] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3d3d3d]'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                {status.label} ({summary[status.value] || 0})
+                Alle ({summary.total})
               </button>
-            ))}
+              {statusOptions.map(status => (
+                <button
+                  key={status.value}
+                  onClick={() => setStatusFilter(status.value)}
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    statusFilter === status.value
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3d3d3d]'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {status.label} ({summary[status.value] || 0})
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Export/Import and Column Settings */}
+          <div className="flex items-center gap-2">
+            <TableExportImport
+              data={filteredOrders}
+              columns={columns}
+              filename="bestellungen"
+              onImport={handleImport}
+              selectedIds={selectedIds}
+              idField="id"
+            />
+            <TableColumnSettings
+              columns={columns}
+              onColumnsChange={setColumns}
+              storageKey="ordersColumns"
+              defaultColumns={DEFAULT_ORDER_COLUMNS}
+            />
           </div>
         </div>
+        
+        {/* Selection indicator */}
+        {selectedIds.size > 0 && (
+          <div className={`mt-4 flex items-center gap-3 px-4 py-2 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#c00000]/20 border border-[#c00000]/30'
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {selectedIds.size} von {filteredOrders.length} Bestellungen ausgewählt
+            </span>
+          </div>
+        )}
       </Card>
 
       {/* Orders Table */}
@@ -448,41 +481,31 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
         <table className="w-full">
           <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+              {/* Checkbox column */}
+              {columns.find(c => c.id === 'select')?.visible && (
+                <th className="px-4 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === filteredOrders.length && filteredOrders.length > 0}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                  />
+                </th>
+              )}
+              {columns.filter(c => c.visible && c.id !== 'select' && c.id !== 'actions').map(col => (
+                <th key={col.id} className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Bestellnr.
+                  {col.label}
                 </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Kunde
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Standort
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Artikel
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Datum
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Status
-                </th>
+              ))}
+              {columns.find(c => c.id === 'actions')?.visible && (
                 <th className={`px-6 py-3 text-right text-xs font-medium uppercase ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
                 }`}>
                   Aktionen
                 </th>
+              )}
               </tr>
             </thead>
             <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
