@@ -506,9 +506,17 @@ const AdminPortalContent = () => {
     }
   }, [isImpersonating]);
 
-  // Sync activeTab with current URL
+  // Sync activeTab with current URL - handles navigation from sub-routes
   useEffect(() => {
-    if (location.pathname.includes('/id-checks')) {
+    console.log('[AdminPortal] URL changed:', location.pathname);
+    
+    // When navigating back to base admin route, preserve activeTab if it was set via state
+    // Otherwise, the tab clicked will have already set the activeTab before this effect runs
+    if (location.pathname === '/portal/admin') {
+      // We're on the base admin route - activeTab is controlled by state
+      // Don't reset it here, let the onClick handler control it
+      console.log('[AdminPortal] On base route, activeTab:', activeTab);
+    } else if (location.pathname.includes('/id-checks')) {
       setActiveTab('id-checks');
     }
   }, [location.pathname]);
