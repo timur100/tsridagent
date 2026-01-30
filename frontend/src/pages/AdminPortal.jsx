@@ -1011,6 +1011,7 @@ const AdminPortalContent = () => {
                 <button
                   key={tab.id}
                   onClick={() => {
+                    console.log('[AdminPortal] Tab clicked:', tab.id);
                     // Special handling for certain tabs
                     if (tab.id === 'id-checks') {
                       navigate('/portal/admin/id-checks');
