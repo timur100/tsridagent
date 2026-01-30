@@ -513,47 +513,95 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                 <tr 
                   key={order.id} 
                   onClick={() => handleViewOrder(order)}
-                  className={`border-t cursor-pointer transition-colors ${theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'}`}
+                  className={`border-t cursor-pointer transition-colors ${
+                    selectedIds.has(order.id)
+                      ? theme === 'dark' ? 'bg-[#c00000]/10 border-gray-700' : 'bg-red-50 border-gray-200'
+                      : theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
+                  }`}
                 >
-                  <td className="px-6 py-4">
-                    <div className={`text-sm font-mono font-bold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                      {order.order_number || `#${order.id.substring(0, 8)}`}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                        {order.customer_name}
+                  {/* Checkbox */}
+                  {columns.find(c => c.id === 'select')?.visible && (
+                    <td className="px-4 py-4 w-10" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(order.id)}
+                        onChange={() => toggleSelectOrder(order.id)}
+                        className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                      />
+                    </td>
+                  )}
+                  {/* Order Number */}
+                  {columns.find(c => c.id === 'order_number')?.visible && (
+                    <td className="px-6 py-4">
+                      <div className={`text-sm font-mono font-bold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                        {order.order_number || `#${order.id.substring(0, 8)}`}
                       </div>
+                    </td>
+                  )}
+                  {/* Customer */}
+                  {columns.find(c => c.id === 'customer')?.visible && (
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                          {order.customer_name}
+                        </div>
+                        <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {order.customer_company}
+                        </div>
+                      </div>
+                    </td>
+                  )}
+                  {/* Location */}
+                  {columns.find(c => c.id === 'location')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      <div className="font-medium">{order.location_code}</div>
                       <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {order.customer_company}
+                        {order.location_name}
                       </div>
-                    </div>
-                  </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                    <div className="font-medium">{order.location_code}</div>
-                    <div className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                      {order.location_name}
-                    </div>
-                  </td>
-                  <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
-                    {order.items?.length || 0} Artikel
-                  </td>
-                  <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
-                    {formatDate(order.order_date)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {getStatusBadge(order.status)}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <Button
-                      onClick={() => handleViewOrder(order)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      Details
-                    </Button>
-                  </td>
+                    </td>
+                  )}
+                  {/* Items */}
+                  {columns.find(c => c.id === 'items')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {order.items?.length || 0} Artikel
+                    </td>
+                  )}
+                  {/* Date */}
+                  {columns.find(c => c.id === 'created_at')?.visible && (
+                    <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {formatDate(order.order_date)}
+                    </td>
+                  )}
+                  {/* Status */}
+                  {columns.find(c => c.id === 'status')?.visible && (
+                    <td className="px-6 py-4">
+                      {getStatusBadge(order.status)}
+                    </td>
+                  )}
+                  {/* Total */}
+                  {columns.find(c => c.id === 'total')?.visible && (
+                    <td className={`px-6 py-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-900'}`}>
+                      {order.total ? `€${order.total.toFixed(2)}` : '-'}
+                    </td>
+                  )}
+                  {/* Notes */}
+                  {columns.find(c => c.id === 'notes')?.visible && (
+                    <td className={`px-6 py-4 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                      {order.notes || '-'}
+                    </td>
+                  )}
+                  {/* Actions */}
+                  {columns.find(c => c.id === 'actions')?.visible && (
+                    <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        onClick={() => handleViewOrder(order)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-3"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Details
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
