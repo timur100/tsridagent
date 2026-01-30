@@ -104,6 +104,18 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  // Close column settings when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showColumnSettings && !event.target.closest('[data-column-settings]')) {
+        setShowColumnSettings(false);
+      }
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showColumnSettings]);
+
   // Save columns to localStorage when changed
   useEffect(() => {
     localStorage.setItem('allLocationsColumns', JSON.stringify(columns));
