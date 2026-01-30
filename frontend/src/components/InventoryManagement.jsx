@@ -835,7 +835,25 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
             </label>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            {/* Export/Import */}
+            <TableExportImport
+              data={filteredItems}
+              columns={columns}
+              filename="inventar"
+              onImport={handleImport}
+              selectedIds={selectedIds}
+              idField="id"
+            />
+            
+            {/* Column Settings */}
+            <TableColumnSettings
+              columns={columns}
+              onColumnsChange={setColumns}
+              storageKey="inventoryColumns"
+              defaultColumns={DEFAULT_INVENTORY_COLUMNS}
+            />
+            
             <Button
               onClick={() => handleOpenModal()}
               className="bg-[#c00000] hover:bg-[#a00000] text-white"
@@ -845,6 +863,19 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
             </Button>
           </div>
         </div>
+        
+        {/* Selection indicator */}
+        {selectedIds.size > 0 && (
+          <div className={`mt-4 flex items-center gap-3 px-4 py-2 rounded-lg ${
+            theme === 'dark'
+              ? 'bg-[#c00000]/20 border border-[#c00000]/30'
+              : 'bg-red-50 border border-red-200'
+          }`}>
+            <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              {selectedIds.size} von {filteredItems.length} Artikeln ausgewählt
+            </span>
+          </div>
+        )}
       </Card>
 
       {/* Items Table */}
@@ -852,22 +883,31 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
         <table className="w-full">
           <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+              {/* Checkbox column */}
+              {columns.find(c => c.id === 'select')?.visible && (
+                <th className="px-4 py-3 w-10">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.size === filteredItems.length && filteredItems.length > 0}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                  />
+                </th>
+              )}
+              {columns.filter(c => c.visible && c.id !== 'select' && c.id !== 'actions').map(col => (
+                <th key={col.id} className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Bild
+                  {col.label}
                 </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+              ))}
+              {columns.find(c => c.id === 'actions')?.visible && (
+                <th className={`px-6 py-3 text-right text-xs font-semibold font-mono ${
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
-                  Artikel
+                  Aktionen
                 </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
-                  theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-                }`}>
-                  Kategorie
-                </th>
-                <th className={`px-6 py-3 text-left text-xs font-semibold font-mono ${
+              )}
                   theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
                 }`}>
                   Barcode
