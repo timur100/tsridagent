@@ -4,11 +4,27 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle, Eye, Box, Package2 } from 'lucide-react';
+import { ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle, Eye, Box, Package2, Settings } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
 import CommissioningView from './CommissioningView';
 import EuroboxManagement from './EuroboxManagement';
+
+// Default column configuration for Orders
+const DEFAULT_ORDER_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'order_number', label: 'Bestellnr.', visible: true, sortable: true },
+  { id: 'customer', label: 'Kunde', visible: true, sortable: true },
+  { id: 'location', label: 'Standort', visible: true, sortable: true },
+  { id: 'items', label: 'Artikel', visible: true, sortable: true },
+  { id: 'created_at', label: 'Datum', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'total', label: 'Summe', visible: false, sortable: true },
+  { id: 'notes', label: 'Notizen', visible: false, sortable: false },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
   const { theme } = useTheme();
