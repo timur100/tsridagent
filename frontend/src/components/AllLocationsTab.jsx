@@ -936,6 +936,255 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
           </div>
         </div>
       )}
+
+      {/* Add Location Modal */}
+      {showAddLocationModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAddLocationModal(false)}>
+          <div
+            className={`w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl p-6 ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              <MapPin className="w-6 h-6 text-[#c00000]" />
+              Neuen Standort hinzufügen
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Tenant */}
+              <div className="md:col-span-2">
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Kunde (Tenant) *
+                </label>
+                <select
+                  value={newLocation.tenant_id}
+                  onChange={(e) => setNewLocation({...newLocation, tenant_id: e.target.value})}
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                >
+                  <option value="">-- Tenant wählen --</option>
+                  {availableTenants.map(t => (
+                    <option key={t.tenant_id} value={t.tenant_id}>
+                      {t.display_name || t.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Location Code */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Standort-Code *
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.location_code}
+                  onChange={(e) => setNewLocation({...newLocation, location_code: e.target.value.toUpperCase()})}
+                  placeholder="z.B. MUCC01"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000] font-mono`}
+                />
+              </div>
+              
+              {/* Station Name */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Stationsname *
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.station_name}
+                  onChange={(e) => setNewLocation({...newLocation, station_name: e.target.value.toUpperCase()})}
+                  placeholder="z.B. MUNICH CITY CENTER"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* Street */}
+              <div className="md:col-span-2">
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Straße
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.street}
+                  onChange={(e) => setNewLocation({...newLocation, street: e.target.value})}
+                  placeholder="Musterstraße 123"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* PLZ */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  PLZ
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.postal_code}
+                  onChange={(e) => setNewLocation({...newLocation, postal_code: e.target.value})}
+                  placeholder="80331"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* City */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Stadt
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.city}
+                  onChange={(e) => setNewLocation({...newLocation, city: e.target.value.toUpperCase()})}
+                  placeholder="MÜNCHEN"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* State */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Bundesland
+                </label>
+                <select
+                  value={newLocation.state}
+                  onChange={(e) => setNewLocation({...newLocation, state: e.target.value})}
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                >
+                  <option value="">-- Wählen --</option>
+                  {Object.entries(STATE_NAMES).map(([code, name]) => (
+                    <option key={code} value={code}>{name}</option>
+                  ))}
+                </select>
+              </div>
+              
+              {/* Country */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Land
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.country}
+                  onChange={(e) => setNewLocation({...newLocation, country: e.target.value})}
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* Manager */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Manager
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.manager}
+                  onChange={(e) => setNewLocation({...newLocation, manager: e.target.value})}
+                  placeholder="Max Mustermann"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* Phone */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Telefon
+                </label>
+                <input
+                  type="text"
+                  value={newLocation.phone}
+                  onChange={(e) => setNewLocation({...newLocation, phone: e.target.value})}
+                  placeholder="+49 89 12345678"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* Email */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  E-Mail
+                </label>
+                <input
+                  type="email"
+                  value={newLocation.email}
+                  onChange={(e) => setNewLocation({...newLocation, email: e.target.value})}
+                  placeholder="standort@firma.de"
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                />
+              </div>
+              
+              {/* Main Type */}
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                  Typ
+                </label>
+                <select
+                  value={newLocation.main_type}
+                  onChange={(e) => setNewLocation({...newLocation, main_type: e.target.value})}
+                  className={`w-full px-3 py-2 rounded-lg border ${
+                    theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
+                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                >
+                  <option value="C">C - Standard</option>
+                  <option value="CSS">CSS - Service Station</option>
+                  <option value="F">F - Franchise</option>
+                  <option value="A">A - Airport</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setShowAddLocationModal(false)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  theme === 'dark'
+                    ? 'border-gray-700 text-gray-300 hover:bg-gray-800'
+                    : 'border-gray-200 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={handleAddLocation}
+                disabled={addingLocation || !newLocation.tenant_id || !newLocation.location_code || !newLocation.station_name}
+                className={`px-6 py-2 rounded-lg bg-[#c00000] text-white font-medium transition-colors hover:bg-[#a00000] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+              >
+                {addingLocation ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Wird hinzugefügt...
+                  </>
+                ) : (
+                  <>
+                    <Plus className="w-4 h-4" />
+                    Standort hinzufügen
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
