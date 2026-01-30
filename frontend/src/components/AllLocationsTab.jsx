@@ -75,6 +75,25 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
   const [availableTenants, setAvailableTenants] = useState([]);
   const [assigningTenant, setAssigningTenant] = useState(null);
   
+  // Add Location Modal state
+  const [showAddLocationModal, setShowAddLocationModal] = useState(false);
+  const [newLocation, setNewLocation] = useState({
+    tenant_id: '',
+    location_code: '',
+    station_name: '',
+    street: '',
+    postal_code: '',
+    city: '',
+    state: '',
+    country: 'Deutschland',
+    continent: 'Europa',
+    manager: '',
+    phone: '',
+    email: '',
+    main_type: 'C'
+  });
+  const [addingLocation, setAddingLocation] = useState(false);
+  
   // Column configuration state
   const [columns, setColumns] = useState(() => {
     const saved = localStorage.getItem('allLocationsColumns');
