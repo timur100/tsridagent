@@ -351,6 +351,82 @@ async def get_google_opening_hours(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Model for creating location with tenant_id in body
+class TenantLocationCreateWithTenant(BaseModel):
+    tenant_id: str
+    tenant_name: Optional[str] = None
+    location_id: Optional[str] = None
+    location_code: str
+    station_name: str
+    postal_code: Optional[str] = ""
+    city: Optional[str] = ""
+    street: Optional[str] = ""
+    state: Optional[str] = ""
+    country: Optional[str] = "Deutschland"
+    continent: Optional[str] = "Europa"
+    manager: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    main_type: Optional[str] = "C"
+    status: Optional[str] = "active"
+
+
+@router.post("")
+async def create_location_direct(
+    location: TenantLocationCreateWithTenant,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    """Create a new location with tenant_id in body (for AllLocationsTab)"""
+    try:
+        # Check if location code already exists for this tenant
+        existing = db.tenant_locations.find_one({
+            "tenant_id": location.tenant_id,
+            "location_code": location.location_code
+        })
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Standort-Code '{location.location_code}' existiert bereits für diesen Tenant")
+        
+        # Create location
+        location_id = location.location_id or str(uuid.uuid4())
+        location_doc = {
+            "location_id": location_id,
+            "tenant_id": location.tenant_id,
+            "tenant_name": location.tenant_name or "",
+            "location_code": location.location_code,
+            "station_name": location.station_name,
+            "postal_code": location.postal_code or "",
+            "city": location.city or "",
+            "street": location.street or "",
+            "state": location.state or "",
+            "country": location.country or "Deutschland",
+            "continent": location.continent or "Europa",
+            "manager": location.manager or "",
+            "phone": location.phone or "",
+            "email": location.email or "",
+            "main_type": location.main_type or "C",
+            "status": location.status or "active",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        db.tenant_locations.insert_one(location_doc)
+        
+        # Remove MongoDB _id from response
+        location_doc.pop('_id', None)
+        
+        return {
+            "success": True,
+            "message": f"Standort '{location.location_code}' erfolgreich erstellt",
+            "location": location_doc
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/{tenant_id}")
 async def create_tenant_location(
     tenant_id: str,
