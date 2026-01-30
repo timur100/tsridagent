@@ -3313,8 +3313,8 @@ const AdminPortalContent = () => {
             setDeviceListKey(prev => prev + 1);
             setShowAddDeviceModal(false);
           }}
-          customers={customers}
-          selectedCustomer={selectedCustomer}
+          customers={availableTenants}
+          selectedCustomer={selectedTenantId || selectedCustomer}
         />
       )}
 
