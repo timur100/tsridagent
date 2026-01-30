@@ -196,6 +196,23 @@ const AdminPortalContent = () => {
   const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
   const [showAddDeviceModal, setShowAddDeviceModal] = useState(false);
   const [tenantInitialTab, setTenantInitialTab] = useState('dashboard');
+  const [availableTenants, setAvailableTenants] = useState([]);
+
+  // Load available tenants for AddDeviceModal
+  useEffect(() => {
+    const loadTenants = async () => {
+      try {
+        const result = await apiCall('/api/tenants');
+        // API returns { success: true, tenants: [...] }
+        const tenantsArray = result?.data?.tenants || result?.tenants || [];
+        console.log('[AdminPortal] Loaded tenants for modal:', tenantsArray);
+        setAvailableTenants(tenantsArray);
+      } catch (error) {
+        console.error('[AdminPortal] Error loading tenants:', error);
+      }
+    };
+    loadTenants();
+  }, [apiCall]);
 
   // Handle navigation from LocationDetailPage or DeviceDetailPage
   useEffect(() => {
