@@ -977,7 +977,11 @@ const AdminPortalContent = () => {
               })().map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => {
+                    console.log('[AdminPortal Impersonation] Tab clicked:', tab.id);
+                    navigate('/portal/admin', { replace: true });
+                    setActiveTab(tab.id);
+                  }}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
                       ? 'border-[#c00000] text-[#c00000]'
