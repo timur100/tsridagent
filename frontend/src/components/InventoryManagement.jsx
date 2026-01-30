@@ -4,8 +4,25 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
-import { Package, Plus, Search, AlertTriangle, Edit, Trash2, Barcode, ChevronDown, ChevronRight, Image as ImageIcon, X, Copy, Eye, EyeOff, ArrowUp, ArrowDown } from 'lucide-react';
+import { Package, Plus, Search, AlertTriangle, Edit, Trash2, Barcode, ChevronDown, ChevronRight, Image as ImageIcon, X, Copy, Eye, EyeOff, ArrowUp, ArrowDown, Settings, GripVertical } from 'lucide-react';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
+
+// Default column configuration for Inventory
+const DEFAULT_INVENTORY_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'image', label: 'Bild', visible: true, sortable: false },
+  { id: 'name', label: 'Artikel', visible: true, sortable: true },
+  { id: 'category', label: 'Kategorie', visible: true, sortable: true },
+  { id: 'barcode', label: 'Barcode', visible: true, sortable: true },
+  { id: 'quantity_in_stock', label: 'Bestand', visible: true, sortable: true },
+  { id: 'unit', label: 'Einheit', visible: true, sortable: true },
+  { id: 'min_stock_level', label: 'Min. Bestand', visible: false, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'description', label: 'Beschreibung', visible: false, sortable: false },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => {
   const { theme } = useTheme();
