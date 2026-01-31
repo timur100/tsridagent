@@ -541,6 +541,19 @@ const LicenseManagement = () => {
           
           {user?.role === 'admin' && (
             <div className="flex gap-2">
+              <TableExportImport
+                data={overview?.licenses || []}
+                columns={columns}
+                filename="lizenzen"
+                selectedIds={selectedIds}
+                idField="license_key"
+              />
+              <TableColumnSettings
+                columns={columns}
+                onColumnsChange={setColumns}
+                storageKey="licenseColumns"
+                defaultColumns={DEFAULT_LICENSE_COLUMNS}
+              />
               <Button
                 onClick={() => setShowCreateModal(true)}
                 className="bg-green-600 hover:bg-green-700 text-white"
