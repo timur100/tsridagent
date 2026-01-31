@@ -89,6 +89,9 @@ from routes.hierarchy_stats import router as hierarchy_stats_router
 from routes.assets import router as assets_router
 from routes.health_monitor import router as health_monitor_router
 
+# Performance utilities
+from utils.db_indexes import create_indexes
+
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -97,6 +100,8 @@ load_dotenv(ROOT_DIR / '.env')
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
+portal_db = client['portal_db']
+multi_tenant_db = client['multi_tenant_db']
 
 # Create the main app without a prefix
 # redirect_slashes=False prevents FastAPI from auto-redirecting HTTP when adding trailing slashes
