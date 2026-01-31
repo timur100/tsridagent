@@ -528,7 +528,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
               </tr>
             </thead>
             <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-              {filteredOrders.map((order) => (
+              {paginatedOrders.map((order) => (
                 <tr 
                   key={order.id} 
                   onClick={() => handleViewOrder(order)}
