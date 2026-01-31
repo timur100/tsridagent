@@ -56,6 +56,10 @@ const SupportManagement = () => {
   const [statusTileFilter, setStatusTileFilter] = useState(null);
   const [staff, setStaff] = useState([]);
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());
   
