@@ -794,6 +794,22 @@ const SupportManagement = () => {
                 ))}
               </tbody>
             </table>
+            
+            {/* Pagination */}
+            {filteredTickets.length > 0 && (
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalItems={filteredTickets.length}
+                pageSize={pageSize}
+                onPageChange={setCurrentPage}
+                onPageSizeChange={(size) => {
+                  setPageSize(size);
+                  setCurrentPage(1);
+                }}
+                theme={theme}
+              />
+            )}
         )}
       </div>
 
