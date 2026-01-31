@@ -196,6 +196,20 @@ const ActivationCodeManager = () => {
           </div>
         </div>
         <div className="flex items-center gap-4">
+          {/* Export/Import and Column Settings */}
+          <TableExportImport
+            data={codes}
+            columns={columns}
+            filename="aktivierungscodes"
+            selectedIds={selectedIds}
+            idField="code"
+          />
+          <TableColumnSettings
+            columns={columns}
+            onColumnsChange={setColumns}
+            storageKey="activationCodeColumns"
+            defaultColumns={DEFAULT_CODE_COLUMNS}
+          />
           {/* Aktueller Tenant Badge */}
           <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-lg border border-primary/20">
             <Building2 className="h-5 w-5 text-primary" />
