@@ -5,9 +5,24 @@ import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { 
   Key, Check, X, AlertCircle, Package, Monitor, 
-  Search, Plus, Trash2, TrendingUp, Download
+  Search, Plus, Trash2, TrendingUp, Download, Settings
 } from 'lucide-react';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
+
+// Default column configuration for Licenses
+const DEFAULT_LICENSE_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'license_key', label: 'Lizenzschlüssel', visible: true, sortable: true },
+  { id: 'customer', label: 'Kunde', visible: true, sortable: true },
+  { id: 'package', label: 'Paket', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'start_date', label: 'Start', visible: true, sortable: true },
+  { id: 'end_date', label: 'Ende', visible: true, sortable: true },
+  { id: 'devices', label: 'Geräte', visible: false, sortable: true },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const LicenseManagement = () => {
   const { theme } = useTheme();
