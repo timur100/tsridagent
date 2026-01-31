@@ -39,6 +39,15 @@ const AssetManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('assetColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_ASSET_COLUMNS;
+  });
+  
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -59,6 +68,39 @@ const AssetManagement = () => {
   // Asset-ID generation state
   const [generatingId, setGeneratingId] = useState(false);
   const [idPreview, setIdPreview] = useState('');
+
+  // Selection handlers
+  const filteredAssets = assets.filter(asset => {
+    const matchesSearch = !searchTerm || 
+      asset.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.asset_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      asset.serial_number?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory = filterCategory === 'all' || asset.category_id === filterCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredAssets.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredAssets.map(a => a.asset_id)));
+    }
+  };
+
+  const toggleSelectAsset = (assetId) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(assetId)) {
+      newSelected.delete(assetId);
+    } else {
+      newSelected.add(assetId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleImport = async (importedData) => {
+    console.log('Imported assets:', importedData);
+    toast.success(`${importedData.length} Assets bereit zum Import`);
+  };
 
   useEffect(() => {
     loadTenants();
