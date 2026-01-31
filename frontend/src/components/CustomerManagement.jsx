@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useImpersonation } from '../contexts/ImpersonationContext';
@@ -9,6 +9,7 @@ import CustomerDetailsModal from './CustomerDetailsModal';
 import SearchInput from './SearchInput';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 
 // Default column configuration for Customers
@@ -34,6 +35,10 @@ const CustomerManagement = ({ customers, onRefresh }) => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());

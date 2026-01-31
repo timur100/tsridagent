@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
@@ -8,6 +8,8 @@ import { ShoppingCart, Clock, Package, Truck, CheckCircle, XCircle, Eye, Box, Pa
 import { QRCodeSVG } from 'qrcode.react';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
+import TableSkeleton from './ui/TableSkeleton';
 import toast from 'react-hot-toast';
 import CommissioningView from './CommissioningView';
 import EuroboxManagement from './EuroboxManagement';
@@ -40,6 +42,10 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
   const [summary, setSummary] = useState({ total: 0, pending: 0, processing: 0, shipped: 0, delivered: 0 });
   const [activeTab, setActiveTab] = useState('orders');
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());
   
@@ -48,6 +54,19 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
     const saved = localStorage.getItem('ordersColumns');
     return saved ? JSON.parse(saved) : DEFAULT_ORDER_COLUMNS;
   });
+
+  // Paginated data
+  const paginatedOrders = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredOrders.slice(startIndex, startIndex + pageSize);
+  }, [filteredOrders, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredOrders.length / pageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusFilter]);
 
   // Selection handlers
   const toggleSelectAll = () => {
