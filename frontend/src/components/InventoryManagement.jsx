@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
@@ -7,6 +7,8 @@ import { Button } from './ui/button';
 import { Package, Plus, Search, AlertTriangle, Edit, Trash2, Barcode, ChevronDown, ChevronRight, Image as ImageIcon, X, Copy, Eye, EyeOff, ArrowUp, ArrowDown, Settings, GripVertical } from 'lucide-react';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
+import TableSkeleton from './ui/TableSkeleton';
 import toast from 'react-hot-toast';
 
 // Default column configuration for Inventory
@@ -41,6 +43,10 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
   const [categories, setCategories] = useState([]);
   const [categoriesExpanded, setCategoriesExpanded] = useState(true);
   const [uploadingImage, setUploadingImage] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());
