@@ -294,12 +294,25 @@ const KitManager = ({ theme }) => {
     kit.location_code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Paginated kits
+  const paginatedKits = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredKits.slice(startIndex, startIndex + pageSize);
+  }, [filteredKits, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredKits.length / pageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   // Selection handlers
   const toggleSelectAll = () => {
-    if (selectedIds.size === filteredKits.length) {
+    if (selectedIds.size === paginatedKits.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredKits.map(k => k.id)));
+      setSelectedIds(new Set(paginatedKits.map(k => k.id)));
     }
   };
 
