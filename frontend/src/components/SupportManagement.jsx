@@ -543,6 +543,21 @@ const SupportManagement = () => {
             Neues Ticket
           </Button>
           
+          {/* Export/Import and Column Settings */}
+          <TableExportImport
+            data={filteredTickets}
+            columns={ticketColumns}
+            filename="tickets"
+            selectedIds={selectedIds}
+            idField="id"
+          />
+          <TableColumnSettings
+            columns={ticketColumns}
+            onColumnsChange={setTicketColumns}
+            storageKey="ticketColumns"
+            defaultColumns={DEFAULT_TICKET_COLUMNS}
+          />
+          
           {/* Reset Filters Button */}
           {(statusTileFilter || searchQuery) && (
             <Button
