@@ -280,6 +280,19 @@ const SupportManagement = () => {
     return true;
   });
 
+  // Paginated tickets
+  const paginatedTickets = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredTickets.slice(startIndex, startIndex + pageSize);
+  }, [filteredTickets, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredTickets.length / pageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [statusTileFilter, searchQuery, filterStatus, filterPriority]);
+
   return (
     <div className="space-y-6">
       {/* Tabs */}
