@@ -34,6 +34,16 @@ const CustomerManagement = ({ customers, onRefresh }) => {
   const [selectedCustomer, setSelectedCustomer] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('customerColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_CUSTOMER_COLUMNS;
+  });
+  
   const [formData, setFormData] = useState({
     email: '',
     name: '',
@@ -42,6 +52,41 @@ const CustomerManagement = ({ customers, onRefresh }) => {
     role: 'customer',
     shop_enabled: false
   });
+
+  // Filter customers based on search
+  const filteredCustomers = customers.filter(customer => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      customer.name?.toLowerCase().includes(search) ||
+      customer.email?.toLowerCase().includes(search) ||
+      customer.company?.toLowerCase().includes(search)
+    );
+  });
+
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredCustomers.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredCustomers.map(c => c.email)));
+    }
+  };
+
+  const toggleSelectCustomer = (email) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(email)) {
+      newSelected.delete(email);
+    } else {
+      newSelected.add(email);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleImport = async (importedData) => {
+    console.log('Imported customers:', importedData);
+    toast.success(`${importedData.length} Kunden bereit zum Import`);
+  };
 
   // Mock stats - will be replaced with real data later
   const getCustomerStats = (customer) => {
