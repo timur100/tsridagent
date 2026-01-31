@@ -44,7 +44,30 @@ Two methods implemented:
 
 ## Implementation Status
 
-### ✅ Completed Features
+### ✅ Completed Features (January 31, 2025)
+
+#### Import/Export & Column Settings System
+Wiederverwendbare Komponenten für alle Datentabellen:
+- **TableExportImport.jsx** - Export (CSV/Excel) und Import-Funktionalität
+- **TableColumnSettings.jsx** - Spalten-Konfiguration (Anzeigen/Verbergen, Drag & Drop)
+- **TableSelectionHeader.jsx** - Bulk-Auswahl-Anzeige
+
+Integriert in folgende Komponenten:
+- ✅ InventoryManagement (Artikel)
+- ✅ OrdersManagement (Bestellungen)
+- ✅ CustomerManagement (Kunden)
+- ✅ AssetManagement (Assets)
+- ✅ KitManager (Kit-Verwaltung)
+- ✅ ActivationCodeManager (Aktivierungscodes)
+- ✅ SupportManagement (Tickets)
+- ✅ LicenseManagement (Lizenzen)
+- ✅ DeviceManagement (bereits vorhanden)
+- ✅ AllLocationsTab (bereits vorhanden)
+
+#### Admin Portal Navigation Bug Fix
+- Tab-Navigation funktioniert jetzt zuverlässig
+- URL wird bei Tab-Wechsel korrekt aktualisiert
+- Keine Konflikte mehr mit Sub-Routes
 
 #### Device Coupling System
 - Manual hierarchical selection (Continent → Country → City → Location → Device)
