@@ -1074,7 +1074,23 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                 </tr>
               ))}
             </tbody>
-        </table>>
+        </table>
+        
+        {/* Pagination */}
+        {filteredItems.length > 0 && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredItems.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            theme={theme}
+          />
+        )}
         
         {filteredItems.length === 0 && (
           <div className="text-center py-12">
@@ -1085,6 +1101,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
           </div>
         )}
       </div>
+      )}
 
       {/* Category Modal */}
       {showCategoryModal && (
