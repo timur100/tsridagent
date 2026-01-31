@@ -651,6 +651,20 @@ const AssetManagement = () => {
           </p>
         </div>
         <div className="flex gap-3">
+          <TableExportImport
+            data={filteredAssets}
+            columns={columns}
+            filename="assets"
+            onImport={handleImport}
+            selectedIds={selectedIds}
+            idField="asset_id"
+          />
+          <TableColumnSettings
+            columns={columns}
+            onColumnsChange={setColumns}
+            storageKey="assetColumns"
+            defaultColumns={DEFAULT_ASSET_COLUMNS}
+          />
           <Button
             onClick={downloadAllQRCodes}
             variant="outline"
@@ -659,14 +673,6 @@ const AssetManagement = () => {
           >
             <QrCode className="h-4 w-4" />
             Alle QR-Codes
-          </Button>
-          <Button
-            onClick={() => toast.info('Import-Funktion kommt bald')}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <Upload className="h-4 w-4" />
-            Import
           </Button>
           <Button
             onClick={() => openModal()}
