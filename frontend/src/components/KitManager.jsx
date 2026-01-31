@@ -458,8 +458,9 @@ const KitManager = ({ theme }) => {
           </Button>
         </Card>
       ) : (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredKits.map((kit) => (
+          {paginatedKits.map((kit) => (
             <Card 
               key={kit.id} 
               className={`p-4 cursor-pointer hover:shadow-lg transition-all ${cardBg} hover:border-primary/50`}
