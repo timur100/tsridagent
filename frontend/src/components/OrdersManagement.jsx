@@ -626,6 +626,22 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
             </tbody>
         </table>
 
+        {/* Pagination */}
+        {filteredOrders.length > 0 && (
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredOrders.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            theme={theme}
+          />
+        )}
+
         {filteredOrders.length === 0 && (
           <div className="text-center py-12">
             <ShoppingCart className="mx-auto h-12 w-12 text-gray-400" />
