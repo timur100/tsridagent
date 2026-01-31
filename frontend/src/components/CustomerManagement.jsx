@@ -69,12 +69,20 @@ const CustomerManagement = ({ customers, onRefresh }) => {
     );
   });
 
+  // Paginated data
+  const paginatedCustomers = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredCustomers.slice(startIndex, startIndex + pageSize);
+  }, [filteredCustomers, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredCustomers.length / pageSize);
+
   // Selection handlers
   const toggleSelectAll = () => {
-    if (selectedIds.size === filteredCustomers.length) {
+    if (selectedIds.size === paginatedCustomers.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(filteredCustomers.map(c => c.email)));
+      setSelectedIds(new Set(paginatedCustomers.map(c => c.email)));
     }
   };
 
