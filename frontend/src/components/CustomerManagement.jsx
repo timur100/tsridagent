@@ -291,7 +291,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
 
       {/* Customer Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {filteredCustomers.map((customer) => {
+        {paginatedCustomers.map((customer) => {
           const stats = getCustomerStats(customer);
           return (
           <Card 
