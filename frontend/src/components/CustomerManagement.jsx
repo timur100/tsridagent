@@ -2,12 +2,28 @@ import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useImpersonation } from '../contexts/ImpersonationContext';
-import { X, Plus, Mail, Building2, UserCheck, UserX, Trash2, Eye, Monitor, MapPin, Package, Users as UsersIcon, LogIn, Search } from 'lucide-react';
+import { X, Plus, Mail, Building2, UserCheck, UserX, Trash2, Eye, Monitor, MapPin, Package, Users as UsersIcon, LogIn, Search, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import CustomerDetailsModal from './CustomerDetailsModal';
 import SearchInput from './SearchInput';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
+
+// Default column configuration for Customers
+const DEFAULT_CUSTOMER_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'name', label: 'Name', visible: true, sortable: true },
+  { id: 'email', label: 'E-Mail', visible: true, sortable: true },
+  { id: 'company', label: 'Unternehmen', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'shop_enabled', label: 'Shop-Zugang', visible: true, sortable: true },
+  { id: 'devices', label: 'Geräte', visible: false, sortable: true },
+  { id: 'locations', label: 'Standorte', visible: false, sortable: true },
+  { id: 'created_at', label: 'Erstellt', visible: false, sortable: true },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const CustomerManagement = ({ customers, onRefresh }) => {
   const { theme } = useTheme();
