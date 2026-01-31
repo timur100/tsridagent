@@ -52,6 +52,15 @@ Wiederverwendbare Komponenten für alle Datentabellen:
 - **TableColumnSettings.jsx** - Spalten-Konfiguration (Anzeigen/Verbergen, Drag & Drop)
 - **TableSelectionHeader.jsx** - Bulk-Auswahl-Anzeige
 
+#### Performance-Optimierungen (January 31, 2025)
+Umfassende Performance-Verbesserungen implementiert:
+- **Datenbank-Indizes** (`/app/backend/utils/db_indexes.py`) - Automatische Index-Erstellung beim Server-Start
+- **In-Memory Cache Service** (`/app/backend/utils/cache_service.py`) - TTL-basierter Cache für API-Responses
+- **TablePagination.jsx** - Wiederverwendbare Pagination (25/50/100/200 pro Seite)
+- **TableSkeleton.jsx** - Loading-Skeletons für bessere gefühlte Performance
+- **VirtualizedTable.jsx** - Virtualisierte Tabellen für große Datenmengen (1000+ Einträge)
+- **@tanstack/react-virtual** - Bibliothek für virtuelles Scrolling installiert
+
 Integriert in folgende Komponenten:
 - ✅ InventoryManagement (Artikel)
 - ✅ OrdersManagement (Bestellungen)
