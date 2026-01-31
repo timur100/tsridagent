@@ -531,6 +531,25 @@ const KitManager = ({ theme }) => {
             </Card>
           ))}
         </div>
+        
+        {/* Pagination */}
+        {filteredKits.length > 0 && (
+          <div className={`mt-4 rounded-xl border ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+            <TablePagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={filteredKits.length}
+              pageSize={pageSize}
+              onPageChange={setCurrentPage}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setCurrentPage(1);
+              }}
+              theme={theme}
+            />
+          </div>
+        )}
+        </>
       )}
 
       {/* Create Kit Modal */}
