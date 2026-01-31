@@ -6,10 +6,26 @@ import { Button } from './ui/button';
 import { 
   Plus, Search, Filter, Download, Upload, 
   Edit2, Trash2, Package, Monitor, Laptop,
-  Zap, RefreshCw, QrCode, Printer
+  Zap, RefreshCw, QrCode, Printer, Settings
 } from 'lucide-react';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
 import QRCodeLib from 'qrcode';
+
+// Default column configuration for Assets
+const DEFAULT_ASSET_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'asset_id', label: 'Asset-ID', visible: true, sortable: true },
+  { id: 'name', label: 'Name', visible: true, sortable: true },
+  { id: 'category', label: 'Kategorie', visible: true, sortable: true },
+  { id: 'serial_number', label: 'Seriennummer', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'location', label: 'Standort', visible: true, sortable: true },
+  { id: 'purchase_date', label: 'Kaufdatum', visible: false, sortable: true },
+  { id: 'warranty_end', label: 'Garantie bis', visible: false, sortable: true },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const AssetManagement = () => {
   const { theme } = useTheme();
