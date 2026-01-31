@@ -8,8 +8,10 @@ import { Button } from './ui/button';
 import { 
   Ticket, AlertCircle, Clock, CheckCircle, XCircle, 
   TrendingUp, Plus, Search, Filter, MessageSquare,
-  User, MapPin, Monitor, AlertTriangle, X, Video, Circle, Users, RefreshCw
+  User, MapPin, Monitor, AlertTriangle, X, Video, Circle, Users, RefreshCw, Settings
 } from 'lucide-react';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
 import TicketDetailModal from './TicketDetailModal';
 import SLAWarningsPanel from './SLAWarningsPanel';
@@ -17,6 +19,21 @@ import StaffManagement from './StaffManagement';
 import AdminChangeRequests from './AdminChangeRequests';
 import KnowledgeBaseEditor from './KnowledgeBaseEditor';
 import SupportSettings from './SupportSettings';
+
+// Default column configuration for Tickets
+const DEFAULT_TICKET_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'ticket_number', label: 'Ticket-Nr.', visible: true, sortable: true },
+  { id: 'title', label: 'Titel', visible: true, sortable: true },
+  { id: 'customer', label: 'Kunde', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'online', label: 'Online', visible: true, sortable: true },
+  { id: 'priority', label: 'Priorität', visible: true, sortable: true },
+  { id: 'created_at', label: 'Erstellt', visible: true, sortable: true },
+  { id: 'assigned_to', label: 'Zuordnung', visible: true, sortable: true },
+  { id: 'category', label: 'Kategorie', visible: false, sortable: true },
+  { id: 'location', label: 'Standort', visible: false, sortable: true },
+];
 
 const SupportManagement = () => {
   const { theme } = useTheme();
