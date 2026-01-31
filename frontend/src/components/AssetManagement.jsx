@@ -638,13 +638,6 @@ const AssetManagement = () => {
     }
   };
 
-  const filteredAssets = assets.filter(asset => {
-    const matchesSearch = asset.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         asset.asset_id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'all' || asset.category_id === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
-
   return (
     <div className="space-y-6">
       {/* Header */}
