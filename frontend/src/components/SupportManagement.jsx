@@ -40,7 +40,7 @@ const SupportManagement = () => {
   const { apiCall, user, token } = useAuth();
   const { selectedTenantId } = useTenant();
   
-  const [activeTab, setActiveTab] = useState('tickets'); // tickets, sla, staff, changes, kb, settings
+  const [activeTab, setActiveTab] = useState('tickets');
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +53,15 @@ const SupportManagement = () => {
   const [devices, setDevices] = useState([]);
   const [statusTileFilter, setStatusTileFilter] = useState(null);
   const [staff, setStaff] = useState([]);
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [ticketColumns, setTicketColumns] = useState(() => {
+    const saved = localStorage.getItem('ticketColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_TICKET_COLUMNS;
+  });
   
   // Get tenant_id for WebSocket
   // Admin users connect to "all" room to receive tickets from all tenants
