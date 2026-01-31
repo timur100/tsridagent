@@ -49,6 +49,15 @@ const KitManager = ({ theme }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('kitColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_KIT_COLUMNS;
+  });
+  
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeployModal, setShowDeployModal] = useState(false);
