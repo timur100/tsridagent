@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useTenant } from '../contexts/TenantContext';
@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
+import TableSkeleton from './ui/TableSkeleton';
 import toast from 'react-hot-toast';
 import TicketDetailModal from './TicketDetailModal';
 import SLAWarningsPanel from './SLAWarningsPanel';
