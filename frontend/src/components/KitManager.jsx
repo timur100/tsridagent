@@ -1,14 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Package, Plus, Search, RefreshCw, MapPin, Trash2, ChevronRight, Check, Box, Tablet, Printer, Monitor, ArrowRight, Building2, Users } from 'lucide-react';
+import { Package, Plus, Search, RefreshCw, MapPin, Trash2, ChevronRight, Check, Box, Tablet, Printer, Monitor, ArrowRight, Building2, Users, Settings } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Input } from './ui/input';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin || 'http://localhost:8001';
+
+// Default column configuration for Kits
+const DEFAULT_KIT_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'kit_name', label: 'Kit-Name', visible: true, sortable: true },
+  { id: 'tenant', label: 'Tenant', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'location', label: 'Standort', visible: true, sortable: true },
+  { id: 'devices_count', label: 'Geräte', visible: true, sortable: true },
+  { id: 'created_at', label: 'Erstellt', visible: false, sortable: true },
+  { id: 'deployed_at', label: 'Installiert', visible: false, sortable: true },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 const KIT_STATUSES = {
   assembled: { label: 'Zusammengestellt', color: 'blue' },
