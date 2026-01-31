@@ -104,6 +104,19 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
     toast.success(`${importedData.length} Einträge bereit zum Import`);
   };
 
+  // Paginated data - memoized for performance
+  const paginatedItems = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredItems.slice(startIndex, startIndex + pageSize);
+  }, [filteredItems, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredItems.length / pageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, categoryFilter, showLowStockOnly]);
+
   useEffect(() => {
     fetchItems();
     fetchCategories();
