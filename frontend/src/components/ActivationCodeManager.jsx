@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { QrCode, Plus, Trash2, Copy, Download, Check, Loader2, Search, RefreshCw, Building2, Settings } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { useTenant } from '../contexts/TenantContext';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
@@ -35,6 +36,10 @@ const ActivationCodeManager = () => {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [selectedCode, setSelectedCode] = useState(null);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());
