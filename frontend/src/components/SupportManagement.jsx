@@ -680,7 +680,7 @@ const SupportManagement = () => {
               </tr>
             </thead>
             <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-                {filteredTickets.map((ticket) => (
+                {paginatedTickets.map((ticket) => (
                   <tr
                     key={ticket.id}
                     onClick={() => {
