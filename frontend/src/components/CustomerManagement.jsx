@@ -481,7 +481,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                 ? 'bg-[#2a2a2a] border-none shadow-xl' 
                 : 'bg-white border border-gray-100 shadow-lg'
             }`}>
-              <Users className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-gray-700' : 'text-gray-300'}`} />
+              <UsersIcon className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-gray-700' : 'text-gray-300'}`} />
               <h3 className={`text-xl font-bold mb-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Keine Kunden vorhanden
               </h3>
@@ -499,6 +499,24 @@ const CustomerManagement = ({ customers, onRefresh }) => {
           </div>
         )}
       </div>
+
+      {/* Pagination */}
+      {filteredCustomers.length > 0 && (
+        <div className={`mt-4 rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            totalItems={filteredCustomers.length}
+            pageSize={pageSize}
+            onPageChange={setCurrentPage}
+            onPageSizeChange={(size) => {
+              setPageSize(size);
+              setCurrentPage(1);
+            }}
+            theme={theme}
+          />
+        </div>
+      )}
 
       {/* Add Customer Modal */}
       {showModal && (
