@@ -478,6 +478,13 @@ async def startup_event():
     """
     logger.info("Starting server...")
     
+    # Create database indexes for performance
+    try:
+        await create_indexes(db, portal_db, multi_tenant_db)
+        logger.info("✅ Database indexes created/verified")
+    except Exception as e:
+        logger.error(f"❌ Failed to create database indexes: {e}")
+    
     # Start TeamViewer Auto-Sync (every 30 seconds)
     try:
         from teamviewer_auto_sync import auto_sync_service
