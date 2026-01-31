@@ -36,6 +36,15 @@ const ActivationCodeManager = () => {
   const [generating, setGenerating] = useState(false);
   const [selectedCode, setSelectedCode] = useState(null);
   
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('activationCodeColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_CODE_COLUMNS;
+  });
+  
   // Filter States
   const [statusFilter, setStatusFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
