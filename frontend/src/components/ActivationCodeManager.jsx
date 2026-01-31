@@ -185,6 +185,19 @@ const ActivationCodeManager = () => {
     );
   });
 
+  // Paginated codes
+  const paginatedCodes = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    return filteredCodes.slice(startIndex, startIndex + pageSize);
+  }, [filteredCodes, currentPage, pageSize]);
+
+  const totalPages = Math.ceil(filteredCodes.length / pageSize);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, statusFilter]);
+
   return (
     <div className="space-y-6">
       {/* Header mit Tenant-Anzeige */}
