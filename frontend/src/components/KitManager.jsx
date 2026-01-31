@@ -289,6 +289,30 @@ const KitManager = ({ theme }) => {
     kit.location_code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Selection handlers
+  const toggleSelectAll = () => {
+    if (selectedIds.size === filteredKits.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredKits.map(k => k.id)));
+    }
+  };
+
+  const toggleSelectKit = (kitId) => {
+    const newSelected = new Set(selectedIds);
+    if (newSelected.has(kitId)) {
+      newSelected.delete(kitId);
+    } else {
+      newSelected.add(kitId);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleImport = async (importedData) => {
+    console.log('Imported kits:', importedData);
+    toast.success(`${importedData.length} Kits bereit zum Import`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -300,6 +324,20 @@ const KitManager = ({ theme }) => {
           </p>
         </div>
         <div className="flex gap-2">
+          <TableExportImport
+            data={filteredKits}
+            columns={columns}
+            filename="kits"
+            onImport={handleImport}
+            selectedIds={selectedIds}
+            idField="id"
+          />
+          <TableColumnSettings
+            columns={columns}
+            onColumnsChange={setColumns}
+            storageKey="kitColumns"
+            defaultColumns={DEFAULT_KIT_COLUMNS}
+          />
           <Button onClick={() => { fetchKits(); fetchAvailableDevices(); }} variant="outline" disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Aktualisieren
