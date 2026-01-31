@@ -44,6 +44,16 @@ const LicenseManagement = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [packages, setPackages] = useState([]);
   const [showPackageModal, setShowPackageModal] = useState(false);
+  
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  
+  // Column configuration state
+  const [columns, setColumns] = useState(() => {
+    const saved = localStorage.getItem('licenseColumns');
+    return saved ? JSON.parse(saved) : DEFAULT_LICENSE_COLUMNS;
+  });
+  
   const [packageForm, setPackageForm] = useState({
     name: '',
     description: '',
