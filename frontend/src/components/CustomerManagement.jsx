@@ -225,18 +225,6 @@ const CustomerManagement = ({ customers, onRefresh }) => {
     }
   };
 
-  // Filter customers based on search
-  const filteredCustomers = customers.filter(customer => {
-    if (!searchTerm) return true;
-    
-    const search = searchTerm.toLowerCase();
-    return (
-      customer.name?.toLowerCase().includes(search) ||
-      customer.email?.toLowerCase().includes(search) ||
-      customer.company?.toLowerCase().includes(search)
-    );
-  });
-
   return (
     <div>
       {/* Header with Search and Add Button in one row */}
@@ -255,6 +243,24 @@ const CustomerManagement = ({ customers, onRefresh }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Suche nach Name, E-Mail oder Firma..."
             className="w-full"
+          />
+        </div>
+
+        {/* Export/Import and Column Settings */}
+        <div className="flex items-center gap-2">
+          <TableExportImport
+            data={filteredCustomers}
+            columns={columns}
+            filename="kunden"
+            onImport={handleImport}
+            selectedIds={selectedIds}
+            idField="email"
+          />
+          <TableColumnSettings
+            columns={columns}
+            onColumnsChange={setColumns}
+            storageKey="customerColumns"
+            defaultColumns={DEFAULT_CUSTOMER_COLUMNS}
           />
         </div>
 
