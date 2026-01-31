@@ -634,6 +634,7 @@ const SupportManagement = () => {
             <p className="text-sm mt-2">Erstellen Sie ein neues Ticket, um zu beginnen</p>
           </div>
         ) : (
+          <>
           <table className="w-full">
             <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
               <tr>
