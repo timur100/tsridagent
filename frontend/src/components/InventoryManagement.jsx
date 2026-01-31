@@ -898,6 +898,9 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
       </Card>
 
       {/* Items Table */}
+      {loading ? (
+        <TableSkeleton rows={pageSize > 10 ? 10 : pageSize} columns={7} theme={theme} />
+      ) : (
       <div className={`overflow-x-auto rounded-xl border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
         <table className="w-full">
           <thead className={theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
@@ -907,7 +910,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                 <th className="px-4 py-3 w-10">
                   <input
                     type="checkbox"
-                    checked={selectedIds.size === filteredItems.length && filteredItems.length > 0}
+                    checked={selectedIds.size === paginatedItems.length && paginatedItems.length > 0}
                     onChange={toggleSelectAll}
                     className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
                   />
@@ -930,7 +933,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
               </tr>
             </thead>
             <tbody className={theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}>
-              {filteredItems.map((item) => (
+              {paginatedItems.map((item) => (
                 <tr 
                   key={item.id} 
                   onClick={() => handleOpenModal(item)}
