@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Package, Plus, Search, RefreshCw, MapPin, Trash2, ChevronRight, Check, Box, Tablet, Printer, Monitor, ArrowRight, Building2, Users, Settings } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from './ui/input';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || window.location.origin || 'http://localhost:8001';
@@ -48,6 +49,10 @@ const KitManager = ({ theme }) => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());

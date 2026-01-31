@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Card } from './ui/card';
@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import TableExportImport from './ui/TableExportImport';
 import TableColumnSettings from './ui/TableColumnSettings';
+import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 
 // Default column configuration for Licenses
@@ -44,6 +45,10 @@ const LicenseManagement = () => {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [packages, setPackages] = useState([]);
   const [showPackageModal, setShowPackageModal] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   
   // Selection state for bulk actions
   const [selectedIds, setSelectedIds] = useState(new Set());
