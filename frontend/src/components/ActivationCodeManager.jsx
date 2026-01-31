@@ -349,7 +349,8 @@ const ActivationCodeManager = () => {
                 Keine Aktivierungscodes gefunden
               </div>
             ) : (
-              filteredCodes.map((code) => (
+              <>
+              {paginatedCodes.map((code) => (
                 <div
                   key={code.code}
                   className={`p-4 border-b border-border cursor-pointer hover:bg-muted/50 transition-colors ${
@@ -381,7 +382,23 @@ const ActivationCodeManager = () => {
                     Erstellt: {new Date(code.created_at).toLocaleString('de-DE')}
                   </div>
                 </div>
-              ))
+              ))}
+              {/* Pagination */}
+              {filteredCodes.length > 0 && (
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  totalItems={filteredCodes.length}
+                  pageSize={pageSize}
+                  onPageChange={setCurrentPage}
+                  onPageSizeChange={(size) => {
+                    setPageSize(size);
+                    setCurrentPage(1);
+                  }}
+                  theme="light"
+                />
+              )}
+              </>
             )}
           </div>
         </Card>
