@@ -810,6 +810,7 @@ const SupportManagement = () => {
                 theme={theme}
               />
             )}
+        </>
         )}
       </div>
 
