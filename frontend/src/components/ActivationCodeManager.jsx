@@ -1,13 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { QrCode, Plus, Trash2, Copy, Download, Check, Loader2, Search, RefreshCw, Building2 } from 'lucide-react';
+import { QrCode, Plus, Trash2, Copy, Download, Check, Loader2, Search, RefreshCw, Building2, Settings } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useTenant } from '../contexts/TenantContext';
+import TableExportImport from './ui/TableExportImport';
+import TableColumnSettings from './ui/TableColumnSettings';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+
+// Default column configuration for Activation Codes
+const DEFAULT_CODE_COLUMNS = [
+  { id: 'select', label: '', visible: true, sortable: false },
+  { id: 'code', label: 'Code', visible: true, sortable: true },
+  { id: 'device_id', label: 'Device-ID', visible: true, sortable: true },
+  { id: 'location_code', label: 'Standort', visible: true, sortable: true },
+  { id: 'status', label: 'Status', visible: true, sortable: true },
+  { id: 'created_at', label: 'Erstellt', visible: true, sortable: true },
+  { id: 'activated_at', label: 'Aktiviert', visible: false, sortable: true },
+  { id: 'expires_at', label: 'Läuft ab', visible: false, sortable: true },
+  { id: 'actions', label: 'Aktionen', visible: true, sortable: false },
+];
 
 /**
  * ActivationCodeManager - Admin-UI für Aktivierungscode-Verwaltung
