@@ -83,6 +83,7 @@ import LocationLifecycleManager from '../components/LocationLifecycleManager';
 import DeviceLifecycleManager from '../components/DeviceLifecycleManager';
 import KitManager from '../components/KitManager';
 import StorageOverview from '../components/StorageOverview';
+import KitTemplateManager from '../components/KitTemplateManager';
 import FleetManagement from '../components/FleetManagement';
 import AIAnalysisManagement from '../components/AIAnalysisManagement';
 import AISearchManagement from '../components/AISearchManagement';
