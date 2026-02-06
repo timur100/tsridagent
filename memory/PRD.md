@@ -230,6 +230,32 @@ Integriert in folgende Komponenten:
   - Rückkehr von Sub-Routes (z.B. ID-Checks) funktioniert
   - URL bleibt konsistent bei `/portal/admin`
 
+#### P0 - Geräte-Verfügbarkeit für Kits (Feb 6, 2025) - ✅ BEHOBEN & GETESTET
+- **Status:** BEHOBEN - 100% Backend (14/14) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_9.json`
+- **Problem:** User konnte keine Geräte beim Kit-Erstellen auswählen. Der Workflow war unklar - Geräte mussten Status "Im Lager" haben und einem Tenant zugewiesen sein.
+- **Lösung - 3-teilig:**
+  1. ✅ **DeviceLifecycleManager Formular erweitert:**
+     - Neues "Tenant (Kunde)" Dropdown-Feld (Pflichtfeld, oben angezeigt)
+     - Neues "Status" Dropdown-Feld mit "Im Lager" als Standard
+     - Hinweis: "✓ Geräte mit Status 'Im Lager' können zu Kits hinzugefügt werden"
+  2. ✅ **Storage Overview (Lager-Tab) implementiert:**
+     - 3 Summary Cards: Gesamt im Lager, Verfügbar für Kits, In Kits zugewiesen
+     - Gruppierung nach Tenant mit Aufklappfunktion
+     - Filter: Tenant, Gerätetyp, "Nur verfügbar für Kits"
+     - Gerätetabelle mit Pagination
+  3. ✅ **Kit-Modal verbessert:**
+     - Zeigt Storage Stats: "Gesamt im Lager: X, Verfügbar für Kits: Y"
+     - Verfügbare Geräte werden korrekt angezeigt
+     - Hinweis falls keine Geräte verfügbar mit Anleitung
+- **Dateien:**
+  - `/app/frontend/src/components/DeviceLifecycleManager.jsx`
+  - `/app/frontend/src/components/StorageOverview.jsx`
+  - `/app/frontend/src/components/KitManager.jsx`
+  - `/app/frontend/src/pages/AdminPortal.jsx`
+  - `/app/backend/routes/device_lifecycle.py`
+- **API-Endpoint:** `GET /api/device-lifecycle/storage/overview` (mit optional `tenant_id` Filter)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
