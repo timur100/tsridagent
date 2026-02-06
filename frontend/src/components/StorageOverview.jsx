@@ -179,6 +179,39 @@ const StorageOverview = ({ theme, tenants = [] }) => {
         </Card>
       </div>
 
+      {/* By Device Type Summary */}
+      {storageData?.by_type && Object.keys(storageData.by_type).length > 0 && (
+        <Card className={`p-4 ${cardBg}`}>
+          <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <Package className="h-5 w-5 text-primary" />
+            Nach Gerätetyp (Alle Tenants)
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {Object.entries(storageData.by_type).map(([type, data]) => (
+              <div 
+                key={type} 
+                className={`p-3 rounded-lg border ${isDark ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-gray-50'}`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  {getDeviceIcon(type)}
+                  <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {DEVICE_TYPE_LABELS[type] || type}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    {data.total}
+                  </span>
+                  <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/30">
+                    {data.available_for_kits} verf.
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
       {/* By Tenant Breakdown */}
       {storageData?.by_tenant && Object.keys(storageData.by_tenant).length > 0 && (
         <Card className={`p-4 ${cardBg}`}>
