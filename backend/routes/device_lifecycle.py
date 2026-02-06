@@ -199,6 +199,96 @@ async def get_event_types():
     return {"success": True, "event_types": EVENT_TYPES}
 
 
+@router.get("/storage/overview")
+async def get_storage_overview(tenant_id: str = Query(None)):
+    """
+    Gibt eine Übersicht aller Geräte im Lager zurück.
+    Zeigt: Anzahl pro Typ, pro Tenant, verfügbar für Kits
+    """
+    try:
+        match_query = {"status": "in_storage"}
+        if tenant_id and tenant_id != "all":
+            match_query["tenant_id"] = tenant_id
+        
+        # Geräte im Lager nach Typ
+        type_pipeline = [
+            {"$match": match_query},
+            {"$group": {
+                "_id": {"device_type": "$device_type", "tenant_id": "$tenant_id"},
+                "count": {"$sum": 1},
+                "devices": {"$push": {
+                    "id": {"$toString": "$_id"},
+                    "serial_number": "$serial_number",
+                    "manufacturer": "$manufacturer",
+                    "model": "$model",
+                    "kit_id": "$kit_id"
+                }}
+            }}
+        ]
+        type_cursor = db.device_inventory.aggregate(type_pipeline)
+        type_results = await type_cursor.to_list(length=100)
+        
+        # Strukturiere die Ergebnisse
+        by_tenant = {}
+        by_type = {}
+        total_in_storage = 0
+        available_for_kits = 0
+        
+        for item in type_results:
+            tenant = item["_id"].get("tenant_id", "unassigned")
+            device_type = item["_id"].get("device_type", "other")
+            count = item["count"]
+            devices = item["devices"]
+            
+            total_in_storage += count
+            
+            # Zähle verfügbare für Kits (ohne kit_id)
+            for d in devices:
+                if not d.get("kit_id"):
+                    available_for_kits += 1
+            
+            # Nach Tenant gruppieren
+            if tenant not in by_tenant:
+                by_tenant[tenant] = {"total": 0, "by_type": {}, "available_for_kits": 0}
+            by_tenant[tenant]["total"] += count
+            by_tenant[tenant]["by_type"][device_type] = by_tenant[tenant]["by_type"].get(device_type, 0) + count
+            by_tenant[tenant]["available_for_kits"] += sum(1 for d in devices if not d.get("kit_id"))
+            
+            # Nach Typ gruppieren
+            if device_type not in by_type:
+                by_type[device_type] = {"total": 0, "available_for_kits": 0}
+            by_type[device_type]["total"] += count
+            by_type[device_type]["available_for_kits"] += sum(1 for d in devices if not d.get("kit_id"))
+        
+        # Hole alle Geräte im Lager für die Liste
+        devices_cursor = db.device_inventory.find(match_query, {
+            "_id": 1, "device_type": 1, "serial_number": 1, "manufacturer": 1, 
+            "model": 1, "tenant_id": 1, "kit_id": 1, "created_at": 1,
+            "purchase_date": 1, "warranty_end": 1
+        }).sort("created_at", -1).limit(500)
+        devices_raw = await devices_cursor.to_list(length=500)
+        
+        devices = []
+        for d in devices_raw:
+            d["id"] = str(d["_id"])
+            del d["_id"]
+            d["available_for_kit"] = not d.get("kit_id")
+            devices.append(d)
+        
+        return {
+            "success": True,
+            "storage": {
+                "total_in_storage": total_in_storage,
+                "available_for_kits": available_for_kits,
+                "by_tenant": by_tenant,
+                "by_type": by_type,
+                "devices": devices
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/list")
 async def list_devices(
     device_type: str = Query(None, description="Filter nach Gerätetyp"),
