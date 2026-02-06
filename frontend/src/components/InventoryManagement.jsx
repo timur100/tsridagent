@@ -338,13 +338,21 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
         parent_id: categoryFormData.parent_id || null
       };
 
+      const token = localStorage.getItem('portal_token');
+      const headers = {
+        'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` })
+      };
+
       if (editingCategory) {
         // Update existing category
-        const result = await apiCall(`/api/inventory/categories/${editingCategory.id}`, {
+        const response = await fetch(`${BACKEND_URL}/api/inventory/categories/${editingCategory.id}`, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(categoryData)
         });
+
+        const result = await response.json();
 
         if (result.success) {
           toast.success('Kategorie aktualisiert');
@@ -352,22 +360,24 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
           fetchItems(); // Refresh items in case category name changed
           handleCloseCategoryModal();
         } else {
-          toast.error(result.data?.detail || 'Fehler beim Aktualisieren');
+          toast.error(result.detail || 'Fehler beim Aktualisieren');
         }
       } else {
         // Create new category
-        const result = await apiCall('/api/inventory/categories', {
+        const response = await fetch(`${BACKEND_URL}/api/inventory/categories`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           body: JSON.stringify(categoryData)
         });
+
+        const result = await response.json();
 
         if (result.success) {
           toast.success(categoryFormData.parent_id ? 'Unterkategorie erstellt' : 'Kategorie erstellt');
           fetchCategories();
           handleCloseCategoryModal();
         } else {
-          toast.error(result.data?.detail || 'Fehler beim Erstellen');
+          toast.error(result.detail || 'Fehler beim Erstellen');
         }
       }
     } catch (error) {
