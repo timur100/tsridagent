@@ -1641,6 +1641,7 @@ const AdminPortalContent = () => {
           <DeviceLifecycleManager 
             theme={theme}
             selectedTenantId={selectedTenantId}
+            tenants={availableTenants}
           />
         )}
 
