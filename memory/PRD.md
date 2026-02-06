@@ -293,6 +293,30 @@ Integriert in folgende Komponenten:
   - `/app/backend/routes/device_lifecycle.py`
 - **API-Endpoint:** `GET /api/device-lifecycle/storage/overview` (mit optional `tenant_id` Filter)
 
+#### Inventar-API & Kit-Vorlagen mit Inventar-Support (Feb 6, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (21/21) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_11.json`
+- **Problem:** 
+  1. Inventar-API fehlte (Artikel konnten nicht angelegt werden)
+  2. Kit-Vorlagen unterstützten nur Geräte mit Seriennummer, nicht Artikel wie Kabel/Adapter
+- **Lösung:**
+  1. ✅ **Inventar-API vollständig implementiert:**
+     - CRUD für Artikel: GET/POST/PUT/DELETE `/api/inventory/items`
+     - Kategorien-Verwaltung: `/api/inventory/categories`
+     - Bestands-Update: PUT `/api/inventory/items/{id}/stock`
+     - Auto-Erstellung von Standard-Kategorien: Hardware, Kabel, Adapter, Zubehör, Verbrauchsmaterial
+  2. ✅ **Kit-Vorlagen erweitert für zwei Komponententypen:**
+     - **Geräte (mit SN):** Aus Geräte-Lager (device_inventory), werden einzeln verfolgt
+     - **Inventar-Artikel (ohne SN):** Aus Inventar (inventory_items), nur Stückzahlen
+     - Zwei Tabs im "Neue Vorlage" Modal
+     - Komponente hat `source: 'device'` oder `source: 'inventory'`
+     - Verfügbarkeitsberechnung berücksichtigt beide Typen
+- **Neue/Geänderte Dateien:**
+  - `/app/backend/routes/inventory.py` - Komplett überarbeitet (async MongoDB)
+  - `/app/backend/routes/kit_templates.py` - Erweitert für inventory components
+  - `/app/frontend/src/components/KitTemplateManager.jsx` - Zwei Tabs für Geräte/Inventar
+- **Testdaten:** 3 Inventar-Artikel (USB-C Kabel 50x, HDMI Adapter 25x, Displayport Kabel 30x)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
