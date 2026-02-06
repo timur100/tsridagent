@@ -116,15 +116,36 @@ const KitManager = ({ theme }) => {
     } catch (e) { console.error(e); }
   };
 
-  const fetchAvailableDevices = async () => {
+  const fetchAvailableDevices = async (tenantId = null) => {
     try {
       // Fetch devices that are in storage and not in a kit
-      const res = await fetch(`${BACKEND_URL}/api/device-lifecycle/list?status=in_storage&limit=500`);
+      let url = `${BACKEND_URL}/api/device-lifecycle/list?status=in_storage&limit=500`;
+      if (tenantId && tenantId !== 'all') {
+        url += `&tenant_id=${tenantId}`;
+      }
+      const res = await fetch(url);
       const data = await res.json();
       if (data.success) {
         // Filter out devices already in a kit
         const available = (data.devices || []).filter(d => !d.kit_id);
         setAvailableDevices(available);
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  // Fetch storage overview for better stats
+  const [storageStats, setStorageStats] = useState(null);
+  
+  const fetchStorageStats = async (tenantId = null) => {
+    try {
+      let url = `${BACKEND_URL}/api/device-lifecycle/storage/overview`;
+      if (tenantId && tenantId !== 'all') {
+        url += `?tenant_id=${tenantId}`;
+      }
+      const res = await fetch(url);
+      const data = await res.json();
+      if (data.success) {
+        setStorageStats(data.storage);
       }
     } catch (e) { console.error(e); }
   };
