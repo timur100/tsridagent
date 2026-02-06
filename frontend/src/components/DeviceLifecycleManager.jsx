@@ -269,8 +269,52 @@ const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
       {/* Edit Modal */}
       <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
         <DialogContent className={`max-w-2xl ${isDark ? 'bg-[#2a2a2a] border-gray-700' : ''}`}>
-          <DialogHeader><DialogTitle className={isDark?'text-white':''}>{editMode ? 'Bearbeiten' : 'Neu'}</DialogTitle></DialogHeader>
-          <div className="grid grid-cols-2 gap-4 py-4">
+          <DialogHeader><DialogTitle className={isDark?'text-white':''}>{editMode ? 'Gerät bearbeiten' : 'Neues Gerät anlegen'}</DialogTitle></DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4 max-h-[60vh] overflow-y-auto">
+            {/* Tenant Selection - Important for Kit availability */}
+            <div className="col-span-2">
+              <label className={`text-sm font-medium flex items-center gap-2 ${isDark?'text-gray-300':''}`}>
+                <Building2 className="h-4 w-4" /> Tenant (Kunde) *
+              </label>
+              <Select value={formData.tenant_id||''} onValueChange={v => setFormData({...formData, tenant_id: v})}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Tenant wählen..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {tenants.map(t => (
+                    <SelectItem key={t.tenant_id} value={t.tenant_id}>
+                      {t.display_name || t.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                Wichtig: Geräte können nur zu Kits des gleichen Tenants hinzugefügt werden
+              </p>
+            </div>
+            
+            {/* Status Selection - Important for Kit availability */}
+            <div className="col-span-2">
+              <label className={`text-sm font-medium flex items-center gap-2 ${isDark?'text-gray-300':''}`}>
+                <Warehouse className="h-4 w-4" /> Status *
+              </label>
+              <Select value={formData.status||'in_storage'} onValueChange={v => setFormData({...formData, status: v})}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(DEVICE_STATUSES).map(([key, val]) => (
+                    <SelectItem key={key} value={key}>{val.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formData.status === 'in_storage' && (
+                <p className={`text-xs mt-1 text-green-500`}>
+                  ✓ Geräte mit Status "Im Lager" können zu Kits hinzugefügt werden
+                </p>
+              )}
+            </div>
+            
             <div><label className={`text-sm ${isDark?'text-gray-300':''}`}>Gerätetyp</label>
               <Select value={formData.device_type||'tablet'} onValueChange={v => setFormData({...formData, device_type: v})}><SelectTrigger className="mt-1"><SelectValue /></SelectTrigger><SelectContent>{Object.entries(deviceTypes).map(([k,t]) => <SelectItem key={k} value={k}>{t.label}</SelectItem>)}</SelectContent></Select></div>
             <div><label className={`text-sm ${isDark?'text-gray-300':''}`}>Seriennummer *</label><input value={formData.serial_number||''} onChange={e => setFormData({...formData, serial_number: e.target.value})} className={`w-full mt-1 px-3 py-2 rounded border ${inputBg}`} /></div>
