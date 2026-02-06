@@ -1655,7 +1655,7 @@ const AdminPortalContent = () => {
         {activeTab === 'storage' && (
           <StorageOverview 
             theme={theme}
-            tenants={tenants}
+            tenants={availableTenants}
           />
         )}
 
