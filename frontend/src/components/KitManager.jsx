@@ -592,10 +592,13 @@ const KitManager = ({ theme }) => {
               <Select 
                 value={createForm.tenant_id} 
                 onValueChange={(v) => {
-                  setCreateForm(prev => ({ ...prev, tenant_id: v, location_code: '' }));
+                  setCreateForm(prev => ({ ...prev, tenant_id: v, location_code: '', selectedDevices: [] }));
                   setSelectedCity('');
                   setLocations([]);
                   fetchCities(v);
+                  // Lade verfügbare Geräte für diesen Tenant
+                  fetchAvailableDevices(v);
+                  fetchStorageStats(v);
                 }}
               >
                 <SelectTrigger className={inputBg}>
