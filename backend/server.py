@@ -34,7 +34,7 @@ from routes.tenant_devices import router as tenant_devices_router
 from routes.teamviewer_integration import router as teamviewer_router
 from routes.regula_scanner import router as regula_scanner_router
 from routes.scanner_settings import router as scanner_settings_router
-# from routes.inventory import router as inventory_router  # Moved to Inventory Microservice
+from routes.inventory import router as inventory_router
 from routes.orders import router as orders_router
 from routes.global_search import router as global_search_router
 from routes.license_management import router as license_management_router
