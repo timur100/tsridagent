@@ -239,7 +239,7 @@ Integriert in folgende Komponenten:
      - Neues "Tenant (Kunde)" Dropdown-Feld (Pflichtfeld, oben angezeigt)
      - Neues "Status" Dropdown-Feld mit "Im Lager" als Standard
      - Hinweis: "✓ Geräte mit Status 'Im Lager' können zu Kits hinzugefügt werden"
-  2. ✅ **Storage Overview (Lager-Tab) implementiert:**
+  2. ✅ **Storage Overview als Sub-Tab in Lagerverwaltung:**
      - 3 Summary Cards: Gesamt im Lager, Verfügbar für Kits, In Kits zugewiesen
      - Gruppierung nach Tenant mit Aufklappfunktion
      - Filter: Tenant, Gerätetyp, "Nur verfügbar für Kits"
@@ -248,6 +248,43 @@ Integriert in folgende Komponenten:
      - Zeigt Storage Stats: "Gesamt im Lager: X, Verfügbar für Kits: Y"
      - Verfügbare Geräte werden korrekt angezeigt
      - Hinweis falls keine Geräte verfügbar mit Anleitung
+- **Dateien:**
+  - `/app/frontend/src/components/DeviceLifecycleManager.jsx`
+  - `/app/frontend/src/components/StorageOverview.jsx`
+  - `/app/frontend/src/components/KitManager.jsx`
+  - `/app/frontend/src/pages/AdminPortal.jsx`
+  - `/app/backend/routes/device_lifecycle.py`
+- **API-Endpoint:** `GET /api/device-lifecycle/storage/overview` (mit optional `tenant_id` Filter)
+
+#### Lagerverwaltung Konsolidierung & Kit-Vorlagen (Feb 6, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (17/17) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_10.json`
+- **Problem:** Doppeltes Menü (Lager vs Inventory) war verwirrend. User wollte alles in "Lagerverwaltung" zusammenführen und Kit-Vorlagen definieren können.
+- **Lösung:**
+  1. ✅ **Menü-Konsolidierung:**
+     - Separater "Lager" Tab aus Hauptmenü entfernt
+     - "Inventory" Tab umbenannt zu "Lagerverwaltung"
+     - 4 Sub-Tabs: Inventar, Wareneingang, Geräte-Lager, Kit-Vorlagen
+  2. ✅ **Geräte-Lager Sub-Tab (StorageOverview):**
+     - Summary Cards: Gesamt, Verfügbar für Kits, In Kits zugewiesen
+     - **NEU:** "Nach Gerätetyp" Übersicht mit Stückzahlen pro Typ
+     - "Nach Tenant" Aufklappbare Gruppierung
+  3. ✅ **Kit-Vorlagen Sub-Tab (KitTemplateManager) - NEU:**
+     - CRUD für Kit-Vorlagen (Name, Beschreibung, Tenant)
+     - Komponenten definieren: Gerätetyp + Menge pro Vorlage
+     - **"X Kits möglich" Berechnung** basierend auf Lagerbeständen
+     - Farbcodierte Verfügbarkeitsanzeige (grün/rot)
+- **Neue Dateien:**
+  - `/app/frontend/src/components/KitTemplateManager.jsx`
+  - `/app/backend/routes/kit_templates.py`
+- **Neue API-Endpoints:**
+  - `GET /api/kit-templates/list`
+  - `POST /api/kit-templates/create`
+  - `GET /api/kit-templates/{id}`
+  - `PUT /api/kit-templates/{id}`
+  - `DELETE /api/kit-templates/{id}`
+  - `GET /api/kit-templates/{id}/availability`
+- **Testdaten:** Standard-Scanner-Kit (europcar) mit 3 Komponenten (Tablet, Scanner Regula, Docking Station Typ 1)
 - **Dateien:**
   - `/app/frontend/src/components/DeviceLifecycleManager.jsx`
   - `/app/frontend/src/components/StorageOverview.jsx`
