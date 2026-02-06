@@ -332,19 +332,18 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
     e.preventDefault();
 
     try {
-      const params = new URLSearchParams({
+      const categoryData = {
         name: categoryFormData.name,
-        description: categoryFormData.description || ''
-      });
-      
-      if (categoryFormData.parent_id) {
-        params.append('parent_id', categoryFormData.parent_id);
-      }
+        description: categoryFormData.description || '',
+        parent_id: categoryFormData.parent_id || null
+      };
 
       if (editingCategory) {
         // Update existing category
-        const result = await apiCall(`/api/inventory/categories/${editingCategory.id}?${params.toString()}`, {
-          method: 'PUT'
+        const result = await apiCall(`/api/inventory/categories/${editingCategory.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(categoryData)
         });
 
         if (result.success) {
@@ -357,8 +356,10 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
         }
       } else {
         // Create new category
-        const result = await apiCall(`/api/inventory/categories?${params.toString()}`, {
-          method: 'POST'
+        const result = await apiCall('/api/inventory/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(categoryData)
         });
 
         if (result.success) {
