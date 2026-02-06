@@ -1651,6 +1651,13 @@ const AdminPortalContent = () => {
           />
         )}
 
+        {activeTab === 'storage' && (
+          <StorageOverview 
+            theme={theme}
+            tenants={tenants}
+          />
+        )}
+
         {activeTab === 'employees' && (
           <div>
             {/* Header with Search and Add Button in one row */}
