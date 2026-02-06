@@ -11,6 +11,8 @@ import TablePagination from './ui/TablePagination';
 import TableSkeleton from './ui/TableSkeleton';
 import toast from 'react-hot-toast';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 // Default column configuration for Inventory
 const DEFAULT_INVENTORY_COLUMNS = [
   { id: 'select', label: '', visible: true, sortable: false },
