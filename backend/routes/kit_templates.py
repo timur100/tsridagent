@@ -200,31 +200,32 @@ async def delete_template(template_id: str):
 async def check_template_availability(template_id: str, tenant_id: str = Query(None)):
     """
     Prüft wie viele Kits mit dieser Vorlage erstellt werden können
-    basierend auf aktuellen Lagerbeständen
+    basierend auf aktuellen Lagerbeständen (Geräte und Inventar-Artikel)
     """
     try:
         template = await db.kit_templates.find_one({"_id": ObjectId(template_id)})
         if not template:
             raise HTTPException(status_code=404, detail="Vorlage nicht gefunden")
         
-        # Get storage stats
-        match_query = {"status": "in_storage"}
-        if tenant_id:
-            match_query["tenant_id"] = tenant_id
-        elif template.get("tenant_id"):
-            match_query["tenant_id"] = template["tenant_id"]
+        effective_tenant_id = tenant_id or template.get("tenant_id")
         
-        # Count available devices by type
+        # Get device storage stats
+        device_match = {"status": "in_storage", "kit_id": {"$exists": False}}
+        if effective_tenant_id:
+            device_match["tenant_id"] = effective_tenant_id
+        
         type_pipeline = [
-            {"$match": match_query},
-            {"$match": {"kit_id": {"$exists": False}}},  # Not in a kit
-            {"$group": {
-                "_id": "$device_type",
-                "count": {"$sum": 1}
-            }}
+            {"$match": device_match},
+            {"$group": {"_id": "$device_type", "count": {"$sum": 1}}}
         ]
         type_cursor = db.device_inventory.aggregate(type_pipeline)
-        type_counts = {item["_id"]: item["count"] async for item in type_cursor}
+        device_type_counts = {item["_id"]: item["count"] async for item in type_cursor}
+        
+        # Get inventory item counts (by item_id)
+        inventory_item_counts = {}
+        inventory_cursor = db.inventory_items.find({"quantity_in_stock": {"$gt": 0}})
+        async for item in inventory_cursor:
+            inventory_item_counts[str(item["_id"])] = item.get("quantity_in_stock", 0)
         
         # Calculate possible kits
         components = template.get("components", [])
@@ -232,17 +233,38 @@ async def check_template_availability(template_id: str, tenant_id: str = Query(N
         component_availability = []
         
         for comp in components:
-            device_type = comp.get("device_type")
+            source = comp.get("source", "device")
             required = comp.get("quantity", 1)
-            available = type_counts.get(device_type, 0)
-            possible = available // required
             
-            component_availability.append({
-                "device_type": device_type,
-                "required": required,
-                "available": available,
-                "possible_kits": possible
-            })
+            if source == "device":
+                # Gerät mit Seriennummer
+                device_type = comp.get("device_type")
+                available = device_type_counts.get(device_type, 0)
+                possible = available // required
+                
+                component_availability.append({
+                    "source": "device",
+                    "device_type": device_type,
+                    "name": device_type,
+                    "required": required,
+                    "available": available,
+                    "possible_kits": possible
+                })
+            else:
+                # Inventar-Artikel ohne Seriennummer
+                item_id = comp.get("inventory_item_id")
+                item_name = comp.get("inventory_item_name", "Unbekannt")
+                available = inventory_item_counts.get(item_id, 0)
+                possible = available // required
+                
+                component_availability.append({
+                    "source": "inventory",
+                    "inventory_item_id": item_id,
+                    "name": item_name,
+                    "required": required,
+                    "available": available,
+                    "possible_kits": possible
+                })
             
             min_kits = min(min_kits, possible)
         
