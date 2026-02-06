@@ -998,6 +998,7 @@ const AdminPortalContent = () => {
                 { id: 'locations', label: 'Locations', icon: MapPin },
                 { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
                 { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
+                { id: 'storage', label: 'Lager', icon: Warehouse },
                 { id: 'kits', label: 'Kit-Verwaltung', icon: Package },
                 { id: 'inventory', label: 'Inventory', icon: Package },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
