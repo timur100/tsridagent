@@ -1,10 +1,13 @@
 """
 Kit Templates API
-Verwaltet Kit-Vorlagen - definiert welche Gerätetypen zu einem Kit gehören
+Verwaltet Kit-Vorlagen - definiert welche Gerätetypen und Artikel zu einem Kit gehören
+Unterstützt zwei Arten von Komponenten:
+1. Geräte (device_inventory) - mit Seriennummer, werden einzeln verfolgt
+2. Inventar-Artikel (inventory_items) - ohne Seriennummer, nur Stückzahlen
 """
 from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Literal
 from datetime import datetime, timezone
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
@@ -20,7 +23,18 @@ db = client['portal_db']
 
 # Pydantic Models
 class KitComponent(BaseModel):
-    device_type: str
+    """
+    Eine Komponente einer Kit-Vorlage
+    - source: 'device' für Geräte mit Seriennummer, 'inventory' für Artikel ohne SN
+    - device_type: Gerätetyp (nur wenn source='device')
+    - inventory_item_id: Inventar-Artikel-ID (nur wenn source='inventory')
+    - inventory_item_name: Name des Inventar-Artikels (für Anzeige)
+    - quantity: Anzahl
+    """
+    source: Literal['device', 'inventory'] = 'device'
+    device_type: Optional[str] = None  # Für Geräte (tablet, scanner_regula, etc.)
+    inventory_item_id: Optional[str] = None  # Für Inventar-Artikel
+    inventory_item_name: Optional[str] = None  # Name für Anzeige
     quantity: int = 1
 
 
