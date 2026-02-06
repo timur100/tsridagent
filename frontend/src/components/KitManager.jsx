@@ -686,10 +686,57 @@ const KitManager = ({ theme }) => {
             {/* Device Selection */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Geräte hinzufügen ({createForm.selectedDevices.length} ausgewählt)</label>
+              
+              {/* Storage Stats Summary */}
+              {storageStats && (
+                <div className={`p-3 rounded-lg mb-2 ${isDark ? 'bg-[#2d2d2d]' : 'bg-gray-50'}`}>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                      Gesamt im Lager: <strong className={isDark ? 'text-white' : 'text-gray-900'}>{storageStats.total_in_storage}</strong>
+                    </span>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>
+                      Verfügbar für Kits: <strong className="text-green-500">{storageStats.available_for_kits}</strong>
+                    </span>
+                  </div>
+                </div>
+              )}
+              
               {availableDevices.length === 0 ? (
-                <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Keine verfügbaren Geräte im Lager. Erstellen Sie zuerst Geräte.
-                </p>
+                <div className={`p-4 rounded-lg border-2 border-dashed ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-300 bg-gray-50'}`}>
+                  <div className="text-center">
+                    <Box className={`h-8 w-8 mx-auto mb-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                    <p className={`text-sm font-medium mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      Keine verfügbaren Geräte im Lager
+                    </p>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Geräte müssen zuerst eingelagert werden, bevor sie zu einem Kit hinzugefügt werden können.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        So fügen Sie Geräte hinzu:
+                      </p>
+                      <ol className={`text-xs text-left list-decimal list-inside ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        <li>Gehen Sie zum Tab <strong>"Geräte-Lifecycle"</strong></li>
+                        <li>Klicken Sie auf <strong>"Neues Gerät"</strong></li>
+                        <li>Wählen Sie Status <strong>"Im Lager"</strong></li>
+                        <li>Weisen Sie den richtigen <strong>Tenant</strong> zu</li>
+                      </ol>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="mt-2"
+                        onClick={() => {
+                          setShowCreateModal(false);
+                          // Navigate to device lifecycle tab
+                          window.dispatchEvent(new CustomEvent('navigate-to-tab', { detail: 'device-lifecycle' }));
+                        }}
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Zum Geräte-Lifecycle Tab
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
                   {availableDevices.map(device => (
@@ -712,6 +759,9 @@ const KitManager = ({ theme }) => {
                           </p>
                           <p className={`text-xs truncate ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                             {device.device_type?.replace('_', ' ')} - {device.model || 'Unbekannt'}
+                          </p>
+                          <p className={`text-xs truncate ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            Tenant: {device.tenant_id || 'Nicht zugewiesen'}
                           </p>
                         </div>
                       </div>
