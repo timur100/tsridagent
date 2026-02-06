@@ -452,6 +452,10 @@ app.include_router(location_management_router)
 from routes.device_lifecycle import router as device_lifecycle_router
 app.include_router(device_lifecycle_router)
 
+# Kit Templates API (Kit-Vorlagen)
+from routes.kit_templates import router as kit_templates_router
+app.include_router(kit_templates_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
