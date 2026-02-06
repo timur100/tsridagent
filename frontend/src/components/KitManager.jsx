@@ -183,7 +183,7 @@ const KitManager = ({ theme }) => {
     } catch (e) { console.error(e); }
   };
 
-  useEffect(() => { fetchKits(); fetchTenants(); fetchAvailableDevices(); }, [fetchKits]);
+  useEffect(() => { fetchKits(); fetchTenants(); fetchAvailableDevices(); fetchStorageStats(); }, [fetchKits]);
 
   // Handlers
   const handleCreateKit = async () => {
