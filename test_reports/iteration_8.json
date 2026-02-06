@@ -45,7 +45,7 @@
     "url_consistency": {
       "description": "Die URL muss /portal/admin bleiben beim Tab-Wechsel",
       "status": "PASS",
-      "details": "All tab clicks maintained URL at https://syncagent.preview.emergentagent.com/portal/admin"
+      "details": "All tab clicks maintained URL at https://tablet-agent-1.preview.emergentagent.com/portal/admin"
     },
     "view_changes_correctly": {
       "description": "Klicken auf einen Tab muss die entsprechende Ansicht anzeigen",

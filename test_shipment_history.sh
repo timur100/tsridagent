@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://syncagent.preview.emergentagent.com/api/dhl"
+API_URL="https://tablet-agent-1.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""
