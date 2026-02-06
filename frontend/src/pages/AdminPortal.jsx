@@ -1717,10 +1717,10 @@ const AdminPortalContent = () => {
             
             {/* Inventory Sub-Tabs */}
             <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <button
                   onClick={() => setInventoryTab('items')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'items'
                       ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
@@ -1733,7 +1733,7 @@ const AdminPortalContent = () => {
                 </button>
                 <button
                   onClick={() => setInventoryTab('goods-receipt')}
-                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'goods-receipt'
                       ? 'bg-[#c00000] text-white'
                       : theme === 'dark'
@@ -1743,6 +1743,32 @@ const AdminPortalContent = () => {
                 >
                   <PackageCheck className="h-5 w-5" />
                   Wareneingang
+                </button>
+                <button
+                  onClick={() => setInventoryTab('device-storage')}
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    inventoryTab === 'device-storage'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Monitor className="h-5 w-5" />
+                  Geräte-Lager
+                </button>
+                <button
+                  onClick={() => setInventoryTab('kit-templates')}
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    inventoryTab === 'kit-templates'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Boxes className="h-5 w-5" />
+                  Kit-Vorlagen
                 </button>
               </div>
             </div>
@@ -1757,6 +1783,20 @@ const AdminPortalContent = () => {
 
             {inventoryTab === 'goods-receipt' && (
               <GoodsReceiptManagement />
+            )}
+
+            {inventoryTab === 'device-storage' && (
+              <StorageOverview 
+                theme={theme}
+                tenants={availableTenants}
+              />
+            )}
+
+            {inventoryTab === 'kit-templates' && (
+              <KitTemplateManager 
+                theme={theme}
+                tenants={availableTenants}
+              />
             )}
           </div>
         )}
