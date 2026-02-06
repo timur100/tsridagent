@@ -23,7 +23,7 @@ const EVENT_ICONS = {
   note_added: MessageSquare, warranty_claimed: Shield, status_changed: RefreshCw
 };
 
-const DeviceLifecycleManager = ({ theme }) => {
+const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
   const [devices, setDevices] = useState([]);
   const [deviceTypes, setDeviceTypes] = useState({});
   const [loading, setLoading] = useState(true);
