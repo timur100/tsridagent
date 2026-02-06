@@ -91,7 +91,23 @@ const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
   
   const openCreateModal = () => {
     setEditMode(false);
-    setFormData({ device_type: 'tablet', serial_number: '', manufacturer: '', model: '', os_name: '', os_version: '', software_version: '', purchase_date: '', warranty_end: '', license_valid_until: '', assigned_location_code: '', responsible_technician: '', notes: '', status: 'in_storage' });
+    setFormData({ 
+      device_type: 'tablet', 
+      serial_number: '', 
+      manufacturer: '', 
+      model: '', 
+      os_name: '', 
+      os_version: '', 
+      software_version: '', 
+      purchase_date: '', 
+      warranty_end: '', 
+      license_valid_until: '', 
+      assigned_location_code: '', 
+      responsible_technician: '', 
+      notes: '', 
+      status: 'in_storage',
+      tenant_id: selectedTenantId || (tenants.length > 0 ? tenants[0].tenant_id : '')
+    });
     setShowEditModal(true);
   };
 
