@@ -878,6 +878,31 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                           </span>
                         </td>
                       );
+                    case 'teamviewer':
+                      return (
+                        <td key={col.id} className="px-2 py-2 text-center whitespace-nowrap">
+                          {device.tvid ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`teamviewer10://control?device=${device.tvid}`, '_blank');
+                              }}
+                              disabled={device.status !== 'online'}
+                              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                device.status === 'online'
+                                  ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                                  : 'bg-gray-500/30 text-gray-400 cursor-not-allowed'
+                              }`}
+                              title={device.status === 'online' ? `Verbinden mit ${device.tvid}` : 'Gerät ist offline'}
+                            >
+                              <Video className="h-3.5 w-3.5" />
+                              {device.status === 'online' ? 'Verbinden' : 'Offline'}
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-500">Keine TVID</span>
+                          )}
+                        </td>
+                      );
                     case 'customer':
                       return selectedCustomer === 'all' ? (
                         <td key={col.id} className={cellClass}>{device.customer || 'Europcar'}</td>
