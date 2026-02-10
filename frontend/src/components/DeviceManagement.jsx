@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCustomerFilter } from '../contexts/CustomerFilterContext';
 import { useTenant } from '../contexts/TenantContext';
 import { Card } from './ui/card';
-import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Settings, Eye, EyeOff, GripVertical, Check } from 'lucide-react';
+import { Monitor, CheckCircle, XCircle, Clock, Search, Filter, ChevronUp, ChevronDown, Settings, Eye, EyeOff, GripVertical, Check, ExternalLink, Video } from 'lucide-react';
 import DeviceDetailsModal from './DeviceDetailsModal';
 import toast from 'react-hot-toast';
 import { getFullBundeslandName } from '../utils/bundesland';
