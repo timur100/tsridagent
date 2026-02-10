@@ -23,6 +23,7 @@ const DEFAULT_DEVICE_COLUMNS = [
   { id: 'select', label: '', visible: true, sortable: false, width: 'w-10' },
   { id: 'device_id', label: 'Device-ID', visible: true, sortable: true, width: 'w-28' },
   { id: 'status', label: 'Status', visible: true, sortable: true, width: 'w-20' },
+  { id: 'teamviewer', label: 'TeamViewer', visible: true, sortable: false, width: 'w-28' },
   { id: 'customer', label: 'Kunde', visible: true, sortable: true, width: 'w-32' },
   { id: 'locationcode', label: 'Location', visible: true, sortable: true, width: 'w-20' },
   { id: 'street', label: 'Straße', visible: true, sortable: true, width: 'w-48' },
