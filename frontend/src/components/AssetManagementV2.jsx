@@ -802,6 +802,21 @@ const AssetManagementV2 = ({ theme }) => {
                     )}
                   </td>
                   <td className="px-4 py-3 text-center">
+                    {asset.warranty_until ? (
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        warrantyExpired ? 'bg-red-500/20 text-red-500' : 
+                        warrantyExpiringSoon ? 'bg-yellow-500/20 text-yellow-500' : 
+                        'bg-green-500/20 text-green-500'
+                      }`}>
+                        {warrantyExpired ? 'Abgelaufen' : 
+                         warrantyExpiringSoon ? 'Läuft ab' : 
+                         new Date(asset.warranty_until).toLocaleDateString('de-DE')}
+                      </span>
+                    ) : (
+                      <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>-</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
                     <StatusBadge status={asset.status} config={ASSET_STATUS_CONFIG} />
                   </td>
                   <td className="px-4 py-3 text-center">
