@@ -1365,7 +1365,7 @@ const AssetManagementV2 = ({ theme }) => {
           </TabsTrigger>
           <TabsTrigger value="bundles" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            Bundles
+            Bundles (Kits)
           </TabsTrigger>
           <TabsTrigger value="assets" className="flex items-center gap-2">
             <Cpu className="h-4 w-4" />
