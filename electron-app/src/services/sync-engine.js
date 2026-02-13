@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://asset-mgmt-v2.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://hardware-slot-months.preview.emergentagent.com');
 }
 
 /**

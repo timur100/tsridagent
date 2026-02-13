@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-mgmt-v2.preview.emergentagent.com/api/dhl"
+API_URL="https://hardware-slot-months.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

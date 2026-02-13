@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://asset-mgmt-v2.preview.emergentagent.com/portal/admin
+https://hardware-slot-months.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

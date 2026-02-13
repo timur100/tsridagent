@@ -21,7 +21,7 @@ const modeManager = require('./src/services/mode-manager');
 const backgroundAgent = require('./src/services/background-agent');
 
 // Configuration
-const PREVIEW_URL = 'https://asset-mgmt-v2.preview.emergentagent.com';
+const PREVIEW_URL = 'https://hardware-slot-months.preview.emergentagent.com';
 const ADMIN_URL = PREVIEW_URL + '/portal/admin';
 const SCAN_URL = PREVIEW_URL + '/'; // Root = Scan App
 const isDev = process.env.NODE_ENV === 'development';
