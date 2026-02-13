@@ -269,6 +269,97 @@ async def create_indexes():
         print(f"[Asset Management V2] Index creation error: {e}")
 
 
+# ============ METADATA ENDPOINTS ============
+
+@router.get("/metadata")
+async def get_metadata():
+    """Get available asset types, manufacturers, and other metadata"""
+    # Asset-Typ-Kategorien mit deutschen Labels
+    asset_type_categories = {
+        "Tablets": [
+            {"value": "tablet", "label": "Tablet (allgemein)"},
+            {"value": "surface_pro_4", "label": "Microsoft Surface Pro 4"},
+            {"value": "surface_pro_6", "label": "Microsoft Surface Pro 6"},
+            {"value": "surface_pro_7", "label": "Microsoft Surface Pro 7"},
+            {"value": "surface_go", "label": "Microsoft Surface Go"},
+        ],
+        "Scanner": [
+            {"value": "scanner", "label": "Scanner (allgemein)"},
+            {"value": "scanner_desko", "label": "Desko Scanner"},
+            {"value": "scanner_regula", "label": "Regula Scanner"},
+        ],
+        "Docking Stations": [
+            {"value": "dock", "label": "Docking Station (allgemein)"},
+            {"value": "dock_desko", "label": "Desko Docking Station"},
+            {"value": "dock_quer", "label": "Docking Station Quer"},
+            {"value": "dock_surface", "label": "Surface Dock"},
+        ],
+        "Netzteile (PSU)": [
+            {"value": "psu", "label": "Netzteil (allgemein)"},
+            {"value": "psu_desko", "label": "Desko Netzteil"},
+            {"value": "psu_surface", "label": "Surface Netzteil"},
+        ],
+        "Kabel & Adapter": [
+            {"value": "cable", "label": "Kabel (allgemein)"},
+            {"value": "usb_adapter_90", "label": "USB Adapter 90°"},
+            {"value": "usb_hub", "label": "USB Hub"},
+            {"value": "hdmi_adapter", "label": "HDMI Adapter"},
+            {"value": "displayport_adapter", "label": "DisplayPort Adapter"},
+        ],
+        "Netzwerk": [
+            {"value": "switch", "label": "Switch"},
+            {"value": "router", "label": "Router"},
+        ],
+        "Sonstiges": [
+            {"value": "other", "label": "Sonstiges"},
+        ]
+    }
+    
+    manufacturers = [
+        {"value": "Microsoft", "label": "Microsoft"},
+        {"value": "Desko", "label": "Desko"},
+        {"value": "Regula", "label": "Regula"},
+        {"value": "Samsung", "label": "Samsung"},
+        {"value": "Lenovo", "label": "Lenovo"},
+        {"value": "HP", "label": "HP"},
+        {"value": "Dell", "label": "Dell"},
+        {"value": "Anker", "label": "Anker"},
+        {"value": "Belkin", "label": "Belkin"},
+        {"value": "Ugreen", "label": "Ugreen"},
+        {"value": "Other", "label": "Sonstiger Hersteller"},
+    ]
+    
+    warranty_types = [
+        {"value": "standard", "label": "Standard-Garantie"},
+        {"value": "extended", "label": "Erweiterte Garantie"},
+        {"value": "on_site", "label": "Vor-Ort-Service"},
+        {"value": "next_business_day", "label": "Next Business Day"},
+        {"value": "none", "label": "Keine Garantie"},
+    ]
+    
+    license_types = [
+        {"value": "perpetual", "label": "Dauerlizenz"},
+        {"value": "subscription", "label": "Abo-Lizenz"},
+        {"value": "oem", "label": "OEM-Lizenz"},
+        {"value": "volume", "label": "Volumenlizenz"},
+        {"value": "trial", "label": "Testlizenz"},
+        {"value": "none", "label": "Keine Lizenz erforderlich"},
+    ]
+    
+    return {
+        "success": True,
+        "asset_types": ASSET_TYPES,
+        "asset_type_categories": asset_type_categories,
+        "manufacturers": manufacturers,
+        "warranty_types": warranty_types,
+        "license_types": license_types,
+        "statuses": ASSET_STATUSES,
+        "location_statuses": LOCATION_STATUSES,
+        "slot_statuses": SLOT_STATUSES,
+        "bundle_statuses": BUNDLE_STATUSES
+    }
+
+
 # ============ LOCATIONS ENDPOINTS ============
 
 @router.get("/locations")
