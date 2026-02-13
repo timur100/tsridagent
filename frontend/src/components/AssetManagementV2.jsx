@@ -1040,40 +1040,161 @@ const AssetManagementV2 = ({ theme }) => {
       case 'asset':
         const typeConfig = ASSET_TYPE_CONFIG[data.type] || ASSET_TYPE_CONFIG.other;
         const TypeIcon = typeConfig.icon;
+        
+        // Hilfsfunktion für Datumsformatierung
+        const formatDate = (dateStr) => {
+          if (!dateStr) return '-';
+          try {
+            return new Date(dateStr).toLocaleDateString('de-DE');
+          } catch {
+            return dateStr;
+          }
+        };
+        
+        // Garantie-Status prüfen
+        const warrantyExpired = data.warranty_until && new Date(data.warranty_until) < new Date();
+        const warrantyExpiringSoon = data.warranty_until && !warrantyExpired && 
+          new Date(data.warranty_until) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+        
+        // Lizenz-Status prüfen
+        const licenseExpired = data.license_expiry_date && new Date(data.license_expiry_date) < new Date();
+        const licenseExpiringSoon = data.license_expiry_date && !licenseExpired && 
+          new Date(data.license_expiry_date) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        
         return (
-          <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Asset ID</p>
-                <p className={`font-medium ${isDark ? 'text-white' : ''}`}>{data.asset_id}</p>
-              </div>
-              <div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
-                <StatusBadge status={data.status} config={ASSET_STATUS_CONFIG} />
-              </div>
-              <div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</p>
-                <div className="flex items-center gap-2">
-                  <TypeIcon className="h-4 w-4" />
-                  <span>{typeConfig.label}</span>
-                </div>
-              </div>
-              <div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Hersteller SN</p>
-                <p>{data.manufacturer_sn || '-'}</p>
-              </div>
-              {data.imei && (
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Basis-Informationen */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-xs font-semibold mb-2 text-gray-500`}>Basis</h4>
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>IMEI</p>
-                  <p>{data.imei}</p>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Asset ID</p>
+                  <p className={`font-medium ${isDark ? 'text-white' : ''}`}>{data.asset_id}</p>
                 </div>
-              )}
-              {data.mac && (
                 <div>
-                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>MAC</p>
-                  <p>{data.mac}</p>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
+                  <StatusBadge status={data.status} config={ASSET_STATUS_CONFIG} />
                 </div>
-              )}
+                <div>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</p>
+                  <div className="flex items-center gap-2">
+                    <TypeIcon className="h-4 w-4" />
+                    <span className="text-sm">{typeConfig.label}</span>
+                  </div>
+                </div>
+                <div>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Hersteller</p>
+                  <p className="text-sm">{data.manufacturer || '-'}</p>
+                </div>
+                <div>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Modell</p>
+                  <p className="text-sm">{data.model || '-'}</p>
+                </div>
+                <div>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Seriennummer</p>
+                  <p className="text-sm font-mono">{data.manufacturer_sn || '-'}</p>
+                </div>
+                {data.imei && (
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>IMEI</p>
+                    <p className="text-sm font-mono">{data.imei}</p>
+                  </div>
+                )}
+                {data.mac && (
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>MAC</p>
+                    <p className="text-sm font-mono">{data.mac}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* Kaufdaten & Garantie */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <h4 className={`text-xs font-semibold mb-2 text-gray-500`}>Kaufdaten</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kaufdatum</span>
+                    <span className="text-sm">{formatDate(data.purchase_date)}</span>
+                  </div>
+                  {data.purchase_price && (
+                    <div className="flex justify-between">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Preis</span>
+                      <span className="text-sm">{data.purchase_price.toFixed(2)} €</span>
+                    </div>
+                  )}
+                  {data.supplier && (
+                    <div className="flex justify-between">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lieferant</span>
+                      <span className="text-sm">{data.supplier}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={`p-3 rounded-lg ${warrantyExpired ? 'bg-red-500/10' : warrantyExpiringSoon ? 'bg-yellow-500/10' : isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <h4 className={`text-xs font-semibold mb-2 ${warrantyExpired ? 'text-red-500' : warrantyExpiringSoon ? 'text-yellow-500' : 'text-gray-500'}`}>
+                  Garantie {warrantyExpired ? '(Abgelaufen!)' : warrantyExpiringSoon ? '(Läuft bald ab!)' : ''}
+                </h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Bis</span>
+                    <span className={`text-sm ${warrantyExpired ? 'text-red-500' : warrantyExpiringSoon ? 'text-yellow-500' : ''}`}>
+                      {formatDate(data.warranty_until)}
+                    </span>
+                  </div>
+                  {data.warranty_type && (
+                    <div className="flex justify-between">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</span>
+                      <span className="text-sm">{WARRANTY_TYPE_OPTIONS.find(w => w.value === data.warranty_type)?.label || data.warranty_type}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Installation & Lizenz */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <h4 className={`text-xs font-semibold mb-2 text-gray-500`}>Installation</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Datum</span>
+                    <span className="text-sm">{formatDate(data.installation_date)}</span>
+                  </div>
+                  {data.installed_by && (
+                    <div className="flex justify-between">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Von</span>
+                      <span className="text-sm">{data.installed_by}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              <div className={`p-3 rounded-lg ${licenseExpired ? 'bg-red-500/10' : licenseExpiringSoon ? 'bg-yellow-500/10' : isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <h4 className={`text-xs font-semibold mb-2 ${licenseExpired ? 'text-red-500' : licenseExpiringSoon ? 'text-yellow-500' : 'text-gray-500'}`}>
+                  Lizenz {licenseExpired ? '(Abgelaufen!)' : licenseExpiringSoon ? '(Läuft bald ab!)' : ''}
+                </h4>
+                <div className="space-y-2">
+                  {data.license_type && (
+                    <div className="flex justify-between">
+                      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</span>
+                      <span className="text-sm">{LICENSE_TYPE_OPTIONS.find(l => l.value === data.license_type)?.label || data.license_type}</span>
+                    </div>
+                  )}
+                  <div className="flex justify-between">
+                    <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Aktiviert</span>
+                    <span className="text-sm">{formatDate(data.license_activation_date)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Läuft ab</span>
+                    <span className={`text-sm ${licenseExpired ? 'text-red-500' : licenseExpiringSoon ? 'text-yellow-500' : ''}`}>
+                      {formatDate(data.license_expiry_date)}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Relations */}
