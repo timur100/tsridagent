@@ -1411,6 +1411,9 @@ const AssetManagementV2 = ({ theme }) => {
               <Plus className="h-5 w-5 text-primary" />
               Neue {createType === 'location' ? 'Location' : createType === 'slot' ? 'Slot' : createType === 'bundle' ? 'Bundle' : 'Asset'}
             </DialogTitle>
+            <DialogDescription className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+              Füllen Sie die erforderlichen Felder aus.
+            </DialogDescription>
           </DialogHeader>
           <CreateModalContent />
           <DialogFooter>
@@ -1431,6 +1434,9 @@ const AssetManagementV2 = ({ theme }) => {
               {selectedItem?.type === 'asset' && <Cpu className="h-5 w-5 text-green-500" />}
               {selectedItem?.data?.location_id || selectedItem?.data?.slot_id || selectedItem?.data?.bundle_id || selectedItem?.data?.asset_id}
             </DialogTitle>
+            <DialogDescription className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+              Details und Verknüpfungen anzeigen
+            </DialogDescription>
           </DialogHeader>
           <DetailModalContent />
           <DialogFooter>
