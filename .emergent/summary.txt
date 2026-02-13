@@ -1,85 +1,356 @@
 <analysis>**original_problem_statement:**
-The user's goal is to build a comprehensive Offline-First Electron Agent for Windows 11 tablets.
+The user's goal is to build a comprehensive Offline-First Electron Agent for Windows 11 tablets. The latest major requirement is to completely overhaul the Asset Management module to support a multi-level structure for large-scale rollout operations, separating the concepts of physical devices (Assets), installation locations (Slots), and hardware kits (Bundles).
 
-PRODUCT REQUIREMENTS:
-- An Electron-based agent application with role-based access (Normal User PIN: 3842, Admin PIN: 9988).
-- The agent must access hardware (USB scanners) and run as a background process with a System Tray icon.
-- It must collect and display extensive system information, visible only to admins.
-- The system must support multiple tenants. An admin should be able to select a tenant (e.g., Europcar) and see all associated locations and devices, sourced from a central MongoDB Atlas database.
-- The agent must use a local SQLite database for offline data storage, which synchronizes with the central MongoDB Atlas database.
-- The agent should support a self-setup flow, including manual selection (Continent -> Country -> City -> Location -> Device) and an Activation Code flow (QR code scanning).
-- An admin portal () for managing tenants, locations, devices, and generating activation codes.
-- A fully automated, one-click build script () is required for easy installation.
-- The application and installer should be branded with a custom logo.
-- A complete **Location Lifecycle Management** system to manage statuses (, , ).
-- A complete **Device Lifecycle Management** system to track the entire history of every piece of hardware (devices, docking stations), including purchase date, warranty, assignments, status changes, manufacturer, model, OS, and software version.
-- A comprehensive **Import/Export functionality** (CSV/Excel) and **dynamic column management** for all data tables within the application.
+**Initial Product Requirements (Summary):**
+*   An Electron-based agent with role-based PIN access and hardware integration (scanners).
+*   Offline capability using a local SQLite database synchronizing with a central MongoDB Atlas DB.
+*   A web-based Admin Portal for multi-tenant management of locations, devices, and activation codes.
+*   Complete lifecycle management for locations and devices, including status tracking and history.
+*   Comprehensive import/export functionality and dynamic column management for all data tables.
+*   A one-click build script for easy installation.
+
+**New Asset Management V2 Requirements:**
+*   Four new database collections: ,  (installation positions),  (kits), and  (physical devices).
+*   Strict separation of concerns: A  is a physical location, an  is a piece of hardware. Replacing hardware does not change the .
+*   Relational structure:  belong to , and  are installed in  at .
+*   Full history tracking for every asset event (installation, replacement, etc.).
+*   A new UI to manage this structure, with detailed views and powerful filtering capabilities, scalable for 1000+ locations and 3000+ assets.
 
 **User's preferred language**: German
 
 **what currently exists?**
-A full-stack application with a React frontend and a FastAPI backend, featuring a web-based Admin Portal.
-
-Recent key features implemented include:
--   **Bug Fix:** A critical navigation bug in the Admin Portal that made tabs unresponsive has been resolved. The UI now correctly uses URL-based routing.
--   **Universal Table Features:** A comprehensive import/export system (CSV/Excel) and a dynamic column manager (show/hide/reorder) have been implemented across most major data tables (, , , , , etc.) using a new set of reusable UI components.
--   **Performance Overhaul:** Significant performance enhancements have been implemented. The backend now automatically creates database indexes on startup. The frontend uses pagination, skeleton loading screens, and in some cases, list virtualization () to handle large datasets efficiently.
--   **UI/UX Improvements:** The global search bar and its suggestions dropdown have been widened, and the Sync button has been removed from the header per user request.
+A full-stack application with a React frontend and a FastAPI backend. The agent recently completed several major features and bug fixes:
+- **Device-to-Kit Workflow:** The primary blocker from the last session was resolved. A new Storage Overview page was implemented, and the UI for creating devices was enhanced, making it clear how to make devices available for inclusion in hardware kits.
+- **Inventory & Kit Templates:** In response to user feedback, the Storage and Inventory sections were merged. A new  was created to manage non-serialized items (like cables and adapters). The Kit Templates feature was built, allowing admins to define the exact composition of a kit using both serialized devices and non-serialized inventory items, and the system calculates how many complete kits can be assembled from available stock.
+- **Bug Fixes:** A critical bug causing a black screen when adding new inventory categories was fixed.
+- **UI Enhancement:** A Connect button was added to the main devices list, allowing one-click TeamViewer access to online devices.
+- **New Feature Kick-off:** The agent has just begun the large Asset Management V2 feature by creating the initial placeholder files for the backend route and frontend component.
 
 **Last working item**:
--   **Last item agent was working:** Addressing a user's confusion about why no devices were available when creating a new Kit. The agent diagnosed that devices must have a status of in_storage and be unassigned to a kit. The agent began implementing a three-part solution: 1) A new Storage Overview page, 2) Improved UI hints and a direct link within the Create Kit modal, 3) An easier workflow for getting new devices into storage.
--   **Status:** IN PROGRESS
--   **Agent Testing Done:** N
--   **Which testing method agent to use?** frontend testing agent
--   **User Testing Done:** N
+- **Last item agent was working:** The agent started scaffolding the new **Asset Management V2** module. This involved creating the placeholder backend route file (), the frontend component file (), and registering the new API router in .
+- **Status:** IN PROGRESS
+- **Agent Testing Done:** N
+- **Which testing method agent to use?** both (This is a large new feature requiring backend and frontend testing)
+- **User Testing Done:** N
 
 **All Pending/In progress Issue list**:
--   **Issue 1:** Complete Device Availability for Kits Workflow (P0)
--   **Issue 2:** Roll out performance optimizations to all remaining tables (P1)
--   **Issue 3:** Implement Agent Status Overview (P1)
--   **Issue 4:** Complete Single Source of Truth Migration for  (P2)
--   **Issue 5:** Debug and Finalize Printer Support in Electron App (P3)
+- **Issue 1:** Implement Asset Management V2 (P0)
+- **Issue 2:** Roll out performance optimizations to all remaining tables (P1)
+- **Issue 3:** Implement Agent Status Overview (P1)
+- **Issue 4:** Complete Single Source of Truth Migration for  (P2)
+- **Issue 5:** Debug and Finalize Printer Support in Electron App (P3)
 
 **Issues Detail:**
--   **Issue 1: Complete Device Availability for Kits Workflow**
-    -   **Attempted fixes:** A new backend endpoint () was created. The Create Kit modal was improved with a better message and a link to the device management page. A new Lager (Storage) tab was added to the admin portal with a placeholder component ().
-    -   **Next debug checklist:**
-        1.  Flesh out the  component to fetch and display data from the new endpoint, including filters and the standard table features (pagination, export, etc.).
-        2.  Enhance  to allow setting a device's status to Im Lager (In Storage) upon creation or as a quick action.
-        3.  Test the full user flow: create a device, set it to in storage, navigate to Kit Management, select the tenant, and confirm the device appears in the Add Devices list.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a direct usability blocker preventing the user from managing hardware kits, a core application feature.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on other issue:** None
+- **Issue 1: Implement Asset Management V2**
+  - **Attempted fixes:** Initial files (, ) have been created and registered.
+  - **Next debug checklist:**
+    1.  Define the Pydantic and database models for the four new collections: , , , and  in the backend.
+    2.  Implement the full set of CRUD APIs for each of these models in .
+    3.  Build out the  component with the required UI for displaying, creating, and managing the new four-tier structure.
+    4.  Ensure all relationships (Asset -> Bundle -> Slot -> Location) are correctly implemented and displayed in the UI.
+    5.  Implement the asset history/timeline view.
+  - **Why fix this issue and what will be achieved with the fix?** This is a new core requirement from the user to build a scalable and robust system for tracking hardware rollouts.
+  - **Status:** IN PROGRESS
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on other issue:** None
 
--   **Issue 2: Roll out performance optimizations to all remaining tables**
-    -   **Attempted fixes:** N/A
-    -   **Next debug checklist:** Systematically review all components that render lists or tables of data (e.g., , , ) and ensure they use the new reusable components: , , and a loading state.
-    -   **Why fix this issue and what will be achieved with the fix?** To ensure a consistent, fast, and responsive user experience across the entire application.
-    -   **Status:** IN PROGRESS
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** frontend
-    -   **Blocked on other issue:** None
+- **Issue 2: Roll out performance optimizations to all remaining tables**
+  - **Next debug checklist:** Systematically review all components that render lists or tables of data (e.g., , , ) and ensure they use the reusable components: , , and a loading state.
+  - **Why fix this issue and what will be achieved with the fix?** To ensure a consistent, fast, and responsive user experience across the entire application.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** frontend
+  - **Blocked on other issue:** None
 
--   **Issue 3: Implement Agent Status Overview**
-    -   **Next debug checklist:** Design and implement a backend heartbeat mechanism from the Electron agent. Create a new UI in the Admin Portal to display active agents and their status (online/offline, last seen). Clarify command/messaging requirements with the user.
-    -   **Why fix this issue and what will be achieved with the fix?** Provides administrators with critical visibility into the deployed fleet of agents.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on other issue:** None
+- **Issue 3: Implement Agent Status Overview**
+  - **Next debug checklist:** Design and implement a backend heartbeat mechanism from the Electron agent. Create a new UI in the Admin Portal to display active agents and their status (online/offline, last seen).
+  - **Why fix this issue and what will be achieved with the fix?** Provides administrators with critical visibility into the deployed fleet of agents.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on other issue:** None
 
--   **Issue 4: Complete Single Source of Truth Migration for **
-    -   **Next debug checklist:** Rewrite all endpoints in  to use MongoDB instead of mock data and test the corresponding frontend features.
-    -   **Why fix this issue and what will be achieved with the fix?** Ensures data consistency and fulfills a core original requirement.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** N
-    -   **Should Test frontend/backend/both after fix?** both
-    -   **Blocked on other issue:** None
+- **Issue 4: Complete Single Source of Truth Migration for **
+  - **Next debug checklist:** Rewrite all endpoints in  to use MongoDB instead of mock data and test the corresponding frontend features.
+  - **Why fix this issue and what will be achieved with the fix?** Ensures data consistency and fulfills a core original requirement.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** N
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on other issue:** None
 
--   **Issue 5: Debug and Finalize Printer Support in Electron App**
-    -   **Next debug checklist:** Investigate previous attempts using commit 60ce0e00cdce005a224b7c02e91727fa194364b0
+- **Issue 5: Debug and Finalize Printer Support in Electron App**
+  - **Next debug checklist:** Investigate previous attempts using commit 9981310096e01170b11082a4eabc66bcbb7dd742
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 13 17:32:30 2026 +0000
+
+    auto-commit for 4e4e2405-9545-4f6a-8b81-1b543deedb5a
+
+commit 7334ba8f70f1d837127d72f68650c56df6378b10
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 13 17:30:02 2026 +0000
+
+    auto-commit for 53f5f5eb-e5fb-41b7-a72c-32a85e687ade
+
+commit c72ffd780e66c104c9e0d8a852b2181a026b2682
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 13 17:29:43 2026 +0000
+
+    auto-commit for d16f6290-5b0b-4623-84c0-12b6324a7241
+
+commit d7002b4517bc4a03620c7235aa34a700d60fb9c5
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Feb 10 20:33:34 2026 +0000
+
+    auto-commit for 681c7f3a-e50d-4dbe-855c-6f51b2b38b8a
+
+commit 7f8dbfc908cb082a37acb004c2e83a71ab38b629
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Feb 10 20:33:10 2026 +0000
+
+    auto-commit for 58ba6800-065e-4628-b6e4-16dde38d88a6
+
+commit 01698d222b29ac82827257d2c0c309487f24c51b
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Tue Feb 10 20:33:00 2026 +0000
+
+    auto-commit for 5c9c1dfd-adec-49be-a531-9926526d4aad
+
+commit 461746315216ea81a0b54e34d5090603f9be57db
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 12:21:54 2026 +0000
+
+    auto-commit for cb320a39-b4fd-4db5-a001-6a01d0274460
+
+commit ef94b73e000f733ffac6bdcb640a6f8465d51b22
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 12:21:05 2026 +0000
+
+    auto-commit for d8fe0b64-39d7-442e-805f-b1c5d3a9e02c
+
+commit 7093308c0b98b6909ee5e2d035eb4622c386e52a
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 12:12:56 2026 +0000
+
+    auto-commit for 56474dca-8687-4dd4-8373-1ee968a99486
+
+commit af900e7b28b27132196923ce51427d2ec39e5e00
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:58:11 2026 +0000
+
+    auto-commit for 28eef148-9804-4771-a494-15e0ebb51806
+
+commit 1dd137e34a209459197e3ff1d480e4bc7ab68a54
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:57:27 2026 +0000
+
+    auto-commit for 2d332834-8bc5-4b4d-9385-1afafc857e8c
+
+commit d6a0e9d81ba8c5f9c29174aad6dc985cd5b84d5a
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:54:28 2026 +0000
+
+    auto-commit for d7031b2e-9d0e-49fd-bdf9-1341db65c1c3
+
+commit 387c7c11438ee607093335146f888878d58dc107
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:53:59 2026 +0000
+
+    auto-commit for ac831a1d-f428-446c-b196-51fe077336df
+
+commit 4c537900a4c9b26ce3ecd4eb3b50ba39da8c975b
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:52:25 2026 +0000
+
+    Auto-commit before changes
+
+commit bfb77f67dee6198deaef1b9664628113e2cfae86
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:47:54 2026 +0000
+
+    auto-commit for a5aefe27-671f-4279-a436-d4462ea95a95
+
+commit a95e7bef19c7f0487c3a863d2dddca6bc730144d
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:46:13 2026 +0000
+
+    auto-commit for 7951f297-e66e-415c-b337-6992947fbc05
+
+commit 55384a24118992bf686ae5432cfea6e60c7815d0
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:45:42 2026 +0000
+
+    auto-commit for cbcba514-a7a9-4c97-84f9-fc76659e48d9
+
+commit 74ad2533ea4a245878954cae1cce2f14ca20ce9e
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:45:19 2026 +0000
+
+    auto-commit for b68b04b7-1b18-4a4d-9b70-fcde262873dd
+
+commit 370ca25469f67c792c658f48c1590afd83bf4f95
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:45:03 2026 +0000
+
+    auto-commit for b4976063-b82d-4444-8efc-95e83ef1fe46
+
+commit 30b2205b7482977e70fcf23418249f9131f0d6d6
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 11:44:28 2026 +0000
+
+    auto-commit for c5f963b7-6819-4e80-afe4-c867a7192c4b
+
+commit a3c73743cbf9f30d601c539101dcb2013f0a9926
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:52:16 2026 +0000
+
+    auto-commit for cac6c53a-b2bb-4212-82f6-9f2198628867
+
+commit 6ff5e1065653de770841d597ef853d0533d74f44
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:51:24 2026 +0000
+
+    auto-commit for ce0d7e65-225a-435a-8076-e3dbf2ed0b8e
+
+commit cc72d90a9b1d2eab2c1b66169288b4fbcaf35f71
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:48:33 2026 +0000
+
+    auto-commit for 8e630a3a-95ef-4de7-8d5a-603c02ca7ffd
+
+commit 6c372593148005648b7ce6070ec4ccc09bed93c8
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:48:10 2026 +0000
+
+    auto-commit for 488aabfc-56ae-4fa3-89ff-adf5a94269d9
+
+commit ef4a2aa22e75860390d6eaee3d225b96233c6d67
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:46:52 2026 +0000
+
+    Auto-commit before changes
+
+commit 7c518fb9c05ed4736d2a999d64d2487e223dc233
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:42:56 2026 +0000
+
+    auto-commit for 59ba6305-d07d-4003-8ef6-29889f5d28c2
+
+commit a26225dfd68e0f864802242a6e3b1901f0ad0a79
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:42:16 2026 +0000
+
+    auto-commit for 8c0f4b0f-74fd-4e17-a70a-2a5a7d6f02fd
+
+commit e17ae9c6f28327169496f7ee126e56d14e7eeaa2
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:41:51 2026 +0000
+
+    auto-commit for 817c9dcf-cfe4-497b-8314-d6bb5f001833
+
+commit 4cd11b4f6eb25fdedde130313bb3a1ff7d151a0d
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:41:22 2026 +0000
+
+    auto-commit for 59c363ed-e36a-44cf-87c6-b10ac3453c29
+
+commit 33004eeaf48085eaa34197efe04a857ee421b966
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:40:08 2026 +0000
+
+    auto-commit for 1ce8f368-ffc8-45f9-8ab5-eb6fe8189d81
+
+commit 8014fa5ca70d8b6177ab3dfa8fd550bf844e94e6
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:39:52 2026 +0000
+
+    auto-commit for 5999a3eb-64a5-4b94-89e8-d1c7b40130c1
+
+commit 60b8ff6604dd1835effc44e9a3a107aea74d70d4
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:39:29 2026 +0000
+
+    auto-commit for a62e0094-df73-469d-8041-f9e0f1121553
+
+commit 4d0487a2219a827aef9d1915cdb0e698b46368f1
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 09:39:06 2026 +0000
+
+    auto-commit for d93b0ebd-528a-4f8f-9afb-92c11aa77b45
+
+commit aecce62a788bfbcdff3ef60c69b4164724f5cf78
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:32:02 2026 +0000
+
+    auto-commit for 3dfc70d3-1c88-414e-9164-08f3011ae358
+
+commit f4cc15aa949a87dd22c0699435ee6082e513ffeb
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:30:54 2026 +0000
+
+    auto-commit for 92b36ad0-8989-4a72-93eb-14d6800a556d
+
+commit 077c198df96841f7fde46db3fc24779e96435ea9
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:30:24 2026 +0000
+
+    auto-commit for b40126d6-8461-4722-bbb6-3655b28f0546
+
+commit accd1927eb0773327cbdce155d4c9da50a4833e8
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:29:56 2026 +0000
+
+    auto-commit for 654b8e3d-b59a-4814-945c-bb9d6cbbe186
+
+commit f62d27dc294fd222ba55e42b924bb1e6aa078a89
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:25:12 2026 +0000
+
+    Auto-commit before changes
+
+commit 88731fde7a5f3d4b8a5515d6b019f47f95e9c698
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:21:50 2026 +0000
+
+    auto-commit for c5a8cc12-5453-4ec1-b26a-9e80d4b6923a
+
+commit 051691469cda54ba9905e9fa2c23af1202f0861c
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:18:50 2026 +0000
+
+    auto-commit for 763e7fa8-9b2b-41d3-a460-be4ea1a6d521
+
+commit 612cd9d3daa1ac56735328e91483b1208e90a2e8
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:18:40 2026 +0000
+
+    auto-commit for 0b7191df-b504-4b0a-bb46-6792670f12a3
+
+commit c92b34ee399186e17f3cdee85b4e178ac5e9f70b
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:18:09 2026 +0000
+
+    auto-commit for 31770f23-7335-4676-84d8-d87d4e509b57
+
+commit 84db063f560c6a76007125ae69fad4939e491c81
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:17:53 2026 +0000
+
+    auto-commit for fc168461-620a-4b91-9c31-677cc49b3454
+
+commit 992d41bb5ebc1ec9a7591bd4bffdc9ca2134891f
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:17:46 2026 +0000
+
+    auto-commit for dc3be621-76b3-4bdb-a8e6-c2b0430c133d
+
+commit 77f11fd9c63fea9afe0068c26ff101e9e9ca9226
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Fri Feb 6 08:16:23 2026 +0000
+
+    auto-commit for 90e6e50e-cd50-4b58-b0e1-855059b6d25f
+
+commit 60ce0e00cdce005a224b7c02e91727fa194364b0
 Author: emergent-agent-e1 <github@emergent.sh>
 Date:   Fri Feb 6 08:11:00 2026 +0000
 
@@ -29141,14 +29412,19 @@ Author: emergent-agent-e1 <github@emergent.sh>
 Date:   Thu Nov 6 12:23:48 2025 +0000
 
     Initial commit. Research reliable methods for silent printing to USB printers from Electron apps on Windows.
-    -   **Why fix this issue and what will be achieved with the fix?** This is a high-value, recurring request for the agent's full functionality.
-    -   **Status:** NOT STARTED
-    -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** The Electron App.
-    -   **Blocked on other issue:** None
+  - **Why fix this issue and what will be achieved with the fix?** This is a high-value, recurring request for the agent's full functionality.
+  - **Status:** NOT STARTED
+  - **Is recurring issue?** Y
+  - **Should Test frontend/backend/both after fix?** The Electron App.
+  - **Blocked on other issue:** None
 
 **In progress Task List**:
-The pending issues cover all in-progress work.
+- **Task 1: Implement Asset Management V2**
+  - **Where to resume:** The backend route  and the frontend component  are currently empty placeholders. The next step is to define the database schemas and implement the CRUD APIs for the , , , and  collections.
+  - **What will be achieved with this?** A new, scalable asset management system that separates physical hardware from installation slots, as per the user's detailed specifications.
+  - **Status:** IN PROGRESS
+  - **Should Test frontend/backend/both after fix?** both
+  - **Blocked on something:** None
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks:**
@@ -29160,10 +29436,11 @@ The pending issues cover all in-progress work.
     *   Production deployment verification.
 
 **Completed work in this session**
--   **BUGFIX - Admin Portal Navigation:** Fixed a critical routing bug in , making the main navigation reliable. Tested and verified with the testing agent.
--   **FEATURE - Universal Table Enhancements:** Created reusable components and integrated Import/Export (CSV/Excel) and column management features into , , , , , and .
--   **FEATURE - Application-Wide Performance Overhaul:** Implemented backend database indexing and frontend pagination, skeleton loading, and virtualization across most major tables to dramatically improve loading times and UI responsiveness.
--   **UI/UX - Header and Search Adjustments:** Removed the Sync button and widened the global search bar and its suggestion dropdown in the main header.
+- **P0 Blocker Resolved:** The device-to-kit workflow was fixed. A Storage Overview and enhanced device creation form were implemented.
+- **Inventory Management Overhaul:** The Lager and Inventory sections were consolidated. A new API for managing non-serialized items (cables, adapters) was created.
+- **Kit Templates Feature:** A new module was created to define kit compositions using both serialized devices and non-serialized inventory. The UI calculates how many complete kits can be built from the current stock.
+- **BUGFIX - Black Screen on Category Creation:** Fixed a critical frontend bug that caused a crash when adding a new inventory category.
+- **UI FEATURE - TeamViewer Integration:** Added a Verbinden (Connect) button to the  list, enabling one-click TeamViewer connections to online devices.
 
 **Earlier issues found/mentioned but not fixed**
 All known issues have been captured in the All Pending/In progress Issue list.
@@ -29177,53 +29454,67 @@ All known issues have been captured in the All Pending/In progress Issue list.
 
 
 **Key Technical Concepts**
--   **URL-Driven State:** The navigation bug fix reinforced using the URL () as the single source of truth for view state, not internal component state.
--   **Component-Based Architecture:** Cross-cutting concerns like data export, pagination, and column settings were abstracted into highly reusable UI components, promoting DRY principles.
--   **Frontend Performance Patterns:** A suite of optimization techniques was implemented: pagination (reducing initial data load), skeleton UIs (improving perceived speed), and virtualization (rendering only visible rows).
--   **Backend Performance Patterns:** Using database indexes is a fundamental optimization to accelerate data retrieval, implemented here via an automated script on server startup.
+- **Separation of Concerns (Asset Management):** The new V2 architecture separates the concept of a physical installation  from the hardware  itself. This is a crucial shift for accurate lifecycle tracking.
+- **Composite Models (Kit Templates):** The system now handles components that are tracked individually (serialized devices) and components tracked in bulk (non-serialized inventory items) within a single Kit Template definition.
+- **UI Consolidation:** The user-facing navigation was simplified by merging two related but separate concepts (Storage and Inventory) into a single, tabbed management view, improving usability.
 
 **key DB schema**
--   ****: A device is available to be added to a kit if its  field is null/missing and its  is set to .
+- ****: A device is available to be added to a kit if its  is null/missing and its  is set to .
+- **** (New): Stores non-serialized items. Schema: .
+- **** (New): Stores a hierarchical structure for inventory items.
+- **** (New): Defines the composition of a kit. Schema: .
+- **** (New - Planned): .
+- **** (New - Planned): .
+- **** (New - Planned): .
+- **** (New - Planned): .
 
 **All files of reference**
--   **/app/frontend/src/pages/AdminPortal.jsx** (Source of navigation and new Storage tab)
--   **/app/frontend/src/components/KitManager.jsx** (Core of the current user workflow)
--   **/app/frontend/src/components/DeviceLifecycleManager.jsx** (Needs to be modified for device status)
--   **/app/frontend/src/components/StorageOverview.jsx** (Needs to be implemented)
--   **/app/backend/routes/device_lifecycle.py** (Contains new storage overview endpoint)
--   **/app/backend/utils/db_indexes.py** (New performance optimization)
--   **/app/frontend/src/components/ui/** (Location of all new reusable table components)
+- **/app/backend/routes/asset_management_v2.py**: (NEW) Entry point for the current P0 task.
+- **/app/frontend/src/components/AssetManagementV2.jsx**: (NEW) Frontend entry point for the P0 task.
+- **/app/frontend/src/components/InventoryManagement.jsx**: Recently fixed and heavily modified. Contains the workaround for the category creation bug.
+- **/app/frontend/src/components/KitTemplateManager.jsx**: Newly created component for the kit definition feature.
+- **/app/backend/routes/inventory.py**: New API for managing non-serialized items.
+- **/app/backend/routes/kit_templates.py**: New API for managing kit definitions.
+- **/app/frontend/src/pages/AdminPortal.jsx**: Main layout file, heavily modified to consolidate menu items.
+- **/app/frontend/src/components/DeviceManagement.jsx**: Recently modified to include the TeamViewer connect button.
 
 **Areas that need refactoring**:
--   The large management components (, , etc.) have been significantly refactored to use the new reusable UI components. This pattern should be applied to any remaining data tables that have not yet been updated.
+- In , a bug was fixed by bypassing the shared  helper and using the  API directly. The root cause (whether it's a caching issue or a bug in ) should be investigated and the  call should be reverted to use  for consistency across the application.
 
 **key api endpoints**
--   ****: (NEW) Fetches all devices with the status in_storage, filterable by .
--   ****: (MODIFIED) Now accepts a  query parameter to correctly filter devices available for a kit.
+- ****: (NEW) Create a new non-serialized inventory item.
+- ****: (NEW) List all inventory items.
+- ****: (NEW) Create a new inventory category.
+- ****: (NEW) Create a new kit template definition.
+- ****: (NEW) Calculates how many kits of a given template can be assembled from current stock.
+- ****: (PLANNED) Endpoint for the new Asset Management V2 module.
 
 **Critical Info for New Agent**
--   **Speak German:** The user communicates exclusively in German. All responses MUST be in German.
--   **P0 Blocker - Kit Workflow:** Your immediate priority is to finish the Device Availability for Kits task. The user is currently blocked from a core workflow. The next step is to build out the UI for the new  component.
--   **Use New Reusable Components:** When building or modifying any table/list views, you MUST use the new reusable components for pagination (), export (), column settings (), and loading states () located in .
+- **Speak German:** The user communicates exclusively in German. All responses MUST be in German.
+- **P0 Task - Asset Management V2:** Your immediate and sole priority is to implement the large Asset Management V2 feature as detailed in the user's request. This is a significant architectural change. Start by defining the backend models and APIs before building the frontend.
+- **Refactoring Note:** Be aware of the  workaround in . While not a blocker, understanding why  failed would be beneficial for long-term stability.
 
 **documents and test reports created in this job**
--   
+-  (updated)
+- 
+- 
+- 
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User:** Why can't I add devices to a new Kit? The list is empty. Where can I mark devices so they can be used in Kits? **Status: IN PROGRESS (Last working item).**
-2.  **User:** OK, implement all three proposed solutions: the storage overview, the better modal, and an easier way to get devices into storage. **Status: IN PROGRESS.**
-3.  **User:** The tables are slow to load. What can be done to make the data appear faster? **Status: COMPLETE.**
-4.  **User:** Yes, apply all performance optimizations. **Status: COMPLETE.**
-5.  **User:** Please add an import/export function (CSV/Excel) and column selection to every table in the application. **Status: COMPLETE.**
-6.  **User:** Yes, start implementing the import/export feature. **Status: COMPLETE.**
-7.  **User:** The suggestion window for search is the same size as the search field. Double its size. **Status: COMPLETE.**
-8.  **User:** Remove the Sync button in the header. Make the search field and its suggestions window 3x wider. **Status: COMPLETE.**
-9.  **User:** After fixing the navigation, please continue. **Status: COMPLETE.**
-10. **User:** Excellent, the navigation bug is fixed. **Status: COMPLETE.**
+1.  **User:** I can't add items in inventory. I also don't see where I can add or edit things like cables and adapters for kit templates. **Status: COMPLETE.**
+2.  **User:** (Clarification) I need to add items like cables/adapters that don't have serial numbers and select them in kit templates. **Status: COMPLETE.**
+3.  **User:** Adding a new category in inventory gives a black screen. **Status: COMPLETE.**
+4.  **User:** I can see a device is online, but there is no Connect button to launch TeamViewer. **Status: COMPLETE.**
+5.  **User:** (NEW MAJOR REQUIREMENT) Upgrade the Asset Management module to a new 4-tier structure (Locations, Slots, Bundles, Assets) with specific rules and UI requirements. **Status: IN PROGRESS (Current P0 task).**
+6.  **User:** Yes. (Confirmation to start work) **Status: COMPLETE.**
+7.  **User:** Can you build everything into Inventory? That's where goods receipt is. **Status: COMPLETE.**
+8.  **User:** (In response to a clarification about inventory items) Option C, but cables and adapters have no serial numbers and should still be selectable in kit templates. **Status: COMPLETE.**
+9.  **User:** Adding a new category in inventory causes a black screen. **Status: COMPLETE.**
+10. **User:** I see a device is online but I can't connect via TeamViewer because there's no Connect button. **Status: COMPLETE.**
 
 **Project Health Check:**
--   **Broken:** The workflow for adding devices to kits is confusing and incomplete, which is the current P0 task.
--   **Mocked:**  still serves mock data and needs to be migrated to MongoDB.
+- **Broken:** Nothing is currently broken for the end-user. The primary focus is new feature development.
+- **Mocked:**  still serves mock data and needs to be migrated to use the MongoDB database.
 
 **3rd Party Integrations**
 -   MongoDB Atlas
@@ -29233,19 +29524,19 @@ All known issues have been captured in the All Pending/In progress Issue list.
 -    / 
 -   
 -   
--   **** (New - for Excel export)
--   **** (New - for list virtualization)
+-   
+-   
 
 **Testing status**
--   **Testing agent used after significant changes:** YES (for the navigation bug fix)
--   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** []
--   **Known regressions:** None. The previous regression (broken navigation) was fixed.
+- **Testing agent used after significant changes:** YES (Used 3 times for major features/fixes in this session, with all tests passing).
+- **Troubleshoot agent used after agent stuck in loop:** NO
+- **Test files created:** []
+- **Known regressions:** None from this session.
 
 **Credentials to test flow:**
--   **Web Portal Login:**  / 
--   **Scan App User PIN:** 
--   **Scan App Admin PIN:** 
+- **Web Portal Login:**  / 
+- **Scan App User PIN:** 
+- **Scan App Admin PIN:** 
 
 **What agent forgot to execute**
-The agent has successfully managed a series of large, multi-step user requests without forgetting any core requirements. The work is logically sequenced and currently focused on the user's most recent blocker.</analysis>
+The agent has successfully addressed all user requests from this session. The older, lower-priority tasks from the previous fork's summary (like performance optimization rollout, printer support) have not yet been addressed, which is the correct prioritization.</analysis>

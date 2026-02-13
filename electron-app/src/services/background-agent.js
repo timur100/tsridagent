@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tablet-agent-1.preview.emergentagent.com';
+    this.serverUrl = 'https://asset-mgmt-v2.preview.emergentagent.com';
   }
 
   /**

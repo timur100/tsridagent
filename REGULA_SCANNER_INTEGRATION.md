@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tablet-agent-1.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-mgmt-v2.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
