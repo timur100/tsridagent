@@ -364,19 +364,28 @@ Integriert in folgende Komponenten:
   - Bundle: BDL-DE-001 (deployed)
   - Assets: TAB-DE-001 (Tablet), SCN-DE-001 (Scanner)
 
-#### Kit-Verwaltung Migration (Feb 13, 2025) - ✅ COMPLETE
-- **Status:** COMPLETE
-- **Änderung:** "Kit-Verwaltung" Tab aus Hauptnavigation entfernt
-- **Grund:** Funktionalität wurde in Asset Management V2 konsolidiert
-- **Neue Struktur:**
-  - Bundles = Kits (Hardware-Sets)
-  - Tab umbenannt: "Bundles (Kits)"
-  - Hinweis in Untertitel: "(inkl. Kit-/Bundle-Verwaltung)"
-- **Workflow für Kits im neuen System:**
-  1. Bundle erstellen (= Kit zusammenstellen)
-  2. Assets zum Bundle hinzufügen
-  3. Bundle in Slot installieren (= Kit an Standort deployen)
-  4. Bundle aus Slot entfernen (= Kit zurücknehmen)
+#### Asset Management V2 - Erweiterte Felder (Feb 13, 2025) - ✅ COMPLETE
+- **Status:** COMPLETE - Frontend & Backend erweitert
+- **Neue Felder für Assets:**
+  - **Kaufdaten:** Kaufdatum, Kaufpreis, Lieferant, Rechnungsnummer
+  - **Garantie:** Garantie bis, Garantie-Typ (Standard, Erweitert, Vor-Ort, NBD)
+  - **Installation:** Installationsdatum, Installiert von
+  - **Lizenz:** Lizenzschlüssel, Lizenz-Typ (Dauer, Abo, OEM, Volumen), Aktivierungsdatum, Ablaufdatum
+- **Erweiterte Gerätetypen:**
+  - Tablets: Surface Pro 4/6/7, Surface Go, Tablet (allgemein)
+  - Scanner: Desko Scanner, Regula Scanner
+  - Docking: Desko Dock, Dock Quer, Surface Dock
+  - Netzteile: Desko PSU, Surface PSU
+  - Kabel & Adapter: USB Adapter 90°, USB Hub, HDMI/DP Adapter
+  - Netzwerk: Switch, Router
+- **Hersteller-Dropdown:** Microsoft, Desko, Regula, Samsung, Lenovo, HP, Dell, Anker, Belkin, Ugreen
+- **Neue API:** `GET /api/asset-mgmt/metadata` - Liefert alle Typen, Hersteller, Status-Optionen
+- **UI-Features:**
+  - Asset-Formular mit scrollbaren Sektionen (Basis, Netzwerk, Kaufdaten, Garantie, Installation, Lizenz)
+  - Gerätetyp-Dropdown mit Kategorien-Gruppierung
+  - Garantie-Warnung in Tabelle (Rot = Abgelaufen, Gelb = Läuft bald ab, Grün = Gültig)
+  - Lizenz-Warnung in Detailansicht
+  - Farbcodierte Sektionen für abgelaufene Garantien/Lizenzen
 
 ### ⏳ Pending Issues
 
