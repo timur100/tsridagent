@@ -50,16 +50,69 @@ const ASSET_STATUS_CONFIG = {
   retired: { label: 'Ausgemustert', color: 'bg-gray-500/20 text-gray-400' }
 };
 
+// Erweiterte Asset-Typ-Konfiguration
 const ASSET_TYPE_CONFIG = {
-  tablet: { label: 'Tablet', icon: Monitor },
-  scanner: { label: 'Scanner', icon: Monitor },
-  dock: { label: 'Docking Station', icon: Layers },
-  psu: { label: 'Netzteil', icon: Plug },
-  cable: { label: 'Kabel', icon: Cable },
-  switch: { label: 'Switch', icon: Box },
-  router: { label: 'Router', icon: Box },
-  other: { label: 'Sonstiges', icon: Box }
+  // Tablets
+  tablet: { label: 'Tablet', icon: Monitor, category: 'Tablets' },
+  surface_pro_4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets' },
+  surface_pro_6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets' },
+  surface_pro_7: { label: 'Surface Pro 7', icon: Monitor, category: 'Tablets' },
+  surface_go: { label: 'Surface Go', icon: Monitor, category: 'Tablets' },
+  // Scanner
+  scanner: { label: 'Scanner', icon: Monitor, category: 'Scanner' },
+  scanner_desko: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner' },
+  scanner_regula: { label: 'Regula Scanner', icon: Monitor, category: 'Scanner' },
+  // Docking Stations
+  dock: { label: 'Docking Station', icon: Layers, category: 'Docking' },
+  dock_desko: { label: 'Desko Dock', icon: Layers, category: 'Docking' },
+  dock_quer: { label: 'Dock Quer', icon: Layers, category: 'Docking' },
+  dock_surface: { label: 'Surface Dock', icon: Layers, category: 'Docking' },
+  // Netzteile
+  psu: { label: 'Netzteil', icon: Plug, category: 'Netzteile' },
+  psu_desko: { label: 'Desko PSU', icon: Plug, category: 'Netzteile' },
+  psu_surface: { label: 'Surface PSU', icon: Plug, category: 'Netzteile' },
+  // Kabel & Adapter
+  cable: { label: 'Kabel', icon: Cable, category: 'Kabel & Adapter' },
+  usb_adapter_90: { label: 'USB Adapter 90°', icon: Cable, category: 'Kabel & Adapter' },
+  usb_hub: { label: 'USB Hub', icon: Cable, category: 'Kabel & Adapter' },
+  hdmi_adapter: { label: 'HDMI Adapter', icon: Cable, category: 'Kabel & Adapter' },
+  displayport_adapter: { label: 'DP Adapter', icon: Cable, category: 'Kabel & Adapter' },
+  // Netzwerk
+  switch: { label: 'Switch', icon: Box, category: 'Netzwerk' },
+  router: { label: 'Router', icon: Box, category: 'Netzwerk' },
+  // Sonstiges
+  other: { label: 'Sonstiges', icon: Box, category: 'Sonstiges' }
 };
+
+const MANUFACTURER_OPTIONS = [
+  { value: 'Microsoft', label: 'Microsoft' },
+  { value: 'Desko', label: 'Desko' },
+  { value: 'Regula', label: 'Regula' },
+  { value: 'Samsung', label: 'Samsung' },
+  { value: 'Lenovo', label: 'Lenovo' },
+  { value: 'HP', label: 'HP' },
+  { value: 'Dell', label: 'Dell' },
+  { value: 'Anker', label: 'Anker' },
+  { value: 'Belkin', label: 'Belkin' },
+  { value: 'Ugreen', label: 'Ugreen' },
+  { value: 'Other', label: 'Sonstiger' }
+];
+
+const WARRANTY_TYPE_OPTIONS = [
+  { value: 'standard', label: 'Standard-Garantie' },
+  { value: 'extended', label: 'Erweiterte Garantie' },
+  { value: 'on_site', label: 'Vor-Ort-Service' },
+  { value: 'next_business_day', label: 'Next Business Day' },
+  { value: 'none', label: 'Keine Garantie' }
+];
+
+const LICENSE_TYPE_OPTIONS = [
+  { value: 'perpetual', label: 'Dauerlizenz' },
+  { value: 'subscription', label: 'Abo-Lizenz' },
+  { value: 'oem', label: 'OEM-Lizenz' },
+  { value: 'volume', label: 'Volumenlizenz' },
+  { value: 'none', label: 'Keine Lizenz' }
+];
 
 const EVENT_TYPE_COLORS = {
   created: 'bg-blue-500',
@@ -70,6 +123,8 @@ const EVENT_TYPE_COLORS = {
   replaced: 'bg-red-500',
   maintenance: 'bg-orange-500',
   status_change: 'bg-gray-500',
+  license_activated: 'bg-cyan-500',
+  license_expired: 'bg-red-600',
   note: 'bg-gray-400'
 };
 
