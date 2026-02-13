@@ -1824,6 +1824,19 @@ const AdminPortalContent = () => {
             <div className={`mb-6 p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
               <div className="flex gap-2">
                 <button
+                  onClick={() => setAssetsSubTab('rollout')}
+                  className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    assetsSubTab === 'rollout'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Cpu className="h-5 w-5" />
+                  Rollout Management
+                </button>
+                <button
                   onClick={() => setAssetsSubTab('hardware')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     assetsSubTab === 'hardware'
@@ -1853,6 +1866,9 @@ const AdminPortalContent = () => {
             </div>
 
             {/* Render appropriate component based on sub-tab */}
+            {assetsSubTab === 'rollout' && (
+              <AssetManagementV2 theme={theme} />
+            )}
             {assetsSubTab === 'hardware' && (
               <AssetManagement />
             )}
