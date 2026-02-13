@@ -364,6 +364,20 @@ Integriert in folgende Komponenten:
   - Bundle: BDL-DE-001 (deployed)
   - Assets: TAB-DE-001 (Tablet), SCN-DE-001 (Scanner)
 
+#### Kit-Verwaltung Migration (Feb 13, 2025) - ✅ COMPLETE
+- **Status:** COMPLETE
+- **Änderung:** "Kit-Verwaltung" Tab aus Hauptnavigation entfernt
+- **Grund:** Funktionalität wurde in Asset Management V2 konsolidiert
+- **Neue Struktur:**
+  - Bundles = Kits (Hardware-Sets)
+  - Tab umbenannt: "Bundles (Kits)"
+  - Hinweis in Untertitel: "(inkl. Kit-/Bundle-Verwaltung)"
+- **Workflow für Kits im neuen System:**
+  1. Bundle erstellen (= Kit zusammenstellen)
+  2. Assets zum Bundle hinzufügen
+  3. Bundle in Slot installieren (= Kit an Standort deployen)
+  4. Bundle aus Slot entfernen (= Kit zurücknehmen)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
