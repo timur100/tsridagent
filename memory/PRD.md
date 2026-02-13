@@ -317,6 +317,53 @@ Integriert in folgende Komponenten:
   - `/app/frontend/src/components/KitTemplateManager.jsx` - Zwei Tabs für Geräte/Inventar
 - **Testdaten:** 3 Inventar-Artikel (USB-C Kabel 50x, HDMI Adapter 25x, Displayport Kabel 30x)
 
+#### Asset Management V2 - Multi-Level Rollout-Struktur (Feb 13, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (34/34) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_12.json`
+- **Problem:** Bestehende Asset-Verwaltung war zu flach. User benötigte eine 4-stufige Hierarchie für großflächige Hardware-Rollouts mit Trennung von physischen Geräten (Assets), Installationsplätzen (Slots) und Hardware-Kits (Bundles).
+- **Lösung - Neue 4-Tier-Architektur:**
+  1. ✅ **Locations (Standorte):** Physische Installationsorte
+     - Felder: location_id, country, customer, city, address, zip_code, status, contacts
+     - Status: active, inactive, planned, decommissioned
+  2. ✅ **Slots (Installationsplätze):** Positionen an einem Standort
+     - Felder: slot_id, location_id, bundle_id, teamviewer_alias, position_description, status
+     - Status: empty, installed, maintenance, reserved
+     - Relation: Slot → Location (many-to-one)
+  3. ✅ **Bundles (Hardware-Kits):** Zusammengestellte Geräte-Sets
+     - Felder: bundle_id, country, description, status
+     - Status: in_storage, deployed, in_transit, maintenance, retired
+     - Relation: Bundle → Slot (one-to-one when installed)
+  4. ✅ **Assets (Physische Geräte):** Einzelne Hardwareteile mit Seriennummer
+     - Felder: asset_id, type, manufacturer_sn, imei, mac, manufacturer, model, bundle_id, status, history[]
+     - Typen: tablet, scanner, dock, psu, cable, switch, router, other
+     - Status: in_storage, deployed, in_transit, maintenance, defective, retired
+     - Relation: Asset → Bundle (many-to-one)
+     - **Historie:** Automatische Event-Protokollierung (created, assigned, installed, etc.)
+- **Backend-Implementierung (`/app/backend/routes/asset_management_v2.py`):**
+  - CRUD-Endpoints für alle 4 Collections
+  - Beziehungs-Management:
+    - `POST /api/asset-mgmt/slots/{slot_id}/install-bundle` - Bundle installieren
+    - `POST /api/asset-mgmt/slots/{slot_id}/uninstall-bundle` - Bundle deinstallieren
+    - `POST /api/asset-mgmt/assets/{asset_id}/assign-bundle` - Asset zu Bundle zuweisen
+    - `POST /api/asset-mgmt/assets/{asset_id}/remove-from-bundle` - Asset entfernen
+  - Statistik-Endpoint: `GET /api/asset-mgmt/stats`
+  - Automatische DB-Index-Erstellung für Performance
+- **Frontend-Implementierung (`/app/frontend/src/components/AssetManagementV2.jsx`):**
+  - Neuer "Rollout Management" Sub-Tab unter Assets (Standard)
+  - 4 Statistik-Cards: Locations, Slots, Bundles, Assets
+  - 4 interne Tabs mit Tabellen und Filtern
+  - Detail-Modals mit Beziehungsanzeige
+  - Asset-Historie als Timeline mit farbcodierten Events
+  - Create-Modals für alle Entitätstypen
+  - Pagination und Such-/Filter-Funktionen
+- **MongoDB Collections:**
+  - `tsrid_locations`, `tsrid_slots`, `tsrid_bundles`, `tsrid_assets`
+- **Testdaten erstellt:**
+  - Location: BERE01 (Berlin, Europcar, aktiv)
+  - Slot: BERE01-01 (installiert)
+  - Bundle: BDL-DE-001 (deployed)
+  - Assets: TAB-DE-001 (Tablet), SCN-DE-001 (Scanner)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
