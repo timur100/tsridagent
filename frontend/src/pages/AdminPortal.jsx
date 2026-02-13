@@ -1645,12 +1645,7 @@ const AdminPortalContent = () => {
           />
         )}
 
-        {activeTab === 'kits' && (
-          <KitManager 
-            theme={theme}
-            selectedTenantId={selectedTenantId}
-          />
-        )}
+        {/* Kit-Verwaltung wurde in Asset Management V2 integriert - siehe "Assets" → "Rollout Management" */}
 
         {activeTab === 'employees' && (
           <div>
