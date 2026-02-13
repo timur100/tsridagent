@@ -754,9 +754,11 @@ const AssetManagementV2 = ({ theme }) => {
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold">Asset ID</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Hersteller SN</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">Hersteller</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">Seriennummer</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Bundle</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Location</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold">Garantie</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Aktionen</th>
             </tr>
@@ -765,6 +767,9 @@ const AssetManagementV2 = ({ theme }) => {
             {assets.map(asset => {
               const typeConfig = ASSET_TYPE_CONFIG[asset.type] || ASSET_TYPE_CONFIG.other;
               const TypeIcon = typeConfig.icon;
+              const warrantyExpired = asset.warranty_until && new Date(asset.warranty_until) < new Date();
+              const warrantyExpiringSoon = asset.warranty_until && !warrantyExpired && 
+                new Date(asset.warranty_until) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
               return (
                 <tr 
                   key={asset.asset_id} 
@@ -775,9 +780,10 @@ const AssetManagementV2 = ({ theme }) => {
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <TypeIcon className="h-4 w-4" />
-                      {typeConfig.label}
+                      <span className="text-sm">{typeConfig.label}</span>
                     </div>
                   </td>
+                  <td className="px-4 py-3 text-sm">{asset.manufacturer || '-'}</td>
                   <td className="px-4 py-3">{asset.manufacturer_sn || '-'}</td>
                   <td className="px-4 py-3">
                     {asset.bundle_id ? (
