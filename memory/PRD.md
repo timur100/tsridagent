@@ -389,9 +389,13 @@ Integriert in folgende Komponenten:
 /app/backend/
 ├── routes/
 │   ├── activation_codes.py       # Activation code management
-│   ├── location_management.py    # Location lifecycle (NEW)
+│   ├── location_management.py    # Location lifecycle
 │   ├── unified_locations.py      # Hierarchical locations API
-│   └── agent_registration.py     # Device registration
+│   ├── agent_registration.py     # Device registration
+│   ├── device_lifecycle.py       # Device lifecycle & Kit management
+│   ├── inventory.py              # Inventory management (non-serialized items)
+│   ├── kit_templates.py          # Kit template definitions
+│   └── asset_management_v2.py    # NEW: 4-tier asset management system
 └── server.py                     # Main FastAPI app
 ```
 
