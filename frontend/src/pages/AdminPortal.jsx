@@ -1000,7 +1000,6 @@ const AdminPortalContent = () => {
                 { id: 'locations', label: 'Locations', icon: MapPin },
                 { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
                 { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
-                { id: 'kits', label: 'Kit-Verwaltung', icon: Package },
                 { id: 'inventory', label: 'Lagerverwaltung', icon: Warehouse },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
                 { id: 'support', label: 'Support', icon: Headphones },
