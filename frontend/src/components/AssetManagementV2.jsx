@@ -1300,82 +1300,273 @@ const AssetManagementV2 = ({ theme }) => {
         );
         
       case 'asset':
+        // Gruppiere Asset-Typen nach Kategorie
+        const typesByCategory = {};
+        Object.entries(ASSET_TYPE_CONFIG).forEach(([key, config]) => {
+          const cat = config.category || 'Sonstiges';
+          if (!typesByCategory[cat]) typesByCategory[cat] = [];
+          typesByCategory[cat].push({ value: key, label: config.label });
+        });
+        
         return (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-sm font-medium">Asset ID *</label>
-                <Input
-                  value={formData.asset_id || ''}
-                  onChange={(e) => setFormData({ ...formData, asset_id: e.target.value })}
-                  placeholder="z.B. TAB-DE-001"
-                  className={inputBg}
-                />
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Basis-Informationen */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Basis-Informationen</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium">Asset ID *</label>
+                  <Input
+                    value={formData.asset_id || ''}
+                    onChange={(e) => setFormData({ ...formData, asset_id: e.target.value })}
+                    placeholder="z.B. TAB-DE-001"
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Gerätetyp *</label>
+                  <Select value={formData.type || 'tablet'} onValueChange={(v) => setFormData({ ...formData, type: v })}>
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {Object.entries(typesByCategory).map(([category, types]) => (
+                        <div key={category}>
+                          <div className="px-2 py-1.5 text-xs font-semibold text-gray-500">{category}</div>
+                          {types.map(t => (
+                            <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                          ))}
+                        </div>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Hersteller</label>
+                  <Select value={formData.manufacturer || ''} onValueChange={(v) => setFormData({ ...formData, manufacturer: v })}>
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                    <SelectContent>
+                      {MANUFACTURER_OPTIONS.map(m => (
+                        <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Modell</label>
+                  <Input
+                    value={formData.model || ''}
+                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                    placeholder="z.B. Surface Pro 6"
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Hersteller-Seriennummer</label>
+                  <Input
+                    value={formData.manufacturer_sn || ''}
+                    onChange={(e) => setFormData({ ...formData, manufacturer_sn: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Status</label>
+                  <Select value={formData.status || 'in_storage'} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(ASSET_STATUS_CONFIG).map(([k, v]) => (
+                        <SelectItem key={k} value={k}>{v.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Land</label>
+                  <Input
+                    value={formData.country || ''}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    placeholder="z.B. DE"
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Bundle (optional)</label>
+                  <Input
+                    value={formData.bundle_id || ''}
+                    onChange={(e) => setFormData({ ...formData, bundle_id: e.target.value })}
+                    placeholder="z.B. BDL-DE-001"
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Typ *</label>
-                <Select value={formData.type || 'tablet'} onValueChange={(v) => setFormData({ ...formData, type: v })}>
-                  <SelectTrigger className={inputBg}><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ASSET_TYPE_CONFIG).map(([k, v]) => (
-                      <SelectItem key={k} value={k}>{v.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            </div>
+            
+            {/* Netzwerk-Informationen */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Netzwerk & IDs</h4>
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-medium">IMEI</label>
+                  <Input
+                    value={formData.imei || ''}
+                    onChange={(e) => setFormData({ ...formData, imei: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">MAC Adresse</label>
+                  <Input
+                    value={formData.mac || ''}
+                    onChange={(e) => setFormData({ ...formData, mac: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Hersteller SN</label>
-                <Input
-                  value={formData.manufacturer_sn || ''}
-                  onChange={(e) => setFormData({ ...formData, manufacturer_sn: e.target.value })}
-                  className={inputBg}
-                />
+            </div>
+            
+            {/* Kaufdaten */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Kaufdaten</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium">Kaufdatum</label>
+                  <Input
+                    type="date"
+                    value={formData.purchase_date || ''}
+                    onChange={(e) => setFormData({ ...formData, purchase_date: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Kaufpreis (€)</label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={formData.purchase_price || ''}
+                    onChange={(e) => setFormData({ ...formData, purchase_price: parseFloat(e.target.value) || null })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Lieferant</label>
+                  <Input
+                    value={formData.supplier || ''}
+                    onChange={(e) => setFormData({ ...formData, supplier: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Rechnungsnummer</label>
+                  <Input
+                    value={formData.invoice_number || ''}
+                    onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">IMEI</label>
-                <Input
-                  value={formData.imei || ''}
-                  onChange={(e) => setFormData({ ...formData, imei: e.target.value })}
-                  className={inputBg}
-                />
+            </div>
+            
+            {/* Garantie */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Garantie</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium">Garantie bis</label>
+                  <Input
+                    type="date"
+                    value={formData.warranty_until || ''}
+                    onChange={(e) => setFormData({ ...formData, warranty_until: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Garantie-Typ</label>
+                  <Select value={formData.warranty_type || ''} onValueChange={(v) => setFormData({ ...formData, warranty_type: v })}>
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                    <SelectContent>
+                      {WARRANTY_TYPE_OPTIONS.map(w => (
+                        <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">MAC Adresse</label>
-                <Input
-                  value={formData.mac || ''}
-                  onChange={(e) => setFormData({ ...formData, mac: e.target.value })}
-                  className={inputBg}
-                />
+            </div>
+            
+            {/* Installation */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Installation</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium">Installationsdatum</label>
+                  <Input
+                    type="date"
+                    value={formData.installation_date || ''}
+                    onChange={(e) => setFormData({ ...formData, installation_date: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Installiert von</label>
+                  <Input
+                    value={formData.installed_by || ''}
+                    onChange={(e) => setFormData({ ...formData, installed_by: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Land</label>
-                <Input
-                  value={formData.country || ''}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  placeholder="z.B. DE"
-                  className={inputBg}
-                />
+            </div>
+            
+            {/* Lizenz */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+              <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Lizenz-Informationen</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium">Lizenzschlüssel</label>
+                  <Input
+                    value={formData.license_key || ''}
+                    onChange={(e) => setFormData({ ...formData, license_key: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Lizenz-Typ</label>
+                  <Select value={formData.license_type || ''} onValueChange={(v) => setFormData({ ...formData, license_type: v })}>
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                    <SelectContent>
+                      {LICENSE_TYPE_OPTIONS.map(l => (
+                        <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Aktivierungsdatum</label>
+                  <Input
+                    type="date"
+                    value={formData.license_activation_date || ''}
+                    onChange={(e) => setFormData({ ...formData, license_activation_date: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Lizenz läuft ab</label>
+                  <Input
+                    type="date"
+                    value={formData.license_expiry_date || ''}
+                    onChange={(e) => setFormData({ ...formData, license_expiry_date: e.target.value })}
+                    className={`h-9 ${inputBg}`}
+                  />
+                </div>
               </div>
-              <div>
-                <label className="text-sm font-medium">Bundle ID (optional)</label>
-                <Input
-                  value={formData.bundle_id || ''}
-                  onChange={(e) => setFormData({ ...formData, bundle_id: e.target.value })}
-                  placeholder="z.B. BDL-DE-001"
-                  className={inputBg}
-                />
-              </div>
-              <div>
-                <label className="text-sm font-medium">Status</label>
-                <Select value={formData.status || 'in_storage'} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                  <SelectTrigger className={inputBg}><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ASSET_STATUS_CONFIG).map(([k, v]) => (
-                      <SelectItem key={k} value={k}>{v.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            </div>
+            
+            {/* Notizen */}
+            <div>
+              <label className="text-xs font-medium">Notizen</label>
+              <Input
+                value={formData.notes || ''}
+                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                className={inputBg}
+              />
             </div>
           </div>
         );
