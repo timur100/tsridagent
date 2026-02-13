@@ -456,6 +456,10 @@ app.include_router(device_lifecycle_router)
 from routes.kit_templates import router as kit_templates_router
 app.include_router(kit_templates_router)
 
+# Asset Management V2 API (Multi-Level Structure)
+from routes.asset_management_v2 import router as asset_mgmt_v2_router
+app.include_router(asset_mgmt_v2_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
