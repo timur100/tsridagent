@@ -1337,7 +1337,7 @@ const AssetManagementV2 = ({ theme }) => {
         <div>
           <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : ''}`}>Asset Management</h2>
           <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Multi-Level Struktur für TSRID Rollout
+            Multi-Level Struktur für TSRID Rollout (inkl. Kit-/Bundle-Verwaltung)
           </p>
         </div>
         <Button 
@@ -1345,7 +1345,7 @@ const AssetManagementV2 = ({ theme }) => {
           className="bg-[#c00000] hover:bg-[#a00000] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Neu {activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : activeTab === 'bundles' ? 'Bundle' : 'Asset'}
+          Neu {activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : activeTab === 'bundles' ? 'Bundle (Kit)' : 'Asset'}
         </Button>
       </div>
 
