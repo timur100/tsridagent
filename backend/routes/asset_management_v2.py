@@ -151,8 +151,23 @@ class AssetCreate(BaseModel):
     bundle_id: Optional[str] = None
     status: str = "in_storage"
     country: Optional[str] = ""
+    # Kaufdaten
     purchase_date: Optional[str] = ""
+    purchase_price: Optional[float] = None
+    supplier: Optional[str] = ""
+    invoice_number: Optional[str] = ""
+    # Garantie
     warranty_until: Optional[str] = ""
+    warranty_type: Optional[str] = ""  # z.B. "Standard", "Extended", "On-Site"
+    # Installation
+    installation_date: Optional[str] = ""
+    installed_by: Optional[str] = ""
+    # Lizenz-Informationen
+    license_key: Optional[str] = ""
+    license_type: Optional[str] = ""  # z.B. "Perpetual", "Subscription", "OEM"
+    license_activation_date: Optional[str] = ""
+    license_expiry_date: Optional[str] = ""
+    # Notizen
     notes: Optional[str] = ""
 
 
@@ -166,8 +181,23 @@ class AssetUpdate(BaseModel):
     bundle_id: Optional[str] = None
     status: Optional[str] = None
     country: Optional[str] = None
+    # Kaufdaten
     purchase_date: Optional[str] = None
+    purchase_price: Optional[float] = None
+    supplier: Optional[str] = None
+    invoice_number: Optional[str] = None
+    # Garantie
     warranty_until: Optional[str] = None
+    warranty_type: Optional[str] = None
+    # Installation
+    installation_date: Optional[str] = None
+    installed_by: Optional[str] = None
+    # Lizenz-Informationen
+    license_key: Optional[str] = None
+    license_type: Optional[str] = None
+    license_activation_date: Optional[str] = None
+    license_expiry_date: Optional[str] = None
+    # Notizen
     notes: Optional[str] = None
 
 
