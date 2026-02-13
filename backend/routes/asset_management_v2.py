@@ -33,9 +33,33 @@ db = client['portal_db']
 LOCATION_STATUSES = ['active', 'inactive', 'planned', 'decommissioned']
 SLOT_STATUSES = ['empty', 'installed', 'maintenance', 'reserved']
 BUNDLE_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'retired']
-ASSET_TYPES = ['tablet', 'scanner', 'dock', 'psu', 'cable', 'switch', 'router', 'other']
+
+# Erweiterte Asset-Typen mit spezifischen Geräten
+ASSET_TYPES = [
+    # Tablets
+    'tablet', 'surface_pro_4', 'surface_pro_6', 'surface_pro_7', 'surface_go',
+    # Scanner
+    'scanner', 'scanner_desko', 'scanner_regula',
+    # Docking Stations
+    'dock', 'dock_desko', 'dock_quer', 'dock_surface',
+    # Netzteile (PSU)
+    'psu', 'psu_desko', 'psu_surface',
+    # Kabel & Adapter
+    'cable', 'usb_adapter_90', 'usb_hub', 'hdmi_adapter', 'displayport_adapter',
+    # Netzwerk
+    'switch', 'router',
+    # Sonstiges
+    'other'
+]
+
+# Hersteller-Liste
+MANUFACTURERS = [
+    'Microsoft', 'Desko', 'Regula', 'Samsung', 'Lenovo', 'HP', 'Dell', 
+    'Anker', 'Belkin', 'Ugreen', 'Other'
+]
+
 ASSET_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'defective', 'retired']
-EVENT_TYPES = ['created', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'note']
+EVENT_TYPES = ['created', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'license_activated', 'license_expired', 'note']
 
 
 # ============ PYDANTIC MODELS ============
