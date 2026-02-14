@@ -77,6 +77,28 @@ const ASSET_TYPE_CONFIG = {
   usb: { label: 'USB Extension', icon: Cable, category: 'Extensions', suffix: 'USB' },
   lan: { label: 'LAN Extension', icon: Cable, category: 'Extensions', suffix: 'LAN' },
   '12v': { label: '12V Extension', icon: Cable, category: 'Extensions', suffix: '12V' },
+  // Kabel Typ A (mit Seriennummer-Tracking)
+  cab_usb_a: { label: 'USB-A Kabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-USBA' },
+  cab_usb_c: { label: 'USB-C Kabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-USBC' },
+  cab_lan: { label: 'LAN-Kabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-LAN' },
+  cab_hdmi: { label: 'HDMI-Kabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-HDMI' },
+  cab_dp: { label: 'DP-Kabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-DP' },
+  cab_pwr: { label: 'Stromkabel (mit SN)', icon: Cable, category: 'Kabel (Typ A)', suffix: 'CAB-PWR' },
+  // Kabel Typ B (Verbrauchsmaterial ohne SN)
+  cns_usb_a: { label: 'USB-A Kabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-USBA' },
+  cns_usb_c: { label: 'USB-C Kabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-USBC' },
+  cns_lan: { label: 'LAN-Kabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-LAN' },
+  cns_hdmi: { label: 'HDMI-Kabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-HDMI' },
+  cns_dp: { label: 'DP-Kabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-DP' },
+  cns_pwr: { label: 'Stromkabel (Verbrauch)', icon: Cable, category: 'Kabel (Typ B)', suffix: 'CNS-PWR' },
+  // Adapter
+  adp_usb_c: { label: 'USB-C Adapter/Hub', icon: Cable, category: 'Adapter', suffix: 'ADP-USBC' },
+  adp_hdmi: { label: 'HDMI Adapter', icon: Cable, category: 'Adapter', suffix: 'ADP-HDMI' },
+  adp_dp: { label: 'DisplayPort Adapter', icon: Cable, category: 'Adapter', suffix: 'ADP-DP' },
+  adp_90: { label: '90° Adapter', icon: Cable, category: 'Adapter', suffix: 'ADP-90' },
+  // Stromverteiler
+  pwr_strip: { label: 'Netzleiste', icon: Plug, category: 'Stromverteiler', suffix: 'PWR-STRIP' },
+  pwr_12v: { label: '12V Verteiler', icon: Plug, category: 'Stromverteiler', suffix: 'PWR-12V' },
   // Kits
   kit_sfd: { label: 'Surface + Desko Kit', icon: Package, category: 'Kits', suffix: 'KIT-SFD' },
   kit_tsr: { label: 'TSRID Kit', icon: Package, category: 'Kits', suffix: 'KIT-TSR' },
