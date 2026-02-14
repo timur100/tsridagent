@@ -119,6 +119,28 @@ ASSET_TYPE_SUFFIX_MAP = {
     'usb': 'USB',
     'lan': 'LAN',
     '12v': '12V',
+    # Kabel Typ A (mit SN-Tracking) -> CAB-xxx
+    'cab_usb_a': 'CAB-USBA',    # USB-A Kabel
+    'cab_usb_c': 'CAB-USBC',    # USB-C Kabel
+    'cab_lan': 'CAB-LAN',       # LAN-Kabel
+    'cab_hdmi': 'CAB-HDMI',     # HDMI-Kabel
+    'cab_dp': 'CAB-DP',         # DisplayPort-Kabel
+    'cab_pwr': 'CAB-PWR',       # Stromkabel
+    # Kabel Typ B (Consumables ohne SN) -> CNS-xxx
+    'cns_usb_a': 'CNS-USBA',    # USB-A Kabel (Consumable)
+    'cns_usb_c': 'CNS-USBC',    # USB-C Kabel (Consumable)
+    'cns_lan': 'CNS-LAN',       # LAN-Kabel (Consumable)
+    'cns_hdmi': 'CNS-HDMI',     # HDMI-Kabel (Consumable)
+    'cns_dp': 'CNS-DP',         # DisplayPort-Kabel (Consumable)
+    'cns_pwr': 'CNS-PWR',       # Stromkabel (Consumable)
+    # Adapter -> ADP-xxx
+    'adp_usb_c': 'ADP-USBC',    # USB-C Adapter/Hub
+    'adp_hdmi': 'ADP-HDMI',     # HDMI Adapter
+    'adp_dp': 'ADP-DP',         # DisplayPort Adapter
+    'adp_90': 'ADP-90',         # 90° Adapter
+    # Stromverteiler -> PWR-xxx
+    'pwr_strip': 'PWR-STRIP',   # Netzleiste
+    'pwr_12v': 'PWR-12V',       # 12V Verteiler
     # Kits -> KIT-xxx
     'kit_sfd': 'KIT-SFD',       # Surface + Desko Kit
     'kit_tsr': 'KIT-TSR',       # TSRID Kit
