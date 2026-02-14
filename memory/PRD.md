@@ -539,14 +539,42 @@ Integriert in folgende Komponenten:
 
 | Priority | Issue | Status |
 |----------|-------|--------|
-| P0 | Kit Feature Phase 2: Frontend UI für Kit-Zusammenstellung | NEXT |
-| P0 | Kit Feature Phase 3: QR-Code Label-Generierung | PLANNED |
+| P0 | Kit Feature Phase 3: QR-Code Label-Generierung für Kits | PLANNED |
 | P1 | Agent Status Overview (Heartbeat-Mechanismus) | NOT STARTED |
 | P1 | Real-time Footer Status (`portalOnline` hardcoded) | NOT STARTED |
 | P2 | "Single Source of Truth" Migration for `fleet_management.py` | NOT STARTED |
 | P3 | Printer Support in Electron App | NOT STARTED (Recurring) |
 
 ### ✅ Recently Completed (Feb 14, 2025)
+
+#### Brother QL-820NWB Drucker-Integration - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - Backend 91% (erwarteter Timeout ohne physischen Drucker), Frontend 100%
+- **Test Report:** `/app/test_reports/iteration_18.json`
+- **Neue Komponente:** `/app/backend/routes/label_printer.py`
+- **Features:**
+  - Netzwerkdruck über TCP/IP Port 9100
+  - QR-Code + Text Label-Generierung mit PIL/qrcode
+  - Brother QL-820NWB Raster-Format
+  - Drucker-Einstellungen Modal im Frontend
+  - Verbindungstest und Status-API
+- **API-Endpoints:**
+  - `GET /api/label-printer/status` - Druckerkonfiguration
+  - `POST /api/label-printer/test-connection` - Verbindung testen
+  - `POST /api/label-printer/print` - Label drucken
+  - `GET /api/label-printer/preview/{asset_id}` - Label-Vorschau (PNG)
+
+#### Kit-Zusammenstellung (Phase 2) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - Backend & Frontend 100% getestet
+- **Test Report:** `/app/test_reports/iteration_18.json`
+- **Neue Komponente:** `/app/frontend/src/components/KitAssemblyWorkflow.jsx`
+- **Backend-Endpoint:** `POST /api/asset-mgmt/kits/quick-assemble`
+- **Features:**
+  - Kit-Template Auswahl (KIT-SFD, KIT-TSR)
+  - Komponenten-Scanner mit Validierung gegen Template
+  - Fortschritts-Tracking (Prozent + fehlende Komponenten-Badges)
+  - Standort-Auswahl für Kit-Finalisierung
+  - Automatische Kit-ID Generierung (z.B. BERE01-01-KIT-TSR)
+  - Label-Modal nach Finalisierung
 
 #### Wareneingang-Workflow Frontend - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Backend (17/17) & Frontend Tests bestanden
