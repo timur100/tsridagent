@@ -627,6 +627,27 @@ async def list_locations(
         cursor = db.tenant_locations.find(query, {"_id": 0}).skip(skip).limit(limit).sort("location_code", 1)
         raw_locations = [loc async for loc in cursor]
         
+        # Get all location IDs for batch slot counting
+        location_ids = [loc.get("location_code", loc.get("location_id", "")) for loc in raw_locations]
+        
+        # Batch count slots for all locations in one query
+        slot_counts = {}
+        installed_counts = {}
+        if location_ids:
+            # Aggregate slot counts
+            pipeline = [
+                {"$match": {"location_id": {"$in": location_ids}}},
+                {"$group": {
+                    "_id": "$location_id",
+                    "total": {"$sum": 1},
+                    "installed": {"$sum": {"$cond": [{"$eq": ["$status", "installed"]}, 1, 0]}}
+                }}
+            ]
+            cursor_counts = db.tsrid_slots.aggregate(pipeline)
+            async for item in cursor_counts:
+                slot_counts[item["_id"]] = item["total"]
+                installed_counts[item["_id"]] = item["installed"]
+        
         # Transform to Asset Management format
         locations = []
         for loc in raw_locations:
