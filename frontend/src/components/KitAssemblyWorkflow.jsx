@@ -247,7 +247,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
 
     setFinalizing(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/v2/kits/quick-assemble?technician=${encodeURIComponent(technician || '')}`, {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/kits/quick-assemble?technician=${encodeURIComponent(technician || '')}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
