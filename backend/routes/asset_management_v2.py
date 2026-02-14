@@ -630,7 +630,9 @@ async def list_locations(
                 {"state": {"$regex": search, "$options": "i"}}
             ]
         
-        # Debug: Print the query
+        # Debug: Print the query and DB info
+        all_tenants = await db.tenant_locations.distinct("tenant_name")
+        print(f"DEBUG All tenants in DB: {all_tenants}")
         print(f"DEBUG locations query: {query}")
         
         # Read from tenant_locations (the main menu locations)
