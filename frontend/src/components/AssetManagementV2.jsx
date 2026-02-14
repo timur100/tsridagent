@@ -2200,13 +2200,15 @@ const AssetManagementV2 = ({ theme }) => {
             Multi-Level Struktur für TSRID Rollout (inkl. Kit-/Bundle-Verwaltung)
           </p>
         </div>
-        <Button 
-          onClick={() => openCreateModal(activeTab.slice(0, -1))} 
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Neu {activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : activeTab === 'bundles' ? 'Bundle (Kit)' : 'Asset'}
-        </Button>
+        {activeTab !== 'goods-receipt' && activeTab !== 'devices' && (
+          <Button 
+            onClick={() => openCreateModal(activeTab.slice(0, -1))} 
+            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Neu {activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : activeTab === 'bundles' ? 'Bundle (Kit)' : 'Asset'}
+          </Button>
+        )}
       </div>
 
       {/* Statistics */}
