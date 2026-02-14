@@ -1966,9 +1966,35 @@ const AssetManagementV2 = ({ theme }) => {
             {/* Garantie */}
             <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
               <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Garantie</h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs font-medium">Garantie bis</label>
+                  <label className="text-xs font-medium">Garantie (Monate)</label>
+                  <Select 
+                    value={formData.warranty_months || ''} 
+                    onValueChange={(v) => {
+                      const months = parseInt(v);
+                      let warrantyDate = '';
+                      // Berechne Enddatum basierend auf Kaufdatum
+                      if (months && formData.purchase_date) {
+                        const startDate = new Date(formData.purchase_date);
+                        startDate.setMonth(startDate.getMonth() + months);
+                        warrantyDate = startDate.toISOString().split('T')[0];
+                      }
+                      setFormData({ ...formData, warranty_months: v, warranty_until: warrantyDate });
+                    }}
+                  >
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="12">12 Monate</SelectItem>
+                      <SelectItem value="24">24 Monate</SelectItem>
+                      <SelectItem value="36">36 Monate</SelectItem>
+                      <SelectItem value="48">48 Monate</SelectItem>
+                      <SelectItem value="60">60 Monate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs font-medium">Garantie bis (berechnet)</label>
                   <Input
                     type="date"
                     value={formData.warranty_until || ''}
@@ -1988,6 +2014,11 @@ const AssetManagementV2 = ({ theme }) => {
                   </Select>
                 </div>
               </div>
+              {formData.purchase_date && formData.warranty_months && (
+                <p className={`text-xs mt-2 ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                  ✓ Garantie-Ende berechnet: {formData.warranty_until ? new Date(formData.warranty_until).toLocaleDateString('de-DE') : '-'}
+                </p>
+              )}
             </div>
             
             {/* Installation */}
