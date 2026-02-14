@@ -183,6 +183,8 @@ class AssetUpdate(BaseModel):
     bundle_id: Optional[str] = None
     status: Optional[str] = None
     country: Optional[str] = None
+    # Verknüpfung mit europcar_devices
+    linked_device_id: Optional[str] = None
     # Kaufdaten
     purchase_date: Optional[str] = None
     purchase_price: Optional[float] = None
