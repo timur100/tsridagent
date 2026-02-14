@@ -204,8 +204,11 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     if (!selectedTemplate) return { percentage: 0, remaining: [] };
     
     const needed = {};
+    const typeLabels = {};
     selectedTemplate.components.forEach(c => {
-      needed[c.type] = (needed[c.type] || 0) + c.quantity;
+      const type = c.asset_type || c.type;
+      needed[type] = (needed[type] || 0) + (c.quantity || 1);
+      typeLabels[type] = c.label || c.notes || type;
     });
 
     const have = {};
@@ -220,7 +223,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     Object.entries(needed).forEach(([type, count]) => {
       const haveCount = have[type] || 0;
       if (haveCount < count) {
-        remaining.push({ type, needed: count, have: haveCount });
+        remaining.push({ type, label: typeLabels[type], needed: count, have: haveCount });
       }
     });
 
