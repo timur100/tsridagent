@@ -198,6 +198,23 @@ Integriert in folgende Komponenten:
 - **Sichtbare Spalten (Standard):** Device-ID, Status, Kunde, Location, Straße, PLZ, Stadt, Land, SN-PC, SN-SC, Set
 - **Ausgeblendete Spalten (Standard):** TVID, IP, Version
 
+#### P0 - Asset Management V2 Locations Tab - Performance Fix & Daten-Korrektur (Feb 14, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - Locations Tab lädt nun korrekt mit 15x Geschwindigkeitsverbesserung
+- **Probleme behoben:**
+  1. ✅ **Performance-Problem:** API-Aufruf dauerte 12 Sekunden für 50 Locations
+     - **Ursache:** Für jede Location wurden 2 separate `count_documents()` DB-Aufrufe gemacht (100 Aufrufe für 50 Locations)
+     - **Lösung:** Batch-Aggregation in einer einzigen MongoDB-Pipeline
+     - **Ergebnis:** Response-Zeit von 12s auf 0.8s reduziert (15x schneller)
+  2. ✅ **Daten-Mapping-Problem:** BERN03 und AAHC01 zeigten "Puma" statt "Europcar"
+     - **Ursache:** Falscher `tenant_name` Wert in MongoDB `tenant_locations` Collection
+     - **Lösung:** Datenbank-Korrektur - beide Locations auf `tenant_name: "Europcar"` gesetzt
+     - **Ergebnis:** Alle Europcar-Locations zeigen jetzt korrekten Kunden an
+- **Geänderte Dateien:**
+  - `/app/backend/routes/asset_management_v2.py` (Zeilen 625-660) - Batch-Slot-Counting mit MongoDB Aggregation
+- **Verifizierung:**
+  - API-Test: `GET /api/asset-mgmt/locations?skip=0&limit=50` in 0.8s
+  - Frontend: Locations-Tabelle zeigt 214 Locations mit korrekten Kundendaten
+
 #### P0 - Geräte-Lifecycle-Management System (Jan 25, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Tests bestanden
 - **Test Report:** `/app/test_reports/iteration_3.json`
