@@ -703,13 +703,14 @@ const AssetManagementV2 = ({ theme }) => {
             value={filters.search}
             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
             className={`pl-10 ${inputBg}`}
+            data-testid="search-input"
           />
         </div>
       </div>
       
       {filterOptions.countries.length > 0 && (
         <Select value={filters.country} onValueChange={(v) => setFilters(prev => ({ ...prev, country: v }))}>
-          <SelectTrigger className={`w-[150px] ${inputBg}`}>
+          <SelectTrigger className={`w-[150px] ${inputBg}`} data-testid="country-filter">
             <SelectValue placeholder="Land" />
           </SelectTrigger>
           <SelectContent>
@@ -721,8 +722,38 @@ const AssetManagementV2 = ({ theme }) => {
         </Select>
       )}
       
+      {/* Stadt-Filter nur für Locations-Tab */}
+      {activeTab === 'locations' && filterOptions.cities && filterOptions.cities.length > 0 && (
+        <Select value={filters.city} onValueChange={(v) => setFilters(prev => ({ ...prev, city: v }))}>
+          <SelectTrigger className={`w-[180px] ${inputBg}`} data-testid="city-filter">
+            <SelectValue placeholder="Stadt" />
+          </SelectTrigger>
+          <SelectContent className="max-h-[300px]">
+            <SelectItem value="all">Alle Städte ({filterOptions.cities.length})</SelectItem>
+            {filterOptions.cities.map(c => (
+              <SelectItem key={c} value={c}>{c}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      
+      {/* Bundesland-Filter nur für Locations-Tab */}
+      {activeTab === 'locations' && filterOptions.states && filterOptions.states.length > 0 && (
+        <Select value={filters.state} onValueChange={(v) => setFilters(prev => ({ ...prev, state: v }))}>
+          <SelectTrigger className={`w-[150px] ${inputBg}`} data-testid="state-filter">
+            <SelectValue placeholder="Bundesland" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Alle Bundesländer</SelectItem>
+            {filterOptions.states.map(s => (
+              <SelectItem key={s} value={s}>{s}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      )}
+      
       <Select value={filters.status} onValueChange={(v) => setFilters(prev => ({ ...prev, status: v }))}>
-        <SelectTrigger className={`w-[150px] ${inputBg}`}>
+        <SelectTrigger className={`w-[150px] ${inputBg}`} data-testid="status-filter">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
