@@ -443,6 +443,39 @@ Integriert in folgende Komponenten:
   - `/app/backend/routes/asset_management_v2.py` - Device-Asset Endpoints (ab Zeile 1320)
   - `/app/frontend/src/components/AssetManagementV2.jsx` - Geräte-Import Tab & Modal
 
+#### Asset-ID Format Implementierung (Feb 14, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_14.json`
+- **Problem:** User wollte ein spezifisches Asset-ID Format mit Typ-Suffixen
+- **Neues Format:** `[device_id]-[type_suffix]`
+  - Beispiel: `AAHC01-01-TAB` (Tablet), `AAHC01-01-SCA` (Scanner)
+- **Implementierte Suffixe:**
+  | Suffix | Asset-Typen |
+  |--------|-------------|
+  | TAB | Tablet, TSRID Tablet, Surface Pro 4/6/7, Surface Go |
+  | SCA | Scanner, TSRID Scanner, Desko Scanner, Regula Scanner |
+  | TDO | Tablet Dock, Surface Dock |
+  | SDO | Scanner Dock, Desko Dock |
+  | TPS | Tablet PSU, Surface PSU |
+  | SPS | Scanner PSU, Desko PSU |
+  | USB | USB Extension, USB Hub, HDMI/DP Adapter |
+  | LAN | LAN Extension, Switch, Router |
+  | 12V | 12V Extension |
+  | KIT | Bundle/Kit |
+  | OTH | Sonstiges |
+- **Backend-Änderungen:**
+  - `ASSET_TYPE_SUFFIX_MAP` Mapping hinzugefügt
+  - `get_asset_type_suffix()` Hilfsfunktion
+  - `create_asset_from_device()` verwendet neues Format
+  - `bulk_create_assets_from_devices()` verwendet neues Format
+  - Metadata-Endpoint liefert Suffix-Map
+- **Frontend-Änderungen:**
+  - `ASSET_TYPE_CONFIG` mit suffix-Property erweitert
+  - Modal zeigt Asset-ID Vorschau in Echtzeit
+  - Asset-Typ Dropdown zeigt Suffixe (z.B. "TSRID Tablet → TAB")
+  - P1-Bug behoben: Modal öffnet sich jetzt korrekt
+- **Verifizierte neue Assets:** AGBC02-01-TAB, BCOC01-01-SCA, BERC01-01-TAB, etc.
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
