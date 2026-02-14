@@ -2222,6 +2222,10 @@ const AssetManagementV2 = ({ theme }) => {
             <PackageOpen className="h-4 w-4" />
             Wareneingang
           </TabsTrigger>
+          <TabsTrigger value="kit-assembly" className="flex items-center gap-2" data-testid="kit-assembly-tab">
+            <Wrench className="h-4 w-4" />
+            Kit-Zusammenstellung
+          </TabsTrigger>
           <TabsTrigger value="locations" className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Locations
@@ -2250,12 +2254,16 @@ const AssetManagementV2 = ({ theme }) => {
         </TabsList>
 
         {/* Filters - only show for data tables */}
-        {activeTab !== 'devices' && activeTab !== 'goods-receipt' && <Filters />}
+        {activeTab !== 'devices' && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && <Filters />}
 
         {/* Content */}
         {activeTab === 'goods-receipt' ? (
           <TabsContent value="goods-receipt">
             <GoodsReceiptWorkflow theme={theme} onRefreshStats={fetchStats} />
+          </TabsContent>
+        ) : activeTab === 'kit-assembly' ? (
+          <TabsContent value="kit-assembly">
+            <KitAssemblyWorkflow theme={theme} onRefreshStats={fetchStats} />
           </TabsContent>
         ) : loading ? (
           <TableSkeleton rows={10} columns={7} theme={theme} />
@@ -2270,7 +2278,7 @@ const AssetManagementV2 = ({ theme }) => {
         )}
 
         {/* Pagination - only for data tables */}
-        {!loading && activeTab !== 'goods-receipt' && (
+        {!loading && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && (
           <div className="mt-4">
             <TablePagination
               currentPage={pagination[activeTab]?.page || 1}
