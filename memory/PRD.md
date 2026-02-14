@@ -558,13 +558,14 @@ Integriert in folgende Komponenten:
 
 ---
 
-Last Updated: January 31, 2025
+Last Updated: February 14, 2025
 
 ---
 
 ## Test Reports
 | Date | Feature | Result | Report |
 |------|---------|--------|--------|
+| Feb 14, 2025 | Asset-ID Format mit Typ-Suffixen | ✅ 100% PASS | `/app/test_reports/iteration_14.json` |
 | Jan 31, 2025 | Admin Portal Navigation Bug Fix | ✅ 100% PASS | `/app/test_reports/iteration_8.json` |
 | Jan 27, 2025 | Devices Tab Checkboxes & Spalten | ✅ 100% PASS | `/app/test_reports/iteration_7.json` |
 | Jan 27, 2025 | Standort-Kacheln & Kit-Verwaltung | ✅ 100% PASS | `/app/test_reports/iteration_6.json` |
