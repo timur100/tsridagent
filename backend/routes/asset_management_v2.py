@@ -658,23 +658,47 @@ async def list_locations(
 
 @router.get("/locations/{location_id}")
 async def get_location(location_id: str):
-    """Get location details with related slots"""
+    """Get location details with related slots from tenant_locations"""
     try:
-        location = await db.tsrid_locations.find_one({"location_id": location_id})
+        # First try tenant_locations (main menu locations)
+        location = await db.tenant_locations.find_one(
+            {"$or": [
+                {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+                {"location_id": location_id}
+            ]},
+            {"_id": 0}
+        )
+        
         if not location:
             raise HTTPException(status_code=404, detail="Location nicht gefunden")
         
-        location = serialize_doc(location)
+        # Transform to Asset Management format
+        loc_id = location.get("location_code", location.get("location_id", ""))
         
         # Get all slots at this location
-        slots_cursor = db.tsrid_slots.find({"location_id": location_id}).sort("slot_id", 1)
+        slots_cursor = db.tsrid_slots.find({"location_id": loc_id}).sort("slot_id", 1)
         slots = [serialize_doc(slot) async for slot in slots_cursor]
         
-        location["slots"] = slots
-        location["slot_count"] = len(slots)
-        location["installed_count"] = sum(1 for s in slots if s.get("status") == "installed")
+        result = {
+            "location_id": loc_id,
+            "name": location.get("station_name", location.get("name", "")),
+            "address": location.get("street", location.get("address", "")),
+            "city": location.get("city", ""),
+            "postal_code": location.get("postal_code", ""),
+            "country": location.get("country", "Deutschland"),
+            "customer": location.get("tenant_name", location.get("tenant_id", "")),
+            "status": "active",
+            "phone": location.get("phone", ""),
+            "email": location.get("email", ""),
+            "manager": location.get("manager", ""),
+            "slots": slots,
+            "slot_count": len(slots),
+            "installed_count": sum(1 for s in slots if s.get("status") == "installed"),
+            "created_at": location.get("created_at"),
+            "updated_at": location.get("updated_at")
+        }
         
-        return {"success": True, "location": location}
+        return {"success": True, "location": result}
     except HTTPException:
         raise
     except Exception as e:
