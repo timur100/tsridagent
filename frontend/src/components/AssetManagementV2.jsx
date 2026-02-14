@@ -148,6 +148,23 @@ const AssetManagementV2 = ({ theme }) => {
   const [bundles, setBundles] = useState([]);
   const [assets, setAssets] = useState([]);
   
+  // Device-Import states
+  const [devices, setDevices] = useState([]);
+  const [deviceStats, setDeviceStats] = useState({ total_devices: 0, with_asset: 0, without_asset: 0 });
+  const [selectedDevices, setSelectedDevices] = useState(new Set());
+  const [deviceFilter, setDeviceFilter] = useState('all'); // 'all', 'yes' (has asset), 'no' (no asset)
+  const [showCreateAssetModal, setShowCreateAssetModal] = useState(false);
+  const [deviceToLink, setDeviceToLink] = useState(null);
+  const [createAssetForm, setCreateAssetForm] = useState({
+    asset_type: 'tsrid_tablet',
+    manufacturer: '',
+    model: '',
+    purchase_date: '',
+    warranty_months: '',
+    warranty_type: '',
+    notes: ''
+  });
+  
   // Filter states
   const [filters, setFilters] = useState({
     country: 'all',
@@ -155,7 +172,8 @@ const AssetManagementV2 = ({ theme }) => {
     type: 'all',
     search: '',
     location_id: '',
-    bundle_id: ''
+    bundle_id: '',
+    tenant_id: 'all'
   });
   
   // Pagination
@@ -163,7 +181,8 @@ const AssetManagementV2 = ({ theme }) => {
     locations: { page: 1, total: 0 },
     slots: { page: 1, total: 0 },
     bundles: { page: 1, total: 0 },
-    assets: { page: 1, total: 0 }
+    assets: { page: 1, total: 0 },
+    devices: { page: 1, total: 0 }
   });
   const pageSize = 50;
   
@@ -178,7 +197,8 @@ const AssetManagementV2 = ({ theme }) => {
   const [filterOptions, setFilterOptions] = useState({
     countries: [],
     customers: [],
-    types: []
+    types: [],
+    tenant_ids: []
   });
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
