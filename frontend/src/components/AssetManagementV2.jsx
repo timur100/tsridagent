@@ -334,6 +334,36 @@ const AssetManagementV2 = ({ theme }) => {
     }
   }, [filters.country, filters.status, filters.type, filters.search, filters.bundle_id, pagination.assets.page]);
 
+  // Fetch devices with asset status
+  const fetchDevices = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        skip: String((pagination.devices.page - 1) * pageSize),
+        limit: String(pageSize)
+      });
+      if (deviceFilter && deviceFilter !== 'all') params.append('has_asset', deviceFilter);
+      if (filters.tenant_id && filters.tenant_id !== 'all') params.append('tenant_id', filters.tenant_id);
+      if (filters.search) params.append('search', filters.search);
+      
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/devices/all?${params}`);
+      const data = await res.json();
+      if (data.success) {
+        setDevices(data.devices);
+        setDeviceStats(data.stats || { total_devices: 0, with_asset: 0, without_asset: 0 });
+        setPagination(prev => ({ ...prev, devices: { ...prev.devices, total: data.total } }));
+        if (data.filters?.tenant_ids) {
+          setFilterOptions(prev => ({ ...prev, tenant_ids: data.filters.tenant_ids }));
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching devices:', e);
+      toast.error('Fehler beim Laden der Geräte');
+    } finally {
+      setLoading(false);
+    }
+  }, [deviceFilter, filters.tenant_id, filters.search, pagination.devices.page]);
+
   // Load data based on active tab
   useEffect(() => {
     fetchStats();
@@ -345,12 +375,15 @@ const AssetManagementV2 = ({ theme }) => {
       case 'slots': fetchSlots(); break;
       case 'bundles': fetchBundles(); break;
       case 'assets': fetchAssets(); break;
+      case 'devices': fetchDevices(); break;
     }
-  }, [activeTab, fetchLocations, fetchSlots, fetchBundles, fetchAssets]);
+  }, [activeTab, fetchLocations, fetchSlots, fetchBundles, fetchAssets, fetchDevices]);
 
   // Reset filters when tab changes
   useEffect(() => {
-    setFilters({ country: 'all', status: 'all', type: 'all', search: '', location_id: '', bundle_id: '' });
+    setFilters({ country: 'all', status: 'all', type: 'all', search: '', location_id: '', bundle_id: '', tenant_id: 'all' });
+    setSelectedDevices(new Set());
+    setDeviceFilter('all');
     setPagination(prev => ({
       ...prev,
       [activeTab]: { page: 1, total: prev[activeTab]?.total || 0 }
