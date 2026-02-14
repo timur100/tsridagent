@@ -151,6 +151,8 @@ class AssetCreate(BaseModel):
     bundle_id: Optional[str] = None
     status: str = "in_storage"
     country: Optional[str] = ""
+    # Verknüpfung mit europcar_devices
+    linked_device_id: Optional[str] = None  # Referenz auf europcar_devices.device_id
     # Kaufdaten
     purchase_date: Optional[str] = ""
     purchase_price: Optional[float] = None
