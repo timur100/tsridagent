@@ -581,37 +581,66 @@ async def list_locations(
     skip: int = Query(0),
     limit: int = Query(100)
 ):
-    """List all locations with filters"""
+    """List all locations from tenant_locations (Hauptmenü-Locations) with filters"""
     try:
         query = {}
         if country:
-            query["country"] = country
+            query["country"] = {"$regex": country, "$options": "i"}
         if customer:
-            query["customer"] = customer
-        if status and status != "all":
-            query["status"] = status
+            query["tenant_id"] = {"$regex": customer, "$options": "i"}
         if search:
             query["$or"] = [
-                {"location_id": {"$regex": search, "$options": "i"}},
-                {"address": {"$regex": search, "$options": "i"}},
+                {"location_code": {"$regex": search, "$options": "i"}},
+                {"station_name": {"$regex": search, "$options": "i"}},
+                {"street": {"$regex": search, "$options": "i"}},
                 {"city": {"$regex": search, "$options": "i"}}
             ]
         
-        total = await db.tsrid_locations.count_documents(query)
-        cursor = db.tsrid_locations.find(query).skip(skip).limit(limit).sort("location_id", 1)
-        locations = [serialize_doc(loc) async for loc in cursor]
+        # Read from tenant_locations (the main menu locations)
+        total = await db.tenant_locations.count_documents(query)
+        cursor = db.tenant_locations.find(query, {"_id": 0}).skip(skip).limit(limit).sort("location_code", 1)
+        raw_locations = [loc async for loc in cursor]
         
-        # Get slot counts for each location
-        for loc in locations:
-            loc["slot_count"] = await db.tsrid_slots.count_documents({"location_id": loc["location_id"]})
-            loc["installed_count"] = await db.tsrid_slots.count_documents({
-                "location_id": loc["location_id"], 
+        # Transform to Asset Management format
+        locations = []
+        for loc in raw_locations:
+            location_id = loc.get("location_code", loc.get("location_id", ""))
+            
+            # Count slots for this location
+            slot_count = await db.tsrid_slots.count_documents({"location_id": location_id})
+            installed_count = await db.tsrid_slots.count_documents({
+                "location_id": location_id, 
                 "status": "installed"
             })
+            
+            locations.append({
+                "location_id": location_id,
+                "name": loc.get("station_name", loc.get("name", "")),
+                "address": loc.get("street", loc.get("address", "")),
+                "city": loc.get("city", ""),
+                "postal_code": loc.get("postal_code", ""),
+                "country": loc.get("country", "Deutschland"),
+                "customer": loc.get("tenant_name", loc.get("tenant_id", "")),
+                "status": "active",  # Default status
+                "phone": loc.get("phone", ""),
+                "email": loc.get("email", ""),
+                "manager": loc.get("manager", ""),
+                "slot_count": slot_count,
+                "installed_count": installed_count,
+                "created_at": loc.get("created_at"),
+                "updated_at": loc.get("updated_at")
+            })
         
-        # Get unique countries for filter
-        countries = await db.tsrid_locations.distinct("country")
-        customers = await db.tsrid_locations.distinct("customer")
+        # Filter by status if provided
+        if status and status != "all":
+            locations = [l for l in locations if l.get("status") == status]
+        
+        # Get unique countries and customers for filter
+        countries = await db.tenant_locations.distinct("country")
+        customers = await db.tenant_locations.distinct("tenant_name")
+        # Filter out None/empty values
+        countries = [c for c in countries if c]
+        customers = [c for c in customers if c]
         
         return {
             "success": True,
