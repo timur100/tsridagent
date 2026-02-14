@@ -603,6 +603,8 @@ async def list_locations(
     country: str = Query(None),
     customer: str = Query(None),
     status: str = Query(None),
+    city: str = Query(None),
+    state: str = Query(None),
     search: str = Query(None),
     skip: int = Query(0),
     limit: int = Query(100)
@@ -614,12 +616,17 @@ async def list_locations(
             query["country"] = {"$regex": country, "$options": "i"}
         if customer:
             query["tenant_id"] = {"$regex": customer, "$options": "i"}
+        if city:
+            query["city"] = {"$regex": f"^{city}$", "$options": "i"}
+        if state:
+            query["state"] = {"$regex": f"^{state}$", "$options": "i"}
         if search:
             query["$or"] = [
                 {"location_code": {"$regex": search, "$options": "i"}},
                 {"station_name": {"$regex": search, "$options": "i"}},
                 {"street": {"$regex": search, "$options": "i"}},
-                {"city": {"$regex": search, "$options": "i"}}
+                {"city": {"$regex": search, "$options": "i"}},
+                {"state": {"$regex": search, "$options": "i"}}
             ]
         
         # Read from tenant_locations (the main menu locations)
@@ -663,6 +670,7 @@ async def list_locations(
                 "address": loc.get("street", loc.get("address", "")),
                 "city": loc.get("city", ""),
                 "postal_code": loc.get("postal_code", ""),
+                "state": loc.get("state", ""),
                 "country": loc.get("country", "Deutschland"),
                 "customer": loc.get("tenant_name", loc.get("tenant_id", "")),
                 "status": "active",  # Default status
@@ -679,12 +687,16 @@ async def list_locations(
         if status and status != "all":
             locations = [l for l in locations if l.get("status") == status]
         
-        # Get unique countries and customers for filter
+        # Get unique filter options
         countries = await db.tenant_locations.distinct("country")
         customers = await db.tenant_locations.distinct("tenant_name")
+        cities = await db.tenant_locations.distinct("city")
+        states = await db.tenant_locations.distinct("state")
         # Filter out None/empty values
-        countries = [c for c in countries if c]
-        customers = [c for c in customers if c]
+        countries = sorted([c for c in countries if c])
+        customers = sorted([c for c in customers if c])
+        cities = sorted([c for c in cities if c])
+        states = sorted([s for s in states if s])
         
         return {
             "success": True,
@@ -693,6 +705,8 @@ async def list_locations(
             "filters": {
                 "countries": countries,
                 "customers": customers,
+                "cities": cities,
+                "states": states,
                 "statuses": LOCATION_STATUSES
             }
         }
