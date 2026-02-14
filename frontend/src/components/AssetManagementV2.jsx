@@ -158,7 +158,7 @@ const EVENT_TYPE_COLORS = {
  */
 const AssetManagementV2 = ({ theme }) => {
   const isDark = theme === 'dark';
-  const [activeTab, setActiveTab] = useState('locations');
+  const [activeTab, setActiveTab] = useState('goods-receipt');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   
