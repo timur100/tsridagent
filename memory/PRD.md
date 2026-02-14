@@ -445,36 +445,43 @@ Integriert in folgende Komponenten:
 
 #### Asset-ID Format Implementierung (Feb 14, 2025) - ✅ COMPLETE & TESTED
 - **Status:** COMPLETE - 100% Backend & Frontend Tests bestanden
-- **Test Report:** `/app/test_reports/iteration_14.json`
-- **Problem:** User wollte ein spezifisches Asset-ID Format mit Typ-Suffixen
-- **Neues Format:** `[device_id]-[type_suffix]`
-  - Beispiel: `AAHC01-01-TAB` (Tablet), `AAHC01-01-SCA` (Scanner)
-- **Implementierte Suffixe:**
-  | Suffix | Asset-Typen |
-  |--------|-------------|
-  | TAB | Tablet, TSRID Tablet, Surface Pro 4/6/7, Surface Go |
-  | SCA | Scanner, TSRID Scanner, Desko Scanner, Regula Scanner |
-  | TDO | Tablet Dock, Surface Dock |
-  | SDO | Scanner Dock, Desko Dock |
-  | TPS | Tablet PSU, Surface PSU |
-  | SPS | Scanner PSU, Desko PSU |
-  | USB | USB Extension, USB Hub, HDMI/DP Adapter |
-  | LAN | LAN Extension, Switch, Router |
-  | 12V | 12V Extension |
-  | KIT | Bundle/Kit |
-  | OTH | Sonstiges |
-- **Backend-Änderungen:**
-  - `ASSET_TYPE_SUFFIX_MAP` Mapping hinzugefügt
-  - `get_asset_type_suffix()` Hilfsfunktion
-  - `create_asset_from_device()` verwendet neues Format
-  - `bulk_create_assets_from_devices()` verwendet neues Format
-  - Metadata-Endpoint liefert Suffix-Map
-- **Frontend-Änderungen:**
-  - `ASSET_TYPE_CONFIG` mit suffix-Property erweitert
-  - Modal zeigt Asset-ID Vorschau in Echtzeit
-  - Asset-Typ Dropdown zeigt Suffixe (z.B. "TSRID Tablet → TAB")
-  - P1-Bug behoben: Modal öffnet sich jetzt korrekt
-- **Verifizierte neue Assets:** AGBC02-01-TAB, BCOC01-01-SCA, BERC01-01-TAB, etc.
+- **Test Report:** `/app/test_reports/iteration_15.json`
+- **Neues Format:** `[device_id]-[TYP]-[MODELL]`
+  - Beispiel: `AAHC01-01-TAB-SP4` (Surface Pro 4 Tablet)
+  - Beispiel: `AAHC01-01-SCA-TSR` (TSRID Scanner)
+  - Beispiel: `AAHC01-01-KIT-SFD` (Surface + Desko Kit)
+- **Implementierte Asset-Typen und Suffixe:**
+  | Kategorie | Asset-Typ | Suffix |
+  |-----------|-----------|--------|
+  | **Tablets** |
+  | | Surface Pro 4 | TAB-SP4 |
+  | | Surface Pro 6 | TAB-SP6 |
+  | | TSRID Tablet | TAB-TSR |
+  | **Scanner** |
+  | | TSRID Scanner | SCA-TSR |
+  | | Desko Scanner | SCA-DSK |
+  | **Tablet Docks** |
+  | | Quer Dock (Surface) | TDO-QER |
+  | | TSRID Tablet Dock | TDO-TSR |
+  | **Scanner Docks** |
+  | | Desko Scanner Dock | SDO-DSK |
+  | | TSRID Scanner Dock | SDO-TSR |
+  | **Tablet PSU** |
+  | | Surface Netzteil | TPS-SPX |
+  | | TSRID Netzteil | TPS-TSR |
+  | **Scanner PSU** |
+  | | Desko Netzteil | SPS-DSK |
+  | | TSRID Netzteil | SPS-TSR |
+  | **Extensions** |
+  | | USB Extension | USB |
+  | | LAN Extension | LAN |
+  | | 12V Extension | 12V |
+  | **Kits** |
+  | | Surface + Desko Kit | KIT-SFD |
+  | | TSRID Kit | KIT-TSR |
+- **Backend:** Neue Asset-Typen (`tab_sp4`, `sca_tsr`, etc.) mit Suffix-Mapping
+- **Frontend:** Modal mit Asset-ID Vorschau und Typ-Dropdown
+- **Verifizierte Assets:** BERE01-01-TAB-SP4, BERE02-01-SCA-TSR, BERE03-01-SDO-DSK, BERL01-01-KIT-SFD, etc.
 
 ### ⏳ Pending Issues
 
