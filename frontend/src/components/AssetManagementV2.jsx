@@ -240,7 +240,6 @@ const AssetManagementV2 = ({ theme }) => {
 
   // Fetch locations
   const fetchLocations = useCallback(async () => {
-    console.log('[AssetMgmt] fetchLocations called');
     setLoading(true);
     try {
       const params = new URLSearchParams({
@@ -251,10 +250,8 @@ const AssetManagementV2 = ({ theme }) => {
       if (filters.status && filters.status !== 'all') params.append('status', filters.status);
       if (filters.search) params.append('search', filters.search);
       
-      console.log('[AssetMgmt] Fetching:', `${BACKEND_URL}/api/asset-mgmt/locations?${params}`);
       const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/locations?${params}`);
       const data = await res.json();
-      console.log('[AssetMgmt] Response:', data.success, 'locations:', data.locations?.length);
       if (data.success) {
         setLocations(data.locations);
         setPagination(prev => ({ ...prev, locations: { ...prev.locations, total: data.total } }));
@@ -267,10 +264,9 @@ const AssetManagementV2 = ({ theme }) => {
         }
       }
     } catch (e) {
-      console.error('[AssetMgmt] Error fetching locations:', e);
+      console.error('Error fetching locations:', e);
       toast.error('Fehler beim Laden der Locations');
     } finally {
-      console.log('[AssetMgmt] Setting loading to false');
       setLoading(false);
     }
   }, [filters.country, filters.status, filters.search, pagination.locations.page]);
