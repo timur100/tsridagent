@@ -884,8 +884,8 @@ async def list_slots(
         # Filter by country through location
         location_ids = None
         if country:
-            loc_cursor = db.tsrid_locations.find({"country": country}, {"location_id": 1})
-            location_ids = [loc["location_id"] async for loc in loc_cursor]
+            loc_cursor = db.tenant_locations.find({"country": {"$regex": country, "$options": "i"}}, {"location_code": 1})
+            location_ids = [loc.get("location_code", loc.get("location_id")) async for loc in loc_cursor]
             if location_ids:
                 if "location_id" in query:
                     query["location_id"] = {"$in": location_ids, "$eq": query["location_id"]}
@@ -898,8 +898,8 @@ async def list_slots(
         
         # Enrich with location and bundle info
         for slot in slots:
-            # Get location info
-            loc = await db.tsrid_locations.find_one({"location_id": slot.get("location_id")}, {"country": 1, "city": 1, "customer": 1})
+            # Get location info from tenant_locations
+            loc = await find_location(slot.get("location_id", ""))
             if loc:
                 slot["location_country"] = loc.get("country")
                 slot["location_city"] = loc.get("city")
@@ -933,10 +933,10 @@ async def get_slot(slot_id: str):
         
         slot = serialize_doc(slot)
         
-        # Get location details
+        # Get location details from tenant_locations
         if slot.get("location_id"):
-            location = await db.tsrid_locations.find_one({"location_id": slot["location_id"]})
-            slot["location"] = serialize_doc(location) if location else None
+            location = await find_location(slot["location_id"])
+            slot["location"] = location
         
         # Get bundle details with assets
         if slot.get("bundle_id"):
