@@ -2327,6 +2327,21 @@ const AssetManagementV2 = ({ theme }) => {
           </DialogHeader>
           
           <div className="space-y-4">
+            {/* Asset-ID Preview */}
+            {deviceToLink && (
+              <div className={`p-3 rounded-lg border-2 border-dashed ${isDark ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-300'}`}>
+                <p className={`text-xs font-medium mb-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                  Asset-ID Vorschau:
+                </p>
+                <p className={`font-mono text-lg font-bold ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                  {deviceToLink.device_id}-{ASSET_TYPE_CONFIG[createAssetForm.asset_type]?.suffix || 'OTH'}
+                </p>
+                <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Format: [Device-ID]-[Typ-Suffix]
+                </p>
+              </div>
+            )}
+            
             {/* Device Info Summary */}
             {deviceToLink && (
               <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
@@ -2351,23 +2366,60 @@ const AssetManagementV2 = ({ theme }) => {
               </div>
             )}
             
-            {/* Asset Type Selection */}
+            {/* Asset Type Selection with Suffix Display */}
             <div>
-              <label className="text-sm font-medium">Asset-Typ *</label>
+              <label className="text-sm font-medium">Asset-Typ * (bestimmt ID-Suffix)</label>
               <Select 
                 value={createAssetForm.asset_type} 
                 onValueChange={(v) => setCreateAssetForm(prev => ({ ...prev, asset_type: v }))}
               >
-                <SelectTrigger className={inputBg}><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="tsrid_tablet">TSRID Tablet</SelectItem>
-                  <SelectItem value="tsrid_scanner">TSRID Scanner</SelectItem>
-                  <SelectItem value="tablet">Tablet (allgemein)</SelectItem>
-                  <SelectItem value="surface_pro_4">Surface Pro 4</SelectItem>
-                  <SelectItem value="surface_pro_6">Surface Pro 6</SelectItem>
-                  <SelectItem value="surface_pro_7">Surface Pro 7</SelectItem>
-                  <SelectItem value="scanner">Scanner (allgemein)</SelectItem>
-                  <SelectItem value="scanner_desko">Desko Scanner</SelectItem>
+                <SelectTrigger className={inputBg}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-[300px]">
+                  {/* TSRID */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">TSRID</div>
+                  <SelectItem value="tsrid_tablet">TSRID Tablet → TAB</SelectItem>
+                  <SelectItem value="tsrid_scanner">TSRID Scanner → SCA</SelectItem>
+                  {/* Tablets */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablets (TAB)</div>
+                  <SelectItem value="tablet">Tablet (allgemein) → TAB</SelectItem>
+                  <SelectItem value="surface_pro_4">Surface Pro 4 → TAB</SelectItem>
+                  <SelectItem value="surface_pro_6">Surface Pro 6 → TAB</SelectItem>
+                  <SelectItem value="surface_pro_7">Surface Pro 7 → TAB</SelectItem>
+                  <SelectItem value="surface_go">Surface Go → TAB</SelectItem>
+                  {/* Scanner */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner (SCA)</div>
+                  <SelectItem value="scanner">Scanner (allgemein) → SCA</SelectItem>
+                  <SelectItem value="scanner_desko">Desko Scanner → SCA</SelectItem>
+                  <SelectItem value="scanner_regula">Regula Scanner → SCA</SelectItem>
+                  {/* Tablet Docks */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Docks (TDO)</div>
+                  <SelectItem value="tablet_dock">Tablet Docking Station → TDO</SelectItem>
+                  <SelectItem value="dock_surface">Surface Dock → TDO</SelectItem>
+                  {/* Scanner Docks */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Docks (SDO)</div>
+                  <SelectItem value="scanner_dock">Scanner Docking Station → SDO</SelectItem>
+                  <SelectItem value="dock_desko">Desko Docking Station → SDO</SelectItem>
+                  {/* Tablet PSU */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Netzteile (TPS)</div>
+                  <SelectItem value="tablet_psu">Tablet Netzteil → TPS</SelectItem>
+                  <SelectItem value="psu_surface">Surface Netzteil → TPS</SelectItem>
+                  {/* Scanner PSU */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Netzteile (SPS)</div>
+                  <SelectItem value="scanner_psu">Scanner Netzteil → SPS</SelectItem>
+                  <SelectItem value="psu_desko">Desko Netzteil → SPS</SelectItem>
+                  {/* Extensions */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Extensions</div>
+                  <SelectItem value="usb_extension">USB Extension → USB</SelectItem>
+                  <SelectItem value="lan_extension">LAN Extension → LAN</SelectItem>
+                  <SelectItem value="12v_extension">12V Extension → 12V</SelectItem>
+                  {/* Bundles */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Bundles</div>
+                  <SelectItem value="bundle">Bundle/Kit → KIT</SelectItem>
+                  {/* Sonstiges */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Sonstiges</div>
+                  <SelectItem value="other">Sonstiges → OTH</SelectItem>
                 </SelectContent>
               </Select>
             </div>
