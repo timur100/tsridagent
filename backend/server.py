@@ -88,6 +88,7 @@ from routes.telephony_webhooks import router as telephony_router
 from routes.hierarchy_stats import router as hierarchy_stats_router
 from routes.assets import router as assets_router
 from routes.health_monitor import router as health_monitor_router
+from routes.label_printer import router as label_printer_router
 
 # Performance utilities
 from utils.db_indexes import create_indexes
