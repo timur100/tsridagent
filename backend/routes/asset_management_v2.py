@@ -795,7 +795,12 @@ async def update_location(location_id: str, update: LocationUpdate):
 async def delete_location(location_id: str):
     """Delete a location (only if no slots exist)"""
     try:
-        location = await db.tsrid_locations.find_one({"location_id": location_id})
+        location = await db.tenant_locations.find_one({
+            "$or": [
+                {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+                {"location_id": location_id}
+            ]
+        })
         if not location:
             raise HTTPException(status_code=404, detail="Location nicht gefunden")
         
@@ -807,7 +812,12 @@ async def delete_location(location_id: str):
                 detail=f"Location hat {slot_count} Slots. Bitte zuerst Slots löschen."
             )
         
-        await db.tsrid_locations.delete_one({"location_id": location_id})
+        await db.tenant_locations.delete_one({
+            "$or": [
+                {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+                {"location_id": location_id}
+            ]
+        })
         
         return {"success": True, "message": f"Location {location_id} gelöscht"}
     except HTTPException:
