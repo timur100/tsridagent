@@ -414,6 +414,13 @@ const AssetManagementV2 = ({ theme }) => {
     }
   }, [activeTab, fetchLocations, fetchSlots, fetchBundles, fetchAssets, fetchDevices]);
 
+  // Reload data when tenant changes
+  useEffect(() => {
+    if (activeTab === 'locations') {
+      fetchLocations();
+    }
+  }, [selectedTenantName]);
+
   // Reset filters when tab changes
   useEffect(() => {
     setFilters({ country: 'all', status: 'all', type: 'all', city: 'all', state: 'all', search: '', location_id: '', bundle_id: '', tenant_id: 'all' });
