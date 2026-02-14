@@ -1065,7 +1065,7 @@ async def list_bundles(
             "total": total,
             "filters": {
                 "countries": countries,
-                "statuses": BUNDLE_STATUSES
+                "statuses": KIT_STATUSES
             }
         }
     except Exception as e:
