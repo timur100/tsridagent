@@ -108,7 +108,7 @@ npm start
 ```
 
 **Was sollte passieren:**
-1. App startet und zeigt die Scan-App (https://hardware-slot-months.preview.emergentagent.com/)
+1. App startet und zeigt die Scan-App (https://asset-id-formatter.preview.emergentagent.com/)
 2. Im Hintergrund: SQLite Datenbank wird erstellt
 3. Console zeigt: `[TSRID] Device ID: xxxxxxxx`
 
@@ -219,7 +219,7 @@ npm start
 
 ### Problem: Keine Verbindung zum Server
 - Prüfen Sie die Internet-Verbindung
-- Prüfen Sie ob https://hardware-slot-months.preview.emergentagent.com/ erreichbar ist
+- Prüfen Sie ob https://asset-id-formatter.preview.emergentagent.com/ erreichbar ist
 
 ---
 
@@ -228,7 +228,7 @@ npm start
 Um die Standort-Liste für Offline-Setup zu laden:
 
 1. Öffnen Sie im Browser: 
-   `https://hardware-slot-months.preview.emergentagent.com/api/agent/locations/export`
+   `https://asset-id-formatter.preview.emergentagent.com/api/agent/locations/export`
 
 2. Speichern Sie die JSON-Antwort als:
    `C:\TSRID\electron-app\offline-data\locations_cache.json`

@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://hardware-slot-months.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://asset-id-formatter.preview.emergentagent.com')
 
 # Test tenant ID for Europcar
 EUROPCAR_TENANT_ID = "1d3653db-86cb-4dd1-9ef5-0236b116def8"

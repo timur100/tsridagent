@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://hardware-slot-months.preview.emergentagent.com';
+    this.serverUrl = 'https://asset-id-formatter.preview.emergentagent.com';
   }
 
   /**

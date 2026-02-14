@@ -26,7 +26,7 @@ const EuroboxManagement = () => {
 
   const fetchEuroboxes = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://hardware-slot-months.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://asset-id-formatter.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/euroboxes/list`);
       const data = await response.json();
       
@@ -40,7 +40,7 @@ const EuroboxManagement = () => {
 
   const fetchAssignments = async () => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://hardware-slot-months.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://asset-id-formatter.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/euroboxes/assignments`);
       const data = await response.json();
       
@@ -72,7 +72,7 @@ const EuroboxManagement = () => {
     setLoading(true);
 
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://hardware-slot-months.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://asset-id-formatter.preview.emergentagent.com';
       
       if (editingEurobox) {
         // Update
@@ -115,7 +115,7 @@ const EuroboxManagement = () => {
 
   const handleCardClick = async (eurobox) => {
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://hardware-slot-months.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://asset-id-formatter.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/euroboxes/by-number/${eurobox.eurobox_number}`);
       const data = await response.json();
       
@@ -235,7 +235,7 @@ const EuroboxManagement = () => {
     if (!window.confirm(`Eurobox ${eurobox.eurobox_number} wirklich löschen?`)) return;
 
     try {
-      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://hardware-slot-months.preview.emergentagent.com';
+      const backendUrl = process.env.REACT_APP_BACKEND_URL || 'https://asset-id-formatter.preview.emergentagent.com';
       const response = await fetch(`${backendUrl}/api/euroboxes/delete/${eurobox.id}`, {
         method: 'DELETE'
       });

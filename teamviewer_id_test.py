@@ -21,7 +21,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://hardware-slot-months.preview.emergentagent.com"
+BACKEND_URL = "https://asset-id-formatter.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification

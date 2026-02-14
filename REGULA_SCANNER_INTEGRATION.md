@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://hardware-slot-months.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-id-formatter.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

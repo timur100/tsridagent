@@ -35,7 +35,7 @@ from typing import Dict, Any, List
 import time
 
 # Backend URL from environment (using actual deployment URL)
-BACKEND_URL = "https://hardware-slot-months.preview.emergentagent.com"
+BACKEND_URL = "https://asset-id-formatter.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class TSRIDSystemTester:
