@@ -698,6 +698,7 @@ POST /api/asset-mgmt/inventory/assign/SN001
 ## Test Reports
 | Date | Feature | Result | Report |
 |------|---------|--------|--------|
+| Feb 14, 2025 | Wareneingang-Workflow Frontend | ✅ 100% PASS | `/app/test_reports/iteration_17.json` |
 | Feb 2025 | Kit/Bundle Feature Phase 1 - Asset-Typen & Templates | ✅ 100% PASS | `/app/test_reports/iteration_16.json` |
 | Feb 14, 2025 | Asset-ID Format mit TYP-MODELL Suffixen | ✅ 100% PASS | `/app/test_reports/iteration_15.json` |
 | Feb 14, 2025 | Asset-ID Format mit Typ-Suffixen (v1) | ✅ 100% PASS | `/app/test_reports/iteration_14.json` |
