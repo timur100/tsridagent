@@ -461,6 +461,9 @@ app.include_router(kit_templates_router)
 from routes.asset_management_v2 import router as asset_mgmt_v2_router
 app.include_router(asset_mgmt_v2_router)
 
+# Label Printer API (Brother QL-820NWB)
+app.include_router(label_printer_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
