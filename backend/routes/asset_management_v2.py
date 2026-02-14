@@ -457,6 +457,32 @@ async def get_metadata():
             {"value": "lan", "label": "LAN Extension", "suffix": "LAN"},
             {"value": "12v", "label": "12V Extension", "suffix": "12V"},
         ],
+        "Kabel (Typ A - mit SN)": [
+            {"value": "cab_usb_a", "label": "USB-A Kabel", "suffix": "CAB-USBA"},
+            {"value": "cab_usb_c", "label": "USB-C Kabel", "suffix": "CAB-USBC"},
+            {"value": "cab_lan", "label": "LAN-Kabel", "suffix": "CAB-LAN"},
+            {"value": "cab_hdmi", "label": "HDMI-Kabel", "suffix": "CAB-HDMI"},
+            {"value": "cab_dp", "label": "DisplayPort-Kabel", "suffix": "CAB-DP"},
+            {"value": "cab_pwr", "label": "Stromkabel", "suffix": "CAB-PWR"},
+        ],
+        "Kabel (Typ B - Verbrauch)": [
+            {"value": "cns_usb_a", "label": "USB-A Kabel", "suffix": "CNS-USBA"},
+            {"value": "cns_usb_c", "label": "USB-C Kabel", "suffix": "CNS-USBC"},
+            {"value": "cns_lan", "label": "LAN-Kabel", "suffix": "CNS-LAN"},
+            {"value": "cns_hdmi", "label": "HDMI-Kabel", "suffix": "CNS-HDMI"},
+            {"value": "cns_dp", "label": "DisplayPort-Kabel", "suffix": "CNS-DP"},
+            {"value": "cns_pwr", "label": "Stromkabel", "suffix": "CNS-PWR"},
+        ],
+        "Adapter": [
+            {"value": "adp_usb_c", "label": "USB-C Adapter/Hub", "suffix": "ADP-USBC"},
+            {"value": "adp_hdmi", "label": "HDMI Adapter", "suffix": "ADP-HDMI"},
+            {"value": "adp_dp", "label": "DisplayPort Adapter", "suffix": "ADP-DP"},
+            {"value": "adp_90", "label": "90° Adapter", "suffix": "ADP-90"},
+        ],
+        "Stromverteiler": [
+            {"value": "pwr_strip", "label": "Netzleiste", "suffix": "PWR-STRIP"},
+            {"value": "pwr_12v", "label": "12V Verteiler", "suffix": "PWR-12V"},
+        ],
         "Kits": [
             {"value": "kit_sfd", "label": "Surface + Desko Kit", "suffix": "KIT-SFD"},
             {"value": "kit_tsr", "label": "TSRID Kit", "suffix": "KIT-TSR"},
@@ -470,6 +496,9 @@ async def get_metadata():
         {"value": "Microsoft", "label": "Microsoft"},
         {"value": "Desko", "label": "Desko"},
         {"value": "TSRID", "label": "TSRID"},
+        {"value": "Anker", "label": "Anker"},
+        {"value": "Ugreen", "label": "Ugreen"},
+        {"value": "Belkin", "label": "Belkin"},
         {"value": "Other", "label": "Sonstiger Hersteller"},
     ]
     
@@ -490,6 +519,9 @@ async def get_metadata():
         {"value": "none", "label": "Keine Lizenz erforderlich"},
     ]
     
+    # Kit-Templates - Vordefinierte Kit-Zusammenstellungen
+    kit_templates = await get_kit_templates_list()
+    
     return {
         "success": True,
         "asset_types": ASSET_TYPES,
@@ -502,7 +534,8 @@ async def get_metadata():
         "statuses": ASSET_STATUSES,
         "location_statuses": LOCATION_STATUSES,
         "slot_statuses": SLOT_STATUSES,
-        "kit_statuses": KIT_STATUSES
+        "kit_statuses": KIT_STATUSES,
+        "kit_templates": kit_templates
     }
 
 
