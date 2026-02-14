@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://bundle-printer-int.preview.emergentagent.com/api/dhl"
+API_URL="https://enhanced-locations.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""

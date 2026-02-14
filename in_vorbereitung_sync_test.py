@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://bundle-printer-int.preview.emergentagent.com"
+BACKEND_URL = "https://enhanced-locations.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for direct verification

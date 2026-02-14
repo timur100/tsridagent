@@ -196,7 +196,7 @@ function Initialize-Directories {
 function Download-OfflineData {
     Write-Info "Lade Offline-Standortdaten..."
     
-    $url = "https://bundle-printer-int.preview.emergentagent.com/api/agent/locations/export"
+    $url = "https://enhanced-locations.preview.emergentagent.com/api/agent/locations/export"
     $outputFile = Join-Path $ScriptDir "offline-data\locations_cache.json"
     
     try {

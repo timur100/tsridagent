@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://bundle-printer-int.preview.emergentagent.com';
+    this.serverUrl = 'https://enhanced-locations.preview.emergentagent.com';
   }
 
   /**
