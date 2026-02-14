@@ -311,7 +311,8 @@ class TestKitScan:
             
             print(f"SUCCESS: Scanned kit {kit_id}")
             print(f"  - Components: {data.get('component_count', 0)}")
-            print(f"  - Template: {data.get('template', {}).get('template_id', 'N/A')}")
+            template = data.get('template') or {}
+            print(f"  - Template: {template.get('template_id', 'N/A')}")
         else:
             print("SKIP: No existing kits to test scanning")
     
