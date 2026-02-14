@@ -2215,6 +2215,10 @@ const AssetManagementV2 = ({ theme }) => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
+          <TabsTrigger value="goods-receipt" className="flex items-center gap-2" data-testid="goods-receipt-tab">
+            <PackageOpen className="h-4 w-4" />
+            Wareneingang
+          </TabsTrigger>
           <TabsTrigger value="locations" className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             Locations
@@ -2242,11 +2246,15 @@ const AssetManagementV2 = ({ theme }) => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Filters - only show for non-device tabs */}
-        {activeTab !== 'devices' && <Filters />}
+        {/* Filters - only show for data tables */}
+        {activeTab !== 'devices' && activeTab !== 'goods-receipt' && <Filters />}
 
         {/* Content */}
-        {loading ? (
+        {activeTab === 'goods-receipt' ? (
+          <TabsContent value="goods-receipt">
+            <GoodsReceiptWorkflow theme={theme} onRefreshStats={fetchStats} />
+          </TabsContent>
+        ) : loading ? (
           <TableSkeleton rows={10} columns={7} theme={theme} />
         ) : (
           <>
@@ -2258,8 +2266,8 @@ const AssetManagementV2 = ({ theme }) => {
           </>
         )}
 
-        {/* Pagination */}
-        {!loading && (
+        {/* Pagination - only for data tables */}
+        {!loading && activeTab !== 'goods-receipt' && (
           <div className="mt-4">
             <TablePagination
               currentPage={pagination[activeTab]?.page || 1}
