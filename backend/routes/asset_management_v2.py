@@ -964,8 +964,8 @@ async def create_slot(slot: SlotCreate):
         if existing:
             raise HTTPException(status_code=400, detail=f"Slot {slot.slot_id} existiert bereits")
         
-        # Verify location exists
-        location = await db.tsrid_locations.find_one({"location_id": slot.location_id})
+        # Verify location exists in tenant_locations
+        location = await find_location(slot.location_id)
         if not location:
             raise HTTPException(status_code=400, detail=f"Location {slot.location_id} nicht gefunden")
         
