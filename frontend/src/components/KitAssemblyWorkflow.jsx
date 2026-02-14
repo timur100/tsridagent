@@ -38,6 +38,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
   const [finalizing, setFinalizing] = useState(false);
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [kitLabelData, setKitLabelData] = useState(null);
+  const [technician, setTechnician] = useState('');
 
   // Printer Settings
   const [printerIP, setPrinterIP] = useState(localStorage.getItem('labelPrinterIP') || '');
