@@ -552,6 +552,34 @@ Integriert in folgende Komponenten:
 - `DELETE /api/asset-mgmt/kits/{kit_id}/remove-component/{comp_id}` - Komponente entfernen
 - `POST /api/asset-mgmt/kits/{kit_id}/scan` - Kit/Komponente scannen (gibt Kit-Info zurück)
 
+#### Enhanced Locations Tab - Neue Spalten & Filter (Feb 14, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (11/11) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_20.json`
+- **Neue Spalten in der Tabelle:**
+  - Location ID
+  - Stationsname
+  - Straße
+  - PLZ
+  - Stadt
+  - Bundesland (als farbiges Badge, z.B. NW, BY, BE)
+  - Kunde
+  - Slots
+  - Status
+  - Aktionen
+- **Neue Dropdown-Filter:**
+  - Stadt-Filter (160 verfügbare Städte)
+  - Bundesland-Filter (16 deutsche Bundesländer als Abkürzungen)
+- **Backend-Änderungen (`/app/backend/routes/asset_management_v2.py`):**
+  - `GET /api/asset-mgmt/locations` - Neue Query-Parameter: `city`, `state`
+  - Response enthält jetzt `state` Feld pro Location
+  - `filters` Objekt enthält `cities` und `states` Arrays für Dropdown-Population
+- **Frontend-Änderungen (`/app/frontend/src/components/AssetManagementV2.jsx`):**
+  - `LocationsTable` - Erweitert mit allen neuen Spalten
+  - `Filters` - Stadt- und Bundesland-Dropdowns hinzugefügt
+  - `fetchLocations` - Unterstützt city/state Filter-Parameter
+- **Daten-Normalisierung:**
+  - Bundesland-Werte in DB normalisiert (Berlin→BE, Hessen→HE, Niedersachsen→NI)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
