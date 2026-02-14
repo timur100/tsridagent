@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://wareneingang-flow.preview.emergentagent.com/portal/admin/id-checks
+   https://bundle-printer-int.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

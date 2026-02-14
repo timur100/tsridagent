@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://wareneingang-flow.preview.emergentagent.com
+│   └── Lädt: https://bundle-printer-int.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

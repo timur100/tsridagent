@@ -37,7 +37,7 @@ Images: [
 
 1. **Admin-Portal öffnen:**
    ```
-   https://wareneingang-flow.preview.emergentagent.com/portal/admin
+   https://bundle-printer-int.preview.emergentagent.com/portal/admin
    ```
 
 2. **Einloggen** mit Admin-Credentials
@@ -52,7 +52,7 @@ Images: [
 
 1. **Test-Seite öffnen:**
    ```
-   https://wareneingang-flow.preview.emergentagent.com/test_images.html
+   https://bundle-printer-int.preview.emergentagent.com/test_images.html
    ```
 
 2. Diese Seite zeigt alle 4 Bilder direkt und ob sie laden
