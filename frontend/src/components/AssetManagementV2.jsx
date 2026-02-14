@@ -2326,7 +2326,7 @@ const AssetManagementV2 = ({ theme }) => {
                   {deviceToLink.device_id}-{ASSET_TYPE_CONFIG[createAssetForm.asset_type]?.suffix || 'OTH'}
                 </p>
                 <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                  Format: [Device-ID]-[Typ-Suffix]
+                  Format: [Device-ID]-[TYP]-[MODELL]
                 </p>
               </div>
             )}
@@ -2366,46 +2366,40 @@ const AssetManagementV2 = ({ theme }) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent className="max-h-[300px]">
-                  {/* TSRID */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">TSRID</div>
-                  <SelectItem value="tsrid_tablet">TSRID Tablet → TAB</SelectItem>
-                  <SelectItem value="tsrid_scanner">TSRID Scanner → SCA</SelectItem>
                   {/* Tablets */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablets (TAB)</div>
-                  <SelectItem value="tablet">Tablet (allgemein) → TAB</SelectItem>
-                  <SelectItem value="surface_pro_4">Surface Pro 4 → TAB</SelectItem>
-                  <SelectItem value="surface_pro_6">Surface Pro 6 → TAB</SelectItem>
-                  <SelectItem value="surface_pro_7">Surface Pro 7 → TAB</SelectItem>
-                  <SelectItem value="surface_go">Surface Go → TAB</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">Tablets</div>
+                  <SelectItem value="tab_sp4">Surface Pro 4 → TAB-SP4</SelectItem>
+                  <SelectItem value="tab_sp6">Surface Pro 6 → TAB-SP6</SelectItem>
+                  <SelectItem value="tab_tsr">TSRID Tablet → TAB-TSR</SelectItem>
                   {/* Scanner */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner (SCA)</div>
-                  <SelectItem value="scanner">Scanner (allgemein) → SCA</SelectItem>
-                  <SelectItem value="scanner_desko">Desko Scanner → SCA</SelectItem>
-                  <SelectItem value="scanner_regula">Regula Scanner → SCA</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner</div>
+                  <SelectItem value="sca_tsr">TSRID Scanner → SCA-TSR</SelectItem>
+                  <SelectItem value="sca_dsk">Desko Scanner → SCA-DSK</SelectItem>
                   {/* Tablet Docks */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Docks (TDO)</div>
-                  <SelectItem value="tablet_dock">Tablet Docking Station → TDO</SelectItem>
-                  <SelectItem value="dock_surface">Surface Dock → TDO</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Docks</div>
+                  <SelectItem value="tdo_qer">Quer Dock (Surface) → TDO-QER</SelectItem>
+                  <SelectItem value="tdo_tsr">TSRID Tablet Dock → TDO-TSR</SelectItem>
                   {/* Scanner Docks */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Docks (SDO)</div>
-                  <SelectItem value="scanner_dock">Scanner Docking Station → SDO</SelectItem>
-                  <SelectItem value="dock_desko">Desko Docking Station → SDO</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Docks</div>
+                  <SelectItem value="sdo_dsk">Desko Scanner Dock → SDO-DSK</SelectItem>
+                  <SelectItem value="sdo_tsr">TSRID Scanner Dock → SDO-TSR</SelectItem>
                   {/* Tablet PSU */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Netzteile (TPS)</div>
-                  <SelectItem value="tablet_psu">Tablet Netzteil → TPS</SelectItem>
-                  <SelectItem value="psu_surface">Surface Netzteil → TPS</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Tablet Netzteile</div>
+                  <SelectItem value="tps_spx">Surface Netzteil → TPS-SPX</SelectItem>
+                  <SelectItem value="tps_tsr">TSRID Tablet Netzteil → TPS-TSR</SelectItem>
                   {/* Scanner PSU */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Netzteile (SPS)</div>
-                  <SelectItem value="scanner_psu">Scanner Netzteil → SPS</SelectItem>
-                  <SelectItem value="psu_desko">Desko Netzteil → SPS</SelectItem>
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner Netzteile</div>
+                  <SelectItem value="sps_dsk">Desko Scanner Netzteil → SPS-DSK</SelectItem>
+                  <SelectItem value="sps_tsr">TSRID Scanner Netzteil → SPS-TSR</SelectItem>
                   {/* Extensions */}
                   <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Extensions</div>
-                  <SelectItem value="usb_extension">USB Extension → USB</SelectItem>
-                  <SelectItem value="lan_extension">LAN Extension → LAN</SelectItem>
-                  <SelectItem value="12v_extension">12V Extension → 12V</SelectItem>
-                  {/* Bundles */}
-                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Bundles</div>
-                  <SelectItem value="bundle">Bundle/Kit → KIT</SelectItem>
+                  <SelectItem value="usb">USB Extension → USB</SelectItem>
+                  <SelectItem value="lan">LAN Extension → LAN</SelectItem>
+                  <SelectItem value="12v">12V Extension → 12V</SelectItem>
+                  {/* Kits */}
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Kits</div>
+                  <SelectItem value="kit_sfd">Surface + Desko Kit → KIT-SFD</SelectItem>
+                  <SelectItem value="kit_tsr">TSRID Kit → KIT-TSR</SelectItem>
                   {/* Sonstiges */}
                   <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Sonstiges</div>
                   <SelectItem value="other">Sonstiges → OTH</SelectItem>
@@ -2413,7 +2407,7 @@ const AssetManagementV2 = ({ theme }) => {
               </Select>
             </div>
             
-            {/* Manufacturer & Model */}
+            {/* Manufacturer - auto-set based on type */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="text-sm font-medium">Hersteller</label>
@@ -2423,9 +2417,10 @@ const AssetManagementV2 = ({ theme }) => {
                 >
                   <SelectTrigger className={inputBg}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
                   <SelectContent>
-                    {MANUFACTURER_OPTIONS.map(m => (
-                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
-                    ))}
+                    <SelectItem value="Microsoft">Microsoft</SelectItem>
+                    <SelectItem value="Desko">Desko</SelectItem>
+                    <SelectItem value="TSRID">TSRID</SelectItem>
+                    <SelectItem value="Other">Sonstiger Hersteller</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -2434,7 +2429,7 @@ const AssetManagementV2 = ({ theme }) => {
                 <Input
                   value={createAssetForm.model}
                   onChange={(e) => setCreateAssetForm(prev => ({ ...prev, model: e.target.value }))}
-                  placeholder="z.B. Surface Pro 7"
+                  placeholder="z.B. Surface Pro 6"
                   className={inputBg}
                 />
               </div>
