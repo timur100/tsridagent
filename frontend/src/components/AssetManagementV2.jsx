@@ -218,6 +218,8 @@ const AssetManagementV2 = ({ theme }) => {
   const [filterOptions, setFilterOptions] = useState({
     countries: [],
     customers: [],
+    cities: [],
+    states: [],
     types: [],
     tenant_ids: []
   });
