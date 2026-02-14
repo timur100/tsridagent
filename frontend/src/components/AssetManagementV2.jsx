@@ -201,6 +201,9 @@ const AssetManagementV2 = ({ theme }) => {
     tenant_id: 'all'
   });
   
+  // Local search state for immediate UI feedback (debounced to filters.search)
+  const [searchInput, setSearchInput] = useState('');
+  
   // Pagination
   const [pagination, setPagination] = useState({
     locations: { page: 1, total: 0 },
