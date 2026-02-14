@@ -414,17 +414,43 @@ async def add_asset_history(asset_id: str, event_type: str, event: str,
     )
 
 
+# ============ HELPER: Location Lookup ============
+
+async def find_location(location_id: str):
+    """
+    Find a location from tenant_locations (main menu locations).
+    Returns location dict or None if not found.
+    """
+    location = await db.tenant_locations.find_one(
+        {"$or": [
+            {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+            {"location_id": location_id}
+        ]},
+        {"_id": 0}
+    )
+    if location:
+        # Transform to consistent format
+        return {
+            "location_id": location.get("location_code", location.get("location_id", "")),
+            "name": location.get("station_name", location.get("name", "")),
+            "city": location.get("city", ""),
+            "country": location.get("country", "Deutschland"),
+            "customer": location.get("tenant_name", location.get("tenant_id", ""))
+        }
+    return None
+
+
 # ============ STARTUP - CREATE INDEXES ============
 
 @router.on_event("startup")
 async def create_indexes():
     """Create database indexes for scalability"""
     try:
-        # Locations indexes
-        await db.tsrid_locations.create_index("location_id", unique=True)
-        await db.tsrid_locations.create_index("country")
-        await db.tsrid_locations.create_index("customer")
-        await db.tsrid_locations.create_index("status")
+        # tenant_locations indexes (main menu locations)
+        await db.tenant_locations.create_index("location_code")
+        await db.tenant_locations.create_index("location_id")
+        await db.tenant_locations.create_index("country")
+        await db.tenant_locations.create_index("tenant_id")
         
         # Slots indexes
         await db.tsrid_slots.create_index("slot_id", unique=True)
