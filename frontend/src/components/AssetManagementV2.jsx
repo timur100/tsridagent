@@ -2116,10 +2116,19 @@ const AssetManagementV2 = ({ theme }) => {
             <Cpu className="h-4 w-4" />
             Assets
           </TabsTrigger>
+          <TabsTrigger value="devices" className="flex items-center gap-2">
+            <Smartphone className="h-4 w-4" />
+            Geräte-Import
+            {deviceStats.without_asset > 0 && (
+              <Badge variant="outline" className="ml-1 bg-orange-500/20 text-orange-500 text-xs px-1.5">
+                {deviceStats.without_asset}
+              </Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
-        {/* Filters */}
-        <Filters />
+        {/* Filters - only show for non-device tabs */}
+        {activeTab !== 'devices' && <Filters />}
 
         {/* Content */}
         {loading ? (
@@ -2130,6 +2139,7 @@ const AssetManagementV2 = ({ theme }) => {
             <TabsContent value="slots"><SlotsTable /></TabsContent>
             <TabsContent value="bundles"><BundlesTable /></TabsContent>
             <TabsContent value="assets"><AssetsTable /></TabsContent>
+            <TabsContent value="devices"><DevicesTable /></TabsContent>
           </>
         )}
 
