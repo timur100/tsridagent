@@ -719,8 +719,8 @@ const AssetManagementV2 = ({ theme }) => {
     </div>
   );
 
-  // Render filters
-  const Filters = () => (
+  // Filters JSX - rendered inline to prevent remount issues with search input
+  const filtersJSX = (
     <div className="flex gap-3 flex-wrap mb-4">
       <div className="flex-1 min-w-[200px]">
         <div className="relative">
