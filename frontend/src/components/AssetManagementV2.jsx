@@ -489,6 +489,113 @@ const AssetManagementV2 = ({ theme }) => {
     }
   };
 
+  // Create asset from device
+  const handleCreateAssetFromDevice = async () => {
+    if (!deviceToLink) return;
+    
+    try {
+      // Calculate warranty end date if months provided
+      let additional_data = {
+        manufacturer: createAssetForm.manufacturer,
+        model: createAssetForm.model,
+        notes: createAssetForm.notes,
+        warranty_type: createAssetForm.warranty_type
+      };
+      
+      if (createAssetForm.purchase_date && createAssetForm.warranty_months) {
+        const purchaseDate = new Date(createAssetForm.purchase_date);
+        purchaseDate.setMonth(purchaseDate.getMonth() + parseInt(createAssetForm.warranty_months));
+        additional_data.warranty_until = purchaseDate.toISOString().split('T')[0];
+        additional_data.purchase_date = createAssetForm.purchase_date;
+      }
+      
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/devices/${deviceToLink.device_id}/create-asset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          device_id: deviceToLink.device_id,
+          asset_type: createAssetForm.asset_type,
+          additional_data
+        })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Asset ${data.asset_id} erstellt`);
+        setShowCreateAssetModal(false);
+        setDeviceToLink(null);
+        setCreateAssetForm({
+          asset_type: 'tsrid_tablet',
+          manufacturer: '',
+          model: '',
+          purchase_date: '',
+          warranty_months: '',
+          warranty_type: '',
+          notes: ''
+        });
+        fetchDevices();
+        fetchStats();
+      } else {
+        toast.error(data.detail || 'Fehler beim Erstellen');
+      }
+    } catch (e) {
+      console.error('Error creating asset:', e);
+      toast.error('Fehler beim Erstellen des Assets');
+    }
+  };
+
+  // Bulk create assets from selected devices
+  const handleBulkCreateAssets = async () => {
+    if (selectedDevices.size === 0) {
+      toast.error('Keine Geräte ausgewählt');
+      return;
+    }
+    
+    if (!window.confirm(`${selectedDevices.size} Assets erstellen?`)) return;
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/devices/bulk-create-assets?asset_type=tsrid_tablet`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Array.from(selectedDevices))
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`${data.summary.success} Assets erstellt, ${data.summary.errors} Fehler`);
+        setSelectedDevices(new Set());
+        fetchDevices();
+        fetchStats();
+      } else {
+        toast.error(data.detail || 'Fehler beim Bulk-Erstellen');
+      }
+    } catch (e) {
+      console.error('Error bulk creating assets:', e);
+      toast.error('Fehler beim Bulk-Erstellen');
+    }
+  };
+
+  // Toggle device selection
+  const toggleDeviceSelection = (deviceId) => {
+    const newSelected = new Set(selectedDevices);
+    if (newSelected.has(deviceId)) {
+      newSelected.delete(deviceId);
+    } else {
+      newSelected.add(deviceId);
+    }
+    setSelectedDevices(newSelected);
+  };
+
+  // Select all unlinked devices on current page
+  const selectAllUnlinkedDevices = () => {
+    const unlinked = devices.filter(d => !d.asset_id);
+    if (selectedDevices.size === unlinked.length) {
+      setSelectedDevices(new Set());
+    } else {
+      setSelectedDevices(new Set(unlinked.map(d => d.device_id)));
+    }
+  };
+
   // Render status badge
   const StatusBadge = ({ status, config }) => {
     const cfg = config[status] || { label: status, color: 'bg-gray-500/20 text-gray-400' };
