@@ -1215,10 +1215,10 @@ async def get_bundle(bundle_id: str):
         slot = await db.tsrid_slots.find_one({"bundle_id": bundle_id})
         if slot:
             slot = serialize_doc(slot)
-            # Get location info
+            # Get location info from tenant_locations
             if slot.get("location_id"):
-                location = await db.tsrid_locations.find_one({"location_id": slot["location_id"]})
-                slot["location"] = serialize_doc(location) if location else None
+                location = await find_location(slot["location_id"])
+                slot["location"] = location
             bundle["slot"] = slot
         
         return {"success": True, "bundle": bundle}
