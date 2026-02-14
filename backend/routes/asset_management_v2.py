@@ -707,24 +707,39 @@ async def get_location(location_id: str):
 
 @router.post("/locations")
 async def create_location(location: LocationCreate):
-    """Create a new location"""
+    """Create a new location in tenant_locations (synced with main menu)"""
     try:
-        # Check if location_id already exists
-        existing = await db.tsrid_locations.find_one({"location_id": location.location_id})
+        # Check if location_code already exists in tenant_locations
+        existing = await db.tenant_locations.find_one({
+            "location_code": {"$regex": f"^{location.location_id}$", "$options": "i"}
+        })
         if existing:
             raise HTTPException(status_code=400, detail=f"Location {location.location_id} existiert bereits")
         
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Create in tenant_locations (main menu format)
         loc_doc = {
-            **location.dict(),
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "location_code": location.location_id.upper(),
+            "station_name": f"{location.city} - {location.location_id}" if location.city else location.location_id,
+            "street": location.address or "",
+            "postal_code": "",
+            "city": location.city or "",
+            "country": location.country or "Deutschland",
+            "tenant_id": location.customer or "europcar",
+            "tenant_name": location.customer or "Europcar",
+            "phone": "",
+            "email": "",
+            "manager": "",
+            "created_at": now,
+            "updated_at": now
         }
         
-        await db.tsrid_locations.insert_one(loc_doc)
+        await db.tenant_locations.insert_one(loc_doc)
         
         return {
             "success": True,
-            "location_id": location.location_id,
+            "location_id": location.location_id.upper(),
             "message": f"Location {location.location_id} erstellt"
         }
     except HTTPException:
@@ -735,17 +750,37 @@ async def create_location(location: LocationCreate):
 
 @router.put("/locations/{location_id}")
 async def update_location(location_id: str, update: LocationUpdate):
-    """Update a location"""
+    """Update a location in tenant_locations"""
     try:
-        location = await db.tsrid_locations.find_one({"location_id": location_id})
+        location = await db.tenant_locations.find_one({
+            "$or": [
+                {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+                {"location_id": location_id}
+            ]
+        })
         if not location:
             raise HTTPException(status_code=404, detail="Location nicht gefunden")
         
-        update_data = {k: v for k, v in update.dict().items() if v is not None}
+        update_data = {}
+        if update.address is not None:
+            update_data["street"] = update.address
+        if update.city is not None:
+            update_data["city"] = update.city
+        if update.country is not None:
+            update_data["country"] = update.country
+        if update.customer is not None:
+            update_data["tenant_name"] = update.customer
+            update_data["tenant_id"] = update.customer
+        if update.status is not None:
+            update_data["status"] = update.status
+            
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
-            await db.tsrid_locations.update_one(
-                {"location_id": location_id},
+            await db.tenant_locations.update_one(
+                {"$or": [
+                    {"location_code": {"$regex": f"^{location_id}$", "$options": "i"}},
+                    {"location_id": location_id}
+                ]},
                 {"$set": update_data}
             )
         
