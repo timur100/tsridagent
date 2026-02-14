@@ -46,15 +46,76 @@ ASSET_TYPES = [
     'scanner', 'scanner_desko', 'scanner_regula',
     # Docking Stations
     'dock', 'dock_desko', 'dock_quer', 'dock_surface',
+    'tablet_dock', 'scanner_dock',
     # Netzteile (PSU)
     'psu', 'psu_desko', 'psu_surface',
+    'tablet_psu', 'scanner_psu',
     # Kabel & Adapter
     'cable', 'usb_adapter_90', 'usb_hub', 'hdmi_adapter', 'displayport_adapter',
+    'usb_extension', 'lan_extension', '12v_extension',
     # Netzwerk
     'switch', 'router',
+    # Bundles
+    'bundle',
     # Sonstiges
     'other'
 ]
+
+# Asset-Typ zu Suffix Mapping für Asset-ID Generierung
+# Format: asset_id = [location_prefix]-[device_num]-[suffix]
+# Beispiel: AAHC01-01-TAB
+ASSET_TYPE_SUFFIX_MAP = {
+    # Tablets -> TAB
+    'tablet': 'TAB',
+    'tsrid_tablet': 'TAB',
+    'surface_pro_4': 'TAB',
+    'surface_pro_6': 'TAB',
+    'surface_pro_7': 'TAB',
+    'surface_go': 'TAB',
+    # Scanner -> SCA
+    'scanner': 'SCA',
+    'tsrid_scanner': 'SCA',
+    'scanner_desko': 'SCA',
+    'scanner_regula': 'SCA',
+    # Tablet Dock -> TDO
+    'tablet_dock': 'TDO',
+    'dock_surface': 'TDO',
+    # Scanner Dock -> SDO
+    'scanner_dock': 'SDO',
+    'dock_desko': 'SDO',
+    # Allgemeine Docks -> TDO (default)
+    'dock': 'TDO',
+    'dock_quer': 'TDO',
+    # Tablet PSU -> TPS
+    'tablet_psu': 'TPS',
+    'psu_surface': 'TPS',
+    # Scanner PSU -> SPS
+    'scanner_psu': 'SPS',
+    'psu_desko': 'SPS',
+    # Allgemeine PSU -> TPS (default)
+    'psu': 'TPS',
+    # Extensions
+    'usb_extension': 'USB',
+    'usb_adapter_90': 'USB',
+    'usb_hub': 'USB',
+    'lan_extension': 'LAN',
+    '12v_extension': '12V',
+    # Kabel
+    'cable': 'USB',
+    'hdmi_adapter': 'USB',
+    'displayport_adapter': 'USB',
+    # Netzwerk -> LAN
+    'switch': 'LAN',
+    'router': 'LAN',
+    # Bundle -> KIT
+    'bundle': 'KIT',
+    # Sonstiges
+    'other': 'OTH'
+}
+
+def get_asset_type_suffix(asset_type: str) -> str:
+    """Get the suffix for an asset type for ID generation"""
+    return ASSET_TYPE_SUFFIX_MAP.get(asset_type, 'OTH')
 
 # Hersteller-Liste
 MANUFACTURERS = [
