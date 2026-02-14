@@ -758,20 +758,23 @@ const AssetManagementV2 = ({ theme }) => {
     </div>
   );
 
-  // Render Locations Table
+  // Render Locations Table with all requested columns
   const LocationsTable = () => (
     <div className={`rounded-lg border overflow-hidden ${cardBg}`}>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className={isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Location ID</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Land</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Kunde</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Stadt</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold">Slots</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold">Aktionen</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Location ID</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Stationsname</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Straße</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">PLZ</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Stadt</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Bundesland</th>
+              <th className="px-3 py-3 text-left text-xs font-semibold whitespace-nowrap">Kunde</th>
+              <th className="px-3 py-3 text-center text-xs font-semibold whitespace-nowrap">Slots</th>
+              <th className="px-3 py-3 text-center text-xs font-semibold whitespace-nowrap">Status</th>
+              <th className="px-3 py-3 text-center text-xs font-semibold whitespace-nowrap">Aktionen</th>
             </tr>
           </thead>
           <tbody>
@@ -780,23 +783,34 @@ const AssetManagementV2 = ({ theme }) => {
                 key={loc.location_id} 
                 className={`border-t cursor-pointer hover:bg-opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
                 onClick={() => openDetailModal('location', loc.location_id)}
+                data-testid={`location-row-${loc.location_id}`}
               >
-                <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>{loc.location_id}</td>
-                <td className="px-4 py-3">{loc.country}</td>
-                <td className="px-4 py-3">{loc.customer}</td>
-                <td className="px-4 py-3">{loc.city || '-'}</td>
-                <td className="px-4 py-3 text-center">
+                <td className={`px-3 py-3 font-medium font-mono ${isDark ? 'text-white' : ''}`}>{loc.location_id}</td>
+                <td className="px-3 py-3 text-sm max-w-[200px] truncate" title={loc.name}>{loc.name || '-'}</td>
+                <td className="px-3 py-3 text-sm max-w-[180px] truncate" title={loc.address}>{loc.address || '-'}</td>
+                <td className="px-3 py-3 text-sm font-mono">{loc.postal_code || '-'}</td>
+                <td className="px-3 py-3 text-sm">{loc.city || '-'}</td>
+                <td className="px-3 py-3 text-sm">
+                  {loc.state ? (
+                    <Badge variant="outline" className={`${isDark ? 'bg-blue-500/10 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
+                      {loc.state}
+                    </Badge>
+                  ) : '-'}
+                </td>
+                <td className="px-3 py-3 text-sm">{loc.customer || '-'}</td>
+                <td className="px-3 py-3 text-center">
                   <span className="text-green-500 font-medium">{loc.installed_count}</span>
                   <span className={isDark ? 'text-gray-500' : 'text-gray-400'}> / {loc.slot_count}</span>
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="px-3 py-3 text-center">
                   <StatusBadge status={loc.status} config={LOCATION_STATUS_CONFIG} />
                 </td>
-                <td className="px-4 py-3 text-center">
+                <td className="px-3 py-3 text-center">
                   <Button 
                     size="sm" 
                     variant="ghost" 
                     onClick={(e) => { e.stopPropagation(); openDetailModal('location', loc.location_id); }}
+                    data-testid={`location-detail-btn-${loc.location_id}`}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
