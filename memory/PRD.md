@@ -483,10 +483,64 @@ Integriert in folgende Komponenten:
 - **Frontend:** Modal mit Asset-ID Vorschau und Typ-Dropdown
 - **Verifizierte Assets:** BERE01-01-TAB-SP4, BERE02-01-SCA-TSR, BERE03-01-SDO-DSK, BERL01-01-KIT-SFD, etc.
 
+#### Kit/Bundle Feature Phase 1 (Feb 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (18/18) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_16.json`
+- **Feature:** Erweiterte Asset-Typen und Kit-Template-System
+
+**Neue Asset-Typen hinzugefügt:**
+| Kategorie | Asset-Typ | Suffix | Beschreibung |
+|-----------|-----------|--------|--------------|
+| **Kabel Typ A (mit SN)** |
+| | USB-A Kabel | CAB-USBA | Mit Seriennummer-Tracking |
+| | USB-C Kabel | CAB-USBC | Mit Seriennummer-Tracking |
+| | LAN-Kabel | CAB-LAN | Mit Seriennummer-Tracking |
+| | HDMI-Kabel | CAB-HDMI | Mit Seriennummer-Tracking |
+| | DisplayPort-Kabel | CAB-DP | Mit Seriennummer-Tracking |
+| | Stromkabel | CAB-PWR | Mit Seriennummer-Tracking |
+| **Kabel Typ B (Verbrauch)** |
+| | USB-A Kabel | CNS-USBA | Ohne SN, Verbrauchsmaterial |
+| | USB-C Kabel | CNS-USBC | Ohne SN, Verbrauchsmaterial |
+| | LAN-Kabel | CNS-LAN | Ohne SN, Verbrauchsmaterial |
+| | HDMI-Kabel | CNS-HDMI | Ohne SN, Verbrauchsmaterial |
+| | DisplayPort-Kabel | CNS-DP | Ohne SN, Verbrauchsmaterial |
+| | Stromkabel | CNS-PWR | Ohne SN, Verbrauchsmaterial |
+| **Adapter** |
+| | USB-C Adapter/Hub | ADP-USBC | |
+| | HDMI Adapter | ADP-HDMI | |
+| | DisplayPort Adapter | ADP-DP | |
+| | 90° Adapter | ADP-90 | |
+| **Stromverteiler** |
+| | Netzleiste | PWR-STRIP | |
+| | 12V Verteiler | PWR-12V | |
+
+**Kit-Template System:**
+- **Collection:** `tsrid_kit_templates`
+- **Standard-Vorlagen erstellt:**
+  - `KIT-SFD`: Surface + Desko Kit (8 Komponenten: Tablet, Scanner, 2x Docks, 2x Netzteile, 2x Kabel optional)
+  - `KIT-TSR`: TSRID Kit (6 Komponenten: Tablet, Scanner, 2x Docks, 2x Netzteile)
+- **API-Endpoints:**
+  - `GET /api/asset-mgmt/kit-templates` - Liste aller Vorlagen
+  - `GET /api/asset-mgmt/kit-templates/{id}` - Vorlage-Details mit Komponenten
+  - `POST /api/asset-mgmt/kit-templates` - Neue Vorlage erstellen
+  - `PUT /api/asset-mgmt/kit-templates/{id}` - Vorlage aktualisieren
+  - `DELETE /api/asset-mgmt/kit-templates/{id}` - Vorlage löschen
+  - `POST /api/asset-mgmt/kit-templates/seed-defaults` - Standard-Vorlagen erstellen
+
+**Kit-Zusammenstellung (Assembly):**
+- `POST /api/asset-mgmt/kits/assemble` - Kit aus Vorlage erstellen
+- `GET /api/asset-mgmt/kits` - Liste aller Kits
+- `GET /api/asset-mgmt/kits/{kit_id}` - Kit-Details mit Komponenten
+- `POST /api/asset-mgmt/kits/{kit_id}/add-component` - Komponente hinzufügen (per Scan)
+- `DELETE /api/asset-mgmt/kits/{kit_id}/remove-component/{comp_id}` - Komponente entfernen
+- `POST /api/asset-mgmt/kits/{kit_id}/scan` - Kit/Komponente scannen (gibt Kit-Info zurück)
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
 |----------|-------|--------|
+| P0 | Kit Feature Phase 2: Frontend UI für Kit-Zusammenstellung | NEXT |
+| P0 | Kit Feature Phase 3: QR-Code Label-Generierung | PLANNED |
 | P1 | Agent Status Overview (Heartbeat-Mechanismus) | NOT STARTED |
 | P1 | Real-time Footer Status (`portalOnline` hardcoded) | NOT STARTED |
 | P2 | "Single Source of Truth" Migration for `fleet_management.py` | NOT STARTED |
