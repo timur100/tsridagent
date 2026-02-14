@@ -351,6 +351,37 @@ class AssetUpdate(BaseModel):
     notes: Optional[str] = None
 
 
+# ============ WARENEINGANG (Inventory Intake) MODELS ============
+
+class InventoryIntakeItem(BaseModel):
+    """Single item for inventory intake - only requires serial number and type"""
+    manufacturer_sn: str  # Seriennummer (Barcode-Scan)
+    type: str  # Asset-Typ z.B. 'tab_tsr', 'sca_dsk'
+    imei: Optional[str] = ""
+    mac: Optional[str] = ""
+    manufacturer: Optional[str] = ""
+    model: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class InventoryIntakeBatch(BaseModel):
+    """Batch intake of multiple items"""
+    items: List[InventoryIntakeItem]
+    intake_date: Optional[str] = ""
+    received_by: Optional[str] = ""
+    supplier: Optional[str] = ""
+    delivery_note: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class AssetAssignToLocation(BaseModel):
+    """Assign an unassigned asset to a location - generates Asset-ID and Label"""
+    location_id: str  # z.B. 'AAHC01'
+    slot_number: Optional[int] = None  # Optional: spezifischer Slot
+    technician: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
 # ============ HELPER FUNCTIONS ============
 
 def serialize_doc(doc):
