@@ -34,83 +34,97 @@ multi_tenant_db = client['multi_tenant_admin']
 # ============ ENUMS ============
 LOCATION_STATUSES = ['active', 'inactive', 'planned', 'decommissioned']
 SLOT_STATUSES = ['empty', 'installed', 'maintenance', 'reserved']
-BUNDLE_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'retired']
+KIT_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'retired']  # Renamed from BUNDLE_STATUSES
 
 # Erweiterte Asset-Typen mit spezifischen Geräten
+# Format: [typ]-[modell] z.B. TAB-SP4, SCA-TSR
 ASSET_TYPES = [
     # Tablets
-    'tablet', 'surface_pro_4', 'surface_pro_6', 'surface_pro_7', 'surface_go',
-    # TSRID Geräte
-    'tsrid_tablet', 'tsrid_scanner',
+    'tab_sp4',      # Surface Pro 4
+    'tab_sp6',      # Surface Pro 6
+    'tab_tsr',      # TSRID Tablet
     # Scanner
-    'scanner', 'scanner_desko', 'scanner_regula',
-    # Docking Stations
-    'dock', 'dock_desko', 'dock_quer', 'dock_surface',
-    'tablet_dock', 'scanner_dock',
-    # Netzteile (PSU)
-    'psu', 'psu_desko', 'psu_surface',
-    'tablet_psu', 'scanner_psu',
-    # Kabel & Adapter
-    'cable', 'usb_adapter_90', 'usb_hub', 'hdmi_adapter', 'displayport_adapter',
-    'usb_extension', 'lan_extension', '12v_extension',
-    # Netzwerk
-    'switch', 'router',
-    # Bundles
-    'bundle',
+    'sca_tsr',      # TSRID Scanner
+    'sca_dsk',      # Desko Scanner
+    # Tablet Docking Stations
+    'tdo_qer',      # Quer Dock (für SP4/SP6)
+    'tdo_tsr',      # TSRID Tablet Dock
+    # Scanner Docking Stations
+    'sdo_dsk',      # Desko Scanner Dock
+    'sdo_tsr',      # TSRID Scanner Dock
+    # Tablet Netzteile
+    'tps_spx',      # Surface PSU (für SP4, SP6, etc.)
+    'tps_tsr',      # TSRID Tablet/Dock PSU
+    # Scanner Netzteile
+    'sps_dsk',      # Desko Scanner PSU
+    'sps_tsr',      # TSRID Scanner PSU
+    # Extensions (ohne Modell-Suffix)
+    'usb',          # USB Extension
+    'lan',          # LAN Extension
+    '12v',          # 12V Extension
+    # Kits
+    'kit_sfd',      # Surface + Desko Kit
+    'kit_tsr',      # TSRID Kit
     # Sonstiges
     'other'
 ]
 
 # Asset-Typ zu Suffix Mapping für Asset-ID Generierung
-# Format: asset_id = [location_prefix]-[device_num]-[suffix]
-# Beispiel: AAHC01-01-TAB
+# Format: asset_id = [device_id]-[TYP]-[MODELL]
+# Beispiel: AAHC01-01-TAB-SP4 (Surface Pro 4 Tablet)
+# Beispiel: AAHC01-01-SCA-TSR (TSRID Scanner)
 ASSET_TYPE_SUFFIX_MAP = {
-    # Tablets -> TAB
-    'tablet': 'TAB',
-    'tsrid_tablet': 'TAB',
-    'surface_pro_4': 'TAB',
-    'surface_pro_6': 'TAB',
-    'surface_pro_7': 'TAB',
-    'surface_go': 'TAB',
-    # Scanner -> SCA
-    'scanner': 'SCA',
-    'tsrid_scanner': 'SCA',
-    'scanner_desko': 'SCA',
-    'scanner_regula': 'SCA',
-    # Tablet Dock -> TDO
-    'tablet_dock': 'TDO',
-    'dock_surface': 'TDO',
-    # Scanner Dock -> SDO
-    'scanner_dock': 'SDO',
-    'dock_desko': 'SDO',
-    # Allgemeine Docks -> TDO (default)
-    'dock': 'TDO',
-    'dock_quer': 'TDO',
-    # Tablet PSU -> TPS
-    'tablet_psu': 'TPS',
-    'psu_surface': 'TPS',
-    # Scanner PSU -> SPS
-    'scanner_psu': 'SPS',
-    'psu_desko': 'SPS',
-    # Allgemeine PSU -> TPS (default)
-    'psu': 'TPS',
-    # Extensions
-    'usb_extension': 'USB',
-    'usb_adapter_90': 'USB',
-    'usb_hub': 'USB',
-    'lan_extension': 'LAN',
-    '12v_extension': '12V',
-    # Kabel
-    'cable': 'USB',
-    'hdmi_adapter': 'USB',
-    'displayport_adapter': 'USB',
-    # Netzwerk -> LAN
-    'switch': 'LAN',
-    'router': 'LAN',
-    # Bundle -> KIT
-    'bundle': 'KIT',
+    # Tablets -> TAB-xxx
+    'tab_sp4': 'TAB-SP4',       # Surface Pro 4
+    'tab_sp6': 'TAB-SP6',       # Surface Pro 6
+    'tab_tsr': 'TAB-TSR',       # TSRID Tablet
+    # Scanner -> SCA-xxx
+    'sca_tsr': 'SCA-TSR',       # TSRID Scanner
+    'sca_dsk': 'SCA-DSK',       # Desko Scanner
+    # Tablet Docking -> TDO-xxx
+    'tdo_qer': 'TDO-QER',       # Quer Dock (SP4/SP6)
+    'tdo_tsr': 'TDO-TSR',       # TSRID Tablet Dock
+    # Scanner Docking -> SDO-xxx
+    'sdo_dsk': 'SDO-DSK',       # Desko Scanner Dock
+    'sdo_tsr': 'SDO-TSR',       # TSRID Scanner Dock
+    # Tablet PSU -> TPS-xxx
+    'tps_spx': 'TPS-SPX',       # Surface PSU
+    'tps_tsr': 'TPS-TSR',       # TSRID PSU
+    # Scanner PSU -> SPS-xxx
+    'sps_dsk': 'SPS-DSK',       # Desko Scanner PSU
+    'sps_tsr': 'SPS-TSR',       # TSRID Scanner PSU
+    # Extensions (ohne Modell-Suffix)
+    'usb': 'USB',
+    'lan': 'LAN',
+    '12v': '12V',
+    # Kits -> KIT-xxx
+    'kit_sfd': 'KIT-SFD',       # Surface + Desko Kit
+    'kit_tsr': 'KIT-TSR',       # TSRID Kit
     # Sonstiges
     'other': 'OTH'
+}
+
+# Asset-Typ Labels für UI (Deutsch)
+ASSET_TYPE_LABELS = {
+    'tab_sp4': 'Surface Pro 4',
+    'tab_sp6': 'Surface Pro 6',
+    'tab_tsr': 'TSRID Tablet',
+    'sca_tsr': 'TSRID Scanner',
+    'sca_dsk': 'Desko Scanner',
+    'tdo_qer': 'Quer Dock (Surface)',
+    'tdo_tsr': 'TSRID Tablet Dock',
+    'sdo_dsk': 'Desko Scanner Dock',
+    'sdo_tsr': 'TSRID Scanner Dock',
+    'tps_spx': 'Surface Netzteil',
+    'tps_tsr': 'TSRID Tablet Netzteil',
+    'sps_dsk': 'Desko Scanner Netzteil',
+    'sps_tsr': 'TSRID Scanner Netzteil',
+    'usb': 'USB Extension',
+    'lan': 'LAN Extension',
+    '12v': '12V Extension',
+    'kit_sfd': 'Surface + Desko Kit',
+    'kit_tsr': 'TSRID Kit',
+    'other': 'Sonstiges'
 }
 
 def get_asset_type_suffix(asset_type: str) -> str:
