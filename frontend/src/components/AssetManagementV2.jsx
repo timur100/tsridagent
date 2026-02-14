@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, Clock, CheckCircle, AlertCircle, XCircle,
   Building2, Monitor, Printer, Cable, Box, Filter, ExternalLink, History,
   ArrowRight, Unplug, Plug, Link2, LinkIcon, Smartphone, Wifi, WifiOff,
-  PackageOpen
+  PackageOpen, Wrench
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -17,6 +17,7 @@ import { Checkbox } from './ui/checkbox';
 import TablePagination from './ui/TablePagination';
 import TableSkeleton from './ui/TableSkeleton';
 import GoodsReceiptWorkflow from './GoodsReceiptWorkflow';
+import KitAssemblyWorkflow from './KitAssemblyWorkflow';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
