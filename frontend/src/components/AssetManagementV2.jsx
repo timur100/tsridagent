@@ -191,6 +191,8 @@ const AssetManagementV2 = ({ theme }) => {
     country: 'all',
     status: 'all',
     type: 'all',
+    city: 'all',
+    state: 'all',
     search: '',
     location_id: '',
     bundle_id: '',
