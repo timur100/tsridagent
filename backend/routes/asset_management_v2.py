@@ -627,11 +627,6 @@ async def list_locations(
         cursor = db.tenant_locations.find(query, {"_id": 0}).skip(skip).limit(limit).sort("location_code", 1)
         raw_locations = [loc async for loc in cursor]
         
-        # DEBUG: Log raw data
-        for loc in raw_locations:
-            if "BERN03" in str(loc.get("location_code", "")):
-                print(f"[DEBUG] BERN03 raw data: tenant_name={loc.get('tenant_name')}, tenant_id={loc.get('tenant_id')}")
-        
         # Transform to Asset Management format
         locations = []
         for loc in raw_locations:
