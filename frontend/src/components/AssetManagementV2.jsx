@@ -244,7 +244,7 @@ const AssetManagementV2 = ({ theme }) => {
     }
   }, []);
 
-  // Fetch locations
+  // Fetch locations - filtered by selected tenant
   const fetchLocations = useCallback(async () => {
     setLoading(true);
     try {
@@ -252,6 +252,10 @@ const AssetManagementV2 = ({ theme }) => {
         skip: String((pagination.locations.page - 1) * pageSize),
         limit: String(pageSize)
       });
+      // Filter by selected tenant (customer) from TenantContext
+      if (selectedTenantName && selectedTenantName !== 'Alle Kunden') {
+        params.append('customer', selectedTenantName);
+      }
       if (filters.country && filters.country !== 'all') params.append('country', filters.country);
       if (filters.status && filters.status !== 'all') params.append('status', filters.status);
       if (filters.city && filters.city !== 'all') params.append('city', filters.city);
@@ -279,7 +283,7 @@ const AssetManagementV2 = ({ theme }) => {
     } finally {
       setLoading(false);
     }
-  }, [filters.country, filters.status, filters.city, filters.state, filters.search, pagination.locations.page]);
+  }, [selectedTenantName, filters.country, filters.status, filters.city, filters.state, filters.search, pagination.locations.page]);
 
   // Fetch slots
   const fetchSlots = useCallback(async () => {
