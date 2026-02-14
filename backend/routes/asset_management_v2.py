@@ -2636,3 +2636,498 @@ async def seed_default_kit_templates():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ WARENEINGANG (Inventory Intake) ENDPOINTS ============
+# Workflow: 
+# 1. Geräte werden mit Seriennummer (Barcode) erfasst → Status "unassigned"
+# 2. Bei Zuweisung zu Location → Asset-ID wird generiert → Label wird erstellt
+
+@router.post("/inventory/intake")
+async def inventory_intake_single(item: InventoryIntakeItem, received_by: str = Query("")):
+    """
+    Wareneingang: Einzelnes Gerät mit Seriennummer erfassen.
+    Das Gerät erhält noch keine Asset-ID - nur die Seriennummer wird gespeichert.
+    Status: "unassigned" (nicht zugewiesen)
+    """
+    try:
+        # Check if serial number already exists
+        existing = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
+        if existing:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Gerät mit Seriennummer {item.manufacturer_sn} existiert bereits"
+            )
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Create asset without location-based ID
+        # Asset-ID is just the serial number for now
+        asset_doc = {
+            "asset_id": None,  # Will be set when assigned to location
+            "manufacturer_sn": item.manufacturer_sn,
+            "type": item.type,
+            "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
+            "type_suffix": ASSET_TYPE_SUFFIX_MAP.get(item.type, "OTH"),
+            "imei": item.imei,
+            "mac": item.mac,
+            "manufacturer": item.manufacturer,
+            "model": item.model,
+            "status": "unassigned",  # Not yet assigned to a location
+            "location_id": None,
+            "country": None,
+            "bundle_id": None,
+            "assigned_to_kit": None,
+            "notes": item.notes,
+            "intake_date": now,
+            "received_by": received_by,
+            "history": [{
+                "date": now,
+                "event": f"Wareneingang: {ASSET_TYPE_LABELS.get(item.type, item.type)}",
+                "event_type": "intake",
+                "notes": f"SN: {item.manufacturer_sn}",
+                "technician": received_by
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        result = await db.tsrid_assets.insert_one(asset_doc)
+        
+        return {
+            "success": True,
+            "message": f"Gerät erfasst: {item.manufacturer_sn}",
+            "manufacturer_sn": item.manufacturer_sn,
+            "type": item.type,
+            "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
+            "status": "unassigned",
+            "next_step": "Gerät kann jetzt einem Standort zugewiesen werden"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/intake/batch")
+async def inventory_intake_batch(batch: InventoryIntakeBatch):
+    """
+    Wareneingang: Mehrere Geräte auf einmal erfassen (z.B. 35 Tablets).
+    Alle Geräte erhalten Status "unassigned".
+    """
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        intake_date = batch.intake_date or now
+        
+        created = []
+        skipped = []
+        
+        for item in batch.items:
+            # Check if serial number already exists
+            existing = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
+            if existing:
+                skipped.append({
+                    "manufacturer_sn": item.manufacturer_sn,
+                    "reason": "Seriennummer existiert bereits"
+                })
+                continue
+            
+            asset_doc = {
+                "asset_id": None,
+                "manufacturer_sn": item.manufacturer_sn,
+                "type": item.type,
+                "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
+                "type_suffix": ASSET_TYPE_SUFFIX_MAP.get(item.type, "OTH"),
+                "imei": item.imei,
+                "mac": item.mac,
+                "manufacturer": item.manufacturer,
+                "model": item.model,
+                "status": "unassigned",
+                "location_id": None,
+                "country": None,
+                "bundle_id": None,
+                "assigned_to_kit": None,
+                "notes": item.notes,
+                "intake_date": intake_date,
+                "received_by": batch.received_by,
+                "supplier": batch.supplier,
+                "delivery_note": batch.delivery_note,
+                "history": [{
+                    "date": now,
+                    "event": f"Wareneingang: {ASSET_TYPE_LABELS.get(item.type, item.type)}",
+                    "event_type": "intake",
+                    "notes": f"SN: {item.manufacturer_sn}, Lieferant: {batch.supplier}",
+                    "technician": batch.received_by
+                }],
+                "created_at": now,
+                "updated_at": now
+            }
+            
+            await db.tsrid_assets.insert_one(asset_doc)
+            created.append({
+                "manufacturer_sn": item.manufacturer_sn,
+                "type": item.type,
+                "type_label": ASSET_TYPE_LABELS.get(item.type, item.type)
+            })
+        
+        return {
+            "success": True,
+            "message": f"{len(created)} Geräte erfasst, {len(skipped)} übersprungen",
+            "created_count": len(created),
+            "skipped_count": len(skipped),
+            "created": created,
+            "skipped": skipped
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/inventory/unassigned")
+async def list_unassigned_assets(
+    type: str = Query(None),
+    search: str = Query(None),
+    skip: int = Query(0),
+    limit: int = Query(100)
+):
+    """
+    Liste aller nicht zugewiesenen Geräte im Lager.
+    Diese Geräte haben noch keine Asset-ID und keinen Standort.
+    """
+    try:
+        query = {"status": "unassigned", "asset_id": None}
+        
+        if type:
+            query["type"] = type
+        if search:
+            query["$or"] = [
+                {"manufacturer_sn": {"$regex": search, "$options": "i"}},
+                {"imei": {"$regex": search, "$options": "i"}},
+                {"notes": {"$regex": search, "$options": "i"}}
+            ]
+        
+        total = await db.tsrid_assets.count_documents(query)
+        cursor = db.tsrid_assets.find(query).skip(skip).limit(limit).sort("created_at", -1)
+        assets = [serialize_doc(a) async for a in cursor]
+        
+        # Group by type for summary
+        type_counts = {}
+        all_unassigned = db.tsrid_assets.find({"status": "unassigned", "asset_id": None})
+        async for a in all_unassigned:
+            t = a.get("type", "other")
+            type_counts[t] = type_counts.get(t, 0) + 1
+        
+        return {
+            "success": True,
+            "assets": assets,
+            "total": total,
+            "type_summary": type_counts
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/assign/{manufacturer_sn}")
+async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssignToLocation):
+    """
+    Gerät einem Standort zuweisen.
+    - Generiert die Asset-ID basierend auf Location + Typ
+    - Generiert Label-Daten für QR-Code
+    - Ändert Status von "unassigned" zu "in_storage"
+    
+    Beispiel: SN "ABC123" + Location "AAHC01" + Typ "tab_tsr" → "AAHC01-01-TAB-TSR"
+    """
+    try:
+        # Find the unassigned asset by serial number
+        asset = await db.tsrid_assets.find_one({
+            "manufacturer_sn": manufacturer_sn,
+            "status": "unassigned"
+        })
+        
+        if not asset:
+            # Check if asset exists but is already assigned
+            existing = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+            if existing:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Gerät {manufacturer_sn} ist bereits zugewiesen: {existing.get('asset_id')}"
+                )
+            raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
+        
+        # Get location info
+        location = await db.tsrid_locations.find_one({"location_id": assignment.location_id})
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Standort {assignment.location_id} nicht gefunden")
+        
+        # Generate the next asset number for this location and type
+        asset_type = asset.get("type", "other")
+        type_suffix = ASSET_TYPE_SUFFIX_MAP.get(asset_type, "OTH")
+        
+        # Count existing assets at this location with same type
+        existing_count = await db.tsrid_assets.count_documents({
+            "location_id": assignment.location_id,
+            "type": asset_type,
+            "asset_id": {"$ne": None}
+        })
+        
+        # Generate Asset-ID: LOCATION-NR-TYP-MODELL
+        asset_number = str(existing_count + 1).zfill(2)
+        new_asset_id = f"{assignment.location_id}-{asset_number}-{type_suffix}"
+        
+        # Check if this ID already exists (shouldn't happen, but safety check)
+        id_exists = await db.tsrid_assets.find_one({"asset_id": new_asset_id})
+        if id_exists:
+            # Find next available number
+            for i in range(existing_count + 2, 100):
+                test_id = f"{assignment.location_id}-{str(i).zfill(2)}-{type_suffix}"
+                if not await db.tsrid_assets.find_one({"asset_id": test_id}):
+                    new_asset_id = test_id
+                    break
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Update the asset
+        update_data = {
+            "asset_id": new_asset_id,
+            "location_id": assignment.location_id,
+            "country": location.get("country", ""),
+            "status": "in_storage",
+            "assignment_date": now,
+            "updated_at": now
+        }
+        
+        # Add history entry
+        history_entry = {
+            "date": now,
+            "event": f"Standort zugewiesen: {assignment.location_id}",
+            "event_type": "assigned_to_location",
+            "notes": f"Asset-ID generiert: {new_asset_id}",
+            "technician": assignment.technician,
+            "location_id": assignment.location_id
+        }
+        
+        await db.tsrid_assets.update_one(
+            {"manufacturer_sn": manufacturer_sn},
+            {
+                "$set": update_data,
+                "$push": {"history": history_entry}
+            }
+        )
+        
+        # Generate label data
+        label_data = {
+            "asset_id": new_asset_id,
+            "manufacturer_sn": manufacturer_sn,
+            "type": asset_type,
+            "type_label": ASSET_TYPE_LABELS.get(asset_type, asset_type),
+            "location_id": assignment.location_id,
+            "location_name": f"{location.get('customer', '')} - {location.get('city', '')}",
+            "qr_content": new_asset_id,  # QR-Code enthält die Asset-ID
+            "generated_at": now
+        }
+        
+        # Add label generation to history
+        await db.tsrid_assets.update_one(
+            {"asset_id": new_asset_id},
+            {
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event": "Label generiert",
+                        "event_type": "label_generated",
+                        "notes": f"QR-Code für {new_asset_id}"
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Gerät zugewiesen und Asset-ID generiert",
+            "asset_id": new_asset_id,
+            "manufacturer_sn": manufacturer_sn,
+            "location_id": assignment.location_id,
+            "status": "in_storage",
+            "label": label_data,
+            "print_label": True,  # Flag für Frontend: Label soll gedruckt werden
+            "qr_code_content": new_asset_id
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/inventory/by-sn/{manufacturer_sn}")
+async def get_asset_by_serial_number(manufacturer_sn: str):
+    """
+    Gerät anhand der Seriennummer finden.
+    Nützlich beim Scannen eines Barcodes.
+    """
+    try:
+        asset = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
+        
+        asset = serialize_doc(asset)
+        asset["type_label"] = ASSET_TYPE_LABELS.get(asset.get("type"), asset.get("type"))
+        
+        return {
+            "success": True,
+            "asset": asset,
+            "is_assigned": asset.get("asset_id") is not None,
+            "status": asset.get("status")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/bulk-assign")
+async def bulk_assign_to_location(
+    serial_numbers: List[str],
+    location_id: str = Query(...),
+    technician: str = Query("")
+):
+    """
+    Mehrere Geräte gleichzeitig einem Standort zuweisen.
+    Jedes Gerät erhält eine eigene Asset-ID.
+    """
+    try:
+        location = await db.tsrid_locations.find_one({"location_id": location_id})
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Standort {location_id} nicht gefunden")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        assigned = []
+        failed = []
+        labels = []
+        
+        for sn in serial_numbers:
+            asset = await db.tsrid_assets.find_one({
+                "manufacturer_sn": sn,
+                "status": "unassigned"
+            })
+            
+            if not asset:
+                existing = await db.tsrid_assets.find_one({"manufacturer_sn": sn})
+                if existing:
+                    failed.append({"sn": sn, "reason": f"Bereits zugewiesen: {existing.get('asset_id')}"})
+                else:
+                    failed.append({"sn": sn, "reason": "Nicht gefunden"})
+                continue
+            
+            # Generate Asset-ID
+            asset_type = asset.get("type", "other")
+            type_suffix = ASSET_TYPE_SUFFIX_MAP.get(asset_type, "OTH")
+            
+            existing_count = await db.tsrid_assets.count_documents({
+                "location_id": location_id,
+                "type": asset_type,
+                "asset_id": {"$ne": None}
+            })
+            
+            asset_number = str(existing_count + 1).zfill(2)
+            new_asset_id = f"{location_id}-{asset_number}-{type_suffix}"
+            
+            # Ensure unique
+            while await db.tsrid_assets.find_one({"asset_id": new_asset_id}):
+                existing_count += 1
+                asset_number = str(existing_count + 1).zfill(2)
+                new_asset_id = f"{location_id}-{asset_number}-{type_suffix}"
+            
+            # Update asset
+            await db.tsrid_assets.update_one(
+                {"manufacturer_sn": sn},
+                {
+                    "$set": {
+                        "asset_id": new_asset_id,
+                        "location_id": location_id,
+                        "country": location.get("country", ""),
+                        "status": "in_storage",
+                        "assignment_date": now,
+                        "updated_at": now
+                    },
+                    "$push": {
+                        "history": {
+                            "date": now,
+                            "event": f"Standort zugewiesen: {location_id}",
+                            "event_type": "assigned_to_location",
+                            "notes": f"Asset-ID: {new_asset_id}",
+                            "technician": technician
+                        }
+                    }
+                }
+            )
+            
+            assigned.append({
+                "manufacturer_sn": sn,
+                "asset_id": new_asset_id,
+                "type": asset_type
+            })
+            
+            labels.append({
+                "asset_id": new_asset_id,
+                "manufacturer_sn": sn,
+                "type_label": ASSET_TYPE_LABELS.get(asset_type, asset_type),
+                "location_id": location_id,
+                "qr_content": new_asset_id
+            })
+        
+        return {
+            "success": True,
+            "message": f"{len(assigned)} Geräte zugewiesen, {len(failed)} fehlgeschlagen",
+            "assigned_count": len(assigned),
+            "failed_count": len(failed),
+            "assigned": assigned,
+            "failed": failed,
+            "labels": labels,
+            "print_labels": len(labels) > 0
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/inventory/label/{asset_id}")
+async def get_label_data(asset_id: str):
+    """
+    Label-Daten für ein Asset abrufen.
+    Wird verwendet um ein Label nachträglich zu drucken.
+    """
+    try:
+        asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {asset_id} nicht gefunden")
+        
+        asset = serialize_doc(asset)
+        
+        # Get location info
+        location = None
+        if asset.get("location_id"):
+            location = await db.tsrid_locations.find_one({"location_id": asset["location_id"]})
+            if location:
+                location = serialize_doc(location)
+        
+        label_data = {
+            "asset_id": asset_id,
+            "manufacturer_sn": asset.get("manufacturer_sn", ""),
+            "type": asset.get("type", ""),
+            "type_label": ASSET_TYPE_LABELS.get(asset.get("type"), asset.get("type")),
+            "manufacturer": asset.get("manufacturer", ""),
+            "model": asset.get("model", ""),
+            "location_id": asset.get("location_id", ""),
+            "location_name": f"{location.get('customer', '')} - {location.get('city', '')}" if location else "",
+            "qr_content": asset_id,
+            "barcode_content": asset.get("manufacturer_sn", "")
+        }
+        
+        return {
+            "success": True,
+            "label": label_data
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
