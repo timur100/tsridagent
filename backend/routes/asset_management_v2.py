@@ -204,8 +204,8 @@ MANUFACTURERS = [
     'Anker', 'Belkin', 'Ugreen', 'TSRID', 'Other'
 ]
 
-ASSET_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'defective', 'retired']
-EVENT_TYPES = ['created', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'license_activated', 'license_expired', 'note', 'linked_device', 'unlinked_device']
+ASSET_STATUSES = ['unassigned', 'in_storage', 'deployed', 'in_transit', 'maintenance', 'defective', 'retired']
+EVENT_TYPES = ['created', 'intake', 'assigned_to_location', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'license_activated', 'license_expired', 'note', 'linked_device', 'unlinked_device', 'label_generated']
 
 
 # ============ PYDANTIC MODELS ============
