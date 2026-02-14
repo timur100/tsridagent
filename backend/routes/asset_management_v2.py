@@ -3379,8 +3379,6 @@ async def get_label_data(asset_id: str):
         location = None
         if asset.get("location_id"):
             location = await find_location(asset["location_id"])
-            if location:
-                location = serialize_doc(location)
         
         label_data = {
             "asset_id": asset_id,
