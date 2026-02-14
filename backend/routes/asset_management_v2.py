@@ -1807,11 +1807,16 @@ async def get_asset_with_device_data(asset_id: str):
 
 @router.post("/devices/bulk-create-assets")
 async def bulk_create_assets_from_devices(device_ids: List[str], asset_type: str = Query("tablet")):
-    """Create assets for multiple devices at once"""
+    """Create assets for multiple devices at once with new ID format.
+    
+    Asset-ID Format: [device_id]-[type_suffix]
+    Example: AAHC01-01-TAB
+    """
     try:
         results = []
         success_count = 0
         error_count = 0
+        type_suffix = get_asset_type_suffix(asset_type)
         
         for device_id in device_ids:
             try:
@@ -1826,7 +1831,8 @@ async def bulk_create_assets_from_devices(device_ids: List[str], asset_type: str
                     error_count += 1
                     continue
                 
-                asset_id = f"AST-{device_id}"
+                # New format: [device_id]-[type_suffix]
+                asset_id = f"{device_id}-{type_suffix}"
                 
                 existing_asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
                 if existing_asset:
@@ -1849,7 +1855,7 @@ async def bulk_create_assets_from_devices(device_ids: List[str], asset_type: str
                         "date": now,
                         "event": f"Asset erstellt aus Device {device_id} (Bulk-Import)",
                         "event_type": "created",
-                        "notes": f"Location: {device.get('locationcode', '')}"
+                        "notes": f"Location: {device.get('locationcode', '')}, Typ-Suffix: {type_suffix}"
                     }],
                     "created_at": now,
                     "updated_at": now
