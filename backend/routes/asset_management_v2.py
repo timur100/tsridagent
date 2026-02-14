@@ -28,6 +28,8 @@ router = APIRouter(prefix="/api/asset-mgmt", tags=["asset-management-v2"])
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
 client = AsyncIOMotorClient(mongo_url)
 db = client['portal_db']
+# Multi-tenant DB für europcar_devices
+multi_tenant_db = client['multi_tenant_admin']
 
 # ============ ENUMS ============
 LOCATION_STATUSES = ['active', 'inactive', 'planned', 'decommissioned']
@@ -38,6 +40,8 @@ BUNDLE_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'retir
 ASSET_TYPES = [
     # Tablets
     'tablet', 'surface_pro_4', 'surface_pro_6', 'surface_pro_7', 'surface_go',
+    # TSRID Geräte
+    'tsrid_tablet', 'tsrid_scanner',
     # Scanner
     'scanner', 'scanner_desko', 'scanner_regula',
     # Docking Stations
@@ -55,11 +59,11 @@ ASSET_TYPES = [
 # Hersteller-Liste
 MANUFACTURERS = [
     'Microsoft', 'Desko', 'Regula', 'Samsung', 'Lenovo', 'HP', 'Dell', 
-    'Anker', 'Belkin', 'Ugreen', 'Other'
+    'Anker', 'Belkin', 'Ugreen', 'TSRID', 'Other'
 ]
 
 ASSET_STATUSES = ['in_storage', 'deployed', 'in_transit', 'maintenance', 'defective', 'retired']
-EVENT_TYPES = ['created', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'license_activated', 'license_expired', 'note']
+EVENT_TYPES = ['created', 'assigned_to_bundle', 'removed_from_bundle', 'installed', 'uninstalled', 'replaced', 'maintenance', 'status_change', 'license_activated', 'license_expired', 'note', 'linked_device', 'unlinked_device']
 
 
 # ============ PYDANTIC MODELS ============
