@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://asset-id-formatter.preview.emergentagent.com
+│   └── Lädt: https://bundle-inventory-pro.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

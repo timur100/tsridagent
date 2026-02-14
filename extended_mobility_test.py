@@ -9,7 +9,7 @@ import json
 import jwt
 
 # Backend URL from environment
-BACKEND_URL = "https://asset-id-formatter.preview.emergentagent.com"
+BACKEND_URL = "https://bundle-inventory-pro.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():

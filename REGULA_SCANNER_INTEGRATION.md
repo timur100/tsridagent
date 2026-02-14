@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://asset-id-formatter.preview.emergentagent.com/portal/admin/id-checks
+   https://bundle-inventory-pro.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
