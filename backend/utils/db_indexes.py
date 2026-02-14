@@ -92,6 +92,32 @@ async def create_indexes(db, portal_db, multi_tenant_db):
         await multi_tenant_db.assets.create_index("status")
         await multi_tenant_db.assets.create_index([("tenant_id", 1), ("category_id", 1)])
         
+        # ==================== Portal DB - TSRID Assets ====================
+        # WICHTIG: sparse=True erlaubt null-Werte für nicht zugewiesene Geräte
+        try:
+            # Drop old non-sparse indexes if they exist
+            existing_indexes = await portal_db.tsrid_assets.index_information()
+            if "asset_id_1" in existing_indexes:
+                await portal_db.tsrid_assets.drop_index("asset_id_1")
+        except:
+            pass
+        
+        # Create sparse indexes for assets (allows null values for unassigned devices)
+        await portal_db.tsrid_assets.create_index("asset_id", unique=True, sparse=True)
+        await portal_db.tsrid_assets.create_index("manufacturer_sn", unique=True, sparse=True)
+        await portal_db.tsrid_assets.create_index("status")
+        await portal_db.tsrid_assets.create_index("type")
+        await portal_db.tsrid_assets.create_index("location_id")
+        await portal_db.tsrid_assets.create_index("assigned_to_kit")
+        
+        # TSRID Locations
+        await portal_db.tsrid_locations.create_index("location_id", unique=True)
+        await portal_db.tsrid_locations.create_index("country")
+        await portal_db.tsrid_locations.create_index("status")
+        
+        # TSRID Kit Templates
+        await portal_db.tsrid_kit_templates.create_index("template_id", unique=True)
+        
         logger.info("✅ Database indexes created successfully")
         return True
         
