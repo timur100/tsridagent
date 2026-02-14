@@ -546,6 +546,28 @@ Integriert in folgende Komponenten:
 | P2 | "Single Source of Truth" Migration for `fleet_management.py` | NOT STARTED |
 | P3 | Printer Support in Electron App | NOT STARTED (Recurring) |
 
+### ✅ Recently Completed (Feb 14, 2025)
+
+#### Wareneingang-Workflow Frontend - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (17/17) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_17.json`
+- **Feature:** Neue Geräte erst mit Seriennummer erfassen, später Standort zuweisen → Asset-ID generieren
+- **Neue Komponente:** `/app/frontend/src/components/GoodsReceiptWorkflow.jsx`
+- **Integration:** Neuer "Wareneingang" Tab in Asset Management V2 (als Standard-Tab)
+- **Workflow:**
+  1. **Wareneingang erfassen:** Seriennummer scannen/eingeben + Gerätetyp auswählen
+  2. **Nicht zugewiesen:** Liste aller erfassten aber noch nicht zugewiesenen Geräte
+  3. **Zuweisen:** Standort auswählen → Asset-ID wird generiert (z.B. BERE01-01-TAB-TSR)
+  4. **Label:** QR-Code Modal zum Drucken
+- **UI-Features:**
+  - Lieferdaten-Felder (Empfänger, Lieferant, Lieferschein-Nr.)
+  - Seriennummer-Eingabe mit Barcode-Icon
+  - Gerätetyp-Dropdown (kategorisiert)
+  - Batch-Erfassung mit Tabelle
+  - Typ-Summary-Cards auf "Nicht zugewiesen" Tab
+  - Zuweisungs-Modal mit Asset-ID Vorschau
+  - QR-Code Label Modal mit Druck-Button
+
 ### 📋 Backlog/Future Tasks
 - Full Scanner Integration (Regula/Desko)
 - Sync Engine Activation (SQLite-to-MongoDB)
