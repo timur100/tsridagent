@@ -410,7 +410,7 @@ const AssetManagementV2 = ({ theme }) => {
 
   // Reset filters when tab changes
   useEffect(() => {
-    setFilters({ country: 'all', status: 'all', type: 'all', search: '', location_id: '', bundle_id: '', tenant_id: 'all' });
+    setFilters({ country: 'all', status: 'all', type: 'all', city: 'all', state: 'all', search: '', location_id: '', bundle_id: '', tenant_id: 'all' });
     setSelectedDevices(new Set());
     setDeviceFilter('all');
     setPagination(prev => ({
