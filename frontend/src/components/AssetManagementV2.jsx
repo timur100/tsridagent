@@ -18,6 +18,7 @@ import TablePagination from './ui/TablePagination';
 import TableSkeleton from './ui/TableSkeleton';
 import GoodsReceiptWorkflow from './GoodsReceiptWorkflow';
 import KitAssemblyWorkflow from './KitAssemblyWorkflow';
+import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
