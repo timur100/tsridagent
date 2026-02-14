@@ -20,12 +20,12 @@ TEST_PASSWORD = "admin123"
 def auth_token():
     """Get authentication token for admin user"""
     response = requests.post(
-        f"{BASE_URL}/api/portal/login",
+        f"{BASE_URL}/api/portal/auth/login",
         json={"email": TEST_EMAIL, "password": TEST_PASSWORD}
     )
     if response.status_code == 200:
         data = response.json()
-        return data.get("token") or data.get("access_token")
+        return data.get("access_token") or data.get("token")
     pytest.skip(f"Authentication failed: {response.status_code}")
 
 
