@@ -52,7 +52,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
   const fetchTemplates = useCallback(async () => {
     setLoadingTemplates(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/v2/kit-templates`);
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/kit-templates`);
       const data = await res.json();
       if (data.success) {
         setTemplates(data.templates || []);
