@@ -1585,7 +1585,11 @@ class CreateAssetFromDeviceRequest(BaseModel):
 
 @router.post("/devices/{device_id}/create-asset")
 async def create_asset_from_device(device_id: str, request: CreateAssetFromDeviceRequest):
-    """Create a new asset from an existing device and link them"""
+    """Create a new asset from an existing device and link them.
+    
+    Asset-ID Format: [location_prefix]-[device_num]-[type_suffix]
+    Example: AAHC01-01-TAB (Tablet), AAHC01-01-SCA (Scanner)
+    """
     try:
         # Get the device
         device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
@@ -1596,9 +1600,10 @@ async def create_asset_from_device(device_id: str, request: CreateAssetFromDevic
         if device.get("asset_id"):
             raise HTTPException(status_code=400, detail=f"Device {device_id} hat bereits Asset {device['asset_id']}")
         
-        # Generate asset_id based on device pattern
-        # E.g., device_id "AAHC01-01" -> asset_id "AST-AAHC01-01"
-        asset_id = f"AST-{device_id}"
+        # Generate asset_id with new format: [device_id]-[type_suffix]
+        # E.g., device_id "AAHC01-01" + asset_type "tsrid_tablet" -> "AAHC01-01-TAB"
+        type_suffix = get_asset_type_suffix(request.asset_type)
+        asset_id = f"{device_id}-{type_suffix}"
         
         # Check if asset_id already exists
         existing_asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
@@ -1626,7 +1631,7 @@ async def create_asset_from_device(device_id: str, request: CreateAssetFromDevic
                 "date": now,
                 "event": f"Asset erstellt aus Device {device_id}",
                 "event_type": "created",
-                "notes": f"Location: {device.get('locationcode', '')}, City: {device.get('city', '')}"
+                "notes": f"Location: {device.get('locationcode', '')}, City: {device.get('city', '')}, Typ-Suffix: {type_suffix}"
             }],
             "created_at": now,
             "updated_at": now
