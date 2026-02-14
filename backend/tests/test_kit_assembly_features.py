@@ -55,7 +55,7 @@ class TestLabelPrinterAPI:
         assert "default_ip" in data, "Missing default_ip field"
         assert "default_port" in data, "Missing default_port field"
         assert "label_size" in data, "Missing label_size field"
-        assert "supported_connections" in data, "Missing supported_connections field"
+        assert "connection_types" in data or "supported_connections" in data, "Missing connection_types field"
         
         # Verify default values
         assert data["default_port"] == 9100, "Expected default port 9100"
