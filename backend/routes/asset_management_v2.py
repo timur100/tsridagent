@@ -2575,6 +2575,151 @@ async def scan_kit_or_component(kit_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ SIMPLIFIED KIT ASSEMBLY (One-Step) ============
+class QuickKitAssembly(BaseModel):
+    template_id: str  # z.B. 'KIT-SFD'
+    location_id: str  # Standort-ID für das Kit
+    component_sns: List[str]  # Seriennummern der Komponenten
+
+
+@router.post("/kits/quick-assemble")
+async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query("")):
+    """
+    One-step kit assembly: Create kit, assign components, generate kit ID.
+    Used by the frontend Kit Assembly workflow.
+    """
+    try:
+        # 1. Get template
+        template = await db.tsrid_kit_templates.find_one({"template_id": assembly.template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {assembly.template_id} nicht gefunden")
+        
+        # 2. Get location
+        location = await db.tsrid_locations.find_one({"location_id": assembly.location_id})
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Standort {assembly.location_id} nicht gefunden")
+        
+        # 3. Validate and get all component assets
+        components = []
+        for sn in assembly.component_sns:
+            # Try by serial number first
+            asset = await db.tsrid_assets.find_one({"manufacturer_sn": sn})
+            if not asset:
+                # Try by asset_id
+                asset = await db.tsrid_assets.find_one({"asset_id": sn})
+            
+            if not asset:
+                raise HTTPException(status_code=404, detail=f"Komponente nicht gefunden: {sn}")
+            
+            if asset.get("assigned_to_kit"):
+                raise HTTPException(status_code=400, detail=f"Komponente {sn} ist bereits Kit {asset['assigned_to_kit']} zugewiesen")
+            
+            components.append(asset)
+        
+        # 4. Generate Kit ID: LOCATION-XX-KIT-SUFFIX
+        # Get the highest existing slot number for kits at this location
+        kit_type = assembly.template_id.lower().replace('-', '_')
+        kit_suffix = ASSET_TYPE_SUFFIXES.get(kit_type, assembly.template_id.replace('KIT-', 'KIT-'))
+        
+        existing_kits = await db.tsrid_assets.find(
+            {
+                "location_id": assembly.location_id,
+                "type": {"$regex": "^kit_"}
+            },
+            {"asset_id": 1}
+        ).to_list(1000)
+        
+        # Extract slot numbers from existing kits
+        max_slot = 0
+        for kit in existing_kits:
+            kit_asset_id = kit.get("asset_id", "")
+            parts = kit_asset_id.split("-")
+            if len(parts) >= 2:
+                try:
+                    slot_num = int(parts[1])
+                    max_slot = max(max_slot, slot_num)
+                except ValueError:
+                    pass
+        
+        next_slot = max_slot + 1
+        kit_id = f"{assembly.location_id}-{next_slot:02d}-{kit_suffix}"
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # 5. Create kit document
+        kit_doc = {
+            "asset_id": kit_id,
+            "type": kit_type,
+            "type_label": template.get("name", assembly.template_id),
+            "kit_template_id": assembly.template_id,
+            "kit_components": [c.get("asset_id") or c.get("manufacturer_sn") for c in components],
+            "kit_status": "complete" if len(components) >= len(template.get("components", [])) else "partial",
+            "location_id": assembly.location_id,
+            "slot_number": next_slot,
+            "status": "in_storage",
+            "history": [{
+                "date": now,
+                "event": f"Kit erstellt basierend auf Vorlage {assembly.template_id}",
+                "event_type": "created",
+                "technician": technician or None,
+                "notes": f"{len(components)} Komponenten zugewiesen"
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_assets.insert_one(kit_doc)
+        
+        # 6. Update all components to link them to this kit
+        for comp in components:
+            comp_id = comp.get("asset_id") or comp.get("_id")
+            await db.tsrid_assets.update_one(
+                {"_id": comp["_id"]},
+                {
+                    "$set": {
+                        "assigned_to_kit": kit_id,
+                        "parent_kit_id": kit_id,
+                        "updated_at": now
+                    }
+                }
+            )
+            
+            # Add history entry to component
+            comp_asset_id = comp.get("asset_id")
+            if comp_asset_id:
+                await add_asset_history(
+                    comp_asset_id,
+                    "assigned_to_bundle",
+                    f"Zu Kit {kit_id} zugewiesen",
+                    bundle_id=kit_id,
+                    technician=technician
+                )
+        
+        # 7. Return success with label data
+        return {
+            "success": True,
+            "kit_id": kit_id,
+            "template_id": assembly.template_id,
+            "template_name": template.get("name", assembly.template_id),
+            "location_id": assembly.location_id,
+            "component_count": len(components),
+            "kit_status": kit_doc["kit_status"],
+            "message": f"Kit {kit_id} erfolgreich erstellt",
+            "label": {
+                "asset_id": kit_id,
+                "type_label": template.get("name", assembly.template_id),
+                "manufacturer_sn": kit_id,
+                "location_name": f"{location.get('city', '')} - {location.get('location_name', assembly.location_id)}",
+                "qr_content": f"TSRID:KIT:{kit_id}",
+                "components": len(components)
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ SEED DEFAULT KIT TEMPLATES ============
 @router.post("/kit-templates/seed-defaults")
 async def seed_default_kit_templates():
