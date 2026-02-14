@@ -4,7 +4,7 @@
 
 ### 1️⃣ API Health Check (zeigt, dass OAuth2 funktioniert)
 ```bash
-curl "https://enhanced-locations.preview.emergentagent.com/api/dhl/health"
+curl "https://tenant-filter-search.preview.emergentagent.com/api/dhl/health"
 ```
 
 **Erwartetes Ergebnis**: `"mode": "live"` ✓
@@ -13,7 +13,7 @@ curl "https://enhanced-locations.preview.emergentagent.com/api/dhl/health"
 
 ### 2️⃣ Mock-Daten abrufen (zeigt Datenstruktur)
 ```bash
-curl "https://enhanced-locations.preview.emergentagent.com/api/dhl/shipments/mock"
+curl "https://tenant-filter-search.preview.emergentagent.com/api/dhl/shipments/mock"
 ```
 
 **Erwartetes Ergebnis**: 3 Test-Sendungen mit allen Details
@@ -24,7 +24,7 @@ curl "https://enhanced-locations.preview.emergentagent.com/api/dhl/shipments/moc
 
 **URL öffnen**:
 ```
-https://enhanced-locations.preview.emergentagent.com/portal/admin
+https://tenant-filter-search.preview.emergentagent.com/portal/admin
 ```
 
 **Login**:
@@ -105,7 +105,7 @@ Jetzt können Sie:
 ## 📊 Beispiel-Request für echte Sendung
 
 ```bash
-curl -X POST "https://enhanced-locations.preview.emergentagent.com/api/dhl/shipments" \
+curl -X POST "https://tenant-filter-search.preview.emergentagent.com/api/dhl/shipments" \
   -H "Content-Type: application/json" \
   -d '{
     "reference_id": "ORDER-12345",

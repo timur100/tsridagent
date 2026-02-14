@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://enhanced-locations.preview.emergentagent.com/portal/admin
+https://tenant-filter-search.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://enhanced-locations.preview.emergentagent.com/api/dhl"
+API_URL="https://tenant-filter-search.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

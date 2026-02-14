@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://enhanced-locations.preview.emergentagent.com';
+    this.serverUrl = 'https://tenant-filter-search.preview.emergentagent.com';
   }
 
   /**

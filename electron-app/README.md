@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://enhanced-locations.preview.emergentagent.com
+│   └── Lädt: https://tenant-filter-search.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```
