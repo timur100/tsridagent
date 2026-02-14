@@ -250,6 +250,8 @@ const AssetManagementV2 = ({ theme }) => {
       });
       if (filters.country && filters.country !== 'all') params.append('country', filters.country);
       if (filters.status && filters.status !== 'all') params.append('status', filters.status);
+      if (filters.city && filters.city !== 'all') params.append('city', filters.city);
+      if (filters.state && filters.state !== 'all') params.append('state', filters.state);
       if (filters.search) params.append('search', filters.search);
       
       const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/locations?${params}`);
@@ -261,7 +263,9 @@ const AssetManagementV2 = ({ theme }) => {
           setFilterOptions(prev => ({
             ...prev,
             countries: data.filters.countries || [],
-            customers: data.filters.customers || []
+            customers: data.filters.customers || [],
+            cities: data.filters.cities || [],
+            states: data.filters.states || []
           }));
         }
       }
@@ -271,7 +275,7 @@ const AssetManagementV2 = ({ theme }) => {
     } finally {
       setLoading(false);
     }
-  }, [filters.country, filters.status, filters.search, pagination.locations.page]);
+  }, [filters.country, filters.status, filters.city, filters.state, filters.search, pagination.locations.page]);
 
   // Fetch slots
   const fetchSlots = useCallback(async () => {
