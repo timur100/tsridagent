@@ -52,6 +52,9 @@ const ASSET_STATUS_CONFIG = {
 
 // Erweiterte Asset-Typ-Konfiguration
 const ASSET_TYPE_CONFIG = {
+  // TSRID Geräte
+  tsrid_tablet: { label: 'TSRID Tablet', icon: Monitor, category: 'TSRID' },
+  tsrid_scanner: { label: 'TSRID Scanner', icon: Monitor, category: 'TSRID' },
   // Tablets
   tablet: { label: 'Tablet', icon: Monitor, category: 'Tablets' },
   surface_pro_4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets' },
@@ -95,6 +98,7 @@ const MANUFACTURER_OPTIONS = [
   { value: 'Anker', label: 'Anker' },
   { value: 'Belkin', label: 'Belkin' },
   { value: 'Ugreen', label: 'Ugreen' },
+  { value: 'TSRID', label: 'TSRID' },
   { value: 'Other', label: 'Sonstiger' }
 ];
 
