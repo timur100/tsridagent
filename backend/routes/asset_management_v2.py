@@ -1573,13 +1573,16 @@ async def delete_asset(asset_id: str):
 
 @router.get("/stats")
 async def get_statistics():
-    """Get overall statistics for dashboard"""
+    """Get overall statistics for dashboard - using tenant_locations"""
     try:
+        # Use tenant_locations for location counts (synced with main menu)
+        total_locations = await db.tenant_locations.count_documents({})
+        
         stats = {
             "locations": {
-                "total": await db.tsrid_locations.count_documents({}),
-                "active": await db.tsrid_locations.count_documents({"status": "active"}),
-                "planned": await db.tsrid_locations.count_documents({"status": "planned"})
+                "total": total_locations,
+                "active": total_locations,  # All tenant_locations are considered active
+                "planned": 0
             },
             "slots": {
                 "total": await db.tsrid_slots.count_documents({}),
@@ -1606,12 +1609,12 @@ async def get_statistics():
         type_cursor = db.tsrid_assets.aggregate(type_pipeline)
         stats["assets"]["by_type"] = {item["_id"]: item["count"] async for item in type_cursor}
         
-        # Locations by country
+        # Locations by country from tenant_locations
         country_pipeline = [
             {"$group": {"_id": "$country", "count": {"$sum": 1}}},
             {"$sort": {"count": -1}}
         ]
-        country_cursor = db.tsrid_locations.aggregate(country_pipeline)
+        country_cursor = db.tenant_locations.aggregate(country_pipeline)
         stats["locations"]["by_country"] = {item["_id"]: item["count"] async for item in country_cursor}
         
         return {"success": True, "stats": stats}
