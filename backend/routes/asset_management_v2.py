@@ -1416,7 +1416,7 @@ async def get_linked_devices(
     """Get all devices that already have an asset_id"""
     try:
         query = {
-            "asset_id": {"$exists": True, "$ne": None, "$ne": ""}
+            "asset_id": {"$exists": True, "$nin": [None, ""]}
         }
         
         if tenant_id:
@@ -1461,7 +1461,7 @@ async def get_all_devices_with_asset_status(
             query["tenant_id"] = tenant_id
         
         if has_asset == "yes":
-            query["asset_id"] = {"$exists": True, "$ne": None, "$ne": ""}
+            query["asset_id"] = {"$exists": True, "$nin": [None, ""]}
         elif has_asset == "no":
             query["$or"] = [
                 {"asset_id": {"$exists": False}},
@@ -1491,7 +1491,7 @@ async def get_all_devices_with_asset_status(
         # Stats
         total_all = await multi_tenant_db.europcar_devices.count_documents({} if not tenant_id else {"tenant_id": tenant_id})
         with_asset = await multi_tenant_db.europcar_devices.count_documents({
-            "asset_id": {"$exists": True, "$ne": None, "$ne": ""},
+            "asset_id": {"$exists": True, "$nin": [None, ""]},
             **({"tenant_id": tenant_id} if tenant_id else {})
         })
         without_asset = total_all - with_asset
