@@ -2059,7 +2059,7 @@ async def get_asset_with_device_data(asset_id: str):
                     
                     # Get location
                     if slot.get("location_id"):
-                        location = await db.tsrid_locations.find_one({"location_id": slot["location_id"]})
+                        location = await find_location(slot["location_id"])
                         asset["location"] = serialize_doc(location) if location else None
         
         # Sort history by date descending
@@ -2722,7 +2722,7 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
             raise HTTPException(status_code=404, detail=f"Kit Template {assembly.template_id} nicht gefunden")
         
         # 2. Get location
-        location = await db.tsrid_locations.find_one({"location_id": assembly.location_id})
+        location = await find_location(assembly.location_id)
         if not location:
             raise HTTPException(status_code=404, detail=f"Standort {assembly.location_id} nicht gefunden")
         
@@ -3126,7 +3126,7 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
         # Get location info
-        location = await db.tsrid_locations.find_one({"location_id": assignment.location_id})
+        location = await find_location(assignment.location_id)
         if not location:
             raise HTTPException(status_code=404, detail=f"Standort {assignment.location_id} nicht gefunden")
         
@@ -3266,7 +3266,7 @@ async def bulk_assign_to_location(
     Jedes Gerät erhält eine eigene Asset-ID.
     """
     try:
-        location = await db.tsrid_locations.find_one({"location_id": location_id})
+        location = await find_location(location_id)
         if not location:
             raise HTTPException(status_code=404, detail=f"Standort {location_id} nicht gefunden")
         
@@ -3378,7 +3378,7 @@ async def get_label_data(asset_id: str):
         # Get location info
         location = None
         if asset.get("location_id"):
-            location = await db.tsrid_locations.find_one({"location_id": asset["location_id"]})
+            location = await find_location(asset["location_id"])
             if location:
                 location = serialize_doc(location)
         
