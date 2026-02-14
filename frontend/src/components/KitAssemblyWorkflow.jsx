@@ -533,7 +533,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
             <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Fehlend:</span>
             {progress.remaining.map((item, i) => (
               <Badge key={i} variant="outline" className="bg-orange-500/10 text-orange-500">
-                {item.needed - item.have}x {item.type}
+                {item.needed - item.have}x {item.label || item.type}
               </Badge>
             ))}
           </div>
