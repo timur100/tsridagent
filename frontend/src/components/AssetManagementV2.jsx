@@ -2208,6 +2208,169 @@ const AssetManagementV2 = ({ theme }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Create Asset from Device Modal */}
+      <Dialog open={showCreateAssetModal} onOpenChange={setShowCreateAssetModal}>
+        <DialogContent className={`max-w-lg ${isDark ? 'bg-[#1a1a1a] text-white' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Link2 className="h-5 w-5 text-green-500" />
+              Asset aus Gerät erstellen
+            </DialogTitle>
+            <DialogDescription className={isDark ? 'text-gray-400' : 'text-gray-500'}>
+              {deviceToLink && (
+                <>Device: <strong>{deviceToLink.device_id}</strong> • Location: {deviceToLink.locationcode} • Stadt: {deviceToLink.city}</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Device Info Summary */}
+            {deviceToLink && (
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>SN-PC:</span>
+                    <span className="ml-2 font-mono">{deviceToLink.sn_pc || '-'}</span>
+                  </div>
+                  <div>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>SN-SC:</span>
+                    <span className="ml-2 font-mono">{deviceToLink.sn_sc || '-'}</span>
+                  </div>
+                  <div>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Status:</span>
+                    <span className="ml-2">{deviceToLink.status}</span>
+                  </div>
+                  <div>
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-500'}>Land:</span>
+                    <span className="ml-2">{deviceToLink.country}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Asset Type Selection */}
+            <div>
+              <label className="text-sm font-medium">Asset-Typ *</label>
+              <Select 
+                value={createAssetForm.asset_type} 
+                onValueChange={(v) => setCreateAssetForm(prev => ({ ...prev, asset_type: v }))}
+              >
+                <SelectTrigger className={inputBg}><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="tsrid_tablet">TSRID Tablet</SelectItem>
+                  <SelectItem value="tsrid_scanner">TSRID Scanner</SelectItem>
+                  <SelectItem value="tablet">Tablet (allgemein)</SelectItem>
+                  <SelectItem value="surface_pro_4">Surface Pro 4</SelectItem>
+                  <SelectItem value="surface_pro_6">Surface Pro 6</SelectItem>
+                  <SelectItem value="surface_pro_7">Surface Pro 7</SelectItem>
+                  <SelectItem value="scanner">Scanner (allgemein)</SelectItem>
+                  <SelectItem value="scanner_desko">Desko Scanner</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Manufacturer & Model */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Hersteller</label>
+                <Select 
+                  value={createAssetForm.manufacturer} 
+                  onValueChange={(v) => setCreateAssetForm(prev => ({ ...prev, manufacturer: v }))}
+                >
+                  <SelectTrigger className={inputBg}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                  <SelectContent>
+                    {MANUFACTURER_OPTIONS.map(m => (
+                      <SelectItem key={m.value} value={m.value}>{m.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Modell</label>
+                <Input
+                  value={createAssetForm.model}
+                  onChange={(e) => setCreateAssetForm(prev => ({ ...prev, model: e.target.value }))}
+                  placeholder="z.B. Surface Pro 7"
+                  className={inputBg}
+                />
+              </div>
+            </div>
+            
+            {/* Purchase & Warranty */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium">Kaufdatum</label>
+                <Input
+                  type="date"
+                  value={createAssetForm.purchase_date}
+                  onChange={(e) => setCreateAssetForm(prev => ({ ...prev, purchase_date: e.target.value }))}
+                  className={inputBg}
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium">Garantie (Monate)</label>
+                <Select 
+                  value={createAssetForm.warranty_months} 
+                  onValueChange={(v) => setCreateAssetForm(prev => ({ ...prev, warranty_months: v }))}
+                >
+                  <SelectTrigger className={inputBg}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="12">12 Monate</SelectItem>
+                    <SelectItem value="24">24 Monate</SelectItem>
+                    <SelectItem value="36">36 Monate</SelectItem>
+                    <SelectItem value="48">48 Monate</SelectItem>
+                    <SelectItem value="60">60 Monate</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {/* Warranty Type */}
+            <div>
+              <label className="text-sm font-medium">Garantie-Typ</label>
+              <Select 
+                value={createAssetForm.warranty_type} 
+                onValueChange={(v) => setCreateAssetForm(prev => ({ ...prev, warranty_type: v }))}
+              >
+                <SelectTrigger className={inputBg}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                <SelectContent>
+                  {WARRANTY_TYPE_OPTIONS.map(w => (
+                    <SelectItem key={w.value} value={w.value}>{w.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Notes */}
+            <div>
+              <label className="text-sm font-medium">Notizen</label>
+              <Input
+                value={createAssetForm.notes}
+                onChange={(e) => setCreateAssetForm(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Optionale Notizen..."
+                className={inputBg}
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowCreateAssetModal(false);
+              setDeviceToLink(null);
+            }}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={handleCreateAssetFromDevice} 
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Asset erstellen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
