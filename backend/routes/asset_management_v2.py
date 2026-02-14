@@ -1996,3 +1996,612 @@ async def bulk_create_assets_from_devices(device_ids: List[str], asset_type: str
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ KIT TEMPLATES ============
+# Kit Templates define which components make up a specific kit type
+# Example: KIT-SFD (Surface + Desko) = 1x TAB-SP4, 1x SCA-DSK, 1x TDO-QER, 1x SDO-DSK, 1x TPS-SPX, 1x SPS-DSK
+
+# Pydantic Models for Kit Templates
+class KitTemplateComponent(BaseModel):
+    asset_type: str  # z.B. 'tab_sp4', 'sca_dsk'
+    quantity: int = 1
+    optional: bool = False  # Ob Komponente optional ist
+    notes: Optional[str] = ""
+
+
+class KitTemplateCreate(BaseModel):
+    template_id: str  # z.B. 'KIT-SFD', 'KIT-TSR'
+    name: str  # z.B. 'Surface + Desko Kit'
+    description: Optional[str] = ""
+    components: List[KitTemplateComponent]
+    notes: Optional[str] = ""
+
+
+class KitTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    components: Optional[List[KitTemplateComponent]] = None
+    notes: Optional[str] = None
+
+
+async def get_kit_templates_list():
+    """Helper function to get all kit templates"""
+    try:
+        cursor = db.tsrid_kit_templates.find({}, {"_id": 0})
+        templates = [doc async for doc in cursor]
+        return templates
+    except Exception:
+        return []
+
+
+@router.get("/kit-templates")
+async def list_kit_templates():
+    """List all kit templates with component details"""
+    try:
+        templates = await get_kit_templates_list()
+        
+        # Enrich templates with component labels
+        for template in templates:
+            if template.get("components"):
+                for comp in template["components"]:
+                    comp["label"] = ASSET_TYPE_LABELS.get(comp.get("asset_type"), comp.get("asset_type"))
+                    comp["suffix"] = ASSET_TYPE_SUFFIX_MAP.get(comp.get("asset_type"), "OTH")
+        
+        return {
+            "success": True,
+            "templates": templates,
+            "total": len(templates)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kit-templates/{template_id}")
+async def get_kit_template(template_id: str):
+    """Get a specific kit template with component details"""
+    try:
+        template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {template_id} nicht gefunden")
+        
+        template = serialize_doc(template)
+        
+        # Enrich with component labels
+        if template.get("components"):
+            for comp in template["components"]:
+                comp["label"] = ASSET_TYPE_LABELS.get(comp.get("asset_type"), comp.get("asset_type"))
+                comp["suffix"] = ASSET_TYPE_SUFFIX_MAP.get(comp.get("asset_type"), "OTH")
+        
+        return {"success": True, "template": template}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kit-templates")
+async def create_kit_template(template: KitTemplateCreate):
+    """Create a new kit template"""
+    try:
+        # Check if template_id already exists
+        existing = await db.tsrid_kit_templates.find_one({"template_id": template.template_id})
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Kit Template {template.template_id} existiert bereits")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        template_doc = {
+            "template_id": template.template_id,
+            "name": template.name,
+            "description": template.description,
+            "components": [comp.dict() for comp in template.components],
+            "notes": template.notes,
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_kit_templates.insert_one(template_doc)
+        
+        return {
+            "success": True,
+            "template_id": template.template_id,
+            "message": f"Kit Template {template.template_id} erstellt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/kit-templates/{template_id}")
+async def update_kit_template(template_id: str, update: KitTemplateUpdate):
+    """Update a kit template"""
+    try:
+        template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {template_id} nicht gefunden")
+        
+        update_data = {}
+        if update.name is not None:
+            update_data["name"] = update.name
+        if update.description is not None:
+            update_data["description"] = update.description
+        if update.notes is not None:
+            update_data["notes"] = update.notes
+        if update.components is not None:
+            update_data["components"] = [comp.dict() for comp in update.components]
+        
+        if update_data:
+            update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+            await db.tsrid_kit_templates.update_one(
+                {"template_id": template_id},
+                {"$set": update_data}
+            )
+        
+        return {"success": True, "message": f"Kit Template {template_id} aktualisiert"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/kit-templates/{template_id}")
+async def delete_kit_template(template_id: str):
+    """Delete a kit template"""
+    try:
+        template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {template_id} nicht gefunden")
+        
+        await db.tsrid_kit_templates.delete_one({"template_id": template_id})
+        
+        return {"success": True, "message": f"Kit Template {template_id} gelöscht"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ KIT ASSEMBLY (Zusammenstellung) ============
+# Kits are assembled assets that contain multiple component assets
+
+class KitAssemblyCreate(BaseModel):
+    kit_id: str  # z.B. 'AAHC01-01-KIT'
+    template_id: str  # z.B. 'KIT-SFD'
+    country: str
+    location_id: Optional[str] = None
+    notes: Optional[str] = ""
+
+
+class KitComponentAssign(BaseModel):
+    asset_id: str  # ID des Komponenten-Assets
+
+
+@router.get("/kits")
+async def list_kits(
+    status: str = Query(None),
+    country: str = Query(None),
+    template_id: str = Query(None),
+    search: str = Query(None),
+    skip: int = Query(0),
+    limit: int = Query(100)
+):
+    """List all assembled kits"""
+    try:
+        # Query assets with type starting with 'kit_'
+        query = {"type": {"$regex": "^kit_"}}
+        
+        if status and status != "all":
+            query["status"] = status
+        if country:
+            query["country"] = country
+        if template_id:
+            query["kit_template_id"] = template_id
+        if search:
+            query["$or"] = [
+                {"asset_id": {"$regex": search, "$options": "i"}},
+                {"notes": {"$regex": search, "$options": "i"}}
+            ]
+        
+        total = await db.tsrid_assets.count_documents(query)
+        cursor = db.tsrid_assets.find(query).skip(skip).limit(limit).sort("asset_id", 1)
+        kits = [serialize_doc(k) async for k in cursor]
+        
+        # Enrich with component count
+        for kit in kits:
+            if kit.get("kit_components"):
+                kit["component_count"] = len(kit["kit_components"])
+            else:
+                kit["component_count"] = 0
+        
+        return {
+            "success": True,
+            "kits": kits,
+            "total": total
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kits/{kit_id}")
+async def get_kit_details(kit_id: str):
+    """Get kit details with all component assets"""
+    try:
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        kit = serialize_doc(kit)
+        
+        # Get template info
+        if kit.get("kit_template_id"):
+            template = await db.tsrid_kit_templates.find_one({"template_id": kit["kit_template_id"]})
+            if template:
+                kit["template"] = serialize_doc(template)
+        
+        # Get full details for each component asset
+        component_details = []
+        if kit.get("kit_components"):
+            for comp_id in kit["kit_components"]:
+                comp_asset = await db.tsrid_assets.find_one({"asset_id": comp_id})
+                if comp_asset:
+                    comp_asset = serialize_doc(comp_asset)
+                    comp_asset["type_label"] = ASSET_TYPE_LABELS.get(comp_asset.get("type"), comp_asset.get("type"))
+                    component_details.append(comp_asset)
+        
+        kit["component_details"] = component_details
+        
+        return {"success": True, "kit": kit}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/assemble")
+async def assemble_kit(assembly: KitAssemblyCreate):
+    """Create a new kit and prepare it for component assembly"""
+    try:
+        # Check if kit_id already exists
+        existing = await db.tsrid_assets.find_one({"asset_id": assembly.kit_id})
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Kit {assembly.kit_id} existiert bereits")
+        
+        # Get template
+        template = await db.tsrid_kit_templates.find_one({"template_id": assembly.template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {assembly.template_id} nicht gefunden")
+        
+        # Map template_id to asset type
+        # e.g., 'KIT-SFD' -> 'kit_sfd'
+        kit_asset_type = assembly.template_id.lower().replace('-', '_')
+        
+        now = datetime.now(timezone.utc).isoformat()
+        kit_doc = {
+            "asset_id": assembly.kit_id,
+            "type": kit_asset_type,
+            "kit_template_id": assembly.template_id,
+            "kit_components": [],  # Will be filled during assembly
+            "kit_status": "assembling",  # assembling, complete, deployed
+            "country": assembly.country,
+            "location_id": assembly.location_id,
+            "status": "in_storage",
+            "notes": assembly.notes,
+            "history": [{
+                "date": now,
+                "event": f"Kit erstellt basierend auf Vorlage {assembly.template_id}",
+                "event_type": "created",
+                "notes": f"Vorlage: {template.get('name', assembly.template_id)}"
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_assets.insert_one(kit_doc)
+        
+        return {
+            "success": True,
+            "kit_id": assembly.kit_id,
+            "template_id": assembly.template_id,
+            "message": f"Kit {assembly.kit_id} erstellt. Bereit für Komponenten-Zuweisung.",
+            "required_components": [
+                {
+                    "asset_type": comp.get("asset_type"),
+                    "label": ASSET_TYPE_LABELS.get(comp.get("asset_type"), comp.get("asset_type")),
+                    "quantity": comp.get("quantity", 1),
+                    "optional": comp.get("optional", False)
+                }
+                for comp in template.get("components", [])
+            ]
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/add-component")
+async def add_component_to_kit(kit_id: str, component: KitComponentAssign, technician: str = Query("")):
+    """Add a component asset to a kit by scanning/entering its asset ID"""
+    try:
+        # Get the kit
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        # Get the component asset
+        comp_asset = await db.tsrid_assets.find_one({"asset_id": component.asset_id})
+        if not comp_asset:
+            raise HTTPException(status_code=404, detail=f"Komponente {component.asset_id} nicht gefunden")
+        
+        # Check if component is already assigned to another kit
+        if comp_asset.get("assigned_to_kit"):
+            raise HTTPException(status_code=400, detail=f"Komponente {component.asset_id} ist bereits Kit {comp_asset['assigned_to_kit']} zugewiesen")
+        
+        # Check if component is already in this kit
+        if component.asset_id in kit.get("kit_components", []):
+            raise HTTPException(status_code=400, detail=f"Komponente {component.asset_id} ist bereits in diesem Kit")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Add component to kit
+        await db.tsrid_assets.update_one(
+            {"asset_id": kit_id},
+            {
+                "$push": {"kit_components": component.asset_id},
+                "$set": {"updated_at": now}
+            }
+        )
+        
+        # Mark component as assigned to kit
+        await db.tsrid_assets.update_one(
+            {"asset_id": component.asset_id},
+            {
+                "$set": {
+                    "assigned_to_kit": kit_id,
+                    "updated_at": now
+                }
+            }
+        )
+        
+        # Add history to kit
+        await add_asset_history(
+            kit_id,
+            "assigned_to_bundle",
+            f"Komponente {component.asset_id} ({ASSET_TYPE_LABELS.get(comp_asset.get('type'), comp_asset.get('type'))}) hinzugefügt",
+            technician=technician
+        )
+        
+        # Add history to component
+        await add_asset_history(
+            component.asset_id,
+            "assigned_to_bundle",
+            f"Zu Kit {kit_id} zugewiesen",
+            bundle_id=kit_id,
+            technician=technician
+        )
+        
+        # Check if kit is complete
+        kit_updated = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        template = await db.tsrid_kit_templates.find_one({"template_id": kit_updated.get("kit_template_id")})
+        
+        is_complete = False
+        if template:
+            required_components = {}
+            for comp in template.get("components", []):
+                if not comp.get("optional", False):
+                    required_components[comp["asset_type"]] = comp.get("quantity", 1)
+            
+            # Count components by type
+            assigned_counts = {}
+            for comp_id in kit_updated.get("kit_components", []):
+                comp = await db.tsrid_assets.find_one({"asset_id": comp_id})
+                if comp:
+                    comp_type = comp.get("type", "other")
+                    assigned_counts[comp_type] = assigned_counts.get(comp_type, 0) + 1
+            
+            # Check if all required components are present
+            is_complete = all(
+                assigned_counts.get(req_type, 0) >= req_qty
+                for req_type, req_qty in required_components.items()
+            )
+            
+            if is_complete:
+                await db.tsrid_assets.update_one(
+                    {"asset_id": kit_id},
+                    {"$set": {"kit_status": "complete"}}
+                )
+        
+        return {
+            "success": True,
+            "message": f"Komponente {component.asset_id} zu Kit {kit_id} hinzugefügt",
+            "kit_status": "complete" if is_complete else "assembling",
+            "component_count": len(kit_updated.get("kit_components", []))
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/kits/{kit_id}/remove-component/{component_id}")
+async def remove_component_from_kit(kit_id: str, component_id: str, technician: str = Query("")):
+    """Remove a component from a kit"""
+    try:
+        # Get the kit
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        # Check if component is in kit
+        if component_id not in kit.get("kit_components", []):
+            raise HTTPException(status_code=400, detail=f"Komponente {component_id} ist nicht in diesem Kit")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Remove component from kit
+        await db.tsrid_assets.update_one(
+            {"asset_id": kit_id},
+            {
+                "$pull": {"kit_components": component_id},
+                "$set": {"updated_at": now, "kit_status": "assembling"}
+            }
+        )
+        
+        # Unmark component
+        await db.tsrid_assets.update_one(
+            {"asset_id": component_id},
+            {"$unset": {"assigned_to_kit": ""}, "$set": {"updated_at": now}}
+        )
+        
+        # Add history
+        await add_asset_history(
+            kit_id,
+            "removed_from_bundle",
+            f"Komponente {component_id} entfernt",
+            technician=technician
+        )
+        
+        await add_asset_history(
+            component_id,
+            "removed_from_bundle",
+            f"Von Kit {kit_id} entfernt",
+            bundle_id=kit_id,
+            technician=technician
+        )
+        
+        return {"success": True, "message": f"Komponente {component_id} von Kit {kit_id} entfernt"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/scan")
+async def scan_kit_or_component(kit_id: str):
+    """Scan a Kit QR code - returns kit info with all components, or info about component's parent kit"""
+    try:
+        # Try to find as kit
+        asset = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {kit_id} nicht gefunden")
+        
+        asset = serialize_doc(asset)
+        
+        # Check if it's a kit (type starts with kit_)
+        if asset.get("type", "").startswith("kit_"):
+            # It's a kit - return full kit details
+            component_details = []
+            if asset.get("kit_components"):
+                for comp_id in asset["kit_components"]:
+                    comp = await db.tsrid_assets.find_one({"asset_id": comp_id})
+                    if comp:
+                        comp = serialize_doc(comp)
+                        comp["type_label"] = ASSET_TYPE_LABELS.get(comp.get("type"), comp.get("type"))
+                        component_details.append(comp)
+            
+            # Get template
+            template = None
+            if asset.get("kit_template_id"):
+                template = await db.tsrid_kit_templates.find_one({"template_id": asset["kit_template_id"]})
+                if template:
+                    template = serialize_doc(template)
+            
+            return {
+                "success": True,
+                "scan_type": "kit",
+                "kit": asset,
+                "template": template,
+                "components": component_details,
+                "component_count": len(component_details)
+            }
+        else:
+            # It's a component - check if it's assigned to a kit
+            if asset.get("assigned_to_kit"):
+                parent_kit = await db.tsrid_assets.find_one({"asset_id": asset["assigned_to_kit"]})
+                if parent_kit:
+                    parent_kit = serialize_doc(parent_kit)
+                    return {
+                        "success": True,
+                        "scan_type": "component",
+                        "component": asset,
+                        "component_type_label": ASSET_TYPE_LABELS.get(asset.get("type"), asset.get("type")),
+                        "parent_kit": parent_kit
+                    }
+            
+            # Component not in any kit
+            return {
+                "success": True,
+                "scan_type": "component",
+                "component": asset,
+                "component_type_label": ASSET_TYPE_LABELS.get(asset.get("type"), asset.get("type")),
+                "parent_kit": None,
+                "message": "Komponente ist keinem Kit zugewiesen"
+            }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ SEED DEFAULT KIT TEMPLATES ============
+@router.post("/kit-templates/seed-defaults")
+async def seed_default_kit_templates():
+    """Create default kit templates for Surface+Desko and TSRID kits"""
+    try:
+        defaults = [
+            {
+                "template_id": "KIT-SFD",
+                "name": "Surface + Desko Kit",
+                "description": "Komplettes Kit für Surface Pro mit Desko Scanner",
+                "components": [
+                    {"asset_type": "tab_sp4", "quantity": 1, "optional": False, "notes": "Surface Pro 4 oder SP6"},
+                    {"asset_type": "sca_dsk", "quantity": 1, "optional": False, "notes": "Desko Scanner"},
+                    {"asset_type": "tdo_qer", "quantity": 1, "optional": False, "notes": "Tablet Quer Dock"},
+                    {"asset_type": "sdo_dsk", "quantity": 1, "optional": False, "notes": "Scanner Dock"},
+                    {"asset_type": "tps_spx", "quantity": 1, "optional": False, "notes": "Tablet Netzteil"},
+                    {"asset_type": "sps_dsk", "quantity": 1, "optional": False, "notes": "Scanner Netzteil"},
+                    {"asset_type": "cab_usb_c", "quantity": 1, "optional": True, "notes": "USB-C Kabel"},
+                    {"asset_type": "cab_lan", "quantity": 1, "optional": True, "notes": "LAN-Kabel"},
+                ],
+                "notes": "Standard Kit für Europcar Stationen mit Surface Pro"
+            },
+            {
+                "template_id": "KIT-TSR",
+                "name": "TSRID Kit",
+                "description": "Komplettes TSRID Hardware-Kit",
+                "components": [
+                    {"asset_type": "tab_tsr", "quantity": 1, "optional": False, "notes": "TSRID Tablet"},
+                    {"asset_type": "sca_tsr", "quantity": 1, "optional": False, "notes": "TSRID Scanner"},
+                    {"asset_type": "tdo_tsr", "quantity": 1, "optional": False, "notes": "TSRID Tablet Dock"},
+                    {"asset_type": "sdo_tsr", "quantity": 1, "optional": False, "notes": "TSRID Scanner Dock"},
+                    {"asset_type": "tps_tsr", "quantity": 1, "optional": False, "notes": "TSRID Tablet Netzteil"},
+                    {"asset_type": "sps_tsr", "quantity": 1, "optional": False, "notes": "TSRID Scanner Netzteil"},
+                ],
+                "notes": "Standard Kit für TSRID Hardware"
+            }
+        ]
+        
+        created = []
+        skipped = []
+        now = datetime.now(timezone.utc).isoformat()
+        
+        for template in defaults:
+            existing = await db.tsrid_kit_templates.find_one({"template_id": template["template_id"]})
+            if existing:
+                skipped.append(template["template_id"])
+                continue
+            
+            template["created_at"] = now
+            template["updated_at"] = now
+            await db.tsrid_kit_templates.insert_one(template)
+            created.append(template["template_id"])
+        
+        return {
+            "success": True,
+            "created": created,
+            "skipped": skipped,
+            "message": f"{len(created)} Templates erstellt, {len(skipped)} übersprungen (bereits vorhanden)"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
