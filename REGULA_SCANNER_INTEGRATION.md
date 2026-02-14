@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://bundle-inventory-pro.preview.emergentagent.com/portal/admin/id-checks
+   https://inventory-check-in.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

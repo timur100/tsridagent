@@ -69,7 +69,7 @@ yarn start
 
 ### Was passiert:
 1. Electron öffnet ein Desktop-Fenster
-2. Lädt automatisch: `https://bundle-inventory-pro.preview.emergentagent.com/portal/admin`
+2. Lädt automatisch: `https://inventory-check-in.preview.emergentagent.com/portal/admin`
 3. Injiziert USB-APIs via `window.usbAPI` und `window.printerAPI`
 4. Web-App erkennt `window.isDesktopApp = true`
 

@@ -220,7 +220,7 @@ X-API-Key: G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
 
 1. **Health Check:** ✅ PASS
    ```bash
-   curl https://bundle-inventory-pro.preview.emergentagent.com/api/webhooks/health
+   curl https://inventory-check-in.preview.emergentagent.com/api/webhooks/health
    # {"success": true, "service": "Webhook Service", "status": "operational"}
    ```
 
@@ -256,8 +256,8 @@ Nach Implementierung im scan-verify-hub:
 2. **.env updaten**:
    ```env
    WEBHOOK_API_KEY=G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg
-   ID_CHECK_WEBHOOK_URL=https://bundle-inventory-pro.preview.emergentagent.com/api/webhooks/scan-completed
-   ID_CHECK_IMAGE_UPLOAD_URL=https://bundle-inventory-pro.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
+   ID_CHECK_WEBHOOK_URL=https://inventory-check-in.preview.emergentagent.com/api/webhooks/scan-completed
+   ID_CHECK_IMAGE_UPLOAD_URL=https://inventory-check-in.preview.emergentagent.com/api/webhooks/scan-completed/upload-images
    ```
 
 3. **Dependencies installieren**:

@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://bundle-inventory-pro.preview.emergentagent.com';
+    this.serverUrl = 'https://inventory-check-in.preview.emergentagent.com';
   }
 
   /**

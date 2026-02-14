@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bundle-inventory-pro.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://inventory-check-in.preview.emergentagent.com')
 
 class TestKitManagementAPIs:
     """Test Kit Management CRUD operations"""

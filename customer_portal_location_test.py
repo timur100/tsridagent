@@ -12,7 +12,7 @@ import random
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://bundle-inventory-pro.preview.emergentagent.com"
+BACKEND_URL = "https://inventory-check-in.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class CustomerPortalLocationTester:
