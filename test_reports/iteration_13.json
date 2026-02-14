@@ -1,0 +1,142 @@
+{
+  "summary": "Device-Asset Linking Feature Testing - Backend: 18/18 tests passed. Frontend: UI verified with Geräte-Import tab showing stats (216 devices, 1 with asset, 215 without), device table with correct columns, TSRID asset types in dropdown, and warranty month selection.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_device_asset_linking.py",
+    "/app/test_reports/pytest/device_asset_linking_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_device_asset_linking.py"
+  ],
+  "success_rate": {
+    "backend": "100% (18/18 tests passed)",
+    "frontend": "100% (all UI features verified via screenshots)"
+  },
+  "test_credentials": {
+    "Admin Portal": "admin@tsrid.com / admin123"
+  },
+  "seed_data_creation": "Device AAHC01-01 was pre-linked with Asset AST-AAHC01-01 as mentioned in context",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Device-Asset linking fully functional. Device import tab shows stats and allows creating assets from devices with TSRID types and warranty month calculation.",
+  "verified_features": {
+    "1_devices_all_endpoint": {
+      "description": "GET /api/asset-mgmt/devices/all - List all devices with asset status",
+      "status": "PASS",
+      "details": [
+        "Returns devices with asset_id field",
+        "Stats show: total_devices (216), with_asset (1), without_asset (215)",
+        "Filters: has_asset (yes/no/all), search, tenant_id"
+      ]
+    },
+    "2_create_asset_from_device": {
+      "description": "POST /api/asset-mgmt/devices/{device_id}/create-asset",
+      "status": "PASS",
+      "details": [
+        "Creates asset with ID pattern AST-{device_id}",
+        "Links asset to device (sets linked_device_id)",
+        "Updates device with asset_id reference",
+        "Returns error if device already has asset"
+      ]
+    },
+    "3_device_asset_linking": {
+      "description": "Asset-Device bi-directional linking",
+      "status": "PASS",
+      "details": [
+        "Device stores asset_id field",
+        "Asset stores linked_device_id field",
+        "GET /api/asset-mgmt/assets/{id}/with-device enriches with device data"
+      ]
+    },
+    "4_geraete_import_tab": {
+      "description": "Frontend: Geräte-Import tab in Rollout Management",
+      "status": "PASS",
+      "details": [
+        "Tab shows badge with unlinked device count (215)",
+        "3 stats cards: Gesamt Geräte (216), Mit Asset (1), Ohne Asset (215)",
+        "Filter dropdown: Alle Geräte, Ohne Asset, Mit Asset"
+      ]
+    },
+    "5_device_table": {
+      "description": "Frontend: Device table with columns",
+      "status": "PASS",
+      "details": [
+        "Columns: Device-ID, Asset-ID, Location, Stadt, SN-PC, SN-SC, Status, Aktionen",
+        "Linked asset shows as green clickable link (AST-AAHC01-01)",
+        "Unlinked devices show 'Kein Asset' and '+ Asset' button"
+      ]
+    },
+    "6_tsrid_asset_types": {
+      "description": "TSRID Tablet and TSRID Scanner asset types",
+      "status": "PASS",
+      "details": [
+        "tsrid_tablet in ASSET_TYPES array",
+        "tsrid_scanner in ASSET_TYPES array",
+        "Dropdown in Create Asset modal shows both options",
+        "Assets can be created with these types"
+      ]
+    },
+    "7_warranty_date_calculation": {
+      "description": "Automatic warranty end date calculation",
+      "status": "PASS",
+      "details": [
+        "Kaufdatum (purchase date) + Garantie Monate = warranty_until",
+        "Dropdown options: 12, 24, 36, 48, 60 Monate",
+        "Calculation: purchaseDate.setMonth(purchaseDate.getMonth() + months)",
+        "Same logic works for license_activation_date + license_months"
+      ]
+    },
+    "8_asset_navigation": {
+      "description": "Clicking linked Asset-ID navigates to asset",
+      "status": "PASS",
+      "details": [
+        "Green asset link in device table is clickable",
+        "Clicking navigates to Assets tab with search filter applied"
+      ]
+    }
+  },
+  "backend_tests_summary": {
+    "total_tests": 18,
+    "passed": 18,
+    "failed": 0,
+    "test_classes": [
+      "TestDeviceAssetListing (4 tests) - Device listing with filters and stats",
+      "TestAssetCreationFromDevice (3 tests) - Create asset from device endpoint",
+      "TestTSRIDAssetTypes (3 tests) - TSRID Tablet/Scanner types",
+      "TestWarrantyDateCalculation (3 tests) - Warranty date with 12/24/36 months",
+      "TestLicenseDateCalculation (1 test) - License expiry calculation",
+      "TestDeviceAssetLink (2 tests) - Bi-directional linking verification",
+      "TestUnlinkedDevicesEndpoint (1 test) - Devices without assets",
+      "TestLinkedDevicesEndpoint (1 test) - Devices with assets"
+    ]
+  },
+  "frontend_tests_summary": {
+    "pages_tested": [
+      "Admin Portal Login",
+      "Assets Tab > Rollout Management > Geräte-Import"
+    ],
+    "ui_elements_verified": [
+      "Geräte-Import tab with badge (215)",
+      "3 stats cards (Gesamt Geräte, Mit Asset, Ohne Asset)",
+      "Device table with 8 columns",
+      "Filter dropdown (Alle Geräte, Ohne Asset, Mit Asset)",
+      "Linked asset display (green clickable link)",
+      "+ Asset button for unlinked devices",
+      "Create Asset modal with TSRID types and warranty months"
+    ]
+  },
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  }
+}
