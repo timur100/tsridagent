@@ -1004,6 +1004,198 @@ const AssetManagementV2 = ({ theme }) => {
     </div>
   );
 
+  // Render Devices Table (Device-Import Tab)
+  const DevicesTable = () => {
+    const unlinkedOnPage = devices.filter(d => !d.asset_id);
+    const allUnlinkedSelected = unlinkedOnPage.length > 0 && unlinkedOnPage.every(d => selectedDevices.has(d.device_id));
+    
+    return (
+      <div className="space-y-4">
+        {/* Device Stats Cards */}
+        <div className="grid grid-cols-3 gap-4">
+          <Card className={`p-4 ${cardBg}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-100'}`}>
+                <Smartphone className="h-5 w-5 text-blue-500" />
+              </div>
+              <div>
+                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt Geräte</p>
+                <p className={`text-xl font-bold ${isDark ? 'text-white' : ''}`}>{deviceStats.total_devices}</p>
+              </div>
+            </div>
+          </Card>
+          <Card className={`p-4 ${cardBg}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-green-500/20' : 'bg-green-100'}`}>
+                <Link2 className="h-5 w-5 text-green-500" />
+              </div>
+              <div>
+                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Mit Asset</p>
+                <p className={`text-xl font-bold ${isDark ? 'text-white' : ''}`}>{deviceStats.with_asset}</p>
+              </div>
+            </div>
+          </Card>
+          <Card className={`p-4 ${cardBg}`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-orange-500/20' : 'bg-orange-100'}`}>
+                <AlertCircle className="h-5 w-5 text-orange-500" />
+              </div>
+              <div>
+                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Ohne Asset</p>
+                <p className={`text-xl font-bold ${isDark ? 'text-white' : ''}`}>{deviceStats.without_asset}</p>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Filters */}
+        <div className="flex gap-3 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <div className="relative">
+              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+              <Input
+                placeholder="Device-ID, Location, SN suchen..."
+                value={filters.search}
+                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                className={`pl-10 ${inputBg}`}
+              />
+            </div>
+          </div>
+          
+          <Select value={deviceFilter} onValueChange={setDeviceFilter}>
+            <SelectTrigger className={`w-[180px] ${inputBg}`}>
+              <SelectValue placeholder="Asset-Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle Geräte</SelectItem>
+              <SelectItem value="no">Ohne Asset</SelectItem>
+              <SelectItem value="yes">Mit Asset</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {selectedDevices.size > 0 && (
+            <Button 
+              onClick={handleBulkCreateAssets}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              {selectedDevices.size} Assets erstellen
+            </Button>
+          )}
+        </div>
+
+        {/* Table */}
+        <div className={`rounded-lg border overflow-hidden ${cardBg}`}>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className={isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
+                <tr>
+                  <th className="px-3 py-3 text-left text-xs font-semibold w-10">
+                    <Checkbox 
+                      checked={allUnlinkedSelected}
+                      onCheckedChange={selectAllUnlinkedDevices}
+                      disabled={unlinkedOnPage.length === 0}
+                    />
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">Device-ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">Asset-ID</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">Location</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">Stadt</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">SN-PC</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold">SN-SC</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold">Aktionen</th>
+                </tr>
+              </thead>
+              <tbody>
+                {devices.map(device => (
+                  <tr 
+                    key={device.device_id} 
+                    className={`border-t ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'}`}
+                  >
+                    <td className="px-3 py-3">
+                      {!device.asset_id && (
+                        <Checkbox 
+                          checked={selectedDevices.has(device.device_id)}
+                          onCheckedChange={() => toggleDeviceSelection(device.device_id)}
+                        />
+                      )}
+                    </td>
+                    <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>
+                      {device.device_id}
+                    </td>
+                    <td className="px-4 py-3">
+                      {device.asset_id ? (
+                        <span 
+                          className="text-green-500 cursor-pointer hover:underline flex items-center gap-1"
+                          onClick={() => {
+                            setActiveTab('assets');
+                            setFilters(prev => ({ ...prev, search: device.asset_id }));
+                          }}
+                        >
+                          <Link2 className="h-3 w-3" />
+                          {device.asset_id}
+                        </span>
+                      ) : (
+                        <span className={`text-xs ${isDark ? 'text-orange-400' : 'text-orange-500'}`}>
+                          Kein Asset
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">{device.locationcode || '-'}</td>
+                    <td className="px-4 py-3">{device.city || '-'}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{device.sn_pc || '-'}</td>
+                    <td className="px-4 py-3 font-mono text-xs">{device.sn_sc || '-'}</td>
+                    <td className="px-4 py-3 text-center">
+                      <Badge variant="outline" className={
+                        device.status === 'online' ? 'bg-green-500/20 text-green-500' :
+                        device.status === 'offline' ? 'bg-red-500/20 text-red-400' :
+                        'bg-yellow-500/20 text-yellow-500'
+                      }>
+                        {device.teamviewer_online ? <Wifi className="h-3 w-3 inline mr-1" /> : <WifiOff className="h-3 w-3 inline mr-1" />}
+                        {device.status || 'unbekannt'}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      {!device.asset_id ? (
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          className="text-green-500 border-green-500 hover:bg-green-500/10"
+                          onClick={() => {
+                            setDeviceToLink(device);
+                            setShowCreateAssetModal(true);
+                          }}
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Asset
+                        </Button>
+                      ) : (
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          onClick={() => openDetailModal('asset', device.asset_id.replace('AST-', ''))}
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {devices.length === 0 && !loading && (
+            <div className="p-8 text-center">
+              <Smartphone className="h-12 w-12 mx-auto mb-4 opacity-30" />
+              <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>Keine Geräte gefunden</p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Render Asset History Timeline
   const AssetHistoryTimeline = ({ history }) => {
     if (!history || history.length === 0) {
