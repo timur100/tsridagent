@@ -3,7 +3,7 @@ import {
   MapPin, Layers, Package, Cpu, Search, RefreshCw, Plus, Edit2, Trash2,
   ChevronRight, ChevronDown, Clock, CheckCircle, AlertCircle, XCircle,
   Building2, Monitor, Printer, Cable, Box, Filter, ExternalLink, History,
-  ArrowRight, Unplug, Plug
+  ArrowRight, Unplug, Plug, Link2, LinkIcon, Smartphone, Wifi, WifiOff
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -12,6 +12,7 @@ import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Checkbox } from './ui/checkbox';
 import TablePagination from './ui/TablePagination';
 import TableSkeleton from './ui/TableSkeleton';
 import toast from 'react-hot-toast';
