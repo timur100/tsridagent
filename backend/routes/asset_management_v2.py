@@ -1317,3 +1317,500 @@ async def get_statistics():
         return {"success": True, "stats": stats}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+# ============ DEVICE-ASSET LINKING ENDPOINTS ============
+
+async def get_device_by_id(device_id: str):
+    """Helper to fetch device from europcar_devices"""
+    device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
+    if device and "_id" in device:
+        device["_id"] = str(device["_id"])
+    return device
+
+
+async def enrich_asset_with_device_data(asset: dict):
+    """Enrich asset with live data from linked device"""
+    if not asset.get("linked_device_id"):
+        return asset
+    
+    device = await get_device_by_id(asset["linked_device_id"])
+    if device:
+        # Synchronisiere Device-Daten ins Asset
+        asset["device_data"] = {
+            "device_id": device.get("device_id"),
+            "locationcode": device.get("locationcode"),
+            "city": device.get("city"),
+            "country": device.get("country"),
+            "sn_pc": device.get("sn_pc"),
+            "sn_sc": device.get("sn_sc"),
+            "status": device.get("status"),
+            "customer": device.get("customer"),
+            "tvid": device.get("tvid"),
+            "teamviewer_online": device.get("teamviewer_online"),
+            "teamviewer_last_seen": device.get("teamviewer_last_seen"),
+            "tenant_id": device.get("tenant_id")
+        }
+    return asset
+
+
+@router.get("/devices/unlinked")
+async def get_unlinked_devices(
+    tenant_id: str = Query(None),
+    search: str = Query(None),
+    skip: int = Query(0),
+    limit: int = Query(100)
+):
+    """Get all devices from europcar_devices that don't have an asset_id yet"""
+    try:
+        query = {
+            "$or": [
+                {"asset_id": {"$exists": False}},
+                {"asset_id": None},
+                {"asset_id": ""}
+            ]
+        }
+        
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        if search:
+            query["$and"] = query.get("$and", [])
+            query["$and"].append({
+                "$or": [
+                    {"device_id": {"$regex": search, "$options": "i"}},
+                    {"locationcode": {"$regex": search, "$options": "i"}},
+                    {"city": {"$regex": search, "$options": "i"}},
+                    {"sn_pc": {"$regex": search, "$options": "i"}},
+                    {"sn_sc": {"$regex": search, "$options": "i"}}
+                ]
+            })
+        
+        total = await multi_tenant_db.europcar_devices.count_documents(query)
+        cursor = multi_tenant_db.europcar_devices.find(query, {"_id": 0}).skip(skip).limit(limit).sort("device_id", 1)
+        devices = [doc async for doc in cursor]
+        
+        # Get unique tenant_ids for filter
+        tenant_ids = await multi_tenant_db.europcar_devices.distinct("tenant_id")
+        
+        return {
+            "success": True,
+            "devices": devices,
+            "total": total,
+            "filters": {
+                "tenant_ids": tenant_ids
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/devices/linked")
+async def get_linked_devices(
+    tenant_id: str = Query(None),
+    search: str = Query(None),
+    skip: int = Query(0),
+    limit: int = Query(100)
+):
+    """Get all devices that already have an asset_id"""
+    try:
+        query = {
+            "asset_id": {"$exists": True, "$ne": None, "$ne": ""}
+        }
+        
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        if search:
+            query["$and"] = query.get("$and", [])
+            query["$and"].append({
+                "$or": [
+                    {"device_id": {"$regex": search, "$options": "i"}},
+                    {"asset_id": {"$regex": search, "$options": "i"}},
+                    {"locationcode": {"$regex": search, "$options": "i"}}
+                ]
+            })
+        
+        total = await multi_tenant_db.europcar_devices.count_documents(query)
+        cursor = multi_tenant_db.europcar_devices.find(query, {"_id": 0}).skip(skip).limit(limit).sort("device_id", 1)
+        devices = [doc async for doc in cursor]
+        
+        return {
+            "success": True,
+            "devices": devices,
+            "total": total
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/devices/all")
+async def get_all_devices_with_asset_status(
+    tenant_id: str = Query(None),
+    has_asset: str = Query(None),  # 'yes', 'no', or None for all
+    search: str = Query(None),
+    skip: int = Query(0),
+    limit: int = Query(100)
+):
+    """Get all devices with their asset linking status"""
+    try:
+        query = {}
+        
+        if tenant_id:
+            query["tenant_id"] = tenant_id
+        
+        if has_asset == "yes":
+            query["asset_id"] = {"$exists": True, "$ne": None, "$ne": ""}
+        elif has_asset == "no":
+            query["$or"] = [
+                {"asset_id": {"$exists": False}},
+                {"asset_id": None},
+                {"asset_id": ""}
+            ]
+        
+        if search:
+            search_query = {
+                "$or": [
+                    {"device_id": {"$regex": search, "$options": "i"}},
+                    {"asset_id": {"$regex": search, "$options": "i"}},
+                    {"locationcode": {"$regex": search, "$options": "i"}},
+                    {"city": {"$regex": search, "$options": "i"}},
+                    {"sn_pc": {"$regex": search, "$options": "i"}}
+                ]
+            }
+            if query:
+                query = {"$and": [query, search_query]}
+            else:
+                query = search_query
+        
+        total = await multi_tenant_db.europcar_devices.count_documents(query)
+        cursor = multi_tenant_db.europcar_devices.find(query, {"_id": 0}).skip(skip).limit(limit).sort("device_id", 1)
+        devices = [doc async for doc in cursor]
+        
+        # Stats
+        total_all = await multi_tenant_db.europcar_devices.count_documents({} if not tenant_id else {"tenant_id": tenant_id})
+        with_asset = await multi_tenant_db.europcar_devices.count_documents({
+            "asset_id": {"$exists": True, "$ne": None, "$ne": ""},
+            **({"tenant_id": tenant_id} if tenant_id else {})
+        })
+        without_asset = total_all - with_asset
+        
+        # Get unique tenant_ids for filter
+        tenant_ids = await multi_tenant_db.europcar_devices.distinct("tenant_id")
+        
+        return {
+            "success": True,
+            "devices": devices,
+            "total": total,
+            "stats": {
+                "total_devices": total_all,
+                "with_asset": with_asset,
+                "without_asset": without_asset
+            },
+            "filters": {
+                "tenant_ids": tenant_ids
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+class CreateAssetFromDeviceRequest(BaseModel):
+    device_id: str
+    asset_type: str = "tablet"
+    additional_data: Optional[Dict[str, Any]] = {}
+
+
+@router.post("/devices/{device_id}/create-asset")
+async def create_asset_from_device(device_id: str, request: CreateAssetFromDeviceRequest):
+    """Create a new asset from an existing device and link them"""
+    try:
+        # Get the device
+        device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
+        if not device:
+            raise HTTPException(status_code=404, detail=f"Device {device_id} nicht gefunden")
+        
+        # Check if device already has an asset
+        if device.get("asset_id"):
+            raise HTTPException(status_code=400, detail=f"Device {device_id} hat bereits Asset {device['asset_id']}")
+        
+        # Generate asset_id based on device pattern
+        # E.g., device_id "AAHC01-01" -> asset_id "AST-AAHC01-01"
+        asset_id = f"AST-{device_id}"
+        
+        # Check if asset_id already exists
+        existing_asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
+        if existing_asset:
+            raise HTTPException(status_code=400, detail=f"Asset {asset_id} existiert bereits")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Map device status to asset status
+        device_status = device.get("status", "").lower()
+        asset_status = "deployed" if device_status == "online" else "in_storage" if device_status == "in_vorbereitung" else "deployed"
+        
+        # Create asset document with device data
+        asset_doc = {
+            "asset_id": asset_id,
+            "type": request.asset_type,
+            "linked_device_id": device_id,
+            "manufacturer_sn": device.get("sn_pc", ""),
+            "country": device.get("country", ""),
+            "status": asset_status,
+            # Additional data from request
+            **request.additional_data,
+            # History
+            "history": [{
+                "date": now,
+                "event": f"Asset erstellt aus Device {device_id}",
+                "event_type": "created",
+                "notes": f"Location: {device.get('locationcode', '')}, City: {device.get('city', '')}"
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_assets.insert_one(asset_doc)
+        
+        # Update device with asset_id reference
+        await multi_tenant_db.europcar_devices.update_one(
+            {"device_id": device_id},
+            {"$set": {"asset_id": asset_id, "asset_updated_at": now}}
+        )
+        
+        return {
+            "success": True,
+            "asset_id": asset_id,
+            "device_id": device_id,
+            "message": f"Asset {asset_id} erstellt und mit Device {device_id} verknüpft"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/devices/{device_id}/link-asset")
+async def link_device_to_existing_asset(device_id: str, asset_id: str = Query(...)):
+    """Link an existing device to an existing asset"""
+    try:
+        # Get the device
+        device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
+        if not device:
+            raise HTTPException(status_code=404, detail=f"Device {device_id} nicht gefunden")
+        
+        # Get the asset
+        asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset {asset_id} nicht gefunden")
+        
+        # Check if device already has an asset
+        if device.get("asset_id") and device.get("asset_id") != asset_id:
+            raise HTTPException(status_code=400, detail=f"Device {device_id} ist bereits mit Asset {device['asset_id']} verknüpft")
+        
+        # Check if asset already has a different device
+        if asset.get("linked_device_id") and asset.get("linked_device_id") != device_id:
+            raise HTTPException(status_code=400, detail=f"Asset {asset_id} ist bereits mit Device {asset['linked_device_id']} verknüpft")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Update device
+        await multi_tenant_db.europcar_devices.update_one(
+            {"device_id": device_id},
+            {"$set": {"asset_id": asset_id, "asset_updated_at": now}}
+        )
+        
+        # Update asset
+        await db.tsrid_assets.update_one(
+            {"asset_id": asset_id},
+            {
+                "$set": {
+                    "linked_device_id": device_id,
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event": f"Mit Device {device_id} verknüpft",
+                        "event_type": "linked_device",
+                        "notes": f"Location: {device.get('locationcode', '')}"
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Device {device_id} mit Asset {asset_id} verknüpft"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/devices/{device_id}/unlink-asset")
+async def unlink_device_from_asset(device_id: str):
+    """Remove the link between a device and its asset"""
+    try:
+        # Get the device
+        device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
+        if not device:
+            raise HTTPException(status_code=404, detail=f"Device {device_id} nicht gefunden")
+        
+        asset_id = device.get("asset_id")
+        if not asset_id:
+            raise HTTPException(status_code=400, detail=f"Device {device_id} hat kein verknüpftes Asset")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Update device - remove asset_id
+        await multi_tenant_db.europcar_devices.update_one(
+            {"device_id": device_id},
+            {"$unset": {"asset_id": ""}, "$set": {"asset_updated_at": now}}
+        )
+        
+        # Update asset - remove linked_device_id and add history
+        await db.tsrid_assets.update_one(
+            {"asset_id": asset_id},
+            {
+                "$unset": {"linked_device_id": ""},
+                "$set": {"updated_at": now},
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event": f"Verknüpfung mit Device {device_id} entfernt",
+                        "event_type": "unlinked_device",
+                        "notes": ""
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Verknüpfung zwischen Device {device_id} und Asset {asset_id} entfernt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/assets/{asset_id}/with-device")
+async def get_asset_with_device_data(asset_id: str):
+    """Get asset details with live device data"""
+    try:
+        asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
+        if not asset:
+            raise HTTPException(status_code=404, detail="Asset nicht gefunden")
+        
+        asset = serialize_doc(asset)
+        
+        # Enrich with live device data
+        asset = await enrich_asset_with_device_data(asset)
+        
+        # Get bundle details if assigned
+        if asset.get("bundle_id"):
+            bundle = await db.tsrid_bundles.find_one({"bundle_id": asset["bundle_id"]})
+            if bundle:
+                asset["bundle"] = serialize_doc(bundle)
+                
+                # Check if bundle is installed
+                slot = await db.tsrid_slots.find_one({"bundle_id": asset["bundle_id"]})
+                if slot:
+                    slot = serialize_doc(slot)
+                    asset["slot"] = slot
+                    
+                    # Get location
+                    if slot.get("location_id"):
+                        location = await db.tsrid_locations.find_one({"location_id": slot["location_id"]})
+                        asset["location"] = serialize_doc(location) if location else None
+        
+        # Sort history by date descending
+        if asset.get("history"):
+            asset["history"] = sorted(asset["history"], key=lambda x: x.get("date", ""), reverse=True)
+        
+        return {"success": True, "asset": asset}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/devices/bulk-create-assets")
+async def bulk_create_assets_from_devices(device_ids: List[str], asset_type: str = Query("tablet")):
+    """Create assets for multiple devices at once"""
+    try:
+        results = []
+        success_count = 0
+        error_count = 0
+        
+        for device_id in device_ids:
+            try:
+                device = await multi_tenant_db.europcar_devices.find_one({"device_id": device_id})
+                if not device:
+                    results.append({"device_id": device_id, "success": False, "error": "Device nicht gefunden"})
+                    error_count += 1
+                    continue
+                
+                if device.get("asset_id"):
+                    results.append({"device_id": device_id, "success": False, "error": f"Bereits verknüpft mit {device['asset_id']}"})
+                    error_count += 1
+                    continue
+                
+                asset_id = f"AST-{device_id}"
+                
+                existing_asset = await db.tsrid_assets.find_one({"asset_id": asset_id})
+                if existing_asset:
+                    results.append({"device_id": device_id, "success": False, "error": f"Asset {asset_id} existiert bereits"})
+                    error_count += 1
+                    continue
+                
+                now = datetime.now(timezone.utc).isoformat()
+                device_status = device.get("status", "").lower()
+                asset_status = "deployed" if device_status == "online" else "in_storage"
+                
+                asset_doc = {
+                    "asset_id": asset_id,
+                    "type": asset_type,
+                    "linked_device_id": device_id,
+                    "manufacturer_sn": device.get("sn_pc", ""),
+                    "country": device.get("country", ""),
+                    "status": asset_status,
+                    "history": [{
+                        "date": now,
+                        "event": f"Asset erstellt aus Device {device_id} (Bulk-Import)",
+                        "event_type": "created",
+                        "notes": f"Location: {device.get('locationcode', '')}"
+                    }],
+                    "created_at": now,
+                    "updated_at": now
+                }
+                
+                await db.tsrid_assets.insert_one(asset_doc)
+                
+                await multi_tenant_db.europcar_devices.update_one(
+                    {"device_id": device_id},
+                    {"$set": {"asset_id": asset_id, "asset_updated_at": now}}
+                )
+                
+                results.append({"device_id": device_id, "asset_id": asset_id, "success": True})
+                success_count += 1
+                
+            except Exception as e:
+                results.append({"device_id": device_id, "success": False, "error": str(e)})
+                error_count += 1
+        
+        return {
+            "success": True,
+            "summary": {
+                "total": len(device_ids),
+                "success": success_count,
+                "errors": error_count
+            },
+            "results": results
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
