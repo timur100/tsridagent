@@ -427,6 +427,7 @@ const AssetManagementV2 = ({ theme }) => {
   // Reset filters when tab changes
   useEffect(() => {
     setFilters({ country: 'all', status: 'all', type: 'all', city: 'all', state: 'all', search: '', location_id: '', bundle_id: '', tenant_id: 'all' });
+    setSearchInput(''); // Reset local search input too
     setSelectedDevices(new Set());
     setDeviceFilter('all');
     setPagination(prev => ({
@@ -434,6 +435,16 @@ const AssetManagementV2 = ({ theme }) => {
       [activeTab]: { page: 1, total: prev[activeTab]?.total || 0 }
     }));
   }, [activeTab]);
+
+  // Debounce search input to avoid too many API calls
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchInput !== filters.search) {
+        setFilters(prev => ({ ...prev, search: searchInput }));
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
   // Open create modal
   const openCreateModal = (type) => {
