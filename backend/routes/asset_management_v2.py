@@ -615,7 +615,8 @@ async def list_locations(
         if country:
             query["country"] = {"$regex": country, "$options": "i"}
         if customer:
-            query["tenant_id"] = {"$regex": customer, "$options": "i"}
+            # Filter by tenant_name (customer name displayed in UI)
+            query["tenant_name"] = {"$regex": f"^{customer}$", "$options": "i"}
         if city:
             query["city"] = {"$regex": f"^{city}$", "$options": "i"}
         if state:
