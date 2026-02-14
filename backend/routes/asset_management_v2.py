@@ -1396,8 +1396,8 @@ async def get_asset(asset_id: str):
                     
                     # Get location
                     if slot.get("location_id"):
-                        location = await db.tsrid_locations.find_one({"location_id": slot["location_id"]})
-                        asset["location"] = serialize_doc(location) if location else None
+                        location = await find_location(slot["location_id"])
+                        asset["location"] = location
         
         # Sort history by date descending
         if asset.get("history"):
