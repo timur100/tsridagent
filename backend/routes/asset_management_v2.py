@@ -166,6 +166,29 @@ ASSET_TYPE_LABELS = {
     'usb': 'USB Extension',
     'lan': 'LAN Extension',
     '12v': '12V Extension',
+    # Kabel Typ A (mit SN)
+    'cab_usb_a': 'USB-A Kabel (mit SN)',
+    'cab_usb_c': 'USB-C Kabel (mit SN)',
+    'cab_lan': 'LAN-Kabel (mit SN)',
+    'cab_hdmi': 'HDMI-Kabel (mit SN)',
+    'cab_dp': 'DisplayPort-Kabel (mit SN)',
+    'cab_pwr': 'Stromkabel (mit SN)',
+    # Kabel Typ B (Consumables)
+    'cns_usb_a': 'USB-A Kabel (Verbrauch)',
+    'cns_usb_c': 'USB-C Kabel (Verbrauch)',
+    'cns_lan': 'LAN-Kabel (Verbrauch)',
+    'cns_hdmi': 'HDMI-Kabel (Verbrauch)',
+    'cns_dp': 'DisplayPort-Kabel (Verbrauch)',
+    'cns_pwr': 'Stromkabel (Verbrauch)',
+    # Adapter
+    'adp_usb_c': 'USB-C Adapter/Hub',
+    'adp_hdmi': 'HDMI Adapter',
+    'adp_dp': 'DisplayPort Adapter',
+    'adp_90': '90° Adapter',
+    # Stromverteiler
+    'pwr_strip': 'Netzleiste',
+    'pwr_12v': '12V Verteiler',
+    # Kits
     'kit_sfd': 'Surface + Desko Kit',
     'kit_tsr': 'TSRID Kit',
     'other': 'Sonstiges'
