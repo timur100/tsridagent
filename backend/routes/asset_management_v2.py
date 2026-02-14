@@ -2060,7 +2060,7 @@ async def get_asset_with_device_data(asset_id: str):
                     # Get location
                     if slot.get("location_id"):
                         location = await find_location(slot["location_id"])
-                        asset["location"] = serialize_doc(location) if location else None
+                        asset["location"] = location
         
         # Sort history by date descending
         if asset.get("history"):
