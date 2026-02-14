@@ -2334,7 +2334,7 @@ const AssetManagementV2 = ({ theme }) => {
         </TabsList>
 
         {/* Filters - only show for data tables */}
-        {activeTab !== 'devices' && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && <Filters />}
+        {activeTab !== 'devices' && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && filtersJSX}
 
         {/* Content */}
         {activeTab === 'goods-receipt' ? (
