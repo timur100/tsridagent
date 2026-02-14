@@ -152,8 +152,8 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
   const validateAndAddComponent = (asset) => {
     if (!selectedTemplate) return;
 
-    // Check if this type is needed
-    const neededTypes = selectedTemplate.components.map(c => c.type);
+    // Check if this type is needed - template uses asset_type, asset uses type
+    const neededTypes = selectedTemplate.components.map(c => c.asset_type || c.type);
     const alreadyScannedTypes = scannedComponents.map(c => c.type);
     
     // Count how many of each type we need vs have
@@ -168,12 +168,12 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     const alreadyHaveOfThisType = scannedTypeCount[assetType] || 0;
 
     if (neededOfThisType === 0) {
-      toast.error(`Typ "${assetType}" wird für dieses Kit nicht benötigt`);
+      toast.error(`Typ "${asset.type_label || assetType}" wird für dieses Kit nicht benötigt`);
       return;
     }
 
     if (alreadyHaveOfThisType >= neededOfThisType) {
-      toast.error(`Alle benötigten "${assetType}" wurden bereits gescannt`);
+      toast.error(`Alle benötigten "${asset.type_label || assetType}" wurden bereits gescannt`);
       return;
     }
 
