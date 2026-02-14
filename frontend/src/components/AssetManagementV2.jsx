@@ -51,41 +51,54 @@ const ASSET_STATUS_CONFIG = {
   retired: { label: 'Ausgemustert', color: 'bg-gray-500/20 text-gray-400' }
 };
 
-// Erweiterte Asset-Typ-Konfiguration
+// Erweiterte Asset-Typ-Konfiguration mit ID-Suffix
 const ASSET_TYPE_CONFIG = {
   // TSRID Geräte
-  tsrid_tablet: { label: 'TSRID Tablet', icon: Monitor, category: 'TSRID' },
-  tsrid_scanner: { label: 'TSRID Scanner', icon: Monitor, category: 'TSRID' },
+  tsrid_tablet: { label: 'TSRID Tablet', icon: Monitor, category: 'TSRID', suffix: 'TAB' },
+  tsrid_scanner: { label: 'TSRID Scanner', icon: Monitor, category: 'TSRID', suffix: 'SCA' },
   // Tablets
-  tablet: { label: 'Tablet', icon: Monitor, category: 'Tablets' },
-  surface_pro_4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets' },
-  surface_pro_6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets' },
-  surface_pro_7: { label: 'Surface Pro 7', icon: Monitor, category: 'Tablets' },
-  surface_go: { label: 'Surface Go', icon: Monitor, category: 'Tablets' },
+  tablet: { label: 'Tablet', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
+  surface_pro_4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
+  surface_pro_6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
+  surface_pro_7: { label: 'Surface Pro 7', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
+  surface_go: { label: 'Surface Go', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
   // Scanner
-  scanner: { label: 'Scanner', icon: Monitor, category: 'Scanner' },
-  scanner_desko: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner' },
-  scanner_regula: { label: 'Regula Scanner', icon: Monitor, category: 'Scanner' },
-  // Docking Stations
-  dock: { label: 'Docking Station', icon: Layers, category: 'Docking' },
-  dock_desko: { label: 'Desko Dock', icon: Layers, category: 'Docking' },
-  dock_quer: { label: 'Dock Quer', icon: Layers, category: 'Docking' },
-  dock_surface: { label: 'Surface Dock', icon: Layers, category: 'Docking' },
-  // Netzteile
-  psu: { label: 'Netzteil', icon: Plug, category: 'Netzteile' },
-  psu_desko: { label: 'Desko PSU', icon: Plug, category: 'Netzteile' },
-  psu_surface: { label: 'Surface PSU', icon: Plug, category: 'Netzteile' },
-  // Kabel & Adapter
-  cable: { label: 'Kabel', icon: Cable, category: 'Kabel & Adapter' },
-  usb_adapter_90: { label: 'USB Adapter 90°', icon: Cable, category: 'Kabel & Adapter' },
-  usb_hub: { label: 'USB Hub', icon: Cable, category: 'Kabel & Adapter' },
-  hdmi_adapter: { label: 'HDMI Adapter', icon: Cable, category: 'Kabel & Adapter' },
-  displayport_adapter: { label: 'DP Adapter', icon: Cable, category: 'Kabel & Adapter' },
+  scanner: { label: 'Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
+  scanner_desko: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
+  scanner_regula: { label: 'Regula Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
+  // Tablet Docking Stations
+  tablet_dock: { label: 'Tablet Docking', icon: Layers, category: 'Tablet Docks', suffix: 'TDO' },
+  dock_surface: { label: 'Surface Dock', icon: Layers, category: 'Tablet Docks', suffix: 'TDO' },
+  // Scanner Docking Stations
+  scanner_dock: { label: 'Scanner Docking', icon: Layers, category: 'Scanner Docks', suffix: 'SDO' },
+  dock_desko: { label: 'Desko Dock', icon: Layers, category: 'Scanner Docks', suffix: 'SDO' },
+  // Andere Docks
+  dock: { label: 'Docking Station', icon: Layers, category: 'Docking', suffix: 'TDO' },
+  dock_quer: { label: 'Dock Quer', icon: Layers, category: 'Docking', suffix: 'TDO' },
+  // Tablet Netzteile
+  tablet_psu: { label: 'Tablet Netzteil', icon: Plug, category: 'Tablet PSU', suffix: 'TPS' },
+  psu_surface: { label: 'Surface PSU', icon: Plug, category: 'Tablet PSU', suffix: 'TPS' },
+  // Scanner Netzteile
+  scanner_psu: { label: 'Scanner Netzteil', icon: Plug, category: 'Scanner PSU', suffix: 'SPS' },
+  psu_desko: { label: 'Desko PSU', icon: Plug, category: 'Scanner PSU', suffix: 'SPS' },
+  // Andere Netzteile
+  psu: { label: 'Netzteil', icon: Plug, category: 'Netzteile', suffix: 'TPS' },
+  // Kabel & Extensions
+  usb_extension: { label: 'USB Extension', icon: Cable, category: 'Extensions', suffix: 'USB' },
+  lan_extension: { label: 'LAN Extension', icon: Cable, category: 'Extensions', suffix: 'LAN' },
+  '12v_extension': { label: '12V Extension', icon: Cable, category: 'Extensions', suffix: '12V' },
+  cable: { label: 'Kabel', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
+  usb_adapter_90: { label: 'USB Adapter 90°', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
+  usb_hub: { label: 'USB Hub', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
+  hdmi_adapter: { label: 'HDMI Adapter', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
+  displayport_adapter: { label: 'DP Adapter', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
   // Netzwerk
-  switch: { label: 'Switch', icon: Box, category: 'Netzwerk' },
-  router: { label: 'Router', icon: Box, category: 'Netzwerk' },
+  switch: { label: 'Switch', icon: Box, category: 'Netzwerk', suffix: 'LAN' },
+  router: { label: 'Router', icon: Box, category: 'Netzwerk', suffix: 'LAN' },
+  // Bundles
+  bundle: { label: 'Bundle/Kit', icon: Package, category: 'Bundles', suffix: 'KIT' },
   // Sonstiges
-  other: { label: 'Sonstiges', icon: Box, category: 'Sonstiges' }
+  other: { label: 'Sonstiges', icon: Box, category: 'Sonstiges', suffix: 'OTH' }
 };
 
 const MANUFACTURER_OPTIONS = [
