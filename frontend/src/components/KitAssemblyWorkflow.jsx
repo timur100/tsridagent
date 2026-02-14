@@ -611,7 +611,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
           Kit finalisieren
         </h4>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
               Standort für das Kit *
@@ -628,6 +628,19 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          
+          <div>
+            <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+              Techniker (optional)
+            </label>
+            <Input
+              placeholder="Name des Technikers"
+              value={technician}
+              onChange={(e) => setTechnician(e.target.value)}
+              className={inputBg}
+              data-testid="technician-input"
+            />
           </div>
           
           <div className="flex items-end">
