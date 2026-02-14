@@ -358,62 +358,41 @@ async def create_indexes():
 async def get_metadata():
     """Get available asset types, manufacturers, and other metadata including ID suffixes"""
     # Asset-Typ-Kategorien mit deutschen Labels und ID-Suffixen
+    # Neues Format: [device_id]-[TYP]-[MODELL] z.B. AAHC01-01-TAB-SP4
     asset_type_categories = {
-        "TSRID": [
-            {"value": "tsrid_tablet", "label": "TSRID Tablet", "suffix": "TAB"},
-            {"value": "tsrid_scanner", "label": "TSRID Scanner", "suffix": "SCA"},
-        ],
         "Tablets": [
-            {"value": "tablet", "label": "Tablet (allgemein)", "suffix": "TAB"},
-            {"value": "surface_pro_4", "label": "Microsoft Surface Pro 4", "suffix": "TAB"},
-            {"value": "surface_pro_6", "label": "Microsoft Surface Pro 6", "suffix": "TAB"},
-            {"value": "surface_pro_7", "label": "Microsoft Surface Pro 7", "suffix": "TAB"},
-            {"value": "surface_go", "label": "Microsoft Surface Go", "suffix": "TAB"},
+            {"value": "tab_sp4", "label": "Surface Pro 4", "suffix": "TAB-SP4"},
+            {"value": "tab_sp6", "label": "Surface Pro 6", "suffix": "TAB-SP6"},
+            {"value": "tab_tsr", "label": "TSRID Tablet", "suffix": "TAB-TSR"},
         ],
         "Scanner": [
-            {"value": "scanner", "label": "Scanner (allgemein)", "suffix": "SCA"},
-            {"value": "scanner_desko", "label": "Desko Scanner", "suffix": "SCA"},
-            {"value": "scanner_regula", "label": "Regula Scanner", "suffix": "SCA"},
+            {"value": "sca_tsr", "label": "TSRID Scanner", "suffix": "SCA-TSR"},
+            {"value": "sca_dsk", "label": "Desko Scanner", "suffix": "SCA-DSK"},
         ],
         "Tablet Docks": [
-            {"value": "tablet_dock", "label": "Tablet Docking Station", "suffix": "TDO"},
-            {"value": "dock_surface", "label": "Surface Dock", "suffix": "TDO"},
+            {"value": "tdo_qer", "label": "Quer Dock (Surface)", "suffix": "TDO-QER"},
+            {"value": "tdo_tsr", "label": "TSRID Tablet Dock", "suffix": "TDO-TSR"},
         ],
         "Scanner Docks": [
-            {"value": "scanner_dock", "label": "Scanner Docking Station", "suffix": "SDO"},
-            {"value": "dock_desko", "label": "Desko Docking Station", "suffix": "SDO"},
-        ],
-        "Docking Stations (Andere)": [
-            {"value": "dock", "label": "Docking Station (allgemein)", "suffix": "TDO"},
-            {"value": "dock_quer", "label": "Docking Station Quer", "suffix": "TDO"},
+            {"value": "sdo_dsk", "label": "Desko Scanner Dock", "suffix": "SDO-DSK"},
+            {"value": "sdo_tsr", "label": "TSRID Scanner Dock", "suffix": "SDO-TSR"},
         ],
         "Tablet Netzteile": [
-            {"value": "tablet_psu", "label": "Tablet Netzteil", "suffix": "TPS"},
-            {"value": "psu_surface", "label": "Surface Netzteil", "suffix": "TPS"},
+            {"value": "tps_spx", "label": "Surface Netzteil", "suffix": "TPS-SPX"},
+            {"value": "tps_tsr", "label": "TSRID Tablet Netzteil", "suffix": "TPS-TSR"},
         ],
         "Scanner Netzteile": [
-            {"value": "scanner_psu", "label": "Scanner Netzteil", "suffix": "SPS"},
-            {"value": "psu_desko", "label": "Desko Netzteil", "suffix": "SPS"},
+            {"value": "sps_dsk", "label": "Desko Scanner Netzteil", "suffix": "SPS-DSK"},
+            {"value": "sps_tsr", "label": "TSRID Scanner Netzteil", "suffix": "SPS-TSR"},
         ],
-        "Netzteile (Andere)": [
-            {"value": "psu", "label": "Netzteil (allgemein)", "suffix": "TPS"},
+        "Extensions": [
+            {"value": "usb", "label": "USB Extension", "suffix": "USB"},
+            {"value": "lan", "label": "LAN Extension", "suffix": "LAN"},
+            {"value": "12v", "label": "12V Extension", "suffix": "12V"},
         ],
-        "Kabel & Extensions": [
-            {"value": "usb_extension", "label": "USB Extension", "suffix": "USB"},
-            {"value": "lan_extension", "label": "LAN Extension", "suffix": "LAN"},
-            {"value": "12v_extension", "label": "12V Extension", "suffix": "12V"},
-            {"value": "cable", "label": "Kabel (allgemein)", "suffix": "USB"},
-            {"value": "usb_adapter_90", "label": "USB Adapter 90°", "suffix": "USB"},
-            {"value": "usb_hub", "label": "USB Hub", "suffix": "USB"},
-            {"value": "hdmi_adapter", "label": "HDMI Adapter", "suffix": "USB"},
-            {"value": "displayport_adapter", "label": "DisplayPort Adapter", "suffix": "USB"},
-        ],
-        "Netzwerk": [
-            {"value": "switch", "label": "Switch", "suffix": "LAN"},
-            {"value": "router", "label": "Router", "suffix": "LAN"},
-        ],
-        "Bundles": [
-            {"value": "bundle", "label": "Bundle/Kit", "suffix": "KIT"},
+        "Kits": [
+            {"value": "kit_sfd", "label": "Surface + Desko Kit", "suffix": "KIT-SFD"},
+            {"value": "kit_tsr", "label": "TSRID Kit", "suffix": "KIT-TSR"},
         ],
         "Sonstiges": [
             {"value": "other", "label": "Sonstiges", "suffix": "OTH"},
@@ -423,14 +402,6 @@ async def get_metadata():
     manufacturers = [
         {"value": "Microsoft", "label": "Microsoft"},
         {"value": "Desko", "label": "Desko"},
-        {"value": "Regula", "label": "Regula"},
-        {"value": "Samsung", "label": "Samsung"},
-        {"value": "Lenovo", "label": "Lenovo"},
-        {"value": "HP", "label": "HP"},
-        {"value": "Dell", "label": "Dell"},
-        {"value": "Anker", "label": "Anker"},
-        {"value": "Belkin", "label": "Belkin"},
-        {"value": "Ugreen", "label": "Ugreen"},
         {"value": "TSRID", "label": "TSRID"},
         {"value": "Other", "label": "Sonstiger Hersteller"},
     ]
@@ -456,6 +427,7 @@ async def get_metadata():
         "success": True,
         "asset_types": ASSET_TYPES,
         "asset_type_categories": asset_type_categories,
+        "asset_type_labels": ASSET_TYPE_LABELS,
         "asset_type_suffix_map": ASSET_TYPE_SUFFIX_MAP,
         "manufacturers": manufacturers,
         "warranty_types": warranty_types,
@@ -463,7 +435,7 @@ async def get_metadata():
         "statuses": ASSET_STATUSES,
         "location_statuses": LOCATION_STATUSES,
         "slot_statuses": SLOT_STATUSES,
-        "bundle_statuses": BUNDLE_STATUSES
+        "kit_statuses": KIT_STATUSES
     }
 
 
