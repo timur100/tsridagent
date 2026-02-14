@@ -342,45 +342,67 @@ async def create_indexes():
 
 @router.get("/metadata")
 async def get_metadata():
-    """Get available asset types, manufacturers, and other metadata"""
-    # Asset-Typ-Kategorien mit deutschen Labels
+    """Get available asset types, manufacturers, and other metadata including ID suffixes"""
+    # Asset-Typ-Kategorien mit deutschen Labels und ID-Suffixen
     asset_type_categories = {
+        "TSRID": [
+            {"value": "tsrid_tablet", "label": "TSRID Tablet", "suffix": "TAB"},
+            {"value": "tsrid_scanner", "label": "TSRID Scanner", "suffix": "SCA"},
+        ],
         "Tablets": [
-            {"value": "tablet", "label": "Tablet (allgemein)"},
-            {"value": "surface_pro_4", "label": "Microsoft Surface Pro 4"},
-            {"value": "surface_pro_6", "label": "Microsoft Surface Pro 6"},
-            {"value": "surface_pro_7", "label": "Microsoft Surface Pro 7"},
-            {"value": "surface_go", "label": "Microsoft Surface Go"},
+            {"value": "tablet", "label": "Tablet (allgemein)", "suffix": "TAB"},
+            {"value": "surface_pro_4", "label": "Microsoft Surface Pro 4", "suffix": "TAB"},
+            {"value": "surface_pro_6", "label": "Microsoft Surface Pro 6", "suffix": "TAB"},
+            {"value": "surface_pro_7", "label": "Microsoft Surface Pro 7", "suffix": "TAB"},
+            {"value": "surface_go", "label": "Microsoft Surface Go", "suffix": "TAB"},
         ],
         "Scanner": [
-            {"value": "scanner", "label": "Scanner (allgemein)"},
-            {"value": "scanner_desko", "label": "Desko Scanner"},
-            {"value": "scanner_regula", "label": "Regula Scanner"},
+            {"value": "scanner", "label": "Scanner (allgemein)", "suffix": "SCA"},
+            {"value": "scanner_desko", "label": "Desko Scanner", "suffix": "SCA"},
+            {"value": "scanner_regula", "label": "Regula Scanner", "suffix": "SCA"},
         ],
-        "Docking Stations": [
-            {"value": "dock", "label": "Docking Station (allgemein)"},
-            {"value": "dock_desko", "label": "Desko Docking Station"},
-            {"value": "dock_quer", "label": "Docking Station Quer"},
-            {"value": "dock_surface", "label": "Surface Dock"},
+        "Tablet Docks": [
+            {"value": "tablet_dock", "label": "Tablet Docking Station", "suffix": "TDO"},
+            {"value": "dock_surface", "label": "Surface Dock", "suffix": "TDO"},
         ],
-        "Netzteile (PSU)": [
-            {"value": "psu", "label": "Netzteil (allgemein)"},
-            {"value": "psu_desko", "label": "Desko Netzteil"},
-            {"value": "psu_surface", "label": "Surface Netzteil"},
+        "Scanner Docks": [
+            {"value": "scanner_dock", "label": "Scanner Docking Station", "suffix": "SDO"},
+            {"value": "dock_desko", "label": "Desko Docking Station", "suffix": "SDO"},
         ],
-        "Kabel & Adapter": [
-            {"value": "cable", "label": "Kabel (allgemein)"},
-            {"value": "usb_adapter_90", "label": "USB Adapter 90°"},
-            {"value": "usb_hub", "label": "USB Hub"},
-            {"value": "hdmi_adapter", "label": "HDMI Adapter"},
-            {"value": "displayport_adapter", "label": "DisplayPort Adapter"},
+        "Docking Stations (Andere)": [
+            {"value": "dock", "label": "Docking Station (allgemein)", "suffix": "TDO"},
+            {"value": "dock_quer", "label": "Docking Station Quer", "suffix": "TDO"},
+        ],
+        "Tablet Netzteile": [
+            {"value": "tablet_psu", "label": "Tablet Netzteil", "suffix": "TPS"},
+            {"value": "psu_surface", "label": "Surface Netzteil", "suffix": "TPS"},
+        ],
+        "Scanner Netzteile": [
+            {"value": "scanner_psu", "label": "Scanner Netzteil", "suffix": "SPS"},
+            {"value": "psu_desko", "label": "Desko Netzteil", "suffix": "SPS"},
+        ],
+        "Netzteile (Andere)": [
+            {"value": "psu", "label": "Netzteil (allgemein)", "suffix": "TPS"},
+        ],
+        "Kabel & Extensions": [
+            {"value": "usb_extension", "label": "USB Extension", "suffix": "USB"},
+            {"value": "lan_extension", "label": "LAN Extension", "suffix": "LAN"},
+            {"value": "12v_extension", "label": "12V Extension", "suffix": "12V"},
+            {"value": "cable", "label": "Kabel (allgemein)", "suffix": "USB"},
+            {"value": "usb_adapter_90", "label": "USB Adapter 90°", "suffix": "USB"},
+            {"value": "usb_hub", "label": "USB Hub", "suffix": "USB"},
+            {"value": "hdmi_adapter", "label": "HDMI Adapter", "suffix": "USB"},
+            {"value": "displayport_adapter", "label": "DisplayPort Adapter", "suffix": "USB"},
         ],
         "Netzwerk": [
-            {"value": "switch", "label": "Switch"},
-            {"value": "router", "label": "Router"},
+            {"value": "switch", "label": "Switch", "suffix": "LAN"},
+            {"value": "router", "label": "Router", "suffix": "LAN"},
+        ],
+        "Bundles": [
+            {"value": "bundle", "label": "Bundle/Kit", "suffix": "KIT"},
         ],
         "Sonstiges": [
-            {"value": "other", "label": "Sonstiges"},
+            {"value": "other", "label": "Sonstiges", "suffix": "OTH"},
         ]
     }
     
@@ -395,6 +417,7 @@ async def get_metadata():
         {"value": "Anker", "label": "Anker"},
         {"value": "Belkin", "label": "Belkin"},
         {"value": "Ugreen", "label": "Ugreen"},
+        {"value": "TSRID", "label": "TSRID"},
         {"value": "Other", "label": "Sonstiger Hersteller"},
     ]
     
@@ -419,6 +442,7 @@ async def get_metadata():
         "success": True,
         "asset_types": ASSET_TYPES,
         "asset_type_categories": asset_type_categories,
+        "asset_type_suffix_map": ASSET_TYPE_SUFFIX_MAP,
         "manufacturers": manufacturers,
         "warranty_types": warranty_types,
         "license_types": license_types,
