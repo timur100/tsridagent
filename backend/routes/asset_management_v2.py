@@ -653,12 +653,9 @@ async def list_locations(
         for loc in raw_locations:
             location_id = loc.get("location_code", loc.get("location_id", ""))
             
-            # Count slots for this location
-            slot_count = await db.tsrid_slots.count_documents({"location_id": location_id})
-            installed_count = await db.tsrid_slots.count_documents({
-                "location_id": location_id, 
-                "status": "installed"
-            })
+            # Get slot counts from batch query
+            slot_count = slot_counts.get(location_id, 0)
+            installed_count = installed_counts.get(location_id, 0)
             
             locations.append({
                 "location_id": location_id,
