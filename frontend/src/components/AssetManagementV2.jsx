@@ -1930,7 +1930,16 @@ const AssetManagementV2 = ({ theme }) => {
                   <Input
                     type="date"
                     value={formData.purchase_date || ''}
-                    onChange={(e) => setFormData({ ...formData, purchase_date: e.target.value })}
+                    onChange={(e) => {
+                      // Automatisch Garantie-Ende neu berechnen wenn Monate gesetzt
+                      let warrantyDate = formData.warranty_until || '';
+                      if (e.target.value && formData.warranty_months) {
+                        const startDate = new Date(e.target.value);
+                        startDate.setMonth(startDate.getMonth() + parseInt(formData.warranty_months));
+                        warrantyDate = startDate.toISOString().split('T')[0];
+                      }
+                      setFormData({ ...formData, purchase_date: e.target.value, warranty_until: warrantyDate });
+                    }}
                     className={`h-9 ${inputBg}`}
                   />
                 </div>
