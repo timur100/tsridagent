@@ -62,6 +62,28 @@ ASSET_TYPES = [
     'usb',          # USB Extension
     'lan',          # LAN Extension
     '12v',          # 12V Extension
+    # Kabel - Typ A (Geräte mit Seriennummer-Tracking)
+    'cab_usb_a',    # USB-A Kabel
+    'cab_usb_c',    # USB-C Kabel
+    'cab_lan',      # LAN-Kabel
+    'cab_hdmi',     # HDMI-Kabel
+    'cab_dp',       # DisplayPort-Kabel
+    'cab_pwr',      # Stromkabel
+    # Kabel - Typ B (Verbrauchsmaterial ohne SN-Tracking)
+    'cns_usb_a',    # USB-A Kabel (Consumable)
+    'cns_usb_c',    # USB-C Kabel (Consumable)
+    'cns_lan',      # LAN-Kabel (Consumable)
+    'cns_hdmi',     # HDMI-Kabel (Consumable)
+    'cns_dp',       # DisplayPort-Kabel (Consumable)
+    'cns_pwr',      # Stromkabel (Consumable)
+    # Adapter
+    'adp_usb_c',    # USB-C Adapter/Hub
+    'adp_hdmi',     # HDMI Adapter
+    'adp_dp',       # DisplayPort Adapter
+    'adp_90',       # 90° Adapter
+    # Netzleisten & Stromverteiler
+    'pwr_strip',    # Netzleiste (Steckdosenleiste)
+    'pwr_12v',      # 12V Verteiler
     # Kits
     'kit_sfd',      # Surface + Desko Kit
     'kit_tsr',      # TSRID Kit
