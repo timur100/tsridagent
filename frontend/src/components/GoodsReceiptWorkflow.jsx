@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Package, QrCode, MapPin, Search, Plus, Check, AlertCircle, Trash2, 
-  ChevronRight, RefreshCw, Barcode, Printer, ArrowRight, CheckCircle,
-  Tag, Scan, ClipboardList, Building2
+  Package, MapPin, Search, Plus, Check, Trash2, 
+  RefreshCw, Barcode, Printer, ArrowRight, CheckCircle,
+  Tag, Scan, ClipboardList
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -11,7 +11,6 @@ import { Input } from './ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Textarea } from './ui/textarea';
 import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
