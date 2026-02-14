@@ -2073,20 +2073,69 @@ const AssetManagementV2 = ({ theme }) => {
                   <Input
                     type="date"
                     value={formData.license_activation_date || ''}
-                    onChange={(e) => setFormData({ ...formData, license_activation_date: e.target.value })}
+                    onChange={(e) => {
+                      // Automatisch Lizenz-Ende berechnen wenn Monate gesetzt
+                      let expiryDate = formData.license_expiry_date || '';
+                      if (e.target.value && formData.license_months) {
+                        const startDate = new Date(e.target.value);
+                        startDate.setMonth(startDate.getMonth() + parseInt(formData.license_months));
+                        expiryDate = startDate.toISOString().split('T')[0];
+                      }
+                      setFormData({ ...formData, license_activation_date: e.target.value, license_expiry_date: expiryDate });
+                    }}
                     className={`h-9 ${inputBg}`}
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium">Lizenz läuft ab</label>
+                  <label className="text-xs font-medium">Lizenz-Laufzeit (Monate)</label>
+                  <Select 
+                    value={formData.license_months || ''} 
+                    onValueChange={(v) => {
+                      const months = parseInt(v);
+                      let expiryDate = '';
+                      // Berechne Enddatum basierend auf Aktivierungsdatum
+                      if (months && formData.license_activation_date) {
+                        const startDate = new Date(formData.license_activation_date);
+                        startDate.setMonth(startDate.getMonth() + months);
+                        expiryDate = startDate.toISOString().split('T')[0];
+                      }
+                      setFormData({ ...formData, license_months: v, license_expiry_date: expiryDate });
+                    }}
+                  >
+                    <SelectTrigger className={`h-9 ${inputBg}`}><SelectValue placeholder="Auswählen..." /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="12">12 Monate</SelectItem>
+                      <SelectItem value="24">24 Monate</SelectItem>
+                      <SelectItem value="36">36 Monate</SelectItem>
+                      <SelectItem value="48">48 Monate</SelectItem>
+                      <SelectItem value="60">60 Monate</SelectItem>
+                      <SelectItem value="perpetual">Unbegrenzt</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <div>
+                  <label className="text-xs font-medium">Lizenz läuft ab (berechnet)</label>
                   <Input
                     type="date"
                     value={formData.license_expiry_date || ''}
                     onChange={(e) => setFormData({ ...formData, license_expiry_date: e.target.value })}
                     className={`h-9 ${inputBg}`}
+                    disabled={formData.license_months === 'perpetual'}
                   />
                 </div>
               </div>
+              {formData.license_activation_date && formData.license_months && formData.license_months !== 'perpetual' && (
+                <p className={`text-xs mt-2 ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                  ✓ Lizenz-Ende berechnet: {formData.license_expiry_date ? new Date(formData.license_expiry_date).toLocaleDateString('de-DE') : '-'}
+                </p>
+              )}
+              {formData.license_months === 'perpetual' && (
+                <p className={`text-xs mt-2 ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+                  ✓ Unbegrenzte Lizenz
+                </p>
+              )}
             </div>
             
             {/* Notizen */}
