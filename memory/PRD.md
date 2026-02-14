@@ -623,6 +623,56 @@ Last Updated: February 2025
 
 ---
 
+## Wareneingang-Workflow (Neu implementiert Feb 2025)
+
+### Workflow-Ablauf:
+1. **Wareneingang**: Geräte mit Seriennummer (Barcode-Scan) erfassen
+   - Status: `unassigned`
+   - Keine Asset-ID (nur Seriennummer)
+2. **Zuweisung zu Standort**: 
+   - Asset-ID wird automatisch generiert (z.B. `AAHC01-01-TAB-TSR`)
+   - Label-Daten für QR-Code werden bereitgestellt
+   - Status wechselt zu `in_storage`
+
+### API-Endpoints:
+| Endpoint | Methode | Beschreibung |
+|----------|---------|--------------|
+| `/api/asset-mgmt/inventory/intake` | POST | Einzelnes Gerät erfassen |
+| `/api/asset-mgmt/inventory/intake/batch` | POST | Mehrere Geräte erfassen |
+| `/api/asset-mgmt/inventory/unassigned` | GET | Liste nicht zugewiesener Geräte |
+| `/api/asset-mgmt/inventory/assign/{sn}` | POST | Gerät zuweisen → Asset-ID generieren |
+| `/api/asset-mgmt/inventory/bulk-assign` | POST | Mehrere Geräte zuweisen |
+| `/api/asset-mgmt/inventory/by-sn/{sn}` | GET | Gerät per Seriennummer finden |
+| `/api/asset-mgmt/inventory/label/{asset_id}` | GET | Label-Daten abrufen |
+
+### Beispiel:
+```
+# Wareneingang (35 Tablets)
+POST /api/asset-mgmt/inventory/intake/batch
+{
+  "items": [
+    {"manufacturer_sn": "SN001", "type": "tab_tsr"},
+    {"manufacturer_sn": "SN002", "type": "tab_tsr"},
+    ...
+  ],
+  "received_by": "Lager-Team",
+  "supplier": "TSRID GmbH"
+}
+
+# Zuweisung
+POST /api/asset-mgmt/inventory/assign/SN001
+{"location_id": "AAHC01"}
+
+# Ergebnis:
+{
+  "asset_id": "AAHC01-01-TAB-TSR",
+  "print_label": true,
+  "qr_code_content": "AAHC01-01-TAB-TSR"
+}
+```
+
+---
+
 ## Test Reports
 | Date | Feature | Result | Report |
 |------|---------|--------|--------|
