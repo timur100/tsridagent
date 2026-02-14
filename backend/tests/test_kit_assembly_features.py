@@ -146,9 +146,10 @@ class TestKitTemplatesAPI:
             
             # Verify component structure
             for comp in components[:3]:  # Check first 3 components
-                assert "type" in comp, "Component missing type"
+                assert "asset_type" in comp or "type" in comp, "Component missing type/asset_type"
                 assert "quantity" in comp, "Component missing quantity"
-                print(f"  Component: {comp.get('name', comp.get('type'))} x{comp.get('quantity')}")
+                comp_name = comp.get('label', comp.get('name', comp.get('asset_type', comp.get('type'))))
+                print(f"  Component: {comp_name} x{comp.get('quantity')}")
 
 
 class TestKitAssemblyWorkflow:
