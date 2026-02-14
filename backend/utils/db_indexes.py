@@ -93,22 +93,34 @@ async def create_indexes(db, portal_db, multi_tenant_db):
         await multi_tenant_db.assets.create_index([("tenant_id", 1), ("category_id", 1)])
         
         # ==================== Portal DB - TSRID Assets ====================
-        # WICHTIG: sparse=True erlaubt null-Werte für nicht zugewiesene Geräte
+        # WICHTIG: partialFilterExpression erlaubt null-Werte für nicht zugewiesene Geräte
         try:
-            # Drop old non-sparse indexes if they exist
+            # Drop old indexes if they exist
             existing_indexes = await portal_db.tsrid_assets.index_information()
-            if "asset_id_1" in existing_indexes:
-                await portal_db.tsrid_assets.drop_index("asset_id_1")
+            for idx_name in list(existing_indexes.keys()):
+                if idx_name != "_id_":
+                    try:
+                        await portal_db.tsrid_assets.drop_index(idx_name)
+                    except:
+                        pass
         except:
             pass
         
-        # Create sparse indexes for assets (allows null values for unassigned devices)
-        await portal_db.tsrid_assets.create_index("asset_id", unique=True, sparse=True)
-        await portal_db.tsrid_assets.create_index("manufacturer_sn", unique=True, sparse=True)
+        # Create partial indexes for assets (allows null values for unassigned devices)
+        await portal_db.tsrid_assets.create_index(
+            "asset_id", 
+            unique=True, 
+            partialFilterExpression={"asset_id": {"$type": "string"}}
+        )
+        await portal_db.tsrid_assets.create_index(
+            "manufacturer_sn", 
+            unique=True,
+            partialFilterExpression={"manufacturer_sn": {"$type": "string"}}
+        )
         await portal_db.tsrid_assets.create_index("status")
         await portal_db.tsrid_assets.create_index("type")
-        await portal_db.tsrid_assets.create_index("location_id")
-        await portal_db.tsrid_assets.create_index("assigned_to_kit")
+        await portal_db.tsrid_assets.create_index("location_id", sparse=True)
+        await portal_db.tsrid_assets.create_index("assigned_to_kit", sparse=True)
         
         # TSRID Locations
         await portal_db.tsrid_locations.create_index("location_id", unique=True)
