@@ -52,51 +52,34 @@ const ASSET_STATUS_CONFIG = {
 };
 
 // Erweiterte Asset-Typ-Konfiguration mit ID-Suffix
+// Format: [device_id]-[TYP]-[MODELL] z.B. AAHC01-01-TAB-SP4
 const ASSET_TYPE_CONFIG = {
-  // TSRID Geräte
-  tsrid_tablet: { label: 'TSRID Tablet', icon: Monitor, category: 'TSRID', suffix: 'TAB' },
-  tsrid_scanner: { label: 'TSRID Scanner', icon: Monitor, category: 'TSRID', suffix: 'SCA' },
   // Tablets
-  tablet: { label: 'Tablet', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
-  surface_pro_4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
-  surface_pro_6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
-  surface_pro_7: { label: 'Surface Pro 7', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
-  surface_go: { label: 'Surface Go', icon: Monitor, category: 'Tablets', suffix: 'TAB' },
+  tab_sp4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets', suffix: 'TAB-SP4' },
+  tab_sp6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets', suffix: 'TAB-SP6' },
+  tab_tsr: { label: 'TSRID Tablet', icon: Monitor, category: 'Tablets', suffix: 'TAB-TSR' },
   // Scanner
-  scanner: { label: 'Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
-  scanner_desko: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
-  scanner_regula: { label: 'Regula Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA' },
+  sca_tsr: { label: 'TSRID Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA-TSR' },
+  sca_dsk: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA-DSK' },
   // Tablet Docking Stations
-  tablet_dock: { label: 'Tablet Docking', icon: Layers, category: 'Tablet Docks', suffix: 'TDO' },
-  dock_surface: { label: 'Surface Dock', icon: Layers, category: 'Tablet Docks', suffix: 'TDO' },
+  tdo_qer: { label: 'Quer Dock (Surface)', icon: Layers, category: 'Tablet Docks', suffix: 'TDO-QER' },
+  tdo_tsr: { label: 'TSRID Tablet Dock', icon: Layers, category: 'Tablet Docks', suffix: 'TDO-TSR' },
   // Scanner Docking Stations
-  scanner_dock: { label: 'Scanner Docking', icon: Layers, category: 'Scanner Docks', suffix: 'SDO' },
-  dock_desko: { label: 'Desko Dock', icon: Layers, category: 'Scanner Docks', suffix: 'SDO' },
-  // Andere Docks
-  dock: { label: 'Docking Station', icon: Layers, category: 'Docking', suffix: 'TDO' },
-  dock_quer: { label: 'Dock Quer', icon: Layers, category: 'Docking', suffix: 'TDO' },
+  sdo_dsk: { label: 'Desko Scanner Dock', icon: Layers, category: 'Scanner Docks', suffix: 'SDO-DSK' },
+  sdo_tsr: { label: 'TSRID Scanner Dock', icon: Layers, category: 'Scanner Docks', suffix: 'SDO-TSR' },
   // Tablet Netzteile
-  tablet_psu: { label: 'Tablet Netzteil', icon: Plug, category: 'Tablet PSU', suffix: 'TPS' },
-  psu_surface: { label: 'Surface PSU', icon: Plug, category: 'Tablet PSU', suffix: 'TPS' },
+  tps_spx: { label: 'Surface Netzteil', icon: Plug, category: 'Tablet PSU', suffix: 'TPS-SPX' },
+  tps_tsr: { label: 'TSRID Tablet Netzteil', icon: Plug, category: 'Tablet PSU', suffix: 'TPS-TSR' },
   // Scanner Netzteile
-  scanner_psu: { label: 'Scanner Netzteil', icon: Plug, category: 'Scanner PSU', suffix: 'SPS' },
-  psu_desko: { label: 'Desko PSU', icon: Plug, category: 'Scanner PSU', suffix: 'SPS' },
-  // Andere Netzteile
-  psu: { label: 'Netzteil', icon: Plug, category: 'Netzteile', suffix: 'TPS' },
-  // Kabel & Extensions
-  usb_extension: { label: 'USB Extension', icon: Cable, category: 'Extensions', suffix: 'USB' },
-  lan_extension: { label: 'LAN Extension', icon: Cable, category: 'Extensions', suffix: 'LAN' },
-  '12v_extension': { label: '12V Extension', icon: Cable, category: 'Extensions', suffix: '12V' },
-  cable: { label: 'Kabel', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
-  usb_adapter_90: { label: 'USB Adapter 90°', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
-  usb_hub: { label: 'USB Hub', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
-  hdmi_adapter: { label: 'HDMI Adapter', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
-  displayport_adapter: { label: 'DP Adapter', icon: Cable, category: 'Kabel & Adapter', suffix: 'USB' },
-  // Netzwerk
-  switch: { label: 'Switch', icon: Box, category: 'Netzwerk', suffix: 'LAN' },
-  router: { label: 'Router', icon: Box, category: 'Netzwerk', suffix: 'LAN' },
-  // Bundles
-  bundle: { label: 'Bundle/Kit', icon: Package, category: 'Bundles', suffix: 'KIT' },
+  sps_dsk: { label: 'Desko Scanner Netzteil', icon: Plug, category: 'Scanner PSU', suffix: 'SPS-DSK' },
+  sps_tsr: { label: 'TSRID Scanner Netzteil', icon: Plug, category: 'Scanner PSU', suffix: 'SPS-TSR' },
+  // Extensions
+  usb: { label: 'USB Extension', icon: Cable, category: 'Extensions', suffix: 'USB' },
+  lan: { label: 'LAN Extension', icon: Cable, category: 'Extensions', suffix: 'LAN' },
+  '12v': { label: '12V Extension', icon: Cable, category: 'Extensions', suffix: '12V' },
+  // Kits
+  kit_sfd: { label: 'Surface + Desko Kit', icon: Package, category: 'Kits', suffix: 'KIT-SFD' },
+  kit_tsr: { label: 'TSRID Kit', icon: Package, category: 'Kits', suffix: 'KIT-TSR' },
   // Sonstiges
   other: { label: 'Sonstiges', icon: Box, category: 'Sonstiges', suffix: 'OTH' }
 };
