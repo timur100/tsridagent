@@ -395,6 +395,7 @@ const AssetManagementV2 = ({ theme }) => {
   }, [fetchStats]);
 
   useEffect(() => {
+    console.log('[AssetMgmt] Tab changed to:', activeTab);
     switch (activeTab) {
       case 'locations': fetchLocations(); break;
       case 'slots': fetchSlots(); break;
