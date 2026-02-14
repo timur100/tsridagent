@@ -630,17 +630,10 @@ async def list_locations(
                 {"state": {"$regex": search, "$options": "i"}}
             ]
         
-        # Debug: Print the query and DB info
-        all_tenants = await db.tenant_locations.distinct("tenant_name")
-        print(f"DEBUG All tenants in DB: {all_tenants}")
-        print(f"DEBUG locations query: {query}")
-        
         # Read from tenant_locations (the main menu locations)
         total = await db.tenant_locations.count_documents(query)
-        print(f"DEBUG total count: {total}")
         cursor = db.tenant_locations.find(query, {"_id": 0}).skip(skip).limit(limit).sort("location_code", 1)
         raw_locations = [loc async for loc in cursor]
-        print(f"DEBUG raw_locations count: {len(raw_locations)}")
         
         # Get all location IDs for batch slot counting
         location_ids = [loc.get("location_code", loc.get("location_id", "")) for loc in raw_locations]
