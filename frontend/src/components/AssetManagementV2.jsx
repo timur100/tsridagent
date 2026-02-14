@@ -1175,10 +1175,12 @@ const AssetManagementV2 = ({ theme }) => {
                           size="sm" 
                           variant="outline"
                           className="text-green-500 border-green-500 hover:bg-green-500/10"
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.stopPropagation();
                             setDeviceToLink(device);
                             setShowCreateAssetModal(true);
                           }}
+                          data-testid={`create-asset-btn-${device.device_id}`}
                         >
                           <Plus className="h-3 w-3 mr-1" />
                           Asset
@@ -1187,7 +1189,11 @@ const AssetManagementV2 = ({ theme }) => {
                         <Button 
                           size="sm" 
                           variant="ghost"
-                          onClick={() => openDetailModal('asset', device.asset_id.replace('AST-', ''))}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDetailModal('asset', device.asset_id);
+                          }}
+                          data-testid={`view-asset-btn-${device.device_id}`}
                         >
                           <ExternalLink className="h-4 w-4" />
                         </Button>
