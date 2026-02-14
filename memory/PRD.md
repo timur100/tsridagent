@@ -387,6 +387,62 @@ Integriert in folgende Komponenten:
   - Lizenz-Warnung in Detailansicht
   - Farbcodierte Sektionen für abgelaufene Garantien/Lizenzen
 
+#### Geräte-Asset Verknüpfung & Automatische Datumsberechnung (Feb 14, 2025) - ✅ COMPLETE & TESTED
+- **Status:** COMPLETE - 100% Backend (18/18) & Frontend Tests bestanden
+- **Test Report:** `/app/test_reports/iteration_13.json`
+- **Problem:** 
+  1. Bestehende Geräte aus dem "Devices" Bereich mussten mit Assets verknüpft werden können
+  2. User wollte Garantie/Lizenz-Laufzeit in Monaten eingeben, nicht manuell Enddatum berechnen
+  3. TSRID-spezifische Gerätetypen fehlten
+- **Lösung - 3 Features:**
+
+  **1. Geräte-Import Tab (NEU):**
+  - Neuer Tab "Geräte-Import" in Asset Management V2
+  - 3 Statistik-Cards: Gesamt Geräte, Mit Asset, Ohne Asset
+  - Badge am Tab zeigt Anzahl unverknüpfter Geräte (z.B. "215")
+  - Tabelle mit: Device-ID, Asset-ID (Link/Kein Asset), Location, Stadt, SN-PC, SN-SC, Status
+  - Checkbox-Auswahl für Bulk-Operationen
+  - Filter: "Alle Geräte", "Ohne Asset", "Mit Asset"
+  - "+ Asset" Button pro Zeile öffnet Modal
+  - Klick auf Asset-ID navigiert zum Assets-Tab
+  - Bulk-Erstellung: Mehrere Devices auswählen → alle als Assets erstellen
+
+  **2. Automatische Datumsberechnung:**
+  - Garantie: Kaufdatum + Monate (12/24/36/48/60) = Garantie-Enddatum
+  - Lizenz: Aktivierungsdatum + Monate (12/24/36/48/60/Unbegrenzt) = Lizenz-Enddatum
+  - Dropdown-Auswahl für Monate statt manueller Datumseingabe
+  - Bestätigungstext: "✓ Garantie-Ende berechnet: [Datum]"
+  - Berechnetes Datum bleibt editierbar für Sonderfälle
+
+  **3. TSRID Gerätetypen:**
+  - `tsrid_tablet` - TSRID Tablet
+  - `tsrid_scanner` - TSRID Scanner
+  - Als erste Kategorie "TSRID" im Gerätetyp-Dropdown
+  - Hersteller "TSRID" zur Auswahl hinzugefügt
+
+- **Backend-Endpoints (NEU in `/app/backend/routes/asset_management_v2.py`):**
+  - `GET /api/asset-mgmt/devices/all` - Alle Geräte mit Asset-Status & Stats
+  - `GET /api/asset-mgmt/devices/unlinked` - Nur Geräte ohne Asset
+  - `GET /api/asset-mgmt/devices/linked` - Nur Geräte mit Asset
+  - `POST /api/asset-mgmt/devices/{device_id}/create-asset` - Asset aus Device erstellen
+  - `POST /api/asset-mgmt/devices/{device_id}/link-asset` - Device mit bestehendem Asset verknüpfen
+  - `POST /api/asset-mgmt/devices/{device_id}/unlink-asset` - Verknüpfung lösen
+  - `POST /api/asset-mgmt/devices/bulk-create-assets` - Mehrere Assets auf einmal erstellen
+  - `GET /api/asset-mgmt/assets/{asset_id}/with-device` - Asset mit Live-Device-Daten
+
+- **Bi-direktionale Verknüpfung:**
+  - Asset speichert: `linked_device_id` (Referenz auf europcar_devices.device_id)
+  - Device speichert: `asset_id` (z.B. "AST-AAHC01-01")
+  - Asset-ID Pattern: `AST-{device_id}`
+
+- **MongoDB Collections:**
+  - `europcar_devices` (multi_tenant_admin DB) - `asset_id` Feld hinzugefügt
+  - `tsrid_assets` (portal_db) - `linked_device_id` Feld hinzugefügt
+
+- **Dateien:**
+  - `/app/backend/routes/asset_management_v2.py` - Device-Asset Endpoints (ab Zeile 1320)
+  - `/app/frontend/src/components/AssetManagementV2.jsx` - Geräte-Import Tab & Modal
+
 ### ⏳ Pending Issues
 
 | Priority | Issue | Status |
