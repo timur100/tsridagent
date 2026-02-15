@@ -80,6 +80,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [receivedBy, setReceivedBy] = useState('');
   const [supplier, setSupplier] = useState('');
   const [deliveryNote, setDeliveryNote] = useState('');
+  const [suppliers, setSuppliers] = useState([]);
   
   // Unassigned Assets State
   const [unassignedAssets, setUnassignedAssets] = useState([]);
@@ -98,12 +99,29 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [assignTechnician, setAssignTechnician] = useState('');
   
+  // Delete Confirmation State
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [assetToDelete, setAssetToDelete] = useState(null);
+  
   // Label Modal State
   const [showLabelModal, setShowLabelModal] = useState(false);
   const [labelData, setLabelData] = useState(null);
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
+
+  // Fetch suppliers
+  const fetchSuppliers = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/suppliers`);
+      const data = await res.json();
+      if (data.success) {
+        setSuppliers(data.suppliers || []);
+      }
+    } catch (e) {
+      console.error('Error fetching suppliers:', e);
+    }
+  }, []);
 
   // Fetch unassigned assets
   const fetchUnassignedAssets = useCallback(async () => {
