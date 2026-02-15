@@ -34,6 +34,46 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   const [kitHistory, setKitHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   
+  // German state abbreviation mapping
+  const STATE_NAMES = {
+    'BW': 'Baden-Württemberg',
+    'BY': 'Bayern',
+    'BE': 'Berlin',
+    'BB': 'Brandenburg',
+    'HB': 'Bremen',
+    'HH': 'Hamburg',
+    'HE': 'Hessen',
+    'MV': 'Mecklenburg-Vorpommern',
+    'NI': 'Niedersachsen',
+    'NW': 'Nordrhein-Westfalen',
+    'RP': 'Rheinland-Pfalz',
+    'SL': 'Saarland',
+    'SN': 'Sachsen',
+    'ST': 'Sachsen-Anhalt',
+    'SH': 'Schleswig-Holstein',
+    'TH': 'Thüringen'
+  };
+
+  // Continent mapping based on country
+  const COUNTRY_CONTINENT = {
+    'Deutschland': 'Europa',
+    'Germany': 'Europa',
+    'Österreich': 'Europa',
+    'Austria': 'Europa',
+    'Schweiz': 'Europa',
+    'Switzerland': 'Europa',
+    'Frankreich': 'Europa',
+    'France': 'Europa',
+    'Italien': 'Europa',
+    'Italy': 'Europa',
+    'Spanien': 'Europa',
+    'Spain': 'Europa',
+    'USA': 'Nordamerika',
+    'United States': 'Nordamerika',
+    'Kanada': 'Nordamerika',
+    'Canada': 'Nordamerika'
+  };
+  
   // Tenant state
   const [tenants, setTenants] = useState([]);
   const [selectedTenant, setSelectedTenant] = useState('');
@@ -42,12 +82,20 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   // Assignment state
   const [locations, setLocations] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
+  const [displayedLocations, setDisplayedLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [locationKits, setLocationKits] = useState([]);
   const [loadingLocationKits, setLoadingLocationKits] = useState(false);
   const [assignmentNotes, setAssignmentNotes] = useState('');
   const [technician, setTechnician] = useState('');
   const [assigning, setAssigning] = useState(false);
+  
+  // Location filter state
+  const [locationSearch, setLocationSearch] = useState('');
+  const [filterContinent, setFilterContinent] = useState('');
+  const [filterCountry, setFilterCountry] = useState('');
+  const [filterState, setFilterState] = useState('');
+  const [filterCity, setFilterCity] = useState('');
   
   // Move state
   const [showMoveDialog, setShowMoveDialog] = useState(false);
