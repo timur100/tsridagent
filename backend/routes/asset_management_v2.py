@@ -3746,6 +3746,90 @@ async def get_next_asset_id(asset_type: str, tenant_id: str = Query("default")):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class ResetCounterRequest(BaseModel):
+    """Request to reset/adjust a counter for an asset type"""
+    asset_type: str
+    new_value: int = Field(ge=1, description="New starting value for the counter")
+
+
+@router.post("/asset-id-config/reset-counter")
+async def reset_asset_counter(
+    request: ResetCounterRequest,
+    tenant_id: str = Query("default")
+):
+    """
+    Reset/adjust the counter for a specific asset type.
+    
+    WARNUNG: Dies kann zu doppelten IDs führen, wenn Geräte mit höheren Nummern existieren.
+    Nur verwenden, wenn Sie wissen, was Sie tun.
+    """
+    try:
+        config = await get_tenant_asset_config(tenant_id)
+        prefix = config.get("warehouse_prefix", "TSRID")
+        type_suffix = DEFAULT_ASSET_ID_FORMATS.get(request.asset_type, {}).get('type_suffix', 'OTH')
+        
+        # Check if any assets exist with sequence >= new_value
+        pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+        cursor = db.tsrid_assets.find(
+            {"warehouse_asset_id": {"$regex": pattern}},
+            {"warehouse_asset_id": 1}
+        )
+        
+        existing_sequences = []
+        async for asset in cursor:
+            wid = asset.get("warehouse_asset_id", "")
+            parts = wid.split("-")
+            if len(parts) >= 4:
+                try:
+                    seq = int(parts[-1])
+                    if seq >= request.new_value:
+                        existing_sequences.append(seq)
+                except:
+                    pass
+        
+        warning = None
+        if existing_sequences:
+            warning = f"WARNUNG: {len(existing_sequences)} Geräte mit Sequenz >= {request.new_value} existieren bereits: {sorted(existing_sequences)[:5]}{'...' if len(existing_sequences) > 5 else ''}"
+        
+        # Store the manual override in a separate collection
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # We don't actually store a counter - the system calculates from existing assets
+        # But we can log this action for audit
+        await db.asset_id_audit_log.insert_one({
+            "tenant_id": tenant_id,
+            "asset_type": request.asset_type,
+            "action": "counter_reset_request",
+            "old_method": "auto_calculated",
+            "requested_value": request.new_value,
+            "warning": warning,
+            "created_at": now
+        })
+        
+        # The actual "reset" effect comes from the fact that if someone wants sequence X,
+        # they need to ensure no assets exist with sequences >= X for that type.
+        # We'll return what the next ID would be.
+        
+        next_seq = await get_next_warehouse_sequence(request.asset_type, tenant_id)
+        next_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+        
+        return {
+            "success": True,
+            "message": f"Zähler-Info für {request.asset_type}",
+            "asset_type": request.asset_type,
+            "type_suffix": type_suffix,
+            "current_next_sequence": next_seq,
+            "current_next_id": next_id,
+            "requested_value": request.new_value,
+            "warning": warning,
+            "note": "Der Zähler wird automatisch aus existierenden Assets berechnet. Um die Sequenz zu ändern, müssten Assets mit höheren Nummern gelöscht oder umbenannt werden."
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/inventory/intake-with-auto-id")
 async def inventory_intake_with_auto_id(
     item: InventoryIntakeItem,
