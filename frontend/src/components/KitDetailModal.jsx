@@ -99,6 +99,22 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     }
   }, [kit?.asset_id]);
 
+  // Fetch tenants
+  const fetchTenants = useCallback(async () => {
+    setLoadingTenants(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/tenants?limit=500`);
+      const data = await res.json();
+      if (data.tenants) {
+        setTenants(data.tenants);
+      }
+    } catch (e) {
+      console.error('Error fetching tenants:', e);
+    } finally {
+      setLoadingTenants(false);
+    }
+  }, []);
+
   // Fetch locations
   const fetchLocations = useCallback(async () => {
     try {
@@ -111,6 +127,22 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
       console.error('Error fetching locations:', e);
     }
   }, []);
+
+  // Filter locations by selected tenant
+  useEffect(() => {
+    if (selectedTenant && locations.length > 0) {
+      const filtered = locations.filter(loc => 
+        loc.tenant_id === selectedTenant || 
+        loc.customer === selectedTenant ||
+        loc.tenant_name === selectedTenant
+      );
+      setFilteredLocations(filtered);
+      // Reset selected location when tenant changes
+      setSelectedLocation('');
+    } else {
+      setFilteredLocations([]);
+    }
+  }, [selectedTenant, locations]);
 
   // Fetch kits at selected location
   const fetchLocationKits = useCallback(async (locationId) => {
@@ -153,8 +185,9 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
       fetchKitDetails();
       fetchKitHistory();
       fetchLocations();
+      fetchTenants();
     }
-  }, [isOpen, kit, fetchKitDetails, fetchKitHistory, fetchLocations]);
+  }, [isOpen, kit, fetchKitDetails, fetchKitHistory, fetchLocations, fetchTenants]);
 
   useEffect(() => {
     if (selectedLocation) {
