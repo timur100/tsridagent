@@ -56,6 +56,14 @@ const ASSET_STATUS_CONFIG = {
   retired: { label: 'Ausgemustert', color: 'bg-gray-500/20 text-gray-400' }
 };
 
+// Kit Status Configuration
+const KIT_STATUS_CONFIG = {
+  incomplete: { label: 'Unvollständig', color: 'bg-yellow-500/20 text-yellow-500' },
+  ready: { label: 'Bereit', color: 'bg-green-500/20 text-green-500' },
+  assigned: { label: 'Zugewiesen', color: 'bg-blue-500/20 text-blue-400' },
+  defective: { label: 'Defekt', color: 'bg-red-500/20 text-red-400' }
+};
+
 // Erweiterte Asset-Typ-Konfiguration mit ID-Suffix
 // Format: [device_id]-[TYP]-[MODELL] z.B. AAHC01-01-TAB-SP4
 const ASSET_TYPE_CONFIG = {
