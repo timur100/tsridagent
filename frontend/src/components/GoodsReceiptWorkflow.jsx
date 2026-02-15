@@ -448,9 +448,9 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
               </div>
             </div>
             
-            {/* Seriennummer Eingabe */}
-            <div className="flex gap-4 mb-6">
-              <div className="flex-1">
+            {/* Seriennummer, IMEI, MAC Eingabe */}
+            <div className="grid grid-cols-12 gap-4 mb-6">
+              <div className="col-span-4">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   Seriennummer (Barcode scannen oder eingeben)
                 </label>
@@ -467,7 +467,31 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   />
                 </div>
               </div>
-              <div className="w-[200px]">
+              <div className="col-span-2">
+                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                  IMEI (optional)
+                </label>
+                <Input
+                  placeholder="IMEI-Nummer"
+                  value={currentIMEI}
+                  onChange={(e) => setCurrentIMEI(e.target.value)}
+                  className={inputBg}
+                  data-testid="imei-input"
+                />
+              </div>
+              <div className="col-span-2">
+                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                  MAC-Adresse (optional)
+                </label>
+                <Input
+                  placeholder="00:00:00:00:00:00"
+                  value={currentMAC}
+                  onChange={(e) => setCurrentMAC(e.target.value)}
+                  className={inputBg}
+                  data-testid="mac-input"
+                />
+              </div>
+              <div className="col-span-2">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   Gerätetyp
                 </label>
@@ -489,10 +513,10 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex items-end">
+              <div className="col-span-2 flex items-end">
                 <Button 
                   onClick={addIntakeItem}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-blue-600 hover:bg-blue-700 w-full"
                   data-testid="add-item-btn"
                 >
                   <Plus className="h-4 w-4 mr-2" />
