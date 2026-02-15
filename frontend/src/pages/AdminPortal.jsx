@@ -3292,6 +3292,10 @@ const AdminPortalContent = () => {
                   <AssetSettings />
                 )}
 
+                {settingsTab === 'asset-id-config' && (
+                  <AssetIdConfigManager />
+                )}
+
                 {settingsTab === 'integrations' && (
                   <div>
                     <div className="mb-4">
