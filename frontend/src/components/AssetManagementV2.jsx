@@ -1461,7 +1461,7 @@ const AssetManagementV2 = ({ theme }) => {
                     >
                       <div>
                         <p className={`font-medium ${isDark ? 'text-white' : ''}`}>{slot.slot_id}</p>
-                        {slot.bundle_id && <p className="text-xs text-purple-500">Bundle: {slot.bundle_id}</p>}
+                        {slot.bundle_id && <p className="text-xs text-purple-500">KIT: {slot.bundle_id}</p>}
                       </div>
                       <StatusBadge status={slot.status} config={SLOT_STATUS_CONFIG} />
                     </div>
@@ -1507,7 +1507,7 @@ const AssetManagementV2 = ({ theme }) => {
             
             {data.bundle && (
               <div>
-                <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Installiertes Bundle</h4>
+                <h4 className={`text-sm font-semibold mb-3 ${isDark ? 'text-white' : ''}`}>Installiertes KIT</h4>
                 <Card 
                   className={`p-4 cursor-pointer ${cardBg}`}
                   onClick={() => openDetailModal('bundle', data.bundle.bundle_id)}
@@ -1530,7 +1530,7 @@ const AssetManagementV2 = ({ theme }) => {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Bundle ID</p>
+                <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>KIT ID</p>
                 <p className={`font-medium ${isDark ? 'text-white' : ''}`}>{data.bundle_id}</p>
               </div>
               <div>
@@ -1760,7 +1760,7 @@ const AssetManagementV2 = ({ theme }) => {
                   onClick={() => openDetailModal('bundle', data.bundle.bundle_id)}
                 >
                   <Package className="h-5 w-5 mx-auto mb-1 text-purple-500" />
-                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Bundle</p>
+                  <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>KIT</p>
                   <p className="font-medium text-sm">{data.bundle.bundle_id}</p>
                 </Card>
               )}
@@ -1935,7 +1935,7 @@ const AssetManagementV2 = ({ theme }) => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium">Bundle ID *</label>
+                <label className="text-sm font-medium">KIT ID *</label>
                 <Input
                   value={formData.bundle_id || ''}
                   onChange={(e) => setFormData({ ...formData, bundle_id: e.target.value })}
@@ -2448,7 +2448,7 @@ const AssetManagementV2 = ({ theme }) => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" />
-              Neue {createType === 'location' ? 'Location' : createType === 'slot' ? 'Slot' : createType === 'bundle' ? 'Bundle' : 'Asset'}
+              Neue {createType === 'location' ? 'Location' : createType === 'slot' ? 'Slot' : createType === 'bundle' ? 'KIT' : 'Asset'}
             </DialogTitle>
             <DialogDescription className={isDark ? 'text-gray-400' : 'text-gray-500'}>
               Füllen Sie die erforderlichen Felder aus.
