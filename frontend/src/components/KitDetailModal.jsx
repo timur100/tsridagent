@@ -252,7 +252,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     }
 
     setDisplayedLocations(result);
-  }, [filteredLocations, filterContinent, filterCountry, filterState, filterCity, locationSearch, STATE_NAMES, COUNTRY_CONTINENT]);
+  }, [filteredLocations, filterContinent, filterCountry, filterState, filterCity, locationSearch]);
 
   // Get unique filter options from filtered locations
   const getFilterOptions = () => {
