@@ -168,7 +168,62 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       fetchUnassignedAssets();
     }
     fetchLocations();
-  }, [activeSubTab, fetchUnassignedAssets, fetchLocations]);
+    fetchSuppliers();
+  }, [activeSubTab, fetchUnassignedAssets, fetchLocations, fetchSuppliers]);
+
+  // Delete unassigned asset
+  const deleteUnassignedAsset = async (sn) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/unassigned/${encodeURIComponent(sn)}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Gerät ${sn} wurde gelöscht`);
+        setShowDeleteModal(false);
+        setAssetToDelete(null);
+        fetchUnassignedAssets();
+        if (onRefreshStats) onRefreshStats();
+      } else {
+        toast.error(data.detail || 'Fehler beim Löschen');
+      }
+    } catch (e) {
+      console.error('Error deleting asset:', e);
+      toast.error('Fehler beim Löschen des Geräts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Delete selected assets (bulk)
+  const deleteSelectedAssets = async () => {
+    if (selectedAssets.size === 0) return;
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/unassigned/bulk`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Array.from(selectedAssets))
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`${data.deleted_count} Geräte gelöscht`);
+        setSelectedAssets(new Set());
+        setShowDeleteModal(false);
+        fetchUnassignedAssets();
+        if (onRefreshStats) onRefreshStats();
+      } else {
+        toast.error(data.detail || 'Fehler beim Löschen');
+      }
+    } catch (e) {
+      console.error('Error deleting assets:', e);
+      toast.error('Fehler beim Löschen der Geräte');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Add item to intake list
   const addIntakeItem = () => {
