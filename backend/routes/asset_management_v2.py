@@ -2827,7 +2827,8 @@ async def get_next_kit_id(template_id: str = Query("KIT-TSR")):
 async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query("")):
     """
     One-step kit assembly: Create kit, assign components, generate kit ID.
-    Used by the frontend Kit Assembly workflow.
+    Kit wird im "Lager" erstellt (ohne Standort-Zuweisung).
+    Standort-Zuweisung erfolgt später über den Kits Tab.
     """
     try:
         # 1. Get template
@@ -2835,12 +2836,7 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
         if not template:
             raise HTTPException(status_code=404, detail=f"Kit Template {assembly.template_id} nicht gefunden")
         
-        # 2. Get location
-        location = await find_location(assembly.location_id)
-        if not location:
-            raise HTTPException(status_code=404, detail=f"Standort {assembly.location_id} nicht gefunden")
-        
-        # 3. Validate and get all component assets
+        # 2. Validate and get all component assets
         components = []
         for sn in assembly.component_sns:
             # Try by serial number first
@@ -2857,53 +2853,46 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
             
             components.append(asset)
         
-        # 4. Generate Kit ID: LOCATION-XX-KIT-SUFFIX
-        # Get the highest existing slot number for kits at this location
-        kit_type = assembly.template_id.lower().replace('-', '_')
-        kit_suffix = ASSET_TYPE_SUFFIXES.get(kit_type, assembly.template_id.replace('KIT-', 'KIT-'))
-        
+        # 3. Generate Kit ID: TSRID-KIT-001, TSRID-KIT-002, etc.
         existing_kits = await db.tsrid_assets.find(
-            {
-                "location_id": assembly.location_id,
-                "type": {"$regex": "^kit_"}
-            },
+            {"asset_id": {"$regex": "^TSRID-KIT-"}},
             {"asset_id": 1}
-        ).to_list(1000)
+        ).to_list(10000)
         
-        # Extract slot numbers from existing kits
-        max_slot = 0
+        # Extract the highest number
+        max_num = 0
         for kit in existing_kits:
             kit_asset_id = kit.get("asset_id", "")
             parts = kit_asset_id.split("-")
-            if len(parts) >= 2:
+            if len(parts) >= 3:
                 try:
-                    slot_num = int(parts[1])
-                    max_slot = max(max_slot, slot_num)
+                    num = int(parts[2])
+                    max_num = max(max_num, num)
                 except ValueError:
                     pass
         
-        next_slot = max_slot + 1
-        kit_id = f"{assembly.location_id}-{next_slot:02d}-{kit_suffix}"
+        next_num = max_num + 1
+        kit_id = f"TSRID-KIT-{next_num:03d}"
         
+        kit_type = assembly.template_id.lower().replace('-', '_')
         now = datetime.now(timezone.utc).isoformat()
         
-        # 5. Create kit document
+        # 4. Create kit document - Status "in_storage" (Lager)
         kit_doc = {
             "asset_id": kit_id,
             "type": kit_type,
             "type_label": template.get("name", assembly.template_id),
             "kit_template_id": assembly.template_id,
             "kit_components": [c.get("asset_id") or c.get("manufacturer_sn") for c in components],
-            "kit_status": "complete" if len(components) >= len(template.get("components", [])) else "partial",
-            "location_id": assembly.location_id,
-            "slot_number": next_slot,
-            "status": "in_storage",
+            "kit_status": "complete" if len(components) >= len(template.get("components", [])) else "incomplete",
+            "location_id": None,  # Kein Standort - im Lager
+            "status": "in_storage",  # Lager-Status
             "history": [{
                 "date": now,
                 "event": f"Kit erstellt basierend auf Vorlage {assembly.template_id}",
                 "event_type": "created",
                 "technician": technician or None,
-                "notes": f"{len(components)} Komponenten zugewiesen"
+                "notes": f"{len(components)} Komponenten zugewiesen - Status: Lager"
             }],
             "created_at": now,
             "updated_at": now
@@ -2911,7 +2900,7 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
         
         await db.tsrid_assets.insert_one(kit_doc)
         
-        # 6. Update all components to link them to this kit
+        # 5. Update all components to link them to this kit
         for comp in components:
             comp_id = comp.get("asset_id") or comp.get("_id")
             await db.tsrid_assets.update_one(
@@ -2936,21 +2925,22 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
                     technician=technician
                 )
         
-        # 7. Return success with label data
+        # 6. Return success with label data
         return {
             "success": True,
             "kit_id": kit_id,
             "template_id": assembly.template_id,
             "template_name": template.get("name", assembly.template_id),
-            "location_id": assembly.location_id,
+            "location_id": None,
+            "location_name": "Lager",
             "component_count": len(components),
             "kit_status": kit_doc["kit_status"],
-            "message": f"Kit {kit_id} erfolgreich erstellt",
+            "message": f"Kit {kit_id} erfolgreich erstellt und im Lager gespeichert",
             "label": {
                 "asset_id": kit_id,
                 "type_label": template.get("name", assembly.template_id),
                 "manufacturer_sn": kit_id,
-                "location_name": f"{location.get('city', '')} - {location.get('location_name', assembly.location_id)}",
+                "location_name": "Lager",
                 "qr_content": f"TSRID:KIT:{kit_id}",
                 "components": len(components)
             }
