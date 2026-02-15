@@ -3470,6 +3470,38 @@ async def list_suppliers():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.delete("/inventory/unassigned/bulk")
+async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
+    """
+    Löscht mehrere nicht zugewiesene Geräte aus dem Lager.
+    WICHTIG: Diese Route muss VOR der parametrisierten Route /{manufacturer_sn} definiert sein!
+    """
+    try:
+        deleted = []
+        failed = []
+        
+        for sn in serial_numbers:
+            result = await db.tsrid_assets.delete_one({
+                "manufacturer_sn": sn,
+                "status": "unassigned",
+                "asset_id": None
+            })
+            if result.deleted_count > 0:
+                deleted.append(sn)
+            else:
+                failed.append(sn)
+        
+        return {
+            "success": True,
+            "deleted_count": len(deleted),
+            "failed_count": len(failed),
+            "deleted": deleted,
+            "failed": failed
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.delete("/inventory/unassigned/{manufacturer_sn}")
 async def delete_unassigned_asset(manufacturer_sn: str):
     """
@@ -3511,37 +3543,6 @@ async def delete_unassigned_asset(manufacturer_sn: str):
         }
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.delete("/inventory/unassigned/bulk")
-async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
-    """
-    Löscht mehrere nicht zugewiesene Geräte aus dem Lager.
-    """
-    try:
-        deleted = []
-        failed = []
-        
-        for sn in serial_numbers:
-            result = await db.tsrid_assets.delete_one({
-                "manufacturer_sn": sn,
-                "status": "unassigned",
-                "asset_id": None
-            })
-            if result.deleted_count > 0:
-                deleted.append(sn)
-            else:
-                failed.append(sn)
-        
-        return {
-            "success": True,
-            "deleted_count": len(deleted),
-            "failed_count": len(failed),
-            "deleted": deleted,
-            "failed": failed
-        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
