@@ -26,6 +26,46 @@ const KIT_STATUS_CONFIG = {
   defective: { label: 'Defekt', color: 'bg-red-500', textColor: 'text-red-500' }
 };
 
+// German state abbreviation mapping - defined outside component to prevent re-creation
+const STATE_NAMES = {
+  'BW': 'Baden-Württemberg',
+  'BY': 'Bayern',
+  'BE': 'Berlin',
+  'BB': 'Brandenburg',
+  'HB': 'Bremen',
+  'HH': 'Hamburg',
+  'HE': 'Hessen',
+  'MV': 'Mecklenburg-Vorpommern',
+  'NI': 'Niedersachsen',
+  'NW': 'Nordrhein-Westfalen',
+  'RP': 'Rheinland-Pfalz',
+  'SL': 'Saarland',
+  'SN': 'Sachsen',
+  'ST': 'Sachsen-Anhalt',
+  'SH': 'Schleswig-Holstein',
+  'TH': 'Thüringen'
+};
+
+// Continent mapping based on country - defined outside component
+const COUNTRY_CONTINENT = {
+  'Deutschland': 'Europa',
+  'Germany': 'Europa',
+  'Österreich': 'Europa',
+  'Austria': 'Europa',
+  'Schweiz': 'Europa',
+  'Switzerland': 'Europa',
+  'Frankreich': 'Europa',
+  'France': 'Europa',
+  'Italien': 'Europa',
+  'Italy': 'Europa',
+  'Spanien': 'Europa',
+  'Spain': 'Europa',
+  'USA': 'Nordamerika',
+  'United States': 'Nordamerika',
+  'Kanada': 'Nordamerika',
+  'Canada': 'Nordamerika'
+};
+
 const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   const isDark = theme === 'dark';
   const navigate = useNavigate();
@@ -33,46 +73,6 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   const [kitDetails, setKitDetails] = useState(null);
   const [kitHistory, setKitHistory] = useState([]);
   const [loading, setLoading] = useState(false);
-  
-  // German state abbreviation mapping
-  const STATE_NAMES = {
-    'BW': 'Baden-Württemberg',
-    'BY': 'Bayern',
-    'BE': 'Berlin',
-    'BB': 'Brandenburg',
-    'HB': 'Bremen',
-    'HH': 'Hamburg',
-    'HE': 'Hessen',
-    'MV': 'Mecklenburg-Vorpommern',
-    'NI': 'Niedersachsen',
-    'NW': 'Nordrhein-Westfalen',
-    'RP': 'Rheinland-Pfalz',
-    'SL': 'Saarland',
-    'SN': 'Sachsen',
-    'ST': 'Sachsen-Anhalt',
-    'SH': 'Schleswig-Holstein',
-    'TH': 'Thüringen'
-  };
-
-  // Continent mapping based on country
-  const COUNTRY_CONTINENT = {
-    'Deutschland': 'Europa',
-    'Germany': 'Europa',
-    'Österreich': 'Europa',
-    'Austria': 'Europa',
-    'Schweiz': 'Europa',
-    'Switzerland': 'Europa',
-    'Frankreich': 'Europa',
-    'France': 'Europa',
-    'Italien': 'Europa',
-    'Italy': 'Europa',
-    'Spanien': 'Europa',
-    'Spain': 'Europa',
-    'USA': 'Nordamerika',
-    'United States': 'Nordamerika',
-    'Kanada': 'Nordamerika',
-    'Canada': 'Nordamerika'
-  };
   
   // Tenant state
   const [tenants, setTenants] = useState([]);
