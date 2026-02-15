@@ -4266,7 +4266,7 @@ async def update_supplier(supplier_id: str, data: SupplierUpdate):
         
         return {
             "success": True,
-            "message": f"Lieferant wurde aktualisiert",
+            "message": "Lieferant wurde aktualisiert",
             "supplier": updated
         }
     except HTTPException:
@@ -4717,7 +4717,7 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
         
         return {
             "success": True,
-            "message": f"Gerät zugewiesen und Asset-ID generiert",
+            "message": "Gerät zugewiesen und Asset-ID generiert",
             "asset_id": new_asset_id,
             "manufacturer_sn": manufacturer_sn,
             "location_id": assignment.location_id,
