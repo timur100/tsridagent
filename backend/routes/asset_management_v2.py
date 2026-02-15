@@ -2411,6 +2411,44 @@ class KitComponentAssign(BaseModel):
     asset_id: str  # ID des Komponenten-Assets
 
 
+@router.get("/kits/next-id")
+async def get_next_kit_id(template_id: str = Query("KIT-TSR")):
+    """
+    Get the next available Kit ID for a given template.
+    Format: TSRID-KIT-001, TSRID-KIT-002, etc.
+    """
+    try:
+        # Find all existing kits with TSRID-KIT-XXX format
+        existing_kits = await db.tsrid_assets.find(
+            {"asset_id": {"$regex": "^TSRID-KIT-"}},
+            {"asset_id": 1}
+        ).to_list(10000)
+        
+        # Extract the highest number
+        max_num = 0
+        for kit in existing_kits:
+            kit_id = kit.get("asset_id", "")
+            # Format: TSRID-KIT-001
+            parts = kit_id.split("-")
+            if len(parts) >= 3:
+                try:
+                    num = int(parts[2])
+                    max_num = max(max_num, num)
+                except ValueError:
+                    pass
+        
+        next_num = max_num + 1
+        next_id = f"TSRID-KIT-{next_num:03d}"
+        
+        return {
+            "success": True,
+            "next_kit_id": next_id,
+            "current_count": max_num
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/kits")
 async def list_kits(
     status: str = Query(None),
