@@ -2702,6 +2702,21 @@ const AssetManagementV2 = ({ theme }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Kit Detail Modal */}
+      <KitDetailModal
+        kit={selectedKitForDetail}
+        isOpen={showKitDetailModal}
+        onClose={() => {
+          setShowKitDetailModal(false);
+          setSelectedKitForDetail(null);
+        }}
+        onRefresh={() => {
+          fetchBundles();
+          fetchStats();
+        }}
+        theme={theme}
+      />
     </div>
   );
 };
