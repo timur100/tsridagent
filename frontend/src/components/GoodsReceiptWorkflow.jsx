@@ -127,6 +127,45 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, []);
 
+  // Quick add supplier
+  const quickAddSupplier = async () => {
+    if (!quickSupplierName.trim()) {
+      toast.error('Name ist erforderlich');
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/suppliers`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: quickSupplierName.trim() })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success(`Lieferant "${quickSupplierName}" angelegt`);
+        setSupplier(quickSupplierName.trim());
+        setQuickSupplierName('');
+        setShowQuickSupplierModal(false);
+        fetchSuppliers();
+      } else {
+        toast.error(data.detail || 'Fehler beim Anlegen');
+      }
+    } catch (e) {
+      console.error('Error creating supplier:', e);
+      toast.error('Fehler beim Anlegen des Lieferanten');
+    }
+  };
+
+  // Handle supplier selection
+  const handleSupplierChange = (value) => {
+    if (value === '__new__') {
+      setShowQuickSupplierModal(true);
+    } else {
+      setSupplier(value);
+    }
+  };
+
   // Fetch unassigned assets
   const fetchUnassignedAssets = useCallback(async () => {
     setLoading(true);
