@@ -38,6 +38,7 @@ import GoodsReceiptManagement from '../components/GoodsReceiptManagement';
 import LowStockAlert from '../components/LowStockAlert';
 import SupportManagement from '../components/SupportManagement';
 import AssetSettings from '../components/AssetSettings';
+import AssetIdConfigManager from '../components/AssetIdConfigManager';
 import AssetManagement from '../components/AssetManagement';
 import AssetManagementV2 from '../components/AssetManagementV2';
 import BrandingSettings from '../components/BrandingSettings';
