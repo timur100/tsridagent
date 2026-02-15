@@ -3539,6 +3539,537 @@ async def inventory_intake_batch(batch: InventoryIntakeBatch):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============ ASSET-ID CONFIGURATION ENDPOINTS ============
+
+# Default Asset-ID formats per type
+DEFAULT_ASSET_ID_FORMATS = {
+    # Tablets
+    'tab_tsr_i7': {'type_suffix': 'TAB-i7', 'description': 'TSRID Tablet i7'},
+    'tab_tsr_i5': {'type_suffix': 'TAB-i5', 'description': 'TSRID Tablet i5'},
+    'tab_sp4': {'type_suffix': 'TAB-SP4', 'description': 'Surface Pro 4'},
+    'tab_sp6': {'type_suffix': 'TAB-SP6', 'description': 'Surface Pro 6'},
+    # Scanner
+    'sca_tsr': {'type_suffix': 'SCA-TSR', 'description': 'TSRID Scanner'},
+    'sca_dsk': {'type_suffix': 'SCA-DSK', 'description': 'Desko Scanner'},
+    # Tablet Docks
+    'tdo_qer': {'type_suffix': 'TDO-QER', 'description': 'Quer Dock (Surface)'},
+    'tdo_tsr': {'type_suffix': 'TDO-TSR', 'description': 'TSRID Tablet Dock'},
+    # Scanner Docks
+    'sdo_dsk': {'type_suffix': 'SDO-DSK', 'description': 'Desko Scanner Dock'},
+    'sdo_tsr': {'type_suffix': 'SDO-TSR', 'description': 'TSRID Scanner Dock'},
+    # Netzteile
+    'tps_spx': {'type_suffix': 'TPS-SPX', 'description': 'Surface Netzteil'},
+    'tps_tsr': {'type_suffix': 'TPS-TSR', 'description': 'TSRID Tablet Netzteil'},
+    'sps_dsk': {'type_suffix': 'SPS-DSK', 'description': 'Desko Scanner Netzteil'},
+    'sps_tsr': {'type_suffix': 'SPS-TSR', 'description': 'TSRID Scanner Netzteil'},
+    # Kabel
+    'cab_usb_a': {'type_suffix': 'CAB-USBA', 'description': 'USB-A Kabel'},
+    'cab_usb_c': {'type_suffix': 'CAB-USBC', 'description': 'USB-C Kabel'},
+    'cab_lan': {'type_suffix': 'CAB-LAN', 'description': 'LAN-Kabel'},
+    'cab_hdmi': {'type_suffix': 'CAB-HDMI', 'description': 'HDMI-Kabel'},
+    'cab_dp': {'type_suffix': 'CAB-DP', 'description': 'DisplayPort-Kabel'},
+    'cab_pwr': {'type_suffix': 'CAB-PWR', 'description': 'Stromkabel'},
+    # Adapter
+    'adp_usb_c': {'type_suffix': 'ADP-USBC', 'description': 'USB-C Adapter/Hub'},
+    'adp_hdmi': {'type_suffix': 'ADP-HDMI', 'description': 'HDMI Adapter'},
+    'adp_dp': {'type_suffix': 'ADP-DP', 'description': 'DisplayPort Adapter'},
+    'adp_90': {'type_suffix': 'ADP-90', 'description': '90° Adapter'},
+    # Stromverteiler
+    'pwr_strip': {'type_suffix': 'PWR-STR', 'description': 'Netzleiste'},
+    'pwr_12v': {'type_suffix': 'PWR-12V', 'description': '12V Verteiler'},
+    # Sonstiges
+    'other': {'type_suffix': 'OTH', 'description': 'Sonstiges'},
+}
+
+
+async def get_tenant_asset_config(tenant_id: str = "default"):
+    """Get asset ID configuration for tenant"""
+    config = await db.asset_id_config.find_one({"tenant_id": tenant_id}, {"_id": 0})
+    if not config:
+        # Return default config
+        return {
+            "tenant_id": tenant_id,
+            "warehouse_prefix": "TSRID",
+            "formats": DEFAULT_ASSET_ID_FORMATS
+        }
+    return config
+
+
+async def get_next_warehouse_sequence(asset_type: str, tenant_id: str = "default"):
+    """Get next sequence number for warehouse asset ID"""
+    # Find the highest existing sequence for this type
+    config = await get_tenant_asset_config(tenant_id)
+    prefix = config.get("warehouse_prefix", "TSRID")
+    type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
+    
+    # Pattern: TSRID-TAB-i7-XXXX
+    pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+    
+    # Find all assets with this pattern
+    cursor = db.tsrid_assets.find(
+        {"warehouse_asset_id": {"$regex": pattern}},
+        {"warehouse_asset_id": 1}
+    ).sort("warehouse_asset_id", -1).limit(1)
+    
+    highest = await cursor.to_list(length=1)
+    
+    if highest and highest[0].get("warehouse_asset_id"):
+        # Extract sequence from TSRID-TAB-i7-0001
+        parts = highest[0]["warehouse_asset_id"].split("-")
+        if len(parts) >= 4:
+            try:
+                seq = int(parts[-1])
+                return seq + 1
+            except:
+                pass
+    
+    return 1  # Start with 1
+
+
+async def get_next_location_sequence(location_id: str):
+    """Get next sequence number for assets at a location"""
+    # Find the highest existing sequence for this location
+    # Pattern: STRT01-XX-...
+    pattern = f"^{location_id}-\\d{{2}}-"
+    
+    cursor = db.tsrid_assets.find(
+        {"asset_id": {"$regex": pattern}},
+        {"asset_id": 1}
+    ).sort("asset_id", -1).limit(1)
+    
+    highest = await cursor.to_list(length=1)
+    
+    if highest and highest[0].get("asset_id"):
+        # Extract sequence from STRT01-01-TAB-i7
+        parts = highest[0]["asset_id"].split("-")
+        if len(parts) >= 2:
+            try:
+                seq = int(parts[1])
+                return seq + 1
+            except:
+                pass
+    
+    return 1  # Start with 1
+
+
+def generate_warehouse_asset_id(prefix: str, type_suffix: str, sequence: int) -> str:
+    """Generate warehouse asset ID: TSRID-TAB-i7-0001"""
+    return f"{prefix}-{type_suffix}-{sequence:04d}"
+
+
+def generate_location_asset_id(location_id: str, sequence: int, type_suffix: str) -> str:
+    """Generate location-based asset ID: STRT01-01-TAB-i7"""
+    return f"{location_id}-{sequence:02d}-{type_suffix}"
+
+
+@router.get("/asset-id-config")
+async def get_asset_id_config(tenant_id: str = Query("default")):
+    """Get asset ID configuration for a tenant"""
+    try:
+        config = await get_tenant_asset_config(tenant_id)
+        
+        # Build format list with all types
+        formats_list = []
+        for asset_type, format_info in DEFAULT_ASSET_ID_FORMATS.items():
+            formats_list.append({
+                "asset_type": asset_type,
+                "type_suffix": format_info['type_suffix'],
+                "description": format_info['description'],
+                "warehouse_example": f"{config.get('warehouse_prefix', 'TSRID')}-{format_info['type_suffix']}-0001",
+                "location_example": f"LOC01-01-{format_info['type_suffix']}"
+            })
+        
+        return {
+            "success": True,
+            "config": {
+                "tenant_id": config.get("tenant_id", "default"),
+                "warehouse_prefix": config.get("warehouse_prefix", "TSRID"),
+                "formats": formats_list
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/asset-id-config")
+async def update_asset_id_config(config: AssetIdConfigCreate):
+    """Update asset ID configuration for a tenant"""
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        config_doc = {
+            "tenant_id": config.tenant_id,
+            "warehouse_prefix": config.warehouse_prefix,
+            "formats": {f.asset_type: {"type_suffix": f.type_suffix, "description": f.description} 
+                       for f in config.formats} if config.formats else DEFAULT_ASSET_ID_FORMATS,
+            "updated_at": now
+        }
+        
+        await db.asset_id_config.update_one(
+            {"tenant_id": config.tenant_id},
+            {"$set": config_doc},
+            upsert=True
+        )
+        
+        return {
+            "success": True,
+            "message": f"Asset-ID Konfiguration für Tenant '{config.tenant_id}' aktualisiert",
+            "config": config_doc
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/asset-id-config/next-id")
+async def get_next_asset_id(asset_type: str, tenant_id: str = Query("default")):
+    """Preview the next asset ID that would be generated for a given type"""
+    try:
+        config = await get_tenant_asset_config(tenant_id)
+        prefix = config.get("warehouse_prefix", "TSRID")
+        type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
+        
+        next_seq = await get_next_warehouse_sequence(asset_type, tenant_id)
+        next_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+        
+        return {
+            "success": True,
+            "asset_type": asset_type,
+            "next_sequence": next_seq,
+            "next_asset_id": next_id,
+            "format_info": {
+                "prefix": prefix,
+                "type_suffix": type_suffix,
+                "format": "{PREFIX}-{TYPE_SUFFIX}-{SEQ:04d}"
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/intake-with-auto-id")
+async def inventory_intake_with_auto_id(
+    item: InventoryIntakeItem,
+    received_by: str = Query(""),
+    tenant_id: str = Query("default")
+):
+    """
+    Wareneingang mit automatischer Asset-ID Generierung.
+    Generiert: TSRID-TAB-i7-0001 (Lager-ID)
+    """
+    try:
+        # Check if serial number already exists
+        existing = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
+        if existing:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Gerät mit Seriennummer {item.manufacturer_sn} existiert bereits"
+            )
+        
+        # Get config and generate ID
+        config = await get_tenant_asset_config(tenant_id)
+        prefix = config.get("warehouse_prefix", "TSRID")
+        type_suffix = DEFAULT_ASSET_ID_FORMATS.get(item.type, {}).get('type_suffix', 'OTH')
+        
+        next_seq = await get_next_warehouse_sequence(item.type, tenant_id)
+        warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        asset_doc = {
+            "asset_id": None,  # Location-based ID (set when assigned)
+            "warehouse_asset_id": warehouse_id,  # Permanent warehouse ID
+            "original_warehouse_id": warehouse_id,  # Never changes - for history
+            "manufacturer_sn": item.manufacturer_sn,
+            "type": item.type,
+            "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
+            "type_suffix": type_suffix,
+            "imei": item.imei,
+            "mac": item.mac,
+            "manufacturer": item.manufacturer,
+            "model": item.model,
+            "status": "unassigned",
+            "location_id": None,
+            "country": None,
+            "bundle_id": None,
+            "assigned_to_kit": None,
+            "notes": item.notes,
+            "intake_date": now,
+            "received_by": received_by,
+            "history": [{
+                "date": now,
+                "event": f"Wareneingang: {ASSET_TYPE_LABELS.get(item.type, item.type)}",
+                "event_type": "intake",
+                "notes": f"SN: {item.manufacturer_sn}, Lager-ID: {warehouse_id}",
+                "technician": received_by
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_assets.insert_one(asset_doc)
+        
+        return {
+            "success": True,
+            "message": f"Gerät erfasst mit ID: {warehouse_id}",
+            "warehouse_asset_id": warehouse_id,
+            "manufacturer_sn": item.manufacturer_sn,
+            "type": item.type,
+            "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
+            "status": "unassigned"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/intake-bulk")
+async def inventory_intake_bulk(
+    request: BulkIntakeRequest,
+    tenant_id: str = Query("default")
+):
+    """
+    Bulk-Wareneingang: Mehrere Geräte mit automatischer Asset-ID erstellen.
+    Optionen:
+    1. Anzahl angeben → System generiert automatisch N Einträge mit Platzhalter-SNs
+    2. Seriennummer-Liste → System generiert Asset-IDs für jede SN
+    """
+    try:
+        config = await get_tenant_asset_config(tenant_id)
+        prefix = config.get("warehouse_prefix", "TSRID")
+        type_suffix = DEFAULT_ASSET_ID_FORMATS.get(request.asset_type, {}).get('type_suffix', 'OTH')
+        
+        now = datetime.now(timezone.utc).isoformat()
+        created = []
+        skipped = []
+        
+        # Determine how many assets to create
+        if request.serial_numbers and len(request.serial_numbers) > 0:
+            # Use provided serial numbers
+            items_to_create = request.serial_numbers
+        elif request.count > 0:
+            # Generate placeholder serial numbers
+            items_to_create = [f"PENDING-{i+1:04d}" for i in range(request.count)]
+        else:
+            raise HTTPException(status_code=400, detail="Entweder 'count' oder 'serial_numbers' muss angegeben werden")
+        
+        # Get starting sequence
+        next_seq = await get_next_warehouse_sequence(request.asset_type, tenant_id)
+        
+        for i, sn in enumerate(items_to_create):
+            # Skip if SN already exists (unless placeholder)
+            if not sn.startswith("PENDING-"):
+                existing = await db.tsrid_assets.find_one({"manufacturer_sn": sn})
+                if existing:
+                    skipped.append({"manufacturer_sn": sn, "reason": "Existiert bereits"})
+                    continue
+            
+            # Generate warehouse ID
+            warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq + i)
+            
+            # Get optional IMEI/MAC if provided
+            imei = request.imeis[i] if request.imeis and i < len(request.imeis) else ""
+            mac = request.macs[i] if request.macs and i < len(request.macs) else ""
+            
+            asset_doc = {
+                "asset_id": None,
+                "warehouse_asset_id": warehouse_id,
+                "original_warehouse_id": warehouse_id,
+                "manufacturer_sn": sn,
+                "type": request.asset_type,
+                "type_label": ASSET_TYPE_LABELS.get(request.asset_type, request.asset_type),
+                "type_suffix": type_suffix,
+                "imei": imei,
+                "mac": mac,
+                "manufacturer": "",
+                "model": "",
+                "status": "unassigned",
+                "location_id": None,
+                "country": None,
+                "bundle_id": None,
+                "assigned_to_kit": None,
+                "notes": request.notes,
+                "intake_date": now,
+                "received_by": request.received_by,
+                "supplier": request.supplier,
+                "delivery_note": request.delivery_note,
+                "history": [{
+                    "date": now,
+                    "event": f"Wareneingang (Bulk): {ASSET_TYPE_LABELS.get(request.asset_type, request.asset_type)}",
+                    "event_type": "intake",
+                    "notes": f"SN: {sn}, Lager-ID: {warehouse_id}, Lieferant: {request.supplier}",
+                    "technician": request.received_by
+                }],
+                "created_at": now,
+                "updated_at": now
+            }
+            
+            await db.tsrid_assets.insert_one(asset_doc)
+            created.append({
+                "warehouse_asset_id": warehouse_id,
+                "manufacturer_sn": sn,
+                "imei": imei,
+                "mac": mac
+            })
+        
+        return {
+            "success": True,
+            "message": f"{len(created)} Geräte erstellt, {len(skipped)} übersprungen",
+            "created_count": len(created),
+            "skipped_count": len(skipped),
+            "created": created,
+            "skipped": skipped,
+            "first_id": created[0]["warehouse_asset_id"] if created else None,
+            "last_id": created[-1]["warehouse_asset_id"] if created else None
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/assign-to-location/{manufacturer_sn}")
+async def assign_asset_to_location_by_sn(
+    manufacturer_sn: str,
+    location_id: str = Query(...),
+    technician: str = Query("")
+):
+    """
+    Asset einer Location zuweisen und Location-basierte Asset-ID generieren.
+    Warehouse-ID: TSRID-TAB-i7-0001 → Location-ID: STRT01-01-TAB-i7
+    """
+    try:
+        # Find the asset
+        asset = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
+        
+        # Check if already assigned
+        if asset.get("location_id"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Gerät ist bereits Location {asset.get('location_id')} zugewiesen"
+            )
+        
+        # Verify location exists
+        location = await db.tenant_locations.find_one({"location_id": location_id})
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Location {location_id} nicht gefunden")
+        
+        # Generate location-based asset ID
+        type_suffix = asset.get("type_suffix", ASSET_TYPE_SUFFIX_MAP.get(asset.get("type"), "OTH"))
+        next_seq = await get_next_location_sequence(location_id)
+        location_asset_id = generate_location_asset_id(location_id, next_seq, type_suffix)
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Update asset
+        update_data = {
+            "asset_id": location_asset_id,
+            "location_id": location_id,
+            "status": "installed",
+            "updated_at": now
+        }
+        
+        # Add history entry
+        history_entry = {
+            "date": now,
+            "event": f"Location zugewiesen: {location_id}",
+            "event_type": "assigned_to_location",
+            "notes": f"Neue Asset-ID: {location_asset_id} (vorher: {asset.get('warehouse_asset_id', 'N/A')})",
+            "technician": technician
+        }
+        
+        await db.tsrid_assets.update_one(
+            {"manufacturer_sn": manufacturer_sn},
+            {
+                "$set": update_data,
+                "$push": {"history": history_entry}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Gerät zu Location {location_id} zugewiesen",
+            "manufacturer_sn": manufacturer_sn,
+            "warehouse_asset_id": asset.get("warehouse_asset_id"),
+            "location_asset_id": location_asset_id,
+            "location_id": location_id,
+            "location_name": location.get("station_name", location_id)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/remove-from-location/{manufacturer_sn}")
+async def remove_asset_from_location(
+    manufacturer_sn: str,
+    technician: str = Query("")
+):
+    """
+    Asset von Location entfernen und zurück zur Warehouse-ID.
+    Location-ID: STRT01-01-TAB-i7 → Warehouse-ID: TSRID-TAB-i7-0001
+    """
+    try:
+        # Find the asset
+        asset = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
+        
+        # Check if assigned to location
+        if not asset.get("location_id"):
+            raise HTTPException(
+                status_code=400,
+                detail="Gerät ist keiner Location zugewiesen"
+            )
+        
+        old_location_id = asset.get("location_id")
+        old_asset_id = asset.get("asset_id")
+        warehouse_id = asset.get("warehouse_asset_id") or asset.get("original_warehouse_id")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Update asset - restore warehouse ID
+        update_data = {
+            "asset_id": None,  # Clear location-based ID
+            "location_id": None,
+            "status": "unassigned",
+            "updated_at": now
+        }
+        
+        # Add history entry
+        history_entry = {
+            "date": now,
+            "event": f"Von Location entfernt: {old_location_id}",
+            "event_type": "removed_from_location",
+            "notes": f"Asset-ID zurückgesetzt: {old_asset_id} → Lager ({warehouse_id})",
+            "technician": technician
+        }
+        
+        await db.tsrid_assets.update_one(
+            {"manufacturer_sn": manufacturer_sn},
+            {
+                "$set": update_data,
+                "$push": {"history": history_entry}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Gerät von Location {old_location_id} entfernt",
+            "manufacturer_sn": manufacturer_sn,
+            "old_asset_id": old_asset_id,
+            "warehouse_asset_id": warehouse_id,
+            "status": "unassigned"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============================================================
 # SUPPLIERS & PRODUCTS MANAGEMENT (Full CRUD)
 # ============================================================
