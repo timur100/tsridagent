@@ -696,8 +696,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             </div>
             
             {/* Seriennummer, IMEI, MAC Eingabe */}
-            <div className="grid grid-cols-12 gap-4 mb-6">
-              <div className="col-span-4">
+            <div className="grid grid-cols-12 gap-4 mb-4">
+              <div className="col-span-3">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   Seriennummer (Barcode scannen oder eingeben)
                 </label>
@@ -709,7 +709,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     onChange={(e) => setCurrentSN(e.target.value)}
                     onKeyDown={handleSNKeyDown}
                     className={`pl-10 ${inputBg}`}
-                    data-testid="serial-number-input"
+                    data-testid="sn-input"
                     autoFocus
                   />
                 </div>
@@ -762,17 +762,46 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="col-span-2 flex items-end">
+              <div className="col-span-3 flex items-end gap-2">
                 <Button 
                   onClick={addIntakeItem}
-                  className="bg-blue-600 hover:bg-blue-700 w-full"
+                  className="bg-blue-600 hover:bg-blue-700 flex-1"
                   data-testid="add-item-btn"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Hinzufügen
                 </Button>
+                <Button 
+                  onClick={() => setShowBulkModal(true)}
+                  variant="outline"
+                  className={`${isDark ? 'border-gray-600 text-gray-300 hover:bg-gray-700' : ''}`}
+                  data-testid="bulk-btn"
+                >
+                  <Package className="h-4 w-4 mr-2" />
+                  Bulk
+                </Button>
               </div>
             </div>
+            
+            {/* Nächste Asset-ID Vorschau */}
+            {nextAssetId && (
+              <div className={`mb-6 p-3 rounded-lg flex items-center justify-between ${isDark ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+                <div className="flex items-center gap-3">
+                  <Tag className={`h-5 w-5 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                  <div>
+                    <p className={`text-sm font-medium ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                      Nächste Asset-ID (Lager):
+                    </p>
+                    <p className={`text-lg font-mono font-bold ${isDark ? 'text-green-400' : 'text-green-800'}`} data-testid="next-asset-id">
+                      {nextAssetId}
+                    </p>
+                  </div>
+                </div>
+                <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  Nach Zuweisung: <span className="font-mono">LOC-01-{nextAssetId.split('-').slice(1, -1).join('-')}</span>
+                </div>
+              </div>
+            )}
             
             {/* Intake List */}
             {intakeItems.length > 0 && (
