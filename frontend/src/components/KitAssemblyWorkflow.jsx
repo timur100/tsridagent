@@ -235,13 +235,8 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     };
   };
 
-  // Finalize Kit
+  // Finalize Kit - Kit wird im "Lager" erstellt, kein Standort erforderlich
   const finalizeKit = async () => {
-    if (!selectedLocation) {
-      toast.error('Bitte wählen Sie einen Standort aus');
-      return;
-    }
-
     const progress = getProgress();
     if (!progress.isComplete) {
       if (!window.confirm('Das Kit ist noch nicht vollständig. Trotzdem fortfahren?')) {
@@ -256,19 +251,18 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           template_id: selectedTemplate.template_id,
-          location_id: selectedLocation,
           component_sns: scannedComponents.map(c => c.manufacturer_sn || c.asset_id)
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        toast.success(`Kit erstellt: ${data.kit_id}`);
+        toast.success(`Kit erstellt: ${data.kit_id} - Im Lager gespeichert`);
         setKitLabelData({
           asset_id: data.kit_id,
           type_label: selectedTemplate.name,
           manufacturer_sn: data.kit_id,
-          location_name: locations.find(l => l.location_id === selectedLocation)?.city || selectedLocation,
+          location_name: 'Lager',
           qr_content: data.kit_id,
           components: scannedComponents.length
         });
