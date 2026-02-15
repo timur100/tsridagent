@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Package, MapPin, History, RefreshCw, AlertTriangle, Check, X,
   ArrowRight, Wrench, ChevronDown, ChevronRight, Calendar, User,
-  Truck, Building, Box
+  Truck, Building, Box, Plus, Users, ExternalLink
 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/dialog';
 import { Button } from './ui/button';
