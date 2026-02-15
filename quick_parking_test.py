@@ -8,7 +8,7 @@ import json
 import time
 
 # Backend URL
-BACKEND_URL = "https://kit-workflow-app.preview.emergentagent.com"
+BACKEND_URL = "https://location-kit-builder.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def test_overstay_quick():

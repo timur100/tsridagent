@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://kit-workflow-app.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://location-kit-builder.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

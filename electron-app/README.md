@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://kit-workflow-app.preview.emergentagent.com
+│   └── Lädt: https://location-kit-builder.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

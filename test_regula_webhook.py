@@ -7,7 +7,7 @@ import requests
 import os
 
 # Get backend URL from env
-BACKEND_URL = "https://kit-workflow-app.preview.emergentagent.com"
+BACKEND_URL = "https://location-kit-builder.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 
 # API Key from backend/.env

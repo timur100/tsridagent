@@ -4,7 +4,7 @@ Test mit echten Regula-Daten von hochgeladenen Dateien
 import requests
 import json
 
-BACKEND_URL = "https://kit-workflow-app.preview.emergentagent.com"
+BACKEND_URL = "https://location-kit-builder.preview.emergentagent.com"
 WEBHOOK_URL = f"{BACKEND_URL}/api/webhooks/regula-scan"
 API_KEY = "G3pbltT7jpdD6U4Z4nB7tAVDrneFVS5IzmC-pAQS3zg"
 
