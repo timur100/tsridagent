@@ -292,8 +292,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   };
 
-  // Add item to intake list
-  const addIntakeItem = () => {
+  // Add item to intake list with auto-generated asset ID
+  const addIntakeItem = async () => {
     if (!currentSN.trim()) {
       toast.error('Bitte Seriennummer eingeben');
       return;
@@ -309,10 +309,18 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       .flat()
       .find(t => t.value === currentType)?.label || currentType;
     
+    // Calculate next ID based on already added items of same type
+    const sameTypeCount = intakeItems.filter(i => i.type === currentType).length;
+    const baseIdParts = nextAssetId.split('-');
+    const baseSeq = parseInt(baseIdParts[baseIdParts.length - 1]) || 1;
+    const newSeq = baseSeq + sameTypeCount;
+    const newAssetId = baseIdParts.slice(0, -1).join('-') + '-' + String(newSeq).padStart(4, '0');
+    
     setIntakeItems(prev => [...prev, {
       manufacturer_sn: currentSN.trim(),
       type: currentType,
       type_label: typeLabel,
+      warehouse_asset_id: newAssetId,
       imei: currentIMEI.trim(),
       mac: currentMAC.trim(),
       manufacturer: '',
@@ -322,6 +330,52 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     setCurrentSN('');
     setCurrentIMEI('');
     setCurrentMAC('');
+    
+    // Focus back to SN input for next scan
+    setTimeout(() => {
+      const snInput = document.querySelector('[data-testid="sn-input"]');
+      if (snInput) snInput.focus();
+    }, 100);
+  };
+
+  // Submit bulk intake (multiple items at once with count)
+  const submitBulkIntake = async () => {
+    if (bulkCount < 1) {
+      toast.error('Anzahl muss mindestens 1 sein');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/intake-bulk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          asset_type: currentType,
+          count: bulkCount,
+          supplier: supplier,
+          delivery_note: deliveryNote,
+          received_by: receivedBy,
+          notes: ''
+        })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`${data.created_count} Geräte erstellt: ${data.first_id} bis ${data.last_id}`);
+        setShowBulkModal(false);
+        setBulkCount(1);
+        fetchNextAssetId(currentType);
+        if (onRefreshStats) onRefreshStats();
+      } else {
+        toast.error(data.detail || 'Fehler beim Erstellen');
+      }
+    } catch (e) {
+      console.error('Error bulk intake:', e);
+      toast.error('Fehler beim Erstellen der Geräte');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Remove item from intake list
@@ -361,7 +415,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   };
 
-  // Submit batch intake
+  // Submit batch intake with auto-generated IDs
   const submitIntake = async () => {
     if (intakeItems.length === 0) {
       toast.error('Keine Geräte zum Erfassen');
@@ -370,28 +424,48 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     
     setLoading(true);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/intake/batch`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          items: intakeItems,
-          received_by: receivedBy,
-          supplier: supplier,
-          delivery_note: deliveryNote,
-          notes: ''
-        })
-      });
+      // Use new endpoint with auto-ID generation
+      let successCount = 0;
+      let errorCount = 0;
       
-      const data = await res.json();
-      if (data.success) {
-        toast.success(`${data.created_count} Geräte erfasst, ${data.skipped_count} übersprungen`);
+      for (const item of intakeItems) {
+        try {
+          const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/intake-with-auto-id?received_by=${encodeURIComponent(receivedBy)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              manufacturer_sn: item.manufacturer_sn,
+              type: item.type,
+              imei: item.imei,
+              mac: item.mac,
+              manufacturer: item.manufacturer,
+              model: item.model,
+              notes: item.notes
+            })
+          });
+          
+          const data = await res.json();
+          if (data.success) {
+            successCount++;
+          } else {
+            errorCount++;
+          }
+        } catch {
+          errorCount++;
+        }
+      }
+      
+      if (successCount > 0) {
+        toast.success(`${successCount} Geräte mit Auto-ID erfasst`);
         setIntakeItems([]);
         setReceivedBy('');
         setSupplier('');
         setDeliveryNote('');
+        fetchNextAssetId(currentType);
         if (onRefreshStats) onRefreshStats();
-      } else {
-        toast.error(data.detail || 'Fehler beim Erfassen');
+      }
+      if (errorCount > 0) {
+        toast.error(`${errorCount} Geräte konnten nicht erfasst werden`);
       }
     } catch (e) {
       console.error('Error submitting intake:', e);
