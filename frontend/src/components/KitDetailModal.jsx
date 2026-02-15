@@ -316,10 +316,11 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     };
   }, [filteredLocations, filterContinent, filterCountry, filterState]);
 
-  // Fetch kits at selected location
+  // Fetch kits at selected location and calculate next kit number
   const fetchLocationKits = useCallback(async (locationId) => {
     if (!locationId) {
       setLocationKits([]);
+      setNextKitNumber(1);
       return;
     }
     
@@ -328,7 +329,20 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
       const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/locations/${locationId}/kits`);
       const data = await res.json();
       if (data.success) {
-        setLocationKits(data.kits || []);
+        const kits = data.kits || [];
+        setLocationKits(kits);
+        
+        // Calculate next kit number based on existing kit IDs
+        // Format: LOCATION-XX-KIT (e.g., MUCT01-01-KIT, MUCT01-02-KIT)
+        let maxNum = 0;
+        kits.forEach(kit => {
+          const match = kit.asset_id?.match(new RegExp(`^${locationId}-(\\d+)-KIT$`, 'i'));
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNum) maxNum = num;
+          }
+        });
+        setNextKitNumber(maxNum + 1);
       }
     } catch (e) {
       console.error('Error fetching location kits:', e);
