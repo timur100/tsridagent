@@ -484,7 +484,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     placeholder="Seriennummer scannen oder eingeben..."
                     value={currentSN}
                     onChange={(e) => setCurrentSN(e.target.value)}
-                    onKeyPress={handleSNKeyPress}
+                    onKeyDown={handleSNKeyDown}
                     className={`pl-10 ${inputBg}`}
                     data-testid="serial-number-input"
                     autoFocus
@@ -499,6 +499,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   placeholder="IMEI-Nummer"
                   value={currentIMEI}
                   onChange={(e) => setCurrentIMEI(e.target.value)}
+                  onKeyDown={handleIMEIKeyDown}
                   className={inputBg}
                   data-testid="imei-input"
                 />
@@ -511,6 +512,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   placeholder="00:00:00:00:00:00"
                   value={currentMAC}
                   onChange={(e) => setCurrentMAC(e.target.value)}
+                  onKeyDown={handleMACKeyDown}
                   className={inputBg}
                   data-testid="mac-input"
                 />
