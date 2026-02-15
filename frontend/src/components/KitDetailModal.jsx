@@ -848,7 +848,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                                         </div>
                                         <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                           {loc.address && <span>{loc.address}, </span>}
-                                          {loc.zip && <span>{loc.zip} </span>}
+                                          {(loc.postal_code || loc.zip) && <span>{loc.postal_code || loc.zip} </span>}
                                           {loc.city}
                                           {loc.state && <span>, {STATE_NAMES[loc.state] || loc.state}</span>}
                                         </div>
