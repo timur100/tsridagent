@@ -874,8 +874,8 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             variant="outline"
                             size="sm"
                             onClick={() => {
+                              navigate('/portal/admin', { state: { activeTab: 'asset-management' } });
                               onClose();
-                              navigate('/portal/locations');
                             }}
                             className="mt-3 text-yellow-600 border-yellow-500"
                           >
