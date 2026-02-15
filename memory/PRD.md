@@ -180,7 +180,16 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 ### Key API Endpoints
 - `GET /api/asset-mgmt/locations` - Get locations with filters (city, state, customer)
 - `GET /api/asset-mgmt/locations/filters` - Get filter options (cities, states)
+- `GET /api/asset-mgmt/kit-templates` - Get all kit templates with inventory stock levels
+- `GET /api/asset-mgmt/inventory-for-templates` - Get inventory items for template configuration
+- `POST /api/asset-mgmt/kit-templates/{id}/add-inventory-component` - Add inventory component to template
+- `DELETE /api/asset-mgmt/kit-templates/{id}/remove-inventory-component/{inv_id}` - Remove inventory component
+- `POST /api/asset-mgmt/kits/quick-assemble` - Create kit and auto-deduct inventory
 
 ### Database
 - MongoDB Atlas (production)
 - Collection: `tenant_locations` - Location data with tenant association
+- Collection: `inventory_items` - Inventory items ohne Seriennummer (Kabel, Adapter, etc.)
+- Collection: `tsrid_kit_templates` - Kit templates with asset + inventory components
+- Collection: `tsrid_assets` - Assets with serial numbers
+- Collection: `tsrid_kits` - Assembled kits
