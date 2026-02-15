@@ -814,7 +814,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                                     </SelectItem>
                                   ))
                                 ) : (
-                                  <SelectItem value="" disabled>
+                                  <SelectItem value="__none__" disabled>
                                     Keine Locations gefunden
                                   </SelectItem>
                                 )}
