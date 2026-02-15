@@ -106,6 +106,27 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
    - **TSRID KIT i5** (template_id: KIT-TSRi5) - TSRID Hardware-Kit mit i5 Prozessor
    - Beide Templates enthalten: TSRID Tablet, TSRID Scanner, TSRID Tablet Dock, TSRID Scanner Dock, TSRID Tablet Netzteil, TSRID Scanner Netzteil
 
+10. **Asset Type Split: TSRID Tablet i5/i7 (COMPLETED 2025-02-15)**
+    - Alten Asset-Typ `tab_tsr` (TSRID Tablet) aufgeteilt in:
+      - `tab_tsr_i5` (TSRID Tablet i5)
+      - `tab_tsr_i7` (TSRID Tablet i7)
+    - Kit-Templates in DB aktualisiert um neue Typen zu nutzen
+
+11. **Wareneingang IMEI/MAC Felder (COMPLETED 2025-02-15)**
+    - Neue Eingabefelder für IMEI und MAC-Adresse im Wareneingang-Formular
+    - Werte werden in der Intake-Liste angezeigt
+    - Backend unterstützt bereits die Speicherung dieser Werte
+
+12. **Barcode-Scanner Bug Fix (FIXED 2025-02-15)**
+    - **Problem**: Barcode-Scanner sendet automatisch "Enter" nach dem Scannen, was das Formular sofort abschickte. Benutzer konnte keine IMEI/MAC eingeben.
+    - **Lösung**: Enter-Taste verschiebt jetzt den Fokus zum nächsten Feld statt sofort hinzuzufügen
+    - **Workflow**: SN + Enter → IMEI → Enter → MAC → Enter → Eintrag hinzufügen
+    - **Dateien**: `/app/frontend/src/components/GoodsReceiptWorkflow.jsx`
+      - `handleSNKeyDown()`: Fokus zu IMEI
+      - `handleIMEIKeyDown()`: Fokus zu MAC  
+      - `handleMACKeyDown()`: addIntakeItem()
+    - **Test-Status**: ✅ Alle 5 Tests bestanden (100%)
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
