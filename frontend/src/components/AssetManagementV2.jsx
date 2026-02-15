@@ -965,60 +965,117 @@ const AssetManagementV2 = ({ theme }) => {
   );
 
   // Render Bundles Table
+  // Open Kit Detail Modal
+  const openKitDetailModal = (kit) => {
+    setSelectedKitForDetail(kit);
+    setShowKitDetailModal(true);
+  };
+
+  // Render Kits Table (formerly Bundles)
   const BundlesTable = () => (
     <div className={`rounded-lg border overflow-hidden ${cardBg}`}>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className={isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Bundle ID</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Land</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold">Assets</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Installiert in</th>
-              <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">Kit-ID</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold">Komponenten</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">Location</th>
+              <th className="px-4 py-3 text-center text-xs font-semibold">Kit-Status</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Erstellt</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Aktionen</th>
             </tr>
           </thead>
           <tbody>
-            {bundles.map(bundle => (
-              <tr 
-                key={bundle.bundle_id} 
-                className={`border-t cursor-pointer hover:bg-opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
-                onClick={() => openDetailModal('bundle', bundle.bundle_id)}
-              >
-                <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>{bundle.bundle_id}</td>
-                <td className="px-4 py-3">{bundle.country}</td>
-                <td className="px-4 py-3 text-center">
-                  <Badge variant="outline">{bundle.asset_count || 0}</Badge>
-                </td>
-                <td className="px-4 py-3">
-                  {bundle.installed_slot ? (
-                    <span className="text-green-500">{bundle.installed_slot}</span>
-                  ) : (
-                    <span className={isDark ? 'text-gray-500' : 'text-gray-400'}>Nicht installiert</span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <StatusBadge status={bundle.status} config={BUNDLE_STATUS_CONFIG} />
-                </td>
-                <td className="px-4 py-3">
-                  {bundle.created_at ? new Date(bundle.created_at).toLocaleDateString('de-DE') : '-'}
-                </td>
-                <td className="px-4 py-3 text-center">
-                  <Button size="sm" variant="ghost">
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </td>
-              </tr>
-            ))}
+            {bundles.map(bundle => {
+              const kitStatus = bundle.kit_status || (bundle.location_id ? 'assigned' : 'ready');
+              const kitStatusConfig = KIT_STATUS_CONFIG[kitStatus] || KIT_STATUS_CONFIG.ready;
+              return (
+                <tr 
+                  key={bundle.bundle_id || bundle.asset_id} 
+                  className={`border-t cursor-pointer hover:bg-opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
+                  onClick={() => openKitDetailModal(bundle)}
+                  data-testid={`kit-row-${bundle.bundle_id || bundle.asset_id}`}
+                >
+                  <td className={`px-4 py-3 font-mono font-medium ${isDark ? 'text-white' : ''}`}>
+                    {bundle.bundle_id || bundle.asset_id}
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {bundle.type_label || bundle.kit_template_id || 'TSRID Kit'}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <Badge variant="outline" className="font-mono">
+                      {bundle.asset_count || bundle.kit_components?.length || 0}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3">
+                    {bundle.location_id || bundle.installed_slot ? (
+                      <span className="flex items-center gap-1 text-green-500">
+                        <MapPin className="h-3 w-3" />
+                        {bundle.location_id || bundle.installed_slot}
+                      </span>
+                    ) : (
+                      <span className={`flex items-center gap-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        <Package className="h-3 w-3" />
+                        Im Lager
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <Badge className={`${kitStatusConfig.color}`}>
+                      {kitStatusConfig.label}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    {bundle.created_at ? new Date(bundle.created_at).toLocaleDateString('de-DE') : '-'}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      {!bundle.location_id && (
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="text-green-500 hover:text-green-600"
+                          onClick={(e) => { e.stopPropagation(); openKitDetailModal(bundle); }}
+                          title="Zuweisen"
+                        >
+                          <MapPin className="h-4 w-4" />
+                        </Button>
+                      )}
+                      {bundle.location_id && (
+                        <Button 
+                          size="sm" 
+                          variant="ghost"
+                          className="text-orange-500 hover:text-orange-600"
+                          onClick={(e) => { e.stopPropagation(); openKitDetailModal(bundle); }}
+                          title="Umziehen"
+                        >
+                          <Truck className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button 
+                        size="sm" 
+                        variant="ghost"
+                        onClick={(e) => { e.stopPropagation(); openKitDetailModal(bundle); }}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
       {bundles.length === 0 && !loading && (
         <div className="p-8 text-center">
           <Package className="h-12 w-12 mx-auto mb-4 opacity-30" />
-          <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>Keine Bundles gefunden</p>
+          <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>Keine Kits gefunden</p>
+          <p className={`text-sm mt-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+            Erstellen Sie ein neues Kit in der Kit-Zusammenstellung
+          </p>
         </div>
       )}
     </div>
