@@ -2068,7 +2068,7 @@ const AssetManagementV2 = ({ theme }) => {
                   <Input
                     value={formData.bundle_id || ''}
                     onChange={(e) => setFormData({ ...formData, bundle_id: e.target.value })}
-                    placeholder="z.B. BDL-DE-001"
+                    placeholder="z.B. TSRID-KIT-001"
                     className={`h-9 ${inputBg}`}
                   />
                 </div>
