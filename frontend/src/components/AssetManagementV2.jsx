@@ -909,7 +909,7 @@ const AssetManagementV2 = ({ theme }) => {
             <tr>
               <th className="px-4 py-3 text-left text-xs font-semibold">Slot ID</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Location</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Bundle</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">KIT</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">TeamViewer</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Installiert</th>
@@ -1092,7 +1092,7 @@ const AssetManagementV2 = ({ theme }) => {
               <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Hersteller</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Seriennummer</th>
-              <th className="px-4 py-3 text-left text-xs font-semibold">Bundle</th>
+              <th className="px-4 py-3 text-left text-xs font-semibold">KIT</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Location</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Garantie</th>
               <th className="px-4 py-3 text-center text-xs font-semibold">Status</th>
@@ -2348,12 +2348,12 @@ const AssetManagementV2 = ({ theme }) => {
         <div>
           <h2 className={`text-2xl font-bold ${isDark ? 'text-white' : ''}`}>Asset Management</h2>
           <p className={`text-sm mt-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Multi-Level Struktur für TSRID Rollout (inkl. Kit-/Bundle-Verwaltung)
+            Multi-Level Struktur für TSRID Rollout (inkl. KIT-Verwaltung)
           </p>
         </div>
-        {activeTab !== 'goods-receipt' && activeTab !== 'devices' && (
+        {activeTab !== 'goods-receipt' && activeTab !== 'devices' && activeTab !== 'kit-assembly' && (
           <Button 
-            onClick={() => openCreateModal(activeTab.slice(0, -1))} 
+            onClick={() => activeTab === 'bundles' ? setActiveTab('kit-assembly') : openCreateModal(activeTab.slice(0, -1))} 
             className="bg-[#c00000] hover:bg-[#a00000] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
