@@ -817,11 +817,197 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
                       )}
                     </div>
                   )}
+                  </div>{/* End clickable area */}
                 </Card>
               );
             })}
           </div>
         )}
+
+        {/* Template Editor Modal */}
+        <Dialog open={showTemplateModal} onOpenChange={setShowTemplateModal}>
+          <DialogContent className={`max-w-3xl max-h-[90vh] overflow-y-auto ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+            <DialogHeader>
+              <DialogTitle className={isDark ? 'text-white' : ''}>
+                {editingTemplate ? 'Vorlage bearbeiten' : 'Neue Vorlage erstellen'}
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4 py-4">
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-gray-300' : ''}>Vorlagen-ID</Label>
+                  <Input
+                    value={templateForm.template_id}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, template_id: e.target.value.toUpperCase() }))}
+                    placeholder="z.B. KIT-SP4D"
+                    disabled={!!editingTemplate}
+                    className={inputBg}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className={isDark ? 'text-gray-300' : ''}>Name *</Label>
+                  <Input
+                    value={templateForm.name}
+                    onChange={(e) => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
+                    placeholder="z.B. Surface Pro 4 + Desko Kit"
+                    className={inputBg}
+                  />
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label className={isDark ? 'text-gray-300' : ''}>Beschreibung</Label>
+                <Textarea
+                  value={templateForm.description}
+                  onChange={(e) => setTemplateForm(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Optionale Beschreibung..."
+                  className={inputBg}
+                  rows={2}
+                />
+              </div>
+              
+              {/* Asset Components (mit Seriennummer) */}
+              <div className="space-y-2">
+                <Label className={isDark ? 'text-gray-300' : ''}>Assets mit Seriennummer</Label>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  {templateForm.components.length === 0 ? (
+                    <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Keine Assets hinzugefügt</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {templateForm.components.map((comp, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <span className={isDark ? 'text-white' : ''}>{comp.quantity}× {comp.label || comp.asset_type}</span>
+                          <Button size="sm" variant="ghost" onClick={() => removeAssetComponent(comp.asset_type)}>
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3 pt-3 border-t border-gray-600">
+                    <p className={`text-xs mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Asset-Typ hinzufügen:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {assetTypes.slice(0, 10).map(type => (
+                        <Button 
+                          key={type.type} 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs h-7"
+                          onClick={() => addAssetComponent(type.type, type.label)}
+                        >
+                          + {type.label}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Inventory Components (ohne Seriennummer) */}
+              <div className="space-y-2">
+                <Label className={isDark ? 'text-gray-300' : ''}>Komponenten ohne Seriennummer (Lager)</Label>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  {templateForm.inventory_components.length === 0 ? (
+                    <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>Keine Lager-Komponenten hinzugefügt</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {templateForm.inventory_components.map((comp, i) => (
+                        <div key={i} className="flex items-center justify-between">
+                          <span className={isDark ? 'text-white' : ''}>{comp.quantity}× {comp.name}</span>
+                          <Button size="sm" variant="ghost" onClick={() => removeInventoryComponent(comp.inventory_item_id)}>
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-3 pt-3 border-t border-gray-600">
+                    <p className={`text-xs mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lager-Artikel hinzufügen:</p>
+                    <div className="flex flex-wrap gap-1 max-h-32 overflow-y-auto">
+                      {inventoryItems.slice(0, 20).map(item => (
+                        <Button 
+                          key={item.id} 
+                          size="sm" 
+                          variant="outline" 
+                          className="text-xs h-7"
+                          onClick={() => addInventoryComponent(item)}
+                        >
+                          + {item.name}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowTemplateModal(false)}>
+                Abbrechen
+              </Button>
+              <Button onClick={saveTemplate} disabled={savingTemplate}>
+                {savingTemplate ? <RefreshCw className="h-4 w-4 animate-spin mr-2" /> : null}
+                {editingTemplate ? 'Speichern' : 'Erstellen'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Reorder Suggestions Modal */}
+        <Dialog open={showReorderModal} onOpenChange={setShowReorderModal}>
+          <DialogContent className={`max-w-2xl ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+            <DialogHeader>
+              <DialogTitle className={isDark ? 'text-white' : ''}>
+                <ShoppingCart className="h-5 w-5 inline-block mr-2 text-orange-500" />
+                Nachbestellungsvorschläge
+              </DialogTitle>
+            </DialogHeader>
+            
+            <div className="py-4">
+              <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                Diese Komponenten sollten nachbestellt werden, um mindestens 10 Kits bauen zu können:
+              </p>
+              
+              <div className="space-y-3">
+                {reorderSuggestions.map((item, i) => (
+                  <div key={i} className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'} flex items-center justify-between`}>
+                    <div>
+                      <p className={`font-medium ${isDark ? 'text-white' : ''}`}>
+                        {item.name}
+                        {item.is_asset && <Badge className="ml-2 text-xs" variant="outline">Asset</Badge>}
+                      </p>
+                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Aktuell: {item.current_stock} Stück
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-orange-500 font-semibold">
+                        +{item.shortfall} nachbestellen
+                      </p>
+                      <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        für 10 Kits
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {reorderSuggestions.length === 0 && (
+                <p className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Alle Komponenten ausreichend vorhanden!
+                </p>
+              )}
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowReorderModal(false)}>
+                Schließen
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Printer Settings Modal */}
         <Dialog open={showPrinterSettings} onOpenChange={setShowPrinterSettings}>
