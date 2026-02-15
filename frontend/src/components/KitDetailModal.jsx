@@ -254,8 +254,8 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     setDisplayedLocations(result);
   }, [filteredLocations, filterContinent, filterCountry, filterState, filterCity, locationSearch]);
 
-  // Get unique filter options from filtered locations
-  const getFilterOptions = () => {
+  // Get unique filter options from filtered locations - memoized to prevent re-computation
+  const filterOptions = useMemo(() => {
     const continents = new Set();
     const countries = new Set();
     const states = new Set();
@@ -280,9 +280,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
       states: Array.from(states).sort(),
       cities: Array.from(cities).sort()
     };
-  };
-
-  const filterOptions = getFilterOptions();
+  }, [filteredLocations]);
 
   // Fetch kits at selected location
   const fetchLocationKits = useCallback(async (locationId) => {
