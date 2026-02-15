@@ -22,7 +22,8 @@ const ASSET_TYPE_CATEGORIES = {
   'Tablets': [
     { value: 'tab_sp4', label: 'Surface Pro 4' },
     { value: 'tab_sp6', label: 'Surface Pro 6' },
-    { value: 'tab_tsr', label: 'TSRID Tablet' },
+    { value: 'tab_tsr_i5', label: 'TSRID Tablet i5' },
+    { value: 'tab_tsr_i7', label: 'TSRID Tablet i7' },
   ],
   'Scanner': [
     { value: 'sca_tsr', label: 'TSRID Scanner' },
@@ -73,7 +74,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   // Wareneingang (Intake) State
   const [intakeItems, setIntakeItems] = useState([]);
   const [currentSN, setCurrentSN] = useState('');
-  const [currentType, setCurrentType] = useState('tab_tsr');
+  const [currentType, setCurrentType] = useState('tab_tsr_i7');
   const [receivedBy, setReceivedBy] = useState('');
   const [supplier, setSupplier] = useState('');
   const [deliveryNote, setDeliveryNote] = useState('');
