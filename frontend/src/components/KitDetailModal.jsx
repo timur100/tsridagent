@@ -1113,7 +1113,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                     </SelectItem>
                   ))}
                   {availableComponents.length === 0 && (
-                    <SelectItem value="" disabled>Keine verfügbaren Komponenten</SelectItem>
+                    <SelectItem value="__none__" disabled>Keine verfügbaren Komponenten</SelectItem>
                   )}
                 </SelectContent>
               </Select>
