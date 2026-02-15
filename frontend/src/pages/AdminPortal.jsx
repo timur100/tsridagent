@@ -1001,6 +1001,7 @@ const AdminPortalContent = () => {
                 { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
                 { id: 'device-lifecycle', label: 'Geräte-Lifecycle', icon: Monitor },
                 { id: 'inventory', label: 'Lagerverwaltung', icon: Warehouse },
+                { id: 'suppliers', label: 'Lieferanten', icon: Truck },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
                 { id: 'support', label: 'Support', icon: Headphones },
                 { id: 'licenses', label: 'Licenses', icon: Key },
