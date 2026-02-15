@@ -1367,6 +1367,115 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Intake Modal */}
+      <Dialog open={showBulkModal} onOpenChange={setShowBulkModal}>
+        <DialogContent className={`max-w-md ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className={isDark ? 'text-white' : ''}>
+              <div className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Bulk-Wareneingang
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Erstellen Sie mehrere Geräte gleichzeitig mit automatisch generierten Asset-IDs.
+              Seriennummern können später nachgetragen werden.
+            </p>
+            
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                Gerätetyp
+              </label>
+              <Select value={currentType} onValueChange={(val) => {
+                setCurrentType(val);
+                fetchNextAssetId(val);
+              }}>
+                <SelectTrigger className={inputBg} data-testid="bulk-type-select">
+                  <SelectValue placeholder="Typ wählen" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(ASSET_TYPE_CATEGORIES).map(([category, types]) => (
+                    <React.Fragment key={category}>
+                      <div className="px-2 py-1 text-xs font-semibold text-gray-500">{category}</div>
+                      {types.map(type => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </React.Fragment>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                Anzahl
+              </label>
+              <Input
+                type="number"
+                min={1}
+                max={100}
+                value={bulkCount}
+                onChange={(e) => setBulkCount(parseInt(e.target.value) || 1)}
+                className={inputBg}
+                data-testid="bulk-count-input"
+              />
+            </div>
+            
+            {/* Preview */}
+            <div className={`p-4 rounded-lg ${isDark ? 'bg-green-900/30 border border-green-700' : 'bg-green-50 border border-green-200'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <Tag className={`h-4 w-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                <span className={`text-sm font-medium ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                  Vorschau der Asset-IDs:
+                </span>
+              </div>
+              <div className={`font-mono text-sm ${isDark ? 'text-green-400' : 'text-green-800'}`}>
+                {nextAssetId && (
+                  <>
+                    <p><strong>Erste ID:</strong> {nextAssetId}</p>
+                    {bulkCount > 1 && (
+                      <p><strong>Letzte ID:</strong> {(() => {
+                        const parts = nextAssetId.split('-');
+                        const baseSeq = parseInt(parts[parts.length - 1]) || 1;
+                        const lastSeq = baseSeq + bulkCount - 1;
+                        return parts.slice(0, -1).join('-') + '-' + String(lastSeq).padStart(4, '0');
+                      })()}</p>
+                    )}
+                    <p className="mt-2 text-xs opacity-70">
+                      Gesamt: {bulkCount} Geräte
+                    </p>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBulkModal(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={submitBulkIntake}
+              disabled={loading || bulkCount < 1}
+              className="bg-green-600 hover:bg-green-700"
+              data-testid="bulk-submit-btn"
+            >
+              {loading ? (
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Check className="h-4 w-4 mr-2" />
+              )}
+              {bulkCount} Geräte erstellen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
