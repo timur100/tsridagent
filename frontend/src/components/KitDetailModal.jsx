@@ -131,10 +131,17 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   // Filter locations by selected tenant
   useEffect(() => {
     if (selectedTenant && locations.length > 0) {
+      // Find the selected tenant's name
+      const selectedTenantObj = tenants.find(t => 
+        t.tenant_id === selectedTenant || t.name === selectedTenant
+      );
+      const tenantName = selectedTenantObj?.name || selectedTenantObj?.display_name || selectedTenant;
+      
+      // Filter locations by customer name (locations use 'customer' field, not tenant_id)
       const filtered = locations.filter(loc => 
-        loc.tenant_id === selectedTenant || 
-        loc.customer === selectedTenant ||
-        loc.tenant_name === selectedTenant
+        loc.customer === tenantName || 
+        loc.customer?.toLowerCase() === tenantName?.toLowerCase() ||
+        loc.tenant_name === tenantName
       );
       setFilteredLocations(filtered);
       // Reset selected location when tenant changes
@@ -142,7 +149,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     } else {
       setFilteredLocations([]);
     }
-  }, [selectedTenant, locations]);
+  }, [selectedTenant, locations, tenants]);
 
   // Fetch kits at selected location
   const fetchLocationKits = useCallback(async (locationId) => {
