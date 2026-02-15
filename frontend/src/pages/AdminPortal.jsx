@@ -78,6 +78,7 @@ import EuropcarManagement from '../components/EuropcarManagement';
 import DHLShipping from '../components/DHLShipping';
 import DocumentScanPage from '../components/DocumentScanPage';
 import TimeTrackingPage from '../components/TimeTrackingPage';
+import SupplierManagement from '../components/SupplierManagement';
 import PlacetelManagement from '../components/PlacetelManagement';
 import ActivationCodeManager from '../components/ActivationCodeManager';
 import LocationLifecycleManager from '../components/LocationLifecycleManager';
