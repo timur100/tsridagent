@@ -66,6 +66,7 @@ const SettingsSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCo
       items: [
         { id: 'customers-management', label: 'Kunden', emoji: '🏢' },
         { id: 'assets', label: 'Assets', emoji: '📦' },
+        { id: 'asset-id-config', label: 'Asset-ID Konfig', emoji: '🔢' },
         { id: 'portal', label: 'Portal', emoji: '🚀' },
         { id: 'scanner-pin', label: 'Scanner PIN', emoji: '🔒' },
         { id: 'subscription-plans', label: 'Subscription Plans', emoji: '💳' },
