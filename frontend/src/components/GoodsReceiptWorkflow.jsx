@@ -826,6 +826,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     <thead className={isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
                       <tr>
                         <th className="px-4 py-2 text-left text-xs font-semibold">#</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold">Lager-ID</th>
                         <th className="px-4 py-2 text-left text-xs font-semibold">Seriennummer</th>
                         <th className="px-4 py-2 text-left text-xs font-semibold">IMEI</th>
                         <th className="px-4 py-2 text-left text-xs font-semibold">MAC</th>
@@ -840,6 +841,9 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
                         >
                           <td className="px-4 py-2 text-sm">{idx + 1}</td>
+                          <td className={`px-4 py-2 font-mono text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                            {item.warehouse_asset_id || '-'}
+                          </td>
                           <td className={`px-4 py-2 font-mono text-sm ${isDark ? 'text-white' : ''}`}>
                             {item.manufacturer_sn}
                           </td>
@@ -890,7 +894,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
               <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 <Barcode className="h-12 w-12 mx-auto mb-4 opacity-30" />
                 <p>Scannen Sie Barcodes oder geben Sie Seriennummern ein</p>
-                <p className="text-sm mt-1">Geräte werden nach dem Erfassen als "nicht zugewiesen" gelistet</p>
+                <p className="text-sm mt-1">Geräte erhalten automatisch eine Lager-ID (z.B. {nextAssetId})</p>
               </div>
             )}
           </Card>
