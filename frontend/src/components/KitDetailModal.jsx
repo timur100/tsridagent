@@ -89,6 +89,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   const [assignmentNotes, setAssignmentNotes] = useState('');
   const [technician, setTechnician] = useState('');
   const [assigning, setAssigning] = useState(false);
+  const [nextKitNumber, setNextKitNumber] = useState(1);
   
   // Location filter state
   const [locationSearch, setLocationSearch] = useState('');
