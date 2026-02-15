@@ -2280,17 +2280,61 @@ async def get_kit_templates_list():
 
 
 @router.get("/kit-templates")
-async def list_kit_templates():
-    """List all kit templates with component details"""
+async def list_kit_templates(include_stock: bool = Query(True, description="Include inventory stock levels")):
+    """List all kit templates with component details and inventory stock levels"""
     try:
         templates = await get_kit_templates_list()
         
-        # Enrich templates with component labels
+        # Get inventory stock levels if requested
+        inventory_stock = {}
+        if include_stock:
+            cursor = db.inventory_items.find({}, {"_id": 1, "name": 1, "quantity_in_stock": 1, "min_stock_level": 1})
+            async for item in cursor:
+                inventory_stock[str(item["_id"])] = {
+                    "name": item.get("name", ""),
+                    "quantity_in_stock": item.get("quantity_in_stock", 0),
+                    "min_stock_level": item.get("min_stock_level", 5)
+                }
+        
+        # Count available assets in storage by type
+        assets_in_storage = {}
+        if include_stock:
+            pipeline = [
+                {"$match": {"status": "in_storage", "parent_kit_id": {"$exists": False}}},
+                {"$group": {"_id": "$type", "count": {"$sum": 1}}}
+            ]
+            async for doc in db.tsrid_assets.aggregate(pipeline):
+                assets_in_storage[doc["_id"]] = doc["count"]
+        
+        # Enrich templates with component labels and stock info
         for template in templates:
+            # Process asset components (mit Seriennummer)
             if template.get("components"):
                 for comp in template["components"]:
                     comp["label"] = ASSET_TYPE_LABELS.get(comp.get("asset_type"), comp.get("asset_type"))
                     comp["suffix"] = ASSET_TYPE_SUFFIX_MAP.get(comp.get("asset_type"), "OTH")
+                    comp["has_serial_number"] = True
+                    if include_stock:
+                        comp["available_in_storage"] = assets_in_storage.get(comp.get("asset_type"), 0)
+            
+            # Process inventory components (ohne Seriennummer)
+            if template.get("inventory_components"):
+                for inv_comp in template["inventory_components"]:
+                    inv_comp["has_serial_number"] = False
+                    item_id = inv_comp.get("inventory_item_id")
+                    if item_id and item_id in inventory_stock:
+                        stock_info = inventory_stock[item_id]
+                        inv_comp["quantity_in_stock"] = stock_info["quantity_in_stock"]
+                        inv_comp["min_stock_level"] = stock_info["min_stock_level"]
+                        inv_comp["stock_status"] = (
+                            "critical" if stock_info["quantity_in_stock"] == 0 
+                            else "low" if stock_info["quantity_in_stock"] <= stock_info["min_stock_level"]
+                            else "ok"
+                        )
+            
+            # Calculate possible kits based on stock
+            if include_stock:
+                template["possible_kits"] = await calculate_possible_kits(template, assets_in_storage, inventory_stock)
         
         return {
             "success": True,
@@ -2299,6 +2343,53 @@ async def list_kit_templates():
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+async def calculate_possible_kits(template: dict, assets_in_storage: dict, inventory_stock: dict) -> dict:
+    """Calculate how many complete kits can be built from available stock"""
+    limiting_component = None
+    max_kits = float('inf')
+    
+    # Check asset components (mit SN)
+    for comp in template.get("components", []):
+        if comp.get("optional"):
+            continue
+        asset_type = comp.get("asset_type")
+        needed = comp.get("quantity", 1)
+        available = assets_in_storage.get(asset_type, 0)
+        possible = available // needed if needed > 0 else 0
+        
+        if possible < max_kits:
+            max_kits = possible
+            limiting_component = {
+                "name": comp.get("label", asset_type),
+                "type": "asset",
+                "needed": needed,
+                "available": available
+            }
+    
+    # Check inventory components (ohne SN)
+    for inv_comp in template.get("inventory_components", []):
+        if inv_comp.get("optional"):
+            continue
+        item_id = inv_comp.get("inventory_item_id")
+        needed = inv_comp.get("quantity", 1)
+        available = inventory_stock.get(item_id, {}).get("quantity_in_stock", 0)
+        possible = available // needed if needed > 0 else 0
+        
+        if possible < max_kits:
+            max_kits = possible
+            limiting_component = {
+                "name": inv_comp.get("name", "Unbekannt"),
+                "type": "inventory",
+                "needed": needed,
+                "available": available
+            }
+    
+    return {
+        "count": max_kits if max_kits != float('inf') else 0,
+        "limiting_component": limiting_component
+    }
 
 
 @router.get("/kit-templates/{template_id}")
