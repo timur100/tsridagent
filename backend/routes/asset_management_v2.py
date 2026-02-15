@@ -382,6 +382,49 @@ class AssetAssignToLocation(BaseModel):
     notes: Optional[str] = ""
 
 
+# ============ KIT MANAGEMENT MODELS ============
+
+class KitCreate(BaseModel):
+    """Create a new kit from available components"""
+    template_id: str  # z.B. 'KIT-TSR' oder 'KIT-SFD'
+    component_asset_ids: List[str]  # Asset-IDs der Komponenten
+    technician: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class KitAssignToLocation(BaseModel):
+    """Assign kit to a location - changes kit ID to location-based format"""
+    location_id: str  # z.B. 'AAHC01'
+    technician: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class KitMoveToLocation(BaseModel):
+    """Move kit to a different location"""
+    new_location_id: str
+    reason: Optional[str] = ""
+    technician: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+class KitReplaceComponent(BaseModel):
+    """Replace a defective component in a kit"""
+    old_component_id: str  # Asset-ID der defekten Komponente
+    new_component_id: str  # Asset-ID der Ersatzkomponente
+    defect_reason: str  # Grund für den Austausch
+    technician: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
+# Kit Status Constants
+KIT_STATUS = {
+    "incomplete": {"label": "Unvollständig", "color": "yellow"},
+    "ready": {"label": "Bereit", "color": "green"},
+    "assigned": {"label": "Zugewiesen", "color": "blue"},
+    "defective": {"label": "Defekt", "color": "red"}
+}
+
+
 # ============ HELPER FUNCTIONS ============
 
 def serialize_doc(doc):
