@@ -42,7 +42,8 @@ ASSET_TYPES = [
     # Tablets
     'tab_sp4',      # Surface Pro 4
     'tab_sp6',      # Surface Pro 6
-    'tab_tsr',      # TSRID Tablet
+    'tab_tsr_i5',   # TSRID Tablet i5
+    'tab_tsr_i7',   # TSRID Tablet i7
     # Scanner
     'sca_tsr',      # TSRID Scanner
     'sca_dsk',      # Desko Scanner
@@ -99,7 +100,8 @@ ASSET_TYPE_SUFFIX_MAP = {
     # Tablets -> TAB-xxx
     'tab_sp4': 'TAB-SP4',       # Surface Pro 4
     'tab_sp6': 'TAB-SP6',       # Surface Pro 6
-    'tab_tsr': 'TAB-TSR',       # TSRID Tablet
+    'tab_tsr_i5': 'TAB-TSRi5',  # TSRID Tablet i5
+    'tab_tsr_i7': 'TAB-TSRi7',  # TSRID Tablet i7
     # Scanner -> SCA-xxx
     'sca_tsr': 'SCA-TSR',       # TSRID Scanner
     'sca_dsk': 'SCA-DSK',       # Desko Scanner
@@ -152,7 +154,8 @@ ASSET_TYPE_SUFFIX_MAP = {
 ASSET_TYPE_LABELS = {
     'tab_sp4': 'Surface Pro 4',
     'tab_sp6': 'Surface Pro 6',
-    'tab_tsr': 'TSRID Tablet',
+    'tab_tsr_i5': 'TSRID Tablet i5',
+    'tab_tsr_i7': 'TSRID Tablet i7',
     'sca_tsr': 'TSRID Scanner',
     'sca_dsk': 'Desko Scanner',
     'tdo_qer': 'Quer Dock (Surface)',
@@ -530,7 +533,8 @@ async def get_metadata():
         "Tablets": [
             {"value": "tab_sp4", "label": "Surface Pro 4", "suffix": "TAB-SP4"},
             {"value": "tab_sp6", "label": "Surface Pro 6", "suffix": "TAB-SP6"},
-            {"value": "tab_tsr", "label": "TSRID Tablet", "suffix": "TAB-TSR"},
+            {"value": "tab_tsr_i5", "label": "TSRID Tablet i5", "suffix": "TAB-TSRi5"},
+            {"value": "tab_tsr_i7", "label": "TSRID Tablet i7", "suffix": "TAB-TSRi7"},
         ],
         "Scanner": [
             {"value": "sca_tsr", "label": "TSRID Scanner", "suffix": "SCA-TSR"},
