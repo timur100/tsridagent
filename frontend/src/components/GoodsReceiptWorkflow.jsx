@@ -190,7 +190,31 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   };
 
   // Handle key press for serial number input
-  const handleSNKeyPress = (e) => {
+  // Scanner sends Enter after scan - move focus to next field instead of submitting
+  const handleSNKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      // Move focus to IMEI field instead of adding item
+      const imeiInput = document.querySelector('[data-testid="imei-input"]');
+      if (imeiInput) {
+        imeiInput.focus();
+      }
+    }
+  };
+  
+  // Handle key press for IMEI input - move to MAC field
+  const handleIMEIKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const macInput = document.querySelector('[data-testid="mac-input"]');
+      if (macInput) {
+        macInput.focus();
+      }
+    }
+  };
+  
+  // Handle key press for MAC input - add item on Enter
+  const handleMACKeyDown = (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       addIntakeItem();
