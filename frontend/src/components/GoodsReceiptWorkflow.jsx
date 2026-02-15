@@ -549,6 +549,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                       <tr>
                         <th className="px-4 py-2 text-left text-xs font-semibold">#</th>
                         <th className="px-4 py-2 text-left text-xs font-semibold">Seriennummer</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold">IMEI</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold">MAC</th>
                         <th className="px-4 py-2 text-left text-xs font-semibold">Typ</th>
                         <th className="px-4 py-2 text-center text-xs font-semibold">Aktion</th>
                       </tr>
@@ -562,6 +564,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           <td className="px-4 py-2 text-sm">{idx + 1}</td>
                           <td className={`px-4 py-2 font-mono text-sm ${isDark ? 'text-white' : ''}`}>
                             {item.manufacturer_sn}
+                          </td>
+                          <td className={`px-4 py-2 font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {item.imei || '-'}
+                          </td>
+                          <td className={`px-4 py-2 font-mono text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                            {item.mac || '-'}
                           </td>
                           <td className="px-4 py-2">
                             <Badge variant="outline">{item.type_label}</Badge>
