@@ -938,9 +938,15 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                   {/* Existing Kits at Location */}
                   {selectedLocation && (
                     <Card className={`p-4 ${cardBg}`}>
-                      <h4 className="font-semibold mb-3">
-                        Vorhandene Kits an {selectedLocation}
-                      </h4>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold flex items-center gap-2">
+                          <Package className="h-4 w-4 text-orange-500" />
+                          Kits an {selectedLocation}
+                        </h4>
+                        <Badge variant="outline" className={locationKits.length > 0 ? 'text-orange-500 border-orange-500' : 'text-gray-500'}>
+                          {locationKits.length} Kit{locationKits.length !== 1 ? 's' : ''} vorhanden
+                        </Badge>
+                      </div>
                       
                       {loadingLocationKits ? (
                         <div className="flex items-center justify-center py-4">
@@ -948,20 +954,47 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                         </div>
                       ) : locationKits.length > 0 ? (
                         <div className="space-y-2">
+                          <div className={`grid grid-cols-2 gap-2 text-xs font-medium px-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            <span>Kit-ID</span>
+                            <span>Typ</span>
+                          </div>
                           {locationKits.map(lk => (
                             <div 
                               key={lk.asset_id}
                               className={`flex items-center justify-between p-2 rounded ${isDark ? 'bg-[#252525]' : 'bg-gray-50'}`}
                             >
-                              <span className="font-mono text-sm">{lk.asset_id}</span>
-                              <Badge variant="outline">{lk.type_label}</Badge>
+                              <span className="font-mono text-sm font-semibold">{lk.asset_id}</span>
+                              <div className="flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                  {lk.component_count || 0} Komp.
+                                </Badge>
+                                <Badge className={`text-xs ${
+                                  lk.kit_status === 'assigned' ? 'bg-green-500' : 
+                                  lk.kit_status === 'defective' ? 'bg-red-500' : 'bg-blue-500'
+                                }`}>
+                                  {lk.kit_status === 'assigned' ? 'Aktiv' : 
+                                   lk.kit_status === 'defective' ? 'Defekt' : 'Lager'}
+                                </Badge>
+                              </div>
                             </div>
                           ))}
+                          <p className={`text-xs mt-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            Sequenz: {locationKits.map(k => {
+                              const match = k.asset_id?.match(/-(\d+)-KIT$/i);
+                              return match ? match[1] : '?';
+                            }).join(', ')}
+                          </p>
                         </div>
                       ) : (
-                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                          Keine Kits an dieser Location vorhanden.
-                        </p>
+                        <div className={`text-center py-4 rounded ${isDark ? 'bg-[#252525]' : 'bg-gray-50'}`}>
+                          <Package className={`h-8 w-8 mx-auto mb-2 ${isDark ? 'text-gray-600' : 'text-gray-300'}`} />
+                          <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Noch keine Kits an dieser Location.
+                          </p>
+                          <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                            Dies wird das erste Kit sein.
+                          </p>
+                        </div>
                       )}
                     </Card>
                   )}
@@ -969,12 +1002,20 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                   {/* New Kit ID Preview */}
                   {selectedLocation && (
                     <Card className={`p-4 border-2 border-dashed ${isDark ? 'bg-green-900/20 border-green-700' : 'bg-green-50 border-green-300'}`}>
-                      <p className={`text-xs font-medium mb-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
-                        Neue Kit-ID nach Zuweisung:
-                      </p>
-                      <p className={`font-mono text-lg font-bold ${isDark ? 'text-green-300' : 'text-green-700'}`}>
-                        {selectedLocation}-{String(locationKits.length + 1).padStart(2, '0')}-KIT
-                      </p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className={`text-xs font-medium mb-1 ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                            Neue Kit-ID nach Zuweisung:
+                          </p>
+                          <p className={`font-mono text-xl font-bold ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                            {selectedLocation}-{String(nextKitNumber).padStart(2, '0')}-KIT
+                          </p>
+                        </div>
+                        <div className={`text-right ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                          <p className="text-xs">Sequenz-Nr.</p>
+                          <p className="text-2xl font-bold">{String(nextKitNumber).padStart(2, '0')}</p>
+                        </div>
+                      </div>
                     </Card>
                   )}
 
