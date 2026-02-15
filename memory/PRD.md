@@ -182,6 +182,34 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - `/app/backend/routes/asset_management_v2.py` (Zeile 3779-3780)
     - **Test-Status**: ✅ Verifiziert mit Testing Agent (100% Backend + Frontend)
 
+17. **Automatische Asset-ID Generierung (NEW FEATURE - IMPLEMENTED 2025-02-15)**
+    - **Feature**: Automatische fortlaufende Asset-IDs im Wareneingang
+    - **Phase 1 - Lager-ID**:
+      - Format: `{PREFIX}-{TYP}-{SEQ:04d}` (z.B. TSRID-TAB-i7-0001)
+      - Präfix konfigurierbar pro Tenant (Standard: "TSRID")
+      - Automatische Sequenz-Generierung pro Gerätetyp
+    - **Phase 2 - Location-ID**:
+      - Format: `{LOC}-{SEQ:02d}-{TYP}` (z.B. STRT01-01-TAB-i7)
+      - Bei Location-Zuweisung wird Lager-ID zu Location-ID umbenannt
+      - Bei Entfernung von Location wird ursprüngliche Lager-ID wiederhergestellt
+    - **UI-Features**:
+      - Grünes Banner zeigt nächste Asset-ID an
+      - Vorschau der Location-ID nach Zuweisung
+      - Bulk-Button für Mehrfach-Erstellung
+      - Bulk-Modal mit Anzahl-Eingabe und ID-Vorschau
+    - **Backend-Endpoints**:
+      - `GET /api/asset-mgmt/asset-id-config` - Konfiguration abrufen
+      - `PUT /api/asset-mgmt/asset-id-config` - Konfiguration aktualisieren
+      - `GET /api/asset-mgmt/asset-id-config/next-id?asset_type=X` - Nächste ID abrufen
+      - `POST /api/asset-mgmt/inventory/intake-with-auto-id` - Einzelnes Gerät mit Auto-ID
+      - `POST /api/asset-mgmt/inventory/intake-bulk` - Mehrere Geräte auf einmal erstellen
+      - `POST /api/asset-mgmt/inventory/assign-to-location/{sn}` - Location zuweisen
+      - `POST /api/asset-mgmt/inventory/remove-from-location/{sn}` - Von Location entfernen
+    - **Dateien**:
+      - `/app/backend/routes/asset_management_v2.py` (Neue Endpoints ab Zeile 3540)
+      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (UI-Änderungen)
+    - **Test-Status**: ✅ 16/16 Backend-Tests + Frontend verifiziert
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
