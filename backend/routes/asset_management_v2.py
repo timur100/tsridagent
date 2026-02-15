@@ -3141,7 +3141,29 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
                     technician=technician
                 )
         
-        # 6. Return success with label data
+        # 6. Deduct inventory components (ohne Seriennummer) from stock
+        inventory_deducted = []
+        for inv_comp in template.get("inventory_components", []):
+            item_id = inv_comp.get("inventory_item_id")
+            qty_needed = inv_comp.get("quantity", 1)
+            
+            if item_id:
+                # Deduct from stock
+                result = await db.inventory_items.update_one(
+                    {"_id": ObjectId(item_id), "quantity_in_stock": {"$gte": qty_needed}},
+                    {"$inc": {"quantity_in_stock": -qty_needed}}
+                )
+                
+                if result.modified_count > 0:
+                    inventory_deducted.append({
+                        "name": inv_comp.get("name", ""),
+                        "quantity": qty_needed
+                    })
+                else:
+                    # Log warning but don't fail - inventory might be out of stock
+                    print(f"Warning: Could not deduct {qty_needed}x {inv_comp.get('name')} - insufficient stock")
+        
+        # 7. Return success with label data
         return {
             "success": True,
             "kit_id": kit_id,
@@ -3150,6 +3172,7 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
             "location_id": None,
             "location_name": "Lager",
             "component_count": len(components),
+            "inventory_deducted": inventory_deducted,
             "kit_status": kit_doc["kit_status"],
             "message": f"Kit {kit_id} erfolgreich erstellt und im Lager gespeichert",
             "label": {
