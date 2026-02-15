@@ -689,12 +689,15 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             {/* Continent Filter */}
                             <div>
                               <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kontinent</label>
-                              <Select value={filterContinent} onValueChange={setFilterContinent}>
+                              <Select 
+                                value={filterContinent || "__all__"} 
+                                onValueChange={(val) => setFilterContinent(val === "__all__" ? "" : val)}
+                              >
                                 <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
                                   <SelectValue placeholder="Alle" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">Alle</SelectItem>
+                                  <SelectItem value="__all__">Alle</SelectItem>
                                   {filterOptions.continents.map(c => (
                                     <SelectItem key={c} value={c}>{c}</SelectItem>
                                   ))}
@@ -705,12 +708,15 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             {/* Country Filter */}
                             <div>
                               <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Land</label>
-                              <Select value={filterCountry} onValueChange={setFilterCountry}>
+                              <Select 
+                                value={filterCountry || "__all__"} 
+                                onValueChange={(val) => setFilterCountry(val === "__all__" ? "" : val)}
+                              >
                                 <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
                                   <SelectValue placeholder="Alle" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">Alle</SelectItem>
+                                  <SelectItem value="__all__">Alle</SelectItem>
                                   {filterOptions.countries.map(c => (
                                     <SelectItem key={c} value={c}>{c}</SelectItem>
                                   ))}
@@ -721,12 +727,15 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             {/* State Filter */}
                             <div>
                               <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Bundesland</label>
-                              <Select value={filterState} onValueChange={setFilterState}>
+                              <Select 
+                                value={filterState || "__all__"} 
+                                onValueChange={(val) => setFilterState(val === "__all__" ? "" : val)}
+                              >
                                 <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
                                   <SelectValue placeholder="Alle" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">Alle</SelectItem>
+                                  <SelectItem value="__all__">Alle</SelectItem>
                                   {filterOptions.states.map(s => (
                                     <SelectItem key={s} value={s}>{s}</SelectItem>
                                   ))}
@@ -737,12 +746,15 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             {/* City Filter */}
                             <div>
                               <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Stadt</label>
-                              <Select value={filterCity} onValueChange={setFilterCity}>
+                              <Select 
+                                value={filterCity || "__all__"} 
+                                onValueChange={(val) => setFilterCity(val === "__all__" ? "" : val)}
+                              >
                                 <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
                                   <SelectValue placeholder="Alle" />
                                 </SelectTrigger>
                                 <SelectContent className="max-h-[200px]">
-                                  <SelectItem value="">Alle</SelectItem>
+                                  <SelectItem value="__all__">Alle</SelectItem>
                                   {filterOptions.cities.map(c => (
                                     <SelectItem key={c} value={c}>{c}</SelectItem>
                                   ))}
