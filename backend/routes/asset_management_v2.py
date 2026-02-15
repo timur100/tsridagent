@@ -2500,6 +2500,118 @@ async def delete_kit_template(template_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/inventory-for-templates")
+async def get_inventory_for_templates():
+    """Get all inventory items that can be added to kit templates"""
+    try:
+        cursor = db.inventory_items.find({}, {"_id": 1, "name": 1, "category": 1, "quantity_in_stock": 1, "min_stock_level": 1, "unit": 1, "barcode": 1})
+        items = []
+        async for item in cursor:
+            stock = item.get("quantity_in_stock", 0)
+            min_stock = item.get("min_stock_level", 5)
+            items.append({
+                "id": str(item["_id"]),
+                "name": item.get("name", ""),
+                "category": item.get("category", ""),
+                "quantity_in_stock": stock,
+                "min_stock_level": min_stock,
+                "unit": item.get("unit", "Stück"),
+                "barcode": item.get("barcode", ""),
+                "stock_status": "critical" if stock == 0 else "low" if stock <= min_stock else "ok"
+            })
+        
+        # Group by category
+        by_category = {}
+        for item in items:
+            cat = item.get("category", "Sonstiges")
+            if cat not in by_category:
+                by_category[cat] = []
+            by_category[cat].append(item)
+        
+        return {
+            "success": True,
+            "items": items,
+            "by_category": by_category,
+            "total": len(items)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kit-templates/{template_id}/add-inventory-component")
+async def add_inventory_component_to_template(
+    template_id: str,
+    inventory_item_id: str = Query(...),
+    quantity: int = Query(1),
+    optional: bool = Query(False)
+):
+    """Add an inventory component (ohne SN) to a kit template"""
+    try:
+        # Verify template exists
+        template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {template_id} nicht gefunden")
+        
+        # Verify inventory item exists
+        from bson import ObjectId
+        inv_item = await db.inventory_items.find_one({"_id": ObjectId(inventory_item_id)})
+        if not inv_item:
+            raise HTTPException(status_code=404, detail="Inventar-Artikel nicht gefunden")
+        
+        new_component = {
+            "inventory_item_id": inventory_item_id,
+            "name": inv_item.get("name", ""),
+            "quantity": quantity,
+            "optional": optional
+        }
+        
+        # Check if already exists
+        existing_components = template.get("inventory_components", [])
+        for comp in existing_components:
+            if comp.get("inventory_item_id") == inventory_item_id:
+                raise HTTPException(status_code=400, detail="Dieser Artikel ist bereits im Template")
+        
+        await db.tsrid_kit_templates.update_one(
+            {"template_id": template_id},
+            {
+                "$push": {"inventory_components": new_component},
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"Komponente '{inv_item.get('name')}' hinzugefügt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/kit-templates/{template_id}/remove-inventory-component/{inventory_item_id}")
+async def remove_inventory_component_from_template(template_id: str, inventory_item_id: str):
+    """Remove an inventory component from a kit template"""
+    try:
+        template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {template_id} nicht gefunden")
+        
+        await db.tsrid_kit_templates.update_one(
+            {"template_id": template_id},
+            {
+                "$pull": {"inventory_components": {"inventory_item_id": inventory_item_id}},
+                "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+            }
+        )
+        
+        return {"success": True, "message": "Komponente entfernt"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ KIT ASSEMBLY (Zusammenstellung) ============
 # Kits are assembled assets that contain multiple component assets
 
