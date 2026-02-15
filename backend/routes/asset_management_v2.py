@@ -3477,3 +3477,637 @@ async def get_label_data(asset_id: str):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============ ENHANCED KIT MANAGEMENT ENDPOINTS ============
+
+@router.post("/kits/create")
+async def create_kit(kit_data: KitCreate):
+    """
+    Erstellt ein neues Kit aus verfügbaren Komponenten.
+    Das Kit erhält eine temporäre ID: TSRID-KIT-XXX (automatisch hochgezählt).
+    Status: 'incomplete' oder 'ready' je nach Vollständigkeit.
+    """
+    try:
+        # 1. Get template
+        template = await db.tsrid_kit_templates.find_one({"template_id": kit_data.template_id})
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Kit Template {kit_data.template_id} nicht gefunden")
+        
+        # 2. Validate components
+        components = []
+        for asset_id in kit_data.component_asset_ids:
+            asset = await db.tsrid_assets.find_one({
+                "$or": [
+                    {"asset_id": asset_id},
+                    {"manufacturer_sn": asset_id}
+                ]
+            })
+            
+            if not asset:
+                raise HTTPException(status_code=404, detail=f"Komponente nicht gefunden: {asset_id}")
+            
+            # Check if already assigned to another kit
+            if asset.get("assigned_to_kit"):
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Komponente {asset_id} ist bereits Kit {asset['assigned_to_kit']} zugewiesen"
+                )
+            
+            # Check if assigned to a location (must be in storage)
+            if asset.get("location_id") and asset.get("status") not in ["in_storage", "unassigned"]:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Komponente {asset_id} ist bereits einer Location zugewiesen und nicht im Lager"
+                )
+            
+            components.append(asset)
+        
+        # 3. Generate Kit ID: TSRID-KIT-XXX
+        existing_kits = await db.tsrid_assets.find(
+            {"asset_id": {"$regex": "^TSRID-KIT-"}},
+            {"asset_id": 1}
+        ).sort("asset_id", -1).limit(1).to_list(1)
+        
+        next_num = 1
+        if existing_kits:
+            last_id = existing_kits[0].get("asset_id", "TSRID-KIT-000")
+            try:
+                last_num = int(last_id.split("-")[-1])
+                next_num = last_num + 1
+            except ValueError:
+                pass
+        
+        kit_id = f"TSRID-KIT-{next_num:03d}"
+        
+        # 4. Determine kit status
+        required_components = [c for c in template.get("components", []) if not c.get("optional", False)]
+        is_complete = len(components) >= len(required_components)
+        kit_status = "ready" if is_complete else "incomplete"
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # 5. Create kit document
+        kit_doc = {
+            "asset_id": kit_id,
+            "type": f"kit_{kit_data.template_id.lower().replace('-', '_')}",
+            "type_label": template.get("name", kit_data.template_id),
+            "kit_template_id": kit_data.template_id,
+            "kit_components": [c.get("asset_id") or c.get("manufacturer_sn") for c in components],
+            "kit_status": kit_status,
+            "location_id": None,  # Not assigned to location yet
+            "status": "in_storage",
+            "original_kit_id": kit_id,  # Store original ID for reference
+            "history": [{
+                "date": now,
+                "event_type": "created",
+                "event": f"Kit erstellt basierend auf Vorlage {kit_data.template_id}",
+                "technician": kit_data.technician or None,
+                "notes": f"{len(components)} Komponenten zugewiesen. Status: {kit_status}"
+            }],
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        await db.tsrid_assets.insert_one(kit_doc)
+        
+        # 6. Update all components to link them to this kit
+        for comp in components:
+            await db.tsrid_assets.update_one(
+                {"_id": comp["_id"]},
+                {
+                    "$set": {
+                        "assigned_to_kit": kit_id,
+                        "parent_kit_id": kit_id,
+                        "status": "in_kit",
+                        "updated_at": now
+                    },
+                    "$push": {
+                        "history": {
+                            "date": now,
+                            "event_type": "assigned_to_bundle",
+                            "event": f"Zu Kit {kit_id} zugewiesen",
+                            "technician": kit_data.technician or None
+                        }
+                    }
+                }
+            )
+        
+        return {
+            "success": True,
+            "kit_id": kit_id,
+            "kit_status": kit_status,
+            "component_count": len(components),
+            "template_name": template.get("name"),
+            "message": f"Kit {kit_id} erfolgreich erstellt"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/assign-location")
+async def assign_kit_to_location(kit_id: str, assignment: KitAssignToLocation):
+    """
+    Weist ein Kit einer Location zu.
+    Die Kit-ID wird geändert zu: LOCATION_ID-XX-KIT (z.B. AAHC01-01-KIT).
+    Status wird zu 'assigned' geändert.
+    """
+    try:
+        # 1. Get kit
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        # Check if kit is already assigned
+        if kit.get("kit_status") == "assigned" and kit.get("location_id"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Kit ist bereits Location {kit['location_id']} zugewiesen. Verwenden Sie 'move' zum Umziehen."
+            )
+        
+        # 2. Get location
+        location = await find_location(assignment.location_id)
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Location {assignment.location_id} nicht gefunden")
+        
+        # 3. Generate new Kit ID based on location
+        existing_kits = await db.tsrid_assets.find(
+            {
+                "location_id": assignment.location_id,
+                "asset_id": {"$regex": f"^{assignment.location_id}-.*-KIT"}
+            },
+            {"asset_id": 1}
+        ).to_list(100)
+        
+        max_num = 0
+        for existing in existing_kits:
+            try:
+                parts = existing.get("asset_id", "").split("-")
+                if len(parts) >= 2:
+                    num = int(parts[1])
+                    max_num = max(max_num, num)
+            except ValueError:
+                pass
+        
+        new_kit_id = f"{assignment.location_id}-{max_num + 1:02d}-KIT"
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # 4. Update kit
+        history_entry = {
+            "date": now,
+            "event_type": "assigned_to_location",
+            "event": f"Kit zugewiesen zu Location {assignment.location_id}",
+            "old_kit_id": kit_id,
+            "new_kit_id": new_kit_id,
+            "location_id": assignment.location_id,
+            "location_name": f"{location.get('city', '')} - {location.get('location_name', '')}",
+            "technician": assignment.technician or None,
+            "notes": assignment.notes or None
+        }
+        
+        await db.tsrid_assets.update_one(
+            {"_id": kit["_id"]},
+            {
+                "$set": {
+                    "asset_id": new_kit_id,
+                    "location_id": assignment.location_id,
+                    "kit_status": "assigned",
+                    "status": "deployed",
+                    "assigned_at": now,
+                    "updated_at": now
+                },
+                "$push": {"history": history_entry}
+            }
+        )
+        
+        # 5. Update all components with new parent kit ID
+        await db.tsrid_assets.update_many(
+            {"assigned_to_kit": kit_id},
+            {
+                "$set": {
+                    "assigned_to_kit": new_kit_id,
+                    "parent_kit_id": new_kit_id,
+                    "location_id": assignment.location_id,
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event_type": "assigned_to_location",
+                        "event": f"Mit Kit zu Location {assignment.location_id} zugewiesen",
+                        "technician": assignment.technician or None
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "old_kit_id": kit_id,
+            "new_kit_id": new_kit_id,
+            "location_id": assignment.location_id,
+            "location_name": f"{location.get('city', '')} - {location.get('location_name', '')}",
+            "message": f"Kit {kit_id} wurde zu {new_kit_id} umbenannt und Location {assignment.location_id} zugewiesen"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/move")
+async def move_kit_to_location(kit_id: str, move_data: KitMoveToLocation):
+    """
+    Verschiebt ein Kit zu einer anderen Location.
+    Die Kit-ID wird entsprechend der neuen Location angepasst.
+    Die komplette Historie wird beibehalten.
+    """
+    try:
+        # 1. Get kit
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        old_location_id = kit.get("location_id")
+        if old_location_id == move_data.new_location_id:
+            raise HTTPException(status_code=400, detail="Kit ist bereits an dieser Location")
+        
+        # 2. Get new location
+        new_location = await find_location(move_data.new_location_id)
+        if not new_location:
+            raise HTTPException(status_code=404, detail=f"Location {move_data.new_location_id} nicht gefunden")
+        
+        # 3. Generate new Kit ID for new location
+        existing_kits = await db.tsrid_assets.find(
+            {
+                "location_id": move_data.new_location_id,
+                "asset_id": {"$regex": f"^{move_data.new_location_id}-.*-KIT"}
+            },
+            {"asset_id": 1}
+        ).to_list(100)
+        
+        max_num = 0
+        for existing in existing_kits:
+            try:
+                parts = existing.get("asset_id", "").split("-")
+                if len(parts) >= 2:
+                    num = int(parts[1])
+                    max_num = max(max_num, num)
+            except ValueError:
+                pass
+        
+        new_kit_id = f"{move_data.new_location_id}-{max_num + 1:02d}-KIT"
+        
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # 4. Update kit
+        history_entry = {
+            "date": now,
+            "event_type": "moved",
+            "event": f"Kit umgezogen von {old_location_id or 'Lager'} nach {move_data.new_location_id}",
+            "old_kit_id": kit_id,
+            "new_kit_id": new_kit_id,
+            "old_location_id": old_location_id,
+            "new_location_id": move_data.new_location_id,
+            "new_location_name": f"{new_location.get('city', '')} - {new_location.get('location_name', '')}",
+            "reason": move_data.reason or None,
+            "technician": move_data.technician or None,
+            "notes": move_data.notes or None
+        }
+        
+        await db.tsrid_assets.update_one(
+            {"_id": kit["_id"]},
+            {
+                "$set": {
+                    "asset_id": new_kit_id,
+                    "location_id": move_data.new_location_id,
+                    "updated_at": now
+                },
+                "$push": {"history": history_entry}
+            }
+        )
+        
+        # 5. Update all components
+        await db.tsrid_assets.update_many(
+            {"assigned_to_kit": kit_id},
+            {
+                "$set": {
+                    "assigned_to_kit": new_kit_id,
+                    "parent_kit_id": new_kit_id,
+                    "location_id": move_data.new_location_id,
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event_type": "moved",
+                        "event": f"Mit Kit umgezogen zu {move_data.new_location_id}",
+                        "reason": move_data.reason or None,
+                        "technician": move_data.technician or None
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "old_kit_id": kit_id,
+            "new_kit_id": new_kit_id,
+            "old_location_id": old_location_id,
+            "new_location_id": move_data.new_location_id,
+            "message": f"Kit erfolgreich umgezogen. Neue ID: {new_kit_id}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/kits/{kit_id}/replace-component")
+async def replace_kit_component(kit_id: str, replacement: KitReplaceComponent):
+    """
+    Tauscht eine defekte Komponente in einem Kit aus.
+    Die alte Komponente wird als 'defect' markiert und aus dem Kit entfernt.
+    Die neue Komponente wird dem Kit hinzugefügt.
+    Vollständige Historie wird geführt.
+    """
+    try:
+        # 1. Get kit
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        # 2. Get old component
+        old_component = await db.tsrid_assets.find_one({
+            "$or": [
+                {"asset_id": replacement.old_component_id},
+                {"manufacturer_sn": replacement.old_component_id}
+            ]
+        })
+        
+        if not old_component:
+            raise HTTPException(status_code=404, detail=f"Alte Komponente {replacement.old_component_id} nicht gefunden")
+        
+        if old_component.get("assigned_to_kit") != kit_id:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Komponente {replacement.old_component_id} gehört nicht zu Kit {kit_id}"
+            )
+        
+        # 3. Get new component
+        new_component = await db.tsrid_assets.find_one({
+            "$or": [
+                {"asset_id": replacement.new_component_id},
+                {"manufacturer_sn": replacement.new_component_id}
+            ]
+        })
+        
+        if not new_component:
+            raise HTTPException(status_code=404, detail=f"Neue Komponente {replacement.new_component_id} nicht gefunden")
+        
+        if new_component.get("assigned_to_kit"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Neue Komponente ist bereits Kit {new_component['assigned_to_kit']} zugewiesen"
+            )
+        
+        # Verify same type
+        if old_component.get("type") != new_component.get("type"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Komponententypen stimmen nicht überein: {old_component.get('type')} vs {new_component.get('type')}"
+            )
+        
+        now = datetime.now(timezone.utc).isoformat()
+        old_comp_id = old_component.get("asset_id") or old_component.get("manufacturer_sn")
+        new_comp_id = new_component.get("asset_id") or new_component.get("manufacturer_sn")
+        
+        # 4. Update old component - mark as defective
+        await db.tsrid_assets.update_one(
+            {"_id": old_component["_id"]},
+            {
+                "$set": {
+                    "assigned_to_kit": None,
+                    "parent_kit_id": None,
+                    "status": "defect",
+                    "defect_reason": replacement.defect_reason,
+                    "defect_date": now,
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event_type": "removed_from_bundle",
+                        "event": f"Aus Kit {kit_id} entfernt (defekt)",
+                        "defect_reason": replacement.defect_reason,
+                        "replaced_by": new_comp_id,
+                        "technician": replacement.technician or None,
+                        "notes": replacement.notes or None
+                    }
+                }
+            }
+        )
+        
+        # 5. Update new component - assign to kit
+        await db.tsrid_assets.update_one(
+            {"_id": new_component["_id"]},
+            {
+                "$set": {
+                    "assigned_to_kit": kit_id,
+                    "parent_kit_id": kit_id,
+                    "location_id": kit.get("location_id"),
+                    "status": "in_kit",
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event_type": "assigned_to_bundle",
+                        "event": f"Zu Kit {kit_id} zugewiesen (Ersatz für {old_comp_id})",
+                        "replaces": old_comp_id,
+                        "technician": replacement.technician or None
+                    }
+                }
+            }
+        )
+        
+        # 6. Update kit components list
+        kit_components = kit.get("kit_components", [])
+        if old_comp_id in kit_components:
+            kit_components.remove(old_comp_id)
+        kit_components.append(new_comp_id)
+        
+        await db.tsrid_assets.update_one(
+            {"_id": kit["_id"]},
+            {
+                "$set": {
+                    "kit_components": kit_components,
+                    "updated_at": now
+                },
+                "$push": {
+                    "history": {
+                        "date": now,
+                        "event_type": "component_replaced",
+                        "event": f"Komponente ausgetauscht: {old_comp_id} → {new_comp_id}",
+                        "old_component": old_comp_id,
+                        "new_component": new_comp_id,
+                        "defect_reason": replacement.defect_reason,
+                        "technician": replacement.technician or None,
+                        "notes": replacement.notes or None
+                    }
+                }
+            }
+        )
+        
+        return {
+            "success": True,
+            "kit_id": kit_id,
+            "old_component": old_comp_id,
+            "new_component": new_comp_id,
+            "defect_reason": replacement.defect_reason,
+            "message": f"Komponente erfolgreich ausgetauscht in Kit {kit_id}"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kits/{kit_id}/history")
+async def get_kit_history(kit_id: str):
+    """
+    Gibt die vollständige Historie eines Kits zurück.
+    Enthält: Erstellung, Zuweisungen, Umzüge, Komponententausch.
+    """
+    try:
+        kit = await db.tsrid_assets.find_one({"asset_id": kit_id})
+        if not kit:
+            raise HTTPException(status_code=404, detail=f"Kit {kit_id} nicht gefunden")
+        
+        kit = serialize_doc(kit)
+        
+        # Get component history as well
+        component_history = []
+        if kit.get("kit_components"):
+            for comp_id in kit["kit_components"]:
+                comp = await db.tsrid_assets.find_one({"asset_id": comp_id})
+                if comp:
+                    comp = serialize_doc(comp)
+                    component_history.append({
+                        "component_id": comp_id,
+                        "type": comp.get("type"),
+                        "type_label": ASSET_TYPE_LABELS.get(comp.get("type"), comp.get("type")),
+                        "history": comp.get("history", [])
+                    })
+        
+        return {
+            "success": True,
+            "kit_id": kit_id,
+            "original_kit_id": kit.get("original_kit_id"),
+            "kit_history": kit.get("history", []),
+            "component_history": component_history,
+            "current_location": kit.get("location_id"),
+            "current_status": kit.get("kit_status")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/kits/available-components")
+async def get_available_components(template_id: str = Query(None)):
+    """
+    Gibt alle verfügbaren Komponenten zurück, die keinem Kit zugewiesen sind.
+    Optional gefiltert nach Kit-Template-Anforderungen.
+    """
+    try:
+        # Base query: components not assigned to any kit and in storage
+        query = {
+            "$and": [
+                {"$or": [{"assigned_to_kit": None}, {"assigned_to_kit": {"$exists": False}}]},
+                {"$or": [{"status": "in_storage"}, {"status": "unassigned"}, {"status": None}]},
+                {"type": {"$not": {"$regex": "^kit_"}}}  # Exclude kits themselves
+            ]
+        }
+        
+        # If template specified, filter by required component types
+        template = None
+        if template_id:
+            template = await db.tsrid_kit_templates.find_one({"template_id": template_id})
+            if template:
+                required_types = [c.get("asset_type") for c in template.get("components", [])]
+                query["type"] = {"$in": required_types}
+        
+        cursor = db.tsrid_assets.find(query).sort("type", 1).limit(500)
+        components = [serialize_doc(c) async for c in cursor]
+        
+        # Add type labels
+        for comp in components:
+            comp["type_label"] = ASSET_TYPE_LABELS.get(comp.get("type"), comp.get("type"))
+        
+        # Group by type for easier display
+        by_type = {}
+        for comp in components:
+            t = comp.get("type", "unknown")
+            if t not in by_type:
+                by_type[t] = {
+                    "type": t,
+                    "type_label": ASSET_TYPE_LABELS.get(t, t),
+                    "count": 0,
+                    "components": []
+                }
+            by_type[t]["count"] += 1
+            by_type[t]["components"].append(comp)
+        
+        return {
+            "success": True,
+            "template": serialize_doc(template) if template else None,
+            "total": len(components),
+            "by_type": list(by_type.values()),
+            "components": components
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/locations/{location_id}/kits")
+async def get_location_kits(location_id: str):
+    """
+    Gibt alle Kits an einer Location zurück.
+    Wird verwendet um zu sehen welche Kits bereits vor Ort sind.
+    """
+    try:
+        location = await find_location(location_id)
+        if not location:
+            raise HTTPException(status_code=404, detail=f"Location {location_id} nicht gefunden")
+        
+        cursor = db.tsrid_assets.find({
+            "location_id": location_id,
+            "type": {"$regex": "^kit_"}
+        }).sort("asset_id", 1)
+        
+        kits = [serialize_doc(k) async for k in cursor]
+        
+        # Enrich with component details
+        for kit in kits:
+            component_count = len(kit.get("kit_components", []))
+            kit["component_count"] = component_count
+            kit["type_label"] = ASSET_TYPE_LABELS.get(kit.get("type"), kit.get("type"))
+        
+        return {
+            "success": True,
+            "location_id": location_id,
+            "location_name": f"{location.get('city', '')} - {location.get('location_name', '')}",
+            "customer": location.get("customer") or location.get("tenant_name"),
+            "kits": kits,
+            "total": len(kits)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
