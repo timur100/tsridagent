@@ -636,7 +636,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                       </SelectTrigger>
                       <SelectContent className="max-h-[300px]">
                         {loadingTenants ? (
-                          <SelectItem value="" disabled>Lade Tenants...</SelectItem>
+                          <SelectItem value="__loading__" disabled>Lade Tenants...</SelectItem>
                         ) : tenants.length > 0 ? (
                           tenants.map(tenant => (
                             <SelectItem 
@@ -648,7 +648,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             </SelectItem>
                           ))
                         ) : (
-                          <SelectItem value="" disabled>Keine Tenants gefunden</SelectItem>
+                          <SelectItem value="__none__" disabled>Keine Tenants gefunden</SelectItem>
                         )}
                       </SelectContent>
                     </Select>
