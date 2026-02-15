@@ -385,6 +385,87 @@ class AssetAssignToLocation(BaseModel):
     notes: Optional[str] = ""
 
 
+# ============ SUPPLIER & PRODUCT MANAGEMENT MODELS ============
+
+class SupplierContact(BaseModel):
+    """Contact person for a supplier"""
+    name: str
+    position: Optional[str] = ""
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    is_primary: bool = False
+
+
+class SupplierCreate(BaseModel):
+    """Create a new supplier/manufacturer"""
+    name: str
+    # Address
+    street: Optional[str] = ""
+    zip_code: Optional[str] = ""
+    city: Optional[str] = ""
+    country: Optional[str] = "Deutschland"
+    # Contact
+    phone: Optional[str] = ""
+    email: Optional[str] = ""
+    website: Optional[str] = ""
+    # Business
+    customer_number: Optional[str] = ""  # Kundennummer bei diesem Lieferanten
+    tax_id: Optional[str] = ""  # USt-IdNr.
+    # Contacts
+    contacts: List[SupplierContact] = []
+    # Notes
+    notes: Optional[str] = ""
+    # Type
+    supplier_type: Optional[str] = "supplier"  # supplier, manufacturer, distributor
+
+
+class SupplierUpdate(BaseModel):
+    """Update supplier data"""
+    name: Optional[str] = None
+    street: Optional[str] = None
+    zip_code: Optional[str] = None
+    city: Optional[str] = None
+    country: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    website: Optional[str] = None
+    customer_number: Optional[str] = None
+    tax_id: Optional[str] = None
+    contacts: Optional[List[SupplierContact]] = None
+    notes: Optional[str] = None
+    supplier_type: Optional[str] = None
+
+
+class ProductCreate(BaseModel):
+    """Create a new product for a supplier"""
+    supplier_id: str
+    name: str
+    sku: Optional[str] = ""  # Artikelnummer/SKU
+    manufacturer_sku: Optional[str] = ""  # Hersteller-Artikelnummer
+    asset_type: Optional[str] = ""  # Verknüpfung zu Asset-Typ (z.B. 'tab_sp4')
+    category: Optional[str] = ""  # Kategorie (z.B. 'Tablets', 'Scanner')
+    description: Optional[str] = ""
+    unit_price: Optional[float] = None
+    currency: Optional[str] = "EUR"
+    # Specifications
+    specifications: Optional[Dict[str, Any]] = {}
+    notes: Optional[str] = ""
+
+
+class ProductUpdate(BaseModel):
+    """Update product data"""
+    name: Optional[str] = None
+    sku: Optional[str] = None
+    manufacturer_sku: Optional[str] = None
+    asset_type: Optional[str] = None
+    category: Optional[str] = None
+    description: Optional[str] = None
+    unit_price: Optional[float] = None
+    currency: Optional[str] = None
+    specifications: Optional[Dict[str, Any]] = None
+    notes: Optional[str] = None
+
+
 # ============ KIT MANAGEMENT MODELS ============
 
 class KitCreate(BaseModel):
