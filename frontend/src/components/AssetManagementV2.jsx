@@ -991,8 +991,9 @@ const AssetManagementV2 = ({ theme }) => {
           </thead>
           <tbody>
             {bundles.map(bundle => {
-              const kitStatus = bundle.kit_status || (bundle.location_id ? 'assigned' : 'ready');
-              const kitStatusConfig = KIT_STATUS_CONFIG[kitStatus] || KIT_STATUS_CONFIG.ready;
+              // Determine kit status: Use kit_status from backend, fallback to location-based logic
+              const kitStatus = bundle.kit_status || bundle.status || (bundle.location_id ? 'assigned' : 'in_storage');
+              const kitStatusConfig = KIT_STATUS_CONFIG[kitStatus] || KIT_STATUS_CONFIG.in_storage;
               return (
                 <tr 
                   key={bundle.bundle_id || bundle.asset_id} 
