@@ -67,6 +67,7 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
      - Neues Pydantic Model: `KitTemplateInventoryComponent`
      - `GET /api/asset-mgmt/kit-templates`: Gibt `inventory_components`, `quantity_in_stock`, `stock_status`, `possible_kits` zurück
      - `GET /api/asset-mgmt/inventory-for-templates`: Liste aller Inventory-Artikel für Templates
+     - `GET /api/asset-mgmt/asset-types`: Liste aller Asset-Typen für Template-Editor
      - `POST /api/asset-mgmt/kit-templates/{id}/add-inventory-component`: Fügt Inventory-Komponente hinzu
      - `DELETE /api/asset-mgmt/kit-templates/{id}/remove-inventory-component/{inv_id}`: Entfernt Komponente
      - `POST /api/asset-mgmt/kits/quick-assemble`: Bucht automatisch Inventory-Komponenten ab
@@ -77,6 +78,26 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
        - "OHNE SERIENNUMMER (Lager):" mit Stückzahl und Stock-Status
        - "BAUBARE KITS:" mit Count und limitierender Komponente
    - **Getestet**: Backend-API funktioniert, Inventory-Komponenten werden korrekt angezeigt
+
+7. **Kit-Template-Management (NEW FEATURE - IMPLEMENTED 2025-02-15)**
+   - **Frontend** (`/app/frontend/src/components/KitAssemblyWorkflow.jsx`):
+     - "Neue Vorlage" Button zum Erstellen neuer Kit-Vorlagen
+     - Bearbeiten-Button (Stift-Icon) auf jeder Kachel
+     - Duplizieren-Button (Kopieren-Icon) auf jeder Kachel
+     - Löschen-Button (Müll-Icon) auf jeder Kachel
+     - Template-Editor-Modal mit:
+       - Assets mit Seriennummer hinzufügen/entfernen
+       - Lager-Komponenten (ohne SN) hinzufügen/entfernen
+     - "Surface + Desko Kit" umbenannt zu "Surface Pro 4 + Desko Kit"
+     - Neues Template "Surface Pro 6 + Desko Kit" (KIT-SP6D) erstellt
+   - **Getestet**: Backend-API funktioniert
+
+8. **Nachbestellungs-Funktion (NEW FEATURE - IMPLEMENTED 2025-02-15)**
+   - **Frontend** (`/app/frontend/src/components/KitAssemblyWorkflow.jsx`):
+     - "Nachbestellen" Button erscheint wenn Komponenten fehlen
+     - Modal zeigt Nachbestellungsvorschläge:
+       - Artikelname, aktueller Bestand, benötigte Menge für 10 Kits
+     - Automatische Berechnung basierend auf Kit-Templates
 
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
