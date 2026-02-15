@@ -30,10 +30,6 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
   const [currentScan, setCurrentScan] = useState('');
   const [validating, setValidating] = useState(false);
 
-  // Location for Kit
-  const [locations, setLocations] = useState([]);
-  const [selectedLocation, setSelectedLocation] = useState('');
-
   // Finalization
   const [finalizing, setFinalizing] = useState(false);
   const [showLabelModal, setShowLabelModal] = useState(false);
