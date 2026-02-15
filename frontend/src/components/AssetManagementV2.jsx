@@ -197,6 +197,10 @@ const AssetManagementV2 = ({ theme }) => {
     notes: ''
   });
   
+  // Kit Detail Modal State
+  const [showKitDetailModal, setShowKitDetailModal] = useState(false);
+  const [selectedKitForDetail, setSelectedKitForDetail] = useState(null);
+  
   // Filter states
   const [filters, setFilters] = useState({
     country: 'all',
