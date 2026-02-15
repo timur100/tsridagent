@@ -523,13 +523,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   Lieferant
                 </label>
-                <Input
-                  placeholder="z.B. TSRID GmbH"
-                  value={supplier}
-                  onChange={(e) => setSupplier(e.target.value)}
-                  className={inputBg}
-                  data-testid="supplier-input"
-                />
+                <Select value={supplier} onValueChange={setSupplier}>
+                  <SelectTrigger className={inputBg} data-testid="supplier-select">
+                    <SelectValue placeholder="Lieferant auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {suppliers.map(s => (
+                      <SelectItem key={s} value={s}>{s}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
