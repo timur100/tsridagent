@@ -59,6 +59,25 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
      - Regex-basierte Sequenz-Berechnung für korrekte Inkrementierung
    - **Getestet**: E2E-Test bestätigt MUCT01-01-KIT → MUCT01-02-KIT → MUCT01-03-KIT
 
+6. **Hybrid-Inventar-System für Kit-Erstellung (NEW FEATURE - IMPLEMENTED 2025-02-15)**
+   - **Konzept**: Zwei Arten von Komponenten in einem Kit-Template:
+     - **Assets MIT Seriennummer**: Tablets, Scanner, Docking Stations (einzeln getrackt)
+     - **Komponenten OHNE Seriennummer**: Kabel, Adapter, Hubs (stückzahl-basiert aus Inventory)
+   - **Backend-Änderungen** (`/app/backend/routes/asset_management_v2.py`):
+     - Neues Pydantic Model: `KitTemplateInventoryComponent`
+     - `GET /api/asset-mgmt/kit-templates`: Gibt `inventory_components`, `quantity_in_stock`, `stock_status`, `possible_kits` zurück
+     - `GET /api/asset-mgmt/inventory-for-templates`: Liste aller Inventory-Artikel für Templates
+     - `POST /api/asset-mgmt/kit-templates/{id}/add-inventory-component`: Fügt Inventory-Komponente hinzu
+     - `DELETE /api/asset-mgmt/kit-templates/{id}/remove-inventory-component/{inv_id}`: Entfernt Komponente
+     - `POST /api/asset-mgmt/kits/quick-assemble`: Bucht automatisch Inventory-Komponenten ab
+     - Neue Funktion `calculate_possible_kits()`: Berechnet mögliche Kits aus Lagerbestand
+   - **Frontend-Änderungen** (`/app/frontend/src/components/KitAssemblyWorkflow.jsx`):
+     - Kit-Kacheln zeigen jetzt separate Sektionen:
+       - "MIT SERIENNUMMER:" mit Verfügbarkeit
+       - "OHNE SERIENNUMMER (Lager):" mit Stückzahl und Stock-Status
+       - "BAUBARE KITS:" mit Count und limitierender Komponente
+   - **Getestet**: Backend-API funktioniert, Inventory-Komponenten werden korrekt angezeigt
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
