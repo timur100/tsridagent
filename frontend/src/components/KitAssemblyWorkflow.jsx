@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Package, Scan, Check, X, AlertTriangle, RefreshCw, Barcode, 
   CheckCircle, ArrowRight, Printer, QrCode, Plus, Trash2,
-  ChevronRight, Box, Search, Tag
+  ChevronRight, Box, Search, Tag, Edit, Copy, Settings, ShoppingCart
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -10,6 +10,9 @@ import { Badge } from './ui/badge';
 import { Input } from './ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { Progress } from './ui/progress';
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
 
@@ -22,6 +25,26 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [loadingTemplates, setLoadingTemplates] = useState(true);
+
+  // Template Management
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateForm, setTemplateForm] = useState({
+    template_id: '',
+    name: '',
+    description: '',
+    components: [],
+    inventory_components: []
+  });
+  const [savingTemplate, setSavingTemplate] = useState(false);
+  
+  // Inventory Items for Template Editor
+  const [inventoryItems, setInventoryItems] = useState([]);
+  const [assetTypes, setAssetTypes] = useState([]);
+  
+  // Reorder Suggestions
+  const [showReorderModal, setShowReorderModal] = useState(false);
+  const [reorderSuggestions, setReorderSuggestions] = useState([]);
 
   // Assembly State
   const [assemblyMode, setAssemblyMode] = useState(false);
