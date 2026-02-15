@@ -191,7 +191,7 @@ const AssetManagementV2 = ({ theme }) => {
   const [showCreateAssetModal, setShowCreateAssetModal] = useState(false);
   const [deviceToLink, setDeviceToLink] = useState(null);
   const [createAssetForm, setCreateAssetForm] = useState({
-    asset_type: 'tab_tsr',  // TSRID Tablet als Standard
+    asset_type: 'tab_tsr_i7',  // TSRID Tablet i7 als Standard
     manufacturer: '',
     model: '',
     purchase_date: '',
