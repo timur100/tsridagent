@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://kit-assign.preview.emergentagent.com/api/dhl"
+API_URL="https://kit-workflow-app.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

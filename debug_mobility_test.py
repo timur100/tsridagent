@@ -8,7 +8,7 @@ import json
 import jwt
 
 # Backend URL from environment
-BACKEND_URL = "https://kit-assign.preview.emergentagent.com"
+BACKEND_URL = "https://kit-workflow-app.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():
