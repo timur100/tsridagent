@@ -377,6 +377,39 @@ class InventoryIntakeBatch(BaseModel):
     notes: Optional[str] = ""
 
 
+# ============ ASSET-ID CONFIGURATION MODELS ============
+
+class AssetIdFormat(BaseModel):
+    """Format configuration for asset IDs per asset type"""
+    asset_type: str  # z.B. 'tab_tsr_i7'
+    warehouse_prefix: str  # z.B. 'TSRID' - Präfix im Lager
+    warehouse_format: str  # z.B. '{PREFIX}-{TYPE}-{SEQ:04d}' -> TSRID-TAB-i7-0001
+    location_format: str  # z.B. '{LOC}-{SEQ:02d}-{TYPE}' -> STRT01-01-TAB-i7
+    type_suffix: str  # z.B. 'TAB-i7' - Kurzer Typ-Suffix
+    description: Optional[str] = ""
+
+
+class AssetIdConfigCreate(BaseModel):
+    """Create/Update Asset-ID configuration for a tenant"""
+    tenant_id: Optional[str] = "default"
+    warehouse_prefix: str = "TSRID"  # Default prefix for warehouse
+    formats: List[AssetIdFormat] = []
+
+
+class BulkIntakeRequest(BaseModel):
+    """Request for bulk intake with auto-generated IDs"""
+    asset_type: str
+    count: int  # Number of assets to create
+    start_serial: Optional[str] = None  # Optional: starting serial number pattern
+    serial_numbers: Optional[List[str]] = None  # Or explicit list of SNs
+    imeis: Optional[List[str]] = None  # Optional IMEI list
+    macs: Optional[List[str]] = None  # Optional MAC list
+    supplier: Optional[str] = ""
+    delivery_note: Optional[str] = ""
+    received_by: Optional[str] = ""
+    notes: Optional[str] = ""
+
+
 class AssetAssignToLocation(BaseModel):
     """Assign an unassigned asset to a location - generates Asset-ID and Label"""
     location_id: str  # z.B. 'AAHC01'
