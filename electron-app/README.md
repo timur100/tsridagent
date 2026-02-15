@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://asset-tracking-7.preview.emergentagent.com
+│   └── Lädt: https://goods-receipt-hub.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```
