@@ -1067,6 +1067,78 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+        <DialogContent className={`max-w-md ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className={`${isDark ? 'text-white' : ''} flex items-center gap-2`}>
+              <Trash2 className="h-5 w-5 text-red-500" />
+              {assetToDelete ? 'Gerät löschen' : `${selectedAssets.size} Geräte löschen`}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className={isDark ? 'text-gray-300' : 'text-gray-600'}>
+              {assetToDelete ? (
+                <>
+                  Möchten Sie das Gerät mit der Seriennummer{' '}
+                  <span className="font-mono font-bold">{assetToDelete.manufacturer_sn}</span>{' '}
+                  wirklich löschen?
+                </>
+              ) : (
+                <>
+                  Möchten Sie wirklich <span className="font-bold">{selectedAssets.size} Geräte</span> löschen?
+                  Diese Aktion kann nicht rückgängig gemacht werden.
+                </>
+              )}
+            </p>
+            
+            {assetToDelete && (
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <div className="flex justify-between">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Typ:</span>
+                  <Badge variant="outline">{getTypeLabel(assetToDelete.type)}</Badge>
+                </div>
+                {assetToDelete.supplier && (
+                  <div className="flex justify-between mt-2">
+                    <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Lieferant:</span>
+                    <span className={isDark ? 'text-white' : ''}>{assetToDelete.supplier}</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowDeleteModal(false);
+              setAssetToDelete(null);
+            }}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={() => {
+                if (assetToDelete) {
+                  deleteUnassignedAsset(assetToDelete.manufacturer_sn);
+                } else {
+                  deleteSelectedAssets();
+                }
+              }}
+              disabled={loading}
+              className="bg-red-600 hover:bg-red-700"
+              data-testid="confirm-delete-btn"
+            >
+              {loading ? (
+                <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4 mr-2" />
+              )}
+              {assetToDelete ? 'Löschen' : `${selectedAssets.size} löschen`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
