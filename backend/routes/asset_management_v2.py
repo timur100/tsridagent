@@ -3425,6 +3425,126 @@ async def inventory_intake_batch(batch: InventoryIntakeBatch):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============================================================
+# SUPPLIERS MANAGEMENT
+# ============================================================
+
+# Default suppliers list
+DEFAULT_SUPPLIERS = [
+    "TSRID GmbH",
+    "Microsoft",
+    "Dell",
+    "HP",
+    "Lenovo",
+    "Apple",
+    "Samsung",
+    "Desko",
+    "Regula",
+    "Brother",
+    "Sonstige"
+]
+
+@router.get("/suppliers")
+async def list_suppliers():
+    """Liste aller Lieferanten (aus Datenbank + Default-Liste)"""
+    try:
+        # Get unique suppliers from existing assets
+        pipeline = [
+            {"$match": {"supplier": {"$ne": None, "$ne": ""}}},
+            {"$group": {"_id": "$supplier"}},
+            {"$sort": {"_id": 1}}
+        ]
+        cursor = db.tsrid_assets.aggregate(pipeline)
+        db_suppliers = [doc["_id"] async for doc in cursor]
+        
+        # Combine with defaults, remove duplicates, sort
+        all_suppliers = list(set(DEFAULT_SUPPLIERS + db_suppliers))
+        all_suppliers.sort()
+        
+        return {
+            "success": True,
+            "suppliers": all_suppliers
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/inventory/unassigned/{manufacturer_sn}")
+async def delete_unassigned_asset(manufacturer_sn: str):
+    """
+    Löscht ein nicht zugewiesenes Gerät aus dem Lager.
+    Nur Geräte mit status='unassigned' und ohne asset_id können gelöscht werden.
+    """
+    try:
+        # Find the unassigned asset
+        asset = await db.tsrid_assets.find_one({
+            "manufacturer_sn": manufacturer_sn,
+            "status": "unassigned",
+            "asset_id": None
+        })
+        
+        if not asset:
+            # Check if asset exists but is assigned
+            existing = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+            if existing:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Gerät {manufacturer_sn} ist bereits zugewiesen und kann nicht gelöscht werden"
+                )
+            raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
+        
+        # Delete the asset
+        result = await db.tsrid_assets.delete_one({
+            "manufacturer_sn": manufacturer_sn,
+            "status": "unassigned",
+            "asset_id": None
+        })
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=500, detail="Fehler beim Löschen des Geräts")
+        
+        return {
+            "success": True,
+            "message": f"Gerät {manufacturer_sn} wurde gelöscht",
+            "deleted_sn": manufacturer_sn
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/inventory/unassigned/bulk")
+async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
+    """
+    Löscht mehrere nicht zugewiesene Geräte aus dem Lager.
+    """
+    try:
+        deleted = []
+        failed = []
+        
+        for sn in serial_numbers:
+            result = await db.tsrid_assets.delete_one({
+                "manufacturer_sn": sn,
+                "status": "unassigned",
+                "asset_id": None
+            })
+            if result.deleted_count > 0:
+                deleted.append(sn)
+            else:
+                failed.append(sn)
+        
+        return {
+            "success": True,
+            "deleted_count": len(deleted),
+            "failed_count": len(failed),
+            "deleted": deleted,
+            "failed": failed
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/inventory/unassigned")
 async def list_unassigned_assets(
     type: str = Query(None),
