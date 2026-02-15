@@ -860,6 +860,11 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                                           <span className="font-mono text-xs font-semibold">{loc.location_id}</span>
                                           <span>-</span>
                                           <span className="font-medium">{loc.name || loc.city}</span>
+                                          {loc.slot_count > 0 && (
+                                            <span className={`text-xs px-1.5 py-0.5 rounded ${isDark ? 'bg-orange-900/50 text-orange-400' : 'bg-orange-100 text-orange-600'}`}>
+                                              {loc.slot_count} Slots
+                                            </span>
+                                          )}
                                         </div>
                                         <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                                           {loc.address && <span>{loc.address}, </span>}
