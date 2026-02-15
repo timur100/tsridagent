@@ -3507,10 +3507,10 @@ async def inventory_intake_batch(batch: InventoryIntakeBatch):
 
 
 # ============================================================
-# SUPPLIERS MANAGEMENT
+# SUPPLIERS & PRODUCTS MANAGEMENT (Full CRUD)
 # ============================================================
 
-# Default suppliers list
+# Default suppliers list (for backwards compatibility)
 DEFAULT_SUPPLIERS = [
     "TSRID GmbH",
     "Microsoft",
@@ -3525,28 +3525,394 @@ DEFAULT_SUPPLIERS = [
     "Sonstige"
 ]
 
+
 @router.get("/suppliers")
 async def list_suppliers():
-    """Liste aller Lieferanten (aus Datenbank + Default-Liste)"""
+    """Liste aller Lieferanten - kombiniert DB-Einträge mit Legacy-Namen"""
     try:
-        # Get unique suppliers from existing assets
+        # Get suppliers from dedicated collection
+        cursor = db.suppliers.find({}, {"_id": 0}).sort("name", 1)
+        db_suppliers = await cursor.to_list(length=1000)
+        
+        # Get unique supplier names from existing assets (legacy)
         pipeline = [
             {"$match": {"supplier": {"$ne": None, "$ne": ""}}},
             {"$group": {"_id": "$supplier"}},
             {"$sort": {"_id": 1}}
         ]
-        cursor = db.tsrid_assets.aggregate(pipeline)
-        db_suppliers = [doc["_id"] async for doc in cursor if doc["_id"]]
+        asset_cursor = db.tsrid_assets.aggregate(pipeline)
+        asset_suppliers = [doc["_id"] async for doc in asset_cursor if doc["_id"]]
         
-        # Combine with defaults, remove duplicates and None values, sort
-        all_suppliers = list(set(DEFAULT_SUPPLIERS + db_suppliers))
-        all_suppliers = [s for s in all_suppliers if s]  # Filter out None/empty
-        all_suppliers.sort()
+        # Build supplier names list (for dropdown)
+        supplier_names = set()
+        for s in db_suppliers:
+            supplier_names.add(s.get("name"))
+        for s in asset_suppliers:
+            supplier_names.add(s)
+        for s in DEFAULT_SUPPLIERS:
+            supplier_names.add(s)
+        
+        # Filter and sort
+        supplier_names = sorted([s for s in supplier_names if s])
         
         return {
             "success": True,
-            "suppliers": all_suppliers
+            "suppliers": supplier_names,  # Simple list for dropdown
+            "suppliers_full": db_suppliers,  # Full data for management
+            "total": len(db_suppliers)
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/suppliers/all")
+async def list_all_suppliers(
+    search: str = "",
+    supplier_type: str = "",
+    limit: int = 100,
+    skip: int = 0
+):
+    """Liste aller Lieferanten mit vollständigen Daten"""
+    try:
+        query = {}
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"city": {"$regex": search, "$options": "i"}},
+                {"customer_number": {"$regex": search, "$options": "i"}}
+            ]
+        if supplier_type:
+            query["supplier_type"] = supplier_type
+        
+        cursor = db.suppliers.find(query, {"_id": 0}).sort("name", 1).skip(skip).limit(limit)
+        suppliers = await cursor.to_list(length=limit)
+        total = await db.suppliers.count_documents(query)
+        
+        return {
+            "success": True,
+            "suppliers": suppliers,
+            "total": total
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/suppliers/{supplier_id}")
+async def get_supplier(supplier_id: str):
+    """Einzelnen Lieferanten abrufen"""
+    try:
+        supplier = await db.suppliers.find_one({"supplier_id": supplier_id}, {"_id": 0})
+        if not supplier:
+            raise HTTPException(status_code=404, detail=f"Lieferant {supplier_id} nicht gefunden")
+        
+        # Get products for this supplier
+        products_cursor = db.products.find({"supplier_id": supplier_id}, {"_id": 0})
+        products = await products_cursor.to_list(length=1000)
+        
+        # Get asset count from this supplier
+        asset_count = await db.tsrid_assets.count_documents({"supplier": supplier.get("name")})
+        
+        return {
+            "success": True,
+            "supplier": supplier,
+            "products": products,
+            "asset_count": asset_count
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/suppliers")
+async def create_supplier(data: SupplierCreate):
+    """Neuen Lieferanten anlegen"""
+    try:
+        # Check if supplier with same name exists
+        existing = await db.suppliers.find_one({"name": data.name})
+        if existing:
+            raise HTTPException(status_code=400, detail=f"Lieferant '{data.name}' existiert bereits")
+        
+        # Generate supplier_id
+        count = await db.suppliers.count_documents({})
+        supplier_id = f"SUP-{count + 1:04d}"
+        
+        supplier_doc = {
+            "supplier_id": supplier_id,
+            "name": data.name,
+            "street": data.street,
+            "zip_code": data.zip_code,
+            "city": data.city,
+            "country": data.country,
+            "phone": data.phone,
+            "email": data.email,
+            "website": data.website,
+            "customer_number": data.customer_number,
+            "tax_id": data.tax_id,
+            "contacts": [c.model_dump() for c in data.contacts] if data.contacts else [],
+            "notes": data.notes,
+            "supplier_type": data.supplier_type,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.suppliers.insert_one(supplier_doc)
+        
+        # Remove _id for response
+        supplier_doc.pop("_id", None)
+        
+        return {
+            "success": True,
+            "message": f"Lieferant '{data.name}' wurde angelegt",
+            "supplier": supplier_doc
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/suppliers/{supplier_id}")
+async def update_supplier(supplier_id: str, data: SupplierUpdate):
+    """Lieferanten aktualisieren"""
+    try:
+        existing = await db.suppliers.find_one({"supplier_id": supplier_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Lieferant {supplier_id} nicht gefunden")
+        
+        # Build update document
+        update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        for field, value in data.model_dump(exclude_unset=True).items():
+            if value is not None:
+                if field == "contacts" and value:
+                    update_doc[field] = [c if isinstance(c, dict) else c.model_dump() for c in value]
+                else:
+                    update_doc[field] = value
+        
+        # If name changed, update assets
+        if data.name and data.name != existing.get("name"):
+            await db.tsrid_assets.update_many(
+                {"supplier": existing.get("name")},
+                {"$set": {"supplier": data.name}}
+            )
+        
+        await db.suppliers.update_one({"supplier_id": supplier_id}, {"$set": update_doc})
+        
+        updated = await db.suppliers.find_one({"supplier_id": supplier_id}, {"_id": 0})
+        
+        return {
+            "success": True,
+            "message": f"Lieferant wurde aktualisiert",
+            "supplier": updated
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/suppliers/{supplier_id}")
+async def delete_supplier(supplier_id: str):
+    """Lieferanten löschen"""
+    try:
+        existing = await db.suppliers.find_one({"supplier_id": supplier_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Lieferant {supplier_id} nicht gefunden")
+        
+        # Check if supplier has products
+        products_count = await db.products.count_documents({"supplier_id": supplier_id})
+        if products_count > 0:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Lieferant hat noch {products_count} Produkte. Bitte zuerst Produkte löschen."
+            )
+        
+        # Check if supplier is used in assets
+        asset_count = await db.tsrid_assets.count_documents({"supplier": existing.get("name")})
+        
+        await db.suppliers.delete_one({"supplier_id": supplier_id})
+        
+        return {
+            "success": True,
+            "message": f"Lieferant '{existing.get('name')}' wurde gelöscht",
+            "affected_assets": asset_count
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ============================================================
+# PRODUCTS MANAGEMENT
+# ============================================================
+
+@router.get("/products")
+async def list_products(
+    supplier_id: str = "",
+    asset_type: str = "",
+    category: str = "",
+    search: str = "",
+    limit: int = 100,
+    skip: int = 0
+):
+    """Liste aller Produkte"""
+    try:
+        query = {}
+        if supplier_id:
+            query["supplier_id"] = supplier_id
+        if asset_type:
+            query["asset_type"] = asset_type
+        if category:
+            query["category"] = category
+        if search:
+            query["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"sku": {"$regex": search, "$options": "i"}},
+                {"manufacturer_sku": {"$regex": search, "$options": "i"}}
+            ]
+        
+        cursor = db.products.find(query, {"_id": 0}).sort("name", 1).skip(skip).limit(limit)
+        products = await cursor.to_list(length=limit)
+        total = await db.products.count_documents(query)
+        
+        # Get categories for filter
+        categories_cursor = db.products.distinct("category")
+        categories = await categories_cursor if hasattr(categories_cursor, '__anext__') else categories_cursor
+        
+        return {
+            "success": True,
+            "products": products,
+            "total": total,
+            "categories": sorted([c for c in categories if c])
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/products/{product_id}")
+async def get_product(product_id: str):
+    """Einzelnes Produkt abrufen"""
+    try:
+        product = await db.products.find_one({"product_id": product_id}, {"_id": 0})
+        if not product:
+            raise HTTPException(status_code=404, detail=f"Produkt {product_id} nicht gefunden")
+        
+        # Get supplier info
+        supplier = await db.suppliers.find_one({"supplier_id": product.get("supplier_id")}, {"_id": 0})
+        
+        return {
+            "success": True,
+            "product": product,
+            "supplier": supplier
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/products")
+async def create_product(data: ProductCreate):
+    """Neues Produkt anlegen"""
+    try:
+        # Check if supplier exists
+        supplier = await db.suppliers.find_one({"supplier_id": data.supplier_id})
+        if not supplier:
+            raise HTTPException(status_code=404, detail=f"Lieferant {data.supplier_id} nicht gefunden")
+        
+        # Check if product with same SKU exists for this supplier
+        if data.sku:
+            existing = await db.products.find_one({
+                "supplier_id": data.supplier_id,
+                "sku": data.sku
+            })
+            if existing:
+                raise HTTPException(
+                    status_code=400, 
+                    detail=f"Produkt mit SKU '{data.sku}' existiert bereits für diesen Lieferanten"
+                )
+        
+        # Generate product_id
+        count = await db.products.count_documents({})
+        product_id = f"PRD-{count + 1:05d}"
+        
+        product_doc = {
+            "product_id": product_id,
+            "supplier_id": data.supplier_id,
+            "supplier_name": supplier.get("name"),
+            "name": data.name,
+            "sku": data.sku,
+            "manufacturer_sku": data.manufacturer_sku,
+            "asset_type": data.asset_type,
+            "category": data.category,
+            "description": data.description,
+            "unit_price": data.unit_price,
+            "currency": data.currency,
+            "specifications": data.specifications or {},
+            "notes": data.notes,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        await db.products.insert_one(product_doc)
+        product_doc.pop("_id", None)
+        
+        return {
+            "success": True,
+            "message": f"Produkt '{data.name}' wurde angelegt",
+            "product": product_doc
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/products/{product_id}")
+async def update_product(product_id: str, data: ProductUpdate):
+    """Produkt aktualisieren"""
+    try:
+        existing = await db.products.find_one({"product_id": product_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Produkt {product_id} nicht gefunden")
+        
+        update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        for field, value in data.model_dump(exclude_unset=True).items():
+            if value is not None:
+                update_doc[field] = value
+        
+        await db.products.update_one({"product_id": product_id}, {"$set": update_doc})
+        
+        updated = await db.products.find_one({"product_id": product_id}, {"_id": 0})
+        
+        return {
+            "success": True,
+            "message": "Produkt wurde aktualisiert",
+            "product": updated
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/products/{product_id}")
+async def delete_product(product_id: str):
+    """Produkt löschen"""
+    try:
+        existing = await db.products.find_one({"product_id": product_id})
+        if not existing:
+            raise HTTPException(status_code=404, detail=f"Produkt {product_id} nicht gefunden")
+        
+        await db.products.delete_one({"product_id": product_id})
+        
+        return {
+            "success": True,
+            "message": f"Produkt '{existing.get('name')}' wurde gelöscht"
+        }
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
