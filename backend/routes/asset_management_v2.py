@@ -3951,8 +3951,8 @@ async def assign_asset_to_location_by_sn(
                 detail=f"Gerät ist bereits Location {asset.get('location_id')} zugewiesen"
             )
         
-        # Verify location exists
-        location = await db.tenant_locations.find_one({"location_id": location_id})
+        # Verify location exists - use helper that checks both location_code and location_id
+        location = await find_location(location_id)
         if not location:
             raise HTTPException(status_code=404, detail=f"Location {location_id} nicht gefunden")
         
