@@ -1,12 +1,13 @@
 # TSRID Offline-First Electron Agent - Product Requirements Document
 
 ## Original Problem Statement
-Build an "Offline-First Electron Agent" with an expanded Asset Management module (V2).
+Build an "Offline-First Electron Agent" with an expanded Asset Management module (V2) with comprehensive Kit Management.
 
 ## Core Requirements
 - Full-stack asset management application
 - React frontend + FastAPI backend + MongoDB
-- Asset Management V2 with multi-level structure (Locations, Slots, Bundles, Assets)
+- Asset Management V2 with multi-level structure (Locations, Slots, KITs, Assets)
+- Kit Management with sequential ID generation (TSRID-KIT-XXX)
 - Offline-first capability via Electron
 - Brother QL-820NWB printer integration
 - Scanner integration (Regula & Desko USB)
@@ -25,37 +26,64 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ## What's Been Implemented
 
+### Session: 2025-02-15 (Current)
+
+#### Critical Bug Fix
+1. **Kit Assignment Modal Black Screen Bug (FIXED)**
+   - **Problem**: Screen turned black when selecting a Tenant in the Kit Assignment modal
+   - **Root Cause 1**: `getFilterOptions()` function was called on every render, creating new array references
+   - **Root Cause 2**: Shadcn/Radix Select components had `value=""` for "Alle" options - empty strings are invalid values in Radix UI
+   - **Solution**: 
+     - Converted `getFilterOptions()` to `useMemo()` for memoized filter options
+     - Changed all `SelectItem value=""` to use `"__all__"` or `"__none__"` placeholder values
+     - Added proper `onValueChange` handlers to convert placeholder values back to empty strings for filter logic
+
+#### Technical Changes
+- `/app/frontend/src/components/KitDetailModal.jsx`:
+  - Added `useMemo` import
+  - Changed `getFilterOptions()` function to `useMemo` hook
+  - Fixed all filter Select components (Continent, Country, State, City) to use `"__all__"` value
+  - Fixed disabled SelectItem elements to use `"__loading__"` or `"__none__"` values
+
 ### Session: 2025-02-14
 
 #### Completed Features
-1. **Enhanced Locations Table**
+1. **Kit Management UI Standardization**
+   - Renamed all "Bundle" references to "KIT"
+   - Button text changed from "Neu Bundle (kit)" to "Neues KIT"
+
+2. **Kit Creation Workflow**
+   - Clicking "Neues KIT" navigates to Kit-Zusammenstellung (Kit Assembly) view
+   - Kits are created with status "Lager" (In Storage) without initial location assignment
+   - Sequential Kit ID generation (TSRID-KIT-XXX) via `/api/asset-mgmt/kits/next-id`
+
+3. **Kit Assignment Workflow (Enhanced)**
+   - Tenant/Customer selection dropdown in Kit Detail Modal
+   - Filtered locations based on selected tenant
+   - Advanced location filtering (Continent, Country, State, City)
+   - Searchable location dropdown
+   - "+ Neuer Tenant" and "+ Neue Location" navigation buttons
+
+4. **Enhanced Locations Table**
    - Added columns: Street (Straße), ZIP (PLZ), City (Stadt), State (Bundesland), Station Name
    - Added dropdown filters for City and State
-   - Backend API updated in `asset_management_v2.py`
 
-2. **Bug Fixes**
-   - **Search Input Bug (FIXED)**: Changed `Filters` from inner function component to JSX variable to prevent remounting
-   - **Tab Navigation Bug (FIXED)**: Removed unnecessary `navigate()` call that caused state reset
-   - **Tenant Filter Bug (FIXED)**: Updated backend to filter by `tenant_name`, added missing Puma data to DB
-   - **Soltau Data Correction (FIXED)**: Updated geographic data in database
-
-#### Technical Changes
-- `/app/frontend/src/components/AssetManagementV2.jsx`: 
-  - Line 722-817: `const Filters = () =>` changed to `const filtersJSX = (...)`
-  - Line 2337: `<Filters />` changed to `{filtersJSX}`
-- `/app/frontend/src/pages/AdminPortal.jsx`:
-  - Line 1013-1019: Added check for current pathname before navigate()
+5. **Bug Fixes**
+   - **Search Input Bug (FIXED)**: Changed `Filters` from inner function component to JSX variable
+   - **Tab Navigation Bug (FIXED)**: Removed unnecessary `navigate()` call
+   - **Tenant Filter Bug (FIXED)**: Updated backend to filter by `tenant_name`
 
 ---
 
 ## Prioritized Backlog
 
-### P0 - Critical (Current Session)
+### P0 - Critical (Completed)
+- [x] Kit Assignment Modal black screen bug - **FIXED 2025-02-15**
 - [x] Search input bug in Locations tab
 - [x] Tab navigation bug
-- [ ] User verification of fixes pending
 
 ### P1 - High Priority
+- [ ] Kit Management Phase 2: Component replacement logic, full history logging, component locking
 - [ ] Kit Feature Phase 3 & 4: Connect QR-Code Label Generation to printer
 - [ ] Full Scanner Integration (Regula & Desko USB)
 - [ ] Sync Engine Activation (SQLite to MongoDB)
