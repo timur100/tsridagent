@@ -192,12 +192,97 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
         loc.tenant_name === tenantName
       );
       setFilteredLocations(filtered);
-      // Reset selected location when tenant changes
+      // Reset selected location and filters when tenant changes
       setSelectedLocation('');
+      setLocationSearch('');
+      setFilterContinent('');
+      setFilterCountry('');
+      setFilterState('');
+      setFilterCity('');
     } else {
       setFilteredLocations([]);
     }
   }, [selectedTenant, locations, tenants]);
+
+  // Apply additional filters (continent, country, state, city, search) to tenant-filtered locations
+  useEffect(() => {
+    if (filteredLocations.length === 0) {
+      setDisplayedLocations([]);
+      return;
+    }
+
+    let result = [...filteredLocations];
+
+    // Filter by continent
+    if (filterContinent) {
+      result = result.filter(loc => {
+        const continent = COUNTRY_CONTINENT[loc.country] || 'Sonstige';
+        return continent === filterContinent;
+      });
+    }
+
+    // Filter by country
+    if (filterCountry) {
+      result = result.filter(loc => loc.country === filterCountry);
+    }
+
+    // Filter by state
+    if (filterState) {
+      result = result.filter(loc => {
+        const stateName = STATE_NAMES[loc.state] || loc.state;
+        return stateName === filterState || loc.state === filterState;
+      });
+    }
+
+    // Filter by city
+    if (filterCity) {
+      result = result.filter(loc => loc.city === filterCity);
+    }
+
+    // Filter by search text
+    if (locationSearch.trim()) {
+      const searchLower = locationSearch.toLowerCase().trim();
+      result = result.filter(loc => 
+        loc.location_id?.toLowerCase().includes(searchLower) ||
+        loc.name?.toLowerCase().includes(searchLower) ||
+        loc.city?.toLowerCase().includes(searchLower) ||
+        loc.address?.toLowerCase().includes(searchLower) ||
+        (STATE_NAMES[loc.state] || loc.state)?.toLowerCase().includes(searchLower)
+      );
+    }
+
+    setDisplayedLocations(result);
+  }, [filteredLocations, filterContinent, filterCountry, filterState, filterCity, locationSearch, STATE_NAMES, COUNTRY_CONTINENT]);
+
+  // Get unique filter options from filtered locations
+  const getFilterOptions = () => {
+    const continents = new Set();
+    const countries = new Set();
+    const states = new Set();
+    const cities = new Set();
+
+    filteredLocations.forEach(loc => {
+      if (loc.country) {
+        countries.add(loc.country);
+        continents.add(COUNTRY_CONTINENT[loc.country] || 'Sonstige');
+      }
+      if (loc.state) {
+        states.add(STATE_NAMES[loc.state] || loc.state);
+      }
+      if (loc.city) {
+        cities.add(loc.city);
+      }
+    });
+
+    return {
+      continents: Array.from(continents).sort(),
+      countries: Array.from(countries).sort(),
+      states: Array.from(states).sort(),
+      cities: Array.from(cities).sort()
+    };
+  };
+
+  const filterOptions = getFilterOptions();
 
   // Fetch kits at selected location
   const fetchLocationKits = useCallback(async (locationId) => {
