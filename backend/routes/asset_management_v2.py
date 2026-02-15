@@ -3118,7 +3118,6 @@ async def quick_assemble_kit(assembly: QuickKitAssembly, technician: str = Query
         
         # 5. Update all components to link them to this kit
         for comp in components:
-            comp_id = comp.get("asset_id") or comp.get("_id")
             await db.tsrid_assets.update_one(
                 {"_id": comp["_id"]},
                 {
