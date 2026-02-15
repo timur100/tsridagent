@@ -1,0 +1,53 @@
+{
+  "summary": "Verified bug fix for Wareneingang form Enter key behavior. All 5 test cases passed - scanner-induced Enter key now moves focus through SN→IMEI→MAC fields before adding item.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/frontend/src/components/GoodsReceiptWorkflow.jsx"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "handleSNKeyDown (lines 194-203): Correctly prevents default Enter behavior and moves focus to IMEI input via data-testid selector",
+    "handleIMEIKeyDown (lines 206-213): Correctly prevents default Enter behavior and moves focus to MAC input",
+    "handleMACKeyDown (lines 217-222): Correctly calls addIntakeItem() when Enter is pressed on MAC field, completing the workflow",
+    "All input fields have correct data-testid attributes and onKeyDown handlers attached (lines 459-518)"
+  ],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "N/A (frontend-only testing)",
+    "frontend": "100% - All 5 features verified"
+  },
+  "test_credentials": {
+    "Web Portal": "admin@tsrid.com / admin123",
+    "Navigation": "Assets Tab → Wareneingang Button"
+  },
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Wareneingang form Enter key bug fix verified. Form now correctly handles barcode scanner Enter key by moving focus SN→IMEI→MAC→Add instead of immediately submitting.",
+  "features_tested": {
+    "TEST 1 - SN Enter moves focus to IMEI": "PASS - After entering SN 'TEST-SN-12345' and pressing Enter, document.activeElement.getAttribute('data-testid') returned 'imei-input'",
+    "TEST 2 - IMEI Enter moves focus to MAC": "PASS - After entering IMEI '123456789012345' and pressing Enter, document.activeElement.getAttribute('data-testid') returned 'mac-input'",
+    "TEST 3 - MAC Enter adds item to list": "PASS - After entering MAC '00:11:22:33:44:55' and pressing Enter, item appeared in 'Zu erfassende Geräte' list",
+    "TEST 4 - IMEI and MAC displayed in list": "PASS - Both IMEI (123456789012345) and MAC (00:11:22:33:44:55) values correctly displayed in table columns",
+    "TEST 5 - Add button still works": "PASS - Manual click on 'Hinzufügen' button successfully added second item 'TEST-SN-67890' to list"
+  },
+  "code_verification": {
+    "sn_keydown_handler": "Lines 194-203: e.preventDefault() + focus to [data-testid='imei-input']",
+    "imei_keydown_handler": "Lines 206-213: e.preventDefault() + focus to [data-testid='mac-input']",
+    "mac_keydown_handler": "Lines 217-222: e.preventDefault() + addIntakeItem()",
+    "input_bindings": "Lines 487, 502, 517: onKeyDown={handleSNKeyDown/handleIMEIKeyDown/handleMACKeyDown}"
+  },
+  "bug_fix_verification": {
+    "original_bug": "Barcode scanner sends Enter after scanning SN, which immediately called addIntakeItem() - user could not enter IMEI or MAC",
+    "fix_applied": "onKeyPress changed to onKeyDown, handleSNKeyDown now moves focus to IMEI instead of adding item",
+    "fix_status": "VERIFIED WORKING"
+  }
+}
