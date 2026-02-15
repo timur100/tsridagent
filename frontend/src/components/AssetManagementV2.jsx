@@ -59,8 +59,10 @@ const ASSET_STATUS_CONFIG = {
 // Kit Status Configuration
 const KIT_STATUS_CONFIG = {
   incomplete: { label: 'Unvollständig', color: 'bg-yellow-500/20 text-yellow-500' },
+  complete: { label: 'Vollständig', color: 'bg-green-500/20 text-green-500' },
   ready: { label: 'Bereit', color: 'bg-green-500/20 text-green-500' },
-  assigned: { label: 'Zugewiesen', color: 'bg-blue-500/20 text-blue-400' },
+  in_storage: { label: 'Lager', color: 'bg-blue-500/20 text-blue-400' },
+  assigned: { label: 'Zugewiesen', color: 'bg-purple-500/20 text-purple-400' },
   defective: { label: 'Defekt', color: 'bg-red-500/20 text-red-400' }
 };
 
