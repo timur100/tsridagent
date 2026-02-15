@@ -471,51 +471,147 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                 </>
               ) : (
                 <>
+                  {/* Step 1: Select Tenant/Customer */}
                   <Card className={`p-4 ${cardBg}`}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <Building className="h-5 w-5 text-green-500" />
-                      <h4 className="font-semibold">Location auswählen</h4>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <Users className="h-5 w-5 text-blue-500" />
+                        <h4 className="font-semibold">1. Kunde/Tenant auswählen</h4>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          onClose();
+                          navigate('/portal/tenants');
+                        }}
+                        className="text-blue-500 border-blue-500"
+                      >
+                        <Plus className="h-3 w-3 mr-1" />
+                        Neuer Tenant
+                      </Button>
                     </div>
                     
-                    <div className="space-y-4">
-                      <div>
-                        <label className="text-sm font-medium mb-1 block">Location *</label>
+                    <Select value={selectedTenant} onValueChange={setSelectedTenant}>
+                      <SelectTrigger className={inputBg}>
+                        <SelectValue placeholder="Tenant/Kunde auswählen..." />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        {loadingTenants ? (
+                          <SelectItem value="" disabled>Lade Tenants...</SelectItem>
+                        ) : tenants.length > 0 ? (
+                          tenants.map(tenant => (
+                            <SelectItem 
+                              key={tenant.tenant_id || tenant.customer_id || tenant.name} 
+                              value={tenant.tenant_id || tenant.customer_id || tenant.name}
+                            >
+                              {tenant.name || tenant.tenant_name || tenant.customer_id} 
+                              {tenant.city && ` (${tenant.city})`}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="" disabled>Keine Tenants gefunden</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    
+                    {selectedTenant && (
+                      <p className={`text-xs mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        ✓ Ausgewählt: <strong>{selectedTenant}</strong> - {filteredLocations.length} Location(s) verfügbar
+                      </p>
+                    )}
+                  </Card>
+
+                  {/* Step 2: Select Location (only shown after tenant selection) */}
+                  {selectedTenant && (
+                    <Card className={`p-4 ${cardBg}`}>
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2">
+                          <Building className="h-5 w-5 text-green-500" />
+                          <h4 className="font-semibold">2. Location auswählen</h4>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            onClose();
+                            navigate('/portal/locations');
+                          }}
+                          className="text-green-500 border-green-500"
+                        >
+                          <Plus className="h-3 w-3 mr-1" />
+                          Neue Location
+                        </Button>
+                      </div>
+                      
+                      {filteredLocations.length > 0 ? (
                         <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                           <SelectTrigger className={inputBg}>
                             <SelectValue placeholder="Location auswählen..." />
                           </SelectTrigger>
                           <SelectContent className="max-h-[300px]">
-                            {locations.map(loc => (
+                            {filteredLocations.map(loc => (
                               <SelectItem key={loc.location_id} value={loc.location_id}>
-                                {loc.location_id} - {loc.city} ({loc.customer || loc.tenant_name})
+                                {loc.location_id} - {loc.city || loc.location_name}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
+                      ) : (
+                        <div className={`p-4 rounded-lg text-center ${isDark ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
+                          <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
+                          <p className={`text-sm ${isDark ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                            Keine Locations für diesen Tenant gefunden.
+                          </p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              onClose();
+                              navigate('/portal/locations');
+                            }}
+                            className="mt-3 text-yellow-600 border-yellow-500"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Location für {selectedTenant} hinzufügen
+                          </Button>
+                        </div>
+                      )}
+                    </Card>
+                  )}
 
-                      <div>
-                        <label className="text-sm font-medium mb-1 block">Techniker</label>
-                        <Input
-                          value={technician}
-                          onChange={(e) => setTechnician(e.target.value)}
-                          placeholder="Name des Technikers..."
-                          className={inputBg}
-                        />
+                  {/* Step 3: Additional Info (only shown after location selection) */}
+                  {selectedLocation && (
+                    <Card className={`p-4 ${cardBg}`}>
+                      <div className="flex items-center gap-2 mb-4">
+                        <User className="h-5 w-5 text-purple-500" />
+                        <h4 className="font-semibold">3. Zusätzliche Informationen</h4>
                       </div>
+                      
+                      <div className="space-y-4">
+                        <div>
+                          <label className="text-sm font-medium mb-1 block">Techniker</label>
+                          <Input
+                            value={technician}
+                            onChange={(e) => setTechnician(e.target.value)}
+                            placeholder="Name des Technikers..."
+                            className={inputBg}
+                          />
+                        </div>
 
-                      <div>
-                        <label className="text-sm font-medium mb-1 block">Notizen</label>
-                        <Textarea
-                          value={assignmentNotes}
-                          onChange={(e) => setAssignmentNotes(e.target.value)}
-                          placeholder="Optionale Notizen..."
-                          className={inputBg}
-                          rows={2}
-                        />
+                        <div>
+                          <label className="text-sm font-medium mb-1 block">Notizen</label>
+                          <Textarea
+                            value={assignmentNotes}
+                            onChange={(e) => setAssignmentNotes(e.target.value)}
+                            placeholder="Optionale Notizen..."
+                            className={inputBg}
+                            rows={2}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  )}
 
                   {/* Existing Kits at Location */}
                   {selectedLocation && (
