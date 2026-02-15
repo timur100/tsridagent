@@ -1071,14 +1071,14 @@ const SupplierManagement = ({ theme }) => {
                   Asset-Typ verknüpfen
                 </label>
                 <Select 
-                  value={productForm.asset_type} 
-                  onValueChange={(v) => setProductForm(prev => ({ ...prev, asset_type: v }))}
+                  value={productForm.asset_type || "none"} 
+                  onValueChange={(v) => setProductForm(prev => ({ ...prev, asset_type: v === "none" ? "" : v }))}
                 >
                   <SelectTrigger className={inputBg}>
                     <SelectValue placeholder="Optional" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Keine Verknüpfung</SelectItem>
+                    <SelectItem value="none">Keine Verknüpfung</SelectItem>
                     {Object.entries(ASSET_TYPE_LABELS).map(([key, label]) => (
                       <SelectItem key={key} value={key}>{label}</SelectItem>
                     ))}
