@@ -1803,6 +1803,10 @@ const AdminPortalContent = () => {
           </div>
         )}
 
+        {activeTab === 'suppliers' && (
+          <SupplierManagement theme={theme} />
+        )}
+
         {activeTab === 'components' && (
           <div>
             <ComponentsManagement />
