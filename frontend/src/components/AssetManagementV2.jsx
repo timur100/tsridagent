@@ -2567,7 +2567,8 @@ const AssetManagementV2 = ({ theme }) => {
                   <div className="px-2 py-1 text-xs font-semibold text-gray-500">Tablets</div>
                   <SelectItem value="tab_sp4">Surface Pro 4 → TAB-SP4</SelectItem>
                   <SelectItem value="tab_sp6">Surface Pro 6 → TAB-SP6</SelectItem>
-                  <SelectItem value="tab_tsr">TSRID Tablet → TAB-TSR</SelectItem>
+                  <SelectItem value="tab_tsr_i5">TSRID Tablet i5 → TAB-TSRi5</SelectItem>
+                  <SelectItem value="tab_tsr_i7">TSRID Tablet i7 → TAB-TSRi7</SelectItem>
                   {/* Scanner */}
                   <div className="px-2 py-1 text-xs font-semibold text-gray-500 mt-2">Scanner</div>
                   <SelectItem value="sca_tsr">TSRID Scanner → SCA-TSR</SelectItem>
