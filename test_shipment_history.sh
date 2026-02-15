@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://tenant-filter-search.preview.emergentagent.com/api/dhl"
+API_URL="https://kit-assign.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

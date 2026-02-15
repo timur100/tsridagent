@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tenant-filter-search.preview.emergentagent.com';
+    this.serverUrl = 'https://kit-assign.preview.emergentagent.com';
   }
 
   /**

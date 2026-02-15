@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DHL Sandbox Testing Script
-API_URL="https://tenant-filter-search.preview.emergentagent.com/api/dhl"
+API_URL="https://kit-assign.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sandbox Testing ==="
 echo ""
