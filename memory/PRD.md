@@ -168,6 +168,20 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
     - **Quick-Add**: "+ Neuer Lieferant..." Option im Wareneingang-Dropdown
     - **Test-Status**: ✅ Funktioniert
 
+16. **Produkte-Tab Schwarzer Bildschirm Bug (FIXED 2025-02-15)**
+    - **Problem**: Beim Klicken auf den "Produkte"-Tab in der Lieferanten-Verwaltung erschien ein schwarzer Bildschirm
+    - **Root Cause 1**: `SelectItem` mit `value=""` (leerer String) - Radix UI erlaubt keine leeren Strings
+    - **Root Cause 2**: Backend `distinct()` in `list_products` wurde nicht korrekt awaited
+    - **Root Cause 3**: HTML Nesting-Fehler - `<Badge>` (div) in `<p>` Element
+    - **Lösung**:
+      1. SelectItem `value=""` zu `value="all"` bzw. `value="none"` geändert (2 Stellen)
+      2. Backend `categories_cursor = db.products.distinct()` zu `categories = await db.products.distinct()` korrigiert
+      3. `<p>Typ: <Badge>...</Badge></p>` zu `<div>...<Badge>...</Badge></div>` geändert
+    - **Dateien**:
+      - `/app/frontend/src/components/SupplierManagement.jsx` (Zeilen 673-683, 1073-1086, 610-613)
+      - `/app/backend/routes/asset_management_v2.py` (Zeile 3779-3780)
+    - **Test-Status**: ✅ Verifiziert mit Testing Agent (100% Backend + Frontend)
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
