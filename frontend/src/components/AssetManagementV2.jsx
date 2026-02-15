@@ -2064,7 +2064,7 @@ const AssetManagementV2 = ({ theme }) => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-medium">Bundle (optional)</label>
+                  <label className="text-xs font-medium">KIT (optional)</label>
                   <Input
                     value={formData.bundle_id || ''}
                     onChange={(e) => setFormData({ ...formData, bundle_id: e.target.value })}
