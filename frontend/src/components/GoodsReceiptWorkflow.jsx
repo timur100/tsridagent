@@ -82,6 +82,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [deliveryNote, setDeliveryNote] = useState('');
   const [suppliers, setSuppliers] = useState([]);
   
+  // Auto Asset-ID State
+  const [nextAssetId, setNextAssetId] = useState('');
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkCount, setBulkCount] = useState(1);
+  const [showBulkModal, setShowBulkModal] = useState(false);
+  
   // Unassigned Assets State
   const [unassignedAssets, setUnassignedAssets] = useState([]);
   const [unassignedTotal, setUnassignedTotal] = useState(0);
