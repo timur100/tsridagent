@@ -3455,10 +3455,11 @@ async def list_suppliers():
             {"$sort": {"_id": 1}}
         ]
         cursor = db.tsrid_assets.aggregate(pipeline)
-        db_suppliers = [doc["_id"] async for doc in cursor]
+        db_suppliers = [doc["_id"] async for doc in cursor if doc["_id"]]
         
-        # Combine with defaults, remove duplicates, sort
+        # Combine with defaults, remove duplicates and None values, sort
         all_suppliers = list(set(DEFAULT_SUPPLIERS + db_suppliers))
+        all_suppliers = [s for s in all_suppliers if s]  # Filter out None/empty
         all_suppliers.sort()
         
         return {
