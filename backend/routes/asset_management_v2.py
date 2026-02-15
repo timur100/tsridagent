@@ -2466,6 +2466,8 @@ async def update_kit_template(template_id: str, update: KitTemplateUpdate):
             update_data["notes"] = update.notes
         if update.components is not None:
             update_data["components"] = [comp.dict() for comp in update.components]
+        if update.inventory_components is not None:
+            update_data["inventory_components"] = [inv_comp.dict() for inv_comp in update.inventory_components]
         
         if update_data:
             update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
