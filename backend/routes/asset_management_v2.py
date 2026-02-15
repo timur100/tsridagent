@@ -2430,6 +2430,7 @@ async def create_kit_template(template: KitTemplateCreate):
             "name": template.name,
             "description": template.description,
             "components": [comp.dict() for comp in template.components],
+            "inventory_components": [inv_comp.dict() for inv_comp in (template.inventory_components or [])],
             "notes": template.notes,
             "created_at": now,
             "updated_at": now
