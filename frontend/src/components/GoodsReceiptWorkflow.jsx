@@ -120,6 +120,24 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
 
+  // Fetch next asset ID for selected type
+  const fetchNextAssetId = useCallback(async (assetType) => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/asset-id-config/next-id?asset_type=${assetType}`);
+      const data = await res.json();
+      if (data.success) {
+        setNextAssetId(data.next_asset_id);
+      }
+    } catch (e) {
+      console.error('Error fetching next asset ID:', e);
+    }
+  }, []);
+
+  // Update next ID when type changes
+  useEffect(() => {
+    fetchNextAssetId(currentType);
+  }, [currentType, fetchNextAssetId]);
+
   // Fetch suppliers
   const fetchSuppliers = useCallback(async () => {
     try {
