@@ -2357,7 +2357,7 @@ const AssetManagementV2 = ({ theme }) => {
             className="bg-[#c00000] hover:bg-[#a00000] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Neu {activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : activeTab === 'bundles' ? 'Bundle (Kit)' : 'Asset'}
+            {activeTab === 'bundles' ? 'Neues KIT' : `Neu ${activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : 'Asset'}`}
           </Button>
         )}
       </div>
