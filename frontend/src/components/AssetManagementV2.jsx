@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, Clock, CheckCircle, AlertCircle, XCircle,
   Building2, Monitor, Printer, Cable, Box, Filter, ExternalLink, History,
   ArrowRight, Unplug, Plug, Link2, LinkIcon, Smartphone, Wifi, WifiOff,
-  PackageOpen, Wrench
+  PackageOpen, Wrench, Truck
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -18,6 +18,7 @@ import TablePagination from './ui/TablePagination';
 import TableSkeleton from './ui/TableSkeleton';
 import GoodsReceiptWorkflow from './GoodsReceiptWorkflow';
 import KitAssemblyWorkflow from './KitAssemblyWorkflow';
+import KitDetailModal from './KitDetailModal';
 import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 
