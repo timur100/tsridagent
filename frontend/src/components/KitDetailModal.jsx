@@ -836,16 +836,23 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                               <SelectTrigger className={inputBg}>
                                 <SelectValue placeholder="Location auswählen..." />
                               </SelectTrigger>
-                              <SelectContent className="max-h-[250px]">
+                              <SelectContent className="max-h-[300px]">
                                 {displayedLocations.length > 0 ? (
                                   displayedLocations.map(loc => (
-                                    <SelectItem key={loc.location_id} value={loc.location_id}>
-                                      <span className="font-mono text-xs">{loc.location_id}</span>
-                                      <span className="mx-1">-</span>
-                                      <span>{loc.name || loc.city}</span>
-                                      <span className={`ml-2 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                                        ({loc.city}, {STATE_NAMES[loc.state] || loc.state})
-                                      </span>
+                                    <SelectItem key={loc.location_id} value={loc.location_id} className="py-2">
+                                      <div className="flex flex-col">
+                                        <div className="flex items-center gap-2">
+                                          <span className="font-mono text-xs font-semibold">{loc.location_id}</span>
+                                          <span>-</span>
+                                          <span className="font-medium">{loc.name || loc.city}</span>
+                                        </div>
+                                        <div className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                          {loc.address && <span>{loc.address}, </span>}
+                                          {loc.zip && <span>{loc.zip} </span>}
+                                          {loc.city}
+                                          {loc.state && <span>, {STATE_NAMES[loc.state] || loc.state}</span>}
+                                        </div>
+                                      </div>
                                     </SelectItem>
                                   ))
                                 ) : (
