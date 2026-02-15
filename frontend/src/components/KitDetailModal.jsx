@@ -580,7 +580,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                             className="mt-3 text-yellow-600 border-yellow-500"
                           >
                             <Plus className="h-3 w-3 mr-1" />
-                            Location für {selectedTenant} hinzufügen
+                            Location für {tenants.find(t => t.tenant_id === selectedTenant)?.name || selectedTenant} hinzufügen
                           </Button>
                         </div>
                       )}
