@@ -566,11 +566,17 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   Lieferant
                 </label>
-                <Select value={supplier} onValueChange={setSupplier}>
+                <Select value={supplier} onValueChange={handleSupplierChange}>
                   <SelectTrigger className={inputBg} data-testid="supplier-select">
                     <SelectValue placeholder="Lieferant auswählen" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="__new__" className="text-green-500 font-medium">
+                      <span className="flex items-center gap-2">
+                        <Plus className="h-4 w-4" />
+                        Neuer Lieferant...
+                      </span>
+                    </SelectItem>
                     {suppliers.map(s => (
                       <SelectItem key={s} value={s}>{s}</SelectItem>
                     ))}
