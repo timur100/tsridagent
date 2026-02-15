@@ -2279,6 +2279,31 @@ async def get_kit_templates_list():
         return []
 
 
+@router.get("/asset-types")
+async def get_asset_types():
+    """Get all available asset types with labels for UI"""
+    try:
+        # Filter out consumables (cns_*) and kit types for asset selection
+        asset_type_list = []
+        for asset_type in ASSET_TYPES:
+            # Skip consumables and kits - they are handled separately
+            if asset_type.startswith('cns_') or asset_type.startswith('kit_'):
+                continue
+            asset_type_list.append({
+                "type": asset_type,
+                "label": ASSET_TYPE_LABELS.get(asset_type, asset_type),
+                "suffix": ASSET_TYPE_SUFFIX_MAP.get(asset_type, 'OTH')
+            })
+        
+        return {
+            "success": True,
+            "types": asset_type_list,
+            "total": len(asset_type_list)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/kit-templates")
 async def list_kit_templates(include_stock: bool = Query(True, description="Include inventory stock levels")):
     """List all kit templates with component details and inventory stock levels"""
