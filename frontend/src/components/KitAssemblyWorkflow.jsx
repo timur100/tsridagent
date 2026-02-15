@@ -370,41 +370,110 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {templates.map(template => (
-              <Card 
-                key={template.template_id} 
-                className={`p-4 cursor-pointer transition-all hover:shadow-lg ${cardBg} hover:border-blue-500`}
-                onClick={() => startAssembly(template)}
-                data-testid={`template-card-${template.template_id}`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
-                    <Package className="h-6 w-6 text-blue-500" />
+            {templates.map(template => {
+              const possibleKits = template.possible_kits;
+              const hasInventoryComponents = template.inventory_components && template.inventory_components.length > 0;
+              const hasLimitingComponent = possibleKits?.limiting_component;
+              
+              return (
+                <Card 
+                  key={template.template_id} 
+                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${cardBg} hover:border-blue-500`}
+                  onClick={() => startAssembly(template)}
+                  data-testid={`template-card-${template.template_id}`}
+                >
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
+                      <Package className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                        {template.name}
+                      </h3>
+                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {template.description || template.template_id}
+                      </p>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400" />
                   </div>
-                  <div className="flex-1">
-                    <h3 className={`font-semibold ${isDark ? 'text-white' : ''}`}>
-                      {template.name}
-                    </h3>
-                    <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                      {template.description || template.template_id}
-                    </p>
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {template.components?.slice(0, 4).map((comp, i) => (
-                        <Badge key={i} variant="outline" className="text-xs">
-                          {comp.quantity}x {comp.type}
+                  
+                  {/* Assets mit Seriennummer */}
+                  {template.components && template.components.length > 0 && (
+                    <div className="mb-3">
+                      <p className={`text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        MIT SERIENNUMMER:
+                      </p>
+                      <div className="space-y-1">
+                        {template.components.map((comp, i) => (
+                          <div key={i} className={`flex items-center justify-between text-xs px-2 py-1 rounded ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                            <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                              {comp.quantity}× {comp.label || comp.asset_type}
+                            </span>
+                            {comp.available_in_storage !== undefined && (
+                              <Badge variant="outline" className={`text-[10px] ${
+                                comp.available_in_storage === 0 ? 'text-red-500 border-red-500' :
+                                comp.available_in_storage < comp.quantity ? 'text-yellow-500 border-yellow-500' :
+                                'text-green-500 border-green-500'
+                              }`}>
+                                {comp.available_in_storage} verfügbar
+                              </Badge>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Inventory-Komponenten ohne Seriennummer */}
+                  {hasInventoryComponents && (
+                    <div className="mb-3">
+                      <p className={`text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        OHNE SERIENNUMMER (Lager):
+                      </p>
+                      <div className="space-y-1">
+                        {template.inventory_components.map((inv, i) => (
+                          <div key={i} className={`flex items-center justify-between text-xs px-2 py-1 rounded ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                            <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                              {inv.quantity}× {inv.name}
+                            </span>
+                            <Badge variant="outline" className={`text-[10px] ${
+                              inv.stock_status === 'critical' ? 'text-red-500 border-red-500' :
+                              inv.stock_status === 'low' ? 'text-yellow-500 border-yellow-500' :
+                              'text-green-500 border-green-500'
+                            }`}>
+                              {inv.quantity_in_stock || 0} Stk
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Mögliche Kits Anzeige */}
+                  {possibleKits && (
+                    <div className={`mt-3 pt-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <div className="flex items-center justify-between">
+                        <span className={`text-xs font-semibold ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          BAUBARE KITS:
+                        </span>
+                        <Badge className={`${
+                          possibleKits.count === 0 ? 'bg-red-500' :
+                          possibleKits.count < 5 ? 'bg-yellow-500' :
+                          'bg-green-500'
+                        } text-white`}>
+                          {possibleKits.count}
                         </Badge>
-                      ))}
-                      {template.components?.length > 4 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{template.components.length - 4} mehr
-                        </Badge>
+                      </div>
+                      {hasLimitingComponent && possibleKits.count < 10 && (
+                        <p className={`text-[10px] mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                          Limitiert durch: {possibleKits.limiting_component.name} ({possibleKits.limiting_component.available} vorhanden)
+                        </p>
                       )}
                     </div>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-gray-400" />
-                </div>
-              </Card>
-            ))}
+                  )}
+                </Card>
+              );
+            })}
           </div>
         )}
 
