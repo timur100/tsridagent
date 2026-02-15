@@ -24,7 +24,7 @@ import time
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://goods-receipt-hub.preview.emergentagent.com"
+    BASE_URL = "https://bulk-intake-preview.preview.emergentagent.com"
 
 
 class TestMetadataEndpoint:

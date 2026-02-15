@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://goods-receipt-hub.preview.emergentagent.com/api/dhl"
+API_URL="https://bulk-intake-preview.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

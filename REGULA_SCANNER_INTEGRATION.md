@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://goods-receipt-hub.preview.emergentagent.com/portal/admin/id-checks
+   https://bulk-intake-preview.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**
