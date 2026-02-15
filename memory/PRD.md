@@ -101,14 +101,24 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - [x] Kit Assignment Modal black screen bug - **FIXED 2025-02-15**
 - [x] Search input bug in Locations tab
 - [x] Tab navigation bug
+- [x] Location-based Kit ID generation (MUCT01-01-KIT format) - **FIXED 2025-02-15**
 
 ### P1 - High Priority
+- [x] **Hybrid Inventory System for Kit-Zusammenstellung** - **IMPLEMENTED 2025-02-15**
+  - Kit-Templates können jetzt Inventory-Komponenten (ohne SN) enthalten
+  - Backend berechnet automatisch "Mögliche Kits" basierend auf Lagerbestand
+  - Kit-Kacheln zeigen detailliert:
+    - Assets MIT Seriennummer (mit Verfügbarkeit im Lager)
+    - Komponenten OHNE Seriennummer (mit Lagerbestand und Status)
+    - Anzahl baubarer Kits mit limitierender Komponente
+  - Automatisches Abbuchen von Inventory bei Kit-Erstellung
 - [ ] Kit Management Phase 2: Component replacement logic, full history logging, component locking
 - [ ] Kit Feature Phase 3 & 4: Connect QR-Code Label Generation to printer
 - [ ] Full Scanner Integration (Regula & Desko USB)
 - [ ] Sync Engine Activation (SQLite to MongoDB)
 
 ### P2 - Medium Priority
+- [ ] UI für Inventory-Komponenten zu Kit-Templates hinzufügen (Admin-UI)
 - [ ] Printer Integration (Frontend) - finalize
 - [ ] Performance optimizations for all tables
 - [ ] Agent Status Overview
