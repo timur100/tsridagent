@@ -19,20 +19,29 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const KIT_STATUS_CONFIG = {
   incomplete: { label: 'Unvollständig', color: 'bg-yellow-500', textColor: 'text-yellow-500' },
+  complete: { label: 'Vollständig', color: 'bg-green-500', textColor: 'text-green-500' },
   ready: { label: 'Bereit', color: 'bg-green-500', textColor: 'text-green-500' },
-  assigned: { label: 'Zugewiesen', color: 'bg-blue-500', textColor: 'text-blue-500' },
+  in_storage: { label: 'Lager', color: 'bg-blue-500', textColor: 'text-blue-500' },
+  assigned: { label: 'Zugewiesen', color: 'bg-purple-500', textColor: 'text-purple-500' },
   defective: { label: 'Defekt', color: 'bg-red-500', textColor: 'text-red-500' }
 };
 
 const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
   const isDark = theme === 'dark';
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [kitDetails, setKitDetails] = useState(null);
   const [kitHistory, setKitHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   
+  // Tenant state
+  const [tenants, setTenants] = useState([]);
+  const [selectedTenant, setSelectedTenant] = useState('');
+  const [loadingTenants, setLoadingTenants] = useState(false);
+  
   // Assignment state
   const [locations, setLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const [locationKits, setLocationKits] = useState([]);
   const [loadingLocationKits, setLoadingLocationKits] = useState(false);
