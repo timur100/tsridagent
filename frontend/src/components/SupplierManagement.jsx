@@ -607,7 +607,10 @@ const SupplierManagement = ({ theme }) => {
                         {selectedSupplier.tax_id && (
                           <p>USt-IdNr.: <span className="font-mono">{selectedSupplier.tax_id}</span></p>
                         )}
-                        <p>Typ: <Badge variant="outline">{selectedSupplier.supplier_type}</Badge></p>
+                        <div className="flex items-center gap-2">
+                          <span>Typ:</span>
+                          <Badge variant="outline">{selectedSupplier.supplier_type}</Badge>
+                        </div>
                       </div>
                     </div>
 
