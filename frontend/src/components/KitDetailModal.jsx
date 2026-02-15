@@ -685,18 +685,133 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                       </div>
                       
                       {filteredLocations.length > 0 ? (
-                        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                          <SelectTrigger className={inputBg}>
-                            <SelectValue placeholder="Location auswählen..." />
-                          </SelectTrigger>
-                          <SelectContent className="max-h-[300px]">
-                            {filteredLocations.map(loc => (
-                              <SelectItem key={loc.location_id} value={loc.location_id}>
-                                {loc.location_id} - {loc.city || loc.location_name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <div className="space-y-4">
+                          {/* Filter Row */}
+                          <div className="grid grid-cols-4 gap-2">
+                            {/* Continent Filter */}
+                            <div>
+                              <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kontinent</label>
+                              <Select value={filterContinent} onValueChange={setFilterContinent}>
+                                <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
+                                  <SelectValue placeholder="Alle" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">Alle</SelectItem>
+                                  {filterOptions.continents.map(c => (
+                                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* Country Filter */}
+                            <div>
+                              <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Land</label>
+                              <Select value={filterCountry} onValueChange={setFilterCountry}>
+                                <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
+                                  <SelectValue placeholder="Alle" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">Alle</SelectItem>
+                                  {filterOptions.countries.map(c => (
+                                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* State Filter */}
+                            <div>
+                              <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Bundesland</label>
+                              <Select value={filterState} onValueChange={setFilterState}>
+                                <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
+                                  <SelectValue placeholder="Alle" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">Alle</SelectItem>
+                                  {filterOptions.states.map(s => (
+                                    <SelectItem key={s} value={s}>{s}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            {/* City Filter */}
+                            <div>
+                              <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Stadt</label>
+                              <Select value={filterCity} onValueChange={setFilterCity}>
+                                <SelectTrigger className={`h-8 text-xs ${inputBg}`}>
+                                  <SelectValue placeholder="Alle" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-[200px]">
+                                  <SelectItem value="">Alle</SelectItem>
+                                  {filterOptions.cities.map(c => (
+                                    <SelectItem key={c} value={c}>{c}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </div>
+
+                          {/* Search Input */}
+                          <div>
+                            <label className={`text-xs mb-1 block ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                              Suche (ID, Name, Stadt, Adresse...)
+                            </label>
+                            <Input
+                              value={locationSearch}
+                              onChange={(e) => setLocationSearch(e.target.value)}
+                              placeholder="z.B. Airport, Berlin, BERC..."
+                              className={`h-9 ${inputBg}`}
+                            />
+                          </div>
+
+                          {/* Location Select */}
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                                Location ({displayedLocations.length} von {filteredLocations.length})
+                              </label>
+                              {(filterContinent || filterCountry || filterState || filterCity || locationSearch) && (
+                                <button 
+                                  onClick={() => {
+                                    setFilterContinent('');
+                                    setFilterCountry('');
+                                    setFilterState('');
+                                    setFilterCity('');
+                                    setLocationSearch('');
+                                  }}
+                                  className="text-xs text-red-500 hover:underline"
+                                >
+                                  Filter zurücksetzen
+                                </button>
+                              )}
+                            </div>
+                            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                              <SelectTrigger className={inputBg}>
+                                <SelectValue placeholder="Location auswählen..." />
+                              </SelectTrigger>
+                              <SelectContent className="max-h-[250px]">
+                                {displayedLocations.length > 0 ? (
+                                  displayedLocations.map(loc => (
+                                    <SelectItem key={loc.location_id} value={loc.location_id}>
+                                      <span className="font-mono text-xs">{loc.location_id}</span>
+                                      <span className="mx-1">-</span>
+                                      <span>{loc.name || loc.city}</span>
+                                      <span className={`ml-2 text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                                        ({loc.city}, {STATE_NAMES[loc.state] || loc.state})
+                                      </span>
+                                    </SelectItem>
+                                  ))
+                                ) : (
+                                  <SelectItem value="" disabled>
+                                    Keine Locations gefunden
+                                  </SelectItem>
+                                )}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
                       ) : (
                         <div className={`p-4 rounded-lg text-center ${isDark ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
                           <AlertTriangle className="h-8 w-8 mx-auto mb-2 text-yellow-500" />
