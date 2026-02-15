@@ -842,15 +842,29 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                         {asset.supplier || '-'}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        <Button
-                          size="sm"
-                          className="bg-blue-600 hover:bg-blue-700"
-                          onClick={() => openAssignModal(asset)}
-                          data-testid={`assign-btn-${asset.manufacturer_sn}`}
-                        >
-                          <MapPin className="h-3 w-3 mr-1" />
-                          Zuweisen
-                        </Button>
+                        <div className="flex items-center justify-center gap-2">
+                          <Button
+                            size="sm"
+                            className="bg-blue-600 hover:bg-blue-700"
+                            onClick={() => openAssignModal(asset)}
+                            data-testid={`assign-btn-${asset.manufacturer_sn}`}
+                          >
+                            <MapPin className="h-3 w-3 mr-1" />
+                            Zuweisen
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                            onClick={() => {
+                              setAssetToDelete(asset);
+                              setShowDeleteModal(true);
+                            }}
+                            data-testid={`delete-btn-${asset.manufacturer_sn}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
