@@ -348,7 +348,7 @@ const AssetManagementV2 = ({ theme }) => {
       }
     } catch (e) {
       console.error('Error fetching bundles:', e);
-      toast.error('Fehler beim Laden der Bundles');
+      toast.error('Fehler beim Laden der KITs');
     } finally {
       setLoading(false);
     }
@@ -710,9 +710,9 @@ const AssetManagementV2 = ({ theme }) => {
             <Package className="h-5 w-5 text-orange-500" />
           </div>
           <div>
-            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Bundles</p>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>KITs</p>
             <p className={`text-xl font-bold ${isDark ? 'text-white' : ''}`}>{stats?.bundles?.total || 0}</p>
-            <p className="text-xs text-green-500">{stats?.bundles?.deployed || 0} deployed</p>
+            <p className="text-xs text-green-500">{stats?.bundles?.deployed || 0} zugewiesen</p>
           </div>
         </div>
       </Card>
