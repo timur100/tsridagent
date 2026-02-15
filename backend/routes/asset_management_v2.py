@@ -3777,8 +3777,7 @@ async def list_products(
         total = await db.products.count_documents(query)
         
         # Get categories for filter
-        categories_cursor = db.products.distinct("category")
-        categories = await categories_cursor if hasattr(categories_cursor, '__anext__') else categories_cursor
+        categories = await db.products.distinct("category")
         
         return {
             "success": True,
