@@ -72,7 +72,8 @@ const ASSET_TYPE_CONFIG = {
   // Tablets
   tab_sp4: { label: 'Surface Pro 4', icon: Monitor, category: 'Tablets', suffix: 'TAB-SP4' },
   tab_sp6: { label: 'Surface Pro 6', icon: Monitor, category: 'Tablets', suffix: 'TAB-SP6' },
-  tab_tsr: { label: 'TSRID Tablet', icon: Monitor, category: 'Tablets', suffix: 'TAB-TSR' },
+  tab_tsr_i5: { label: 'TSRID Tablet i5', icon: Monitor, category: 'Tablets', suffix: 'TAB-TSRi5' },
+  tab_tsr_i7: { label: 'TSRID Tablet i7', icon: Monitor, category: 'Tablets', suffix: 'TAB-TSRi7' },
   // Scanner
   sca_tsr: { label: 'TSRID Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA-TSR' },
   sca_dsk: { label: 'Desko Scanner', icon: Monitor, category: 'Scanner', suffix: 'SCA-DSK' },
