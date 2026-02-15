@@ -161,7 +161,7 @@ const EVENT_TYPE_COLORS = {
 const AssetManagementV2 = ({ theme }) => {
   const isDark = theme === 'dark';
   const { selectedTenantId, selectedTenantName } = useTenant();
-  const [activeTab, setActiveTab] = useState('goods-receipt');
+  const [activeTab, setActiveTab] = useState('assets');
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   
@@ -2298,6 +2298,10 @@ const AssetManagementV2 = ({ theme }) => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">
+          <TabsTrigger value="assets" className="flex items-center gap-2">
+            <Cpu className="h-4 w-4" />
+            Assets
+          </TabsTrigger>
           <TabsTrigger value="goods-receipt" className="flex items-center gap-2" data-testid="goods-receipt-tab">
             <PackageOpen className="h-4 w-4" />
             Wareneingang
@@ -2317,10 +2321,6 @@ const AssetManagementV2 = ({ theme }) => {
           <TabsTrigger value="bundles" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
             Bundles (Kits)
-          </TabsTrigger>
-          <TabsTrigger value="assets" className="flex items-center gap-2">
-            <Cpu className="h-4 w-4" />
-            Assets
           </TabsTrigger>
           <TabsTrigger value="devices" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
