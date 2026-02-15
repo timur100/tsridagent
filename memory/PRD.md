@@ -47,6 +47,14 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
    - **Problem**: Button navigierte zu ungültiger Route `/portal/locations` → Logout
    - **Solution**: Navigation zu `/portal/admin` mit `state: { activeTab: 'asset-management' }`
 
+5. **Location-basierte Kit-ID Generierung (NEW FEATURE)**
+   - **Format**: `{LOCATION_ID}-{SEQUENZ}-KIT` (z.B. MUCT01-01-KIT, MUCT01-02-KIT)
+   - **Funktionen**:
+     - Bestehende Kits bei Location-Auswahl anzeigen mit Status und Komponenten-Count
+     - Sequenz-Nummern werden extrahiert und angezeigt
+     - Nächste Kit-ID automatisch berechnet (höchste Sequenz + 1)
+     - Location-Dropdown zeigt Slot-Count pro Location
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
