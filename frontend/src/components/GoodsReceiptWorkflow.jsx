@@ -173,13 +173,15 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       manufacturer_sn: currentSN.trim(),
       type: currentType,
       type_label: typeLabel,
-      imei: '',
-      mac: '',
+      imei: currentIMEI.trim(),
+      mac: currentMAC.trim(),
       manufacturer: '',
       model: '',
       notes: ''
     }]);
     setCurrentSN('');
+    setCurrentIMEI('');
+    setCurrentMAC('');
   };
 
   // Remove item from intake list
