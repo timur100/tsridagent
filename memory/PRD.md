@@ -26,7 +26,28 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ## What's Been Implemented
 
-### Session: 2025-02-15 (Current)
+### Session: 2025-02-16 (Current)
+
+#### New Features
+18. **Asset-ID Konfiguration Admin-UI (NEW FEATURE - IMPLEMENTED 2025-02-16)**
+    - **Feature**: Vollständiges Admin-UI zur Konfiguration der automatischen Asset-ID-Generierung
+    - **Zugang**: Settings → System → Asset-ID Konfig
+    - **UI-Komponente**: `/app/frontend/src/components/AssetIdConfigManager.jsx`
+    - **3 Tabs**:
+      - **Präfix**: Lager-ID Präfix ändern (z.B. "TSRID")
+      - **Zähler**: Zeigt alle Sequenz-Zähler pro Gerätetyp mit "Anpassen"-Button
+      - **Formate**: Zeigt alle ID-Formate nach Gerätetyp mit Lager-ID und Standort-ID Beispielen
+    - **Backend-Endpoints**:
+      - `GET /api/asset-mgmt/asset-id-config` - Konfiguration abrufen
+      - `PUT /api/asset-mgmt/asset-id-config` - Präfix aktualisieren
+      - `GET /api/asset-mgmt/asset-id-config/next-id` - Nächste ID für Typ abrufen
+      - `POST /api/asset-mgmt/asset-id-config/reset-counter` - Zähler-Info mit Warnung
+    - **Wichtig**: Zähler werden automatisch aus existierenden Assets berechnet (kein separater Counter)
+    - **Test-Status**: ✅ 100% (9/9 Backend + Frontend)
+
+---
+
+### Session: 2025-02-15
 
 #### Bug Fixes
 1. **Kit Assignment Modal Black Screen Bug (FIXED)**
