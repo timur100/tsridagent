@@ -1188,6 +1188,54 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Quick Add Supplier Modal */}
+      <Dialog open={showQuickSupplierModal} onOpenChange={setShowQuickSupplierModal}>
+        <DialogContent className={`max-w-md ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className={isDark ? 'text-white' : ''}>
+              Neuen Lieferanten anlegen
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Schnell einen neuen Lieferanten anlegen. Weitere Details können später unter "Lieferanten" hinzugefügt werden.
+            </p>
+            <div>
+              <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                Name *
+              </label>
+              <Input
+                value={quickSupplierName}
+                onChange={(e) => setQuickSupplierName(e.target.value)}
+                placeholder="Firmenname"
+                className={inputBg}
+                onKeyDown={(e) => e.key === 'Enter' && quickAddSupplier()}
+                data-testid="quick-supplier-name-input"
+                autoFocus
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowQuickSupplierModal(false);
+              setQuickSupplierName('');
+            }}>
+              Abbrechen
+            </Button>
+            <Button 
+              onClick={quickAddSupplier}
+              className="bg-green-600 hover:bg-green-700"
+              data-testid="quick-add-supplier-btn"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Anlegen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
