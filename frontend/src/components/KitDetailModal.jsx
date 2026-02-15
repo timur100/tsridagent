@@ -254,21 +254,54 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
     setDisplayedLocations(result);
   }, [filteredLocations, filterContinent, filterCountry, filterState, filterCity, locationSearch]);
 
-  // Get unique filter options from filtered locations - memoized to prevent re-computation
+  // Get unique filter options - cascading filters based on current selections
   const filterOptions = useMemo(() => {
     const continents = new Set();
     const countries = new Set();
     const states = new Set();
     const cities = new Set();
 
+    // For continents: use all filtered locations (by tenant)
     filteredLocations.forEach(loc => {
       if (loc.country) {
-        countries.add(loc.country);
         continents.add(COUNTRY_CONTINENT[loc.country] || 'Sonstige');
       }
+    });
+
+    // For countries: filter by selected continent
+    let countryFilteredLocs = filteredLocations;
+    if (filterContinent) {
+      countryFilteredLocs = filteredLocations.filter(loc => {
+        const continent = COUNTRY_CONTINENT[loc.country] || 'Sonstige';
+        return continent === filterContinent;
+      });
+    }
+    countryFilteredLocs.forEach(loc => {
+      if (loc.country) {
+        countries.add(loc.country);
+      }
+    });
+
+    // For states: filter by selected continent AND country
+    let stateFilteredLocs = countryFilteredLocs;
+    if (filterCountry) {
+      stateFilteredLocs = countryFilteredLocs.filter(loc => loc.country === filterCountry);
+    }
+    stateFilteredLocs.forEach(loc => {
       if (loc.state) {
         states.add(STATE_NAMES[loc.state] || loc.state);
       }
+    });
+
+    // For cities: filter by selected continent, country AND state
+    let cityFilteredLocs = stateFilteredLocs;
+    if (filterState) {
+      cityFilteredLocs = stateFilteredLocs.filter(loc => {
+        const stateName = STATE_NAMES[loc.state] || loc.state;
+        return stateName === filterState || loc.state === filterState;
+      });
+    }
+    cityFilteredLocs.forEach(loc => {
       if (loc.city) {
         cities.add(loc.city);
       }
@@ -280,7 +313,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
       states: Array.from(states).sort(),
       cities: Array.from(cities).sort()
     };
-  }, [filteredLocations]);
+  }, [filteredLocations, filterContinent, filterCountry, filterState]);
 
   // Fetch kits at selected location
   const fetchLocationKits = useCallback(async (locationId) => {
