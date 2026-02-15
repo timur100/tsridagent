@@ -692,11 +692,11 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
               return (
                 <Card 
                   key={template.template_id} 
-                  className={`p-4 transition-all hover:shadow-lg ${cardBg} hover:border-blue-500 relative group`}
+                  className={`p-4 transition-all hover:shadow-lg ${cardBg} hover:border-blue-500 relative group flex flex-col`}
                   data-testid={`template-card-${template.template_id}`}
                 >
                   {/* Action Buttons (top right) */}
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                     <Button 
                       size="sm" 
                       variant="ghost" 
@@ -726,8 +726,9 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
                     </Button>
                   </div>
 
-                  {/* Clickable area for assembly */}
-                  <div className="cursor-pointer" onClick={() => startAssembly(template)}>
+                  {/* Clickable area for assembly - flex-1 to take available space */}
+                  <div className="cursor-pointer flex flex-col flex-1" onClick={() => startAssembly(template)}>
+                    {/* Header */}
                     <div className="flex items-start gap-3 mb-3">
                       <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
                         <Package className="h-6 w-6 text-blue-500" />
@@ -795,9 +796,12 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
                     </div>
                   )}
                   
-                  {/* Mögliche Kits Anzeige */}
+                  {/* Spacer to push BAUBARE KITS to bottom */}
+                  <div className="flex-1" />
+                  
+                  {/* Mögliche Kits Anzeige - Always at bottom with mt-auto */}
                   {possibleKits && (
-                    <div className={`mt-3 pt-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <div className={`mt-auto pt-3 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
                       <div className="flex items-center justify-between">
                         <span className={`text-xs font-semibold ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                           BAUBARE KITS:
