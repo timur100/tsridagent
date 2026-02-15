@@ -98,6 +98,13 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
      - Modal zeigt Nachbestellungsvorschläge:
        - Artikelname, aktueller Bestand, benötigte Menge für 10 Kits
      - Automatische Berechnung basierend auf Kit-Templates
+   - **VERIFIZIERT**: Button zeigt "(15)" für 15 fehlende Komponenten
+   - **VERIFIZIERT**: Modal listet alle Assets mit Nachbestellmenge
+
+9. **TSRID KIT Templates (COMPLETED 2025-02-15)**
+   - **TSRID KIT i7** (template_id: KIT-TSRi7) - TSRID Hardware-Kit mit i7 Prozessor
+   - **TSRID KIT i5** (template_id: KIT-TSRi5) - TSRID Hardware-Kit mit i5 Prozessor
+   - Beide Templates enthalten: TSRID Tablet, TSRID Scanner, TSRID Tablet Dock, TSRID Scanner Dock, TSRID Tablet Netzteil, TSRID Scanner Netzteil
 
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
@@ -142,6 +149,8 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - [x] Search input bug in Locations tab
 - [x] Tab navigation bug
 - [x] Location-based Kit ID generation (MUCT01-01-KIT format) - **FIXED 2025-02-15**
+- [x] TSRID KIT umbenennen zu "TSRID KIT i7" (KIT-TSRi7) - **DONE 2025-02-15**
+- [x] TSRID KIT i5 Template erstellen (KIT-TSRi5) - **DONE 2025-02-15**
 
 ### P1 - High Priority
 - [x] **Hybrid Inventory System for Kit-Zusammenstellung** - **IMPLEMENTED 2025-02-15**
