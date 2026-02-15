@@ -599,31 +599,13 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
         )}
       </Card>
 
-      {/* Location Selection & Finalize */}
+      {/* Kit finalisieren - Ohne Standort-Auswahl (Lager) */}
       <Card className={`p-6 ${cardBg}`}>
         <h4 className={`font-medium mb-4 ${isDark ? 'text-white' : ''}`}>
           Kit finalisieren
         </h4>
         
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
-              Standort für das Kit *
-            </label>
-            <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-              <SelectTrigger className={inputBg} data-testid="kit-location-select">
-                <SelectValue placeholder="Standort wählen" />
-              </SelectTrigger>
-              <SelectContent>
-                {locations.map(loc => (
-                  <SelectItem key={loc.location_id} value={loc.location_id}>
-                    {loc.location_id} - {loc.city || loc.customer}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
+        <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
               Techniker (optional)
@@ -640,7 +622,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
           <div className="flex items-end">
             <Button
               onClick={finalizeKit}
-              disabled={finalizing || scannedComponents.length === 0 || !selectedLocation}
+              disabled={finalizing || scannedComponents.length === 0}
               className={`w-full ${progress.isComplete ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'}`}
               data-testid="finalize-kit-btn"
             >
@@ -649,9 +631,16 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
               ) : (
                 <CheckCircle className="h-4 w-4 mr-2" />
               )}
-              {progress.isComplete ? 'Kit erstellen' : 'Unvollständiges Kit erstellen'}
+              {progress.isComplete ? 'Kit erstellen (Lager)' : 'Unvollständiges Kit erstellen'}
             </Button>
           </div>
+        </div>
+        
+        <div className={`mt-3 p-3 rounded-lg flex items-center gap-2 ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
+          <Package className="h-4 w-4 text-blue-500" />
+          <span className={`text-sm ${isDark ? 'text-blue-400' : 'text-blue-700'}`}>
+            Das Kit wird im <strong>Lager</strong> erstellt. Standort-Zuweisung erfolgt im "Kits" Menüpunkt.
+          </span>
         </div>
         
         {!progress.isComplete && scannedComponents.length > 0 && (
