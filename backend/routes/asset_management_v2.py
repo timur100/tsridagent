@@ -2244,11 +2244,20 @@ class KitTemplateComponent(BaseModel):
     notes: Optional[str] = ""
 
 
+# NEW: Inventory Components (ohne Seriennummer - Verbrauchsmaterial)
+class KitTemplateInventoryComponent(BaseModel):
+    inventory_item_id: str  # ID aus inventory_items Collection
+    name: str  # Name des Artikels für Anzeige
+    quantity: int = 1
+    optional: bool = False
+
+
 class KitTemplateCreate(BaseModel):
     template_id: str  # z.B. 'KIT-SFD', 'KIT-TSR'
     name: str  # z.B. 'Surface + Desko Kit'
     description: Optional[str] = ""
-    components: List[KitTemplateComponent]
+    components: List[KitTemplateComponent]  # Assets MIT Seriennummer
+    inventory_components: Optional[List[KitTemplateInventoryComponent]] = []  # Komponenten OHNE Seriennummer
     notes: Optional[str] = ""
 
 
@@ -2256,6 +2265,7 @@ class KitTemplateUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     components: Optional[List[KitTemplateComponent]] = None
+    inventory_components: Optional[List[KitTemplateInventoryComponent]] = None
     notes: Optional[str] = None
 
 
