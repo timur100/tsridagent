@@ -62,23 +62,9 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, []);
 
-  // Fetch Locations
-  const fetchLocations = useCallback(async () => {
-    try {
-      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/locations?limit=500`);
-      const data = await res.json();
-      if (data.success) {
-        setLocations(data.locations || []);
-      }
-    } catch (e) {
-      console.error('Error fetching locations:', e);
-    }
-  }, []);
-
   useEffect(() => {
     fetchTemplates();
-    fetchLocations();
-  }, [fetchTemplates, fetchLocations]);
+  }, [fetchTemplates]);
 
   // Start Assembly for selected template
   const startAssembly = (template) => {
