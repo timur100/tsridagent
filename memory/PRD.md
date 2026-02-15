@@ -28,22 +28,30 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-15 (Current)
 
-#### Critical Bug Fix
+#### Bug Fixes
 1. **Kit Assignment Modal Black Screen Bug (FIXED)**
    - **Problem**: Screen turned black when selecting a Tenant in the Kit Assignment modal
-   - **Root Cause 1**: `getFilterOptions()` function was called on every render, creating new array references
-   - **Root Cause 2**: Shadcn/Radix Select components had `value=""` for "Alle" options - empty strings are invalid values in Radix UI
-   - **Solution**: 
-     - Converted `getFilterOptions()` to `useMemo()` for memoized filter options
-     - Changed all `SelectItem value=""` to use `"__all__"` or `"__none__"` placeholder values
-     - Added proper `onValueChange` handlers to convert placeholder values back to empty strings for filter logic
+   - **Root Cause**: `getFilterOptions()` + empty string values in Select components
+   - **Solution**: `useMemo` for filter options + `"__all__"`/`"__none__"` placeholder values
+
+2. **Filter-Kaskade funktioniert nicht (FIXED)**
+   - **Problem**: Wenn Bundesland "Berlin" ausgewählt wurde, zeigte der Stadt-Filter alle Städte statt nur Berlin
+   - **Solution**: `filterOptions` nutzt jetzt kaskadierende Filter (Kontinent -> Land -> Bundesland -> Stadt)
+
+3. **Location-Dropdown ohne Adresse/PLZ (FIXED)**
+   - **Problem**: Im Location-Dropdown fehlten Adresse und Postleitzahl
+   - **Solution**: Zweizeiliges Format mit Location-ID/Name oben, Adresse/PLZ/Stadt/Bundesland unten
+   - **Fix**: `postal_code` statt `zip` verwendet (korrektes Datenbankfeld)
+
+4. **"Neue Location" Button Logout-Bug (FIXED)**
+   - **Problem**: Button navigierte zu ungültiger Route `/portal/locations` → Logout
+   - **Solution**: Navigation zu `/portal/admin` mit `state: { activeTab: 'asset-management' }`
 
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
-  - Added `useMemo` import
-  - Changed `getFilterOptions()` function to `useMemo` hook
-  - Fixed all filter Select components (Continent, Country, State, City) to use `"__all__"` value
-  - Fixed disabled SelectItem elements to use `"__loading__"` or `"__none__"` values
+  - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
+  - Zeilen 840-857: Location-Dropdown mit Adresse und `postal_code`
+  - Zeilen 655-663, 706-710, 876-879: Navigation-Buttons mit korrektem Routing
 
 ### Session: 2025-02-14
 
