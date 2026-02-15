@@ -143,6 +143,31 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
     - **Lieferanten**: Apple, Bechtle AG, Brother, Dell, Desko, HP, Lenovo, Microsoft, Regula, Samsung, TSRID GmbH, etc.
     - **Test-Status**: ✅ Funktioniert
 
+15. **Lieferanten & Hersteller Management (COMPLETED 2025-02-15)**
+    - **Feature**: Vollständiges CRUD für Lieferanten und Produkte
+    - **Navigation**: Neuer "Lieferanten" Tab in der Haupt-Navigation
+    - **UI Komponente**: `/app/frontend/src/components/SupplierManagement.jsx`
+    - **Lieferanten-Felder**:
+      - Name (Pflicht)
+      - Typ (Lieferant/Hersteller/Distributor)
+      - Adresse (Straße, PLZ, Stadt, Land)
+      - Kontakt (Telefon, E-Mail, Website)
+      - Kundennummer, USt-IdNr.
+      - Ansprechpartner (mehrere möglich)
+      - Notizen
+    - **Produkte-Felder**:
+      - Name, SKU, Hersteller-SKU
+      - Kategorie, Asset-Typ-Verknüpfung
+      - Preis (Netto), Währung
+      - Beschreibung, Notizen
+    - **Backend-Endpoints**:
+      - `GET/POST /api/asset-mgmt/suppliers` - Liste & Anlegen
+      - `GET/PUT/DELETE /api/asset-mgmt/suppliers/{id}` - Details, Bearbeiten, Löschen
+      - `GET/POST /api/asset-mgmt/products` - Liste & Anlegen
+      - `GET/PUT/DELETE /api/asset-mgmt/products/{id}` - Details, Bearbeiten, Löschen
+    - **Quick-Add**: "+ Neuer Lieferant..." Option im Wareneingang-Dropdown
+    - **Test-Status**: ✅ Funktioniert
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
