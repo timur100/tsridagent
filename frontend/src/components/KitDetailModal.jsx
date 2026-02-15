@@ -524,7 +524,7 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                     
                     {selectedTenant && (
                       <p className={`text-xs mt-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        ✓ Ausgewählt: <strong>{selectedTenant}</strong> - {filteredLocations.length} Location(s) verfügbar
+                        ✓ Ausgewählt: <strong>{tenants.find(t => t.tenant_id === selectedTenant)?.name || selectedTenant}</strong> - {filteredLocations.length} Location(s) verfügbar
                       </p>
                     )}
                   </Card>
