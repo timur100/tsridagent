@@ -74,6 +74,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   // Wareneingang (Intake) State
   const [intakeItems, setIntakeItems] = useState([]);
   const [currentSN, setCurrentSN] = useState('');
+  const [currentIMEI, setCurrentIMEI] = useState('');
+  const [currentMAC, setCurrentMAC] = useState('');
   const [currentType, setCurrentType] = useState('tab_tsr_i7');
   const [receivedBy, setReceivedBy] = useState('');
   const [supplier, setSupplier] = useState('');
