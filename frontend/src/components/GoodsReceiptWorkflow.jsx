@@ -777,17 +777,31 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             </Button>
 
             {selectedAssets.size > 0 && (
-              <Button
-                className="bg-green-600 hover:bg-green-700"
-                onClick={() => {
-                  setAssetToAssign(null);
-                  setShowAssignModal(true);
-                }}
-                data-testid="bulk-assign-btn"
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                {selectedAssets.size} Geräte zuweisen
-              </Button>
+              <>
+                <Button
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => {
+                    setAssetToAssign(null);
+                    setShowAssignModal(true);
+                  }}
+                  data-testid="bulk-assign-btn"
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  {selectedAssets.size} Geräte zuweisen
+                </Button>
+                <Button
+                  variant="outline"
+                  className="border-red-500 text-red-500 hover:bg-red-500/10"
+                  onClick={() => {
+                    setAssetToDelete(null);
+                    setShowDeleteModal(true);
+                  }}
+                  data-testid="bulk-delete-btn"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  {selectedAssets.size} löschen
+                </Button>
+              </>
             )}
           </div>
 
