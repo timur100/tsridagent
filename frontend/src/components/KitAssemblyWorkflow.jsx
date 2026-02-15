@@ -806,13 +806,13 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
                         <span className={`text-xs font-semibold ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                           BAUBARE KITS:
                         </span>
-                        <Badge className={`${
-                          possibleKits.count === 0 ? 'bg-red-500' :
-                          possibleKits.count < 5 ? 'bg-yellow-500' :
-                          'bg-green-500'
-                        } text-white`}>
+                        <span className={`text-2xl font-bold px-3 py-1 rounded-md ${
+                          possibleKits.count === 0 ? 'bg-red-500 text-white' :
+                          possibleKits.count < 5 ? 'bg-yellow-500 text-white' :
+                          'bg-green-500 text-white'
+                        }`}>
                           {possibleKits.count}
-                        </Badge>
+                        </span>
                       </div>
                       {hasLimitingComponent && possibleKits.count < 10 && (
                         <p className={`text-[10px] mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
