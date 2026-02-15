@@ -626,7 +626,7 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     return (
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h2 className={`text-xl font-semibold ${isDark ? 'text-white' : ''}`}>
               Kit-Zusammenstellung
@@ -635,14 +635,35 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
               Wählen Sie eine Kit-Vorlage und scannen Sie die Komponenten
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={() => setShowPrinterSettings(true)}
-            className={printerStatus?.success ? 'border-green-500 text-green-500' : ''}
-          >
-            <Printer className="h-4 w-4 mr-2" />
-            {printerIP ? `Drucker: ${printerIP.substring(0, 15)}...` : 'Drucker einrichten'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {reorderSuggestions.length > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowReorderModal(true)}
+                className="border-orange-500 text-orange-500 hover:bg-orange-500/10"
+                data-testid="reorder-suggestions-btn"
+              >
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                Nachbestellen ({reorderSuggestions.length})
+              </Button>
+            )}
+            <Button 
+              onClick={openNewTemplateModal}
+              className="bg-blue-600 hover:bg-blue-700"
+              data-testid="new-template-btn"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Neue Vorlage
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowPrinterSettings(true)}
+              className={printerStatus?.success ? 'border-green-500 text-green-500' : ''}
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              {printerIP ? `Drucker` : 'Drucker'}
+            </Button>
+          </div>
         </div>
 
         {/* Template Grid */}
@@ -656,9 +677,10 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
             <p className={isDark ? 'text-gray-400' : 'text-gray-500'}>
               Keine Kit-Vorlagen vorhanden
             </p>
-            <p className={`text-sm mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-              Erstellen Sie Kit-Vorlagen im Admin-Bereich
-            </p>
+            <Button onClick={openNewTemplateModal} className="mt-4">
+              <Plus className="h-4 w-4 mr-2" />
+              Erste Vorlage erstellen
+            </Button>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -670,34 +692,66 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
               return (
                 <Card 
                   key={template.template_id} 
-                  className={`p-4 cursor-pointer transition-all hover:shadow-lg ${cardBg} hover:border-blue-500`}
-                  onClick={() => startAssembly(template)}
+                  className={`p-4 transition-all hover:shadow-lg ${cardBg} hover:border-blue-500 relative group`}
                   data-testid={`template-card-${template.template_id}`}
                 >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
-                      <Package className="h-6 w-6 text-blue-500" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className={`font-semibold ${isDark ? 'text-white' : ''}`}>
-                        {template.name}
-                      </h3>
-                      <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                        {template.description || template.template_id}
-                      </p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400" />
+                  {/* Action Buttons (top right) */}
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 w-7 p-0"
+                      onClick={(e) => { e.stopPropagation(); openEditTemplateModal(template); }}
+                      title="Bearbeiten"
+                    >
+                      <Edit className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 w-7 p-0"
+                      onClick={(e) => { e.stopPropagation(); duplicateTemplate(template); }}
+                      title="Duplizieren"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 w-7 p-0 text-red-500 hover:text-red-600"
+                      onClick={(e) => { e.stopPropagation(); deleteTemplate(template); }}
+                      title="Löschen"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
                   </div>
+
+                  {/* Clickable area for assembly */}
+                  <div className="cursor-pointer" onClick={() => startAssembly(template)}>
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/20' : 'bg-blue-50'}`}>
+                        <Package className="h-6 w-6 text-blue-500" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className={`font-semibold ${isDark ? 'text-white' : ''}`}>
+                          {template.name}
+                        </h3>
+                        <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                          {template.description || template.template_id}
+                        </p>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-gray-400" />
+                    </div>
                   
-                  {/* Assets mit Seriennummer */}
-                  {template.components && template.components.length > 0 && (
-                    <div className="mb-3">
-                      <p className={`text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        MIT SERIENNUMMER:
-                      </p>
-                      <div className="space-y-1">
-                        {template.components.map((comp, i) => (
-                          <div key={i} className={`flex items-center justify-between text-xs px-2 py-1 rounded ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                    {/* Assets mit Seriennummer */}
+                    {template.components && template.components.length > 0 && (
+                      <div className="mb-3">
+                        <p className={`text-xs font-semibold mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          MIT SERIENNUMMER:
+                        </p>
+                        <div className="space-y-1">
+                          {template.components.map((comp, i) => (
+                            <div key={i} className={`flex items-center justify-between text-xs px-2 py-1 rounded ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                             <span className={isDark ? 'text-gray-300' : 'text-gray-700'}>
                               {comp.quantity}× {comp.label || comp.asset_type}
                             </span>
