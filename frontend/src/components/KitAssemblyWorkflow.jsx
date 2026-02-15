@@ -75,6 +75,8 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
       const data = await res.json();
       if (data.success) {
         setTemplates(data.templates || []);
+        // Calculate reorder suggestions
+        calculateReorderSuggestions(data.templates || []);
       }
     } catch (e) {
       console.error('Error fetching templates:', e);
@@ -84,9 +86,276 @@ const KitAssemblyWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, []);
 
+  // Fetch Inventory Items for Template Editor
+  const fetchInventoryItems = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory-for-templates`);
+      const data = await res.json();
+      if (data.success) {
+        setInventoryItems(data.items || []);
+      }
+    } catch (e) {
+      console.error('Error fetching inventory:', e);
+    }
+  }, []);
+
+  // Fetch Asset Types
+  const fetchAssetTypes = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/asset-types`);
+      const data = await res.json();
+      if (data.success) {
+        setAssetTypes(data.types || []);
+      }
+    } catch (e) {
+      console.error('Error fetching asset types:', e);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTemplates();
-  }, [fetchTemplates]);
+    fetchInventoryItems();
+    fetchAssetTypes();
+  }, [fetchTemplates, fetchInventoryItems, fetchAssetTypes]);
+
+  // Calculate Reorder Suggestions
+  const calculateReorderSuggestions = (templatesData) => {
+    const suggestions = [];
+    const targetKits = 10; // Ziel: mindestens 10 Kits bauen können
+    
+    templatesData.forEach(template => {
+      const possibleKits = template.possible_kits?.count || 0;
+      
+      if (possibleKits < targetKits) {
+        // Check inventory components
+        template.inventory_components?.forEach(inv => {
+          const currentStock = inv.quantity_in_stock || 0;
+          const neededPerKit = inv.quantity || 1;
+          const shortfall = (targetKits - possibleKits) * neededPerKit;
+          
+          if (currentStock < (targetKits * neededPerKit)) {
+            const existing = suggestions.find(s => s.inventory_item_id === inv.inventory_item_id);
+            if (existing) {
+              existing.shortfall = Math.max(existing.shortfall, shortfall);
+            } else {
+              suggestions.push({
+                inventory_item_id: inv.inventory_item_id,
+                name: inv.name,
+                current_stock: currentStock,
+                min_stock: inv.min_stock_level || 5,
+                shortfall: shortfall,
+                used_in_templates: [template.name]
+              });
+            }
+          }
+        });
+        
+        // Check asset components
+        template.components?.forEach(comp => {
+          const available = comp.available_in_storage || 0;
+          const neededPerKit = comp.quantity || 1;
+          const shortfall = (targetKits - possibleKits) * neededPerKit;
+          
+          if (available < (targetKits * neededPerKit)) {
+            const existing = suggestions.find(s => s.asset_type === comp.asset_type);
+            if (existing) {
+              existing.shortfall = Math.max(existing.shortfall, shortfall);
+            } else {
+              suggestions.push({
+                asset_type: comp.asset_type,
+                name: comp.label || comp.asset_type,
+                current_stock: available,
+                shortfall: shortfall,
+                is_asset: true,
+                used_in_templates: [template.name]
+              });
+            }
+          }
+        });
+      }
+    });
+    
+    // Sort by shortfall (highest first)
+    suggestions.sort((a, b) => b.shortfall - a.shortfall);
+    setReorderSuggestions(suggestions);
+  };
+
+  // Template CRUD Operations
+  const openNewTemplateModal = () => {
+    setEditingTemplate(null);
+    setTemplateForm({
+      template_id: '',
+      name: '',
+      description: '',
+      components: [],
+      inventory_components: []
+    });
+    setShowTemplateModal(true);
+  };
+
+  const openEditTemplateModal = (template) => {
+    setEditingTemplate(template);
+    setTemplateForm({
+      template_id: template.template_id,
+      name: template.name,
+      description: template.description || '',
+      components: template.components || [],
+      inventory_components: template.inventory_components || []
+    });
+    setShowTemplateModal(true);
+  };
+
+  const duplicateTemplate = async (template) => {
+    const newName = prompt('Name für die duplizierte Vorlage:', `${template.name} (Kopie)`);
+    if (!newName) return;
+    
+    const newId = `KIT-${Date.now().toString(36).toUpperCase()}`;
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/kit-templates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          template_id: newId,
+          name: newName,
+          description: template.description || '',
+          components: template.components || [],
+          inventory_components: template.inventory_components || []
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Vorlage "${newName}" erstellt`);
+        fetchTemplates();
+      } else {
+        toast.error(data.detail || 'Fehler beim Duplizieren');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Duplizieren');
+    }
+  };
+
+  const deleteTemplate = async (template) => {
+    if (!window.confirm(`Vorlage "${template.name}" wirklich löschen?`)) return;
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/kit-templates/${template.template_id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Vorlage gelöscht');
+        fetchTemplates();
+      } else {
+        toast.error(data.detail || 'Fehler beim Löschen');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Löschen');
+    }
+  };
+
+  const saveTemplate = async () => {
+    if (!templateForm.name.trim()) {
+      toast.error('Name ist erforderlich');
+      return;
+    }
+    
+    setSavingTemplate(true);
+    try {
+      const isNew = !editingTemplate;
+      const url = isNew 
+        ? `${BACKEND_URL}/api/asset-mgmt/kit-templates`
+        : `${BACKEND_URL}/api/asset-mgmt/kit-templates/${editingTemplate.template_id}`;
+      
+      const body = isNew 
+        ? {
+            template_id: templateForm.template_id || `KIT-${Date.now().toString(36).toUpperCase()}`,
+            name: templateForm.name,
+            description: templateForm.description,
+            components: templateForm.components,
+            inventory_components: templateForm.inventory_components
+          }
+        : {
+            name: templateForm.name,
+            description: templateForm.description,
+            components: templateForm.components,
+            inventory_components: templateForm.inventory_components
+          };
+      
+      const res = await fetch(url, {
+        method: isNew ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        toast.success(isNew ? 'Vorlage erstellt' : 'Vorlage aktualisiert');
+        setShowTemplateModal(false);
+        fetchTemplates();
+      } else {
+        toast.error(data.detail || 'Fehler beim Speichern');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setSavingTemplate(false);
+    }
+  };
+
+  // Add/Remove Components in Template Form
+  const addAssetComponent = (assetType, label) => {
+    const existing = templateForm.components.find(c => c.asset_type === assetType);
+    if (existing) {
+      setTemplateForm(prev => ({
+        ...prev,
+        components: prev.components.map(c => 
+          c.asset_type === assetType ? { ...c, quantity: c.quantity + 1 } : c
+        )
+      }));
+    } else {
+      setTemplateForm(prev => ({
+        ...prev,
+        components: [...prev.components, { asset_type: assetType, label, quantity: 1, optional: false }]
+      }));
+    }
+  };
+
+  const removeAssetComponent = (assetType) => {
+    setTemplateForm(prev => ({
+      ...prev,
+      components: prev.components.filter(c => c.asset_type !== assetType)
+    }));
+  };
+
+  const addInventoryComponent = (item) => {
+    const existing = templateForm.inventory_components.find(c => c.inventory_item_id === item.id);
+    if (existing) {
+      setTemplateForm(prev => ({
+        ...prev,
+        inventory_components: prev.inventory_components.map(c => 
+          c.inventory_item_id === item.id ? { ...c, quantity: c.quantity + 1 } : c
+        )
+      }));
+    } else {
+      setTemplateForm(prev => ({
+        ...prev,
+        inventory_components: [...prev.inventory_components, { 
+          inventory_item_id: item.id, 
+          name: item.name, 
+          quantity: 1, 
+          optional: false 
+        }]
+      }));
+    }
+  };
+
+  const removeInventoryComponent = (itemId) => {
+    setTemplateForm(prev => ({
+      ...prev,
+      inventory_components: prev.inventory_components.filter(c => c.inventory_item_id !== itemId)
+    }));
+  };
 
   // Start Assembly for selected template
   const startAssembly = (template) => {
