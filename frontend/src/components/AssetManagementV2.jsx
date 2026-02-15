@@ -2320,7 +2320,7 @@ const AssetManagementV2 = ({ theme }) => {
           </TabsTrigger>
           <TabsTrigger value="bundles" className="flex items-center gap-2">
             <Package className="h-4 w-4" />
-            Bundles (Kits)
+            Kits
           </TabsTrigger>
           <TabsTrigger value="devices" className="flex items-center gap-2">
             <Smartphone className="h-4 w-4" />
