@@ -653,8 +653,9 @@ const KitDetailModal = ({ kit, isOpen, onClose, onRefresh, theme }) => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
+                          // Navigate with state to switch tab, then close modal
+                          navigate('/portal/admin', { state: { activeTab: 'tenants' } });
                           onClose();
-                          navigate('/portal/tenants');
                         }}
                         className="text-blue-500 border-blue-500"
                       >
