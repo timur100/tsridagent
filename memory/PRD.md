@@ -127,6 +127,22 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - `handleMACKeyDown()`: addIntakeItem()
     - **Test-Status**: ✅ Alle 5 Tests bestanden (100%)
 
+13. **Löschen nicht zugewiesener Geräte (COMPLETED 2025-02-15)**
+    - **Feature**: Nicht zugewiesene Geräte können jetzt gelöscht werden
+    - **UI**: Roter Mülleimer-Button in jeder Zeile + Bulk-Löschen bei Mehrfachauswahl
+    - **Modal**: Bestätigungs-Dialog mit Geräte-Details vor dem Löschen
+    - **Backend**: 
+      - `DELETE /api/asset-mgmt/inventory/unassigned/{sn}` - Einzelnes Gerät
+      - `DELETE /api/asset-mgmt/inventory/unassigned/bulk` - Mehrere Geräte
+    - **Test-Status**: ✅ Funktioniert
+
+14. **Lieferant-Dropdown im Wareneingang (COMPLETED 2025-02-15)**
+    - **Feature**: Lieferant ist jetzt ein Dropdown statt freies Textfeld
+    - **Backend**: `GET /api/asset-mgmt/suppliers` - Kombiniert Default-Lieferanten + DB-Werte
+    - **UI**: Select-Komponente mit allen verfügbaren Lieferanten
+    - **Lieferanten**: Apple, Bechtle AG, Brother, Dell, Desko, HP, Lenovo, Microsoft, Regula, Samsung, TSRID GmbH, etc.
+    - **Test-Status**: ✅ Funktioniert
+
 #### Technical Changes
 - `/app/frontend/src/components/KitDetailModal.jsx`:
   - Zeilen 258-316: `filterOptions` useMemo mit kaskadierenden Filtern
