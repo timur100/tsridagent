@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://location-kit-builder.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-kit-builder.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""
