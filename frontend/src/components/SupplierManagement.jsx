@@ -670,12 +670,12 @@ const SupplierManagement = ({ theme }) => {
                       data-testid="product-search"
                     />
                   </div>
-                  <Select value={productCategory} onValueChange={setProductCategory}>
+                  <Select value={productCategory || "all"} onValueChange={(val) => setProductCategory(val === "all" ? "" : val)}>
                     <SelectTrigger className={`${inputBg} w-40`}>
                       <SelectValue placeholder="Kategorie" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Alle</SelectItem>
+                      <SelectItem value="all">Alle</SelectItem>
                       {PRODUCT_CATEGORIES.map(cat => (
                         <SelectItem key={cat} value={cat}>{cat}</SelectItem>
                       ))}
