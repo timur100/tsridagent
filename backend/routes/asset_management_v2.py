@@ -1566,6 +1566,50 @@ async def list_assets(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/assets/search-detail")
+async def search_asset_detail_by_identifier(q: str = Query(..., description="Search by warehouse_asset_id, manufacturer_sn, imei, or mac")):
+    """
+    Suche ein Asset anhand verschiedener Identifikatoren und gebe alle Details zurück.
+    Wird für die Scan-to-Detail Funktion verwendet.
+    """
+    try:
+        # Search by multiple fields
+        asset = await db.tsrid_assets.find_one({
+            "$or": [
+                {"warehouse_asset_id": q},
+                {"manufacturer_sn": q},
+                {"imei": q},
+                {"mac": q},
+                {"asset_id": q}
+            ]
+        })
+        
+        if not asset:
+            return {"success": False, "message": f"Kein Gerät gefunden für: {q}"}
+        
+        # Serialize and return
+        asset_data = serialize_doc(asset)
+        
+        # If assigned to a location, get location details
+        if asset.get("location_id"):
+            location = await db.tsrid_locations.find_one({"location_id": asset["location_id"]})
+            if location:
+                asset_data["location"] = serialize_doc(location)
+        
+        # If assigned to a kit/bundle, get bundle details
+        if asset.get("bundle_id"):
+            bundle = await db.tsrid_bundles.find_one({"bundle_id": asset["bundle_id"]})
+            if bundle:
+                asset_data["bundle"] = serialize_doc(bundle)
+        
+        return {
+            "success": True,
+            "asset": asset_data
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/assets/{asset_id}")
 async def get_asset(asset_id: str):
     """Get asset details with full history and relations"""
