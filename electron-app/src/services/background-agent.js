@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://bulk-intake-preview.preview.emergentagent.com';
+    this.serverUrl = 'https://asset-intake-debug.preview.emergentagent.com';
   }
 
   /**

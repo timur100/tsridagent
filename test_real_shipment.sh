@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://bulk-intake-preview.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-intake-debug.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

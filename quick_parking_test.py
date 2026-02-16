@@ -8,7 +8,7 @@ import json
 import time
 
 # Backend URL
-BACKEND_URL = "https://bulk-intake-preview.preview.emergentagent.com"
+BACKEND_URL = "https://asset-intake-debug.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def test_overstay_quick():

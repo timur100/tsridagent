@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://bulk-intake-preview.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-intake-debug.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

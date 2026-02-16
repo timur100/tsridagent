@@ -9,7 +9,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://bulk-intake-preview.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://asset-intake-debug.preview.emergentagent.com').rstrip('/')
 
 
 class TestKitTemplatesAPI:
