@@ -238,6 +238,8 @@ const GlobalSearch = ({ onResultSelect }) => {
         return <Package className="h-5 w-5 text-[#c00000]" />;
       case 'artikel':
         return <Package className="h-5 w-5 text-blue-500" />;
+      case 'tsrid_asset':
+        return <Package className="h-5 w-5 text-green-500" />;
       case 'bestellung':
         return <ShoppingBag className="h-5 w-5 text-purple-500" />;
       case 'geraet':
