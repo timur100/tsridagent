@@ -471,13 +471,22 @@ const AssetManagementV2 = ({ theme }) => {
 
   // Open detail modal
   const openDetailModal = async (type, id) => {
+    // Skip if no ID provided
+    if (!id) {
+      toast.error('Keine ID vorhanden');
+      return;
+    }
+    
     try {
       let endpoint = '';
       switch (type) {
         case 'location': endpoint = `/api/asset-mgmt/locations/${id}`; break;
         case 'slot': endpoint = `/api/asset-mgmt/slots/${id}`; break;
         case 'bundle': endpoint = `/api/asset-mgmt/bundles/${id}`; break;
-        case 'asset': endpoint = `/api/asset-mgmt/assets/${id}`; break;
+        case 'asset': 
+          // Use search-detail endpoint which works with asset_id, warehouse_asset_id, or manufacturer_sn
+          endpoint = `/api/asset-mgmt/assets/search-detail?q=${encodeURIComponent(id)}`; 
+          break;
       }
       
       const res = await fetch(`${BACKEND_URL}${endpoint}`);
@@ -485,6 +494,8 @@ const AssetManagementV2 = ({ theme }) => {
       if (data.success) {
         setSelectedItem({ type, data: data[type] || data.location || data.slot || data.bundle || data.asset });
         setShowDetailModal(true);
+      } else {
+        toast.error(data.message || 'Details nicht gefunden');
       }
     } catch (e) {
       toast.error('Fehler beim Laden der Details');
