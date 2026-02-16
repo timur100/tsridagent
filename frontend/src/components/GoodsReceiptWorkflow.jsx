@@ -285,7 +285,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
     fetchLocations();
     fetchSuppliers();
-  }, [activeSubTab, fetchUnassignedAssets, fetchLocations, fetchSuppliers]);
+    fetchTenants();
+  }, [activeSubTab, fetchUnassignedAssets, fetchLocations, fetchSuppliers, fetchTenants]);
 
   // Delete unassigned asset
   const deleteUnassignedAsset = async (sn) => {
