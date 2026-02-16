@@ -1257,16 +1257,20 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     <SelectValue placeholder="Standort wählen..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {locations.map(loc => (
-                      <SelectItem key={loc.location_id} value={loc.location_id}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{loc.location_id}</span>
-                          <span className="text-xs text-gray-500">
-                            {loc.street} {loc.house_number}, {loc.postal_code} {loc.city}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
+                    {locations.map(loc => {
+                      const locCode = loc.station_code || loc.location_code || loc.location_id || '';
+                      const locValue = locCode || loc.street;
+                      return (
+                        <SelectItem key={locValue} value={locValue}>
+                          <div className="flex flex-col">
+                            <span className="font-medium font-mono">{locCode || 'N/A'}</span>
+                            <span className="text-xs text-gray-500">
+                              {loc.street} {loc.house_number || ''}, {loc.zip || loc.postal_code || ''} {loc.city}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
                   </SelectContent>
                 </Select>
               </div>
