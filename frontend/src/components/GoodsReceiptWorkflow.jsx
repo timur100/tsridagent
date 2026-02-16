@@ -254,6 +254,33 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, []);
 
+  // Open Asset Detail Modal - Search by warehouse_asset_id, manufacturer_sn, or imei
+  const openAssetDetail = useCallback(async (searchValue) => {
+    if (!searchValue) return;
+    
+    setAssetDetailLoading(true);
+    setShowAssetDetailModal(true);
+    
+    try {
+      // Search for asset by any identifier
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/assets/search-detail?q=${encodeURIComponent(searchValue)}`);
+      const data = await res.json();
+      
+      if (data.success && data.asset) {
+        setSelectedAssetDetail(data.asset);
+      } else {
+        toast.error(`Kein Gerät gefunden für: ${searchValue}`);
+        setShowAssetDetailModal(false);
+      }
+    } catch (e) {
+      console.error('Error fetching asset detail:', e);
+      toast.error('Fehler beim Laden der Gerätdetails');
+      setShowAssetDetailModal(false);
+    } finally {
+      setAssetDetailLoading(false);
+    }
+  }, []);
+
   // Fetch unassigned assets
   const fetchUnassignedAssets = useCallback(async () => {
     setLoading(true);
