@@ -69,6 +69,7 @@ const ASSET_TYPE_CATEGORIES = {
 
 const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const isDark = theme === 'dark';
+  const { user } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState('intake');
   const [loading, setLoading] = useState(false);
   
@@ -78,10 +79,18 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [currentIMEI, setCurrentIMEI] = useState('');
   const [currentMAC, setCurrentMAC] = useState('');
   const [currentType, setCurrentType] = useState('tab_tsr_i7');
+  // Auto-fill receivedBy with logged-in user
   const [receivedBy, setReceivedBy] = useState('');
   const [supplier, setSupplier] = useState('');
   const [deliveryNote, setDeliveryNote] = useState('');
   const [suppliers, setSuppliers] = useState([]);
+  
+  // Set receivedBy when user is available
+  useEffect(() => {
+    if (user && !receivedBy) {
+      setReceivedBy(user.name || user.email || '');
+    }
+  }, [user, receivedBy]);
   
   // Auto Asset-ID State
   const [nextAssetId, setNextAssetId] = useState('');
