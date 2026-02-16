@@ -1121,13 +1121,15 @@ const AssetManagementV2 = ({ theme }) => {
               const warrantyExpired = asset.warranty_until && new Date(asset.warranty_until) < new Date();
               const warrantyExpiringSoon = asset.warranty_until && !warrantyExpired && 
                 new Date(asset.warranty_until) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+              // Use asset_id, warehouse_asset_id, or manufacturer_sn as fallback for detail view
+              const assetIdentifier = asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn;
               return (
                 <tr 
-                  key={asset.asset_id} 
+                  key={asset.asset_id || asset.manufacturer_sn} 
                   className={`border-t cursor-pointer hover:bg-opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
-                  onClick={() => openDetailModal('asset', asset.asset_id)}
+                  onClick={() => openDetailModal('asset', assetIdentifier)}
                 >
-                  <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>{asset.asset_id}</td>
+                  <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>{asset.asset_id || '-'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <TypeIcon className="h-4 w-4" />
