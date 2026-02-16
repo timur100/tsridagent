@@ -1670,6 +1670,183 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Asset Detail Modal */}
+      <Dialog open={showAssetDetailModal} onOpenChange={setShowAssetDetailModal}>
+        <DialogContent className={`max-w-2xl max-h-[85vh] overflow-y-auto ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : ''}`}>
+              <Package className="h-5 w-5 text-green-500" />
+              Gerätdetails
+            </DialogTitle>
+          </DialogHeader>
+          
+          {assetDetailLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <RefreshCw className="h-8 w-8 animate-spin text-gray-400" />
+            </div>
+          ) : selectedAssetDetail ? (
+            <div className="space-y-4">
+              {/* Basis-Informationen */}
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h4 className="text-xs font-semibold text-gray-500 mb-3">Identifikation</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  {selectedAssetDetail.warehouse_asset_id && (
+                    <div>
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lager-ID</p>
+                      <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                        {selectedAssetDetail.warehouse_asset_id}
+                      </code>
+                    </div>
+                  )}
+                  {selectedAssetDetail.asset_id && (
+                    <div>
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Asset-ID</p>
+                      <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-blue-500/20 text-blue-400' : 'bg-blue-100 text-blue-700'}`}>
+                        {selectedAssetDetail.asset_id}
+                      </code>
+                    </div>
+                  )}
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Seriennummer</p>
+                    <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.manufacturer_sn || '-'}</p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Status</p>
+                    <Badge variant={selectedAssetDetail.status === 'deployed' ? 'default' : 'outline'} 
+                           className={selectedAssetDetail.status === 'deployed' ? 'bg-green-500' : ''}>
+                      {selectedAssetDetail.status}
+                    </Badge>
+                  </div>
+                  {selectedAssetDetail.imei && (
+                    <div>
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>IMEI</p>
+                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.imei}</p>
+                    </div>
+                  )}
+                  {selectedAssetDetail.mac && (
+                    <div>
+                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>MAC-Adresse</p>
+                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.mac}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Typ & Hersteller */}
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h4 className="text-xs font-semibold text-gray-500 mb-3">Produkt</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</p>
+                    <Badge variant="outline">{selectedAssetDetail.type_label || selectedAssetDetail.type}</Badge>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Hersteller</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.manufacturer || '-'}</p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Modell</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.model || '-'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Location / Bundle Info */}
+              {(selectedAssetDetail.location || selectedAssetDetail.bundle) && (
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <h4 className="text-xs font-semibold text-gray-500 mb-3">Zuordnung</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedAssetDetail.location && (
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Standort</p>
+                        <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                          {selectedAssetDetail.location.location_id} - {selectedAssetDetail.location.city}
+                        </p>
+                        <p className="text-xs text-gray-400">{selectedAssetDetail.location.address}</p>
+                      </div>
+                    )}
+                    {selectedAssetDetail.bundle && (
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kit</p>
+                        <p className={`text-sm text-purple-500 ${isDark ? '' : ''}`}>
+                          {selectedAssetDetail.bundle.bundle_id}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Wareneingang Info */}
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h4 className="text-xs font-semibold text-gray-500 mb-3">Wareneingang</h4>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Empfangen am</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                      {selectedAssetDetail.intake_date 
+                        ? new Date(selectedAssetDetail.intake_date).toLocaleDateString('de-DE')
+                        : selectedAssetDetail.created_at 
+                          ? new Date(selectedAssetDetail.created_at).toLocaleDateString('de-DE')
+                          : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Empfangen von</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.received_by || '-'}</p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lieferant</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.supplier || '-'}</p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Notes */}
+              {selectedAssetDetail.notes && (
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <h4 className="text-xs font-semibold text-gray-500 mb-2">Notizen</h4>
+                  <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.notes}</p>
+                </div>
+              )}
+              
+              {/* History Timeline */}
+              {selectedAssetDetail.history && selectedAssetDetail.history.length > 0 && (
+                <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <h4 className="text-xs font-semibold text-gray-500 mb-3">Historie ({selectedAssetDetail.history.length})</h4>
+                  <div className="space-y-3 max-h-[200px] overflow-y-auto">
+                    {selectedAssetDetail.history.slice().reverse().map((entry, idx) => (
+                      <div key={idx} className={`flex gap-3 pb-3 ${idx < selectedAssetDetail.history.length - 1 ? 'border-b border-gray-700' : ''}`}>
+                        <div className={`w-2 h-2 mt-2 rounded-full flex-shrink-0 ${
+                          entry.event_type === 'intake' ? 'bg-green-500' :
+                          entry.event_type === 'assignment' ? 'bg-blue-500' :
+                          entry.event_type === 'kit_assignment' ? 'bg-purple-500' :
+                          'bg-gray-500'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-sm font-medium ${isDark ? 'text-white' : ''}`}>{entry.event}</p>
+                          {entry.notes && <p className="text-xs text-gray-400 mt-1">{entry.notes}</p>}
+                          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                            <span>{new Date(entry.date).toLocaleString('de-DE')}</span>
+                            {entry.technician && <span>• {entry.technician}</span>}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : null}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAssetDetailModal(false)}>
+              Schließen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
