@@ -1032,9 +1032,20 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
               <div className="relative">
                 <Search className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
                 <Input
-                  placeholder="Seriennummer suchen..."
+                  placeholder="Lager-ID / Seriennummer / IMEI scannen..."
                   value={searchUnassigned}
                   onChange={(e) => setSearchUnassigned(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchUnassigned.trim()) {
+                      // If it looks like a specific ID (starts with TSRID- or has certain patterns), open detail directly
+                      const val = searchUnassigned.trim();
+                      if (val.startsWith('TSRID-') || val.length >= 8) {
+                        openAssetDetail(val);
+                        setSearchUnassigned('');
+                        e.preventDefault();
+                      }
+                    }
+                  }}
                   className={`pl-10 ${inputBg}`}
                   data-testid="search-unassigned-input"
                 />
