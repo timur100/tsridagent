@@ -143,6 +143,45 @@ async def global_search(
                     "data": asset
                 })
 
+        # 1.6. Search TSRID Assets (Lager-Assets) - Search warehouse_asset_id, manufacturer_sn
+        tsrid_asset_query = {
+            "$or": [
+                {"warehouse_asset_id": search_regex},
+                {"asset_id": search_regex},
+                {"manufacturer_sn": search_regex},
+                {"imei": search_regex},
+                {"mac": search_regex},
+                {"type_label": search_regex},
+                {"notes": search_regex}
+            ]
+        }
+        
+        tsrid_assets = []
+        if user_role == "admin":
+            print(f"[Global Search] Admin search - TSRID assets")
+            tsrid_assets = list(portal_db.tsrid_assets.find(tsrid_asset_query, {"_id": 0}).limit(50))
+        
+        print(f"[Global Search] Found {len(tsrid_assets)} TSRID assets")
+        
+        # Process TSRID asset results
+        for asset in tsrid_assets:
+            warehouse_id = asset.get('warehouse_asset_id') or asset.get('asset_id')
+            sn = asset.get('manufacturer_sn', 'N/A')
+            type_label = asset.get('type_label', asset.get('type', 'N/A'))
+            status = asset.get('status', 'unknown')
+            
+            if warehouse_id or sn:
+                assets_results.append({
+                    "type": "tsrid_asset",
+                    "id": warehouse_id or sn,
+                    "title": warehouse_id or sn,
+                    "subtitle": f"{type_label} | SN: {sn} | Status: {status}",
+                    "status": status,
+                    "warehouse_asset_id": warehouse_id,
+                    "manufacturer_sn": sn,
+                    "data": asset
+                })
+
         # 2. Search Locations (HIGH PRIORITY) - Search ALL fields
         location_query = {
             "$or": [
