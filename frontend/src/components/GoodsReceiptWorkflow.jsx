@@ -289,14 +289,21 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, []);
 
+  // Fetch unassigned assets when tab changes to 'unassigned' or on filter changes
   useEffect(() => {
     if (activeSubTab === 'unassigned') {
       fetchUnassignedAssets();
     }
+  }, [activeSubTab, fetchUnassignedAssets]);
+
+  // Fetch initial data (locations, suppliers, tenants, and initial unassigned count)
+  useEffect(() => {
     fetchLocations();
     fetchSuppliers();
     fetchTenants();
-  }, [activeSubTab, fetchUnassignedAssets, fetchLocations, fetchSuppliers, fetchTenants]);
+    // Always fetch unassigned count for the badge, regardless of active tab
+    fetchUnassignedAssets();
+  }, [fetchLocations, fetchSuppliers, fetchTenants, fetchUnassignedAssets]);
 
   // Delete unassigned asset
   const deleteUnassignedAsset = async (sn) => {
