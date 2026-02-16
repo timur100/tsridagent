@@ -175,9 +175,10 @@ const GlobalSearch = ({ onResultSelect }) => {
         const isBarcodeSearch = /^\d+$/.test(trimmedQuery) && trimmedQuery.length >= 8;  // 8+ digit barcode
         const isOrderNumberSearch = trimmedQuery.toUpperCase().startsWith('BE.');  // Order numbers
         const isAssetIDSearch = /^TSR\.EC\.[A-Z]+\.\d+$/i.test(trimmedQuery);  // Asset-ID format: TSR.EC.SCDE.000001
+        const isTsridAssetSearch = /^TSRID-[A-Z]+-[A-Za-z0-9]+-\d{4}$/i.test(trimmedQuery);  // TSRID Asset format: TSRID-TAB-i7-0001
         
         // Auto-open for exact matches or specific patterns
-        if (result.priority_match && result.total > 0 && (isBarcodeSearch || isOrderNumberSearch || isAssetIDSearch)) {
+        if (result.priority_match && result.total > 0 && (isBarcodeSearch || isOrderNumberSearch || isAssetIDSearch || isTsridAssetSearch)) {
           // Automatically open for:
           // - Complete barcode scans
           // - Order numbers
