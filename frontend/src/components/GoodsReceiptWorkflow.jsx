@@ -196,6 +196,49 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   };
 
+  // Fetch tenants for assignment
+  const fetchTenants = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/tenants`);
+      const data = await res.json();
+      if (data.success) {
+        setTenants(data.tenants || []);
+      }
+    } catch (e) {
+      console.error('Error fetching tenants:', e);
+    }
+  }, []);
+
+  // Fetch cities for selected tenant
+  const fetchCities = useCallback(async (tenantId) => {
+    if (!tenantId) {
+      setCities([]);
+      return;
+    }
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=Deutschland&tenant_id=${tenantId}`);
+      const data = await res.json();
+      setCities(data.cities || []);
+    } catch (e) {
+      console.error('Error fetching cities:', e);
+    }
+  }, []);
+
+  // Fetch locations for selected city and tenant
+  const fetchLocationsByCity = useCallback(async (city, tenantId) => {
+    if (!city || !tenantId) {
+      setLocations([]);
+      return;
+    }
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/unified-locations/by-city?city=${encodeURIComponent(city)}&country=Deutschland&tenant_id=${tenantId}`);
+      const data = await res.json();
+      setLocations(data.locations || []);
+    } catch (e) {
+      console.error('Error fetching locations:', e);
+    }
+  }, []);
+
   // Fetch unassigned assets
   const fetchUnassignedAssets = useCallback(async () => {
     setLoading(true);
