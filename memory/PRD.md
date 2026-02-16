@@ -28,6 +28,18 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-16 (Current)
 
+#### Bug Fixes
+19. **Asset erscheint nicht in "Nicht zugewiesen"-Liste (BUG FIX - 2025-02-16)**
+    - **Problem**: "gescannte Lager-ID erscheint nicht bei 'Nicht zugewiesen' - ganzer datensatz fehlt" - Neu erstellte Assets erschienen nicht sofort in der Unassigned-Liste
+    - **Root Cause**: Frontend `GoodsReceiptWorkflow.jsx` rief `fetchUnassignedAssets()` nicht nach erfolgreicher Asset-Erstellung auf
+    - **Lösung**: 
+      1. `fetchUnassignedAssets()` wird jetzt nach `submitIntake()` aufgerufen (Zeile 537)
+      2. `fetchUnassignedAssets()` wird jetzt nach `submitBulkIntake()` aufgerufen (Zeile 437)
+      3. `receivedBy` wird nicht mehr geleert, da es mit dem eingeloggten User auto-befüllt wird
+      4. Initial `useEffect` lädt jetzt unassigned count unabhängig vom aktiven Tab
+    - **Dateien**: `/app/frontend/src/components/GoodsReceiptWorkflow.jsx`
+    - **Test-Status**: ✅ 100% (8/8 Backend + Frontend UI Tests)
+
 #### New Features
 18. **Asset-ID Konfiguration Admin-UI (NEW FEATURE - IMPLEMENTED 2025-02-16)**
     - **Feature**: Vollständiges Admin-UI zur Konfiguration der automatischen Asset-ID-Generierung
