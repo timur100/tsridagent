@@ -105,6 +105,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [selectedLocation, setSelectedLocation] = useState('');
   const [assignTechnician, setAssignTechnician] = useState('');
   
+  // Tenant/Location Selection State (like Kit Management)
+  const [tenants, setTenants] = useState([]);
+  const [selectedTenant, setSelectedTenant] = useState('');
+  const [cities, setCities] = useState([]);
+  const [selectedCity, setSelectedCity] = useState('');
+  
   // Delete Confirmation State
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [assetToDelete, setAssetToDelete] = useState(null);
