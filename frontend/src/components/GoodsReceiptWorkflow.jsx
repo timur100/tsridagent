@@ -528,8 +528,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   // Open assign modal
   const openAssignModal = (asset) => {
     setAssetToAssign(asset);
+    setSelectedTenant('');
+    setSelectedCity('');
     setSelectedLocation('');
     setAssignTechnician('');
+    setCities([]);
+    setLocations([]);
     setShowAssignModal(true);
   };
 
