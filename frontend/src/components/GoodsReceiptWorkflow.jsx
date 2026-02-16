@@ -1054,6 +1054,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                         data-testid="select-all-checkbox"
                       />
                     </th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold">Lager-ID</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Seriennummer</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Empfangen am</th>
@@ -1075,7 +1076,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           className="rounded"
                         />
                       </td>
-                      <td className={`px-4 py-3 font-mono ${isDark ? 'text-white' : ''}`}>
+                      <td className="px-4 py-3">
+                        {asset.warehouse_asset_id ? (
+                          <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                            {asset.warehouse_asset_id}
+                          </code>
+                        ) : (
+                          <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-</span>
+                        )}
+                      </td>
+                      <td className={`px-4 py-3 font-mono text-sm ${isDark ? 'text-white' : ''}`}>
                         {asset.manufacturer_sn}
                       </td>
                       <td className="px-4 py-3">
