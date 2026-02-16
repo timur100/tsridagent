@@ -319,6 +319,12 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ## Known Issues
 
+### Pending Issues
+1. **P1 - Seriennummer-Scanning funktioniert nicht in Wareneingang** - NOT STARTED
+2. **P2 - Datenmigration bestehender "TSRID Tablet" Assets zu i5/i7 Typen** - NOT STARTED (benötigt User-Input für Mapping)
+3. **P3 - Duplikate Legacy-Router für Kit-Templates** - NOT STARTED
+4. **P4 - Drucker-Unterstützung in Electron App** - RECURRING (5+ mal versucht)
+
 ### Recurring Issues
 - **Electron app printer support**: Recurrence count 5+, NOT STARTED
 
