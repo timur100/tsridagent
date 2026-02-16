@@ -132,6 +132,11 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   // Quick Add Supplier Modal State
   const [showQuickSupplierModal, setShowQuickSupplierModal] = useState(false);
   const [quickSupplierName, setQuickSupplierName] = useState('');
+  
+  // Asset Detail Modal State
+  const [showAssetDetailModal, setShowAssetDetailModal] = useState(false);
+  const [selectedAssetDetail, setSelectedAssetDetail] = useState(null);
+  const [assetDetailLoading, setAssetDetailLoading] = useState(false);
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
