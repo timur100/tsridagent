@@ -472,6 +472,11 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       return;
     }
     
+    if (!receivedBy.trim()) {
+      toast.error('Bitte "Empfangen von" ausfüllen');
+      return;
+    }
+    
     setLoading(true);
     try {
       // Use new endpoint with auto-ID generation
