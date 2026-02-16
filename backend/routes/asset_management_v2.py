@@ -3841,6 +3841,13 @@ async def inventory_intake_with_auto_id(
     Generiert: TSRID-TAB-i7-0001 (Lager-ID)
     """
     try:
+        # Validate received_by
+        if not received_by or not received_by.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="'Empfangen von' ist erforderlich"
+            )
+        
         # Check if serial number already exists
         existing = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
         if existing:
