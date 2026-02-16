@@ -433,6 +433,8 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
         setShowBulkModal(false);
         setBulkCount(1);
         fetchNextAssetId(currentType);
+        // Refresh the unassigned assets list so new assets appear immediately
+        fetchUnassignedAssets();
         if (onRefreshStats) onRefreshStats();
       } else {
         toast.error(data.detail || 'Fehler beim Erstellen');
