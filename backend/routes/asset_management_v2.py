@@ -3848,13 +3848,33 @@ async def inventory_intake_with_auto_id(
                 detail="'Empfangen von' ist erforderlich"
             )
         
+        # ===== UNIQUENESS VALIDATION =====
         # Check if serial number already exists
-        existing = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
-        if existing:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Gerät mit Seriennummer {item.manufacturer_sn} existiert bereits"
-            )
+        if item.manufacturer_sn:
+            existing_sn = await db.tsrid_assets.find_one({"manufacturer_sn": item.manufacturer_sn})
+            if existing_sn:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Seriennummer '{item.manufacturer_sn}' existiert bereits (Lager-ID: {existing_sn.get('warehouse_asset_id', 'N/A')})"
+                )
+        
+        # Check if IMEI already exists (if provided)
+        if item.imei and item.imei.strip():
+            existing_imei = await db.tsrid_assets.find_one({"imei": item.imei})
+            if existing_imei:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"IMEI '{item.imei}' existiert bereits (Lager-ID: {existing_imei.get('warehouse_asset_id', 'N/A')})"
+                )
+        
+        # Check if MAC already exists (if provided)
+        if item.mac and item.mac.strip():
+            existing_mac = await db.tsrid_assets.find_one({"mac": item.mac})
+            if existing_mac:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"MAC-Adresse '{item.mac}' existiert bereits (Lager-ID: {existing_mac.get('warehouse_asset_id', 'N/A')})"
+                )
         
         # Get config and generate ID
         config = await get_tenant_asset_config(tenant_id)
@@ -3863,6 +3883,14 @@ async def inventory_intake_with_auto_id(
         
         next_seq = await get_next_warehouse_sequence(item.type, tenant_id)
         warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+        
+        # Verify warehouse_id is unique (should always be, but double-check)
+        existing_wid = await db.tsrid_assets.find_one({"warehouse_asset_id": warehouse_id})
+        if existing_wid:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Asset-ID '{warehouse_id}' existiert bereits - bitte erneut versuchen"
+            )
         
         now = datetime.now(timezone.utc).isoformat()
         
@@ -3874,8 +3902,8 @@ async def inventory_intake_with_auto_id(
             "type": item.type,
             "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
             "type_suffix": type_suffix,
-            "imei": item.imei,
-            "mac": item.mac,
+            "imei": item.imei if item.imei and item.imei.strip() else None,
+            "mac": item.mac if item.mac and item.mac.strip() else None,
             "manufacturer": item.manufacturer,
             "model": item.model,
             "status": "unassigned",
