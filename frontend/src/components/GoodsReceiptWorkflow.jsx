@@ -1158,11 +1158,11 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
 
       {/* Assign Modal */}
       <Dialog open={showAssignModal} onOpenChange={setShowAssignModal}>
-        <DialogContent className={`max-w-md ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+        <DialogContent className={`max-w-lg ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
           <DialogHeader>
             <DialogTitle className={isDark ? 'text-white' : ''}>
               {assetToAssign 
-                ? `Gerät zuweisen: ${assetToAssign.manufacturer_sn}`
+                ? `Gerät zuweisen`
                 : `${selectedAssets.size} Geräte zuweisen`
               }
             </DialogTitle>
@@ -1172,8 +1172,14 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             {assetToAssign && (
               <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                 <div className="flex justify-between">
+                  <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Lager-ID:</span>
+                  <code className={`font-mono ${isDark ? 'text-green-400' : 'text-green-600'}`}>
+                    {assetToAssign.warehouse_asset_id || '-'}
+                  </code>
+                </div>
+                <div className="flex justify-between mt-2">
                   <span className={isDark ? 'text-gray-400' : 'text-gray-600'}>Seriennummer:</span>
-                  <span className={`font-mono ${isDark ? 'text-white' : ''}`}>
+                  <span className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>
                     {assetToAssign.manufacturer_sn}
                   </span>
                 </div>
@@ -1186,23 +1192,85 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
               </div>
             )}
             
+            {/* Tenant Selection */}
             <div>
               <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
-                Standort auswählen *
+                Kunde (Tenant) *
               </label>
-              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                <SelectTrigger className={inputBg} data-testid="location-select">
-                  <SelectValue placeholder="Standort wählen" />
+              <Select 
+                value={selectedTenant} 
+                onValueChange={(v) => {
+                  setSelectedTenant(v);
+                  setSelectedCity('');
+                  setSelectedLocation('');
+                  setLocations([]);
+                  fetchCities(v);
+                }}
+              >
+                <SelectTrigger className={inputBg} data-testid="tenant-select">
+                  <SelectValue placeholder="Kunden auswählen..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {locations.map(loc => (
-                    <SelectItem key={loc.location_id} value={loc.location_id}>
-                      {loc.location_id} - {loc.city || loc.customer}
+                  {tenants.map(t => (
+                    <SelectItem key={t.tenant_id} value={t.tenant_id}>
+                      {t.display_name || t.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+            
+            {/* City Selection */}
+            {selectedTenant && (
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                  Stadt *
+                </label>
+                <Select 
+                  value={selectedCity} 
+                  onValueChange={(v) => {
+                    setSelectedCity(v);
+                    setSelectedLocation('');
+                    fetchLocationsByCity(v, selectedTenant);
+                  }}
+                >
+                  <SelectTrigger className={inputBg} data-testid="city-select">
+                    <SelectValue placeholder="Stadt auswählen..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {cities.map(city => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            {/* Location Selection with Street */}
+            {selectedCity && (
+              <div>
+                <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
+                  Standort auswählen *
+                </label>
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                  <SelectTrigger className={inputBg} data-testid="location-select">
+                    <SelectValue placeholder="Standort wählen..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.map(loc => (
+                      <SelectItem key={loc.location_id} value={loc.location_id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{loc.location_id}</span>
+                          <span className="text-xs text-gray-500">
+                            {loc.street} {loc.house_number}, {loc.postal_code} {loc.city}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
             <div>
               <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
