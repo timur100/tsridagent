@@ -1124,9 +1124,10 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   {unassignedAssets.map(asset => (
                     <tr 
                       key={asset.manufacturer_sn}
-                      className={`border-t ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'}`}
+                      className={`border-t cursor-pointer ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'}`}
+                      onClick={() => openAssetDetail(asset.warehouse_asset_id || asset.manufacturer_sn)}
                     >
-                      <td className="px-3 py-3">
+                      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
                           checked={selectedAssets.has(asset.manufacturer_sn)}
@@ -1157,7 +1158,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                       <td className="px-4 py-3 text-sm">
                         {asset.supplier || '-'}
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-2">
                           <Button
                             size="sm"
