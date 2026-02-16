@@ -523,10 +523,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       if (successCount > 0) {
         toast.success(`${successCount} Geräte mit Auto-ID erfasst`);
         setIntakeItems([]);
-        setReceivedBy('');
+        // Don't clear receivedBy - it's auto-filled with logged-in user
         setSupplier('');
         setDeliveryNote('');
         fetchNextAssetId(currentType);
+        // Refresh the unassigned assets list so new assets appear immediately
+        fetchUnassignedAssets();
         if (onRefreshStats) onRefreshStats();
       }
       if (errorCount > 0) {
