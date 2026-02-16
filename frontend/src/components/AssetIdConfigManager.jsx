@@ -229,16 +229,28 @@ const AssetIdConfigManager = () => {
       </div>
       
       {/* Info Banner */}
-      <Card className={`p-4 border-l-4 border-l-blue-500 ${theme === 'dark' ? 'bg-blue-900/20' : 'bg-blue-50'}`}>
+      <Card className={`p-4 border-l-4 border-l-blue-500 ${theme === 'dark' ? 'bg-blue-900/30 border-gray-700' : 'bg-blue-50'}`}>
         <div className="flex items-start gap-3">
-          <Info className="h-5 w-5 text-blue-500 mt-0.5" />
+          <Info className={`h-5 w-5 mt-0.5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-500'}`} />
           <div>
             <h4 className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Wie funktioniert die ID-Generierung?
             </h4>
-            <ul className={`mt-2 space-y-1 text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'}`}>
-              <li><strong>Lager-ID:</strong> <code className="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700">{warehousePrefix}-TYP-0001</code> - Wird beim Wareneingang vergeben</li>
-              <li><strong>Standort-ID:</strong> <code className="px-1 py-0.5 rounded bg-gray-200 dark:bg-gray-700">LOC01-01-TYP</code> - Wird bei Standort-Zuweisung generiert</li>
+            <ul className={`mt-2 space-y-2 text-sm ${theme === 'dark' ? 'text-gray-200' : 'text-gray-600'}`}>
+              <li className="flex items-center gap-2 flex-wrap">
+                <strong className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Lager-ID:</strong>
+                <code className={`px-2 py-1 rounded font-mono text-sm ${theme === 'dark' ? 'bg-gray-800 text-green-400 border border-gray-600' : 'bg-gray-200 text-green-700'}`}>
+                  {warehousePrefix}-TYP-0001
+                </code>
+                <span>- Wird beim Wareneingang vergeben</span>
+              </li>
+              <li className="flex items-center gap-2 flex-wrap">
+                <strong className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>Standort-ID:</strong>
+                <code className={`px-2 py-1 rounded font-mono text-sm ${theme === 'dark' ? 'bg-gray-800 text-blue-400 border border-gray-600' : 'bg-gray-200 text-blue-700'}`}>
+                  LOC01-01-TYP
+                </code>
+                <span>- Wird bei Standort-Zuweisung generiert</span>
+              </li>
             </ul>
           </div>
         </div>
