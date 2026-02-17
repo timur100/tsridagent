@@ -3411,10 +3411,14 @@ const AdminPortalContent = () => {
       <Outlet />
 
       {/* TSRID Asset Detail Modal (from global search) */}
-      <Dialog open={!!selectedTsridAsset} onOpenChange={(open) => !open && setSelectedTsridAsset(null)}>
-        <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white'}`}>
+      <Dialog 
+        key={selectedTsridAsset?.warehouse_asset_id || 'tsrid-modal'}
+        open={!!selectedTsridAsset} 
+        onOpenChange={(open) => !open && setSelectedTsridAsset(null)}
+      >
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#2d2d2d] border-gray-700">
           <DialogHeader>
-            <DialogTitle className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+            <DialogTitle className="text-white">
               Gerätedetails
             </DialogTitle>
           </DialogHeader>
