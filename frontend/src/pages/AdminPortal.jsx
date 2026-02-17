@@ -3431,22 +3431,22 @@ const AdminPortalContent = () => {
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Identifikation
                   </h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     <div>
                       <p className="text-[10px] text-gray-500">Lager-ID</p>
-                      <p className="font-mono font-medium text-xs text-white break-all">
+                      <p className="font-mono font-medium text-xs text-white break-all leading-tight">
                         {selectedTsridAsset.warehouse_asset_id || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Asset-ID</p>
-                      <p className="font-mono font-medium text-xs text-white break-all">
+                      <p className="font-mono font-medium text-xs text-white break-all leading-tight">
                         {selectedTsridAsset.asset_id || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Seriennummer</p>
-                      <p className="font-mono text-xs text-gray-200 break-all">
+                      <p className="font-mono text-xs text-gray-200 break-all leading-tight">
                         {selectedTsridAsset.manufacturer_sn || '-'}
                       </p>
                     </div>
