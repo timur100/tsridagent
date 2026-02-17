@@ -3472,28 +3472,28 @@ const AdminPortalContent = () => {
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Produkt & Technik
                   </h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     <div>
                       <p className="text-[10px] text-gray-500">Typ</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Hersteller</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.manufacturer || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Modell</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.model || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">IMEI</p>
-                      <p className="font-mono text-xs text-gray-200 break-all">
+                      <p className="font-mono text-xs text-gray-200 break-all leading-tight">
                         {selectedTsridAsset.imei || '-'}
                       </p>
                     </div>
