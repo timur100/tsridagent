@@ -69,7 +69,7 @@ yarn start
 
 ### Was passiert:
 1. Electron öffnet ein Desktop-Fenster
-2. Lädt automatisch: `https://modal-visibility-fix.preview.emergentagent.com/portal/admin`
+2. Lädt automatisch: `https://label-print-fix-2.preview.emergentagent.com/portal/admin`
 3. Injiziert USB-APIs via `window.usbAPI` und `window.printerAPI`
 4. Web-App erkennt `window.isDesktopApp = true`
 

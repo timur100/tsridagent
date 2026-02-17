@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://modal-visibility-fix.preview.emergentagent.com/api/dhl"
+API_URL="https://label-print-fix-2.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

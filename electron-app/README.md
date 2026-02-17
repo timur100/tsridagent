@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://modal-visibility-fix.preview.emergentagent.com
+│   └── Lädt: https://label-print-fix-2.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

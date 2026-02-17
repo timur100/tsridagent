@@ -83,10 +83,10 @@ Abrechnungsnummer → EKP + Verfahren + Teilnahme (z.B. 12345678905301)
 **Nutzen Sie**:
 ```bash
 # Mock-Daten abrufen
-curl "https://modal-visibility-fix.preview.emergentagent.com/api/dhl/shipments/mock"
+curl "https://label-print-fix-2.preview.emergentagent.com/api/dhl/shipments/mock"
 
 # UI testen
-https://modal-visibility-fix.preview.emergentagent.com/portal/admin
+https://label-print-fix-2.preview.emergentagent.com/portal/admin
 → R&D → Paketversand → DHL
 ```
 

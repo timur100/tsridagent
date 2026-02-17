@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://modal-visibility-fix.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://label-print-fix-2.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**
