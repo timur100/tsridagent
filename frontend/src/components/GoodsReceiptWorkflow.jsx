@@ -478,13 +478,6 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     `);
     printWindow.document.close();
   }, [labelToPrint]);
-          });
-        </script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-  }, [labelToPrint]);
 
   // Fetch locations for assignment
   const fetchLocations = useCallback(async () => {
