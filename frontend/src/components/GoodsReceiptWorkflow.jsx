@@ -311,6 +311,60 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, [searchUnassigned, filterType, pagination.page]);
 
+  // Start editing asset
+  const startEditingAsset = useCallback(() => {
+    if (!selectedAssetDetail) return;
+    setAssetEditForm({
+      manufacturer: selectedAssetDetail.manufacturer || '',
+      model: selectedAssetDetail.model || '',
+      imei: selectedAssetDetail.imei || '',
+      mac: selectedAssetDetail.mac || '',
+      purchase_date: selectedAssetDetail.purchase_date ? selectedAssetDetail.purchase_date.split('T')[0] : '',
+      purchase_price: selectedAssetDetail.purchase_price || '',
+      supplier: selectedAssetDetail.supplier || '',
+      warranty_until: selectedAssetDetail.warranty_until ? selectedAssetDetail.warranty_until.split('T')[0] : '',
+      warranty_type: selectedAssetDetail.warranty_type || '',
+      notes: selectedAssetDetail.notes || '',
+    });
+    setIsEditingAsset(true);
+  }, [selectedAssetDetail]);
+
+  // Save asset changes
+  const saveAssetChanges = useCallback(async () => {
+    if (!selectedAssetDetail) return;
+    
+    const identifier = selectedAssetDetail.warehouse_asset_id || selectedAssetDetail.manufacturer_sn || selectedAssetDetail.asset_id;
+    if (!identifier) {
+      toast.error('Kein Identifikator gefunden');
+      return;
+    }
+    
+    setSavingAsset(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/assets/update-by-identifier?identifier=${encodeURIComponent(identifier)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assetEditForm)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success('Asset aktualisiert');
+        setSelectedAssetDetail(data.asset);
+        setIsEditingAsset(false);
+        // Refresh the unassigned list
+        fetchUnassignedAssets();
+      } else {
+        toast.error(data.detail || 'Fehler beim Speichern');
+      }
+    } catch (e) {
+      console.error('Error saving asset:', e);
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setSavingAsset(false);
+    }
+  }, [selectedAssetDetail, assetEditForm, fetchUnassignedAssets]);
+
   // Fetch locations for assignment
   const fetchLocations = useCallback(async () => {
     try {
