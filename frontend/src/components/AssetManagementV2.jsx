@@ -1273,10 +1273,21 @@ const AssetManagementV2 = ({ theme }) => {
                   <td className="px-4 py-3 text-center">
                     <StatusBadge status={asset.status} config={ASSET_STATUS_CONFIG} />
                   </td>
-                  <td className="px-4 py-3 text-center">
-                    <Button size="sm" variant="ghost">
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                  <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center gap-1">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="px-2"
+                        onClick={() => openLabelPrint(asset)}
+                        title="Label drucken"
+                      >
+                        <Printer className="h-4 w-4" />
+                      </Button>
+                      <Button size="sm" variant="ghost">
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               );
