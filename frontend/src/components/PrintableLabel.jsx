@@ -32,7 +32,7 @@ const generateElementHtml = (element, layoutItem, asset, logoUrl) => {
   const width = w * MM_PER_COL;
   const height = h * (GRID_ROW_HEIGHT / 4);
   
-  const posStyle = `position: absolute; left: ${left}mm; top: ${top}mm; width: ${width}mm; height: ${height}mm;`;
+  const posStyle = `position: absolute; left: ${left}mm; top: ${top}mm; width: ${width}mm; height: ${height}mm; overflow: hidden;`;
   
   const labelId = asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn || '';
   const serialNumber = asset.manufacturer_sn || '';
@@ -60,10 +60,12 @@ const generateElementHtml = (element, layoutItem, asset, logoUrl) => {
   
   switch (type) {
     case 'qrcode':
-      return `<div style="${posStyle}" data-qr="${qrContent.replace(/"/g, '&quot;')}"></div>`;
+      // QR-Code Container mit expliziten Canvas-Styles
+      return `<div class="qr-element" style="${posStyle} display: flex; align-items: center; justify-content: center;" data-qr="${qrContent.replace(/"/g, '&quot;')}" data-width="${width}" data-height="${height}"></div>`;
     
     case 'barcode':
-      return `<div style="${posStyle}" data-barcode="${serialNumber}" data-format="${config.barcodeFormat || 'CODE128'}" data-show-value="${config.showValue !== false}"></div>`;
+      // Barcode Container mit expliziten SVG-Styles
+      return `<div class="barcode-element" style="${posStyle} display: flex; align-items: center; justify-content: center;" data-barcode="${serialNumber}" data-format="${config.barcodeFormat || 'CODE128'}" data-show-value="${config.showValue !== false}" data-width="${width}" data-height="${height}"></div>`;
     
     case 'asset_id':
       return `<div style="${posStyle} ${textStyle}">${labelId}</div>`;
