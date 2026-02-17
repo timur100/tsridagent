@@ -22,6 +22,7 @@ import KitDetailModal from './KitDetailModal';
 import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
+import Barcode from 'react-barcode';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 

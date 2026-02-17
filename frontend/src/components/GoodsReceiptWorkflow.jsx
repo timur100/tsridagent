@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import TablePagination from './ui/TablePagination';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
+import Barcode from 'react-barcode';
 import { useAuth } from '../contexts/AuthContext';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
