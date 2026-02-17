@@ -3390,6 +3390,191 @@ const AdminPortalContent = () => {
 
       {/* Outlet for nested routes - renders child routes like DeviceDetailPage */}
       <Outlet />
+
+      {/* TSRID Asset Detail Modal (from global search) */}
+      <Dialog open={!!selectedTsridAsset} onOpenChange={(open) => !open && setSelectedTsridAsset(null)}>
+        <DialogContent className={`max-w-2xl ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white'}`}>
+          <DialogHeader>
+            <DialogTitle className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+              Gerätedetails
+            </DialogTitle>
+          </DialogHeader>
+          {selectedTsridAsset && (
+            <div className="space-y-6">
+              {/* Identification */}
+              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Identifikation
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Lager-ID</p>
+                    <p className={`font-mono font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {selectedTsridAsset.warehouse_asset_id || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Asset-ID</p>
+                    <p className={`font-mono font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                      {selectedTsridAsset.asset_id || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Seriennummer</p>
+                    <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {selectedTsridAsset.manufacturer_sn || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Status</p>
+                    <span className={`inline-block px-2 py-1 text-xs rounded ${
+                      selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-500' :
+                      selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-500' :
+                      selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-500' :
+                      'bg-gray-500/20 text-gray-500'
+                    }`}>
+                      {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
+                       selectedTsridAsset.status === 'deployed' ? 'Deployed' :
+                       selectedTsridAsset.status === 'unassigned' ? 'Nicht zugewiesen' :
+                       selectedTsridAsset.status || 'Unbekannt'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Product & Technical Data */}
+              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Produkt & Technische Daten
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Typ</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Hersteller</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.manufacturer || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Modell</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.model || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>IMEI</p>
+                    <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {selectedTsridAsset.imei || '-'}
+                    </p>
+                  </div>
+                  {selectedTsridAsset.mac && (
+                    <div>
+                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>MAC-Adresse</p>
+                      <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        {selectedTsridAsset.mac}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Purchase Data */}
+              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Kaufdaten & Garantie
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Kaufdatum</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Kaufpreis</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Lieferant</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Garantie bis</p>
+                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                      {selectedTsridAsset.warranty_end ? new Date(selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code and Barcode for Label */}
+              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+                  Label-Vorschau
+                </h3>
+                <div className="flex items-start gap-4 p-3 bg-white rounded">
+                  <QRCodeSVG 
+                    value={selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || selectedTsridAsset.manufacturer_sn || ''}
+                    size={80}
+                    level="M"
+                  />
+                  <div className="flex-1 text-black">
+                    <p className="font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                      {selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || '-'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {selectedTsridAsset.type_label || selectedTsridAsset.type}
+                    </p>
+                    {selectedTsridAsset.manufacturer_sn && (
+                      <div className="mt-2">
+                        <Barcode 
+                          value={selectedTsridAsset.manufacturer_sn}
+                          width={1}
+                          height={30}
+                          fontSize={8}
+                          margin={0}
+                          displayValue={true}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setSelectedTsridAsset(null)}
+                  className={theme === 'dark' ? 'border-gray-600' : ''}
+                >
+                  Schließen
+                </Button>
+                <Button
+                  onClick={() => {
+                    setActiveTab('assets');
+                    setAssetsSubTab('rollout');
+                    setSelectedTsridAsset(null);
+                    toast.success('Navigiere zu Asset-Verwaltung...');
+                  }}
+                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                >
+                  In Lagerverwaltung öffnen
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
