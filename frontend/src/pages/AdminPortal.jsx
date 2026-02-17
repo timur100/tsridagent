@@ -3449,33 +3449,33 @@ const AdminPortalContent = () => {
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Typ</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Typ</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Hersteller</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Hersteller</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.manufacturer || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Modell</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Modell</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.model || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>IMEI</p>
-                    <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className="text-xs text-gray-500">IMEI</p>
+                    <p className="font-mono text-gray-700 dark:text-gray-300">
                       {selectedTsridAsset.imei || '-'}
                     </p>
                   </div>
                   {selectedTsridAsset.mac && (
                     <div>
-                      <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>MAC-Adresse</p>
-                      <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                      <p className="text-xs text-gray-500">MAC-Adresse</p>
+                      <p className="font-mono text-gray-700 dark:text-gray-300">
                         {selectedTsridAsset.mac}
                       </p>
                     </div>
@@ -3484,32 +3484,32 @@ const AdminPortalContent = () => {
               </div>
 
               {/* Purchase Data */}
-              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <div className="p-4 rounded-lg bg-gray-100 dark:bg-[#1a1a1a]">
+                <h3 className="text-sm font-semibold mb-3 text-gray-600 dark:text-gray-400">
                   Kaufdaten & Garantie
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Kaufdatum</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Kaufdatum</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Kaufpreis</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Kaufpreis</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Lieferant</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Lieferant</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Garantie bis</p>
-                    <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                    <p className="text-xs text-gray-500">Garantie bis</p>
+                    <p className="text-gray-900 dark:text-white">
                       {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
                         new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
                     </p>
