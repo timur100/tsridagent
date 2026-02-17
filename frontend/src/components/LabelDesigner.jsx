@@ -20,6 +20,7 @@ import { Switch } from './ui/switch';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import toast from 'react-hot-toast';
+import { printAssetLabelWithTemplate } from './PrintableLabel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
