@@ -192,6 +192,9 @@ const AdminPortalContent = () => {
   const [selectedVehicleId, setSelectedVehicleId] = useState(null); // For opening vehicle detail from global search
   const [inventoryTab, setInventoryTab] = useState('items'); // 'items' or 'goods-receipt'
   const [selectedTsridAsset, setSelectedTsridAsset] = useState(null); // For opening TSRID asset detail from global search
+  const [isEditingTsridAsset, setIsEditingTsridAsset] = useState(false); // Edit mode for TSRID asset modal
+  const [tsridAssetEditForm, setTsridAssetEditForm] = useState({}); // Edit form data
+  const [isSavingTsridAsset, setIsSavingTsridAsset] = useState(false); // Save loading state
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
   
   // Reset selectedVehicleId when changing tabs
