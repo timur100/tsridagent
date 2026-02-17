@@ -3466,39 +3466,39 @@ const AdminPortalContent = () => {
               </div>
 
               {/* Product & Technical Data */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a]">
-                <h3 className="text-sm font-semibold mb-3 text-gray-400">
+              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                <h3 className="text-sm font-semibold mb-3 text-gray-300">
                   Produkt & Technische Daten
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-gray-500">Typ</p>
+                    <p className="text-xs text-gray-400">Typ</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Hersteller</p>
+                    <p className="text-xs text-gray-400">Hersteller</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.manufacturer || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Modell</p>
+                    <p className="text-xs text-gray-400">Modell</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.model || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">IMEI</p>
-                    <p className="font-mono text-sm text-gray-300 break-all">
+                    <p className="text-xs text-gray-400">IMEI</p>
+                    <p className="font-mono text-sm text-gray-200 break-all">
                       {selectedTsridAsset.imei || '-'}
                     </p>
                   </div>
                   {selectedTsridAsset.mac && (
                     <div>
-                      <p className="text-xs text-gray-500">MAC-Adresse</p>
-                      <p className="font-mono text-sm text-gray-300">
+                      <p className="text-xs text-gray-400">MAC-Adresse</p>
+                      <p className="font-mono text-sm text-gray-200">
                         {selectedTsridAsset.mac}
                       </p>
                     </div>
@@ -3507,31 +3507,31 @@ const AdminPortalContent = () => {
               </div>
 
               {/* Purchase Data */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a]">
-                <h3 className="text-sm font-semibold mb-3 text-gray-400">
+              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                <h3 className="text-sm font-semibold mb-3 text-gray-300">
                   Kaufdaten & Garantie
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-gray-500">Kaufdatum</p>
+                    <p className="text-xs text-gray-400">Kaufdatum</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Kaufpreis</p>
+                    <p className="text-xs text-gray-400">Kaufpreis</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Lieferant</p>
+                    <p className="text-xs text-gray-400">Lieferant</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Garantie bis</p>
+                    <p className="text-xs text-gray-400">Garantie bis</p>
                     <p className="text-sm text-white">
                       {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
                         new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
@@ -3541,8 +3541,8 @@ const AdminPortalContent = () => {
               </div>
 
               {/* QR Code and Barcode for Label */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a]">
-                <h3 className="text-sm font-semibold mb-3 text-gray-400">
+              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                <h3 className="text-sm font-semibold mb-3 text-gray-300">
                   Label-Vorschau
                 </h3>
                 <div className="flex items-start gap-4 p-3 bg-white rounded">
