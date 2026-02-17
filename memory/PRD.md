@@ -28,6 +28,26 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-17 (Current)
 
+#### Bug Fixes
+23. **Globale Suche Modal zeigt keine Daten (BUG FIX - 2025-02-17)**
+    - **Problem**: Die globale Suche im Admin-Portal öffnete ein leeres Modal bei TSRID-Asset-Suche. Die Daten wurden korrekt an das Modal übergeben, aber nicht angezeigt.
+    - **Root Cause**: CSS Layout-Bug in der Dialog-Komponente. Die Basis-Klasse verwendete `grid`, was dazu führte, dass innere `grid-cols-2` Elemente eine Höhe von 0 hatten.
+    - **Lösung**:
+      1. In `/app/frontend/src/components/ui/dialog.jsx`: `grid` zu `flex flex-col` geändert
+      2. `isDark` Check zu `true` gesetzt (App verwendet immer Dark Mode)
+      3. Alle Textfarben im Modal explizit auf `text-white`, `text-gray-300`, `text-gray-400` gesetzt
+      4. Border zu allen Sektionen hinzugefügt (`border border-gray-700`)
+    - **Dateien**:
+      - `/app/frontend/src/components/ui/dialog.jsx` (Zeile 37: grid → flex flex-col)
+      - `/app/frontend/src/pages/AdminPortal.jsx` (Modal CSS-Klassen aktualisiert)
+    - **Verifizierte Funktionalität**:
+      - Suche nach `TSRID-TAB-i7-0001` öffnet Modal
+      - Alle Sektionen sichtbar: Identifikation, Produkt & Technische Daten, Kaufdaten & Garantie, Label-Vorschau
+      - Status-Badge wird korrekt angezeigt (z.B. "Im Lager" grün)
+      - QR-Code und Seriennummer-Barcode werden angezeigt
+      - Buttons "Schließen" und "In Lagerverwaltung öffnen" funktionieren
+    - **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_30.json)
+
 #### New Features
 22. **Label-Verbesserungen: Asset-ID einzeilig + Seriennummer-Barcode (NEW FEATURE - 2025-02-17)**
     - **Feature**: Verbesserte Labels für Asset-Druck mit zwei neuen Elementen:
