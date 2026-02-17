@@ -3518,8 +3518,8 @@ const AdminPortalContent = () => {
               </div>
 
               {/* QR Code and Barcode for Label */}
-              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <div className="p-4 rounded-lg bg-gray-100 dark:bg-[#1a1a1a]">
+                <h3 className="text-sm font-semibold mb-3 text-gray-600 dark:text-gray-400">
                   Label-Vorschau
                 </h3>
                 <div className="flex items-start gap-4 p-3 bg-white rounded">
@@ -3556,7 +3556,7 @@ const AdminPortalContent = () => {
                 <Button
                   variant="outline"
                   onClick={() => setSelectedTsridAsset(null)}
-                  className={theme === 'dark' ? 'border-gray-600' : ''}
+                  className="dark:border-gray-600"
                 >
                   Schließen
                 </Button>
