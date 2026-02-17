@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://asset-intake-labels.preview.emergentagent.com/portal/admin
+https://modal-visibility-fix.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

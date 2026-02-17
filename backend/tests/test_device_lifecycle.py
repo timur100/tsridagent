@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://asset-intake-labels.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://modal-visibility-fix.preview.emergentagent.com')
 
 class TestDeviceLifecycleAPI:
     """Device Lifecycle Management API Tests"""

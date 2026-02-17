@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://asset-intake-labels.preview.emergentagent.com';
+    this.serverUrl = 'https://modal-visibility-fix.preview.emergentagent.com';
   }
 
   /**

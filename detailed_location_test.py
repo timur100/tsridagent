@@ -9,7 +9,7 @@ import json
 import sys
 
 # Backend URL from environment
-BACKEND_URL = "https://asset-intake-labels.preview.emergentagent.com"
+BACKEND_URL = "https://modal-visibility-fix.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_tenant_admin():
