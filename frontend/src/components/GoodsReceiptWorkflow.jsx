@@ -369,6 +369,103 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   }, [selectedAssetDetail, assetEditForm, fetchUnassignedAssets]);
 
+  // Open label print modal
+  const openLabelPrint = useCallback((asset) => {
+    setLabelToPrint(asset);
+    setShowLabelPrintModal(true);
+  }, []);
+
+  // Print label function
+  const printLabel = useCallback(() => {
+    const printWindow = window.open('', '_blank', 'width=400,height=300');
+    if (!printWindow || !labelToPrint) return;
+    
+    const labelId = labelToPrint.warehouse_asset_id || labelToPrint.asset_id || labelToPrint.manufacturer_sn;
+    const typeLabel = labelToPrint.type_label || labelToPrint.type || '';
+    const serialNumber = labelToPrint.manufacturer_sn || '';
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Label: ${labelId}</title>
+        <style>
+          @page { size: 62mm 29mm; margin: 0; }
+          body { 
+            margin: 0; 
+            padding: 2mm;
+            font-family: Arial, sans-serif;
+            width: 62mm;
+            height: 29mm;
+            box-sizing: border-box;
+          }
+          .label-container {
+            display: flex;
+            align-items: center;
+            gap: 3mm;
+            height: 100%;
+          }
+          .qr-code {
+            flex-shrink: 0;
+          }
+          .qr-code svg {
+            width: 22mm !important;
+            height: 22mm !important;
+          }
+          .info {
+            flex: 1;
+            overflow: hidden;
+          }
+          .label-id {
+            font-size: 11pt;
+            font-weight: bold;
+            margin-bottom: 1mm;
+            word-break: break-all;
+          }
+          .type {
+            font-size: 8pt;
+            color: #666;
+            margin-bottom: 1mm;
+          }
+          .serial {
+            font-size: 7pt;
+            font-family: monospace;
+            color: #333;
+            word-break: break-all;
+          }
+          @media print {
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="label-container">
+          <div class="qr-code" id="qr"></div>
+          <div class="info">
+            <div class="label-id">${labelId}</div>
+            <div class="type">${typeLabel}</div>
+            <div class="serial">SN: ${serialNumber}</div>
+          </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+        <script>
+          QRCode.toCanvas(document.createElement('canvas'), '${labelId}', { width: 88, margin: 0 }, function(err, canvas) {
+            if (!err) {
+              const svg = document.createElement('img');
+              svg.src = canvas.toDataURL();
+              svg.style.width = '22mm';
+              svg.style.height = '22mm';
+              document.getElementById('qr').appendChild(svg);
+              setTimeout(() => { window.print(); window.close(); }, 500);
+            }
+          });
+        </script>
+      </body>
+      </html>
+    `);
+    printWindow.document.close();
+  }, [labelToPrint]);
+
   // Fetch locations for assignment
   const fetchLocations = useCallback(async () => {
     try {
