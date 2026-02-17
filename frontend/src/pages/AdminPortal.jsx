@@ -3419,18 +3419,11 @@ const AdminPortalContent = () => {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto !bg-[#2d2d2d] !border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white">
-              Gerätedetails - {selectedTsridAsset?.warehouse_asset_id}
+              Gerätedetails
             </DialogTitle>
           </DialogHeader>
           {selectedTsridAsset && (
             <div className="space-y-4 text-white">
-              {/* Debug Output */}
-              <div className="p-2 bg-red-500/20 rounded text-red-300 text-xs">
-                DEBUG: warehouse_id={selectedTsridAsset.warehouse_asset_id}, 
-                asset_id={selectedTsridAsset.asset_id}, 
-                sn={selectedTsridAsset.manufacturer_sn}
-              </div>
-              
               {/* Identification */}
               <div className="p-4 rounded-lg bg-[#1a1a1a]">
                 <h3 className="text-sm font-semibold mb-3 text-gray-400">
