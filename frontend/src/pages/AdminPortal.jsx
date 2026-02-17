@@ -3439,29 +3439,29 @@ const AdminPortalContent = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-gray-500">Lager-ID</p>
-                    <p className="font-mono font-medium text-sm text-white">
+                    <p className="font-mono font-medium text-sm text-white break-all">
                       {selectedTsridAsset.warehouse_asset_id || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Asset-ID</p>
-                    <p className="font-mono font-medium text-sm text-white">
+                    <p className="font-mono font-medium text-sm text-white break-all">
                       {selectedTsridAsset.asset_id || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Seriennummer</p>
-                    <p className="font-mono text-gray-300">
+                    <p className="font-mono text-sm text-gray-300 break-all">
                       {selectedTsridAsset.manufacturer_sn || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Status</p>
                     <span className={`inline-block px-2 py-1 text-xs rounded ${
-                      selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-500' :
-                      selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-500' :
-                      selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-500' :
-                      'bg-gray-500/20 text-gray-500'
+                      selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
+                      selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
+                      selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-gray-500/20 text-gray-400'
                     }`}>
                       {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
                        selectedTsridAsset.status === 'deployed' ? 'Deployed' :
@@ -3480,32 +3480,32 @@ const AdminPortalContent = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-gray-500">Typ</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Hersteller</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.manufacturer || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Modell</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.model || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">IMEI</p>
-                    <p className="font-mono text-gray-300">
+                    <p className="font-mono text-sm text-gray-300 break-all">
                       {selectedTsridAsset.imei || '-'}
                     </p>
                   </div>
                   {selectedTsridAsset.mac && (
                     <div>
                       <p className="text-xs text-gray-500">MAC-Adresse</p>
-                      <p className="font-mono text-gray-300">
+                      <p className="font-mono text-sm text-gray-300">
                         {selectedTsridAsset.mac}
                       </p>
                     </div>
@@ -3521,25 +3521,25 @@ const AdminPortalContent = () => {
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className="text-xs text-gray-500">Kaufdatum</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Kaufpreis</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Lieferant</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
                     </p>
                   </div>
                   <div>
                     <p className="text-xs text-gray-500">Garantie bis</p>
-                    <p className="text-white">
+                    <p className="text-sm text-white">
                       {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
                         new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
                     </p>
