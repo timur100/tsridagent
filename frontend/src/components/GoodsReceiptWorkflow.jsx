@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Package, MapPin, Search, Plus, Check, Trash2, 
   RefreshCw, Barcode, Printer, ArrowRight, CheckCircle,
-  Tag, Scan, ClipboardList
+  Tag, Scan, ClipboardList, Edit
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
