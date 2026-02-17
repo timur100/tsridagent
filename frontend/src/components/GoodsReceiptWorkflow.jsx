@@ -1856,10 +1856,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                 {isEditingAsset ? 'Gerät bearbeiten' : 'Gerätdetails'}
               </div>
               {!isEditingAsset && selectedAssetDetail && !assetDetailLoading && (
-                <Button size="sm" variant="outline" onClick={startEditingAsset}>
-                  <Edit className="h-4 w-4 mr-1" />
-                  Bearbeiten
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button size="sm" variant="outline" onClick={() => openLabelPrint(selectedAssetDetail)}>
+                    <Printer className="h-4 w-4 mr-1" />
+                    Label
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={startEditingAsset}>
+                    <Edit className="h-4 w-4 mr-1" />
+                    Bearbeiten
+                  </Button>
+                </div>
               )}
             </DialogTitle>
           </DialogHeader>
