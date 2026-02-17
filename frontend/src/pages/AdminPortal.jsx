@@ -3416,181 +3416,181 @@ const AdminPortalContent = () => {
         open={!!selectedTsridAsset} 
         onOpenChange={(open) => !open && setSelectedTsridAsset(null)}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#2d2d2d] border-gray-700">
-          <DialogHeader>
-            <DialogTitle className="text-white">
+        <DialogContent className="max-w-3xl bg-[#2d2d2d] border-gray-700">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-white text-base">
               Gerätedetails
             </DialogTitle>
           </DialogHeader>
           {selectedTsridAsset && (
-            <div className="space-y-4">
-              {/* Identification */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                <h3 className="text-sm font-semibold mb-3 text-gray-300">
-                  Identifikation
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs text-gray-400">Lager-ID</p>
-                    <p className="font-mono font-medium text-sm text-white break-all">
-                      {selectedTsridAsset.warehouse_asset_id || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Asset-ID</p>
-                    <p className="font-mono font-medium text-sm text-white break-all">
-                      {selectedTsridAsset.asset_id || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Seriennummer</p>
-                    <p className="font-mono text-sm text-gray-200 break-all">
-                      {selectedTsridAsset.manufacturer_sn || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Status</p>
-                    <span className={`inline-block px-2 py-1 text-xs rounded font-medium ${
-                      selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
-                      selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
-                      selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-300'
-                    }`}>
-                      {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
-                       selectedTsridAsset.status === 'deployed' ? 'Deployed' :
-                       selectedTsridAsset.status === 'unassigned' ? 'Nicht zugewiesen' :
-                       selectedTsridAsset.status || 'Unbekannt'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Product & Technical Data */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                <h3 className="text-sm font-semibold mb-3 text-gray-300">
-                  Produkt & Technische Daten
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs text-gray-400">Typ</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Hersteller</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.manufacturer || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Modell</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.model || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">IMEI</p>
-                    <p className="font-mono text-sm text-gray-200 break-all">
-                      {selectedTsridAsset.imei || '-'}
-                    </p>
-                  </div>
-                  {selectedTsridAsset.mac && (
+            <div className="space-y-2">
+              {/* Row 1: Identification + Product & Technical Data */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Identification */}
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                  <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                    Identifikation
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <p className="text-xs text-gray-400">MAC-Adresse</p>
-                      <p className="font-mono text-sm text-gray-200">
-                        {selectedTsridAsset.mac}
+                      <p className="text-[10px] text-gray-500">Lager-ID</p>
+                      <p className="font-mono font-medium text-xs text-white break-all">
+                        {selectedTsridAsset.warehouse_asset_id || '-'}
                       </p>
                     </div>
-                  )}
+                    <div>
+                      <p className="text-[10px] text-gray-500">Asset-ID</p>
+                      <p className="font-mono font-medium text-xs text-white break-all">
+                        {selectedTsridAsset.asset_id || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Seriennummer</p>
+                      <p className="font-mono text-xs text-gray-200 break-all">
+                        {selectedTsridAsset.manufacturer_sn || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Status</p>
+                      <span className={`inline-block px-1.5 py-0.5 text-[10px] rounded font-medium ${
+                        selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
+                        selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
+                        selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
+                        'bg-gray-500/20 text-gray-300'
+                      }`}>
+                        {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
+                         selectedTsridAsset.status === 'deployed' ? 'Deployed' :
+                         selectedTsridAsset.status === 'unassigned' ? 'Nicht zugewiesen' :
+                         selectedTsridAsset.status || 'Unbekannt'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Product & Technical Data */}
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                  <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                    Produkt & Technik
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-[10px] text-gray-500">Typ</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Hersteller</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.manufacturer || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Modell</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.model || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">IMEI</p>
+                      <p className="font-mono text-xs text-gray-200 break-all">
+                        {selectedTsridAsset.imei || '-'}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Purchase Data */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                <h3 className="text-sm font-semibold mb-3 text-gray-300">
-                  Kaufdaten & Garantie
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <p className="text-xs text-gray-400">Kaufdatum</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Kaufpreis</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Lieferant</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400">Garantie bis</p>
-                    <p className="text-sm text-white">
-                      {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
-                        new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
-                    </p>
+              {/* Row 2: Purchase Data + Label Preview */}
+              <div className="grid grid-cols-2 gap-2">
+                {/* Purchase Data */}
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                  <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                    Kaufdaten & Garantie
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-[10px] text-gray-500">Kaufdatum</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Kaufpreis</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Lieferant</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Garantie bis</p>
+                      <p className="text-xs text-white">
+                        {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+                          new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* QR Code and Barcode for Label */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                <h3 className="text-sm font-semibold mb-3 text-gray-300">
-                  Label-Vorschau
-                </h3>
-                <div className="flex items-start gap-4 p-3 bg-white rounded">
-                  <QRCodeSVG 
-                    value={selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || selectedTsridAsset.manufacturer_sn || ''}
-                    size={80}
-                    level="M"
-                  />
-                  <div className="flex-1 text-black">
-                    <p className="font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis">
-                      {selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || '-'}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {selectedTsridAsset.type_label || selectedTsridAsset.type}
-                    </p>
-                    {selectedTsridAsset.manufacturer_sn && (
-                      <div className="mt-2">
-                        <Barcode 
-                          value={selectedTsridAsset.manufacturer_sn}
-                          width={1}
-                          height={30}
-                          fontSize={8}
-                          margin={0}
-                          displayValue={true}
-                        />
-                      </div>
-                    )}
+                {/* QR Code and Barcode for Label */}
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                  <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                    Label-Vorschau
+                  </h3>
+                  <div className="flex items-start gap-3 p-2 bg-white rounded">
+                    <QRCodeSVG 
+                      value={selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || selectedTsridAsset.manufacturer_sn || ''}
+                      size={60}
+                      level="M"
+                    />
+                    <div className="flex-1 text-black min-w-0">
+                      <p className="font-bold text-xs whitespace-nowrap overflow-hidden text-ellipsis">
+                        {selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || '-'}
+                      </p>
+                      <p className="text-[10px] text-gray-600">
+                        {selectedTsridAsset.type_label || selectedTsridAsset.type}
+                      </p>
+                      {selectedTsridAsset.manufacturer_sn && (
+                        <div className="mt-1">
+                          <Barcode 
+                            value={selectedTsridAsset.manufacturer_sn}
+                            width={1}
+                            height={20}
+                            fontSize={7}
+                            margin={0}
+                            displayValue={true}
+                          />
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-end gap-2">
+              <div className="flex justify-end gap-2 pt-1">
                 <Button
                   variant="outline"
+                  size="sm"
                   onClick={() => setSelectedTsridAsset(null)}
-                  className="dark:border-gray-600"
+                  className="dark:border-gray-600 h-8"
                 >
                   Schließen
                 </Button>
                 <Button
+                  size="sm"
                   onClick={() => {
                     setActiveTab('assets');
                     setAssetsSubTab('rollout');
                     setSelectedTsridAsset(null);
                     toast.success('Navigiere zu Asset-Verwaltung...');
                   }}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="bg-[#c00000] hover:bg-[#a00000] text-white h-8"
                 >
                   In Lagerverwaltung öffnen
                 </Button>
