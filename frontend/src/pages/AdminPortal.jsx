@@ -801,13 +801,8 @@ const AdminPortalContent = () => {
                       }
                     }, 200);
                   } else if (result.type === 'tsrid_asset') {
-                    // Open TSRID Asset in Lagerverwaltung
-                    setActiveTab('inventory');
-                    setInventoryTab('lager');
-                    // Show toast with asset info
-                    const warehouseId = result.data.warehouse_asset_id || result.id;
-                    const sn = result.data.manufacturer_sn;
-                    toast.success(`Lager-Asset gefunden: ${warehouseId} (SN: ${sn})`);
+                    // Open TSRID Asset Detail Modal
+                    setSelectedTsridAsset(result.data);
                   } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
