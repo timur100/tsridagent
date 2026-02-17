@@ -345,6 +345,7 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - [x] Location-based Kit ID generation (MUCT01-01-KIT format) - **FIXED 2025-02-15**
 - [x] TSRID KIT umbenennen zu "TSRID KIT i7" (KIT-TSRi7) - **DONE 2025-02-15**
 - [x] TSRID KIT i5 Template erstellen (KIT-TSRi5) - **DONE 2025-02-15**
+- [x] **Label-Verbesserungen: Asset-ID einzeilig + Seriennummer-Barcode** - **DONE 2025-02-17**
 
 ### P1 - High Priority
 - [x] **Hybrid Inventory System for Kit-Zusammenstellung** - **IMPLEMENTED 2025-02-15**
