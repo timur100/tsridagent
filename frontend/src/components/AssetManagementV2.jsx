@@ -529,11 +529,22 @@ const AssetManagementV2 = ({ theme }) => {
       const svgElement = qrContainer.querySelector('svg');
       if (svgElement) {
         const clonedSvg = svgElement.cloneNode(true);
-        clonedSvg.setAttribute('width', '22mm');
-        clonedSvg.setAttribute('height', '22mm');
-        clonedSvg.style.width = '22mm';
-        clonedSvg.style.height = '22mm';
+        clonedSvg.setAttribute('width', '18mm');
+        clonedSvg.setAttribute('height', '18mm');
+        clonedSvg.style.width = '18mm';
+        clonedSvg.style.height = '18mm';
         qrSvgHtml = clonedSvg.outerHTML;
+      }
+    }
+    
+    // Get the Barcode SVG from the preview
+    const barcodeContainer = document.querySelector('[data-barcode-preview]');
+    let barcodeSvgHtml = '';
+    if (barcodeContainer && serialNumber) {
+      const svgElement = barcodeContainer.querySelector('svg');
+      if (svgElement) {
+        const clonedSvg = svgElement.cloneNode(true);
+        barcodeSvgHtml = clonedSvg.outerHTML;
       }
     }
     
@@ -552,7 +563,7 @@ const AssetManagementV2 = ({ theme }) => {
           @page { size: 62mm 29mm; margin: 0; }
           body { 
             margin: 0; 
-            padding: 2mm;
+            padding: 1.5mm;
             font-family: Arial, sans-serif;
             width: 62mm;
             height: 29mm;
@@ -560,39 +571,49 @@ const AssetManagementV2 = ({ theme }) => {
           }
           .label-container {
             display: flex;
-            align-items: center;
-            gap: 3mm;
+            align-items: flex-start;
+            gap: 2mm;
             height: 100%;
           }
           .qr-code {
             flex-shrink: 0;
-            width: 22mm;
-            height: 22mm;
+            width: 18mm;
+            height: 18mm;
           }
           .qr-code svg {
-            width: 22mm !important;
-            height: 22mm !important;
+            width: 18mm !important;
+            height: 18mm !important;
           }
           .info {
             flex: 1;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+          }
+          .top-info {
+            flex-shrink: 0;
           }
           .label-id {
-            font-size: 11pt;
+            font-size: 9pt;
             font-weight: bold;
-            margin-bottom: 1mm;
-            word-break: break-all;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
           .type {
-            font-size: 8pt;
-            color: #666;
-            margin-bottom: 1mm;
-          }
-          .serial {
             font-size: 7pt;
-            font-family: monospace;
-            color: #333;
-            word-break: break-all;
+            color: #666;
+          }
+          .barcode-container {
+            flex-shrink: 0;
+            margin-top: auto;
+          }
+          .barcode-container svg {
+            display: block;
+            max-width: 100%;
+            height: auto;
           }
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -603,9 +624,11 @@ const AssetManagementV2 = ({ theme }) => {
         <div class="label-container">
           <div class="qr-code">${qrSvgHtml}</div>
           <div class="info">
-            <div class="label-id">${labelId}</div>
-            <div class="type">${typeLabel}</div>
-            <div class="serial">SN: ${serialNumber}</div>
+            <div class="top-info">
+              <div class="label-id">${labelId}</div>
+              <div class="type">${typeLabel}</div>
+            </div>
+            ${serialNumber ? `<div class="barcode-container">${barcodeSvgHtml}</div>` : ''}
           </div>
         </div>
         <script>
