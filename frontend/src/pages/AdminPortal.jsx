@@ -3416,7 +3416,7 @@ const AdminPortalContent = () => {
         open={!!selectedTsridAsset} 
         onOpenChange={(open) => !open && setSelectedTsridAsset(null)}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto !bg-[#2d2d2d] !border-gray-700">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#2d2d2d] border-gray-700">
           <DialogHeader>
             <DialogTitle className="text-white">
               Gerätedetails
