@@ -3423,38 +3423,38 @@ const AdminPortalContent = () => {
             </DialogTitle>
           </DialogHeader>
           {selectedTsridAsset && (
-            <div className="space-y-4 text-white">
+            <div className="space-y-4">
               {/* Identification */}
-              <div className="p-4 rounded-lg bg-[#1a1a1a]">
-                <h3 className="text-sm font-semibold mb-3 text-gray-400">
+              <div className="p-4 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                <h3 className="text-sm font-semibold mb-3 text-gray-300">
                   Identifikation
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-gray-500">Lager-ID</p>
+                    <p className="text-xs text-gray-400">Lager-ID</p>
                     <p className="font-mono font-medium text-sm text-white break-all">
                       {selectedTsridAsset.warehouse_asset_id || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Asset-ID</p>
+                    <p className="text-xs text-gray-400">Asset-ID</p>
                     <p className="font-mono font-medium text-sm text-white break-all">
                       {selectedTsridAsset.asset_id || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Seriennummer</p>
-                    <p className="font-mono text-sm text-gray-300 break-all">
+                    <p className="text-xs text-gray-400">Seriennummer</p>
+                    <p className="font-mono text-sm text-gray-200 break-all">
                       {selectedTsridAsset.manufacturer_sn || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500">Status</p>
-                    <span className={`inline-block px-2 py-1 text-xs rounded ${
+                    <p className="text-xs text-gray-400">Status</p>
+                    <span className={`inline-block px-2 py-1 text-xs rounded font-medium ${
                       selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
                       selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
                       selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-gray-500/20 text-gray-300'
                     }`}>
                       {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
                        selectedTsridAsset.status === 'deployed' ? 'Deployed' :
