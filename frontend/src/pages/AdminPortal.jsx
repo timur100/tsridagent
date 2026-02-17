@@ -3613,18 +3613,15 @@ const AdminPortalContent = () => {
                       </div>
                     </div>
                     {isEditingTsridAsset && (
-                      <div className="flex justify-between gap-2">
-                        <div className="flex-1">
-                          <p className="text-[10px] text-gray-500">MAC-Adresse</p>
-                          <input
-                            type="text"
-                            value={tsridAssetEditForm.mac}
-                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, mac: e.target.value}))}
-                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
-                            placeholder="00:00:00:00:00:00"
-                          />
-                        </div>
-                        <div className="flex-1"></div>
+                      <div>
+                        <p className="text-[10px] text-gray-500">MAC-Adresse</p>
+                        <input
+                          type="text"
+                          value={tsridAssetEditForm.mac}
+                          onChange={(e) => setTsridAssetEditForm(prev => ({...prev, mac: e.target.value}))}
+                          className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
+                          placeholder="00:00:00:00:00:00"
+                        />
                       </div>
                     )}
                   </div>
