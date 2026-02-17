@@ -3510,7 +3510,8 @@ const AdminPortalContent = () => {
                   <div>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Garantie bis</p>
                     <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
-                      {selectedTsridAsset.warranty_end ? new Date(selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
+                      {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+                        new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
                     </p>
                   </div>
                 </div>
