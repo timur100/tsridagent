@@ -3502,7 +3502,7 @@ const AdminPortalContent = () => {
               </div>
 
               {/* Row 2: Purchase Data + Label Preview */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 items-stretch">
                 {/* Purchase Data */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
