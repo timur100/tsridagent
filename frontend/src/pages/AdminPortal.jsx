@@ -3425,7 +3425,7 @@ const AdminPortalContent = () => {
           {selectedTsridAsset && (
             <div className="space-y-2">
               {/* Row 1: Identification + Product & Technical Data */}
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 items-stretch">
                 {/* Identification */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
