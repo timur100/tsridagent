@@ -463,6 +463,11 @@ app.include_router(kit_templates_router)
 from routes.asset_management_v2 import router as asset_mgmt_v2_router
 app.include_router(asset_mgmt_v2_router)
 
+# Label Templates API
+from routes.label_templates import router as label_templates_router, set_database as set_label_templates_db
+set_label_templates_db(db)
+app.include_router(label_templates_router)
+
 # Label Printer API (Brother QL-820NWB)
 app.include_router(label_printer_router)
 
