@@ -2877,7 +2877,7 @@ const AssetManagementV2 = ({ theme }) => {
               <div className={`p-4 rounded-lg border-2 border-dashed ${isDark ? 'border-gray-600 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'}`}>
                 <p className="text-xs text-gray-500 mb-2 text-center">Vorschau (62mm x 29mm)</p>
                 <div className="flex items-center gap-4 p-2 bg-white rounded" style={{ minHeight: '80px' }}>
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0" data-qr-preview="true">
                     <QRCodeSVG 
                       value={labelToPrint.asset_id || labelToPrint.warehouse_asset_id || labelToPrint.manufacturer_sn || ''}
                       size={70}
