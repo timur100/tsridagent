@@ -1003,7 +1003,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   Seriennummer (Barcode scannen oder eingeben)
                 </label>
                 <div className="relative">
-                  <Barcode className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <BarcodeIcon className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
                   <Input
                     placeholder="Seriennummer scannen oder eingeben..."
                     value={currentSN}
@@ -1193,7 +1193,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             
             {intakeItems.length === 0 && (
               <div className={`text-center py-12 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                <Barcode className="h-12 w-12 mx-auto mb-4 opacity-30" />
+                <BarcodeIcon className="h-12 w-12 mx-auto mb-4 opacity-30" />
                 <p>Scannen Sie Barcodes oder geben Sie Seriennummern ein</p>
                 <p className="text-sm mt-1">Geräte erhalten automatisch eine Lager-ID (z.B. {nextAssetId})</p>
               </div>
