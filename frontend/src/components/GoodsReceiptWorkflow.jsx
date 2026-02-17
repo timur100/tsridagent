@@ -140,6 +140,10 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [isEditingAsset, setIsEditingAsset] = useState(false);
   const [assetEditForm, setAssetEditForm] = useState({});
   const [savingAsset, setSavingAsset] = useState(false);
+  
+  // Label Print Modal State
+  const [showLabelPrintModal, setShowLabelPrintModal] = useState(false);
+  const [labelToPrint, setLabelToPrint] = useState(null);
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
