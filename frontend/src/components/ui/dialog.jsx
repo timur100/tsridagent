@@ -73,12 +73,19 @@ const DialogFooter = ({
 )
 DialogFooter.displayName = "DialogFooter"
 
-const DialogTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn("text-lg font-semibold leading-none tracking-tight text-gray-900 dark:text-white", className)}
-    {...props} />
-))
+const DialogTitle = React.forwardRef(({ className, ...props }, ref) => {
+  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  return (
+    <DialogPrimitive.Title
+      ref={ref}
+      className={cn(
+        "text-lg font-semibold leading-none tracking-tight",
+        isDark ? "text-white" : "text-gray-900",
+        className
+      )}
+      {...props} />
+  );
+})
 DialogTitle.displayName = DialogPrimitive.Title.displayName
 
 const DialogDescription = React.forwardRef(({ className, ...props }, ref) => (
