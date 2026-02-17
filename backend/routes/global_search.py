@@ -169,8 +169,36 @@ async def global_search(
             sn = asset.get('manufacturer_sn', 'N/A')
             type_label = asset.get('type_label', asset.get('type', 'N/A'))
             status = asset.get('status', 'unknown')
+            location_code = asset.get('location_id', '')
+            
+            # Fetch location and tenant info if available
+            location_info = None
+            tenant_info = None
+            if location_code:
+                loc = portal_db.tenant_locations.find_one({'location_code': location_code}, {'_id': 0})
+                if loc:
+                    location_info = {
+                        'location_code': loc.get('location_code'),
+                        'station_name': loc.get('station_name'),
+                        'city': loc.get('city'),
+                        'street': loc.get('street'),
+                        'country': loc.get('country'),
+                        'manager': loc.get('manager'),
+                        'phone': loc.get('phone'),
+                        'email': loc.get('email')
+                    }
+                    tenant_info = {
+                        'tenant_id': loc.get('tenant_id'),
+                        'tenant_name': loc.get('tenant_name')
+                    }
             
             if warehouse_id or sn:
+                asset_data = {**asset}
+                if location_info:
+                    asset_data['location_info'] = location_info
+                if tenant_info:
+                    asset_data['tenant_info'] = tenant_info
+                
                 assets_results.append({
                     "type": "tsrid_asset",
                     "id": warehouse_id or sn,
@@ -179,7 +207,9 @@ async def global_search(
                     "status": status,
                     "warehouse_asset_id": warehouse_id,
                     "manufacturer_sn": sn,
-                    "data": asset
+                    "location_info": location_info,
+                    "tenant_info": tenant_info,
+                    "data": asset_data
                 })
 
         # 2. Search Locations (HIGH PRIORITY) - Search ALL fields
