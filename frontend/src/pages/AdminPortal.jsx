@@ -3425,44 +3425,40 @@ const AdminPortalContent = () => {
           {selectedTsridAsset && (
             <div className="space-y-2">
               {/* Row 1: Identification + Product & Technical Data */}
-              <div className="grid grid-cols-2 gap-2 items-stretch">
+              <div className="grid grid-cols-2 gap-2">
                 {/* Identification */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Identifikation
                   </h3>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-                    <div>
-                      <p className="text-[10px] text-gray-500">Lager-ID</p>
-                      <p className="font-mono font-medium text-xs text-white break-all leading-tight">
-                        {selectedTsridAsset.warehouse_asset_id || '-'}
-                      </p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-[10px] text-gray-500">Lager-ID</p>
+                        <p className="font-mono font-medium text-xs text-white">{selectedTsridAsset.warehouse_asset_id || '-'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500">Status</p>
+                        <span className={`inline-block px-1.5 py-0.5 text-[10px] rounded font-medium ${
+                          selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
+                          selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
+                          selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
+                          'bg-gray-500/20 text-gray-300'
+                        }`}>
+                          {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
+                           selectedTsridAsset.status === 'deployed' ? 'Deployed' :
+                           selectedTsridAsset.status === 'unassigned' ? 'Nicht zugewiesen' :
+                           selectedTsridAsset.status || 'Unbekannt'}
+                        </span>
+                      </div>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Asset-ID</p>
-                      <p className="font-mono font-medium text-xs text-white break-all leading-tight">
-                        {selectedTsridAsset.asset_id || '-'}
-                      </p>
+                      <p className="font-mono text-xs text-white">{selectedTsridAsset.asset_id || '-'}</p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Seriennummer</p>
-                      <p className="font-mono text-xs text-gray-200 break-all leading-tight">
-                        {selectedTsridAsset.manufacturer_sn || '-'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Status</p>
-                      <span className={`inline-block px-1.5 py-0.5 text-[10px] rounded font-medium ${
-                        selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-400' :
-                        selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-400' :
-                        selectedTsridAsset.status === 'unassigned' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-gray-500/20 text-gray-300'
-                      }`}>
-                        {selectedTsridAsset.status === 'in_storage' ? 'Im Lager' :
-                         selectedTsridAsset.status === 'deployed' ? 'Deployed' :
-                         selectedTsridAsset.status === 'unassigned' ? 'Nicht zugewiesen' :
-                         selectedTsridAsset.status || 'Unbekannt'}
-                      </span>
+                      <p className="font-mono text-xs text-gray-200 break-all">{selectedTsridAsset.manufacturer_sn || '-'}</p>
                     </div>
                   </div>
                 </div>
@@ -3472,67 +3468,59 @@ const AdminPortalContent = () => {
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Produkt & Technik
                   </h3>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-                    <div>
-                      <p className="text-[10px] text-gray-500">Typ</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}
-                      </p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-[10px] text-gray-500">Typ</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500">Hersteller</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.manufacturer || '-'}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Hersteller</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.manufacturer || '-'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Modell</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.model || '-'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">IMEI</p>
-                      <p className="font-mono text-xs text-gray-200 break-all leading-tight">
-                        {selectedTsridAsset.imei || '-'}
-                      </p>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-[10px] text-gray-500">Modell</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.model || '-'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500">IMEI</p>
+                        <p className="font-mono text-xs text-gray-200">{selectedTsridAsset.imei || '-'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Row 2: Purchase Data + Label Preview */}
-              <div className="grid grid-cols-2 gap-2 items-stretch">
+              <div className="grid grid-cols-2 gap-2">
                 {/* Purchase Data */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Kaufdaten & Garantie
                   </h3>
-                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
-                    <div>
-                      <p className="text-[10px] text-gray-500">Kaufdatum</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
-                      </p>
+                  <div className="space-y-1">
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-[10px] text-gray-500">Kaufdatum</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500">Kaufpreis</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Kaufpreis</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Lieferant</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-[10px] text-gray-500">Garantie bis</p>
-                      <p className="text-xs text-white leading-tight">
-                        {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
-                          new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
-                      </p>
+                    <div className="flex justify-between">
+                      <div>
+                        <p className="text-[10px] text-gray-500">Lieferant</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-gray-500">Garantie bis</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+                          new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
