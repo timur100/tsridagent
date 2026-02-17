@@ -29,6 +29,37 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 ### Session: 2025-02-16 (Current)
 
 #### Bug Fixes
+20. **Asset-Detail-Modal öffnet sich nicht (BUG FIX - 2025-02-16)**
+    - **Problem**: Beim Klicken auf Assets in der Assets-Tabelle öffnete sich kein Detail-Modal
+    - **Root Cause**: `openDetailModal('asset', asset.asset_id)` funktionierte nicht für Assets mit `asset_id: null`
+    - **Lösung**: 
+      1. Neuer Backend-Endpoint `/api/asset-mgmt/assets/search-detail?q=<identifier>` erstellt
+      2. Endpoint sucht nach `warehouse_asset_id`, `manufacturer_sn`, `imei`, `mac`, oder `asset_id`
+      3. Frontend verwendet jetzt Fallback: `asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn`
+    - **Dateien**: 
+      - `/app/backend/routes/asset_management_v2.py` (neuer Endpoint)
+      - `/app/frontend/src/components/AssetManagementV2.jsx` (openDetailModal geändert)
+    - **Test-Status**: ✅ Manuell getestet
+
+#### New Features
+21. **Scan-to-Detail Feature & Asset-Detail-Modal für Wareneingang (NEW FEATURE - 2025-02-16)**
+    - **Feature**: Komplettes Asset-Detail-Modal mit allen Informationen und Historie
+    - **Funktionen**:
+      - Klicken auf Asset-Zeile öffnet Detail-Modal
+      - Suchfeld akzeptiert Lager-ID / Seriennummer / IMEI (Scan-to-Detail)
+      - Bei Enter-Taste wird direkt das Detail-Modal geöffnet
+    - **Details angezeigt**:
+      - Identifikation (Lager-ID, Asset-ID, Seriennummer, Status, IMEI, MAC)
+      - Produkt (Typ, Hersteller, Modell)
+      - Zuordnung (Standort, Kit)
+      - Wareneingang (Datum, Empfänger, Lieferant)
+      - Notizen
+      - Historie (Timeline aller Ereignisse)
+    - **Dateien**:
+      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (neues Modal + openAssetDetail)
+      - `/app/backend/routes/asset_management_v2.py` (search-detail Endpoint)
+    - **Test-Status**: ✅ Screenshots + API-Tests bestanden
+
 19. **Asset erscheint nicht in "Nicht zugewiesen"-Liste (BUG FIX - 2025-02-16)**
     - **Problem**: "gescannte Lager-ID erscheint nicht bei 'Nicht zugewiesen' - ganzer datensatz fehlt" - Neu erstellte Assets erschienen nicht sofort in der Unassigned-Liste
     - **Root Cause**: Frontend `GoodsReceiptWorkflow.jsx` rief `fetchUnassignedAssets()` nicht nach erfolgreicher Asset-Erstellung auf
