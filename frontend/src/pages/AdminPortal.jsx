@@ -3560,11 +3560,11 @@ const AdminPortalContent = () => {
                 </div>
 
                 {/* Product & Technical Data - Editable */}
-                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700 overflow-visible">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Produkt & Technik
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     <div className="flex justify-between gap-2">
                       <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Typ</p>
