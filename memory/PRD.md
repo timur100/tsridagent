@@ -29,6 +29,25 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 ### Session: 2025-02-17 (Current)
 
 #### Bug Fixes
+26. **Label-Druck abgeschnitten bei 62mm Endlosrolle (BUG FIX - 2025-02-17)**
+    - **Problem**: Beim Drucken von Labels auf 62mm Endlosrollen wurde der Inhalt oben und unten abgeschnitten.
+    - **Root Cause**: Die CSS `@page` Regel hatte eine feste Größe (`size: 62mm 29mm`), was bei einer Endlosrolle zu Abschneiden führte.
+    - **Lösung**: 
+      1. Neue wiederverwendbare `PrintableLabel.jsx` Komponente erstellt
+      2. CSS geändert zu `@page { size: 62mm auto; }` - feste Breite, automatische Höhe
+      3. Professionelleres Label-Layout mit QR-Code links, Info rechts, Barcode unten
+      4. CDN-Libraries für QR-Code und Barcode im Druckfenster für maximale Kompatibilität
+    - **Refactoring**: Duplizierte Print-Logik aus `GoodsReceiptWorkflow.jsx` und `AssetManagementV2.jsx` in eine zentrale Komponente konsolidiert
+    - **Dateien**:
+      - `/app/frontend/src/components/PrintableLabel.jsx` (NEU - exportiert printAssetLabel, LabelPreview, LabelPrintModal)
+      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (Import Zeile 19, verwendet LabelPrintModal)
+      - `/app/frontend/src/components/AssetManagementV2.jsx` (Import Zeile 26, verwendet LabelPrintModal)
+    - **Druckhinweise im Modal**:
+      - Brother QL-820NWB empfohlen
+      - Papier: 62mm Endlosrolle (DK-22205)
+      - Drucker auf "Automatische Größe" einstellen
+    - **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_31.json)
+
 23. **Globale Suche Modal zeigt keine Daten (BUG FIX - 2025-02-17)**
     - **Problem**: Die globale Suche im Admin-Portal öffnete ein leeres Modal bei TSRID-Asset-Suche. Die Daten wurden korrekt an das Modal übergeben, aber nicht angezeigt.
     - **Root Cause**: CSS Layout-Bug in der Dialog-Komponente. Die Basis-Klasse verwendete `grid`, was dazu führte, dass innere `grid-cols-2` Elemente eine Höhe von 0 hatten.
