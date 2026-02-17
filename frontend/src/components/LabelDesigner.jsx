@@ -902,7 +902,21 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
             <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>
               Schließen
             </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => {
+                // Erstelle ein temporäres Template-Objekt für den Test-Druck
+                const testTemplate = {
+                  elements,
+                  layout,
+                  label_height: labelHeight,
+                  logo_url: logoUrl
+                };
+                printAssetLabelWithTemplate(SAMPLE_ASSET, testTemplate);
+                toast.success('Test-Label wird gedruckt...');
+              }}
+              data-testid="test-print-btn"
+            >
               <Printer className="h-4 w-4 mr-2" />
               Test drucken
             </Button>
