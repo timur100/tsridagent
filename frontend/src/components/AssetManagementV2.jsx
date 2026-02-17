@@ -204,6 +204,10 @@ const AssetManagementV2 = ({ theme }) => {
   const [showKitDetailModal, setShowKitDetailModal] = useState(false);
   const [selectedKitForDetail, setSelectedKitForDetail] = useState(null);
   
+  // Label Print Modal State
+  const [showLabelPrintModal, setShowLabelPrintModal] = useState(false);
+  const [labelToPrint, setLabelToPrint] = useState(null);
+  
   // Filter states
   const [filters, setFilters] = useState({
     country: 'all',
