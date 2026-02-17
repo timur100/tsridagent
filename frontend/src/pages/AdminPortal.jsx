@@ -3520,54 +3520,44 @@ const AdminPortalContent = () => {
           </DialogHeader>
           {selectedTsridAsset && (
             <div className="space-y-2">
-              {/* Assignment/Tenant Info - Full Width */}
+              {/* Assignment/Tenant Info - Compact */}
               {(selectedTsridAsset.tenant_info || selectedTsridAsset.location_info || selectedTsridAsset.location_id) && (
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-blue-500/30">
                   <h3 className="text-xs font-semibold mb-2 text-blue-400 uppercase tracking-wide">
                     Zuweisung & Standort
                   </h3>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-4 gap-2">
                     <div>
-                      <p className="text-[10px] text-gray-500">Kunde / Tenant</p>
-                      <p className="text-sm font-medium text-white">
-                        {selectedTsridAsset.tenant_info?.tenant_name || 'Nicht zugewiesen'}
+                      <p className="text-[10px] text-gray-500">Kunde</p>
+                      <p className="text-xs font-medium text-white truncate">
+                        {selectedTsridAsset.tenant_info?.tenant_name || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Standort-Code</p>
-                      <p className="text-sm font-mono text-white">
+                      <p className="text-xs font-mono text-white">
                         {selectedTsridAsset.location_info?.location_code || selectedTsridAsset.location_id || '-'}
                       </p>
                     </div>
-                    {selectedTsridAsset.location_info && (
-                      <>
-                        <div className="col-span-2">
-                          <p className="text-[10px] text-gray-500">Station</p>
-                          <p className="text-xs text-white">
-                            {selectedTsridAsset.location_info.station_name || '-'}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-gray-500">Stadt</p>
-                          <p className="text-xs text-white">
-                            {selectedTsridAsset.location_info.city || '-'}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-gray-500">Land</p>
-                          <p className="text-xs text-white">
-                            {selectedTsridAsset.location_info.country || selectedTsridAsset.country || '-'}
-                          </p>
-                        </div>
-                        {selectedTsridAsset.location_info.manager && (
-                          <div className="col-span-2">
-                            <p className="text-[10px] text-gray-500">Manager</p>
-                            <p className="text-xs text-white">
-                              {selectedTsridAsset.location_info.manager}
-                            </p>
-                          </div>
-                        )}
-                      </>
+                    <div className="col-span-2">
+                      <p className="text-[10px] text-gray-500">Station</p>
+                      <p className="text-xs text-white truncate">
+                        {selectedTsridAsset.location_info?.station_name || '-'}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Stadt</p>
+                      <p className="text-xs text-white">{selectedTsridAsset.location_info?.city || '-'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-gray-500">Land</p>
+                      <p className="text-xs text-white">{selectedTsridAsset.location_info?.country || '-'}</p>
+                    </div>
+                    {selectedTsridAsset.location_info?.manager && (
+                      <div className="col-span-2">
+                        <p className="text-[10px] text-gray-500">Manager</p>
+                        <p className="text-xs text-white">{selectedTsridAsset.location_info.manager}</p>
+                      </div>
                     )}
                   </div>
                 </div>
