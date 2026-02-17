@@ -3508,28 +3508,28 @@ const AdminPortalContent = () => {
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Kaufdaten & Garantie
                   </h3>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-1.5">
                     <div>
                       <p className="text-[10px] text-gray-500">Kaufdatum</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Kaufpreis</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Lieferant</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-gray-500">Garantie bis</p>
-                      <p className="text-xs text-white">
+                      <p className="text-xs text-white leading-tight">
                         {selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
                           new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}
                       </p>
