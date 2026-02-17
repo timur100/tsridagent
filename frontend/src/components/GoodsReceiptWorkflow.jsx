@@ -1515,7 +1515,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                 </Button>
                 <Button 
                   className="flex-1 bg-blue-600 hover:bg-blue-700"
-                  onClick={printLabel}
+                  onClick={() => printAssetLabel(labelData)}
                   data-testid="print-label-btn"
                 >
                   <Printer className="h-4 w-4 mr-2" />
