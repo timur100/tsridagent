@@ -864,11 +864,6 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     return type;
   };
 
-  // Print label (opens browser print dialog)
-  const printLabel = () => {
-    window.print();
-  };
-
   return (
     <div className="space-y-6">
       {/* Header with Stats */}
