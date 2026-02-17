@@ -805,6 +805,8 @@ const AdminPortalContent = () => {
                     }, 200);
                   } else if (result.type === 'tsrid_asset') {
                     // Open TSRID Asset Detail Modal
+                    console.log('TSRID Asset selected:', result);
+                    console.log('TSRID Asset data:', result.data);
                     setSelectedTsridAsset(result.data);
                   } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
