@@ -515,12 +515,32 @@ const AssetManagementV2 = ({ theme }) => {
 
   // Print label function
   const printLabel = () => {
-    const printWindow = window.open('', '_blank', 'width=400,height=300');
-    if (!printWindow || !labelToPrint) return;
+    if (!labelToPrint) return;
     
     const labelId = labelToPrint.asset_id || labelToPrint.warehouse_asset_id || labelToPrint.manufacturer_sn;
     const typeLabel = labelToPrint.type_label || labelToPrint.type || '';
     const serialNumber = labelToPrint.manufacturer_sn || '';
+    
+    // Get the QR code SVG from the preview
+    const qrContainer = document.querySelector('[data-qr-preview]');
+    let qrSvgHtml = '';
+    if (qrContainer) {
+      const svgElement = qrContainer.querySelector('svg');
+      if (svgElement) {
+        const clonedSvg = svgElement.cloneNode(true);
+        clonedSvg.setAttribute('width', '22mm');
+        clonedSvg.setAttribute('height', '22mm');
+        clonedSvg.style.width = '22mm';
+        clonedSvg.style.height = '22mm';
+        qrSvgHtml = clonedSvg.outerHTML;
+      }
+    }
+    
+    const printWindow = window.open('', '_blank', 'width=400,height=300');
+    if (!printWindow) {
+      toast.error('Popup-Blocker aktiv - bitte erlauben Sie Popups');
+      return;
+    }
     
     printWindow.document.write(`
       <!DOCTYPE html>
@@ -545,8 +565,10 @@ const AssetManagementV2 = ({ theme }) => {
           }
           .qr-code {
             flex-shrink: 0;
+            width: 22mm;
+            height: 22mm;
           }
-          .qr-code img {
+          .qr-code svg {
             width: 22mm !important;
             height: 22mm !important;
           }
@@ -578,25 +600,15 @@ const AssetManagementV2 = ({ theme }) => {
       </head>
       <body>
         <div class="label-container">
-          <div class="qr-code" id="qr"></div>
+          <div class="qr-code">${qrSvgHtml}</div>
           <div class="info">
             <div class="label-id">${labelId}</div>
             <div class="type">${typeLabel}</div>
             <div class="serial">SN: ${serialNumber}</div>
           </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
         <script>
-          QRCode.toCanvas(document.createElement('canvas'), '${labelId}', { width: 88, margin: 0 }, function(err, canvas) {
-            if (!err) {
-              const img = document.createElement('img');
-              img.src = canvas.toDataURL();
-              img.style.width = '22mm';
-              img.style.height = '22mm';
-              document.getElementById('qr').appendChild(img);
-              setTimeout(() => { window.print(); window.close(); }, 500);
-            }
-          });
+          setTimeout(() => { window.print(); }, 300);
         <\/script>
       </body>
       </html>
