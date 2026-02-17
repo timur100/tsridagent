@@ -75,7 +75,8 @@ const DialogFooter = ({
 DialogFooter.displayName = "DialogFooter"
 
 const DialogTitle = React.forwardRef(({ className, ...props }, ref) => {
-  const isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('dark');
+  // This app uses a dark theme by default
+  const isDark = true;
   return (
     <DialogPrimitive.Title
       ref={ref}
