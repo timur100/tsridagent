@@ -1741,12 +1741,25 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       </Dialog>
 
       {/* Asset Detail Modal */}
-      <Dialog open={showAssetDetailModal} onOpenChange={setShowAssetDetailModal}>
+      <Dialog open={showAssetDetailModal} onOpenChange={(open) => {
+        if (!open) {
+          setIsEditingAsset(false);
+        }
+        setShowAssetDetailModal(open);
+      }}>
         <DialogContent className={`max-w-2xl max-h-[85vh] overflow-y-auto ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
           <DialogHeader>
-            <DialogTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : ''}`}>
-              <Package className="h-5 w-5 text-green-500" />
-              Gerätdetails
+            <DialogTitle className={`flex items-center justify-between ${isDark ? 'text-white' : ''}`}>
+              <div className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-green-500" />
+                {isEditingAsset ? 'Gerät bearbeiten' : 'Gerätdetails'}
+              </div>
+              {!isEditingAsset && selectedAssetDetail && !assetDetailLoading && (
+                <Button size="sm" variant="outline" onClick={startEditingAsset}>
+                  <Edit className="h-4 w-4 mr-1" />
+                  Bearbeiten
+                </Button>
+              )}
             </DialogTitle>
           </DialogHeader>
           
@@ -1756,7 +1769,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             </div>
           ) : selectedAssetDetail ? (
             <div className="space-y-4">
-              {/* Basis-Informationen */}
+              {/* Identifikation - immer nur Anzeige */}
               <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                 <h4 className="text-xs font-semibold text-gray-500 mb-3">Identifikation</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -1787,67 +1800,157 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                       {selectedAssetDetail.status}
                     </Badge>
                   </div>
-                  {selectedAssetDetail.imei && (
-                    <div>
-                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>IMEI</p>
-                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.imei}</p>
-                    </div>
-                  )}
-                  {selectedAssetDetail.mac && (
-                    <div>
-                      <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>MAC-Adresse</p>
-                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.mac}</p>
-                    </div>
-                  )}
                 </div>
               </div>
               
-              {/* Typ & Hersteller */}
+              {/* Produkt & Technische Daten - Editierbar */}
               <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <h4 className="text-xs font-semibold text-gray-500 mb-3">Produkt</h4>
-                <div className="grid grid-cols-3 gap-4">
+                <h4 className="text-xs font-semibold text-gray-500 mb-3">Produkt & Technische Daten</h4>
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Typ</p>
                     <Badge variant="outline">{selectedAssetDetail.type_label || selectedAssetDetail.type}</Badge>
                   </div>
                   <div>
-                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Hersteller</p>
-                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.manufacturer || '-'}</p>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Hersteller</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.manufacturer}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, manufacturer: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="z.B. Samsung, Microsoft"
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.manufacturer || '-'}</p>
+                    )}
                   </div>
                   <div>
-                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Modell</p>
-                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.model || '-'}</p>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Modell</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.model}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, model: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="z.B. Galaxy Tab S9"
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.model || '-'}</p>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>IMEI</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.imei}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, imei: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="15-stellige IMEI"
+                      />
+                    ) : (
+                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.imei || '-'}</p>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>MAC-Adresse</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.mac}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, mac: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="00:00:00:00:00:00"
+                      />
+                    ) : (
+                      <p className={`font-mono text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.mac || '-'}</p>
+                    )}
                   </div>
                 </div>
               </div>
               
-              {/* Location / Bundle Info */}
-              {(selectedAssetDetail.location || selectedAssetDetail.bundle) && (
-                <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                  <h4 className="text-xs font-semibold text-gray-500 mb-3">Zuordnung</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    {selectedAssetDetail.location && (
-                      <div>
-                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Standort</p>
-                        <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
-                          {selectedAssetDetail.location.location_id} - {selectedAssetDetail.location.city}
-                        </p>
-                        <p className="text-xs text-gray-400">{selectedAssetDetail.location.address}</p>
-                      </div>
+              {/* Kaufdaten & Garantie - Editierbar */}
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h4 className="text-xs font-semibold text-gray-500 mb-3">Kaufdaten & Garantie</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kaufdatum</p>
+                    {isEditingAsset ? (
+                      <Input
+                        type="date"
+                        value={assetEditForm.purchase_date}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, purchase_date: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                        {selectedAssetDetail.purchase_date 
+                          ? new Date(selectedAssetDetail.purchase_date).toLocaleDateString('de-DE')
+                          : '-'}
+                      </p>
                     )}
-                    {selectedAssetDetail.bundle && (
-                      <div>
-                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kit</p>
-                        <p className={`text-sm text-purple-500 ${isDark ? '' : ''}`}>
-                          {selectedAssetDetail.bundle.bundle_id}
-                        </p>
-                      </div>
+                  </div>
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kaufpreis (€)</p>
+                    {isEditingAsset ? (
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={assetEditForm.purchase_price}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, purchase_price: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="0.00"
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                        {selectedAssetDetail.purchase_price ? `${selectedAssetDetail.purchase_price.toFixed(2)} €` : '-'}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lieferant</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.supplier}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, supplier: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="Lieferantenname"
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.supplier || '-'}</p>
+                    )}
+                  </div>
+                  <div>
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Garantie bis</p>
+                    {isEditingAsset ? (
+                      <Input
+                        type="date"
+                        value={assetEditForm.warranty_until}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, warranty_until: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                        {selectedAssetDetail.warranty_until 
+                          ? new Date(selectedAssetDetail.warranty_until).toLocaleDateString('de-DE')
+                          : '-'}
+                      </p>
+                    )}
+                  </div>
+                  <div className="col-span-2">
+                    <p className={`text-xs mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Garantie-Art</p>
+                    {isEditingAsset ? (
+                      <Input
+                        value={assetEditForm.warranty_type}
+                        onChange={(e) => setAssetEditForm(prev => ({...prev, warranty_type: e.target.value}))}
+                        className={`h-8 ${inputBg}`}
+                        placeholder="z.B. Herstellergarantie, Erweiterte Garantie"
+                      />
+                    ) : (
+                      <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.warranty_type || '-'}</p>
                     )}
                   </div>
                 </div>
-              )}
+              </div>
               
-              {/* Wareneingang Info */}
+              {/* Wareneingang Info - nur Anzeige */}
               <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                 <h4 className="text-xs font-semibold text-gray-500 mb-3">Wareneingang</h4>
                 <div className="grid grid-cols-3 gap-4">
@@ -1866,22 +1969,56 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.received_by || '-'}</p>
                   </div>
                   <div>
-                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lieferant</p>
-                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.supplier || '-'}</p>
+                    <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Lieferschein-Nr.</p>
+                    <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.delivery_note || '-'}</p>
                   </div>
                 </div>
               </div>
               
-              {/* Notes */}
-              {selectedAssetDetail.notes && (
+              {/* Notes - Editierbar */}
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <h4 className="text-xs font-semibold text-gray-500 mb-2">Notizen</h4>
+                {isEditingAsset ? (
+                  <textarea
+                    value={assetEditForm.notes}
+                    onChange={(e) => setAssetEditForm(prev => ({...prev, notes: e.target.value}))}
+                    className={`w-full p-2 rounded border text-sm ${isDark ? 'bg-[#2d2d2d] border-gray-600 text-white' : 'border-gray-300'}`}
+                    rows={3}
+                    placeholder="Notizen zum Gerät..."
+                  />
+                ) : (
+                  <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.notes || '-'}</p>
+                )}
+              </div>
+              
+              {/* Location / Bundle Info - nur im Ansichtsmodus */}
+              {!isEditingAsset && (selectedAssetDetail.location || selectedAssetDetail.bundle) && (
                 <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                  <h4 className="text-xs font-semibold text-gray-500 mb-2">Notizen</h4>
-                  <p className={`text-sm ${isDark ? 'text-white' : ''}`}>{selectedAssetDetail.notes}</p>
+                  <h4 className="text-xs font-semibold text-gray-500 mb-3">Zuordnung</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedAssetDetail.location && (
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Standort</p>
+                        <p className={`text-sm ${isDark ? 'text-white' : ''}`}>
+                          {selectedAssetDetail.location.location_id} - {selectedAssetDetail.location.city}
+                        </p>
+                        <p className="text-xs text-gray-400">{selectedAssetDetail.location.address}</p>
+                      </div>
+                    )}
+                    {selectedAssetDetail.bundle && (
+                      <div>
+                        <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Kit</p>
+                        <p className={`text-sm text-purple-500`}>
+                          {selectedAssetDetail.bundle.bundle_id}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               
-              {/* History Timeline */}
-              {selectedAssetDetail.history && selectedAssetDetail.history.length > 0 && (
+              {/* History Timeline - nur im Ansichtsmodus */}
+              {!isEditingAsset && selectedAssetDetail.history && selectedAssetDetail.history.length > 0 && (
                 <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                   <h4 className="text-xs font-semibold text-gray-500 mb-3">Historie ({selectedAssetDetail.history.length})</h4>
                   <div className="space-y-3 max-h-[200px] overflow-y-auto">
@@ -1891,6 +2028,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           entry.event_type === 'intake' ? 'bg-green-500' :
                           entry.event_type === 'assignment' ? 'bg-blue-500' :
                           entry.event_type === 'kit_assignment' ? 'bg-purple-500' :
+                          entry.event_type === 'update' ? 'bg-yellow-500' :
                           'bg-gray-500'
                         }`} />
                         <div className="flex-1 min-w-0">
@@ -1909,10 +2047,26 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             </div>
           ) : null}
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAssetDetailModal(false)}>
-              Schließen
-            </Button>
+          <DialogFooter className="gap-2">
+            {isEditingAsset ? (
+              <>
+                <Button variant="outline" onClick={() => setIsEditingAsset(false)} disabled={savingAsset}>
+                  Abbrechen
+                </Button>
+                <Button onClick={saveAssetChanges} disabled={savingAsset} className="bg-green-600 hover:bg-green-700">
+                  {savingAsset ? (
+                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Check className="h-4 w-4 mr-2" />
+                  )}
+                  Speichern
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" onClick={() => setShowAssetDetailModal(false)}>
+                Schließen
+              </Button>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
