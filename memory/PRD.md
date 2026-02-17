@@ -28,6 +28,36 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-17 (Current)
 
+#### New Features
+27. **Label-Designer mit Drag & Drop (NEW FEATURE - 2025-02-17)**
+    - **Feature**: Vollständiger visueller Label-Designer zum Erstellen eigener Label-Layouts
+    - **Funktionalität**:
+      - Drag & Drop Canvas mit react-grid-layout (62mm Breite, variable Höhe)
+      - 10 Elemente verfügbar: QR-Code, Barcode, Asset-ID, Seriennummer, Gerätetyp, Hersteller, Modell, Eigener Text, Logo, Trennlinie
+      - Elemente verschieben und skalieren
+      - Eigenschaften-Panel für ausgewähltes Element (Schriftgröße, Ausrichtung, Barcode-Format, etc.)
+      - Logo-Upload Funktion
+      - Höhe-Slider für Label-Länge
+      - Live-Vorschau mit Sample-Asset-Daten
+    - **Template-System**:
+      - Templates speichern mit Name, Beschreibung
+      - Asset-Typ-spezifische Templates (z.B. nur für Tablets)
+      - Standard-Template festlegen
+      - Templates laden/löschen/duplizieren
+    - **Backend-API**:
+      - `GET /api/label-templates` - Liste aller Templates
+      - `POST /api/label-templates` - Template erstellen
+      - `PUT /api/label-templates/{id}` - Template aktualisieren
+      - `DELETE /api/label-templates/{id}` - Template löschen
+      - `GET /api/label-templates/default` - Standard-Template abrufen
+      - `POST /api/label-templates/{id}/duplicate` - Template duplizieren
+    - **Dateien**:
+      - `/app/frontend/src/components/LabelDesigner.jsx` (NEU - Hauptkomponente)
+      - `/app/backend/routes/label_templates.py` (NEU - Backend API)
+      - `/app/frontend/src/pages/AdminPortal.jsx` (Integration unter Lagerverwaltung)
+    - **Zugang**: Lagerverwaltung → Label-Designer Tab
+    - **Test-Status**: ✅ 100% Backend + Frontend (Testing Agent verifiziert - iteration_32.json)
+
 #### Bug Fixes
 26. **Label-Druck abgeschnitten bei 62mm Endlosrolle (BUG FIX - 2025-02-17)**
     - **Problem**: Beim Drucken von Labels auf 62mm Endlosrollen wurde der Inhalt oben und unten abgeschnitten.
