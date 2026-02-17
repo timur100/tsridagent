@@ -204,70 +204,132 @@ export const printAssetLabelWithTemplate = (asset, template) => {
       <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
       
       <script>
-        // QR-Codes generieren
-        document.querySelectorAll('[data-qr]').forEach(function(el) {
-          var content = el.getAttribute('data-qr');
-          var canvas = document.createElement('canvas');
-          QRCode.toCanvas(canvas, content, {
-            width: 76,
-            margin: 0,
-            color: { dark: '#000000', light: '#ffffff' }
-          }, function(error) {
-            if (!error) {
-              el.appendChild(canvas);
-              canvas.style.width = '100%';
-              canvas.style.height = '100%';
+        // Warte auf Libraries
+        function waitForLibraries(callback) {
+          var checkCount = 0;
+          var check = function() {
+            checkCount++;
+            if (typeof QRCode !== 'undefined' && typeof JsBarcode !== 'undefined') {
+              callback();
+            } else if (checkCount < 50) {
+              setTimeout(check, 100);
+            } else {
+              console.error('Libraries not loaded');
+              callback(); // Proceed anyway
+            }
+          };
+          check();
+        }
+        
+        waitForLibraries(function() {
+          console.log('Libraries loaded, generating codes...');
+          
+          // QR-Codes generieren (für Template-Elemente)
+          document.querySelectorAll('[data-qr]').forEach(function(el) {
+            var content = el.getAttribute('data-qr');
+            var widthMm = parseFloat(el.getAttribute('data-width') || '20');
+            var heightMm = parseFloat(el.getAttribute('data-height') || '20');
+            var sizePx = Math.min(widthMm, heightMm) * 3.78; // mm to px (approx)
+            
+            console.log('Generating QR for:', content.substring(0, 50));
+            
+            var canvas = document.createElement('canvas');
+            QRCode.toCanvas(canvas, content, {
+              width: Math.max(sizePx, 76),
+              margin: 0,
+              color: { dark: '#000000', light: '#ffffff' }
+            }, function(error) {
+              if (error) {
+                console.error('QR Error:', error);
+              } else {
+                el.appendChild(canvas);
+                canvas.style.width = '100%';
+                canvas.style.height = '100%';
+                canvas.style.maxWidth = widthMm + 'mm';
+                canvas.style.maxHeight = heightMm + 'mm';
+                console.log('QR generated successfully');
+              }
+            });
+          });
+          
+          // Barcodes generieren (für Template-Elemente)
+          document.querySelectorAll('[data-barcode]').forEach(function(el) {
+            var value = el.getAttribute('data-barcode');
+            var format = el.getAttribute('data-format') || 'CODE128';
+            var showValue = el.getAttribute('data-show-value') !== 'false';
+            var widthMm = parseFloat(el.getAttribute('data-width') || '30');
+            var heightMm = parseFloat(el.getAttribute('data-height') || '10');
+            
+            console.log('Generating Barcode for:', value);
+            
+            if (value && value.trim()) {
+              var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+              el.appendChild(svg);
+              try {
+                JsBarcode(svg, value, {
+                  format: format,
+                  width: Math.max(1, widthMm / 20), // Scale width based on container
+                  height: Math.max(20, heightMm * 3),
+                  displayValue: showValue,
+                  fontSize: 8,
+                  margin: 0,
+                  textMargin: 2
+                });
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxHeight = '100%';
+                console.log('Barcode generated successfully');
+              } catch(e) {
+                console.error('Barcode Error:', e);
+                el.innerHTML = '<span style="font-family: monospace; font-size: 8pt;">' + value + '</span>';
+              }
             }
           });
-        });
-        
-        // Barcodes generieren
-        document.querySelectorAll('[data-barcode]').forEach(function(el) {
-          var value = el.getAttribute('data-barcode');
-          var format = el.getAttribute('data-format') || 'CODE128';
-          var showValue = el.getAttribute('data-show-value') !== 'false';
-          if (value) {
+          
+          ${!template ? `
+          // Standard-Layout QR und Barcode
+          var qrContainer = document.getElementById('qr-placeholder');
+          if (qrContainer) {
+            var canvas = document.createElement('canvas');
+            QRCode.toCanvas(canvas, '${qrContent.replace(/'/g, "\\'")}', {
+              width: 76,
+              margin: 0,
+              color: { dark: '#000000', light: '#ffffff' }
+            }, function(error) {
+              if (!error) {
+                qrContainer.appendChild(canvas);
+                canvas.style.width = '20mm';
+                canvas.style.height = '20mm';
+              }
+            });
+          }
+          
+          var barcodeContainer = document.getElementById('barcode-placeholder');
+          if (barcodeContainer && '${serialNumber}') {
             var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            el.appendChild(svg);
+            barcodeContainer.appendChild(svg);
             try {
-              JsBarcode(svg, value, {
-                format: format,
+              JsBarcode(svg, '${serialNumber}', {
+                format: 'CODE128',
                 width: 1.5,
-                height: 30,
-                displayValue: showValue,
+                height: 25,
+                displayValue: true,
                 fontSize: 8,
                 margin: 0,
                 textMargin: 2
               });
-              svg.style.width = '100%';
-              svg.style.height = '100%';
             } catch(e) {
-              el.innerHTML = '<span style="font-family: monospace; font-size: 8pt;">' + value + '</span>';
+              barcodeContainer.innerHTML = '<span style="font-family: monospace;">${serialNumber}</span>';
             }
           }
+          ` : ''}
+          
+          // Drucken nach kurzer Verzögerung
+          setTimeout(function() { 
+            console.log('Printing...');
+            window.print(); 
+          }, 800);
         });
-        
-        ${!template ? `
-        // Standard-Layout QR und Barcode
-        var qrContainer = document.getElementById('qr-placeholder');
-        if (qrContainer) {
-          var canvas = document.createElement('canvas');
-          QRCode.toCanvas(canvas, '${qrContent.replace(/'/g, "\\'")}', {
-            width: 76,
-            margin: 0,
-            color: { dark: '#000000', light: '#ffffff' }
-          }, function(error) {
-            if (!error) {
-              qrContainer.appendChild(canvas);
-              canvas.style.width = '20mm';
-              canvas.style.height = '20mm';
-            }
-          });
-        }
-        
-        var barcodeContainer = document.getElementById('barcode-placeholder');
-        if (barcodeContainer && '${serialNumber}') {
-          var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
           barcodeContainer.appendChild(svg);
           try {
             JsBarcode(svg, '${serialNumber}', {
