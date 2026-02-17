@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Printer, X, FileText, Palette } from 'lucide-react';
 import toast from 'react-hot-toast';
+import ReactDOMServer from 'react-dom/server';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -13,22 +14,62 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const GRID_COLS = 12;
 const GRID_ROW_HEIGHT = 20;
 const LABEL_WIDTH_MM = 62;
-const MM_PER_COL = LABEL_WIDTH_MM / GRID_COLS; // ~5.17mm per column
+const MM_PER_COL = LABEL_WIDTH_MM / GRID_COLS;
 
 /**
  * PrintableLabel - Wiederverwendbare Komponente für Asset-Labels
  * Optimiert für Brother QL-820NWB mit 62mm Endlosrolle
- * Unterstützt jetzt benutzerdefinierte Templates aus dem Label-Designer
  */
+
+// Generiert SVG-String für QR-Code
+const generateQRCodeSvg = (content, size = 100) => {
+  try {
+    const svgString = ReactDOMServer.renderToStaticMarkup(
+      <QRCodeSVG 
+        value={content}
+        size={size}
+        level="M"
+        includeMargin={false}
+      />
+    );
+    return svgString;
+  } catch (e) {
+    console.error('QR Generation error:', e);
+    return '';
+  }
+};
+
+// Generiert SVG-String für Barcode
+const generateBarcodeSvg = (value, options = {}) => {
+  if (!value) return '';
+  try {
+    const svgString = ReactDOMServer.renderToStaticMarkup(
+      <Barcode 
+        value={value}
+        format={options.format || 'CODE128'}
+        width={options.width || 1.5}
+        height={options.height || 40}
+        displayValue={options.displayValue !== false}
+        fontSize={options.fontSize || 10}
+        margin={0}
+        textMargin={2}
+        background="transparent"
+      />
+    );
+    return svgString;
+  } catch (e) {
+    console.error('Barcode Generation error:', e);
+    return `<span style="font-family: monospace; font-size: 10pt;">${value}</span>`;
+  }
+};
 
 // Generiert HTML für ein Element basierend auf Template-Konfiguration
 const generateElementHtml = (element, layoutItem, asset, logoUrl) => {
   const { type, config } = element;
   const { x, y, w, h } = layoutItem;
   
-  // Position und Größe in mm berechnen
   const left = x * MM_PER_COL;
-  const top = y * (GRID_ROW_HEIGHT / 4); // ~5mm per row
+  const top = y * (GRID_ROW_HEIGHT / 4);
   const width = w * MM_PER_COL;
   const height = h * (GRID_ROW_HEIGHT / 4);
   
@@ -56,16 +97,22 @@ const generateElementHtml = (element, layoutItem, asset, logoUrl) => {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    color: #000;
   `;
   
   switch (type) {
     case 'qrcode':
-      // QR-Code Container mit expliziten Canvas-Styles
-      return `<div class="qr-element" style="${posStyle} display: flex; align-items: center; justify-content: center;" data-qr="${qrContent.replace(/"/g, '&quot;')}" data-width="${width}" data-height="${height}"></div>`;
+      const qrSvg = generateQRCodeSvg(qrContent, Math.min(width, height) * 4);
+      return `<div style="${posStyle} display: flex; align-items: center; justify-content: center;">${qrSvg}</div>`;
     
     case 'barcode':
-      // Barcode Container mit expliziten SVG-Styles
-      return `<div class="barcode-element" style="${posStyle} display: flex; align-items: center; justify-content: center;" data-barcode="${serialNumber}" data-format="${config.barcodeFormat || 'CODE128'}" data-show-value="${config.showValue !== false}" data-width="${width}" data-height="${height}"></div>`;
+      const barcodeSvg = generateBarcodeSvg(serialNumber, {
+        format: config.barcodeFormat || 'CODE128',
+        displayValue: config.showValue !== false,
+        width: Math.max(1, width / 25),
+        height: Math.max(25, height * 4)
+      });
+      return `<div style="${posStyle} display: flex; align-items: center; justify-content: center;">${barcodeSvg}</div>`;
     
     case 'asset_id':
       return `<div style="${posStyle} ${textStyle}">${labelId}</div>`;
@@ -115,7 +162,6 @@ export const printAssetLabelWithTemplate = (asset, template) => {
     type: asset.type || ''
   });
   
-  // Berechne Label-Höhe in mm
   const labelHeight = template ? (template.label_height || 6) * (GRID_ROW_HEIGHT / 4) : 30;
   
   const printWindow = window.open('', '_blank', 'width=500,height=400');
@@ -134,6 +180,15 @@ export const printAssetLabelWithTemplate = (asset, template) => {
       }
     });
   }
+  
+  // Generiere Standard-Layout SVGs
+  const defaultQrSvg = generateQRCodeSvg(qrContent, 76);
+  const defaultBarcodeSvg = serialNumber ? generateBarcodeSvg(serialNumber, {
+    width: 1.5,
+    height: 30,
+    displayValue: true,
+    fontSize: 9
+  }) : '';
   
   printWindow.document.write(`
     <!DOCTYPE html>
@@ -158,8 +213,12 @@ export const printAssetLabelWithTemplate = (asset, template) => {
           height: ${labelHeight}mm;
           padding: 1mm;
         }
+        svg {
+          display: block;
+          max-width: 100%;
+          height: auto;
+        }
         ${!template ? `
-        /* Standard Layout ohne Template */
         .default-label {
           display: flex;
           flex-direction: row;
@@ -168,7 +227,7 @@ export const printAssetLabelWithTemplate = (asset, template) => {
           width: 100%;
         }
         .qr-section { flex-shrink: 0; width: 20mm; height: 20mm; }
-        .qr-section svg, .qr-section canvas { width: 20mm !important; height: 20mm !important; display: block; }
+        .qr-section svg { width: 20mm !important; height: 20mm !important; }
         .info-section { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1mm; }
         .asset-id { font-size: 10pt; font-weight: bold; line-height: 1.2; word-break: break-all; color: #000; }
         .device-type { font-size: 7pt; color: #444; text-transform: uppercase; letter-spacing: 0.3px; }
@@ -176,7 +235,7 @@ export const printAssetLabelWithTemplate = (asset, template) => {
         .serial-section { margin-top: 2mm; padding-top: 2mm; border-top: 0.3mm solid #ddd; }
         .serial-label { font-size: 5pt; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1mm; }
         .barcode-container { width: 100%; overflow: hidden; }
-        .barcode-container svg { display: block; width: 100%; height: auto; max-height: 10mm; }
+        .barcode-container svg { width: 100%; height: auto; max-height: 12mm; }
         ` : ''}
       </style>
     </head>
@@ -184,7 +243,7 @@ export const printAssetLabelWithTemplate = (asset, template) => {
       <div class="label-container">
         ${template ? elementsHtml : `
         <div class="default-label">
-          <div class="qr-section" id="qr-placeholder"></div>
+          <div class="qr-section">${defaultQrSvg}</div>
           <div class="info-section">
             <div class="asset-id">${labelId}</div>
             <div class="device-type">${typeLabel}</div>
@@ -192,144 +251,18 @@ export const printAssetLabelWithTemplate = (asset, template) => {
             ${serialNumber ? `
             <div class="serial-section">
               <div class="serial-label">Seriennummer</div>
-              <div class="barcode-container" id="barcode-placeholder"></div>
+              <div class="barcode-container">${defaultBarcodeSvg}</div>
             </div>
             ` : ''}
           </div>
         </div>
         `}
       </div>
-      
-      <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
-      <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"><\/script>
-      
       <script>
-        // Warte auf Libraries
-        function waitForLibraries(callback) {
-          var checkCount = 0;
-          var check = function() {
-            checkCount++;
-            if (typeof QRCode !== 'undefined' && typeof JsBarcode !== 'undefined') {
-              callback();
-            } else if (checkCount < 50) {
-              setTimeout(check, 100);
-            } else {
-              console.error('Libraries not loaded');
-              callback(); // Proceed anyway
-            }
-          };
-          check();
-        }
-        
-        waitForLibraries(function() {
-          console.log('Libraries loaded, generating codes...');
-          
-          // QR-Codes generieren (für Template-Elemente)
-          document.querySelectorAll('[data-qr]').forEach(function(el) {
-            var content = el.getAttribute('data-qr');
-            var widthMm = parseFloat(el.getAttribute('data-width') || '20');
-            var heightMm = parseFloat(el.getAttribute('data-height') || '20');
-            var sizePx = Math.min(widthMm, heightMm) * 3.78; // mm to px (approx)
-            
-            console.log('Generating QR for:', content.substring(0, 50));
-            
-            var canvas = document.createElement('canvas');
-            QRCode.toCanvas(canvas, content, {
-              width: Math.max(sizePx, 76),
-              margin: 0,
-              color: { dark: '#000000', light: '#ffffff' }
-            }, function(error) {
-              if (error) {
-                console.error('QR Error:', error);
-              } else {
-                el.appendChild(canvas);
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                canvas.style.maxWidth = widthMm + 'mm';
-                canvas.style.maxHeight = heightMm + 'mm';
-                console.log('QR generated successfully');
-              }
-            });
-          });
-          
-          // Barcodes generieren (für Template-Elemente)
-          document.querySelectorAll('[data-barcode]').forEach(function(el) {
-            var value = el.getAttribute('data-barcode');
-            var format = el.getAttribute('data-format') || 'CODE128';
-            var showValue = el.getAttribute('data-show-value') !== 'false';
-            var widthMm = parseFloat(el.getAttribute('data-width') || '30');
-            var heightMm = parseFloat(el.getAttribute('data-height') || '10');
-            
-            console.log('Generating Barcode for:', value);
-            
-            if (value && value.trim()) {
-              var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-              el.appendChild(svg);
-              try {
-                JsBarcode(svg, value, {
-                  format: format,
-                  width: Math.max(1, widthMm / 20), // Scale width based on container
-                  height: Math.max(20, heightMm * 3),
-                  displayValue: showValue,
-                  fontSize: 8,
-                  margin: 0,
-                  textMargin: 2
-                });
-                svg.style.width = '100%';
-                svg.style.height = 'auto';
-                svg.style.maxHeight = '100%';
-                console.log('Barcode generated successfully');
-              } catch(e) {
-                console.error('Barcode Error:', e);
-                el.innerHTML = '<span style="font-family: monospace; font-size: 8pt;">' + value + '</span>';
-              }
-            }
-          });
-          
-          ${!template ? `
-          // Standard-Layout QR und Barcode
-          var qrContainer = document.getElementById('qr-placeholder');
-          if (qrContainer) {
-            var canvas = document.createElement('canvas');
-            QRCode.toCanvas(canvas, '${qrContent.replace(/'/g, "\\'")}', {
-              width: 76,
-              margin: 0,
-              color: { dark: '#000000', light: '#ffffff' }
-            }, function(error) {
-              if (!error) {
-                qrContainer.appendChild(canvas);
-                canvas.style.width = '20mm';
-                canvas.style.height = '20mm';
-              }
-            });
-          }
-          
-          var barcodeContainer = document.getElementById('barcode-placeholder');
-          if (barcodeContainer && '${serialNumber}') {
-            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            barcodeContainer.appendChild(svg);
-            try {
-              JsBarcode(svg, '${serialNumber}', {
-                format: 'CODE128',
-                width: 1.5,
-                height: 25,
-                displayValue: true,
-                fontSize: 8,
-                margin: 0,
-                textMargin: 2
-              });
-            } catch(e) {
-              barcodeContainer.innerHTML = '<span style="font-family: monospace;">${serialNumber}</span>';
-            }
-          }
-          ` : ''}
-          
-          // Drucken nach kurzer Verzögerung
-          setTimeout(function() { 
-            console.log('Printing...');
-            window.print(); 
-          }, 800);
-        });
+        // Kurze Verzögerung für Rendering, dann drucken
+        setTimeout(function() { 
+          window.print(); 
+        }, 300);
       <\/script>
     </body>
     </html>
@@ -358,7 +291,7 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
     type: asset.type || ''
   });
   
-  // Wenn Template vorhanden, zeige Template-basierte Vorschau
+  // Template-basierte Vorschau
   if (template && template.elements && template.layout) {
     const labelHeight = (template.label_height || 6) * GRID_ROW_HEIGHT;
     
@@ -496,7 +429,7 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
   );
 };
 
-// Label Print Modal Komponente mit Template-Auswahl
+// Label Print Modal mit Template-Auswahl
 export const LabelPrintModal = ({ 
   open, 
   onOpenChange, 
@@ -508,7 +441,6 @@ export const LabelPrintModal = ({
   const [selectedTemplate, setSelectedTemplate] = useState(null);
   const [loading, setLoading] = useState(false);
   
-  // Templates laden
   useEffect(() => {
     if (open) {
       fetchTemplates();
@@ -522,7 +454,6 @@ export const LabelPrintModal = ({
       const data = await res.json();
       if (data.success) {
         setTemplates(data.templates || []);
-        // Standard-Template finden
         const defaultTemplate = data.templates?.find(t => t.is_default);
         if (defaultTemplate) {
           setSelectedTemplateId(defaultTemplate.template_id);
@@ -561,7 +492,6 @@ export const LabelPrintModal = ({
         </DialogHeader>
         
         <div className="py-4 space-y-4">
-          {/* Template-Auswahl */}
           <div>
             <label className={`text-sm font-medium mb-2 block ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               <Palette className="h-4 w-4 inline mr-1" />
@@ -596,7 +526,6 @@ export const LabelPrintModal = ({
             )}
           </div>
           
-          {/* Label Vorschau */}
           <div>
             <p className={`text-sm mb-2 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Vorschau:
@@ -606,7 +535,6 @@ export const LabelPrintModal = ({
             </div>
           </div>
           
-          {/* Druckhinweise */}
           <div className={`p-3 rounded-lg text-sm ${isDark ? 'bg-blue-500/10 border border-blue-500/30 text-blue-300' : 'bg-blue-50 border border-blue-200 text-blue-700'}`}>
             <p className="font-medium mb-1">Druckhinweis:</p>
             <ul className="list-disc list-inside text-xs space-y-1">
