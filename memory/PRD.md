@@ -26,7 +26,27 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ## What's Been Implemented
 
-### Session: 2025-02-16 (Current)
+### Session: 2025-02-17 (Current)
+
+#### New Features
+22. **Label-Verbesserungen: Asset-ID einzeilig + Seriennummer-Barcode (NEW FEATURE - 2025-02-17)**
+    - **Feature**: Verbesserte Labels für Asset-Druck mit zwei neuen Elementen:
+      1. Asset-ID wird jetzt auf einer einzigen Zeile angezeigt (kein Umbruch)
+      2. Scannable Barcode für die Seriennummer wurde hinzugefügt
+    - **Änderungen**:
+      - `react-barcode` Library installiert (yarn add)
+      - Label-Preview zeigt jetzt QR-Code links und Barcode für Seriennummer unten
+      - CSS: `white-space: nowrap` für Asset-ID verhindert Zeilenumbruch
+      - Print-Funktion extrahiert sowohl QR-Code als auch Barcode-SVG
+    - **Dateien**:
+      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (Import + Label-Preview + printLabel)
+      - `/app/frontend/src/components/AssetManagementV2.jsx` (Import + Label-Preview + printLabel)
+    - **Lucide-Icon Konflikt**: `Barcode` Icon in GoodsReceiptWorkflow.jsx zu `BarcodeIcon` umbenannt
+    - **Test-Status**: ✅ 100% (Testing Agent verifiziert)
+
+---
+
+### Session: 2025-02-16
 
 #### Bug Fixes
 20. **Asset-Detail-Modal öffnet sich nicht (BUG FIX - 2025-02-16)**
