@@ -1610,6 +1610,65 @@ async def search_asset_detail_by_identifier(q: str = Query(..., description="Sea
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.put("/assets/update-by-identifier")
+async def update_asset_by_identifier(
+    identifier: str = Query(..., description="warehouse_asset_id, manufacturer_sn, imei, mac, or asset_id"),
+    update: AssetUpdate = None
+):
+    """
+    Update an asset by any identifier (warehouse_asset_id, manufacturer_sn, imei, mac, or asset_id).
+    This is useful for assets that don't have an asset_id yet (unassigned inventory).
+    """
+    try:
+        # Find asset by any identifier
+        asset = await db.tsrid_assets.find_one({
+            "$or": [
+                {"warehouse_asset_id": identifier},
+                {"manufacturer_sn": identifier},
+                {"imei": identifier},
+                {"mac": identifier},
+                {"asset_id": identifier}
+            ]
+        })
+        
+        if not asset:
+            raise HTTPException(status_code=404, detail=f"Asset nicht gefunden: {identifier}")
+        
+        update_data = {k: v for k, v in update.dict().items() if v is not None}
+        if update_data:
+            update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+            
+            # Add history entry for the update
+            history_entry = {
+                "date": datetime.now(timezone.utc).isoformat(),
+                "event": "Daten aktualisiert",
+                "event_type": "update",
+                "notes": f"Felder geändert: {', '.join(update_data.keys())}",
+                "technician": update_data.get("installed_by", "System")
+            }
+            
+            await db.tsrid_assets.update_one(
+                {"_id": asset["_id"]},
+                {
+                    "$set": update_data,
+                    "$push": {"history": history_entry}
+                }
+            )
+        
+        # Fetch and return updated asset
+        updated_asset = await db.tsrid_assets.find_one({"_id": asset["_id"]})
+        
+        return {
+            "success": True, 
+            "message": "Asset aktualisiert",
+            "asset": serialize_doc(updated_asset)
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/assets/{asset_id}")
 async def get_asset(asset_id: str):
     """Get asset details with full history and relations"""
