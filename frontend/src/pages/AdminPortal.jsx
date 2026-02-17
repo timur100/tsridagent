@@ -230,12 +230,8 @@ const AdminPortalContent = () => {
     setIsSavingTsridAsset(true);
     try {
       const identifier = selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.manufacturer_sn;
-      const response = await fetch(`${BACKEND_URL}/api/asset-mgmt/assets/update-by-identifier?identifier=${encodeURIComponent(identifier)}`, {
+      const result = await apiCall(`/api/asset-mgmt/assets/update-by-identifier?identifier=${encodeURIComponent(identifier)}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify({
           manufacturer: tsridAssetEditForm.manufacturer || null,
           model: tsridAssetEditForm.model || null,
@@ -249,15 +245,13 @@ const AdminPortalContent = () => {
         })
       });
       
-      const data = await response.json();
-      
-      if (data.success) {
+      if (result.success) {
         toast.success('Asset erfolgreich aktualisiert');
         // Update the local state with the new data
-        setSelectedTsridAsset(data.asset);
+        setSelectedTsridAsset(result.data?.asset || result.asset);
         setIsEditingTsridAsset(false);
       } else {
-        toast.error(data.detail || 'Fehler beim Speichern');
+        toast.error(result.detail || result.error || 'Fehler beim Speichern');
       }
     } catch (error) {
       console.error('Error saving asset:', error);
