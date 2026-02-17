@@ -107,6 +107,9 @@ import LicensePlateRecognition from '../components/LicensePlateRecognition';
 import USBDeviceManager from '../components/USBDeviceManager';
 import MongoDBMonitor from '../components/MongoDBMonitor';
 import toast from 'react-hot-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { QRCodeSVG } from 'qrcode.react';
+import Barcode from 'react-barcode';
 
 const AdminPortalContent = () => {
   const { user, logout, apiCall } = useAuth();
