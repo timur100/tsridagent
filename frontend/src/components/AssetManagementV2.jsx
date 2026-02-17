@@ -21,6 +21,7 @@ import KitAssemblyWorkflow from './KitAssemblyWorkflow';
 import KitDetailModal from './KitDetailModal';
 import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
+import { QRCodeSVG } from 'qrcode.react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
