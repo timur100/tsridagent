@@ -203,6 +203,89 @@ const AdminPortalContent = () => {
       setSelectedVehicleId(null);
     }
   }, [rndTab]);
+
+  // Initialize edit form when selectedTsridAsset changes
+  useEffect(() => {
+    if (selectedTsridAsset) {
+      setTsridAssetEditForm({
+        manufacturer: selectedTsridAsset.manufacturer || '',
+        model: selectedTsridAsset.model || '',
+        imei: selectedTsridAsset.imei || '',
+        mac: selectedTsridAsset.mac || '',
+        purchase_date: selectedTsridAsset.purchase_date ? selectedTsridAsset.purchase_date.split('T')[0] : '',
+        purchase_price: selectedTsridAsset.purchase_price || '',
+        supplier: selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '',
+        warranty_until: selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+          (selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).split('T')[0] : '',
+        notes: selectedTsridAsset.notes || ''
+      });
+      setIsEditingTsridAsset(false);
+    }
+  }, [selectedTsridAsset]);
+
+  // Save TSRID Asset changes
+  const saveTsridAssetChanges = async () => {
+    if (!selectedTsridAsset) return;
+    
+    setIsSavingTsridAsset(true);
+    try {
+      const identifier = selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.manufacturer_sn;
+      const response = await fetch(`${BACKEND_URL}/api/asset-mgmt/assets/update-by-identifier?identifier=${encodeURIComponent(identifier)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          manufacturer: tsridAssetEditForm.manufacturer || null,
+          model: tsridAssetEditForm.model || null,
+          imei: tsridAssetEditForm.imei || null,
+          mac: tsridAssetEditForm.mac || null,
+          purchase_date: tsridAssetEditForm.purchase_date || null,
+          purchase_price: tsridAssetEditForm.purchase_price ? parseFloat(tsridAssetEditForm.purchase_price) : null,
+          supplier: tsridAssetEditForm.supplier || null,
+          warranty_until: tsridAssetEditForm.warranty_until || null,
+          notes: tsridAssetEditForm.notes || null
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Asset erfolgreich aktualisiert');
+        // Update the local state with the new data
+        setSelectedTsridAsset(data.asset);
+        setIsEditingTsridAsset(false);
+      } else {
+        toast.error(data.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      console.error('Error saving asset:', error);
+      toast.error('Fehler beim Speichern des Assets');
+    } finally {
+      setIsSavingTsridAsset(false);
+    }
+  };
+
+  // Cancel edit mode
+  const cancelTsridAssetEdit = () => {
+    if (selectedTsridAsset) {
+      setTsridAssetEditForm({
+        manufacturer: selectedTsridAsset.manufacturer || '',
+        model: selectedTsridAsset.model || '',
+        imei: selectedTsridAsset.imei || '',
+        mac: selectedTsridAsset.mac || '',
+        purchase_date: selectedTsridAsset.purchase_date ? selectedTsridAsset.purchase_date.split('T')[0] : '',
+        purchase_price: selectedTsridAsset.purchase_price || '',
+        supplier: selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '',
+        warranty_until: selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+          (selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).split('T')[0] : '',
+        notes: selectedTsridAsset.notes || ''
+      });
+    }
+    setIsEditingTsridAsset(false);
+  };
+
   const [companyLogoLight, setCompanyLogoLight] = useState(null);
   const [companyName, setCompanyName] = useState('TSRID');
   const [selectedDeviceForModal, setSelectedDeviceForModal] = useState(null);
