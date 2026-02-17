@@ -3402,31 +3402,31 @@ const AdminPortalContent = () => {
           {selectedTsridAsset && (
             <div className="space-y-4">
               {/* Identification */}
-              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <div className="p-4 rounded-lg bg-gray-100 dark:bg-[#1a1a1a]">
+                <h3 className="text-sm font-semibold mb-3 text-gray-600 dark:text-gray-400">
                   Identifikation
                 </h3>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Lager-ID</p>
-                    <p className={`font-mono font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <p className="text-xs text-gray-500">Lager-ID</p>
+                    <p className="font-mono font-medium text-sm text-gray-900 dark:text-white">
                       {selectedTsridAsset.warehouse_asset_id || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Asset-ID</p>
-                    <p className={`font-mono font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <p className="text-xs text-gray-500">Asset-ID</p>
+                    <p className="font-mono font-medium text-sm text-gray-900 dark:text-white">
                       {selectedTsridAsset.asset_id || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Seriennummer</p>
-                    <p className={`font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className="text-xs text-gray-500">Seriennummer</p>
+                    <p className="font-mono text-gray-700 dark:text-gray-300">
                       {selectedTsridAsset.manufacturer_sn || '-'}
                     </p>
                   </div>
                   <div>
-                    <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Status</p>
+                    <p className="text-xs text-gray-500">Status</p>
                     <span className={`inline-block px-2 py-1 text-xs rounded ${
                       selectedTsridAsset.status === 'in_storage' ? 'bg-green-500/20 text-green-500' :
                       selectedTsridAsset.status === 'deployed' ? 'bg-blue-500/20 text-blue-500' :
@@ -3443,11 +3443,11 @@ const AdminPortalContent = () => {
               </div>
 
               {/* Product & Technical Data */}
-              <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
-                <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              <div className="p-4 rounded-lg bg-gray-100 dark:bg-[#1a1a1a]">
+                <h3 className="text-sm font-semibold mb-3 text-gray-600 dark:text-gray-400">
                   Produkt & Technische Daten
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Typ</p>
                     <p className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
