@@ -39,11 +39,17 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - Logo-Upload Funktion
       - Höhe-Slider für Label-Länge
       - Live-Vorschau mit Sample-Asset-Daten
+      - **NEU: Test-Drucken Button** im Vorschau-Dialog
     - **Template-System**:
       - Templates speichern mit Name, Beschreibung
       - Asset-Typ-spezifische Templates (z.B. nur für Tablets)
       - Standard-Template festlegen
       - Templates laden/löschen/duplizieren
+    - **Integration mit Label-Druck (Phase 2)**:
+      - **Template-Auswahl** im Print-Modal beim Drucken aus Assets/Wareneingang
+      - Standard-Layout bleibt immer verfügbar
+      - Vorschau zeigt ausgewähltes Template dynamisch
+      - `printAssetLabelWithTemplate()` rendert Templates mit positionierten Elementen
     - **Backend-API**:
       - `GET /api/label-templates` - Liste aller Templates
       - `POST /api/label-templates` - Template erstellen
@@ -52,11 +58,12 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - `GET /api/label-templates/default` - Standard-Template abrufen
       - `POST /api/label-templates/{id}/duplicate` - Template duplizieren
     - **Dateien**:
-      - `/app/frontend/src/components/LabelDesigner.jsx` (NEU - Hauptkomponente)
-      - `/app/backend/routes/label_templates.py` (NEU - Backend API)
+      - `/app/frontend/src/components/LabelDesigner.jsx` (Designer-Komponente)
+      - `/app/frontend/src/components/PrintableLabel.jsx` (Template-Auswahl + Druck)
+      - `/app/backend/routes/label_templates.py` (Backend API)
       - `/app/frontend/src/pages/AdminPortal.jsx` (Integration unter Lagerverwaltung)
     - **Zugang**: Lagerverwaltung → Label-Designer Tab
-    - **Test-Status**: ✅ 100% Backend + Frontend (Testing Agent verifiziert - iteration_32.json)
+    - **Test-Status**: ✅ 100% Backend + Frontend (Testing Agent verifiziert - iteration_32.json, iteration_33.json)
 
 #### Bug Fixes
 26. **Label-Druck abgeschnitten bei 62mm Endlosrolle (BUG FIX - 2025-02-17)**
