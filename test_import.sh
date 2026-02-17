@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-intake-debug.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-intake-labels.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""

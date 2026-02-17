@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://asset-intake-debug.preview.emergentagent.com
+│   └── Lädt: https://asset-intake-labels.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

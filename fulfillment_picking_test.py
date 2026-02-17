@@ -10,7 +10,7 @@ import sys
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://asset-intake-debug.preview.emergentagent.com"
+BACKEND_URL = "https://asset-intake-labels.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class FulfillmentPickingTester:
