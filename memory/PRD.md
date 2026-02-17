@@ -48,6 +48,11 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - Buttons "Schließen" und "In Lagerverwaltung öffnen" funktionieren
     - **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_30.json)
 
+24. **Modal Layout optimiert (UI FIX - 2025-02-17)**
+    - **Problem**: Modal war zu groß und erforderte Scrollen, um alle Inhalte zu sehen.
+    - **Lösung**: Kompaktes 2x2 Grid-Layout mit kleineren Abständen und Schriftgrößen.
+    - **Test-Status**: ✅ Visuell verifiziert
+
 #### New Features
 22. **Label-Verbesserungen: Asset-ID einzeilig + Seriennummer-Barcode (NEW FEATURE - 2025-02-17)**
     - **Feature**: Verbesserte Labels für Asset-Druck mit zwei neuen Elementen:
@@ -63,6 +68,19 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
       - `/app/frontend/src/components/AssetManagementV2.jsx` (Import + Label-Preview + printLabel)
     - **Lucide-Icon Konflikt**: `Barcode` Icon in GoodsReceiptWorkflow.jsx zu `BarcodeIcon` umbenannt
     - **Test-Status**: ✅ 100% (Testing Agent verifiziert)
+
+25. **CRUD-Funktionalität im globalen Suche-Modal (NEW FEATURE - 2025-02-17)**
+    - **Feature**: Admin kann Asset-Daten direkt im Modal bearbeiten und speichern.
+    - **Funktionalität**:
+      - "Bearbeiten"-Button oben rechts im Modal
+      - Editierbare Felder: Hersteller, Modell, IMEI, MAC-Adresse, Kaufdatum, Kaufpreis, Lieferant, Garantie bis, Notizen
+      - "Speichern" und "Abbrechen" Buttons im Edit-Modus
+      - Label-Vorschau wird durch Notizen-Feld im Edit-Modus ersetzt
+    - **Nicht editierbare Felder** (Identifikation): Lager-ID, Asset-ID, Seriennummer, Status
+    - **Backend-Endpoint**: `PUT /api/asset-mgmt/assets/update-by-identifier?identifier=...`
+    - **Dateien**:
+      - `/app/frontend/src/pages/AdminPortal.jsx` (State, Funktionen, Modal UI)
+    - **Test-Status**: ✅ Manuell verifiziert (Speichern + Laden der Änderungen funktioniert)
 
 ---
 
