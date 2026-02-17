@@ -791,6 +791,10 @@ const AdminPortalContent = () => {
             <div className="flex-1 max-w-3xl mx-8">
               <GlobalSearch 
                 onResultSelect={(result) => {
+                  console.log('GlobalSearch onResultSelect called with:', result);
+                  console.log('Result type:', result?.type);
+                  console.log('Result data:', result?.data);
+                  
                   if (result.type === 'asset') {
                     // Open Asset Management with this asset
                     setActiveTab('assets');
