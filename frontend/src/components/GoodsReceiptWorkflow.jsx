@@ -1328,7 +1328,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                         {asset.supplier || '-'}
                       </td>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="px-2"
+                            onClick={() => openLabelPrint(asset)}
+                            title="Label drucken"
+                          >
+                            <Printer className="h-3 w-3" />
+                          </Button>
                           <Button
                             size="sm"
                             className="bg-blue-600 hover:bg-blue-700"
@@ -1341,7 +1350,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           <Button
                             size="sm"
                             variant="ghost"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 px-2"
                             onClick={() => {
                               setAssetToDelete(asset);
                               setShowDeleteModal(true);
