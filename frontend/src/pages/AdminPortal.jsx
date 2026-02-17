@@ -805,9 +805,18 @@ const AdminPortalContent = () => {
                     }, 200);
                   } else if (result.type === 'tsrid_asset') {
                     // Open TSRID Asset Detail Modal
-                    console.log('TSRID Asset selected:', result);
-                    console.log('TSRID Asset data:', result.data);
-                    setSelectedTsridAsset(result.data);
+                    // result contains: type, id, title, subtitle, status, warehouse_asset_id, manufacturer_sn, data
+                    // Use result directly since it has the main fields, and result.data for full details
+                    const assetData = {
+                      ...(result.data || {}),
+                      warehouse_asset_id: result.warehouse_asset_id || (result.data?.warehouse_asset_id),
+                      manufacturer_sn: result.manufacturer_sn || (result.data?.manufacturer_sn),
+                      status: result.status || (result.data?.status),
+                      type: result.data?.type || 'tsrid_asset',
+                      type_label: result.data?.type_label || result.subtitle?.split('|')[0]?.trim()
+                    };
+                    console.log('Setting TSRID Asset:', assetData);
+                    setSelectedTsridAsset(assetData);
                   } else if (result.type === 'vehicle') {
                     // Open vehicle detail in Fahrzeugverwaltung
                     const vehicleId = result.data.id || result.id;
