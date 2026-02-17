@@ -43,22 +43,28 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 #### New Features
 21. **Scan-to-Detail Feature & Asset-Detail-Modal für Wareneingang (NEW FEATURE - 2025-02-16)**
-    - **Feature**: Komplettes Asset-Detail-Modal mit allen Informationen und Historie
+    - **Feature**: Komplettes Asset-Detail-Modal mit allen Informationen, Historie UND BEARBEITUNGSFUNKTION
     - **Funktionen**:
       - Klicken auf Asset-Zeile öffnet Detail-Modal
       - Suchfeld akzeptiert Lager-ID / Seriennummer / IMEI (Scan-to-Detail)
       - Bei Enter-Taste wird direkt das Detail-Modal geöffnet
+      - **NEU:** "Bearbeiten" Button im Modal öffnet Edit-Modus
+      - **NEU:** Editierbare Felder: Hersteller, Modell, IMEI, MAC, Kaufdatum, Kaufpreis, Lieferant, Garantie bis, Garantie-Art, Notizen
+      - **NEU:** Änderungen werden mit Historie-Eintrag gespeichert
     - **Details angezeigt**:
-      - Identifikation (Lager-ID, Asset-ID, Seriennummer, Status, IMEI, MAC)
-      - Produkt (Typ, Hersteller, Modell)
-      - Zuordnung (Standort, Kit)
-      - Wareneingang (Datum, Empfänger, Lieferant)
-      - Notizen
-      - Historie (Timeline aller Ereignisse)
+      - Identifikation (Lager-ID, Asset-ID, Seriennummer, Status) - nur Anzeige
+      - Produkt (Typ, Hersteller, Modell, IMEI, MAC) - editierbar
+      - Kaufdaten & Garantie - editierbar
+      - Wareneingang (Datum, Empfänger, Lieferschein) - nur Anzeige
+      - Notizen - editierbar
+      - Historie (Timeline aller Ereignisse inkl. Updates) - nur Anzeige
+    - **Backend-Endpoints**:
+      - `GET /api/asset-mgmt/assets/search-detail?q=<id>` - Suche nach Asset
+      - `PUT /api/asset-mgmt/assets/update-by-identifier?identifier=<id>` - Update Asset
     - **Dateien**:
-      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (neues Modal + openAssetDetail)
-      - `/app/backend/routes/asset_management_v2.py` (search-detail Endpoint)
-    - **Test-Status**: ✅ Screenshots + API-Tests bestanden
+      - `/app/frontend/src/components/GoodsReceiptWorkflow.jsx` (Modal + Edit-Modus)
+      - `/app/backend/routes/asset_management_v2.py` (search-detail + update-by-identifier Endpoints)
+    - **Test-Status**: ✅ API-Tests + Screenshots bestanden
 
 19. **Asset erscheint nicht in "Nicht zugewiesen"-Liste (BUG FIX - 2025-02-16)**
     - **Problem**: "gescannte Lager-ID erscheint nicht bei 'Nicht zugewiesen' - ganzer datensatz fehlt" - Neu erstellte Assets erschienen nicht sofort in der Unassigned-Liste
