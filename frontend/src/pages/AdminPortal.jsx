@@ -3501,7 +3501,7 @@ const AdminPortalContent = () => {
           }
         }}
       >
-        <DialogContent className="max-w-3xl bg-[#2d2d2d] border-gray-700">
+        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-[#2d2d2d] border-gray-700">
           <DialogHeader className="pb-2 flex flex-row items-center justify-between">
             <DialogTitle className="text-white text-base">
               {isEditingTsridAsset ? 'Gerät bearbeiten' : 'Gerätedetails'}
