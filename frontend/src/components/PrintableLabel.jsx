@@ -330,24 +330,6 @@ export const printAssetLabelWithTemplate = (asset, template) => {
             window.print(); 
           }, 800);
         });
-          barcodeContainer.appendChild(svg);
-          try {
-            JsBarcode(svg, '${serialNumber}', {
-              format: 'CODE128',
-              width: 1.5,
-              height: 25,
-              displayValue: true,
-              fontSize: 8,
-              margin: 0,
-              textMargin: 2
-            });
-          } catch(e) {
-            barcodeContainer.innerHTML = '<span style="font-family: monospace;">${serialNumber}</span>';
-          }
-        }
-        ` : ''}
-        
-        setTimeout(function() { window.print(); }, 500);
       <\/script>
     </body>
     </html>
