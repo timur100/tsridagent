@@ -3560,7 +3560,7 @@ const AdminPortalContent = () => {
                 </div>
 
                 {/* Product & Technical Data - Editable */}
-                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700 overflow-visible">
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Produkt & Technik
                   </h3>
@@ -3612,21 +3612,27 @@ const AdminPortalContent = () => {
                         )}
                       </div>
                     </div>
-                    {isEditingTsridAsset && (
-                      <div>
-                        <p className="text-[10px] text-gray-500">MAC-Adresse</p>
-                        <input
-                          type="text"
-                          value={tsridAssetEditForm.mac}
-                          onChange={(e) => setTsridAssetEditForm(prev => ({...prev, mac: e.target.value}))}
-                          className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
-                          placeholder="00:00:00:00:00:00"
-                        />
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
+
+              {/* MAC Address field - only in edit mode, full width */}
+              {isEditingTsridAsset && (
+                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <p className="text-[10px] text-gray-500">MAC-Adresse</p>
+                      <input
+                        type="text"
+                        value={tsridAssetEditForm.mac}
+                        onChange={(e) => setTsridAssetEditForm(prev => ({...prev, mac: e.target.value}))}
+                        className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
+                        placeholder="00:00:00:00:00:00"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Row 2: Purchase Data + Label Preview OR Notes */}
               <div className="grid grid-cols-2 gap-2">
