@@ -2900,24 +2900,35 @@ const AssetManagementV2 = ({ theme }) => {
               {/* Label Preview */}
               <div className={`p-4 rounded-lg border-2 border-dashed ${isDark ? 'border-gray-600 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'}`}>
                 <p className="text-xs text-gray-500 mb-2 text-center">Vorschau (62mm x 29mm)</p>
-                <div className="flex items-center gap-4 p-2 bg-white rounded" style={{ minHeight: '80px' }}>
+                <div className="flex items-start gap-3 p-2 bg-white rounded" style={{ minHeight: '80px' }}>
                   <div className="flex-shrink-0" data-qr-preview="true">
                     <QRCodeSVG 
                       value={labelToPrint.asset_id || labelToPrint.warehouse_asset_id || labelToPrint.manufacturer_sn || ''}
-                      size={70}
+                      size={60}
                       level="M"
                     />
                   </div>
-                  <div className="flex-1 overflow-hidden text-black">
-                    <p className="font-bold text-sm break-all">
-                      {labelToPrint.asset_id || labelToPrint.warehouse_asset_id || '-'}
-                    </p>
-                    <p className="text-xs text-gray-600">
-                      {labelToPrint.type_label || labelToPrint.type}
-                    </p>
-                    <p className="text-xs font-mono text-gray-500 break-all">
-                      SN: {labelToPrint.manufacturer_sn || '-'}
-                    </p>
+                  <div className="flex-1 overflow-hidden text-black flex flex-col justify-between" style={{ minHeight: '60px' }}>
+                    <div>
+                      <p className="font-bold text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                        {labelToPrint.asset_id || labelToPrint.warehouse_asset_id || '-'}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        {labelToPrint.type_label || labelToPrint.type}
+                      </p>
+                    </div>
+                    {labelToPrint.manufacturer_sn && (
+                      <div className="mt-1" data-barcode-preview="true">
+                        <Barcode 
+                          value={labelToPrint.manufacturer_sn}
+                          width={1}
+                          height={25}
+                          fontSize={8}
+                          margin={0}
+                          displayValue={true}
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
