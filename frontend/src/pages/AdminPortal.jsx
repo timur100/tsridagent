@@ -3393,29 +3393,29 @@ const AdminPortalContent = () => {
 
       {/* TSRID Asset Detail Modal (from global search) */}
       <Dialog open={!!selectedTsridAsset} onOpenChange={(open) => !open && setSelectedTsridAsset(null)}>
-        <DialogContent className={`max-w-2xl ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white'}`}>
+        <DialogContent className={`max-w-2xl max-h-[90vh] overflow-y-auto ${theme === 'dark' ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white'}`}>
           <DialogHeader>
             <DialogTitle className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
               Gerätedetails
             </DialogTitle>
           </DialogHeader>
           {selectedTsridAsset && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Identification */}
               <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
                 <h3 className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   Identifikation
                 </h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Lager-ID</p>
-                    <p className={`font-mono font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <p className={`font-mono font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {selectedTsridAsset.warehouse_asset_id || '-'}
                     </p>
                   </div>
                   <div>
                     <p className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>Asset-ID</p>
-                    <p className={`font-mono font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                    <p className={`font-mono font-medium text-sm ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {selectedTsridAsset.asset_id || '-'}
                     </p>
                   </div>
