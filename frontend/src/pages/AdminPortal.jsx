@@ -3500,19 +3500,35 @@ const AdminPortalContent = () => {
       <Dialog 
         key={selectedTsridAsset?.warehouse_asset_id || 'tsrid-modal'}
         open={!!selectedTsridAsset} 
-        onOpenChange={(open) => !open && setSelectedTsridAsset(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedTsridAsset(null);
+            setIsEditingTsridAsset(false);
+          }
+        }}
       >
         <DialogContent className="max-w-3xl bg-[#2d2d2d] border-gray-700">
-          <DialogHeader className="pb-2">
+          <DialogHeader className="pb-2 flex flex-row items-center justify-between">
             <DialogTitle className="text-white text-base">
-              Gerätedetails
+              {isEditingTsridAsset ? 'Gerät bearbeiten' : 'Gerätedetails'}
             </DialogTitle>
+            {!isEditingTsridAsset && selectedTsridAsset && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditingTsridAsset(true)}
+                className="h-7 text-xs border-gray-600 hover:bg-gray-700"
+              >
+                <Edit2 className="w-3 h-3 mr-1" />
+                Bearbeiten
+              </Button>
+            )}
           </DialogHeader>
           {selectedTsridAsset && (
             <div className="space-y-2">
               {/* Row 1: Identification + Product & Technical Data */}
               <div className="grid grid-cols-2 gap-2">
-                {/* Identification */}
+                {/* Identification - Read only */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Identifikation
@@ -3549,125 +3565,253 @@ const AdminPortalContent = () => {
                   </div>
                 </div>
 
-                {/* Product & Technical Data */}
+                {/* Product & Technical Data - Editable */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Produkt & Technik
                   </h3>
                   <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <div>
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Typ</p>
                         <p className="text-xs text-white">{selectedTsridAsset.type_label || selectedTsridAsset.type || '-'}</p>
                       </div>
-                      <div className="text-right">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Hersteller</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.manufacturer || '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="text"
+                            value={tsridAssetEditForm.manufacturer}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, manufacturer: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.manufacturer || '-'}</p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex justify-between">
-                      <div>
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Modell</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.model || '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="text"
+                            value={tsridAssetEditForm.model}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, model: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.model || '-'}</p>
+                        )}
                       </div>
-                      <div className="text-right">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">IMEI</p>
-                        <p className="font-mono text-xs text-gray-200">{selectedTsridAsset.imei || '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="text"
+                            value={tsridAssetEditForm.imei}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, imei: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
+                          />
+                        ) : (
+                          <p className="font-mono text-xs text-gray-200">{selectedTsridAsset.imei || '-'}</p>
+                        )}
                       </div>
                     </div>
+                    {isEditingTsridAsset && (
+                      <div className="flex justify-between gap-2">
+                        <div className="flex-1">
+                          <p className="text-[10px] text-gray-500">MAC-Adresse</p>
+                          <input
+                            type="text"
+                            value={tsridAssetEditForm.mac}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, mac: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white font-mono"
+                            placeholder="00:00:00:00:00:00"
+                          />
+                        </div>
+                        <div className="flex-1"></div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Row 2: Purchase Data + Label Preview */}
+              {/* Row 2: Purchase Data + Label Preview OR Notes */}
               <div className="grid grid-cols-2 gap-2">
-                {/* Purchase Data */}
+                {/* Purchase Data - Editable */}
                 <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
                   <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
                     Kaufdaten & Garantie
                   </h3>
                   <div className="space-y-1">
-                    <div className="flex justify-between">
-                      <div>
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Kaufdatum</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="date"
+                            value={tsridAssetEditForm.purchase_date}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, purchase_date: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.purchase_date ? new Date(selectedTsridAsset.purchase_date).toLocaleDateString('de-DE') : '-'}</p>
+                        )}
                       </div>
-                      <div className="text-right">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Kaufpreis</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={tsridAssetEditForm.purchase_price}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, purchase_price: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                            placeholder="0.00"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.purchase_price ? `${selectedTsridAsset.purchase_price.toFixed(2)} €` : '-'}</p>
+                        )}
                       </div>
                     </div>
-                    <div className="flex justify-between">
-                      <div>
+                    <div className="flex justify-between gap-2">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Lieferant</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="text"
+                            value={tsridAssetEditForm.supplier}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, supplier: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.supplier_name || selectedTsridAsset.supplier || '-'}</p>
+                        )}
                       </div>
-                      <div className="text-right">
+                      <div className="flex-1">
                         <p className="text-[10px] text-gray-500">Garantie bis</p>
-                        <p className="text-xs text-white">{selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
-                          new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}</p>
+                        {isEditingTsridAsset ? (
+                          <input
+                            type="date"
+                            value={tsridAssetEditForm.warranty_until}
+                            onChange={(e) => setTsridAssetEditForm(prev => ({...prev, warranty_until: e.target.value}))}
+                            className="w-full text-xs bg-gray-800 border border-gray-600 rounded px-1.5 py-0.5 text-white"
+                          />
+                        ) : (
+                          <p className="text-xs text-white">{selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end ? 
+                            new Date(selectedTsridAsset.warranty_until || selectedTsridAsset.warranty_end).toLocaleDateString('de-DE') : '-'}</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* QR Code and Barcode for Label */}
-                <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
-                  <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
-                    Label-Vorschau
-                  </h3>
-                  <div className="flex items-start gap-3 p-2 bg-white rounded">
-                    <QRCodeSVG 
-                      value={selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || selectedTsridAsset.manufacturer_sn || ''}
-                      size={60}
-                      level="M"
+                {/* QR Code and Barcode for Label OR Notes in Edit Mode */}
+                {isEditingTsridAsset ? (
+                  <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                    <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                      Notizen
+                    </h3>
+                    <textarea
+                      value={tsridAssetEditForm.notes}
+                      onChange={(e) => setTsridAssetEditForm(prev => ({...prev, notes: e.target.value}))}
+                      className="w-full h-20 text-xs bg-gray-800 border border-gray-600 rounded px-2 py-1 text-white resize-none"
+                      placeholder="Notizen zum Gerät..."
                     />
-                    <div className="flex-1 text-black min-w-0">
-                      <p className="font-bold text-xs whitespace-nowrap overflow-hidden text-ellipsis">
-                        {selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || '-'}
-                      </p>
-                      <p className="text-[10px] text-gray-600">
-                        {selectedTsridAsset.type_label || selectedTsridAsset.type}
-                      </p>
-                      {selectedTsridAsset.manufacturer_sn && (
-                        <div className="mt-1">
-                          <Barcode 
-                            value={selectedTsridAsset.manufacturer_sn}
-                            width={1}
-                            height={20}
-                            fontSize={7}
-                            margin={0}
-                            displayValue={true}
-                          />
-                        </div>
-                      )}
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-lg bg-[#1a1a1a] border border-gray-700">
+                    <h3 className="text-xs font-semibold mb-2 text-gray-400 uppercase tracking-wide">
+                      Label-Vorschau
+                    </h3>
+                    <div className="flex items-start gap-3 p-2 bg-white rounded">
+                      <QRCodeSVG 
+                        value={selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || selectedTsridAsset.manufacturer_sn || ''}
+                        size={60}
+                        level="M"
+                      />
+                      <div className="flex-1 text-black min-w-0">
+                        <p className="font-bold text-xs whitespace-nowrap overflow-hidden text-ellipsis">
+                          {selectedTsridAsset.warehouse_asset_id || selectedTsridAsset.asset_id || '-'}
+                        </p>
+                        <p className="text-[10px] text-gray-600">
+                          {selectedTsridAsset.type_label || selectedTsridAsset.type}
+                        </p>
+                        {selectedTsridAsset.manufacturer_sn && (
+                          <div className="mt-1">
+                            <Barcode 
+                              value={selectedTsridAsset.manufacturer_sn}
+                              width={1}
+                              height={20}
+                              fontSize={7}
+                              margin={0}
+                              displayValue={true}
+                            />
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Action Buttons */}
               <div className="flex justify-end gap-2 pt-1">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedTsridAsset(null)}
-                  className="dark:border-gray-600 h-8"
-                >
-                  Schließen
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setActiveTab('assets');
-                    setAssetsSubTab('rollout');
-                    setSelectedTsridAsset(null);
-                    toast.success('Navigiere zu Asset-Verwaltung...');
-                  }}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white h-8"
-                >
-                  In Lagerverwaltung öffnen
-                </Button>
+                {isEditingTsridAsset ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={cancelTsridAssetEdit}
+                      className="h-8 border-gray-600 hover:bg-gray-700"
+                      disabled={isSavingTsridAsset}
+                    >
+                      Abbrechen
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={saveTsridAssetChanges}
+                      className="h-8 bg-green-600 hover:bg-green-700 text-white"
+                      disabled={isSavingTsridAsset}
+                    >
+                      {isSavingTsridAsset ? (
+                        <>
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                          Speichern...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="w-3 h-3 mr-1" />
+                          Speichern
+                        </>
+                      )}
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedTsridAsset(null)}
+                      className="dark:border-gray-600 h-8"
+                    >
+                      Schließen
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        setActiveTab('assets');
+                        setAssetsSubTab('rollout');
+                        setSelectedTsridAsset(null);
+                        toast.success('Navigiere zu Asset-Verwaltung...');
+                      }}
+                      className="bg-[#c00000] hover:bg-[#a00000] text-white h-8"
+                    >
+                      In Lagerverwaltung öffnen
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           )}
