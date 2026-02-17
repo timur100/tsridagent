@@ -2177,6 +2177,85 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Label Print Modal */}
+      <Dialog open={showLabelPrintModal} onOpenChange={setShowLabelPrintModal}>
+        <DialogContent className={`max-w-md ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+          <DialogHeader>
+            <DialogTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : ''}`}>
+              <Printer className="h-5 w-5 text-blue-500" />
+              Label drucken
+            </DialogTitle>
+          </DialogHeader>
+          
+          {labelToPrint && (
+            <div className="space-y-4">
+              {/* Label Preview */}
+              <div className={`p-4 rounded-lg border-2 border-dashed ${isDark ? 'border-gray-600 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'}`}>
+                <p className="text-xs text-gray-500 mb-2 text-center">Vorschau (62mm x 29mm)</p>
+                <div className="flex items-center gap-4 p-2 bg-white rounded" style={{ minHeight: '80px' }}>
+                  <div className="flex-shrink-0">
+                    <QRCodeSVG 
+                      value={labelToPrint.warehouse_asset_id || labelToPrint.asset_id || labelToPrint.manufacturer_sn || ''}
+                      size={70}
+                      level="M"
+                    />
+                  </div>
+                  <div className="flex-1 overflow-hidden text-black">
+                    <p className="font-bold text-sm break-all">
+                      {labelToPrint.warehouse_asset_id || labelToPrint.asset_id || '-'}
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      {labelToPrint.type_label || labelToPrint.type}
+                    </p>
+                    <p className="text-xs font-mono text-gray-500 break-all">
+                      SN: {labelToPrint.manufacturer_sn || '-'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Asset Info */}
+              <div className={`text-sm ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                <div className="flex justify-between py-1">
+                  <span>Lager-ID:</span>
+                  <code className={`px-2 py-0.5 rounded ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                    {labelToPrint.warehouse_asset_id || '-'}
+                  </code>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span>Seriennummer:</span>
+                  <span className="font-mono">{labelToPrint.manufacturer_sn || '-'}</span>
+                </div>
+                <div className="flex justify-between py-1">
+                  <span>Typ:</span>
+                  <span>{labelToPrint.type_label || labelToPrint.type}</span>
+                </div>
+              </div>
+              
+              {/* Print Instructions */}
+              <div className={`text-xs p-3 rounded ${isDark ? 'bg-blue-500/10 text-blue-300' : 'bg-blue-50 text-blue-700'}`}>
+                <p className="font-medium mb-1">Druckanleitung:</p>
+                <ul className="list-disc list-inside space-y-0.5">
+                  <li>Brother QL-820NWB empfohlen</li>
+                  <li>Etikettengröße: 62mm x 29mm (DK-11209)</li>
+                  <li>Bei Bedarf Druckeinstellungen anpassen</li>
+                </ul>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowLabelPrintModal(false)}>
+              Abbrechen
+            </Button>
+            <Button onClick={printLabel} className="bg-blue-600 hover:bg-blue-700">
+              <Printer className="h-4 w-4 mr-2" />
+              Jetzt drucken
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
