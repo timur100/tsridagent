@@ -188,6 +188,7 @@ const AdminPortalContent = () => {
   const [rndSidebarCollapsed, setRndSidebarCollapsed] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState(null); // For opening vehicle detail from global search
   const [inventoryTab, setInventoryTab] = useState('items'); // 'items' or 'goods-receipt'
+  const [selectedTsridAsset, setSelectedTsridAsset] = useState(null); // For opening TSRID asset detail from global search
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
   
   // Reset selectedVehicleId when changing tabs
