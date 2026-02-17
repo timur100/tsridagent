@@ -1870,6 +1870,20 @@ const AdminPortalContent = () => {
                   <Boxes className="h-5 w-5" />
                   Kit-Vorlagen
                 </button>
+                <button
+                  onClick={() => setInventoryTab('label-designer')}
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    inventoryTab === 'label-designer'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                  data-testid="label-designer-tab"
+                >
+                  <FileText className="h-5 w-5" />
+                  Label-Designer
+                </button>
               </div>
             </div>
 
