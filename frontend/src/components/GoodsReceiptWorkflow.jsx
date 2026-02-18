@@ -1381,9 +1381,21 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                       </td>
                       <td className="px-4 py-3">
                         {asset.warehouse_asset_id ? (
-                          <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
-                            {asset.warehouse_asset_id}
-                          </code>
+                          <div className="flex items-center gap-2">
+                            <code className={`px-2 py-1 rounded text-sm font-mono ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                              {asset.warehouse_asset_id}
+                            </code>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                fetchIdHistory(asset.warehouse_asset_id);
+                              }}
+                              title="ID-Historie anzeigen"
+                              className={`p-1 rounded hover:bg-gray-600/30 transition-colors ${isDark ? 'text-gray-400 hover:text-blue-400' : 'text-gray-500 hover:text-blue-600'}`}
+                            >
+                              <History className="w-4 h-4" />
+                            </button>
+                          </div>
                         ) : (
                           <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-</span>
                         )}
