@@ -3719,6 +3719,7 @@ async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str 
     
     # Get ALL existing sequence numbers for this type
     pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+    logger.info(f"Gap-filling: Looking for pattern: {pattern}")
     
     cursor = db.tsrid_assets.find(
         {"warehouse_asset_id": {"$regex": pattern}},
@@ -3736,10 +3737,14 @@ async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str 
             except:
                 pass
     
+    logger.info(f"Gap-filling: Found {len(existing_sequences)} existing sequences: {sorted(existing_sequences)[:10]}...")
+    
     # Find the FIRST available gap starting from 1
     next_seq = 1
     while next_seq in existing_sequences:
         next_seq += 1
+    
+    logger.info(f"Gap-filling: Next available sequence is {next_seq}")
     
     return next_seq
 
