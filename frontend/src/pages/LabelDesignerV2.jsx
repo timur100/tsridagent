@@ -499,26 +499,25 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     const qrImages = {};
     const barcodeImages = {};
     
-    // Generate QR codes
+    // Generate QR codes using qrcode library
     for (const element of elements.filter(e => e.type === 'qrcode')) {
       try {
-        const QRCode = await import('qrcode');
-        const qrDataUrl = await QRCode.toDataURL(qrContent, { 
+        const qrDataUrl = await QRCodeLib.toDataURL(qrContent, { 
           width: 200, 
           margin: 0,
           errorCorrectionLevel: 'M'
         });
         qrImages[element.id] = qrDataUrl;
+        console.log('QR generated for', element.id);
       } catch (err) {
         console.error('QR generation error:', err);
       }
     }
     
-    // Generate barcodes using canvas
+    // Generate barcodes using jsbarcode
     for (const element of elements.filter(e => e.type === 'barcode')) {
       try {
         const canvas = document.createElement('canvas');
-        const JsBarcode = (await import('jsbarcode')).default;
         JsBarcode(canvas, serialNumber, {
           format: element.config?.barcodeFormat || 'CODE128',
           width: 2,
@@ -529,6 +528,7 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
           background: '#ffffff'
         });
         barcodeImages[element.id] = canvas.toDataURL('image/png');
+        console.log('Barcode generated for', element.id);
       } catch (err) {
         console.error('Barcode generation error:', err);
       }
@@ -597,6 +597,8 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
         case 'line':
           elementsHtml += `<div style="${posStyle}display:flex;align-items:center;"><div style="width:100%;border-top:1px ${config.lineStyle||'solid'} ${config.lineColor||'#000'};"></div></div>`;
           break;
+        default:
+          break;
       }
     }
     
@@ -627,26 +629,34 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     var loadedCount = 0;
     var totalImages = images.length;
     
+    console.log('Total images to load:', totalImages);
+    
     function checkAllLoaded() {
       loadedCount++;
+      console.log('Image loaded:', loadedCount, '/', totalImages);
       if (loadedCount >= totalImages) {
         // All images loaded, trigger print
+        console.log('All images loaded, printing...');
         setTimeout(function() { 
           window.print(); 
-        }, 100);
+        }, 200);
       }
     }
     
     if (totalImages === 0) {
       // No images, print immediately
-      setTimeout(function() { window.print(); }, 100);
+      console.log('No images, printing immediately...');
+      setTimeout(function() { window.print(); }, 200);
     } else {
       images.forEach(function(img) {
-        if (img.complete) {
+        if (img.complete && img.naturalHeight !== 0) {
           checkAllLoaded();
         } else {
           img.onload = checkAllLoaded;
-          img.onerror = checkAllLoaded;
+          img.onerror = function() {
+            console.error('Image failed to load:', img.src.substring(0, 50));
+            checkAllLoaded();
+          };
         }
       });
     }
