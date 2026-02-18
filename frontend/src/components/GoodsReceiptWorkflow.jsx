@@ -1527,6 +1527,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     // Get the selected assets data for bulk printing
                     const assetsToPrint = unassignedAssets.filter(a => selectedAssets.has(a.manufacturer_sn));
                     setBulkPrintAssets(assetsToPrint);
+                    fetchBulkPrintTemplates(); // Load templates when opening modal
                     setShowBulkPrintModal(true);
                   }}
                   data-testid="bulk-print-btn"
