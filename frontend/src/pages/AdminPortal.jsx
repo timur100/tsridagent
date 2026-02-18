@@ -87,7 +87,7 @@ import DeviceLifecycleManager from '../components/DeviceLifecycleManager';
 import KitManager from '../components/KitManager';
 import StorageOverview from '../components/StorageOverview';
 import KitTemplateManager from '../components/KitTemplateManager';
-import LabelDesigner from '../components/LabelDesigner';
+import LabelDesignerV2 from './LabelDesignerV2';
 import FleetManagement from '../components/FleetManagement';
 import AIAnalysisManagement from '../components/AIAnalysisManagement';
 import AISearchManagement from '../components/AISearchManagement';
