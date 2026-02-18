@@ -717,18 +717,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       .flat()
       .find(t => t.value === currentType)?.label || currentType;
     
-    // Calculate next ID based on already added items of same type
-    const sameTypeCount = intakeItems.filter(i => i.type === currentType).length;
-    const baseIdParts = nextAssetId.split('-');
-    const baseSeq = parseInt(baseIdParts[baseIdParts.length - 1]) || 1;
-    const newSeq = baseSeq + sameTypeCount;
-    const newAssetId = baseIdParts.slice(0, -1).join('-') + '-' + String(newSeq).padStart(4, '0');
+    // DO NOT calculate ID locally - Backend assigns the actual ID
+    // Just show a placeholder, the real ID comes from the backend when submitted
+    const placeholderSeq = intakeItems.filter(i => i.type === currentType).length + 1;
+    const placeholderId = `(wird vergeben #${placeholderSeq})`;
     
     setIntakeItems(prev => [...prev, {
       manufacturer_sn: currentSN.trim(),
       type: currentType,
       type_label: typeLabel,
-      warehouse_asset_id: newAssetId,
+      warehouse_asset_id: placeholderId, // Placeholder - real ID assigned by backend
       imei: currentIMEI.trim(),
       mac: currentMAC.trim(),
       manufacturer: '',
