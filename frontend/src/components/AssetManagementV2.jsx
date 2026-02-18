@@ -556,6 +556,32 @@ const AssetManagementV2 = ({ theme }) => {
     }
   };
 
+  // Handle update asset
+  const handleUpdateAsset = async () => {
+    if (!editAssetData.asset_id) return;
+    
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/assets/${editAssetData.asset_id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editAssetData)
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success('Asset aktualisiert');
+        setIsEditingAsset(false);
+        // Refresh the detail modal with new data
+        openDetailModal('asset', editAssetData.asset_id);
+        fetchAssets();
+      } else {
+        toast.error(data.detail || 'Fehler beim Aktualisieren');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Aktualisieren');
+    }
+  };
+
   // Handle delete
   const handleDelete = async (type, id) => {
     if (!window.confirm(`${type} ${id} wirklich löschen?`)) return;
