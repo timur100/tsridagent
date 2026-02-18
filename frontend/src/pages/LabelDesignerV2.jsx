@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom/client';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -21,6 +22,8 @@ import { Switch } from '../components/ui/switch';
 import { QRCodeSVG, QRCodeCanvas } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import toast from 'react-hot-toast';
+import QRCodeLib from 'qrcode';
+import JsBarcode from 'jsbarcode';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
