@@ -493,22 +493,21 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     const labelId = SAMPLE_ASSET.asset_id;
     const serialNumber = SAMPLE_ASSET.manufacturer_sn;
     const typeLabel = SAMPLE_ASSET.type_label;
-    const qrContent = JSON.stringify({ id: labelId, sn: serialNumber });
     
     // Pre-generate QR codes and barcodes as base64 images
     const qrImages = {};
     const barcodeImages = {};
     
-    // Generate QR codes using qrcode library
+    // Generate QR codes using qrcode library - QR contains only the Asset-ID
     for (const element of elements.filter(e => e.type === 'qrcode')) {
       try {
-        const qrDataUrl = await QRCodeLib.toDataURL(qrContent, { 
+        const qrDataUrl = await QRCodeLib.toDataURL(labelId, { 
           width: 400, 
           margin: 1,
           errorCorrectionLevel: 'H'
         });
         qrImages[element.id] = qrDataUrl;
-        console.log('QR generated for', element.id, 'content:', qrContent);
+        console.log('QR generated for', element.id, 'content:', labelId);
       } catch (err) {
         console.error('QR generation error:', err);
       }
