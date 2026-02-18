@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://direct-print-ipp.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://wareneingang-review.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

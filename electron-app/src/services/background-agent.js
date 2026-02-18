@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://direct-print-ipp.preview.emergentagent.com';
+    this.serverUrl = 'https://wareneingang-review.preview.emergentagent.com';
   }
 
   /**

@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://direct-print-ipp.preview.emergentagent.com/portal/admin
+https://wareneingang-review.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

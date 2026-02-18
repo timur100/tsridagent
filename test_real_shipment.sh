@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://direct-print-ipp.preview.emergentagent.com/api/dhl"
+API_URL="https://wareneingang-review.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

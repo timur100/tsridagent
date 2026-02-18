@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL from environment
-BACKEND_URL = "https://direct-print-ipp.preview.emergentagent.com"
+BACKEND_URL = "https://wareneingang-review.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():

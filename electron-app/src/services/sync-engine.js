@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://direct-print-ipp.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://wareneingang-review.preview.emergentagent.com');
 }
 
 /**

@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://direct-print-ipp.preview.emergentagent.com/portal/admin
+https://wareneingang-review.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://direct-print-ipp.preview.emergentagent.com/portal/admin
+**URL:** https://wareneingang-review.preview.emergentagent.com/portal/admin
