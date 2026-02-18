@@ -1385,13 +1385,26 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
               </div>
               
               {/* Bluetooth Status */}
-              <div className={`p-3 rounded-lg ${bluetoothConnected ? 'bg-green-500/10 border border-green-500/30' : 'bg-gray-500/10 border border-gray-500/30'}`}>
+              <div className={`p-3 rounded-lg ${
+                bluetoothConnected 
+                  ? 'bg-green-500/10 border border-green-500/30' 
+                  : !bluetoothStatus.available 
+                    ? 'bg-red-500/10 border border-red-500/30'
+                    : 'bg-gray-500/10 border border-gray-500/30'
+              }`}>
                 <div className="flex items-center gap-2">
                   {bluetoothConnected ? (
                     <>
                       <CheckCircle className="h-5 w-5 text-green-500" />
                       <span className={`text-sm ${isDark ? 'text-green-400' : 'text-green-600'}`}>
                         Verbunden: {bluetoothDevice?.name || 'Bluetooth-Drucker'}
+                      </span>
+                    </>
+                  ) : !bluetoothStatus.available ? (
+                    <>
+                      <AlertCircle className="h-5 w-5 text-red-500" />
+                      <span className={`text-sm ${isDark ? 'text-red-400' : 'text-red-600'}`}>
+                        {bluetoothStatus.message || 'Bluetooth nicht verfügbar'}
                       </span>
                     </>
                   ) : (
@@ -1403,18 +1416,39 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
                 </div>
               </div>
               
+              {/* Warning for web environment */}
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-yellow-500/10 border border-yellow-500/30' : 'bg-yellow-50 border border-yellow-200'}`}>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className={`text-sm font-medium ${isDark ? 'text-yellow-300' : 'text-yellow-700'}`}>Eingeschränkte Verfügbarkeit</p>
+                    <p className={`text-xs ${isDark ? 'text-yellow-400' : 'text-yellow-600'}`}>
+                      Bluetooth funktioniert nur in der <strong>Electron-Desktop-App</strong> oder lokal in Chrome/Edge. 
+                      In Web-Umgebungen nutzen Sie bitte <strong>WiFi/Netzwerk-Druck</strong> für Zebra-Drucker.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
               <Button 
                 onClick={connectBluetooth}
                 variant="outline"
                 className="w-full"
+                disabled={!bluetoothStatus.available}
                 data-testid="connect-bluetooth-btn"
               >
                 <Bluetooth className="h-4 w-4 mr-2" />
                 Bluetooth-Drucker suchen
               </Button>
               
-              <div className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                <p>Hinweis: Web Bluetooth erfordert einen modernen Browser (Chrome, Edge) und HTTPS.</p>
+              {/* Alternative: Zebra via WiFi */}
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+                <p className={`text-xs font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                  💡 Alternative: Zebra-Drucker unterstützen auch WiFi-Druck!
+                </p>
+                <p className={`text-xs ${isDark ? 'text-blue-400' : 'text-blue-600'} mt-1`}>
+                  Verbinden Sie Ihren Zebra-Drucker mit dem WLAN und nutzen Sie den WiFi/Netzwerk-Tab mit der IP-Adresse des Druckers.
+                </p>
               </div>
             </TabsContent>
             
