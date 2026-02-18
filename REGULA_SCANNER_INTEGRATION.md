@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://label-print-fix-2.preview.emergentagent.com/portal/admin/id-checks
+   https://direct-print-ipp.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

@@ -68,7 +68,7 @@
     "bug": "Bulk delete returns 404",
     "root_cause": "FastAPI route definition order - parameterized route /{manufacturer_sn} at line 3473 catches /bulk before it can reach the actual /bulk handler at line 3518",
     "reproduction_steps": [
-      "1. curl -X DELETE 'https://label-print-fix-2.preview.emergentagent.com/api/asset-mgmt/inventory/unassigned/bulk' -H 'Content-Type: application/json' -d '[\"test-sn\"]'",
+      "1. curl -X DELETE 'https://direct-print-ipp.preview.emergentagent.com/api/asset-mgmt/inventory/unassigned/bulk' -H 'Content-Type: application/json' -d '[\"test-sn\"]'",
       "2. Observe 404 error: 'Gerät mit SN bulk nicht gefunden'"
     ],
     "fix": "In /app/backend/routes/asset_management_v2.py, move lines 3518-3546 (bulk delete endpoint) to BEFORE lines 3473-3515 (single delete endpoint)"

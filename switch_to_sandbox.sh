@@ -21,5 +21,5 @@ sleep 5
 
 echo ""
 echo "Test mit Sandbox..."
-curl -s "https://label-print-fix-2.preview.emergentagent.com/api/dhl/health" | jq '.'
+curl -s "https://direct-print-ipp.preview.emergentagent.com/api/dhl/health" | jq '.'
 
