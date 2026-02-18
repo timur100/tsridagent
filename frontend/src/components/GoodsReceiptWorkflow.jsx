@@ -865,6 +865,10 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           const data = await res.json();
           if (data.success) {
             successCount++;
+            // Log the actual assigned ID
+            if (data.warehouse_asset_id) {
+              console.log(`Assigned: ${item.manufacturer_sn} → ${data.warehouse_asset_id}`);
+            }
           } else {
             errorCount++;
             // Capture the specific error message (e.g., duplicate SN/IMEI)
@@ -882,7 +886,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       }
       
       if (successCount > 0) {
-        toast.success(`${successCount} Geräte mit Auto-ID erfasst`);
+        toast.success(`${successCount} Geräte erfolgreich erfasst! IDs wurden vom System vergeben.`, { duration: 4000 });
         setIntakeItems([]);
         // Don't clear receivedBy - it's auto-filled with logged-in user
         setSupplier('');
