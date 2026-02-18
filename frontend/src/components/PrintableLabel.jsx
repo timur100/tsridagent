@@ -633,4 +633,4 @@ export const LabelPrintModal = ({ open, onOpenChange, asset, isDark = true }) =>
   );
 };
 
-export default { printAssetLabel, printAssetLabelWithTemplate, LabelPreview, LabelPrintModal };
+export default { printAssetLabel, printAssetLabelWithTemplate, printMultipleLabelsWithTemplate, LabelPreview, LabelPrintModal };
