@@ -255,22 +255,32 @@ async def test_printer_connection(req: TestPrintRequest):
     """
     Test connection to the printer.
     """
+    ip = req.get_ip
+    port = req.get_port
+    
+    if not ip:
+        return {
+            "success": False,
+            "message": "Keine IP-Adresse angegeben",
+            "status": "error"
+        }
+    
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.settimeout(5)
-        result = sock.connect_ex((req.printer_ip, req.printer_port))
+        result = sock.connect_ex((ip, port))
         sock.close()
         
         if result == 0:
             return {
                 "success": True,
-                "message": f"Drucker erreichbar unter {req.printer_ip}:{req.printer_port}",
+                "message": f"Drucker erreichbar unter {ip}:{port}",
                 "status": "online"
             }
         else:
             return {
                 "success": False,
-                "message": f"Drucker nicht erreichbar unter {req.printer_ip}:{req.printer_port}",
+                "message": f"Drucker nicht erreichbar unter {ip}:{port}",
                 "status": "offline",
                 "error_code": result
             }
