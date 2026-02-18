@@ -43,11 +43,8 @@ const generateAllSvgs = async (asset, template) => {
   const labelId = asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn || '';
   const serialNumber = asset.manufacturer_sn || '';
   
-  const qrContent = JSON.stringify({
-    id: labelId,
-    sn: serialNumber,
-    type: asset.type || ''
-  });
+  // QR-Code enthält nur die Asset-ID
+  const qrContent = labelId;
   
   const svgs = {};
   
@@ -55,7 +52,7 @@ const generateAllSvgs = async (asset, template) => {
   svgs.defaultQr = await renderToSvgString(QRCodeSVG, {
     value: qrContent,
     size: 80,
-    level: 'M',
+    level: 'H',
     includeMargin: false
   });
   
