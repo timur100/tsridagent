@@ -115,11 +115,11 @@ class TestIntakeWithAutoID:
             events = history_data["history"].get("events", [])
             assert len(events) >= 1, "Should have at least one history event"
             
-            # Check the first event is 'created'
-            first_event = events[0]
-            assert first_event.get("action") == "created"
-            assert first_event.get("asset_sn") == self.test_sn
-            print(f"✓ History entry created: action={first_event.get('action')}")
+            # Check the LAST event is 'created' for our test SN (IDs may be reused)
+            last_event = events[-1]
+            assert last_event.get("action") == "created"
+            assert last_event.get("asset_sn") == self.test_sn, f"Last event SN {last_event.get('asset_sn')} != {self.test_sn}"
+            print(f"✓ History entry created: action={last_event.get('action')}, events={len(events)}")
         
         # Cleanup - delete the test asset
         cleanup_res = requests.delete(f"{BASE_URL}/api/asset-mgmt/inventory/unassigned/{self.test_sn}?reason=TestCleanup&user=TestAgent")
