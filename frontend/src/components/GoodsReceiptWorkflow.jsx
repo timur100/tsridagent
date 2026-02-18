@@ -87,6 +87,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [deliveryNote, setDeliveryNote] = useState('');
   const [suppliers, setSuppliers] = useState([]);
   
+  // Live Validation State
+  const [snValidationError, setSnValidationError] = useState(null);
+  const [imeiValidationError, setImeiValidationError] = useState(null);
+  const [macValidationError, setMacValidationError] = useState(null);
+  const [isValidating, setIsValidating] = useState(false);
+  
   // Set receivedBy when user is available
   useEffect(() => {
     if (user && !receivedBy) {
