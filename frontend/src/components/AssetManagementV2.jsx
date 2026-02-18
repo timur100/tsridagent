@@ -2981,6 +2981,14 @@ const AssetManagementV2 = ({ theme }) => {
         asset={labelToPrint}
         isDark={isDark}
       />
+      
+      {/* Label Print Modal from Detail View */}
+      <LabelPrintModal
+        open={showLabelPrintModalInDetail}
+        onOpenChange={setShowLabelPrintModalInDetail}
+        asset={selectedItem?.type === 'asset' ? selectedItem?.data : null}
+        isDark={isDark}
+      />
     </div>
   );
 };
