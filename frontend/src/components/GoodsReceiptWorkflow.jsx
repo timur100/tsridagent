@@ -149,6 +149,105 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
+  
+  // Duplicate Check State
+  const [duplicates, setDuplicates] = useState([]);
+  const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+  const [fixingDuplicate, setFixingDuplicate] = useState(false);
+  
+  // Edit Row State (for inline editing in the table)
+  const [editingRowId, setEditingRowId] = useState(null);
+  const [editRowData, setEditRowData] = useState({});
+  const [savingRow, setSavingRow] = useState(false);
+  
+  // Check for duplicates
+  const checkDuplicates = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/check-duplicate`);
+      const data = await res.json();
+      if (data.success && data.has_duplicates) {
+        setDuplicates(data.duplicates);
+        toast.error(`${data.duplicate_count} Duplikat(e) gefunden!`);
+        return data.duplicates;
+      } else {
+        setDuplicates([]);
+        return [];
+      }
+    } catch (e) {
+      console.error('Error checking duplicates:', e);
+      return [];
+    }
+  }, []);
+  
+  // Fix a duplicate
+  const fixDuplicate = async (warehouseId) => {
+    setFixingDuplicate(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/fix-duplicate/${encodeURIComponent(warehouseId)}`, {
+        method: 'POST'
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        fetchUnassignedAssets();
+        checkDuplicates();
+      } else {
+        toast.error(data.detail || 'Fehler beim Korrigieren');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Korrigieren');
+    } finally {
+      setFixingDuplicate(false);
+    }
+  };
+  
+  // Save row edit (update unassigned asset)
+  const saveRowEdit = async () => {
+    if (!editingRowId || !editRowData) return;
+    
+    setSavingRow(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/unassigned/${encodeURIComponent(editingRowId)}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          manufacturer_sn: editRowData.manufacturer_sn,
+          imei: editRowData.imei,
+          mac: editRowData.mac
+        })
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        toast.success('Gerät aktualisiert');
+        setEditingRowId(null);
+        setEditRowData({});
+        fetchUnassignedAssets();
+      } else {
+        toast.error(data.detail || 'Fehler beim Speichern');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setSavingRow(false);
+    }
+  };
+  
+  // Cancel row edit
+  const cancelRowEdit = () => {
+    setEditingRowId(null);
+    setEditRowData({});
+  };
+  
+  // Start editing a row
+  const startEditRow = (asset) => {
+    setEditingRowId(asset.warehouse_asset_id);
+    setEditRowData({
+      manufacturer_sn: asset.manufacturer_sn || '',
+      imei: asset.imei || '',
+      mac: asset.mac || ''
+    });
+  };
 
   // Fetch next asset ID for selected type
   const fetchNextAssetId = useCallback(async (assetType) => {
