@@ -5413,31 +5413,18 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
             "generated_at": now
         }
         
-        # Add label generation to history
-        await db.tsrid_assets.update_one(
-            {"asset_id": new_asset_id},
-            {
-                "$push": {
-                    "history": {
-                        "date": now,
-                        "event": "Label generiert",
-                        "event_type": "label_generated",
-                        "notes": f"QR-Code für {new_asset_id}"
-                    }
-                }
-            }
-        )
-        
         return {
             "success": True,
-            "message": "Gerät zugewiesen und Asset-ID generiert",
-            "asset_id": new_asset_id,
+            "message": f"Gerät {permanent_asset_id} dem Standort {assignment.location_id} zugewiesen",
+            "asset_id": permanent_asset_id,
+            "warehouse_asset_id": permanent_asset_id,
             "manufacturer_sn": manufacturer_sn,
             "location_id": assignment.location_id,
             "status": "in_storage",
             "label": label_data,
-            "print_label": True,  # Flag für Frontend: Label soll gedruckt werden
-            "qr_code_content": new_asset_id
+            "print_label": False,  # Label wurde bereits im Wareneingang gedruckt - KEINE neue ID!
+            "qr_code_content": permanent_asset_id,
+            "note": "Die Lager-ID bleibt unverändert. Kein neues Label erforderlich."
         }
     except HTTPException:
         raise
