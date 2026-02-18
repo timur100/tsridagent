@@ -71,8 +71,18 @@ class BatchPrintRequest(BaseModel):
 
 
 class TestPrintRequest(BaseModel):
-    printer_ip: str
+    printer_ip: Optional[str] = None
+    ip_address: Optional[str] = None
     printer_port: int = 9100
+    port: int = 9100
+    
+    @property
+    def get_ip(self) -> str:
+        return self.printer_ip or self.ip_address or ""
+    
+    @property
+    def get_port(self) -> int:
+        return self.printer_port if self.printer_port != 9100 else self.port
 
 
 class PrinterSettingsModel(BaseModel):
