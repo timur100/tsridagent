@@ -75,6 +75,20 @@ class TestPrintRequest(BaseModel):
     printer_port: int = 9100
 
 
+class PrinterSettingsModel(BaseModel):
+    ip_address: str
+    port: int = 9100
+    name: str = "Brother QL-820NWB"
+    print_method: str = "network"
+    is_default: bool = True
+
+
+def get_db():
+    """Get database connection"""
+    client = AsyncIOMotorClient(mongo_url)
+    return client[db_name]
+
+
 def create_label_image(label: LabelData) -> Image.Image:
     """
     Create a label image with QR code and text for Brother QL printers.
