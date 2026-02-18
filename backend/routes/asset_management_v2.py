@@ -4805,9 +4805,10 @@ async def delete_product(product_id: str):
 
 
 @router.delete("/inventory/unassigned/bulk")
-async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
+async def delete_unassigned_assets_bulk(serial_numbers: List[str], reason: str = Query("Bulk-Löschung"), user: str = Query("system")):
     """
     Löscht mehrere nicht zugewiesene Geräte aus dem Lager.
+    Protokolliert jede Löschung in der ID-Historie für Nachvollziehbarkeit.
     WICHTIG: Diese Route muss VOR der parametrisierten Route /{manufacturer_sn} definiert sein!
     """
     try:
@@ -4815,13 +4816,43 @@ async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
         failed = []
         
         for sn in serial_numbers:
-            result = await db.tsrid_assets.delete_one({
+            # Find asset first to get warehouse_asset_id for history
+            asset = await db.tsrid_assets.find_one({
                 "manufacturer_sn": sn,
                 "status": "unassigned",
                 "asset_id": None
             })
-            if result.deleted_count > 0:
-                deleted.append(sn)
+            
+            if asset:
+                warehouse_id = asset.get("warehouse_asset_id")
+                
+                # Delete the asset
+                result = await db.tsrid_assets.delete_one({
+                    "manufacturer_sn": sn,
+                    "status": "unassigned",
+                    "asset_id": None
+                })
+                
+                if result.deleted_count > 0:
+                    deleted.append(sn)
+                    
+                    # Log to ID history - this ID is now available for reuse
+                    if warehouse_id:
+                        await log_id_history(
+                            warehouse_id=warehouse_id,
+                            action="deleted",
+                            asset_sn=sn,
+                            user=user,
+                            reason=reason,
+                            details={
+                                "imei": asset.get("imei"),
+                                "mac": asset.get("mac"),
+                                "type": asset.get("type"),
+                                "manufacturer": asset.get("manufacturer")
+                            }
+                        )
+                else:
+                    failed.append(sn)
             else:
                 failed.append(sn)
         
@@ -4830,7 +4861,8 @@ async def delete_unassigned_assets_bulk(serial_numbers: List[str]):
             "deleted_count": len(deleted),
             "failed_count": len(failed),
             "deleted": deleted,
-            "failed": failed
+            "failed": failed,
+            "note": "Gelöschte IDs stehen für neue Geräte wieder zur Verfügung. Alle Löschungen wurden in der Historie protokolliert."
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
