@@ -2818,14 +2818,15 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             </div>
             
             {/* Druckhinweis */}
-            <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
-              <p className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
-                💡 Druckhinweis
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-green-500/10 border border-green-500/30' : 'bg-green-50 border border-green-200'}`}>
+              <p className={`text-sm font-medium ${isDark ? 'text-green-300' : 'text-green-700'}`}>
+                ✅ Alle {bulkPrintAssets.length} Labels in einem Druckauftrag
               </p>
               <ul className={`text-xs mt-1 space-y-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                <li>• Jedes Label wird nacheinander im Browser-Druckdialog geöffnet</li>
+                <li>• Es öffnet sich <strong>nur ein Druckdialog</strong></li>
+                <li>• Der Drucker druckt alle Labels automatisch hintereinander</li>
+                <li>• Zwischen jedem Label wird automatisch geschnitten</li>
                 <li>• Empfohlen: Brother QL-820NWB mit 62mm Endlosrolle (DK-22205)</li>
-                <li>• Tipp: "Im Hintergrund drucken" aktivieren für schnelleres Drucken</li>
               </ul>
             </div>
           </div>
