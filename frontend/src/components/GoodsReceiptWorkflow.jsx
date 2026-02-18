@@ -201,6 +201,64 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   };
   
+  // Fetch Label Templates for Bulk Print
+  const fetchBulkPrintTemplates = async () => {
+    setBulkPrintLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/label-templates`);
+      const data = await res.json();
+      if (data.success) {
+        setBulkPrintTemplates(data.templates || []);
+        // Set default template if exists
+        const defaultTemplate = data.templates?.find(t => t.is_default);
+        if (defaultTemplate) {
+          setBulkPrintSelectedTemplateId(defaultTemplate.template_id);
+          setBulkPrintSelectedTemplate(defaultTemplate);
+        }
+      }
+    } catch (e) {
+      console.error('Error fetching templates:', e);
+    } finally {
+      setBulkPrintLoading(false);
+    }
+  };
+  
+  // Handle bulk print template change
+  const handleBulkPrintTemplateChange = (templateId) => {
+    setBulkPrintSelectedTemplateId(templateId);
+    if (templateId === 'default') {
+      setBulkPrintSelectedTemplate(null);
+    } else {
+      const template = bulkPrintTemplates.find(t => t.template_id === templateId);
+      setBulkPrintSelectedTemplate(template || null);
+    }
+  };
+  
+  // Handle bulk print execution
+  const handleBulkPrint = async () => {
+    setBulkPrinting(true);
+    try {
+      // Print all labels sequentially with a small delay
+      for (let i = 0; i < bulkPrintAssets.length; i++) {
+        setBulkPrintIndex(i);
+        await printAssetLabelWithTemplate(bulkPrintAssets[i], bulkPrintSelectedTemplate);
+        // Small delay between prints to prevent browser issues
+        if (i < bulkPrintAssets.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      }
+      toast.success(`${bulkPrintAssets.length} Labels gedruckt`);
+      setShowBulkPrintModal(false);
+      setSelectedAssets(new Set());
+    } catch (e) {
+      console.error('Error printing labels:', e);
+      toast.error('Fehler beim Drucken');
+    } finally {
+      setBulkPrinting(false);
+      setBulkPrintIndex(0);
+    }
+  };
+  
   // Check for duplicates
   const checkDuplicates = useCallback(async () => {
     try {
