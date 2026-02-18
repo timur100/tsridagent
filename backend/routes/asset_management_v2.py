@@ -100,8 +100,8 @@ ASSET_TYPE_SUFFIX_MAP = {
     # Tablets -> TAB-xxx
     'tab_sp4': 'TAB-SP4',       # Surface Pro 4
     'tab_sp6': 'TAB-SP6',       # Surface Pro 6
-    'tab_tsr_i5': 'TAB-TSRi5',  # TSRID Tablet i5
-    'tab_tsr_i7': 'TAB-TSRi7',  # TSRID Tablet i7
+    'tab_tsr_i5': 'TAB-i5',     # TSRID Tablet i5 (Legacy format: TAB-i5)
+    'tab_tsr_i7': 'TAB-i7',     # TSRID Tablet i7 (Legacy format: TAB-i7)
     # Scanner -> SCA-xxx
     'sca_tsr': 'SCA-TSR',       # TSRID Scanner
     'sca_dsk': 'SCA-DSK',       # Desko Scanner
