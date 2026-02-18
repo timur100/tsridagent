@@ -414,3 +414,111 @@ async def get_printer_status():
         "supported_printer": "Brother QL-820NWB",
         "connection_types": ["TCP/IP (Port 9100)", "Network", "WiFi", "USB (via CUPS)"]
     }
+
+
+@router.get("/settings")
+async def get_printer_settings():
+    """
+    Get saved printer settings from database.
+    """
+    try:
+        db = get_db()
+        settings = await db.printer_settings.find_one({"is_default": True}, {"_id": 0})
+        
+        if not settings:
+            # Return default settings if none saved
+            settings = {
+                "ip_address": DEFAULT_PRINTER_IP,
+                "port": DEFAULT_PRINTER_PORT,
+                "name": "Brother QL-820NWB",
+                "print_method": "network",
+                "is_default": True
+            }
+        
+        return {
+            "success": True,
+            "settings": settings
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "error": str(e),
+            "settings": {
+                "ip_address": DEFAULT_PRINTER_IP,
+                "port": DEFAULT_PRINTER_PORT,
+                "name": "Brother QL-820NWB",
+                "print_method": "network"
+            }
+        }
+
+
+@router.post("/settings")
+async def save_printer_settings(settings: PrinterSettingsModel):
+    """
+    Save printer settings to database.
+    """
+    try:
+        db = get_db()
+        
+        # If this is default, unset other defaults
+        if settings.is_default:
+            await db.printer_settings.update_many(
+                {"is_default": True},
+                {"$set": {"is_default": False}}
+            )
+        
+        settings_doc = {
+            "ip_address": settings.ip_address,
+            "port": settings.port,
+            "name": settings.name,
+            "print_method": settings.print_method,
+            "is_default": settings.is_default,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Upsert settings
+        await db.printer_settings.update_one(
+            {"name": settings.name},
+            {"$set": settings_doc},
+            upsert=True
+        )
+        
+        return {
+            "success": True,
+            "message": "Drucker-Einstellungen gespeichert",
+            "settings": settings_doc
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/methods")
+async def get_print_methods():
+    """
+    Get available print methods.
+    """
+    return {
+        "success": True,
+        "methods": [
+            {
+                "id": "network",
+                "label": "WiFi/Netzwerk",
+                "description": "Direktdruck über TCP/IP auf Port 9100",
+                "printers": ["Brother QL-820NWB"],
+                "default_port": 9100
+            },
+            {
+                "id": "bluetooth",
+                "label": "Bluetooth",
+                "description": "Für Zebra Handheld-Drucker mit ZPL",
+                "printers": ["Zebra ZQ Series", "Zebra ZD Series"],
+                "note": "Erfordert Web Bluetooth API"
+            },
+            {
+                "id": "browser",
+                "label": "Browser-Druck",
+                "description": "Standard-Druckdialog des Browsers",
+                "note": "Fallback-Option, QR-Codes möglicherweise unzuverlässig"
+            }
+        ]
+    }
