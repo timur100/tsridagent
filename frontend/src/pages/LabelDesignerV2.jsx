@@ -292,10 +292,8 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
           // Create QR code canvas
           const qrCanvas = document.createElement('canvas');
           const qrSize = Math.min(w, h) * 0.9;
-          const qrContent = JSON.stringify({
-            id: SAMPLE_ASSET.asset_id,
-            sn: SAMPLE_ASSET.manufacturer_sn
-          });
+          // QR-Code enthält nur die Asset-ID
+          const qrContent = SAMPLE_ASSET.asset_id;
           
           // Use QRCodeCanvas to render
           const qrDiv = document.createElement('div');
@@ -306,7 +304,7 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
               <QRCodeCanvas 
                 value={qrContent} 
                 size={qrSize}
-                level="M"
+                level="H"
                 ref={(el) => {
                   if (el) {
                     const qrCanvasEl = el;
