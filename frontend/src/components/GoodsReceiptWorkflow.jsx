@@ -160,6 +160,30 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [editRowData, setEditRowData] = useState({});
   const [savingRow, setSavingRow] = useState(false);
   
+  // ID History State
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [historyData, setHistoryData] = useState(null);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  
+  // Fetch ID History
+  const fetchIdHistory = async (warehouseAssetId) => {
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/id-history/${encodeURIComponent(warehouseAssetId)}`);
+      const data = await res.json();
+      if (data.success) {
+        setHistoryData(data);
+        setShowHistoryModal(true);
+      } else {
+        toast.error('Keine Historie gefunden');
+      }
+    } catch (e) {
+      toast.error('Fehler beim Laden der Historie');
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+  
   // Check for duplicates
   const checkDuplicates = useCallback(async () => {
     try {
