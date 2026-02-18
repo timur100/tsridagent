@@ -76,7 +76,7 @@ const generateAllSvgs = async (asset, template) => {
         svgs[`qr_${element.id}`] = await renderToSvgString(QRCodeSVG, {
           value: qrContent,
           size: 100,
-          level: 'M'
+          level: 'H'
         });
       } else if (element.type === 'barcode' && serialNumber) {
         svgs[`bc_${element.id}`] = await renderToSvgString(Barcode, {
