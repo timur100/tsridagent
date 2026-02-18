@@ -297,6 +297,78 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     fetchNextAssetId(currentType);
   }, [currentType, fetchNextAssetId]);
 
+  // Live validation when SN/IMEI/MAC is scanned
+  const validateIdentifier = useCallback(async (field, value) => {
+    if (!value || !value.trim()) {
+      if (field === 'manufacturer_sn') setSnValidationError(null);
+      if (field === 'imei') setImeiValidationError(null);
+      if (field === 'mac') setMacValidationError(null);
+      return true;
+    }
+    
+    setIsValidating(true);
+    try {
+      const params = new URLSearchParams();
+      params.append(field, value.trim());
+      
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/validate-unique?${params.toString()}`);
+      const data = await res.json();
+      
+      if (!data.is_unique && data.conflicts && data.conflicts.length > 0) {
+        const conflict = data.conflicts[0];
+        const errorMsg = conflict.message;
+        
+        if (field === 'manufacturer_sn') setSnValidationError(errorMsg);
+        if (field === 'imei') setImeiValidationError(errorMsg);
+        if (field === 'mac') setMacValidationError(errorMsg);
+        
+        // Show toast immediately
+        toast.error(errorMsg, { duration: 5000, id: `dup-${field}` });
+        return false;
+      } else {
+        if (field === 'manufacturer_sn') setSnValidationError(null);
+        if (field === 'imei') setImeiValidationError(null);
+        if (field === 'mac') setMacValidationError(null);
+        return true;
+      }
+    } catch (e) {
+      console.error('Validation error:', e);
+      return true; // Allow on error, backend will catch
+    } finally {
+      setIsValidating(false);
+    }
+  }, []);
+
+  // Auto-validate when SN changes (after scan completes)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentSN && currentSN.trim().length >= 5) {
+        validateIdentifier('manufacturer_sn', currentSN);
+      }
+    }, 300); // 300ms debounce for scan completion
+    return () => clearTimeout(timer);
+  }, [currentSN, validateIdentifier]);
+
+  // Auto-validate when IMEI changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentIMEI && currentIMEI.trim().length >= 10) {
+        validateIdentifier('imei', currentIMEI);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [currentIMEI, validateIdentifier]);
+
+  // Auto-validate when MAC changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentMAC && currentMAC.trim().length >= 10) {
+        validateIdentifier('mac', currentMAC);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [currentMAC, validateIdentifier]);
+
   // Fetch suppliers
   const fetchSuppliers = useCallback(async () => {
     try {
