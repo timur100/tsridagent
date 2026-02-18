@@ -2718,7 +2718,13 @@ const AssetManagementV2 = ({ theme }) => {
       </Dialog>
 
       {/* Detail Modal */}
-      <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
+      <Dialog open={showDetailModal} onOpenChange={(open) => {
+        setShowDetailModal(open);
+        if (!open) {
+          setIsEditingAsset(false);
+          setEditAssetData({});
+        }
+      }}>
         <DialogContent className={`max-w-2xl ${isDark ? 'bg-[#1a1a1a] text-white' : ''}`}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
