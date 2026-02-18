@@ -730,6 +730,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       // Use new endpoint with auto-ID generation
       let successCount = 0;
       let errorCount = 0;
+      let errorMessages = [];
       
       for (const item of intakeItems) {
         try {
@@ -752,9 +753,17 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             successCount++;
           } else {
             errorCount++;
+            // Capture the specific error message (e.g., duplicate SN/IMEI)
+            const errorMsg = data.detail || 'Unbekannter Fehler';
+            errorMessages.push(`${item.manufacturer_sn}: ${errorMsg}`);
+            // Show immediate toast for duplicate errors
+            if (errorMsg.includes('existiert bereits')) {
+              toast.error(errorMsg, { duration: 5000 });
+            }
           }
-        } catch {
+        } catch (e) {
           errorCount++;
+          errorMessages.push(`${item.manufacturer_sn}: Netzwerkfehler`);
         }
       }
       
@@ -770,7 +779,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
         if (onRefreshStats) onRefreshStats();
       }
       if (errorCount > 0) {
-        toast.error(`${errorCount} Geräte konnten nicht erfasst werden`);
+        // Show detailed error message
+        const errorDetail = errorMessages.length > 0 
+          ? errorMessages.join('\n') 
+          : `${errorCount} Geräte konnten nicht erfasst werden`;
+        toast.error(errorDetail, { duration: 6000 });
+        console.error('Intake errors:', errorMessages);
       }
     } catch (e) {
       console.error('Error submitting intake:', e);
