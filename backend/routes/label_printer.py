@@ -1,6 +1,9 @@
 """
-Label Printer Integration - Brother QL-820NWB
-Supports network printing via TCP Socket (Port 9100)
+Label Printer Integration - Brother QL-820NWB & Zebra Printers
+Supports multiple printing methods:
+- Network printing via TCP Socket (Port 9100) for Brother
+- Bluetooth via Web Bluetooth API (frontend) for Zebra
+- Browser printing as fallback
 """
 import os
 import io
@@ -12,8 +15,13 @@ from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 from PIL import Image, ImageDraw, ImageFont
 import qrcode
+from motor.motor_asyncio import AsyncIOMotorClient
 
 router = APIRouter(prefix="/api/label-printer", tags=["Label Printer"])
+
+# MongoDB connection
+mongo_url = os.environ.get('MONGO_URL')
+db_name = os.environ.get('DB_NAME', 'tsrid_db')
 
 # Brother QL-820NWB specs
 # Label width: 62mm = ~696 pixels at 300dpi, or ~580px at 300dpi for 62mm continuous
@@ -22,8 +30,15 @@ LABEL_WIDTH_PX = 696
 LABEL_HEIGHT_PX = 271  # For 29mm height at 300dpi
 
 # Printer settings (can be overridden via API)
-DEFAULT_PRINTER_IP = os.environ.get("LABEL_PRINTER_IP", "192.168.1.100")
+DEFAULT_PRINTER_IP = os.environ.get("LABEL_PRINTER_IP", "192.168.118.1")
 DEFAULT_PRINTER_PORT = 9100
+
+# Print methods
+PRINT_METHODS = {
+    "network": "WiFi/Netzwerk (TCP Port 9100)",
+    "bluetooth": "Bluetooth (Zebra ZPL)",
+    "browser": "Browser-Druck (Fallback)"
+}
 
 
 class PrinterSettings(BaseModel):
