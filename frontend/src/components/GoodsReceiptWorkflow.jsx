@@ -1310,7 +1310,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}
                         >
                           <td className="px-4 py-2 text-sm">{idx + 1}</td>
-                          <td className={`px-4 py-2 font-mono text-sm font-bold ${isDark ? 'text-green-400' : 'text-green-700'}`}>
+                          <td className={`px-4 py-2 font-mono text-sm ${item.warehouse_asset_id?.startsWith('(') ? 'text-yellow-500 italic' : isDark ? 'text-green-400 font-bold' : 'text-green-700 font-bold'}`}>
                             {item.warehouse_asset_id || '-'}
                           </td>
                           <td className={`px-4 py-2 font-mono text-sm ${isDark ? 'text-white' : ''}`}>
