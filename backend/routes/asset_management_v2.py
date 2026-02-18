@@ -4800,6 +4800,195 @@ async def delete_unassigned_asset(manufacturer_sn: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+class UnassignedAssetUpdate(BaseModel):
+    """Model for updating an unassigned asset in Wareneingang"""
+    manufacturer_sn: Optional[str] = None
+    imei: Optional[str] = None
+    mac: Optional[str] = None
+    notes: Optional[str] = None
+
+
+@router.put("/inventory/unassigned/{warehouse_asset_id}")
+async def update_unassigned_asset(warehouse_asset_id: str, update: UnassignedAssetUpdate):
+    """
+    Aktualisiert ein nicht zugewiesenes Gerät im Wareneingang.
+    Ermöglicht die Korrektur von falschen Scans (Seriennummer, IMEI, MAC).
+    Nur Geräte mit status='unassigned' und ohne asset_id können bearbeitet werden.
+    """
+    try:
+        # Find the unassigned asset
+        asset = await db.tsrid_assets.find_one({
+            "warehouse_asset_id": warehouse_asset_id,
+            "status": "unassigned",
+            "asset_id": None
+        })
+        
+        if not asset:
+            existing = await db.tsrid_assets.find_one({"warehouse_asset_id": warehouse_asset_id})
+            if existing:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Gerät {warehouse_asset_id} ist bereits zugewiesen und kann nicht bearbeitet werden"
+                )
+            raise HTTPException(status_code=404, detail=f"Gerät mit Lager-ID {warehouse_asset_id} nicht gefunden")
+        
+        # Build update document
+        update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+        
+        # Check for uniqueness of new values
+        if update.manufacturer_sn is not None and update.manufacturer_sn != asset.get("manufacturer_sn"):
+            existing_sn = await db.tsrid_assets.find_one({
+                "manufacturer_sn": update.manufacturer_sn,
+                "warehouse_asset_id": {"$ne": warehouse_asset_id}
+            })
+            if existing_sn:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Seriennummer '{update.manufacturer_sn}' existiert bereits (Lager-ID: {existing_sn.get('warehouse_asset_id', 'N/A')})"
+                )
+            update_doc["manufacturer_sn"] = update.manufacturer_sn
+        
+        if update.imei is not None:
+            if update.imei and update.imei.strip():
+                existing_imei = await db.tsrid_assets.find_one({
+                    "imei": update.imei,
+                    "warehouse_asset_id": {"$ne": warehouse_asset_id}
+                })
+                if existing_imei:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"IMEI '{update.imei}' existiert bereits (Lager-ID: {existing_imei.get('warehouse_asset_id', 'N/A')})"
+                    )
+            update_doc["imei"] = update.imei.strip() if update.imei else ""
+        
+        if update.mac is not None:
+            if update.mac and update.mac.strip():
+                existing_mac = await db.tsrid_assets.find_one({
+                    "mac": update.mac,
+                    "warehouse_asset_id": {"$ne": warehouse_asset_id}
+                })
+                if existing_mac:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"MAC-Adresse '{update.mac}' existiert bereits (Lager-ID: {existing_mac.get('warehouse_asset_id', 'N/A')})"
+                    )
+            update_doc["mac"] = update.mac.strip() if update.mac else ""
+        
+        if update.notes is not None:
+            update_doc["notes"] = update.notes
+        
+        # Update the asset
+        result = await db.tsrid_assets.update_one(
+            {"warehouse_asset_id": warehouse_asset_id, "status": "unassigned", "asset_id": None},
+            {"$set": update_doc}
+        )
+        
+        if result.modified_count == 0 and len(update_doc) > 1:
+            raise HTTPException(status_code=500, detail="Fehler beim Aktualisieren des Geräts")
+        
+        # Fetch updated asset
+        updated_asset = await db.tsrid_assets.find_one(
+            {"warehouse_asset_id": warehouse_asset_id},
+            {"_id": 0}
+        )
+        
+        return {
+            "success": True,
+            "message": f"Gerät {warehouse_asset_id} wurde aktualisiert",
+            "asset": updated_asset
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/inventory/check-duplicate")
+async def check_duplicate_warehouse_ids():
+    """
+    Prüft auf doppelte Lager-IDs und gibt eine Liste zurück.
+    """
+    try:
+        # Aggregate to find duplicates
+        pipeline = [
+            {"$match": {"warehouse_asset_id": {"$exists": True, "$ne": None}}},
+            {"$group": {"_id": "$warehouse_asset_id", "count": {"$sum": 1}, "docs": {"$push": {"sn": "$manufacturer_sn", "imei": "$imei"}}}},
+            {"$match": {"count": {"$gt": 1}}},
+            {"$sort": {"_id": 1}}
+        ]
+        
+        duplicates = await db.tsrid_assets.aggregate(pipeline).to_list(length=100)
+        
+        return {
+            "success": True,
+            "has_duplicates": len(duplicates) > 0,
+            "duplicate_count": len(duplicates),
+            "duplicates": duplicates
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/inventory/fix-duplicate/{warehouse_asset_id}")
+async def fix_duplicate_warehouse_id(warehouse_asset_id: str):
+    """
+    Korrigiert doppelte Lager-IDs indem eine neue, einzigartige ID generiert wird.
+    Behält das erste Gerät mit der ursprünglichen ID, gibt dem Duplikat eine neue ID.
+    """
+    try:
+        # Find all assets with this warehouse_asset_id
+        assets = await db.tsrid_assets.find(
+            {"warehouse_asset_id": warehouse_asset_id}
+        ).sort("created_at", 1).to_list(length=10)
+        
+        if len(assets) <= 1:
+            return {
+                "success": True,
+                "message": "Keine Duplikate gefunden",
+                "duplicates_fixed": 0
+            }
+        
+        # Keep the first one, rename the others
+        fixed = []
+        for i, asset in enumerate(assets[1:], start=1):
+            # Get asset type and generate new ID
+            asset_type = asset.get("type", "other")
+            type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
+            prefix = "TSRID"  # Default prefix
+            
+            new_seq = await get_next_warehouse_sequence(asset_type, "default")
+            new_id = generate_warehouse_asset_id(prefix, type_suffix, new_seq)
+            
+            # Update the asset with new ID
+            result = await db.tsrid_assets.update_one(
+                {"_id": asset["_id"]},
+                {"$set": {
+                    "warehouse_asset_id": new_id,
+                    "original_warehouse_id": asset.get("original_warehouse_id", warehouse_asset_id),
+                    "duplicate_fixed_at": datetime.now(timezone.utc).isoformat(),
+                    "duplicate_fixed_from": warehouse_asset_id
+                }}
+            )
+            
+            if result.modified_count > 0:
+                fixed.append({
+                    "old_id": warehouse_asset_id,
+                    "new_id": new_id,
+                    "manufacturer_sn": asset.get("manufacturer_sn")
+                })
+        
+        return {
+            "success": True,
+            "message": f"{len(fixed)} Duplikat(e) korrigiert",
+            "duplicates_fixed": len(fixed),
+            "fixed_items": fixed
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.get("/inventory/unassigned")
 async def list_unassigned_assets(
     type: str = Query(None),
