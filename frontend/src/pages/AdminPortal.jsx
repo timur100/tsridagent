@@ -1948,6 +1948,12 @@ const AdminPortalContent = () => {
           </div>
         )}
 
+        {activeTab === 'label-designer' && (
+          <div className={`rounded-lg border ${theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`} style={{ height: 'calc(100vh - 180px)' }}>
+            <LabelDesigner theme={theme} />
+          </div>
+        )}
+
         {activeTab === 'assets' && (
           <div>
             {/* Assets Sub-Navigation */}
