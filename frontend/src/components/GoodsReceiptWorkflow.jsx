@@ -1453,6 +1453,19 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             {selectedAssets.size > 0 && (
               <>
                 <Button
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    // Get the selected assets data for bulk printing
+                    const assetsToPrint = unassignedAssets.filter(a => selectedAssets.has(a.manufacturer_sn));
+                    setBulkPrintAssets(assetsToPrint);
+                    setShowBulkPrintModal(true);
+                  }}
+                  data-testid="bulk-print-btn"
+                >
+                  <Printer className="h-4 w-4 mr-2" />
+                  {selectedAssets.size} Labels drucken
+                </Button>
+                <Button
                   className="bg-green-600 hover:bg-green-700"
                   onClick={() => {
                     setAssetToAssign(null);
