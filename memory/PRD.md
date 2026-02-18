@@ -527,6 +527,10 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - [x] TSRID KIT umbenennen zu "TSRID KIT i7" (KIT-TSRi7) - **DONE 2025-02-15**
 - [x] TSRID KIT i5 Template erstellen (KIT-TSRi5) - **DONE 2025-02-15**
 - [x] **Label-Verbesserungen: Asset-ID einzeilig + Seriennummer-Barcode** - **DONE 2025-02-17**
+- [x] **Frontend Lager-ID Vorhersage-Bug** - Zeigt jetzt Platzhalter statt falscher IDs - **VERIFIED 2025-02-18**
+- [x] **Live-Duplikat-Validierung** - Echtzeit-Prüfung von SN/IMEI/MAC - **VERIFIED 2025-02-18**
+- [x] **"Nächste Asset-ID" Refresh nach Löschung** - **VERIFIED 2025-02-18**
+- [x] **ID-Historie Modal** - Vollständiger Audit-Trail für jede Lager-ID - **VERIFIED 2025-02-18**
 
 ### P1 - High Priority
 - [x] **Hybrid Inventory System for Kit-Zusammenstellung** - **IMPLEMENTED 2025-02-15**
