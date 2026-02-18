@@ -158,6 +158,11 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [showBulkPrintModal, setShowBulkPrintModal] = useState(false);
   const [bulkPrintAssets, setBulkPrintAssets] = useState([]);
   const [bulkPrintIndex, setBulkPrintIndex] = useState(0);
+  const [bulkPrintTemplates, setBulkPrintTemplates] = useState([]);
+  const [bulkPrintSelectedTemplateId, setBulkPrintSelectedTemplateId] = useState('default');
+  const [bulkPrintSelectedTemplate, setBulkPrintSelectedTemplate] = useState(null);
+  const [bulkPrintLoading, setBulkPrintLoading] = useState(false);
+  const [bulkPrinting, setBulkPrinting] = useState(false);
 
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
