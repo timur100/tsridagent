@@ -210,11 +210,28 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
       setBluetoothConnected(true);
       toast.success(`Verbunden mit ${device.name || 'Bluetooth-Drucker'}`);
     } catch (e) {
-      if (e.name !== 'NotFoundError') {
+      if (e.name === 'NotFoundError') {
+        // User cancelled the device selection
+        return;
+      }
+      
+      // Check for permissions policy error
+      if (e.message && e.message.includes('permissions policy')) {
+        toast.error('Bluetooth ist in dieser Umgebung nicht verfügbar. Bitte nutzen Sie die Electron-App oder WiFi-Druck.', { duration: 5000 });
+        setBluetoothStatus({ 
+          available: false, 
+          message: 'Bluetooth ist nur in der Electron-App verfügbar' 
+        });
+      } else if (e.name === 'SecurityError') {
+        toast.error('Bluetooth erfordert HTTPS und ist in dieser Umgebung eingeschränkt.', { duration: 5000 });
+      } else {
         toast.error('Bluetooth-Verbindung fehlgeschlagen: ' + e.message);
       }
     }
   };
+  
+  // Bluetooth availability state
+  const [bluetoothStatus, setBluetoothStatus] = useState({ available: true, message: '' });
 
   // Save printer settings
   const savePrinterSettings = async () => {
