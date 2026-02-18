@@ -482,13 +482,56 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     setIsPrinting(false);
   };
 
-  // Print via browser
+  // Print via browser - generates images BEFORE opening print window
   const printViaBrowser = async () => {
     setIsPrinting(true);
+    toast.loading('Label wird vorbereitet...', { id: 'print-prep' });
     
     const labelId = SAMPLE_ASSET.asset_id;
     const serialNumber = SAMPLE_ASSET.manufacturer_sn;
     const typeLabel = SAMPLE_ASSET.type_label;
+    const qrContent = JSON.stringify({ id: labelId, sn: serialNumber });
+    
+    // Pre-generate QR codes and barcodes as base64 images
+    const qrImages = {};
+    const barcodeImages = {};
+    
+    // Generate QR codes
+    for (const element of elements.filter(e => e.type === 'qrcode')) {
+      try {
+        const QRCode = await import('qrcode');
+        const qrDataUrl = await QRCode.toDataURL(qrContent, { 
+          width: 200, 
+          margin: 0,
+          errorCorrectionLevel: 'M'
+        });
+        qrImages[element.id] = qrDataUrl;
+      } catch (err) {
+        console.error('QR generation error:', err);
+      }
+    }
+    
+    // Generate barcodes using canvas
+    for (const element of elements.filter(e => e.type === 'barcode')) {
+      try {
+        const canvas = document.createElement('canvas');
+        const JsBarcode = (await import('jsbarcode')).default;
+        JsBarcode(canvas, serialNumber, {
+          format: element.config?.barcodeFormat || 'CODE128',
+          width: 2,
+          height: 50,
+          displayValue: element.config?.showValue !== false,
+          fontSize: 12,
+          margin: 0,
+          background: '#ffffff'
+        });
+        barcodeImages[element.id] = canvas.toDataURL('image/png');
+      } catch (err) {
+        console.error('Barcode generation error:', err);
+      }
+    }
+    
+    toast.dismiss('print-prep');
     
     const printWindow = window.open('', '_blank', 'width=600,height=500');
     if (!printWindow) {
@@ -497,7 +540,7 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
       return;
     }
 
-    // Generate element HTML
+    // Generate element HTML with pre-rendered images
     let elementsHtml = '';
     for (const element of elements) {
       const layoutItem = layout.find(l => l.i === element.id);
@@ -514,10 +557,16 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
       
       switch (type) {
         case 'qrcode':
-          elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;" id="qr-${element.id}"></div>`;
+          // Use pre-generated QR code image
+          if (qrImages[element.id]) {
+            elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;"><img src="${qrImages[element.id]}" style="max-width:100%;max-height:100%;object-fit:contain;" /></div>`;
+          }
           break;
         case 'barcode':
-          elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;" id="bc-${element.id}"></div>`;
+          // Use pre-generated barcode image
+          if (barcodeImages[element.id]) {
+            elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;"><img src="${barcodeImages[element.id]}" style="max-width:100%;max-height:100%;object-fit:contain;" /></div>`;
+          }
           break;
         case 'asset_id':
           elementsHtml += `<div style="${posStyle}${textStyle}">${labelId}</div>`;
@@ -547,25 +596,22 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
           break;
       }
     }
-
-    const qrContent = JSON.stringify({ id: labelId, sn: serialNumber });
     
     const htmlContent = `<!DOCTYPE html>
 <html>
 <head>
   <title>Label: ${labelId}</title>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"><\/script>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"><\/script>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
     @page{size:62mm ${labelHeightMm + 2}mm;margin:0;}
     @media print{
       html,body{width:62mm;height:${labelHeightMm + 2}mm;margin:0;padding:0;overflow:hidden;}
       body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      .no-print{display:none !important;}
     }
     body{font-family:Arial,sans-serif;width:62mm;background:white;}
     .label-container{position:relative;width:62mm;height:${labelHeightMm}mm;padding:1mm;background:white;overflow:hidden;}
-    canvas,svg{display:block;max-width:100%;height:auto;}
+    img{display:block;}
   </style>
 </head>
 <body>
@@ -573,29 +619,34 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     ${elementsHtml}
   </div>
   <script>
-    // Render QR codes
-    ${elements.filter(e => e.type === 'qrcode').map(e => `
-      var qrEl${e.id.replace(/[^a-z0-9]/gi, '')} = document.getElementById('qr-${e.id}');
-      if (qrEl${e.id.replace(/[^a-z0-9]/gi, '')}) {
-        var qrCanvas = document.createElement('canvas');
-        QRCode.toCanvas(qrCanvas, '${qrContent.replace(/'/g, "\\'")}', {width: 80, margin: 0}, function(err) {
-          if (!err) qrEl${e.id.replace(/[^a-z0-9]/gi, '')}.appendChild(qrCanvas);
-        });
-      }
-    `).join('\n')}
+    // Wait for all images to load, then print
+    var images = document.querySelectorAll('img');
+    var loadedCount = 0;
+    var totalImages = images.length;
     
-    // Render barcodes
-    ${elements.filter(e => e.type === 'barcode').map(e => `
-      var bcEl${e.id.replace(/[^a-z0-9]/gi, '')} = document.getElementById('bc-${e.id}');
-      if (bcEl${e.id.replace(/[^a-z0-9]/gi, '')}) {
-        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        bcEl${e.id.replace(/[^a-z0-9]/gi, '')}.appendChild(svg);
-        JsBarcode(svg, '${serialNumber}', {format:'CODE128',width:1.5,height:30,displayValue:true,fontSize:9,margin:0});
+    function checkAllLoaded() {
+      loadedCount++;
+      if (loadedCount >= totalImages) {
+        // All images loaded, trigger print
+        setTimeout(function() { 
+          window.print(); 
+        }, 100);
       }
-    `).join('\n')}
+    }
     
-    // Print after rendering
-    setTimeout(function(){window.print();}, 500);
+    if (totalImages === 0) {
+      // No images, print immediately
+      setTimeout(function() { window.print(); }, 100);
+    } else {
+      images.forEach(function(img) {
+        if (img.complete) {
+          checkAllLoaded();
+        } else {
+          img.onload = checkAllLoaded;
+          img.onerror = checkAllLoaded;
+        }
+      });
+    }
   <\/script>
 </body>
 </html>`;
