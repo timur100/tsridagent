@@ -1295,11 +1295,14 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {unassignedAssets.map(asset => (
+                  {unassignedAssets.map(asset => {
+                    const isEditing = editingRowId === asset.warehouse_asset_id;
+                    
+                    return (
                     <tr 
                       key={asset.manufacturer_sn}
-                      className={`border-t cursor-pointer ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'}`}
-                      onClick={() => openAssetDetail(asset.warehouse_asset_id || asset.manufacturer_sn)}
+                      className={`border-t ${isEditing ? 'bg-blue-500/10' : ''} ${!isEditing ? 'cursor-pointer' : ''} ${isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'}`}
+                      onClick={() => !isEditing && openAssetDetail(asset.warehouse_asset_id || asset.manufacturer_sn)}
                     >
                       <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
@@ -1307,6 +1310,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           checked={selectedAssets.has(asset.manufacturer_sn)}
                           onChange={() => toggleAssetSelection(asset.manufacturer_sn)}
                           className="rounded"
+                          disabled={isEditing}
                         />
                       </td>
                       <td className="px-4 py-3">
@@ -1318,56 +1322,114 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                           <span className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>-</span>
                         )}
                       </td>
-                      <td className={`px-4 py-3 font-mono text-sm ${isDark ? 'text-white' : ''}`}>
-                        {asset.manufacturer_sn}
+                      <td className={`px-4 py-3 font-mono text-sm ${isDark ? 'text-white' : ''}`} onClick={(e) => isEditing && e.stopPropagation()}>
+                        {isEditing ? (
+                          <Input
+                            value={editRowData.manufacturer_sn || ''}
+                            onChange={(e) => setEditRowData(prev => ({ ...prev, manufacturer_sn: e.target.value }))}
+                            className={`h-8 text-xs font-mono ${inputBg}`}
+                            placeholder="Seriennummer"
+                          />
+                        ) : (
+                          asset.manufacturer_sn
+                        )}
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${isDark ? 'text-white' : ''}`} onClick={(e) => isEditing && e.stopPropagation()}>
+                        {isEditing ? (
+                          <Input
+                            value={editRowData.imei || ''}
+                            onChange={(e) => setEditRowData(prev => ({ ...prev, imei: e.target.value }))}
+                            className={`h-8 text-xs ${inputBg}`}
+                            placeholder="IMEI"
+                          />
+                        ) : (
+                          asset.imei || '-'
+                        )}
+                      </td>
+                      <td className={`px-4 py-3 text-sm ${isDark ? 'text-white' : ''}`} onClick={(e) => isEditing && e.stopPropagation()}>
+                        {isEditing ? (
+                          <Input
+                            value={editRowData.mac || ''}
+                            onChange={(e) => setEditRowData(prev => ({ ...prev, mac: e.target.value }))}
+                            className={`h-8 text-xs ${inputBg}`}
+                            placeholder="MAC-Adresse"
+                          />
+                        ) : (
+                          asset.mac || '-'
+                        )}
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant="outline">{asset.type_label || getTypeLabel(asset.type)}</Badge>
                       </td>
-                      <td className="px-4 py-3 text-sm">
-                        {asset.intake_date 
-                          ? new Date(asset.intake_date).toLocaleDateString('de-DE')
-                          : '-'}
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        {asset.supplier || '-'}
-                      </td>
                       <td className="px-4 py-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="px-2"
-                            onClick={() => openLabelPrint(asset)}
-                            title="Label drucken"
-                          >
-                            <Printer className="h-3 w-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            className="bg-blue-600 hover:bg-blue-700"
-                            onClick={() => openAssignModal(asset)}
-                            data-testid={`assign-btn-${asset.manufacturer_sn}`}
-                          >
-                            <MapPin className="h-3 w-3 mr-1" />
-                            Zuweisen
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-500 hover:text-red-600 hover:bg-red-500/10 px-2"
-                            onClick={() => {
-                              setAssetToDelete(asset);
-                              setShowDeleteModal(true);
-                            }}
-                            data-testid={`delete-btn-${asset.manufacturer_sn}`}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          {isEditing ? (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="px-2 text-gray-500"
+                                onClick={cancelRowEdit}
+                                disabled={savingRow}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 px-2"
+                                onClick={saveRowEdit}
+                                disabled={savingRow}
+                              >
+                                {savingRow ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="px-2"
+                                onClick={() => startEditRow(asset)}
+                                title="Bearbeiten"
+                              >
+                                <Edit2 className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="px-2"
+                                onClick={() => openLabelPrint(asset)}
+                                title="Label drucken"
+                              >
+                                <Printer className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                className="bg-blue-600 hover:bg-blue-700"
+                                onClick={() => openAssignModal(asset)}
+                                data-testid={`assign-btn-${asset.manufacturer_sn}`}
+                              >
+                                <MapPin className="h-3 w-3 mr-1" />
+                                Zuweisen
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="text-red-500 hover:text-red-600 hover:bg-red-500/10 px-2"
+                                onClick={() => {
+                                  setAssetToDelete(asset);
+                                  setShowDeleteModal(true);
+                                }}
+                                data-testid={`delete-btn-${asset.manufacturer_sn}`}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  )})}
                 </tbody>
               </table>
             </div>
