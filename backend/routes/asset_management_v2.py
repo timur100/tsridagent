@@ -5064,6 +5064,77 @@ async def update_unassigned_asset(warehouse_asset_id: str, update: UnassignedAss
         raise HTTPException(status_code=500, detail=str(e))
 
 
+
+@router.get("/inventory/id-history/{warehouse_asset_id}")
+async def get_warehouse_id_history(warehouse_asset_id: str):
+    """
+    Ruft die vollständige Historie einer Lager-ID ab.
+    
+    Zeigt alle Ereignisse wie:
+    - Erstellung
+    - Löschung (ID wird freigegeben)
+    - Neuzuweisung (ID wurde wiederverwendet)
+    - Korrekturen
+    
+    Dies ist wichtig für die Nachvollziehbarkeit im Livesystem.
+    """
+    try:
+        history = await get_id_history(warehouse_asset_id)
+        
+        if not history:
+            return {
+                "success": True,
+                "warehouse_asset_id": warehouse_asset_id,
+                "history": None,
+                "message": "Keine Historie für diese ID gefunden"
+            }
+        
+        return {
+            "success": True,
+            "warehouse_asset_id": warehouse_asset_id,
+            "history": history,
+            "event_count": len(history.get("events", [])),
+            "note": "Alle ID-Änderungen werden für Audit-Zwecke protokolliert"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/inventory/id-history")
+async def list_all_id_history(
+    skip: int = Query(0),
+    limit: int = Query(50),
+    action_filter: str = Query(None, description="Filter by action: created, deleted, reassigned")
+):
+    """
+    Listet alle ID-Historien-Einträge auf.
+    Nützlich für Audit-Berichte und Übersicht über gelöschte/wiederverwendete IDs.
+    """
+    try:
+        query = {}
+        if action_filter:
+            query["events.action"] = action_filter
+        
+        total = await db.asset_id_history.count_documents(query)
+        cursor = db.asset_id_history.find(query).skip(skip).limit(limit).sort("last_updated", -1)
+        
+        histories = []
+        async for doc in cursor:
+            doc["warehouse_asset_id"] = doc.pop("_id")
+            histories.append(doc)
+        
+        return {
+            "success": True,
+            "total": total,
+            "histories": histories,
+            "skip": skip,
+            "limit": limit
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @router.get("/inventory/check-duplicate")
 async def check_duplicate_warehouse_ids():
     """
