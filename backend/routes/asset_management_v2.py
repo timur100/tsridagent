@@ -5136,6 +5136,59 @@ async def list_all_id_history(
 
 
 
+@router.get("/inventory/validate-unique")
+async def validate_unique_identifiers(
+    manufacturer_sn: str = Query(None, description="Seriennummer zu prüfen"),
+    imei: str = Query(None, description="IMEI zu prüfen"),
+    mac: str = Query(None, description="MAC-Adresse zu prüfen")
+):
+    """
+    Prüft ob SN, IMEI oder MAC bereits im System existieren.
+    Wird beim Scannen verwendet um Duplikate sofort zu erkennen.
+    """
+    try:
+        conflicts = []
+        
+        if manufacturer_sn and manufacturer_sn.strip():
+            existing = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn.strip()})
+            if existing:
+                conflicts.append({
+                    "field": "manufacturer_sn",
+                    "value": manufacturer_sn,
+                    "existing_id": existing.get("warehouse_asset_id"),
+                    "message": f"Seriennummer '{manufacturer_sn}' existiert bereits (Lager-ID: {existing.get('warehouse_asset_id', 'N/A')})"
+                })
+        
+        if imei and imei.strip():
+            existing = await db.tsrid_assets.find_one({"imei": imei.strip()})
+            if existing:
+                conflicts.append({
+                    "field": "imei",
+                    "value": imei,
+                    "existing_id": existing.get("warehouse_asset_id"),
+                    "message": f"IMEI '{imei}' existiert bereits (Lager-ID: {existing.get('warehouse_asset_id', 'N/A')})"
+                })
+        
+        if mac and mac.strip():
+            existing = await db.tsrid_assets.find_one({"mac": mac.strip()})
+            if existing:
+                conflicts.append({
+                    "field": "mac",
+                    "value": mac,
+                    "existing_id": existing.get("warehouse_asset_id"),
+                    "message": f"MAC-Adresse '{mac}' existiert bereits (Lager-ID: {existing.get('warehouse_asset_id', 'N/A')})"
+                })
+        
+        return {
+            "success": True,
+            "is_unique": len(conflicts) == 0,
+            "conflicts": conflicts
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
 @router.get("/inventory/check-duplicate")
 async def check_duplicate_warehouse_ids():
     """
