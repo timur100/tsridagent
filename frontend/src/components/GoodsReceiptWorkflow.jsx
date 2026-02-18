@@ -2633,6 +2633,152 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Print Modal - Mehrere Labels drucken */}
+      <Dialog open={showBulkPrintModal} onOpenChange={(open) => {
+        setShowBulkPrintModal(open);
+        if (!open) {
+          setBulkPrintIndex(0);
+        }
+      }}>
+        <DialogContent className={`max-w-2xl ${isDark ? 'bg-[#2d2d2d] text-white border-gray-700' : 'bg-white'}`}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Printer className="h-5 w-5 text-blue-500" />
+              {bulkPrintAssets.length} Labels drucken
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Die folgenden {bulkPrintAssets.length} Labels werden zum Drucken vorbereitet. 
+              Sie können alle auf einmal drucken oder einzeln durchgehen.
+            </p>
+            
+            {/* Liste der zu druckenden Assets */}
+            <div className={`max-h-60 overflow-y-auto rounded-lg border ${isDark ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'}`}>
+              <table className="w-full text-sm">
+                <thead className={`sticky top-0 ${isDark ? 'bg-[#2d2d2d]' : 'bg-gray-100'}`}>
+                  <tr>
+                    <th className="px-3 py-2 text-left text-xs font-semibold">#</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold">Lager-ID</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold">Seriennummer</th>
+                    <th className="px-3 py-2 text-left text-xs font-semibold">Typ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bulkPrintAssets.map((asset, idx) => (
+                    <tr 
+                      key={asset.manufacturer_sn}
+                      className={`border-t ${isDark ? 'border-gray-700' : 'border-gray-200'} ${idx === bulkPrintIndex ? 'bg-blue-500/20' : ''}`}
+                    >
+                      <td className="px-3 py-2">{idx + 1}</td>
+                      <td className="px-3 py-2 font-mono text-xs">
+                        <code className={`px-1.5 py-0.5 rounded ${isDark ? 'bg-green-500/20 text-green-400' : 'bg-green-100 text-green-700'}`}>
+                          {asset.warehouse_asset_id}
+                        </code>
+                      </td>
+                      <td className="px-3 py-2 font-mono text-xs">{asset.manufacturer_sn}</td>
+                      <td className="px-3 py-2">
+                        <Badge variant="outline" className="text-xs">{asset.type_label || getTypeLabel(asset.type)}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            {/* Druckhinweis */}
+            <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-blue-50 border border-blue-200'}`}>
+              <p className={`text-sm font-medium ${isDark ? 'text-blue-300' : 'text-blue-700'}`}>
+                💡 Druckhinweis
+              </p>
+              <ul className={`text-xs mt-1 space-y-1 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+                <li>• <strong>Alle drucken</strong>: Öffnet den Druckdialog mit allen Labels auf einer Seite</li>
+                <li>• Empfohlen: Brother QL-820NWB mit 62mm Endlosrolle (DK-22205)</li>
+              </ul>
+            </div>
+          </div>
+          
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowBulkPrintModal(false)}>
+              Abbrechen
+            </Button>
+            <Button 
+              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => {
+                // Create a print window with all labels
+                const printWindow = window.open('', '_blank', 'width=400,height=600');
+                if (!printWindow) {
+                  toast.error('Pop-up blockiert. Bitte erlauben Sie Pop-ups für diese Seite.');
+                  return;
+                }
+                
+                // Generate label HTML for all selected assets
+                const labelsHtml = bulkPrintAssets.map((asset, idx) => {
+                  const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
+                  const qrValue = asset.warehouse_asset_id || asset.manufacturer_sn || 'N/A';
+                  
+                  return `
+                    <div class="label" style="page-break-after: always; width: 62mm; padding: 3mm; box-sizing: border-box; font-family: Arial, sans-serif;">
+                      <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=${encodeURIComponent(qrValue)}" 
+                             style="width: 20mm; height: 20mm;" alt="QR">
+                        <div style="flex: 1; font-size: 8pt;">
+                          <div style="font-weight: bold; font-size: 10pt; margin-bottom: 2px;">${assetId}</div>
+                          <div style="color: #666; font-size: 7pt;">SN: ${asset.manufacturer_sn || '-'}</div>
+                          <div style="color: #666; font-size: 7pt;">Typ: ${asset.type_label || asset.type || '-'}</div>
+                          ${asset.imei ? `<div style="color: #666; font-size: 7pt;">IMEI: ${asset.imei}</div>` : ''}
+                        </div>
+                      </div>
+                      <div style="text-align: center; margin-top: 2mm;">
+                        <img src="https://barcodeapi.org/api/128/${encodeURIComponent(asset.manufacturer_sn || assetId)}" 
+                             style="height: 8mm; max-width: 100%;" alt="Barcode">
+                        <div style="font-size: 6pt; font-family: monospace;">${asset.manufacturer_sn || assetId}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join('');
+                
+                printWindow.document.write(`
+                  <!DOCTYPE html>
+                  <html>
+                  <head>
+                    <title>Labels drucken (${bulkPrintAssets.length} Stück)</title>
+                    <style>
+                      @page { size: 62mm auto; margin: 0; }
+                      @media print {
+                        body { margin: 0; padding: 0; }
+                        .label:last-child { page-break-after: avoid; }
+                      }
+                      body { margin: 0; padding: 0; }
+                    </style>
+                  </head>
+                  <body>
+                    ${labelsHtml}
+                  </body>
+                  </html>
+                `);
+                
+                printWindow.document.close();
+                
+                // Wait for images to load, then print
+                setTimeout(() => {
+                  printWindow.focus();
+                  printWindow.print();
+                }, 1000);
+                
+                toast.success(`${bulkPrintAssets.length} Labels zum Drucken vorbereitet`);
+                setShowBulkPrintModal(false);
+                setSelectedAssets(new Set()); // Clear selection after printing
+              }}
+            >
+              <Printer className="h-4 w-4 mr-2" />
+              Alle {bulkPrintAssets.length} Labels drucken
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
