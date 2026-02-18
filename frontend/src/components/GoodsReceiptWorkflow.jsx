@@ -1123,43 +1123,80 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                   Seriennummer (Barcode scannen oder eingeben)
                 </label>
                 <div className="relative">
-                  <BarcodeIcon className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`} />
+                  <BarcodeIcon className={`absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 ${snValidationError ? 'text-red-500' : isDark ? 'text-gray-500' : 'text-gray-400'}`} />
                   <Input
                     placeholder="Seriennummer scannen oder eingeben..."
                     value={currentSN}
-                    onChange={(e) => setCurrentSN(e.target.value)}
+                    onChange={(e) => {
+                      setCurrentSN(e.target.value);
+                      if (!e.target.value.trim()) setSnValidationError(null);
+                    }}
                     onKeyDown={handleSNKeyDown}
-                    className={`pl-10 ${inputBg}`}
+                    className={`pl-10 ${inputBg} ${snValidationError ? 'border-red-500 border-2 bg-red-500/10' : ''}`}
                     data-testid="sn-input"
                     autoFocus
                   />
+                  {isValidating && currentSN && (
+                    <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-blue-500" />
+                  )}
+                  {snValidationError && !isValidating && (
+                    <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                  )}
                 </div>
+                {snValidationError && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    {snValidationError}
+                  </p>
+                )}
               </div>
               <div className="col-span-2">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   IMEI (optional)
                 </label>
-                <Input
-                  placeholder="IMEI-Nummer"
-                  value={currentIMEI}
-                  onChange={(e) => setCurrentIMEI(e.target.value)}
-                  onKeyDown={handleIMEIKeyDown}
-                  className={inputBg}
-                  data-testid="imei-input"
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="IMEI-Nummer"
+                    value={currentIMEI}
+                    onChange={(e) => {
+                      setCurrentIMEI(e.target.value);
+                      if (!e.target.value.trim()) setImeiValidationError(null);
+                    }}
+                    onKeyDown={handleIMEIKeyDown}
+                    className={`${inputBg} ${imeiValidationError ? 'border-red-500 border-2 bg-red-500/10' : ''}`}
+                    data-testid="imei-input"
+                  />
+                  {imeiValidationError && (
+                    <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                  )}
+                </div>
+                {imeiValidationError && (
+                  <p className="text-red-500 text-xs mt-1">{imeiValidationError}</p>
+                )}
               </div>
               <div className="col-span-2">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
                   MAC-Adresse (optional)
                 </label>
-                <Input
-                  placeholder="00:00:00:00:00:00"
-                  value={currentMAC}
-                  onChange={(e) => setCurrentMAC(e.target.value)}
-                  onKeyDown={handleMACKeyDown}
-                  className={inputBg}
-                  data-testid="mac-input"
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="00:00:00:00:00:00"
+                    value={currentMAC}
+                    onChange={(e) => {
+                      setCurrentMAC(e.target.value);
+                      if (!e.target.value.trim()) setMacValidationError(null);
+                    }}
+                    onKeyDown={handleMACKeyDown}
+                    className={`${inputBg} ${macValidationError ? 'border-red-500 border-2 bg-red-500/10' : ''}`}
+                    data-testid="mac-input"
+                  />
+                  {macValidationError && (
+                    <AlertTriangle className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-red-500" />
+                  )}
+                </div>
+                {macValidationError && (
+                  <p className="text-red-500 text-xs mt-1">{macValidationError}</p>
+                )}
               </div>
               <div className="col-span-2">
                 <label className={`block text-sm font-medium mb-1 ${isDark ? 'text-gray-300' : ''}`}>
