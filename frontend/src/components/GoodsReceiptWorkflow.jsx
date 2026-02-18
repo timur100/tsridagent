@@ -16,7 +16,7 @@ import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import { useAuth } from '../contexts/AuthContext';
-import { printAssetLabel, printAssetLabelWithTemplate, LabelPrintModal, LabelPreview } from './PrintableLabel';
+import { printAssetLabel, printAssetLabelWithTemplate, printMultipleLabelsWithTemplate, LabelPrintModal, LabelPreview } from './PrintableLabel';
 import { Palette, FileText } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
