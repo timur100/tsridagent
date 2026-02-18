@@ -28,6 +28,31 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-18 (Current)
 
+#### Bug Fix: Intelligentes Lager-ID System (CRITICAL FIX - 2025-02-18)
+- **Problem**: IDs wurden einfach hochgezählt ohne Lücken zu füllen, gelöschte IDs waren nicht wiederverwendbar
+- **Lösung**: Komplett neues ID-System implementiert:
+  - **Lücken-füllende IDs**: System findet die niedrigste freie ID (nicht einfach Counter++)
+  - **Wiederverwendbare IDs**: Gelöschte IDs werden automatisch für neue Geräte freigegeben
+  - **Vollständige Historie**: Jede ID-Vergabe, -Löschung, -Neuzuweisung wird protokolliert
+  - **Audit-Trail**: Nachvollziehbar wann welches Gerät welche ID hatte
+
+- **Neue Backend-Funktionen**:
+  - `get_next_available_warehouse_sequence()` - Findet nächste freie ID (füllt Lücken)
+  - `reserve_warehouse_sequence()` - Reserviert ID und protokolliert in Historie
+  - `log_id_history()` - Protokolliert alle ID-Ereignisse
+  - `get_id_history()` - Ruft Historie einer ID ab
+
+- **Neue API-Endpoints**:
+  - `GET /api/asset-mgmt/inventory/id-history/{warehouse_asset_id}` - Vollständige ID-Historie
+  - `GET /api/asset-mgmt/inventory/id-history` - Liste aller ID-Historien
+
+- **Frontend-Erweiterung**:
+  - Historie-Icon neben jeder Lager-ID in der Wareneingang-Tabelle
+  - Klick öffnet ID-Historie Modal mit chronologischer Event-Liste
+  - Zeigt: Erstellung, Löschung, Neuzuweisung mit Zeitstempel und Benutzer
+
+- **Test-Ergebnisse**: 13/13 Backend-Tests bestanden, Frontend verifiziert
+
 #### New Features
 28. **Label-Designer V2 mit Multi-Druckmethoden (NEW FEATURE - 2025-02-18)**
     - **Feature**: Professioneller WYSIWYG Label-Designer mit mehreren Druckoptionen
