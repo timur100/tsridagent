@@ -503,12 +503,12 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
     for (const element of elements.filter(e => e.type === 'qrcode')) {
       try {
         const qrDataUrl = await QRCodeLib.toDataURL(qrContent, { 
-          width: 200, 
-          margin: 0,
-          errorCorrectionLevel: 'M'
+          width: 400, 
+          margin: 1,
+          errorCorrectionLevel: 'H'
         });
         qrImages[element.id] = qrDataUrl;
-        console.log('QR generated for', element.id);
+        console.log('QR generated for', element.id, 'content:', qrContent);
       } catch (err) {
         console.error('QR generation error:', err);
       }
