@@ -1688,8 +1688,191 @@ const AssetManagementV2 = ({ theme }) => {
         const licenseExpiringSoon = data.license_expiry_date && !licenseExpired && 
           new Date(data.license_expiry_date) < new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
         
+        // Edit mode view
+        if (isEditingAsset) {
+          return (
+            <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
+                <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-white' : ''}`}>
+                  <Edit2 className="h-4 w-4" />
+                  Asset bearbeiten
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500">Hersteller</label>
+                    <Input
+                      value={editAssetData.manufacturer || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, manufacturer: e.target.value }))}
+                      className={inputBg}
+                      placeholder="z.B. TSRID GmbH"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Modell</label>
+                    <Input
+                      value={editAssetData.model || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, model: e.target.value }))}
+                      className={inputBg}
+                      placeholder="z.B. TSR-TAB-i7"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Seriennummer</label>
+                    <Input
+                      value={editAssetData.manufacturer_sn || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, manufacturer_sn: e.target.value }))}
+                      className={inputBg}
+                      placeholder="Hersteller-SN"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Status</label>
+                    <Select 
+                      value={editAssetData.status || 'in_storage'} 
+                      onValueChange={(v) => setEditAssetData(prev => ({ ...prev, status: v }))}
+                    >
+                      <SelectTrigger className={inputBg}><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {Object.entries(ASSET_STATUS_CONFIG).map(([key, cfg]) => (
+                          <SelectItem key={key} value={key}>{cfg.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">IMEI</label>
+                    <Input
+                      value={editAssetData.imei || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, imei: e.target.value }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">MAC-Adresse</label>
+                    <Input
+                      value={editAssetData.mac || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, mac: e.target.value }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Kaufdatum</label>
+                    <Input
+                      type="date"
+                      value={editAssetData.purchase_date?.split('T')[0] || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, purchase_date: e.target.value }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Kaufpreis (€)</label>
+                    <Input
+                      type="number"
+                      value={editAssetData.purchase_price || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, purchase_price: parseFloat(e.target.value) || null }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Garantie bis</label>
+                    <Input
+                      type="date"
+                      value={editAssetData.warranty_until?.split('T')[0] || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, warranty_until: e.target.value }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500">Lieferant</label>
+                    <Input
+                      value={editAssetData.supplier || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, supplier: e.target.value }))}
+                      className={inputBg}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="text-xs text-gray-500">Notizen</label>
+                    <Input
+                      value={editAssetData.notes || ''}
+                      onChange={(e) => setEditAssetData(prev => ({ ...prev, notes: e.target.value }))}
+                      className={inputBg}
+                      placeholder="Optionale Notizen..."
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditingAsset(false)}>
+                  Abbrechen
+                </Button>
+                <Button onClick={handleUpdateAsset} className="bg-green-600 hover:bg-green-700">
+                  Speichern
+                </Button>
+              </div>
+            </div>
+          );
+        }
+        
+        // Normal view
         return (
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => {
+                  setEditAssetData({ ...data });
+                  setIsEditingAsset(true);
+                }}
+              >
+                <Edit2 className="h-4 w-4 mr-1" />
+                Bearbeiten
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowLabelPrintModalInDetail(true)}
+                className="text-blue-500 border-blue-500 hover:bg-blue-500/10"
+              >
+                <Printer className="h-4 w-4 mr-1" />
+                Label drucken
+              </Button>
+            </div>
+            
+            {/* Label Preview */}
+            <div className={`p-3 rounded-lg border-2 border-dashed ${isDark ? 'border-gray-600 bg-[#1a1a1a]' : 'border-gray-300 bg-gray-50'}`}>
+              <h4 className={`text-xs font-semibold mb-2 text-gray-500 flex items-center gap-2`}>
+                <Printer className="h-3 w-3" />
+                Label-Vorschau
+              </h4>
+              <div className="flex items-center gap-3 p-2 bg-white rounded border">
+                <QRCodeSVG 
+                  value={data.asset_id} 
+                  size={60} 
+                  level="H"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-black text-sm">{data.asset_id}</p>
+                  <p className="text-xs text-gray-500">{typeConfig.label}</p>
+                  {data.manufacturer_sn && (
+                    <div className="mt-1">
+                      <Barcode 
+                        value={data.manufacturer_sn} 
+                        format="CODE128" 
+                        width={1} 
+                        height={20} 
+                        displayValue={true} 
+                        fontSize={8}
+                        margin={0}
+                        background="transparent"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
             {/* Basis-Informationen */}
             <div className={`p-3 rounded-lg ${isDark ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
               <h4 className={`text-xs font-semibold mb-2 text-gray-500`}>Basis</h4>
