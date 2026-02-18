@@ -1,0 +1,140 @@
+{
+  "summary": "Wareneingang Kritische Fixes verifiziert - Alle P0/P1/P2 Features funktionieren korrekt: Platzhalter '(wird vergeben #N)' in Erfassungsliste, Live-Duplikat-Validierung, ID-Historie Modal, Backend validate-unique & id-history APIs",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {
+        "component": "DialogContent",
+        "issue": "Minor console warning: Missing Description or aria-describedby for DialogContent",
+        "priority": "LOW"
+      }
+    ]
+  },
+  "test_report_links": [
+    "/app/backend/routes/asset_management_v2.py",
+    "/app/frontend/src/components/GoodsReceiptWorkflow.jsx"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100%",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "Admin Portal": "admin@tsrid.com / admin123",
+    "Scan App PIN": "9988"
+  },
+  "seed_data_creation": "Existing unassigned assets with IDs TSRID-TAB-i7-0035 down to TSRID-TAB-i7-0001",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Wareneingang workflow fully functional. Critical fixes verified: 1) Frontend shows placeholders '(wird vergeben #N)' instead of predicted IDs in the intake table before submission, 2) Live validation detects duplicate SN/IMEI/MAC with red border and error message, 3) ID-Historie modal shows audit trail for each warehouse asset ID, 4) Backend validate-unique and id-history APIs working correctly.",
+  "features_verified": {
+    "P0_placeholder_in_intake_list": {
+      "status": "PASS",
+      "description": "Wareneingang Tab - Hinzufügen mehrerer Geräte zur Liste zeigt Platzhalter '(wird vergeben #N)' in Lager-ID Spalte",
+      "evidence": "Text '(wird vergeben #' found in page content after adding items to intake list",
+      "code_reference": "GoodsReceiptWorkflow.jsx lines 720-729"
+    },
+    "P0_backend_assigns_real_ids": {
+      "status": "PASS",
+      "description": "Nach Submit der Liste werden echte IDs vom Backend vergeben (nicht frontend-predicted)",
+      "evidence": "Backend endpoint /api/asset-mgmt/inventory/intake-with-auto-id generates real warehouse_asset_id",
+      "code_reference": "asset_management_v2.py intake-with-auto-id endpoint"
+    },
+    "P1_live_duplicate_validation": {
+      "status": "PASS",
+      "description": "Live-Validierung - Bei Eingabe einer existierenden Seriennummer/IMEI sollte sofort Fehlermeldung erscheinen und Eingabefeld rot werden",
+      "evidence": "Entered existing SN '10AWNA8D0XFA25L1110', got error 'Seriennummer existiert bereits (Lager-ID: TSRID-TAB-i7-0035)', red border on input",
+      "code_reference": "GoodsReceiptWorkflow.jsx lines 301-340 validateIdentifier()"
+    },
+    "P1_add_button_blocked_on_error": {
+      "status": "PASS",
+      "description": "'Hinzufügen' Button zeigt Toast-Fehler wenn Validierungsfehler vorhanden",
+      "evidence": "Toast message 'Bitte beheben Sie zuerst die Duplikat-Fehler' shown when clicking Hinzufügen with duplicate SN"
+    },
+    "P2_next_id_refresh_after_delete": {
+      "status": "PASS",
+      "description": "Nach Löschen eines Assets in 'Nicht zugewiesen' Tab muss 'Nächste Asset-ID' aktualisiert werden",
+      "evidence": "Code verified: deleteUnassignedAsset() and deleteSelectedAssets() both call fetchNextAssetId(currentType)",
+      "code_reference": "GoodsReceiptWorkflow.jsx lines 626-637, 656-667"
+    },
+    "P2_validate_unique_api": {
+      "status": "PASS",
+      "description": "Backend API /api/asset-mgmt/inventory/validate-unique funktioniert korrekt",
+      "evidence": "curl test: unique SN returns {is_unique: true}, existing SN returns {is_unique: false, conflicts: [{message: 'existiert bereits'}]}",
+      "test_url": "/api/asset-mgmt/inventory/validate-unique?manufacturer_sn=10AWNA8D0XFA25L1110"
+    },
+    "P2_id_history_api": {
+      "status": "PASS",
+      "description": "Backend API /api/asset-mgmt/inventory/id-history/{id} funktioniert korrekt",
+      "evidence": "curl test: returns history with events array [{action: created, timestamp, user, asset_sn, details}]",
+      "test_url": "/api/asset-mgmt/inventory/id-history/TSRID-TAB-i7-0035"
+    },
+    "P2_id_history_modal": {
+      "status": "PASS",
+      "description": "ID-Historie Button neben Lager-ID öffnet Modal mit Historie",
+      "evidence": "Clicked History icon, modal opened showing 'ID-Historie: TSRID-TAB-i7-0035', event 'Erstellt', timestamp, user"
+    }
+  },
+  "api_verification": {
+    "GET /api/asset-mgmt/inventory/validate-unique?manufacturer_sn=TEST123": {
+      "status": "200 OK",
+      "response": "{success: true, is_unique: true, conflicts: []}"
+    },
+    "GET /api/asset-mgmt/inventory/validate-unique?manufacturer_sn=10AWNA8D0XFA25L1110": {
+      "status": "200 OK",
+      "response": "{success: true, is_unique: false, conflicts: [{field: manufacturer_sn, message: 'Seriennummer existiert bereits'}]}"
+    },
+    "GET /api/asset-mgmt/inventory/id-history/TSRID-TAB-i7-0035": {
+      "status": "200 OK",
+      "response": "{success: true, warehouse_asset_id: TSRID-TAB-i7-0035, history: {events: [{action: created, ...}]}, event_count: 1}"
+    },
+    "GET /api/asset-mgmt/asset-id-config/next-id?asset_type=tab_tsr_i7": {
+      "status": "200 OK",
+      "response": "{success: true, next_asset_id: TSRID-TAB-i7-0036, next_sequence: 36}"
+    }
+  },
+  "ui_verification": {
+    "Wareneingang_erfassen_tab": {
+      "status": "PASS",
+      "elements_verified": [
+        "SN input field with data-testid='sn-input'",
+        "IMEI input field with data-testid='imei-input'",
+        "MAC input field with data-testid='mac-input'",
+        "Hinzufügen button with data-testid='add-item-btn'",
+        "Nächste Asset-ID display with data-testid='next-asset-id'",
+        "Intake list table with Lager-ID, Seriennummer, IMEI, MAC, Typ columns"
+      ]
+    },
+    "Nicht_zugewiesen_tab": {
+      "status": "PASS",
+      "elements_verified": [
+        "Table with Lager-ID, Seriennummer, IMEI, MAC, Typ, Aktion columns",
+        "History icons next to each Lager-ID",
+        "Zuweisen buttons for each row",
+        "Badge showing '34 nicht zugewiesen'",
+        "Duplikat-Check button"
+      ]
+    },
+    "ID_Historie_Modal": {
+      "status": "PASS",
+      "elements_verified": [
+        "Modal title 'ID-Historie: TSRID-TAB-i7-XXXX'",
+        "Usage count 'Diese ID wurde Xx verwendet'",
+        "Event list with Erstellt/Gelöscht events",
+        "Timestamp and user info",
+        "Schließen button"
+      ]
+    }
+  },
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  }
+}
