@@ -4343,7 +4343,7 @@ async def assign_asset_to_location_by_sn(
         )
         
         # Log to ID history
-        await log_asset_id_history(
+        await log_id_history(
             permanent_asset_id,
             "assigned_to_location",
             manufacturer_sn,
@@ -4421,7 +4421,7 @@ async def remove_asset_from_location(
         )
         
         # Log to ID history
-        await log_asset_id_history(
+        await log_id_history(
             permanent_asset_id,
             "removed_from_location",
             manufacturer_sn,
@@ -5416,7 +5416,7 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
         )
         
         # Log to ID history
-        await log_asset_id_history(
+        await log_id_history(
             permanent_asset_id,
             "assigned_to_location",
             asset.get("manufacturer_sn"),
