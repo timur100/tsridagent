@@ -4170,6 +4170,12 @@ async def inventory_intake_bulk(
 ):
     """
     Bulk-Wareneingang: Mehrere Geräte mit automatischer Asset-ID erstellen.
+    
+    Die IDs werden intelligent vergeben (Lücken-Füllend):
+    - Füllt Lücken von gelöschten IDs
+    - Jede ID ist systemweit einzigartig
+    - Alle Vergaben werden in der Historie protokolliert
+    
     Optionen:
     1. Anzahl angeben → System generiert automatisch N Einträge mit Platzhalter-SNs
     2. Seriennummer-Liste → System generiert Asset-IDs für jede SN
@@ -4193,9 +4199,6 @@ async def inventory_intake_bulk(
         else:
             raise HTTPException(status_code=400, detail="Entweder 'count' oder 'serial_numbers' muss angegeben werden")
         
-        # Get starting sequence
-        next_seq = await get_next_warehouse_sequence(request.asset_type, tenant_id)
-        
         for i, sn in enumerate(items_to_create):
             # Skip if SN already exists (unless placeholder)
             if not sn.startswith("PENDING-"):
@@ -4204,8 +4207,13 @@ async def inventory_intake_bulk(
                     skipped.append({"manufacturer_sn": sn, "reason": "Existiert bereits"})
                     continue
             
-            # Generate warehouse ID
-            warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq + i)
+            # Use the new gap-filling sequence function for each item
+            next_seq, warehouse_id = await reserve_warehouse_sequence(
+                asset_type=request.asset_type,
+                manufacturer_sn=sn,
+                tenant_id=tenant_id,
+                user=request.received_by or "system"
+            )
             
             # Get optional IMEI/MAC if provided
             imei = request.imeis[i] if request.imeis and i < len(request.imeis) else ""
@@ -4260,7 +4268,8 @@ async def inventory_intake_bulk(
             "created": created,
             "skipped": skipped,
             "first_id": created[0]["warehouse_asset_id"] if created else None,
-            "last_id": created[-1]["warehouse_asset_id"] if created else None
+            "last_id": created[-1]["warehouse_asset_id"] if created else None,
+            "note": "IDs werden intelligent vergeben (Lücken werden gefüllt)"
         }
     except HTTPException:
         raise
