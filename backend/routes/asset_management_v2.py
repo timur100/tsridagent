@@ -5323,11 +5323,11 @@ async def list_unassigned_assets(
 async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssignToLocation):
     """
     Gerät einem Standort zuweisen.
-    - Generiert die Asset-ID basierend auf Location + Typ
-    - Generiert Label-Daten für QR-Code
+    - Die warehouse_asset_id (z.B. TSRID-TAB-i7-0035) bleibt die permanente Asset-ID
+    - Nur die Location wird verknüpft
     - Ändert Status von "unassigned" zu "in_storage"
     
-    Beispiel: SN "ABC123" + Location "AAHC01" + Typ "tab_tsr" → "AAHC01-01-TAB-TSR"
+    Die ID ändert sich NICHT - das Label aus dem Wareneingang bleibt gültig!
     """
     try:
         # Find the unassigned asset by serial number
@@ -5342,7 +5342,7 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
             if existing:
                 raise HTTPException(
                     status_code=400, 
-                    detail=f"Gerät {manufacturer_sn} ist bereits zugewiesen: {existing.get('asset_id')}"
+                    detail=f"Gerät {manufacturer_sn} ist bereits zugewiesen an: {existing.get('location_id', 'unbekannt')}"
                 )
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
@@ -5351,36 +5351,21 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
         if not location:
             raise HTTPException(status_code=404, detail=f"Standort {assignment.location_id} nicht gefunden")
         
-        # Generate the next asset number for this location and type
-        asset_type = asset.get("type", "other")
-        type_suffix = ASSET_TYPE_SUFFIX_MAP.get(asset_type, "OTH")
+        # Die warehouse_asset_id wird zur permanenten asset_id
+        # KEINE neue ID-Generierung - die Lager-ID bleibt erhalten!
+        permanent_asset_id = asset.get("warehouse_asset_id")
         
-        # Count existing assets at this location with same type
-        existing_count = await db.tsrid_assets.count_documents({
-            "location_id": assignment.location_id,
-            "type": asset_type,
-            "asset_id": {"$ne": None}
-        })
-        
-        # Generate Asset-ID: LOCATION-NR-TYP-MODELL
-        asset_number = str(existing_count + 1).zfill(2)
-        new_asset_id = f"{assignment.location_id}-{asset_number}-{type_suffix}"
-        
-        # Check if this ID already exists (shouldn't happen, but safety check)
-        id_exists = await db.tsrid_assets.find_one({"asset_id": new_asset_id})
-        if id_exists:
-            # Find next available number
-            for i in range(existing_count + 2, 100):
-                test_id = f"{assignment.location_id}-{str(i).zfill(2)}-{type_suffix}"
-                if not await db.tsrid_assets.find_one({"asset_id": test_id}):
-                    new_asset_id = test_id
-                    break
+        if not permanent_asset_id:
+            raise HTTPException(
+                status_code=400, 
+                detail="Gerät hat keine Lager-ID (warehouse_asset_id). Bitte erst im Wareneingang erfassen."
+            )
         
         now = datetime.now(timezone.utc).isoformat()
         
-        # Update the asset
+        # Update the asset - warehouse_asset_id wird zur asset_id
         update_data = {
-            "asset_id": new_asset_id,
+            "asset_id": permanent_asset_id,  # Gleiche ID wie warehouse_asset_id!
             "location_id": assignment.location_id,
             "country": location.get("country", ""),
             "status": "in_storage",
@@ -5393,7 +5378,7 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
             "date": now,
             "event": f"Standort zugewiesen: {assignment.location_id}",
             "event_type": "assigned_to_location",
-            "notes": f"Asset-ID generiert: {new_asset_id}",
+            "notes": f"Asset-ID beibehalten: {permanent_asset_id}, Location: {location.get('name', assignment.location_id)}",
             "technician": assignment.technician,
             "location_id": assignment.location_id
         }
@@ -5406,15 +5391,25 @@ async def assign_asset_to_location(manufacturer_sn: str, assignment: AssetAssign
             }
         )
         
-        # Generate label data
+        # Log to ID history
+        await log_asset_id_history(
+            permanent_asset_id,
+            "assigned_to_location",
+            asset.get("manufacturer_sn"),
+            assignment.technician,
+            f"Zugewiesen an Location: {assignment.location_id}"
+        )
+        
+        # Generate label data - mit der permanenten ID
         label_data = {
-            "asset_id": new_asset_id,
+            "asset_id": permanent_asset_id,
+            "warehouse_asset_id": permanent_asset_id,  # Beide sind jetzt gleich
             "manufacturer_sn": manufacturer_sn,
-            "type": asset_type,
-            "type_label": ASSET_TYPE_LABELS.get(asset_type, asset_type),
+            "type": asset.get("type", "other"),
+            "type_label": ASSET_TYPE_LABELS.get(asset.get("type", "other"), asset.get("type", "other")),
             "location_id": assignment.location_id,
             "location_name": f"{location.get('customer', '')} - {location.get('city', '')}",
-            "qr_content": new_asset_id,  # QR-Code enthält die Asset-ID
+            "qr_content": permanent_asset_id,  # QR-Code enthält die permanente Asset-ID
             "generated_at": now
         }
         
