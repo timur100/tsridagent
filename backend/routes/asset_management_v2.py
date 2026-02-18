@@ -4869,10 +4869,12 @@ async def delete_unassigned_assets_bulk(serial_numbers: List[str], reason: str =
 
 
 @router.delete("/inventory/unassigned/{manufacturer_sn}")
-async def delete_unassigned_asset(manufacturer_sn: str):
+async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Manuell gelöscht"), user: str = Query("system")):
     """
     Löscht ein nicht zugewiesenes Gerät aus dem Lager.
     Nur Geräte mit status='unassigned' und ohne asset_id können gelöscht werden.
+    
+    Die gelöschte ID wird in der Historie protokolliert und steht für neue Geräte wieder zur Verfügung.
     """
     try:
         # Find the unassigned asset
@@ -4892,6 +4894,8 @@ async def delete_unassigned_asset(manufacturer_sn: str):
                 )
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
+        warehouse_id = asset.get("warehouse_asset_id")
+        
         # Delete the asset
         result = await db.tsrid_assets.delete_one({
             "manufacturer_sn": manufacturer_sn,
@@ -4902,10 +4906,29 @@ async def delete_unassigned_asset(manufacturer_sn: str):
         if result.deleted_count == 0:
             raise HTTPException(status_code=500, detail="Fehler beim Löschen des Geräts")
         
+        # Log to ID history - this ID is now available for reuse
+        if warehouse_id:
+            await log_id_history(
+                warehouse_id=warehouse_id,
+                action="deleted",
+                asset_sn=manufacturer_sn,
+                user=user,
+                reason=reason,
+                details={
+                    "imei": asset.get("imei"),
+                    "mac": asset.get("mac"),
+                    "type": asset.get("type"),
+                    "manufacturer": asset.get("manufacturer"),
+                    "model": asset.get("model")
+                }
+            )
+        
         return {
             "success": True,
             "message": f"Gerät {manufacturer_sn} wurde gelöscht",
-            "deleted_sn": manufacturer_sn
+            "deleted_sn": manufacturer_sn,
+            "freed_id": warehouse_id,
+            "note": f"Die ID {warehouse_id} steht jetzt für ein neues Gerät zur Verfügung und wurde in der Historie protokolliert."
         }
     except HTTPException:
         raise
