@@ -244,6 +244,11 @@ const AssetManagementV2 = ({ theme }) => {
   const [createType, setCreateType] = useState('');
   const [formData, setFormData] = useState({});
   
+  // Asset edit and label states
+  const [isEditingAsset, setIsEditingAsset] = useState(false);
+  const [editAssetData, setEditAssetData] = useState({});
+  const [showLabelPrintModalInDetail, setShowLabelPrintModalInDetail] = useState(false);
+  
   // Filter options from API
   const [filterOptions, setFilterOptions] = useState({
     countries: [],
