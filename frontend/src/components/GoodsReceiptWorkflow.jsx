@@ -1241,6 +1241,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             >
               <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             </Button>
+            
+            <Button 
+              variant="outline" 
+              onClick={checkDuplicates}
+              title="Auf Duplikate prüfen"
+              className={duplicates.length > 0 ? 'border-red-500 text-red-500' : ''}
+            >
+              <AlertTriangle className="h-4 w-4 mr-1" />
+              {duplicates.length > 0 ? `${duplicates.length} Duplikat(e)` : 'Duplikat-Check'}
+            </Button>
 
             {selectedAssets.size > 0 && (
               <>
@@ -1270,6 +1280,38 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
               </>
             )}
           </div>
+          
+          {/* Duplicate Warning */}
+          {duplicates.length > 0 && (
+            <div className={`p-3 rounded-lg mb-4 ${isDark ? 'bg-red-500/20 border border-red-500/50' : 'bg-red-50 border border-red-200'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-5 w-5 text-red-500" />
+                <span className={`font-semibold ${isDark ? 'text-red-400' : 'text-red-700'}`}>
+                  {duplicates.length} doppelte Lager-ID(s) gefunden!
+                </span>
+              </div>
+              <div className="space-y-2">
+                {duplicates.map(dup => (
+                  <div key={dup._id} className={`flex items-center justify-between p-2 rounded ${isDark ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
+                    <div>
+                      <code className="text-sm font-mono">{dup._id}</code>
+                      <span className={`ml-2 text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        ({dup.count}x vorhanden)
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => fixDuplicate(dup._id)}
+                      disabled={fixingDuplicate}
+                      className="bg-orange-600 hover:bg-orange-700"
+                    >
+                      {fixingDuplicate ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Korrigieren'}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Unassigned Assets Table */}
           <Card className={`${cardBg}`}>
