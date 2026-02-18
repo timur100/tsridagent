@@ -5,15 +5,15 @@ import 'react-resizable/css/styles.css';
 import { 
   Save, Trash2, Plus, Eye, Printer, RotateCcw, 
   QrCode, BarChart3, Type, Image, Minus, Copy,
-  Settings, FileText, Download, Upload, Check
+  Settings, FileText, Download, Upload, Check, Wifi, WifiOff,
+  Ruler, ZoomIn, ZoomOut, Move
 } from 'lucide-react';
-import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Badge } from './ui/badge';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from './ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Slider } from './ui/slider';
 import { Switch } from './ui/switch';
@@ -24,7 +24,7 @@ import { printAssetLabelWithTemplate } from './PrintableLabel';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-// Element types available in the designer
+// Element types
 const ELEMENT_TYPES = {
   qrcode: { label: 'QR-Code', icon: QrCode, defaultW: 3, defaultH: 3, minW: 2, minH: 2 },
   barcode: { label: 'Barcode', icon: BarChart3, defaultW: 6, defaultH: 2, minW: 3, minH: 1 },
@@ -38,7 +38,7 @@ const ELEMENT_TYPES = {
   line: { label: 'Trennlinie', icon: Minus, defaultW: 6, defaultH: 1, minW: 2, minH: 1 },
 };
 
-// Sample asset data for preview
+// Sample data
 const SAMPLE_ASSET = {
   asset_id: 'FRAT01-01-TAB-TSRi7',
   warehouse_asset_id: 'TSRID-TAB-i7-0001',
@@ -49,13 +49,14 @@ const SAMPLE_ASSET = {
   model: 'TSR-TAB-i7-2024',
 };
 
-// Grid configuration - 62mm width = 12 columns
-const GRID_COLS = 12;
-const GRID_ROW_HEIGHT = 20; // pixels per row
+// WYSIWYG Constants - 1mm = 3.78px at 96dpi
+const MM_TO_PX = 3.78;
 const LABEL_WIDTH_MM = 62;
-const LABEL_WIDTH_PX = 280; // Visual representation
+const GRID_COLS = 12;
+const COL_WIDTH_MM = LABEL_WIDTH_MM / GRID_COLS; // ~5.17mm per column
+const ROW_HEIGHT_MM = 5; // 5mm per row
 
-const LabelDesigner = ({ theme = 'dark', onClose }) => {
+const LabelDesigner = ({ theme = 'dark' }) => {
   const isDark = theme === 'dark';
   const [elements, setElements] = useState([]);
   const [layout, setLayout] = useState([]);
@@ -63,36 +64,117 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
   const [templates, setTemplates] = useState([]);
   const [currentTemplate, setCurrentTemplate] = useState(null);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
-  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [showPrinterDialog, setShowPrinterDialog] = useState(false);
   const [templateName, setTemplateName] = useState('');
   const [templateDescription, setTemplateDescription] = useState('');
   const [templateAssetType, setTemplateAssetType] = useState('all');
   const [isDefault, setIsDefault] = useState(false);
-  const [labelHeight, setLabelHeight] = useState(6); // rows
+  const [labelHeight, setLabelHeight] = useState(6); // rows = 30mm
   const [logoUrl, setLogoUrl] = useState('');
+  const [zoom, setZoom] = useState(100);
+  const [printerConfig, setPrinterConfig] = useState({ ip: '', port: 631, name: 'Brother QL-820NWB' });
+  const [printerConnected, setPrinterConnected] = useState(false);
+  const [testingPrinter, setTestingPrinter] = useState(false);
   const fileInputRef = useRef(null);
+  const canvasRef = useRef(null);
   
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
 
-  // Fetch templates from backend
+  // Calculate pixel dimensions based on zoom
+  const labelWidthPx = LABEL_WIDTH_MM * MM_TO_PX * (zoom / 100);
+  const labelHeightPx = (labelHeight * ROW_HEIGHT_MM) * MM_TO_PX * (zoom / 100);
+  const rowHeightPx = ROW_HEIGHT_MM * MM_TO_PX * (zoom / 100);
+
+  // Fetch templates
   const fetchTemplates = useCallback(async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/api/label-templates`);
       const data = await res.json();
-      if (data.success) {
-        setTemplates(data.templates || []);
-      }
+      if (data.success) setTemplates(data.templates || []);
     } catch (e) {
       console.error('Error fetching templates:', e);
     }
   }, []);
 
+  // Fetch printer settings
+  const fetchPrinterSettings = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/label-printer/settings`);
+      const data = await res.json();
+      if (data.success && data.settings) {
+        setPrinterConfig({
+          ip: data.settings.ip_address || '',
+          port: data.settings.port || 631,
+          name: data.settings.name || 'Brother QL-820NWB'
+        });
+      }
+    } catch (e) {
+      console.error('Error fetching printer settings:', e);
+    }
+  }, []);
+
   useEffect(() => {
     fetchTemplates();
-  }, [fetchTemplates]);
+    fetchPrinterSettings();
+  }, [fetchTemplates, fetchPrinterSettings]);
 
-  // Add element to canvas
+  // Test printer connection
+  const testPrinterConnection = async () => {
+    if (!printerConfig.ip) {
+      toast.error('Bitte IP-Adresse eingeben');
+      return;
+    }
+    setTestingPrinter(true);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/label-printer/test-connection`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ip_address: printerConfig.ip,
+          port: printerConfig.port,
+          name: printerConfig.name
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPrinterConnected(true);
+        toast.success(data.message);
+      } else {
+        setPrinterConnected(false);
+        toast.error(data.message || 'Verbindung fehlgeschlagen');
+      }
+    } catch (e) {
+      setPrinterConnected(false);
+      toast.error('Verbindungstest fehlgeschlagen');
+    }
+    setTestingPrinter(false);
+  };
+
+  // Save printer settings
+  const savePrinterSettings = async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/label-printer/settings`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ip_address: printerConfig.ip,
+          port: printerConfig.port,
+          name: printerConfig.name,
+          is_default: true
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success('Drucker-Einstellungen gespeichert');
+        setShowPrinterDialog(false);
+      }
+    } catch (e) {
+      toast.error('Fehler beim Speichern');
+    }
+  };
+
+  // Add element
   const addElement = (type) => {
     const config = ELEMENT_TYPES[type];
     const newId = `${type}_${Date.now()}`;
@@ -101,10 +183,10 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
       id: newId,
       type,
       config: {
-        fontSize: type.includes('text') || ['asset_id', 'serial_number', 'device_type', 'manufacturer', 'model'].includes(type) ? 10 : undefined,
+        fontSize: ['asset_id', 'serial_number', 'device_type', 'manufacturer', 'model', 'custom_text'].includes(type) ? 10 : undefined,
         fontWeight: type === 'asset_id' ? 'bold' : 'normal',
         textAlign: 'left',
-        customText: type === 'custom_text' ? 'Eigener Text' : undefined,
+        customText: type === 'custom_text' ? 'Text' : undefined,
         barcodeFormat: type === 'barcode' ? 'CODE128' : undefined,
         showValue: type === 'barcode' ? true : undefined,
         lineStyle: type === 'line' ? 'solid' : undefined,
@@ -112,10 +194,11 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
       }
     };
     
+    const maxY = layout.length > 0 ? Math.max(...layout.map(l => l.y + l.h)) : 0;
     const newLayoutItem = {
       i: newId,
       x: 0,
-      y: layout.length > 0 ? Math.max(...layout.map(l => l.y + l.h)) : 0,
+      y: maxY,
       w: config.defaultW,
       h: config.defaultH,
       minW: config.minW,
@@ -126,10 +209,8 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
     setLayout(prev => [...prev, newLayoutItem]);
     setSelectedElement(newId);
     
-    // Auto-extend label height if needed
-    const newMaxY = newLayoutItem.y + newLayoutItem.h;
-    if (newMaxY > labelHeight) {
-      setLabelHeight(newMaxY + 1);
+    if (maxY + config.defaultH > labelHeight) {
+      setLabelHeight(maxY + config.defaultH + 1);
     }
   };
 
@@ -147,11 +228,8 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
     if (!element || !layoutItem) return;
     
     const newId = `${element.type}_${Date.now()}`;
-    const newElement = { ...element, id: newId, config: { ...element.config } };
-    const newLayoutItem = { ...layoutItem, i: newId, y: layoutItem.y + layoutItem.h };
-    
-    setElements(prev => [...prev, newElement]);
-    setLayout(prev => [...prev, newLayoutItem]);
+    setElements(prev => [...prev, { ...element, id: newId, config: { ...element.config } }]);
+    setLayout(prev => [...prev, { ...layoutItem, i: newId, y: layoutItem.y + layoutItem.h }]);
     setSelectedElement(newId);
   };
 
@@ -165,12 +243,9 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
   // Handle layout change
   const onLayoutChange = (newLayout) => {
     setLayout(newLayout);
-    // Update label height based on content
     if (newLayout.length > 0) {
       const maxY = Math.max(...newLayout.map(l => l.y + l.h));
-      if (maxY > labelHeight - 1) {
-        setLabelHeight(maxY + 1);
-      }
+      if (maxY > labelHeight - 1) setLabelHeight(maxY + 1);
     }
   };
 
@@ -187,8 +262,8 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
       asset_type: templateAssetType,
       is_default: isDefault,
       label_height: labelHeight,
-      elements: elements,
-      layout: layout,
+      elements,
+      layout,
       logo_url: logoUrl,
     };
     
@@ -208,14 +283,11 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
         toast.success(currentTemplate ? 'Template aktualisiert' : 'Template gespeichert');
         setShowSaveDialog(false);
         fetchTemplates();
-        if (!currentTemplate) {
-          setCurrentTemplate(data.template);
-        }
+        if (!currentTemplate) setCurrentTemplate(data.template);
       } else {
         toast.error(data.detail || 'Fehler beim Speichern');
       }
     } catch (e) {
-      console.error('Error saving template:', e);
       toast.error('Fehler beim Speichern');
     }
   };
@@ -237,25 +309,20 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
   // Delete template
   const deleteTemplate = async (templateId) => {
     if (!window.confirm('Template wirklich löschen?')) return;
-    
     try {
-      const res = await fetch(`${BACKEND_URL}/api/label-templates/${templateId}`, {
-        method: 'DELETE'
-      });
+      const res = await fetch(`${BACKEND_URL}/api/label-templates/${templateId}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
         toast.success('Template gelöscht');
         fetchTemplates();
-        if (currentTemplate?.template_id === templateId) {
-          resetDesigner();
-        }
+        if (currentTemplate?.template_id === templateId) resetDesigner();
       }
     } catch (e) {
       toast.error('Fehler beim Löschen');
     }
   };
 
-  // Reset designer
+  // Reset
   const resetDesigner = () => {
     setElements([]);
     setLayout([]);
@@ -273,7 +340,6 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
   const handleLogoUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
     const reader = new FileReader();
     reader.onload = (event) => {
       setLogoUrl(event.target.result);
@@ -282,14 +348,37 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
     reader.readAsDataURL(file);
   };
 
-  // Render element content
-  const renderElementContent = (element) => {
+  // Print test label
+  const printTestLabel = () => {
+    const testTemplate = { elements, layout, label_height: labelHeight, logo_url: logoUrl };
+    printAssetLabelWithTemplate(SAMPLE_ASSET, testTemplate);
+  };
+
+  // Render element content (WYSIWYG)
+  const renderElementContent = (element, scale = 1) => {
     const { type, config } = element;
+    const fontSize = (config.fontSize || 10) * scale;
+    
+    const textStyle = {
+      fontSize: `${fontSize}pt`,
+      fontWeight: config.fontWeight || 'normal',
+      textAlign: config.textAlign || 'left',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start',
+      width: '100%',
+      height: '100%',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+      color: '#000',
+      padding: '1px 2px',
+    };
     
     switch (type) {
       case 'qrcode':
         return (
-          <div className="w-full h-full flex items-center justify-center bg-white p-1">
+          <div className="w-full h-full flex items-center justify-center bg-white">
             <QRCodeSVG 
               value={JSON.stringify({ id: SAMPLE_ASSET.asset_id, sn: SAMPLE_ASSET.manufacturer_sn })}
               size={100}
@@ -298,368 +387,302 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
             />
           </div>
         );
-      
       case 'barcode':
         return (
           <div className="w-full h-full flex items-center justify-center bg-white overflow-hidden">
             <Barcode 
               value={SAMPLE_ASSET.manufacturer_sn}
               format={config.barcodeFormat || 'CODE128'}
-              width={1.5}
-              height={40}
+              width={1.2}
+              height={35}
               displayValue={config.showValue !== false}
-              fontSize={8}
-              margin={2}
+              fontSize={9}
+              margin={0}
               background="transparent"
             />
           </div>
         );
-      
       case 'asset_id':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1"
-            style={{ 
-              fontSize: `${config.fontSize || 10}pt`,
-              fontWeight: config.fontWeight || 'bold',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            {SAMPLE_ASSET.asset_id}
-          </div>
-        );
-      
+        return <div style={textStyle} className="bg-white">{SAMPLE_ASSET.asset_id}</div>;
       case 'serial_number':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1 font-mono"
-            style={{ 
-              fontSize: `${config.fontSize || 9}pt`,
-              fontWeight: config.fontWeight || 'normal',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            SN: {SAMPLE_ASSET.manufacturer_sn}
-          </div>
-        );
-      
+        return <div style={{ ...textStyle, fontFamily: 'monospace' }} className="bg-white">SN: {SAMPLE_ASSET.manufacturer_sn}</div>;
       case 'device_type':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1"
-            style={{ 
-              fontSize: `${config.fontSize || 8}pt`,
-              fontWeight: config.fontWeight || 'normal',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            {SAMPLE_ASSET.type_label}
-          </div>
-        );
-      
+        return <div style={textStyle} className="bg-white">{SAMPLE_ASSET.type_label}</div>;
       case 'manufacturer':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1"
-            style={{ 
-              fontSize: `${config.fontSize || 8}pt`,
-              fontWeight: config.fontWeight || 'normal',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            {SAMPLE_ASSET.manufacturer}
-          </div>
-        );
-      
+        return <div style={textStyle} className="bg-white">{SAMPLE_ASSET.manufacturer}</div>;
       case 'model':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1"
-            style={{ 
-              fontSize: `${config.fontSize || 8}pt`,
-              fontWeight: config.fontWeight || 'normal',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            {SAMPLE_ASSET.model}
-          </div>
-        );
-      
+        return <div style={textStyle} className="bg-white">{SAMPLE_ASSET.model}</div>;
       case 'custom_text':
-        return (
-          <div 
-            className="w-full h-full flex items-center overflow-hidden text-black bg-white px-1"
-            style={{ 
-              fontSize: `${config.fontSize || 8}pt`,
-              fontWeight: config.fontWeight || 'normal',
-              textAlign: config.textAlign || 'left',
-              justifyContent: config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'
-            }}
-          >
-            {config.customText || 'Text'}
-          </div>
-        );
-      
+        return <div style={textStyle} className="bg-white">{config.customText || 'Text'}</div>;
       case 'logo':
         return (
-          <div className="w-full h-full flex items-center justify-center bg-white p-1">
+          <div className="w-full h-full flex items-center justify-center bg-white">
             {logoUrl ? (
               <img src={logoUrl} alt="Logo" className="max-w-full max-h-full object-contain" />
             ) : (
-              <div className="text-gray-400 text-xs text-center">Logo hochladen</div>
+              <div className="text-gray-400 text-xs text-center">Logo</div>
             )}
           </div>
         );
-      
       case 'line':
         return (
-          <div className="w-full h-full flex items-center bg-white px-1">
-            <div 
-              className="w-full"
-              style={{ 
-                borderTopWidth: '1px',
-                borderTopStyle: config.lineStyle || 'solid',
-                borderTopColor: config.lineColor || '#000000'
-              }}
-            />
+          <div className="w-full h-full flex items-center bg-white">
+            <div style={{ width: '100%', borderTop: `1px ${config.lineStyle || 'solid'} ${config.lineColor || '#000'}` }} />
           </div>
         );
-      
       default:
         return <div className="w-full h-full bg-gray-200" />;
     }
   };
 
-  // Get selected element data
   const selectedElementData = selectedElement ? elements.find(e => e.id === selectedElement) : null;
+  const labelHeightMm = labelHeight * ROW_HEIGHT_MM;
 
   return (
     <div className={`h-full flex flex-col ${isDark ? 'bg-[#1a1a1a] text-white' : 'bg-gray-100'}`}>
       {/* Header */}
-      <div className={`p-4 border-b ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'}`}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FileText className="h-6 w-6 text-blue-500" />
-            <div>
-              <h1 className="text-xl font-bold">Label-Designer</h1>
-              <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                {currentTemplate ? `Bearbeite: ${currentTemplate.name}` : 'Neues Template erstellen'}
-              </p>
-            </div>
+      <div className={`p-3 border-b ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'} flex items-center justify-between`}>
+        <div className="flex items-center gap-3">
+          <FileText className="h-5 w-5 text-blue-500" />
+          <div>
+            <h1 className="text-lg font-bold">Label-Designer</h1>
+            <p className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              {currentTemplate ? currentTemplate.name : 'Neues Template'} • {LABEL_WIDTH_MM}mm × {labelHeightMm}mm
+            </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={resetDesigner}>
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Neu
+        </div>
+        <div className="flex items-center gap-2">
+          {/* Zoom Controls */}
+          <div className="flex items-center gap-1 mr-2">
+            <Button variant="ghost" size="sm" onClick={() => setZoom(Math.max(50, zoom - 25))}>
+              <ZoomOut className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="sm" onClick={() => setShowPreviewDialog(true)}>
-              <Eye className="h-4 w-4 mr-1" />
-              Vorschau
-            </Button>
-            <Button 
-              size="sm" 
-              className="bg-green-600 hover:bg-green-700"
-              onClick={() => setShowSaveDialog(true)}
-            >
-              <Save className="h-4 w-4 mr-1" />
-              Speichern
+            <span className="text-xs w-12 text-center">{zoom}%</span>
+            <Button variant="ghost" size="sm" onClick={() => setZoom(Math.min(200, zoom + 25))}>
+              <ZoomIn className="h-4 w-4" />
             </Button>
           </div>
+          
+          {/* Printer Status */}
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowPrinterDialog(true)}
+            className={printerConnected ? 'border-green-500 text-green-500' : ''}
+          >
+            {printerConnected ? <Wifi className="h-4 w-4 mr-1" /> : <WifiOff className="h-4 w-4 mr-1" />}
+            Drucker
+          </Button>
+          
+          <Button variant="outline" size="sm" onClick={resetDesigner}>
+            <RotateCcw className="h-4 w-4 mr-1" />
+            Neu
+          </Button>
+          <Button variant="outline" size="sm" onClick={printTestLabel}>
+            <Printer className="h-4 w-4 mr-1" />
+            Test
+          </Button>
+          <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => setShowSaveDialog(true)}>
+            <Save className="h-4 w-4 mr-1" />
+            Speichern
+          </Button>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left Sidebar - Element Palette */}
-        <div className={`w-64 border-r overflow-y-auto ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'}`}>
-          <div className="p-4">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
+        {/* Left Sidebar - Elements */}
+        <div className={`w-56 border-r overflow-y-auto ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'}`}>
+          <div className="p-3">
+            <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
               <Plus className="h-4 w-4" />
               Elemente
             </h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-1.5">
               {Object.entries(ELEMENT_TYPES).map(([type, config]) => {
                 const Icon = config.icon;
                 return (
                   <button
                     key={type}
                     onClick={() => addElement(type)}
-                    className={`p-2 rounded-lg border text-xs flex flex-col items-center gap-1 transition-colors ${
-                      isDark 
-                        ? 'border-gray-600 hover:bg-gray-700 hover:border-blue-500' 
-                        : 'border-gray-200 hover:bg-blue-50 hover:border-blue-500'
+                    className={`p-2 rounded border text-xs flex flex-col items-center gap-1 transition-colors ${
+                      isDark ? 'border-gray-600 hover:bg-gray-700 hover:border-blue-500' : 'border-gray-200 hover:bg-blue-50 hover:border-blue-500'
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-center leading-tight">{config.label}</span>
+                    <Icon className="h-4 w-4" />
+                    <span className="text-center leading-tight text-[10px]">{config.label}</span>
                   </button>
                 );
               })}
             </div>
             
             {/* Logo Upload */}
-            <div className="mt-4 pt-4 border-t border-gray-600">
-              <h4 className="text-sm font-medium mb-2">Logo hochladen</h4>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleLogoUpload}
-                accept="image/*"
-                className="hidden"
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <Upload className="h-4 w-4 mr-2" />
-                Bild wählen
+            <div className="mt-3 pt-3 border-t border-gray-600">
+              <h4 className="text-xs font-medium mb-2">Logo</h4>
+              <input type="file" ref={fileInputRef} onChange={handleLogoUpload} accept="image/*" className="hidden" />
+              <Button variant="outline" size="sm" className="w-full text-xs" onClick={() => fileInputRef.current?.click()}>
+                <Upload className="h-3 w-3 mr-1" />
+                Hochladen
               </Button>
               {logoUrl && (
-                <div className="mt-2 p-2 bg-white rounded">
-                  <img src={logoUrl} alt="Logo" className="max-h-16 mx-auto" />
+                <div className="mt-2 p-1 bg-white rounded border">
+                  <img src={logoUrl} alt="Logo" className="max-h-10 mx-auto" />
                 </div>
               )}
             </div>
             
-            {/* Saved Templates */}
-            <div className="mt-4 pt-4 border-t border-gray-600">
-              <h4 className="text-sm font-medium mb-2">Gespeicherte Templates</h4>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {templates.length === 0 ? (
-                  <p className="text-xs text-gray-500">Keine Templates vorhanden</p>
-                ) : (
-                  templates.map(template => (
-                    <div 
-                      key={template.template_id}
-                      className={`p-2 rounded border cursor-pointer transition-colors ${
-                        currentTemplate?.template_id === template.template_id
-                          ? 'border-blue-500 bg-blue-500/10'
-                          : isDark ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      onClick={() => loadTemplate(template)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium truncate">{template.name}</span>
-                        <button
-                          onClick={(e) => { e.stopPropagation(); deleteTemplate(template.template_id); }}
-                          className="text-red-500 hover:text-red-400"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </button>
-                      </div>
-                      {template.is_default && (
-                        <Badge variant="outline" className="text-xs mt-1">Standard</Badge>
-                      )}
+            {/* Templates */}
+            <div className="mt-3 pt-3 border-t border-gray-600">
+              <h4 className="text-xs font-medium mb-2">Templates ({templates.length})</h4>
+              <div className="space-y-1 max-h-40 overflow-y-auto">
+                {templates.map(template => (
+                  <div 
+                    key={template.template_id}
+                    className={`p-1.5 rounded border cursor-pointer text-xs ${
+                      currentTemplate?.template_id === template.template_id
+                        ? 'border-blue-500 bg-blue-500/10'
+                        : isDark ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200'
+                    }`}
+                    onClick={() => loadTemplate(template)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="truncate font-medium">{template.name}</span>
+                      <button onClick={(e) => { e.stopPropagation(); deleteTemplate(template.template_id); }} className="text-red-500 hover:text-red-400">
+                        <Trash2 className="h-3 w-3" />
+                      </button>
                     </div>
-                  ))
-                )}
+                    {template.is_default && <Badge variant="outline" className="text-[10px] mt-0.5">Standard</Badge>}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Center - Canvas */}
-        <div className="flex-1 overflow-auto p-6 flex items-start justify-center">
-          <div>
-            {/* Label Size Indicator */}
-            <div className={`mb-2 text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              {LABEL_WIDTH_MM}mm × {Math.round(labelHeight * GRID_ROW_HEIGHT / 4)}mm (ca.)
+        {/* Center - WYSIWYG Canvas */}
+        <div className="flex-1 overflow-auto p-4 flex flex-col items-center" style={{ background: isDark ? '#111' : '#e5e5e5' }}>
+          {/* Ruler (Top) */}
+          <div className="flex items-end mb-1" style={{ width: labelWidthPx, marginLeft: '20px' }}>
+            {[0, 10, 20, 30, 40, 50, 60].map(mm => (
+              <div key={mm} className="text-[8px] text-gray-500" style={{ width: `${10 * MM_TO_PX * (zoom / 100)}px`, textAlign: mm === 0 ? 'left' : 'center' }}>
+                {mm}mm
+              </div>
+            ))}
+          </div>
+          
+          <div className="flex">
+            {/* Ruler (Left) */}
+            <div className="flex flex-col mr-1" style={{ height: labelHeightPx }}>
+              {Array.from({ length: Math.ceil(labelHeightMm / 10) + 1 }).map((_, i) => (
+                <div key={i} className="text-[8px] text-gray-500 text-right pr-1" style={{ height: `${10 * MM_TO_PX * (zoom / 100)}px` }}>
+                  {i * 10}mm
+                </div>
+              ))}
             </div>
             
             {/* Canvas */}
             <div 
-              className="bg-white border-2 border-dashed border-gray-300 relative"
+              ref={canvasRef}
+              className="bg-white border-2 border-gray-400 shadow-lg relative"
               style={{ 
-                width: LABEL_WIDTH_PX,
-                minHeight: labelHeight * GRID_ROW_HEIGHT,
+                width: labelWidthPx,
+                height: labelHeightPx,
+                boxShadow: '0 4px 20px rgba(0,0,0,0.3)'
               }}
             >
+              {/* Grid Lines */}
+              <div className="absolute inset-0 pointer-events-none opacity-20">
+                {Array.from({ length: GRID_COLS + 1 }).map((_, i) => (
+                  <div 
+                    key={`v${i}`} 
+                    className="absolute top-0 bottom-0 border-l border-blue-300"
+                    style={{ left: `${(i / GRID_COLS) * 100}%` }}
+                  />
+                ))}
+                {Array.from({ length: labelHeight + 1 }).map((_, i) => (
+                  <div 
+                    key={`h${i}`} 
+                    className="absolute left-0 right-0 border-t border-blue-300"
+                    style={{ top: `${(i / labelHeight) * 100}%` }}
+                  />
+                ))}
+              </div>
+              
               <GridLayout
                 className="layout"
                 layout={layout}
                 cols={GRID_COLS}
-                rowHeight={GRID_ROW_HEIGHT}
-                width={LABEL_WIDTH_PX}
+                rowHeight={rowHeightPx}
+                width={labelWidthPx}
                 onLayoutChange={onLayoutChange}
                 isDraggable
                 isResizable
                 compactType={null}
                 preventCollision={false}
-                margin={[2, 2]}
+                margin={[0, 0]}
+                containerPadding={[0, 0]}
               >
                 {elements.map(element => (
                   <div 
                     key={element.id}
-                    className={`cursor-move ${selectedElement === element.id ? 'ring-2 ring-blue-500' : ''}`}
+                    className={`cursor-move border ${selectedElement === element.id ? 'border-blue-500 border-2' : 'border-transparent hover:border-blue-300'}`}
                     onClick={() => setSelectedElement(element.id)}
                   >
-                    {renderElementContent(element)}
+                    {renderElementContent(element, zoom / 100)}
                   </div>
                 ))}
               </GridLayout>
               
               {elements.length === 0 && (
-                <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">
-                  Elemente hierher ziehen
+                <div className="absolute inset-0 flex items-center justify-center text-gray-400 text-sm pointer-events-none">
+                  <div className="text-center">
+                    <Move className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p>Elemente hierher ziehen</p>
+                    <p className="text-xs mt-1">oder links auswählen</p>
+                  </div>
                 </div>
               )}
             </div>
-            
-            {/* Label Height Control */}
-            <div className="mt-4 flex items-center gap-3">
-              <span className="text-sm">Höhe:</span>
-              <Slider
-                value={[labelHeight]}
-                onValueChange={([v]) => setLabelHeight(v)}
-                min={3}
-                max={15}
-                step={1}
-                className="w-48"
-              />
-              <span className="text-sm text-gray-500">{labelHeight} Zeilen</span>
-            </div>
+          </div>
+          
+          {/* Height Slider */}
+          <div className="mt-4 flex items-center gap-3 bg-white/10 p-2 rounded">
+            <Ruler className="h-4 w-4 text-gray-400" />
+            <span className="text-xs text-gray-400">Höhe:</span>
+            <Slider
+              value={[labelHeight]}
+              onValueChange={([v]) => setLabelHeight(v)}
+              min={2}
+              max={20}
+              step={1}
+              className="w-40"
+            />
+            <span className="text-xs text-gray-400 w-16">{labelHeightMm}mm</span>
           </div>
         </div>
 
-        {/* Right Sidebar - Element Properties */}
-        <div className={`w-72 border-l overflow-y-auto ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'}`}>
-          <div className="p-4">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
+        {/* Right Sidebar - Properties */}
+        <div className={`w-64 border-l overflow-y-auto ${isDark ? 'border-gray-700 bg-[#2d2d2d]' : 'border-gray-200 bg-white'}`}>
+          <div className="p-3">
+            <h3 className="font-semibold text-sm mb-2 flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Eigenschaften
             </h3>
             
             {selectedElementData ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <Badge>{ELEMENT_TYPES[selectedElementData.type]?.label}</Badge>
+                  <Badge className="text-xs">{ELEMENT_TYPES[selectedElementData.type]?.label}</Badge>
                   <div className="flex gap-1">
-                    <Button 
-                      size="sm" 
-                      variant="ghost"
-                      onClick={() => duplicateElement(selectedElement)}
-                    >
-                      <Copy className="h-4 w-4" />
+                    <Button size="sm" variant="ghost" onClick={() => duplicateElement(selectedElement)} className="h-7 w-7 p-0">
+                      <Copy className="h-3 w-3" />
                     </Button>
-                    <Button 
-                      size="sm" 
-                      variant="ghost" 
-                      className="text-red-500"
-                      onClick={() => removeElement(selectedElement)}
-                    >
-                      <Trash2 className="h-4 w-4" />
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500" onClick={() => removeElement(selectedElement)}>
+                      <Trash2 className="h-3 w-3" />
                     </Button>
                   </div>
                 </div>
                 
-                {/* Text Properties */}
                 {['asset_id', 'serial_number', 'device_type', 'manufacturer', 'model', 'custom_text'].includes(selectedElementData.type) && (
                   <>
                     <div>
@@ -670,35 +693,23 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
                         max={24}
                         value={selectedElementData.config.fontSize || 10}
                         onChange={(e) => updateElementConfig(selectedElement, 'fontSize', parseInt(e.target.value))}
-                        className={`mt-1 ${inputBg}`}
+                        className={`mt-1 h-8 text-sm ${inputBg}`}
                       />
                     </div>
-                    
                     <div>
                       <Label className="text-xs">Schriftstärke</Label>
-                      <Select 
-                        value={selectedElementData.config.fontWeight || 'normal'}
-                        onValueChange={(v) => updateElementConfig(selectedElement, 'fontWeight', v)}
-                      >
-                        <SelectTrigger className={`mt-1 ${inputBg}`}>
-                          <SelectValue />
-                        </SelectTrigger>
+                      <Select value={selectedElementData.config.fontWeight || 'normal'} onValueChange={(v) => updateElementConfig(selectedElement, 'fontWeight', v)}>
+                        <SelectTrigger className={`mt-1 h-8 text-sm ${inputBg}`}><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="normal">Normal</SelectItem>
                           <SelectItem value="bold">Fett</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    
                     <div>
                       <Label className="text-xs">Ausrichtung</Label>
-                      <Select 
-                        value={selectedElementData.config.textAlign || 'left'}
-                        onValueChange={(v) => updateElementConfig(selectedElement, 'textAlign', v)}
-                      >
-                        <SelectTrigger className={`mt-1 ${inputBg}`}>
-                          <SelectValue />
-                        </SelectTrigger>
+                      <Select value={selectedElementData.config.textAlign || 'left'} onValueChange={(v) => updateElementConfig(selectedElement, 'textAlign', v)}>
+                        <SelectTrigger className={`mt-1 h-8 text-sm ${inputBg}`}><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="left">Links</SelectItem>
                           <SelectItem value="center">Zentriert</SelectItem>
@@ -706,219 +717,163 @@ const LabelDesigner = ({ theme = 'dark', onClose }) => {
                         </SelectContent>
                       </Select>
                     </div>
-                    
                     {selectedElementData.type === 'custom_text' && (
                       <div>
                         <Label className="text-xs">Text</Label>
                         <Input
                           value={selectedElementData.config.customText || ''}
                           onChange={(e) => updateElementConfig(selectedElement, 'customText', e.target.value)}
-                          className={`mt-1 ${inputBg}`}
+                          className={`mt-1 h-8 text-sm ${inputBg}`}
                         />
                       </div>
                     )}
                   </>
                 )}
                 
-                {/* Barcode Properties */}
                 {selectedElementData.type === 'barcode' && (
                   <>
                     <div>
                       <Label className="text-xs">Format</Label>
-                      <Select 
-                        value={selectedElementData.config.barcodeFormat || 'CODE128'}
-                        onValueChange={(v) => updateElementConfig(selectedElement, 'barcodeFormat', v)}
-                      >
-                        <SelectTrigger className={`mt-1 ${inputBg}`}>
-                          <SelectValue />
-                        </SelectTrigger>
+                      <Select value={selectedElementData.config.barcodeFormat || 'CODE128'} onValueChange={(v) => updateElementConfig(selectedElement, 'barcodeFormat', v)}>
+                        <SelectTrigger className={`mt-1 h-8 text-sm ${inputBg}`}><SelectValue /></SelectTrigger>
                         <SelectContent>
                           <SelectItem value="CODE128">CODE128</SelectItem>
                           <SelectItem value="CODE39">CODE39</SelectItem>
                           <SelectItem value="EAN13">EAN13</SelectItem>
-                          <SelectItem value="UPC">UPC</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
-                    
                     <div className="flex items-center justify-between">
                       <Label className="text-xs">Wert anzeigen</Label>
-                      <Switch
-                        checked={selectedElementData.config.showValue !== false}
-                        onCheckedChange={(v) => updateElementConfig(selectedElement, 'showValue', v)}
-                      />
+                      <Switch checked={selectedElementData.config.showValue !== false} onCheckedChange={(v) => updateElementConfig(selectedElement, 'showValue', v)} />
                     </div>
                   </>
                 )}
                 
-                {/* Line Properties */}
                 {selectedElementData.type === 'line' && (
-                  <>
-                    <div>
-                      <Label className="text-xs">Stil</Label>
-                      <Select 
-                        value={selectedElementData.config.lineStyle || 'solid'}
-                        onValueChange={(v) => updateElementConfig(selectedElement, 'lineStyle', v)}
-                      >
-                        <SelectTrigger className={`mt-1 ${inputBg}`}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="solid">Durchgezogen</SelectItem>
-                          <SelectItem value="dashed">Gestrichelt</SelectItem>
-                          <SelectItem value="dotted">Gepunktet</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </>
+                  <div>
+                    <Label className="text-xs">Stil</Label>
+                    <Select value={selectedElementData.config.lineStyle || 'solid'} onValueChange={(v) => updateElementConfig(selectedElement, 'lineStyle', v)}>
+                      <SelectTrigger className={`mt-1 h-8 text-sm ${inputBg}`}><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="solid">Durchgezogen</SelectItem>
+                        <SelectItem value="dashed">Gestrichelt</SelectItem>
+                        <SelectItem value="dotted">Gepunktet</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 )}
               </div>
             ) : (
-              <p className={`text-sm ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                Element auswählen um Eigenschaften zu bearbeiten
-              </p>
+              <p className="text-xs text-gray-500">Element auswählen</p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Save Template Dialog */}
+      {/* Save Dialog */}
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
         <DialogContent className={isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}>
           <DialogHeader>
-            <DialogTitle className={isDark ? 'text-white' : ''}>
-              Template speichern
-            </DialogTitle>
+            <DialogTitle className={isDark ? 'text-white' : ''}>Template speichern</DialogTitle>
           </DialogHeader>
-          
-          <div className="space-y-4">
+          <div className="space-y-3">
             <div>
-              <Label>Name *</Label>
-              <Input
-                value={templateName}
-                onChange={(e) => setTemplateName(e.target.value)}
-                placeholder="z.B. Standard-Label"
-                className={`mt-1 ${inputBg}`}
-              />
+              <Label className="text-sm">Name *</Label>
+              <Input value={templateName} onChange={(e) => setTemplateName(e.target.value)} placeholder="z.B. Standard-Label" className={`mt-1 ${inputBg}`} />
             </div>
-            
             <div>
-              <Label>Beschreibung</Label>
-              <Input
-                value={templateDescription}
-                onChange={(e) => setTemplateDescription(e.target.value)}
-                placeholder="Optional"
-                className={`mt-1 ${inputBg}`}
-              />
+              <Label className="text-sm">Beschreibung</Label>
+              <Input value={templateDescription} onChange={(e) => setTemplateDescription(e.target.value)} placeholder="Optional" className={`mt-1 ${inputBg}`} />
             </div>
-            
             <div>
-              <Label>Asset-Typ</Label>
+              <Label className="text-sm">Asset-Typ</Label>
               <Select value={templateAssetType} onValueChange={setTemplateAssetType}>
-                <SelectTrigger className={`mt-1 ${inputBg}`}>
-                  <SelectValue />
-                </SelectTrigger>
+                <SelectTrigger className={`mt-1 ${inputBg}`}><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alle Typen</SelectItem>
                   <SelectItem value="tab_tsr_i7">TSRID Tablet i7</SelectItem>
                   <SelectItem value="tab_tsr_i5">TSRID Tablet i5</SelectItem>
                   <SelectItem value="sca_tsr">TSRID Scanner</SelectItem>
-                  <SelectItem value="sca_dsk">Desko Scanner</SelectItem>
-                  <SelectItem value="kit">Kits</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-            
             <div className="flex items-center justify-between">
-              <Label>Als Standard festlegen</Label>
+              <Label className="text-sm">Als Standard</Label>
               <Switch checked={isDefault} onCheckedChange={setIsDefault} />
             </div>
           </div>
-          
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
-              Abbrechen
-            </Button>
+            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>Abbrechen</Button>
             <Button onClick={saveTemplate} className="bg-green-600 hover:bg-green-700">
-              <Save className="h-4 w-4 mr-2" />
-              Speichern
+              <Save className="h-4 w-4 mr-1" />Speichern
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Preview Dialog */}
-      <Dialog open={showPreviewDialog} onOpenChange={setShowPreviewDialog}>
-        <DialogContent className={`max-w-lg ${isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}`}>
+      {/* Printer Settings Dialog */}
+      <Dialog open={showPrinterDialog} onOpenChange={setShowPrinterDialog}>
+        <DialogContent className={isDark ? 'bg-[#2d2d2d] border-gray-700' : ''}>
           <DialogHeader>
             <DialogTitle className={isDark ? 'text-white' : ''}>
-              Druckvorschau
+              <Printer className="h-5 w-5 inline mr-2" />
+              Drucker-Einstellungen
             </DialogTitle>
+            <DialogDescription className={isDark ? 'text-gray-400' : ''}>
+              Brother QL-820NWB Netzwerkdrucker konfigurieren
+            </DialogDescription>
           </DialogHeader>
-          
-          <div className="py-4">
-            <p className={`text-sm mb-4 ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-              So wird das Label auf dem Drucker ausgegeben:
-            </p>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-sm">IP-Adresse *</Label>
+              <Input 
+                value={printerConfig.ip} 
+                onChange={(e) => setPrinterConfig(prev => ({ ...prev, ip: e.target.value }))} 
+                placeholder="192.168.1.100" 
+                className={`mt-1 ${inputBg}`} 
+              />
+            </div>
+            <div>
+              <Label className="text-sm">Port (IPP)</Label>
+              <Input 
+                type="number"
+                value={printerConfig.port} 
+                onChange={(e) => setPrinterConfig(prev => ({ ...prev, port: parseInt(e.target.value) }))} 
+                className={`mt-1 ${inputBg}`} 
+              />
+            </div>
+            <div>
+              <Label className="text-sm">Drucker-Name</Label>
+              <Input 
+                value={printerConfig.name} 
+                onChange={(e) => setPrinterConfig(prev => ({ ...prev, name: e.target.value }))} 
+                className={`mt-1 ${inputBg}`} 
+              />
+            </div>
             
-            <div className="flex justify-center">
-              <div 
-                className="bg-white border-2 border-gray-300"
-                style={{ 
-                  width: LABEL_WIDTH_PX,
-                  minHeight: labelHeight * GRID_ROW_HEIGHT,
-                }}
-              >
-                <GridLayout
-                  className="layout"
-                  layout={layout}
-                  cols={GRID_COLS}
-                  rowHeight={GRID_ROW_HEIGHT}
-                  width={LABEL_WIDTH_PX}
-                  isDraggable={false}
-                  isResizable={false}
-                  margin={[2, 2]}
-                >
-                  {elements.map(element => (
-                    <div key={element.id}>
-                      {renderElementContent(element)}
-                    </div>
-                  ))}
-                </GridLayout>
+            <div className={`p-3 rounded-lg ${printerConnected ? 'bg-green-500/10 border border-green-500/30' : 'bg-yellow-500/10 border border-yellow-500/30'}`}>
+              <div className="flex items-center gap-2">
+                {printerConnected ? (
+                  <>
+                    <Wifi className="h-5 w-5 text-green-500" />
+                    <span className="text-green-400 text-sm">Drucker verbunden</span>
+                  </>
+                ) : (
+                  <>
+                    <WifiOff className="h-5 w-5 text-yellow-500" />
+                    <span className="text-yellow-400 text-sm">Nicht verbunden</span>
+                  </>
+                )}
               </div>
             </div>
-            
-            <div className={`mt-4 p-3 rounded-lg text-sm ${isDark ? 'bg-blue-500/10 text-blue-300' : 'bg-blue-50 text-blue-700'}`}>
-              <p className="font-medium mb-1">Druckeinstellungen:</p>
-              <ul className="list-disc list-inside text-xs space-y-1">
-                <li>Brother QL-820NWB</li>
-                <li>62mm Endlosrolle (DK-22205)</li>
-                <li>Größe: {LABEL_WIDTH_MM}mm × ~{Math.round(labelHeight * GRID_ROW_HEIGHT / 4)}mm</li>
-              </ul>
-            </div>
           </div>
-          
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPreviewDialog(false)}>
-              Schließen
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={testPrinterConnection} disabled={testingPrinter}>
+              {testingPrinter ? 'Teste...' : 'Verbindung testen'}
             </Button>
-            <Button 
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => {
-                // Erstelle ein temporäres Template-Objekt für den Test-Druck
-                const testTemplate = {
-                  elements,
-                  layout,
-                  label_height: labelHeight,
-                  logo_url: logoUrl
-                };
-                printAssetLabelWithTemplate(SAMPLE_ASSET, testTemplate);
-                toast.success('Test-Label wird gedruckt...');
-              }}
-              data-testid="test-print-btn"
-            >
-              <Printer className="h-4 w-4 mr-2" />
-              Test drucken
+            <Button onClick={savePrinterSettings} className="bg-blue-600 hover:bg-blue-700">
+              <Save className="h-4 w-4 mr-1" />Speichern
             </Button>
           </DialogFooter>
         </DialogContent>
