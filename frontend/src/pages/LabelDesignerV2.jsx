@@ -885,9 +885,9 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
         return (
           <div className="w-full h-full flex items-center justify-center bg-white">
             <QRCodeSVG 
-              value={JSON.stringify({ id: SAMPLE_ASSET.asset_id, sn: SAMPLE_ASSET.manufacturer_sn })}
+              value={SAMPLE_ASSET.asset_id}
               size={100}
-              level="M"
+              level="H"
               style={{ width: '100%', height: '100%' }}
             />
           </div>
