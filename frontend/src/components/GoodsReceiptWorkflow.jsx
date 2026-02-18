@@ -2339,6 +2339,108 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
         asset={labelToPrint}
         isDark={isDark}
       />
+
+      {/* ID History Modal */}
+      <Dialog open={showHistoryModal} onOpenChange={setShowHistoryModal}>
+        <DialogContent className={`max-w-lg ${isDark ? 'bg-[#2d2d2d] text-white border-gray-700' : 'bg-white'}`}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <History className="h-5 w-5 text-blue-500" />
+              ID-Historie: {historyData?.warehouse_asset_id}
+            </DialogTitle>
+          </DialogHeader>
+          
+          {historyLoading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+            </div>
+          ) : historyData?.history ? (
+            <div className="space-y-4">
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
+                <p className="text-xs text-blue-500 mb-1">Diese ID wurde</p>
+                <p className={`text-lg font-semibold ${isDark ? 'text-white' : ''}`}>
+                  {historyData.event_count}x verwendet
+                </p>
+              </div>
+              
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                {historyData.history.events?.slice().reverse().map((event, idx) => (
+                  <div 
+                    key={idx} 
+                    className={`p-3 rounded-lg border ${
+                      event.action === 'created' 
+                        ? isDark ? 'border-green-500/30 bg-green-500/10' : 'border-green-200 bg-green-50'
+                        : event.action === 'deleted'
+                        ? isDark ? 'border-red-500/30 bg-red-500/10' : 'border-red-200 bg-red-50'
+                        : isDark ? 'border-blue-500/30 bg-blue-500/10' : 'border-blue-200 bg-blue-50'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant={
+                        event.action === 'created' ? 'default' : 
+                        event.action === 'deleted' ? 'destructive' : 
+                        'secondary'
+                      } className={
+                        event.action === 'created' ? 'bg-green-600' :
+                        event.action === 'deleted' ? 'bg-red-600' :
+                        'bg-blue-600'
+                      }>
+                        {event.action === 'created' ? 'Erstellt' : 
+                         event.action === 'deleted' ? 'Gelöscht' : 
+                         event.action === 'reassigned' ? 'Neu zugewiesen' :
+                         event.action}
+                      </Badge>
+                      <span className="text-xs text-gray-500">
+                        {new Date(event.timestamp).toLocaleString('de-DE')}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-1 text-sm">
+                      {event.asset_sn && (
+                        <p className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                          <span className="text-gray-500">Seriennummer:</span>{' '}
+                          <code className="font-mono">{event.asset_sn}</code>
+                        </p>
+                      )}
+                      {event.previous_asset_sn && (
+                        <p className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                          <span className="text-gray-500">Vorherige SN:</span>{' '}
+                          <code className="font-mono line-through text-red-400">{event.previous_asset_sn}</code>
+                        </p>
+                      )}
+                      {event.user && (
+                        <p className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                          <span className="text-gray-500">Benutzer:</span> {event.user}
+                        </p>
+                      )}
+                      {event.reason && (
+                        <p className={isDark ? 'text-gray-300' : 'text-gray-700'}>
+                          <span className="text-gray-500">Grund:</span> {event.reason}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-xs text-gray-500 text-center pt-2 border-t border-gray-700">
+                {historyData.note}
+              </p>
+            </div>
+          ) : (
+            <div className="py-8 text-center text-gray-500">
+              <History className="h-12 w-12 mx-auto mb-3 opacity-30" />
+              <p>Keine Historie für diese ID vorhanden</p>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowHistoryModal(false)}>
+              Schließen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
