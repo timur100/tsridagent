@@ -342,7 +342,7 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
   return (
     <div className={`p-4 rounded-lg border ${isDark ? 'bg-white' : 'bg-gray-50'}`} style={{ width: '100%', maxWidth: '280px' }}>
       <div className="flex gap-3">
-        <div className="flex-shrink-0"><QRCodeSVG value={qrContent} size={80} level="M" includeMargin={false} /></div>
+        <div className="flex-shrink-0"><QRCodeSVG value={qrContent} size={80} level="H" includeMargin={false} /></div>
         <div className="flex-1 min-w-0 flex flex-col gap-1">
           <div className="font-bold text-black text-sm leading-tight break-all">{labelId}</div>
           <div className="text-xs text-gray-600 uppercase tracking-wide">{typeLabel}</div>
