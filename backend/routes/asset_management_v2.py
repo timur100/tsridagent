@@ -3698,50 +3698,131 @@ async def get_tenant_asset_config(tenant_id: str = "default"):
     return config
 
 
-async def get_next_warehouse_sequence(asset_type: str, tenant_id: str = "default"):
-    """Get next sequence number for warehouse asset ID - ATOMIC with counter collection"""
+async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str = "default", for_preview: bool = False):
+    """
+    Get next AVAILABLE sequence number for warehouse asset ID.
+    
+    This function finds the LOWEST available ID (fills gaps from deleted assets).
+    It does NOT increment any counter - it calculates from existing data.
+    
+    Args:
+        asset_type: Type of asset (e.g., 'tab_tsr_i7')
+        tenant_id: Tenant identifier
+        for_preview: If True, just preview without reserving
+    
+    Returns:
+        The next available sequence number (fills gaps)
+    """
     config = await get_tenant_asset_config(tenant_id)
     prefix = config.get("warehouse_prefix", "TSRID")
     type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
     
-    counter_key = f"{tenant_id}_{prefix}_{type_suffix}"
-    
-    # Use atomic findAndModify to get next sequence
-    result = await db.asset_counters.find_one_and_update(
-        {"_id": counter_key},
-        {"$inc": {"seq": 1}},
-        upsert=True,
-        return_document=True
+    # Get ALL existing sequence numbers for this type
+    pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+    cursor = db.tsrid_assets.find(
+        {"warehouse_asset_id": {"$regex": pattern}},
+        {"warehouse_asset_id": 1}
     )
     
-    next_seq = result.get("seq", 1)
+    existing_sequences = set()
+    async for asset in cursor:
+        wid = asset.get("warehouse_asset_id", "")
+        parts = wid.split("-")
+        if len(parts) >= 4:
+            try:
+                seq = int(parts[-1])
+                existing_sequences.add(seq)
+            except:
+                pass
     
-    # If this is a new counter, initialize from existing data
-    if next_seq == 1:
-        # Check for existing assets to not create duplicates
-        pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
-        cursor = db.tsrid_assets.find(
-            {"warehouse_asset_id": {"$regex": pattern}},
-            {"warehouse_asset_id": 1}
-        ).sort("warehouse_asset_id", -1).limit(1)
-        
-        highest = await cursor.to_list(length=1)
-        
-        if highest and highest[0].get("warehouse_asset_id"):
-            parts = highest[0]["warehouse_asset_id"].split("-")
-            if len(parts) >= 4:
-                try:
-                    existing_max = int(parts[-1])
-                    # Update counter to be higher than existing max
-                    await db.asset_counters.update_one(
-                        {"_id": counter_key},
-                        {"$set": {"seq": existing_max + 1}}
-                    )
-                    return existing_max + 1
-                except:
-                    pass
+    # Find the FIRST available gap starting from 1
+    next_seq = 1
+    while next_seq in existing_sequences:
+        next_seq += 1
     
     return next_seq
+
+
+async def reserve_warehouse_sequence(asset_type: str, manufacturer_sn: str, tenant_id: str = "default", user: str = "system"):
+    """
+    Reserve a warehouse ID by finding the next available sequence.
+    Also logs the action to the ID history for audit trail.
+    
+    Returns:
+        tuple: (sequence_number, warehouse_asset_id)
+    """
+    config = await get_tenant_asset_config(tenant_id)
+    prefix = config.get("warehouse_prefix", "TSRID")
+    type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
+    
+    next_seq = await get_next_available_warehouse_sequence(asset_type, tenant_id, for_preview=False)
+    warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+    
+    # Log to ID history
+    await log_id_history(
+        warehouse_id=warehouse_id,
+        action="created",
+        asset_sn=manufacturer_sn,
+        user=user,
+        details={"asset_type": asset_type, "sequence": next_seq}
+    )
+    
+    return next_seq, warehouse_id
+
+
+async def log_id_history(warehouse_id: str, action: str, asset_sn: str = None, user: str = "system", 
+                         previous_asset_sn: str = None, reason: str = None, details: dict = None):
+    """
+    Log an action to the ID history collection for full audit trail.
+    
+    Actions: created, deleted, reassigned, corrected
+    """
+    now = datetime.now(timezone.utc).isoformat()
+    
+    event = {
+        "action": action,
+        "timestamp": now,
+        "user": user
+    }
+    
+    if asset_sn:
+        event["asset_sn"] = asset_sn
+    if previous_asset_sn:
+        event["previous_asset_sn"] = previous_asset_sn
+    if reason:
+        event["reason"] = reason
+    if details:
+        event["details"] = details
+    
+    # Upsert into the history collection
+    await db.asset_id_history.update_one(
+        {"_id": warehouse_id},
+        {
+            "$push": {"events": event},
+            "$set": {"last_updated": now},
+            "$setOnInsert": {"created_at": now}
+        },
+        upsert=True
+    )
+    
+    return event
+
+
+async def get_id_history(warehouse_id: str):
+    """Get the full history of an asset ID"""
+    history = await db.asset_id_history.find_one({"_id": warehouse_id})
+    if history:
+        history["id"] = history.pop("_id")
+    return history
+
+
+# Keep old function name for compatibility but use new logic
+async def get_next_warehouse_sequence(asset_type: str, tenant_id: str = "default"):
+    """
+    DEPRECATED: Use get_next_available_warehouse_sequence instead.
+    This is kept for backward compatibility but now uses gap-filling logic.
+    """
+    return await get_next_available_warehouse_sequence(asset_type, tenant_id, for_preview=True)
 
 
 async def validate_warehouse_id_unique(warehouse_asset_id: str) -> bool:
