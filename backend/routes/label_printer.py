@@ -297,6 +297,9 @@ async def print_test_label(req: TestPrintRequest):
     """
     Print a test label to verify printer setup.
     """
+    ip = req.get_ip
+    port = req.get_port
+    
     test_label = LabelData(
         asset_id="TEST-LABEL-001",
         type_label="Testdruck",
@@ -312,13 +315,13 @@ async def print_test_label(req: TestPrintRequest):
     raster_data = image_to_brother_raster(img)
     
     # Send to printer
-    result = send_to_printer(req.printer_ip, req.printer_port, raster_data)
+    result = send_to_printer(ip, port, raster_data)
     
     if result.get("success"):
         return {
             "success": True,
             "message": "Testlabel wurde gedruckt",
-            "printer_ip": req.printer_ip
+            "printer_ip": ip
         }
     else:
         raise HTTPException(status_code=500, detail=result.get("error", "Druckfehler"))
