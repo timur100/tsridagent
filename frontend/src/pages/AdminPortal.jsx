@@ -1930,7 +1930,7 @@ const AdminPortalContent = () => {
 
         {activeTab === 'label-designer' && (
           <div className={`rounded-lg border ${theme === 'dark' ? 'border-gray-700 bg-[#1a1a1a]' : 'border-gray-200 bg-white'}`} style={{ height: 'calc(100vh - 180px)' }}>
-            <LabelDesigner theme={theme} />
+            <LabelDesignerV2 theme={theme} />
           </div>
         )}
 
