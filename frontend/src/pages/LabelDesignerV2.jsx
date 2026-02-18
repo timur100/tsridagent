@@ -560,9 +560,9 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
       
       switch (type) {
         case 'qrcode':
-          // Use pre-generated QR code image
+          // Use pre-generated QR code image with crisp rendering
           if (qrImages[element.id]) {
-            elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;"><img src="${qrImages[element.id]}" style="max-width:100%;max-height:100%;object-fit:contain;" /></div>`;
+            elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;"><img src="${qrImages[element.id]}" style="width:${Math.min(width, height) - 1}mm;height:${Math.min(width, height) - 1}mm;object-fit:contain;image-rendering:pixelated;image-rendering:-moz-crisp-edges;image-rendering:crisp-edges;" /></div>`;
           }
           break;
         case 'barcode':
