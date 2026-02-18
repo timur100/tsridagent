@@ -4373,8 +4373,9 @@ async def remove_asset_from_location(
     technician: str = Query("")
 ):
     """
-    Asset von Location entfernen und zurück zur Warehouse-ID.
-    Location-ID: STRT01-01-TAB-i7 → Warehouse-ID: TSRID-TAB-i7-0001
+    Asset von Location entfernen.
+    Die Asset-ID (warehouse_asset_id) bleibt UNVERÄNDERT!
+    Nur die Location-Verknüpfung wird entfernt.
     """
     try:
         # Find the asset
@@ -4390,14 +4391,13 @@ async def remove_asset_from_location(
             )
         
         old_location_id = asset.get("location_id")
-        old_asset_id = asset.get("asset_id")
-        warehouse_id = asset.get("warehouse_asset_id") or asset.get("original_warehouse_id")
+        permanent_asset_id = asset.get("warehouse_asset_id") or asset.get("asset_id")
         
         now = datetime.now(timezone.utc).isoformat()
         
-        # Update asset - restore warehouse ID
+        # Update asset - Die ID bleibt gleich, nur Location wird entfernt
         update_data = {
-            "asset_id": None,  # Clear location-based ID
+            "asset_id": permanent_asset_id,  # ID bleibt!
             "location_id": None,
             "status": "unassigned",
             "updated_at": now
@@ -4408,7 +4408,7 @@ async def remove_asset_from_location(
             "date": now,
             "event": f"Von Location entfernt: {old_location_id}",
             "event_type": "removed_from_location",
-            "notes": f"Asset-ID zurückgesetzt: {old_asset_id} → Lager ({warehouse_id})",
+            "notes": f"Asset-ID beibehalten: {permanent_asset_id}, zurück ins Lager",
             "technician": technician
         }
         
@@ -4420,13 +4420,23 @@ async def remove_asset_from_location(
             }
         )
         
+        # Log to ID history
+        await log_asset_id_history(
+            permanent_asset_id,
+            "removed_from_location",
+            manufacturer_sn,
+            technician,
+            f"Entfernt von Location: {old_location_id}"
+        )
+        
         return {
             "success": True,
-            "message": f"Gerät von Location {old_location_id} entfernt",
+            "message": f"Gerät {permanent_asset_id} von Location {old_location_id} entfernt",
             "manufacturer_sn": manufacturer_sn,
-            "old_asset_id": old_asset_id,
-            "warehouse_asset_id": warehouse_id,
-            "status": "unassigned"
+            "asset_id": permanent_asset_id,  # ID bleibt gleich!
+            "warehouse_asset_id": permanent_asset_id,
+            "status": "unassigned",
+            "note": "Die Asset-ID bleibt unverändert. Das Label ist weiterhin gültig."
         }
     except HTTPException:
         raise
