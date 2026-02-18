@@ -575,6 +575,7 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
         setSelectedAssets(new Set());
         setShowDeleteModal(false);
         fetchUnassignedAssets();
+        fetchNextAssetId(currentType); // WICHTIG: Nächste ID aktualisieren nach Löschung
         if (onRefreshStats) onRefreshStats();
       } else {
         toast.error(data.detail || 'Fehler beim Löschen');
