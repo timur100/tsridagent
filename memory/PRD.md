@@ -26,7 +26,37 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ## What's Been Implemented
 
-### Session: 2025-02-17 (Current)
+### Session: 2025-02-18 (Current)
+
+#### New Features
+28. **Label-Designer V2 mit Multi-Druckmethoden (NEW FEATURE - 2025-02-18)**
+    - **Feature**: Professioneller WYSIWYG Label-Designer mit mehreren Druckoptionen
+    - **Druckmethoden**:
+      1. **WiFi/Netzwerk (TCP Port 9100)**: Direktdruck zum Brother QL-820NWB über IP-Adresse (192.168.118.1)
+      2. **Bluetooth**: Für Zebra Handheld-Drucker mit ZPL-Unterstützung (Web Bluetooth API)
+      3. **Browser-Druck**: Fallback-Option mit Standard-Druckdialog
+    - **Drucker-Einstellungen Dialog**:
+      - 3-Tab-Layout (WiFi/Netzwerk, Bluetooth, Browser)
+      - IP-Adresse und Port konfigurierbar
+      - Verbindungstest-Funktion
+      - Einstellungen werden in MongoDB gespeichert
+    - **WYSIWYG-Canvas**:
+      - Lineale (mm) oben und links
+      - Grid-Lines für präzise Positionierung
+      - Zoom-Funktion (50% - 200%)
+      - Höhen-Slider für Label-Länge
+    - **Backend-Endpoints**:
+      - `GET /api/label-printer/settings` - Drucker-Einstellungen abrufen
+      - `POST /api/label-printer/settings` - Drucker-Einstellungen speichern
+      - `GET /api/label-printer/methods` - Verfügbare Druckmethoden
+      - `POST /api/label-printer/test-connection` - Verbindungstest
+    - **Dateien**:
+      - `/app/frontend/src/pages/LabelDesignerV2.jsx` (Neue Komponente)
+      - `/app/backend/routes/label_printer.py` (Erweitert um Settings-Endpoints)
+      - `/app/frontend/src/pages/AdminPortal.jsx` (Integration)
+    - **Test-Status**: ✅ Frontend UI funktioniert, API-Endpoints getestet
+
+### Session: 2025-02-17
 
 #### New Features
 27. **Label-Designer mit Drag & Drop (NEW FEATURE - 2025-02-17)**
