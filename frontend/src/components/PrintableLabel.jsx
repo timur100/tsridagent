@@ -279,6 +279,208 @@ export const printAssetLabel = (asset) => {
   printAssetLabelWithTemplate(asset, null);
 };
 
+// Generiert HTML für ein einzelnes Label (für Bulk-Print)
+const generateLabelHtml = async (asset, template, svgs, isLastLabel = false) => {
+  const labelId = asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn || '';
+  const serialNumber = asset.manufacturer_sn || '';
+  const typeLabel = asset.type_label || asset.type || '';
+  const manufacturer = asset.manufacturer || '';
+  const model = asset.model || '';
+  
+  const labelHeight = template ? (template.label_height || 6) * (GRID_ROW_HEIGHT / 4) : 30;
+  
+  // Generiere Element-HTML für Template
+  let elementsHtml = '';
+  if (template && template.elements && template.layout) {
+    template.elements.forEach(element => {
+      const layoutItem = template.layout.find(l => l.i === element.id);
+      if (!layoutItem) return;
+      
+      const { type, config } = element;
+      const { x, y, w, h } = layoutItem;
+      
+      const left = x * MM_PER_COL;
+      const top = y * (GRID_ROW_HEIGHT / 4);
+      const width = w * MM_PER_COL;
+      const height = h * (GRID_ROW_HEIGHT / 4);
+      
+      const posStyle = `position:absolute;left:${left}mm;top:${top}mm;width:${width}mm;height:${height}mm;overflow:hidden;`;
+      
+      const textStyle = `
+        font-size:${config.fontSize || 10}pt;
+        font-weight:${config.fontWeight || 'normal'};
+        display:flex;align-items:center;
+        justify-content:${config.textAlign === 'center' ? 'center' : config.textAlign === 'right' ? 'flex-end' : 'flex-start'};
+        overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#000;
+      `;
+      
+      switch (type) {
+        case 'qrcode':
+          const qrSvg = svgs[`qr_${element.id}`] || '';
+          elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;">${qrSvg}</div>`;
+          break;
+        case 'barcode':
+          const bcSvg = svgs[`bc_${element.id}`] || '';
+          elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;">${bcSvg}</div>`;
+          break;
+        case 'asset_id':
+          elementsHtml += `<div style="${posStyle}${textStyle}">${labelId}</div>`;
+          break;
+        case 'serial_number':
+          elementsHtml += `<div style="${posStyle}${textStyle}font-family:monospace;">SN: ${serialNumber}</div>`;
+          break;
+        case 'device_type':
+          elementsHtml += `<div style="${posStyle}${textStyle}">${typeLabel}</div>`;
+          break;
+        case 'manufacturer':
+          elementsHtml += `<div style="${posStyle}${textStyle}">${manufacturer}</div>`;
+          break;
+        case 'model':
+          elementsHtml += `<div style="${posStyle}${textStyle}">${model}</div>`;
+          break;
+        case 'custom_text':
+          elementsHtml += `<div style="${posStyle}${textStyle}">${config.customText || ''}</div>`;
+          break;
+        case 'logo':
+          if (template.logo_url) {
+            elementsHtml += `<div style="${posStyle}display:flex;align-items:center;justify-content:center;"><img src="${template.logo_url}" style="max-width:100%;max-height:100%;object-fit:contain;"/></div>`;
+          }
+          break;
+        case 'line':
+          elementsHtml += `<div style="${posStyle}display:flex;align-items:center;"><div style="width:100%;border-top:1px ${config.lineStyle || 'solid'} ${config.lineColor || '#000'};"></div></div>`;
+          break;
+        default:
+          break;
+      }
+    });
+  }
+  
+  const pageBreak = isLastLabel ? '' : 'page-break-after:always;';
+  
+  if (template) {
+    return `<div class="label-container" style="position:relative;width:62mm;height:${labelHeight}mm;padding:1mm;background:white;overflow:hidden;${pageBreak}">${elementsHtml}</div>`;
+  } else {
+    // Standard-Layout
+    return `
+      <div class="label-container" style="width:62mm;padding:2mm;background:white;${pageBreak}">
+        <div style="display:flex;flex-direction:row;align-items:flex-start;gap:3mm;width:100%;">
+          <div style="flex-shrink:0;width:20mm;height:20mm;">${svgs.defaultQr || ''}</div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1mm;">
+            <div style="font-size:10pt;font-weight:bold;line-height:1.2;word-break:break-all;color:#000;">${labelId}</div>
+            <div style="font-size:7pt;color:#444;text-transform:uppercase;letter-spacing:0.3px;">${typeLabel}</div>
+            ${manufacturer || model ? `<div style="font-size:6pt;color:#666;margin-top:0.5mm;">${manufacturer}${manufacturer && model ? ' - ' : ''}${model}</div>` : ''}
+            ${serialNumber ? `
+            <div style="margin-top:2mm;padding-top:2mm;border-top:0.3mm solid #ddd;">
+              <div style="font-size:5pt;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1mm;">Seriennummer</div>
+              <div style="width:100%;overflow:hidden;">${svgs.defaultBarcode || ''}</div>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }
+};
+
+// Mehrere Labels in einem Druckauftrag drucken
+export const printMultipleLabelsWithTemplate = async (assets, template, onProgress) => {
+  if (!assets || assets.length === 0) return;
+  
+  toast.loading(`${assets.length} Labels werden vorbereitet...`, { id: 'bulk-print-toast' });
+  
+  // Generiere SVGs für alle Assets
+  const allSvgs = [];
+  for (let i = 0; i < assets.length; i++) {
+    if (onProgress) onProgress(i, assets.length);
+    const svgs = await generateAllSvgs(assets[i], template);
+    allSvgs.push(svgs);
+  }
+  
+  // Generiere HTML für alle Labels
+  let allLabelsHtml = '';
+  for (let i = 0; i < assets.length; i++) {
+    const isLastLabel = i === assets.length - 1;
+    const labelHtml = await generateLabelHtml(assets[i], template, allSvgs[i], isLastLabel);
+    allLabelsHtml += labelHtml;
+  }
+  
+  toast.dismiss('bulk-print-toast');
+  
+  const printWindow = window.open('', '_blank', 'width=600,height=500');
+  if (!printWindow) {
+    toast.error('Popup-Blocker aktiv - bitte erlauben Sie Popups');
+    return false;
+  }
+  
+  const labelHeight = template ? (template.label_height || 6) * (GRID_ROW_HEIGHT / 4) : 30;
+  
+  // SVG-Style für konsistentes Rendering
+  const svgStyle = `
+    svg{display:block;max-width:100%;height:auto;}
+    .qr-section svg,.barcode-container svg{width:100%!important;height:100%!important;}
+  `;
+  
+  const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>${assets.length} Labels drucken</title>
+  <style>
+    @page{
+      size:62mm ${labelHeight + 2}mm;
+      margin:0;
+    }
+    @media print{
+      html,body{
+        margin:0;
+        padding:0;
+      }
+      body{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+      }
+      .label-container{
+        page-break-inside:avoid;
+        break-inside:avoid;
+      }
+    }
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      width:62mm;
+      margin:0;
+      padding:0;
+      background:white;
+    }
+    ${svgStyle}
+    ${!template ? `
+    .default-label{display:flex;flex-direction:row;align-items:flex-start;gap:3mm;width:100%;}
+    .qr-section{flex-shrink:0;width:20mm;height:20mm;}
+    .qr-section svg{width:20mm!important;height:20mm!important;}
+    .info-section{flex:1;min-width:0;display:flex;flex-direction:column;gap:1mm;}
+    .barcode-container{width:100%;overflow:hidden;}
+    .barcode-container svg{width:100%;height:auto;max-height:12mm;}
+    ` : ''}
+  </style>
+</head>
+<body>
+  ${allLabelsHtml}
+  <script>
+    // Warte kurz auf Rendering, dann drucken
+    setTimeout(function(){
+      window.print();
+      // Nach dem Drucken schließen
+      window.onafterprint = function(){ window.close(); };
+    }, 300);
+  <\/script>
+</body>
+</html>`;
+  
+  printWindow.document.write(htmlContent);
+  printWindow.document.close();
+  
+  return true;
+};
+
 // Label Vorschau
 export const LabelPreview = ({ asset, template, isDark = true }) => {
   if (!asset) return null;
