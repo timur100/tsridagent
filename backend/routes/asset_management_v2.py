@@ -5308,27 +5308,36 @@ async def list_unassigned_assets(
 ):
     """
     Liste aller nicht zugewiesenen Geräte im Lager.
-    Diese Geräte haben noch keine Asset-ID und keinen Standort.
+    Diese Geräte haben noch keinen Standort (location_id ist None).
     """
     try:
-        query = {"status": "unassigned", "asset_id": None}
+        # Unassigned = status is "unassigned" OR location_id is None
+        query = {
+            "$or": [
+                {"status": "unassigned"},
+                {"location_id": None, "status": {"$ne": "retired"}}
+            ]
+        }
         
         if type:
             query["type"] = type
         if search:
-            query["$or"] = [
+            search_or = [
                 {"manufacturer_sn": {"$regex": search, "$options": "i"}},
                 {"imei": {"$regex": search, "$options": "i"}},
+                {"warehouse_asset_id": {"$regex": search, "$options": "i"}},
                 {"notes": {"$regex": search, "$options": "i"}}
             ]
+            query = {"$and": [query, {"$or": search_or}]}
         
         total = await db.tsrid_assets.count_documents(query)
-        cursor = db.tsrid_assets.find(query).skip(skip).limit(limit).sort("created_at", -1)
+        cursor = db.tsrid_assets.find(query).skip(skip).limit(limit).sort("warehouse_asset_id", -1)
         assets = [serialize_doc(a) async for a in cursor]
         
         # Group by type for summary
         type_counts = {}
-        all_unassigned = db.tsrid_assets.find({"status": "unassigned", "asset_id": None})
+        base_query = {"$or": [{"status": "unassigned"}, {"location_id": None, "status": {"$ne": "retired"}}]}
+        all_unassigned = db.tsrid_assets.find(base_query)
         async for a in all_unassigned:
             t = a.get("type", "other")
             type_counts[t] = type_counts.get(t, 0) + 1
