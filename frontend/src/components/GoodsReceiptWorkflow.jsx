@@ -539,9 +539,13 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       const data = await res.json();
       if (data.success) {
         toast.success(`Gerät ${sn} wurde gelöscht`);
+        if (data.freed_id) {
+          toast.success(`ID ${data.freed_id} ist jetzt wieder verfügbar`, { duration: 3000 });
+        }
         setShowDeleteModal(false);
         setAssetToDelete(null);
         fetchUnassignedAssets();
+        fetchNextAssetId(currentType); // WICHTIG: Nächste ID aktualisieren nach Löschung
         if (onRefreshStats) onRefreshStats();
       } else {
         toast.error(data.detail || 'Fehler beim Löschen');
