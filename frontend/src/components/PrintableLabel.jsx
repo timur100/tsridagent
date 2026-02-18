@@ -289,7 +289,8 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
   const manufacturer = asset.manufacturer || '';
   const model = asset.model || '';
   
-  const qrContent = JSON.stringify({ id: labelId, sn: serialNumber, type: asset.type || '' });
+  // QR-Code enthält nur die Asset-ID
+  const qrContent = labelId;
   
   if (template && template.elements && template.layout) {
     const labelHeight = (template.label_height || 6) * GRID_ROW_HEIGHT;
@@ -311,7 +312,7 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
           
           switch (type) {
             case 'qrcode':
-              return <div key={element.id} style={style}><QRCodeSVG value={qrContent} size={100} level="M" style={{ width: '100%', height: '100%' }} /></div>;
+              return <div key={element.id} style={style}><QRCodeSVG value={qrContent} size={100} level="H" style={{ width: '100%', height: '100%' }} /></div>;
             case 'barcode':
               return serialNumber ? <div key={element.id} style={style}><Barcode value={serialNumber} format={config.barcodeFormat || 'CODE128'} width={1} height={30} displayValue={config.showValue !== false} fontSize={8} margin={0} background="transparent" /></div> : null;
             case 'asset_id':
