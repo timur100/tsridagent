@@ -3719,6 +3719,9 @@ async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str 
     
     # Get ALL existing sequence numbers for this type
     pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+    
+    print(f"[ID-GEN DEBUG] asset_type={asset_type}, prefix={prefix}, type_suffix={type_suffix}, pattern={pattern}")
+    
     cursor = db.tsrid_assets.find(
         {"warehouse_asset_id": {"$regex": pattern}},
         {"warehouse_asset_id": 1}
@@ -3728,6 +3731,7 @@ async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str 
     async for asset in cursor:
         wid = asset.get("warehouse_asset_id", "")
         parts = wid.split("-")
+        print(f"[ID-GEN DEBUG] Found asset: {wid}")
         if len(parts) >= 4:
             try:
                 seq = int(parts[-1])
@@ -3735,10 +3739,14 @@ async def get_next_available_warehouse_sequence(asset_type: str, tenant_id: str 
             except:
                 pass
     
+    print(f"[ID-GEN DEBUG] existing_sequences={existing_sequences}")
+    
     # Find the FIRST available gap starting from 1
     next_seq = 1
     while next_seq in existing_sequences:
         next_seq += 1
+    
+    print(f"[ID-GEN DEBUG] next_seq={next_seq}")
     
     return next_seq
 
