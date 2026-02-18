@@ -1288,9 +1288,9 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Lager-ID</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Seriennummer</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold">IMEI</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold">MAC</th>
                     <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold">Empfangen am</th>
-                    <th className="px-4 py-3 text-left text-xs font-semibold">Lieferant</th>
                     <th className="px-4 py-3 text-center text-xs font-semibold">Aktion</th>
                   </tr>
                 </thead>
