@@ -5492,6 +5492,34 @@ async def get_asset_by_serial_number(manufacturer_sn: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/inventory/fix-unassigned-asset-ids")
+async def fix_unassigned_asset_ids():
+    """
+    Korrigiert Inkonsistenzen bei unassigned Assets.
+    Setzt asset_id auf null für alle Assets die status='unassigned' und location_id=None haben.
+    Die warehouse_asset_id bleibt erhalten.
+    """
+    try:
+        result = await db.tsrid_assets.update_many(
+            {
+                "status": "unassigned",
+                "location_id": None,
+                "asset_id": {"$ne": None}
+            },
+            {
+                "$set": {"asset_id": None}
+            }
+        )
+        
+        return {
+            "success": True,
+            "message": f"{result.modified_count} Assets korrigiert",
+            "modified_count": result.modified_count
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/inventory/bulk-assign")
 async def bulk_assign_to_location(
     serial_numbers: List[str],
