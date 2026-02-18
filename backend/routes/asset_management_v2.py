@@ -4044,6 +4044,11 @@ async def inventory_intake_with_auto_id(
     """
     Wareneingang mit automatischer Asset-ID Generierung.
     Generiert: TSRID-TAB-i7-0001 (Lager-ID)
+    
+    Die ID wird intelligent vergeben:
+    - Füllt Lücken von gelöschten IDs
+    - Jede ID ist systemweit einzigartig
+    - Alle Vergaben werden in der Historie protokolliert
     """
     try:
         # Validate received_by
@@ -4081,13 +4086,18 @@ async def inventory_intake_with_auto_id(
                     detail=f"MAC-Adresse '{item.mac}' existiert bereits (Lager-ID: {existing_mac.get('warehouse_asset_id', 'N/A')})"
                 )
         
-        # Get config and generate ID
+        # Get config and generate ID using the new gap-filling logic
         config = await get_tenant_asset_config(tenant_id)
         prefix = config.get("warehouse_prefix", "TSRID")
         type_suffix = DEFAULT_ASSET_ID_FORMATS.get(item.type, {}).get('type_suffix', 'OTH')
         
-        next_seq = await get_next_warehouse_sequence(item.type, tenant_id)
-        warehouse_id = generate_warehouse_asset_id(prefix, type_suffix, next_seq)
+        # Use the new function that fills gaps and logs history
+        next_seq, warehouse_id = await reserve_warehouse_sequence(
+            asset_type=item.type,
+            manufacturer_sn=item.manufacturer_sn,
+            tenant_id=tenant_id,
+            user=received_by
+        )
         
         # Verify warehouse_id is unique (should always be, but double-check)
         existing_wid = await db.tsrid_assets.find_one({"warehouse_asset_id": warehouse_id})
@@ -4132,6 +4142,10 @@ async def inventory_intake_with_auto_id(
         
         await db.tsrid_assets.insert_one(asset_doc)
         
+        # Check if this was a reused ID (from deleted asset)
+        id_history = await get_id_history(warehouse_id)
+        was_reused = id_history and len(id_history.get("events", [])) > 1
+        
         return {
             "success": True,
             "message": f"Gerät erfasst mit ID: {warehouse_id}",
@@ -4139,7 +4153,9 @@ async def inventory_intake_with_auto_id(
             "manufacturer_sn": item.manufacturer_sn,
             "type": item.type,
             "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
-            "status": "unassigned"
+            "status": "unassigned",
+            "id_was_reused": was_reused,
+            "note": "ID wurde wiederverwendet (vorheriges Gerät gelöscht)" if was_reused else None
         }
     except HTTPException:
         raise
