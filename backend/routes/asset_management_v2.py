@@ -4285,8 +4285,9 @@ async def assign_asset_to_location_by_sn(
     technician: str = Query("")
 ):
     """
-    Asset einer Location zuweisen und Location-basierte Asset-ID generieren.
-    Warehouse-ID: TSRID-TAB-i7-0001 → Location-ID: STRT01-01-TAB-i7
+    Asset einer Location zuweisen.
+    Die warehouse_asset_id (z.B. TSRID-TAB-i7-0035) bleibt die permanente Asset-ID!
+    Es wird KEINE neue ID generiert - nur die Location wird verknüpft.
     """
     try:
         # Find the asset
@@ -4306,18 +4307,21 @@ async def assign_asset_to_location_by_sn(
         if not location:
             raise HTTPException(status_code=404, detail=f"Location {location_id} nicht gefunden")
         
-        # Generate location-based asset ID
-        type_suffix = asset.get("type_suffix", ASSET_TYPE_SUFFIX_MAP.get(asset.get("type"), "OTH"))
-        next_seq = await get_next_location_sequence(location_id)
-        location_asset_id = generate_location_asset_id(location_id, next_seq, type_suffix)
+        # Die warehouse_asset_id wird zur permanenten asset_id - KEINE neue ID!
+        permanent_asset_id = asset.get("warehouse_asset_id")
+        if not permanent_asset_id:
+            raise HTTPException(
+                status_code=400, 
+                detail="Gerät hat keine Lager-ID. Bitte erst im Wareneingang erfassen."
+            )
         
         now = datetime.now(timezone.utc).isoformat()
         
-        # Update asset
+        # Update asset - ID bleibt gleich, nur Location wird hinzugefügt
         update_data = {
-            "asset_id": location_asset_id,
+            "asset_id": permanent_asset_id,  # Gleiche ID wie warehouse_asset_id!
             "location_id": location_id,
-            "status": "installed",
+            "status": "in_storage",
             "updated_at": now
         }
         
@@ -4326,7 +4330,7 @@ async def assign_asset_to_location_by_sn(
             "date": now,
             "event": f"Location zugewiesen: {location_id}",
             "event_type": "assigned_to_location",
-            "notes": f"Neue Asset-ID: {location_asset_id} (vorher: {asset.get('warehouse_asset_id', 'N/A')})",
+            "notes": f"Asset-ID beibehalten: {permanent_asset_id}",
             "technician": technician
         }
         
@@ -4338,14 +4342,24 @@ async def assign_asset_to_location_by_sn(
             }
         )
         
+        # Log to ID history
+        await log_asset_id_history(
+            permanent_asset_id,
+            "assigned_to_location",
+            manufacturer_sn,
+            technician,
+            f"Zugewiesen an Location: {location_id}"
+        )
+        
         return {
             "success": True,
-            "message": f"Gerät zu Location {location_id} zugewiesen",
+            "message": f"Gerät {permanent_asset_id} zu Location {location_id} zugewiesen",
             "manufacturer_sn": manufacturer_sn,
-            "warehouse_asset_id": asset.get("warehouse_asset_id"),
-            "location_asset_id": location_asset_id,
+            "warehouse_asset_id": permanent_asset_id,
+            "asset_id": permanent_asset_id,  # Beide sind jetzt gleich!
             "location_id": location_id,
-            "location_name": location.get("station_name", location_id)
+            "location_name": location.get("station_name", location_id),
+            "note": "Die Lager-ID bleibt unverändert. Kein neues Label erforderlich."
         }
     except HTTPException:
         raise
