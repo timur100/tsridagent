@@ -197,10 +197,43 @@ export const printAssetLabelWithTemplate = async (asset, template) => {
   <title>Label: ${labelId}</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    @page{size:62mm auto;margin:0;}
-    @media print{html,body{width:62mm;margin:0;padding:0;}body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
-    body{font-family:Arial,Helvetica,sans-serif;width:62mm;background:white;}
-    .label-container{position:relative;width:62mm;min-height:${labelHeight}mm;padding:1mm;background:white;}
+    @page{
+      size:62mm ${labelHeight + 2}mm;
+      margin:0;
+    }
+    @media print{
+      html,body{
+        width:62mm;
+        height:${labelHeight + 2}mm;
+        margin:0;
+        padding:0;
+        overflow:hidden;
+      }
+      body{
+        -webkit-print-color-adjust:exact;
+        print-color-adjust:exact;
+      }
+      .label-container{
+        page-break-inside:avoid;
+        break-inside:avoid;
+      }
+    }
+    body{
+      font-family:Arial,Helvetica,sans-serif;
+      width:62mm;
+      background:white;
+      overflow:hidden;
+    }
+    .label-container{
+      position:relative;
+      width:62mm;
+      height:${labelHeight}mm;
+      padding:1mm;
+      background:white;
+      overflow:hidden;
+      page-break-inside:avoid;
+      break-inside:avoid;
+    }
     ${svgStyle}
     ${!template ? `
     .default-label{display:flex;flex-direction:row;align-items:flex-start;gap:3mm;width:100%;}
