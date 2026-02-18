@@ -673,13 +673,19 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       return;
     }
     
+    // Block if there are validation errors
+    if (snValidationError || imeiValidationError || macValidationError) {
+      toast.error('Bitte beheben Sie zuerst die Duplikat-Fehler', { duration: 3000 });
+      return;
+    }
+    
     // Check for duplicate in local list
     if (intakeItems.some(item => item.manufacturer_sn === currentSN.trim())) {
       toast.error('Seriennummer bereits in der Liste');
       return;
     }
     
-    // IMPORTANT: Check if SN/IMEI/MAC already exists in database
+    // Final validation check (in case auto-validate didn't run)
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -691,9 +697,12 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       const validation = await res.json();
       
       if (!validation.is_unique) {
-        // Show all conflicts
+        // Show all conflicts and set error states
         validation.conflicts.forEach(conflict => {
           toast.error(conflict.message, { duration: 5000 });
+          if (conflict.field === 'manufacturer_sn') setSnValidationError(conflict.message);
+          if (conflict.field === 'imei') setImeiValidationError(conflict.message);
+          if (conflict.field === 'mac') setMacValidationError(conflict.message);
         });
         setLoading(false);
         return;
