@@ -234,22 +234,27 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     }
   };
   
-  // Handle bulk print execution
+  // Handle bulk print execution - ALL LABELS IN ONE PRINT JOB
   const handleBulkPrint = async () => {
     setBulkPrinting(true);
     try {
-      // Print all labels sequentially with a small delay
-      for (let i = 0; i < bulkPrintAssets.length; i++) {
-        setBulkPrintIndex(i);
-        await printAssetLabelWithTemplate(bulkPrintAssets[i], bulkPrintSelectedTemplate);
-        // Small delay between prints to prevent browser issues
-        if (i < bulkPrintAssets.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 500));
-        }
+      // Progress callback
+      const onProgress = (current, total) => {
+        setBulkPrintIndex(current);
+      };
+      
+      // Print all labels in a single document
+      const success = await printMultipleLabelsWithTemplate(
+        bulkPrintAssets, 
+        bulkPrintSelectedTemplate,
+        onProgress
+      );
+      
+      if (success) {
+        toast.success(`${bulkPrintAssets.length} Labels in einem Druckauftrag vorbereitet`);
+        setShowBulkPrintModal(false);
+        setSelectedAssets(new Set());
       }
-      toast.success(`${bulkPrintAssets.length} Labels gedruckt`);
-      setShowBulkPrintModal(false);
-      setSelectedAssets(new Set());
     } catch (e) {
       console.error('Error printing labels:', e);
       toast.error('Fehler beim Drucken');
