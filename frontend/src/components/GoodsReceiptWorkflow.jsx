@@ -738,6 +738,10 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
     setCurrentSN('');
     setCurrentIMEI('');
     setCurrentMAC('');
+    // Clear validation errors
+    setSnValidationError(null);
+    setImeiValidationError(null);
+    setMacValidationError(null);
     
     // Focus back to SN input for next scan
     setTimeout(() => {
