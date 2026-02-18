@@ -419,10 +419,7 @@ const LabelDesignerV2 = ({ theme = 'dark' }) => {
         type_label: SAMPLE_ASSET.type_label,
         manufacturer_sn: SAMPLE_ASSET.manufacturer_sn,
         location_name: null,
-        qr_content: JSON.stringify({
-          id: SAMPLE_ASSET.asset_id,
-          sn: SAMPLE_ASSET.manufacturer_sn
-        })
+        qr_content: SAMPLE_ASSET.asset_id
       };
       
       const res = await fetch(`${BACKEND_URL}/api/label-printer/print`, {
