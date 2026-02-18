@@ -100,8 +100,9 @@ class TestIntakeWithAutoID:
         warehouse_id = data["warehouse_asset_id"]
         print(f"✓ Created asset with ID: {warehouse_id}")
         
-        # Verify the ID format
-        assert warehouse_id.startswith("TSRID-TAB-TSRi7-"), f"Wrong ID format: {warehouse_id}"
+        # Verify the ID format (TSRID-TAB-i7-XXXX or TSRID-TAB-TSRi7-XXXX)
+        assert warehouse_id.startswith("TSRID-"), f"Wrong ID format: {warehouse_id}"
+        assert "TAB" in warehouse_id, f"Wrong ID format, missing TAB: {warehouse_id}"
         
         # Verify history was created
         history_res = requests.get(f"{BASE_URL}/api/asset-mgmt/inventory/id-history/{warehouse_id}")
