@@ -1113,6 +1113,7 @@ const AdminPortalContent = () => {
                 { id: 'suppliers', label: 'Lieferanten', icon: Truck },
                 { id: 'orders', label: 'Orders', icon: ShoppingCart },
                 { id: 'support', label: 'Support', icon: Headphones },
+                { id: 'label-designer', label: 'Label-Designer', icon: FileText },
                 { id: 'licenses', label: 'Licenses', icon: Key },
                 { id: 'database', label: 'Database', icon: Database },
                 { id: 'settings', label: 'Settings', icon: Settings },
