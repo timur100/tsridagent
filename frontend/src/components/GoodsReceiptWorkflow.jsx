@@ -595,11 +595,36 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
       return;
     }
     
-    // Check for duplicate
+    // Check for duplicate in local list
     if (intakeItems.some(item => item.manufacturer_sn === currentSN.trim())) {
       toast.error('Seriennummer bereits in der Liste');
       return;
     }
+    
+    // IMPORTANT: Check if SN/IMEI/MAC already exists in database
+    setLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.append('manufacturer_sn', currentSN.trim());
+      if (currentIMEI.trim()) params.append('imei', currentIMEI.trim());
+      if (currentMAC.trim()) params.append('mac', currentMAC.trim());
+      
+      const res = await fetch(`${BACKEND_URL}/api/asset-mgmt/inventory/validate-unique?${params.toString()}`);
+      const validation = await res.json();
+      
+      if (!validation.is_unique) {
+        // Show all conflicts
+        validation.conflicts.forEach(conflict => {
+          toast.error(conflict.message, { duration: 5000 });
+        });
+        setLoading(false);
+        return;
+      }
+    } catch (e) {
+      console.error('Error validating:', e);
+      // Continue anyway if validation fails - backend will catch duplicates
+    }
+    setLoading(false);
     
     const typeLabel = Object.values(ASSET_TYPE_CATEGORIES)
       .flat()
