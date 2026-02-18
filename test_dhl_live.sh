@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://wareneingang-review.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-intake-live.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""
