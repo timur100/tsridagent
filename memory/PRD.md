@@ -28,6 +28,38 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-18 (Current)
 
+#### Bug Fix: Frontend Lager-ID Vorhersage-Bug (CRITICAL FIX - VERIFIED 2025-02-18)
+- **Problem**: Frontend zeigte fälschlicherweise doppelte/falsche Lager-IDs in der Wareneingang-Erfassungsliste an, bevor die Geräte überhaupt erfasst wurden. Benutzer dachten, es werden doppelte IDs vergeben.
+- **Root Cause**: Client-seitige Logik versuchte die nächste ID vorherzusagen - diese Vorhersage war fehlerhaft und berücksichtigte nicht den aktuellen Backend-Stand.
+- **Lösung**: 
+  - Komplette Entfernung der Client-seitigen ID-Vorhersage
+  - Platzhalter `(wird vergeben #N)` wird jetzt in der Erfassungsliste angezeigt
+  - Echte IDs werden erst vom Backend bei Submit vergeben
+  - Code: `GoodsReceiptWorkflow.jsx` Zeilen 720-729
+- **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_36.json)
+
+#### Bug Fix: Live-Duplikat-Validierung (VERIFIED 2025-02-18)
+- **Problem**: System erlaubte Assets mit doppelten Seriennummern/IMEI/MAC-Adressen
+- **Lösung**:
+  - Echtzeit-Validierung bei Eingabe (300ms debounce)
+  - Eingabefeld wird rot wenn Duplikat erkannt
+  - Fehlermeldung zeigt existierende Lager-ID
+  - "Hinzufügen" Button blockiert bei Validierungsfehlern
+  - Backend: `GET /api/asset-mgmt/inventory/validate-unique`
+- **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_36.json)
+
+#### Bug Fix: "Nächste Asset-ID" Refresh nach Löschung (VERIFIED 2025-02-18)
+- **Problem**: Nach dem Löschen eines Assets wurde die "Nächste Asset-ID" Anzeige nicht aktualisiert
+- **Lösung**: `fetchNextAssetId(currentType)` wird jetzt in `deleteUnassignedAsset()` und `deleteSelectedAssets()` aufgerufen
+- **Test-Status**: ✅ 100% (Code verifiziert - iteration_36.json)
+
+#### Feature: ID-Historie Modal (VERIFIED 2025-02-18)
+- **Feature**: Vollständige Audit-Trail für jede Lager-ID
+- **UI**: History-Icon neben jeder Lager-ID in der Tabelle
+- **Modal zeigt**: Erstellung, Löschung, Neuzuweisung mit Zeitstempel und Benutzer
+- **Backend**: `GET /api/asset-mgmt/inventory/id-history/{warehouse_asset_id}`
+- **Test-Status**: ✅ 100% (Testing Agent verifiziert - iteration_36.json)
+
 #### Bug Fix: Intelligentes Lager-ID System (CRITICAL FIX - 2025-02-18)
 - **Problem**: IDs wurden einfach hochgezählt ohne Lücken zu füllen, gelöschte IDs waren nicht wiederverwendbar
 - **Lösung**: Komplett neues ID-System implementiert:
