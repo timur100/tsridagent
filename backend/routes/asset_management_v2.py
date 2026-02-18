@@ -3699,34 +3699,55 @@ async def get_tenant_asset_config(tenant_id: str = "default"):
 
 
 async def get_next_warehouse_sequence(asset_type: str, tenant_id: str = "default"):
-    """Get next sequence number for warehouse asset ID"""
-    # Find the highest existing sequence for this type
+    """Get next sequence number for warehouse asset ID - ATOMIC with counter collection"""
     config = await get_tenant_asset_config(tenant_id)
     prefix = config.get("warehouse_prefix", "TSRID")
     type_suffix = DEFAULT_ASSET_ID_FORMATS.get(asset_type, {}).get('type_suffix', 'OTH')
     
-    # Pattern: TSRID-TAB-i7-XXXX
-    pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+    counter_key = f"{tenant_id}_{prefix}_{type_suffix}"
     
-    # Find all assets with this pattern
-    cursor = db.tsrid_assets.find(
-        {"warehouse_asset_id": {"$regex": pattern}},
-        {"warehouse_asset_id": 1}
-    ).sort("warehouse_asset_id", -1).limit(1)
+    # Use atomic findAndModify to get next sequence
+    result = await db.asset_counters.find_one_and_update(
+        {"_id": counter_key},
+        {"$inc": {"seq": 1}},
+        upsert=True,
+        return_document=True
+    )
     
-    highest = await cursor.to_list(length=1)
+    next_seq = result.get("seq", 1)
     
-    if highest and highest[0].get("warehouse_asset_id"):
-        # Extract sequence from TSRID-TAB-i7-0001
-        parts = highest[0]["warehouse_asset_id"].split("-")
-        if len(parts) >= 4:
-            try:
-                seq = int(parts[-1])
-                return seq + 1
-            except:
-                pass
+    # If this is a new counter, initialize from existing data
+    if next_seq == 1:
+        # Check for existing assets to not create duplicates
+        pattern = f"^{prefix}-{type_suffix}-\\d{{4}}$"
+        cursor = db.tsrid_assets.find(
+            {"warehouse_asset_id": {"$regex": pattern}},
+            {"warehouse_asset_id": 1}
+        ).sort("warehouse_asset_id", -1).limit(1)
+        
+        highest = await cursor.to_list(length=1)
+        
+        if highest and highest[0].get("warehouse_asset_id"):
+            parts = highest[0]["warehouse_asset_id"].split("-")
+            if len(parts) >= 4:
+                try:
+                    existing_max = int(parts[-1])
+                    # Update counter to be higher than existing max
+                    await db.asset_counters.update_one(
+                        {"_id": counter_key},
+                        {"$set": {"seq": existing_max + 1}}
+                    )
+                    return existing_max + 1
+                except:
+                    pass
     
-    return 1  # Start with 1
+    return next_seq
+
+
+async def validate_warehouse_id_unique(warehouse_asset_id: str) -> bool:
+    """Check if a warehouse asset ID is unique"""
+    existing = await db.tsrid_assets.find_one({"warehouse_asset_id": warehouse_asset_id})
+    return existing is None
 
 
 async def get_next_location_sequence(location_id: str):
