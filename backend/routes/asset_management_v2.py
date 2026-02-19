@@ -5311,16 +5311,14 @@ async def list_unassigned_assets(
     limit: int = Query(100)
 ):
     """
-    Liste aller nicht zugewiesenen Geräte im Lager.
-    Diese Geräte haben noch keinen Standort (location_id ist None).
+    Liste aller Geräte im Lager (ohne Standort-Zuweisung).
+    Diese Geräte haben eine Asset-ID, aber noch keinen Standort (location_id ist None).
     """
     try:
-        # Unassigned = status is "unassigned" OR location_id is None
+        # "Im Lager" = location_id ist null und nicht ausgemustert
         query = {
-            "$or": [
-                {"status": "unassigned"},
-                {"location_id": None, "status": {"$ne": "retired"}}
-            ]
+            "location_id": None,
+            "status": {"$nin": ["retired", "disposed", "defective"]}
         }
         
         if type:
@@ -5330,6 +5328,7 @@ async def list_unassigned_assets(
                 {"manufacturer_sn": {"$regex": search, "$options": "i"}},
                 {"imei": {"$regex": search, "$options": "i"}},
                 {"warehouse_asset_id": {"$regex": search, "$options": "i"}},
+                {"asset_id": {"$regex": search, "$options": "i"}},
                 {"notes": {"$regex": search, "$options": "i"}}
             ]
             query = {"$and": [query, {"$or": search_or}]}
@@ -5340,9 +5339,9 @@ async def list_unassigned_assets(
         
         # Group by type for summary
         type_counts = {}
-        base_query = {"$or": [{"status": "unassigned"}, {"location_id": None, "status": {"$ne": "retired"}}]}
-        all_unassigned = db.tsrid_assets.find(base_query)
-        async for a in all_unassigned:
+        base_query = {"location_id": None, "status": {"$nin": ["retired", "disposed", "defective"]}}
+        all_in_storage = db.tsrid_assets.find(base_query)
+        async for a in all_in_storage:
             t = a.get("type", "other")
             type_counts[t] = type_counts.get(t, 0) + 1
         
