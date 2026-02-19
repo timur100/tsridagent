@@ -12,6 +12,14 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
 
   const menuStructure = [
     {
+      id: 'mobile-dev',
+      label: 'Mobile Entwicklung',
+      icon: Phone,
+      items: [
+        { id: 'mobile-app-preview', label: 'Mobile App Vorschau', emoji: '📱' }
+      ]
+    },
+    {
       id: 'biometrics',
       label: 'Biometrie',
       icon: UserCheck,
