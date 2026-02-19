@@ -165,6 +165,9 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
   const [bulkPrintLoading, setBulkPrintLoading] = useState(false);
   const [bulkPrinting, setBulkPrinting] = useState(false);
 
+  // Bulk Edit State
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false);
+
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : '';
   
