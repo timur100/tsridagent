@@ -4925,26 +4925,25 @@ async def delete_unassigned_assets_bulk(serial_numbers: List[str], reason: str =
 @router.delete("/inventory/unassigned/{manufacturer_sn}")
 async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Manuell gelöscht"), user: str = Query("system")):
     """
-    Löscht ein nicht zugewiesenes Gerät aus dem Lager.
-    Nur Geräte mit status='unassigned' und ohne asset_id können gelöscht werden.
+    Löscht ein Gerät aus dem Lager (ohne Location-Zuweisung).
+    Nur Geräte ohne location_id können gelöscht werden.
     
     Die gelöschte ID wird in der Historie protokolliert und steht für neue Geräte wieder zur Verfügung.
     """
     try:
-        # Find the unassigned asset
+        # Find the asset without location assignment
         asset = await db.tsrid_assets.find_one({
             "manufacturer_sn": manufacturer_sn,
-            "status": "unassigned",
-            "asset_id": None
+            "location_id": None
         })
         
         if not asset:
-            # Check if asset exists but is assigned
+            # Check if asset exists but is assigned to a location
             existing = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
             if existing:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Gerät {manufacturer_sn} ist bereits zugewiesen und kann nicht gelöscht werden"
+                    detail=f"Gerät {manufacturer_sn} ist einem Standort zugewiesen ({existing.get('location_id')}) und kann nicht gelöscht werden"
                 )
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
@@ -4953,8 +4952,7 @@ async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Man
         # Delete the asset
         result = await db.tsrid_assets.delete_one({
             "manufacturer_sn": manufacturer_sn,
-            "status": "unassigned",
-            "asset_id": None
+            "location_id": None
         })
         
         if result.deleted_count == 0:
