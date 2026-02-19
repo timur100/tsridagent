@@ -1531,6 +1531,16 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
             {selectedAssets.size > 0 && (
               <>
                 <Button
+                  className="bg-purple-600 hover:bg-purple-700"
+                  onClick={() => {
+                    setShowBulkEditModal(true);
+                  }}
+                  data-testid="bulk-edit-btn"
+                >
+                  <Edit2 className="h-4 w-4 mr-2" />
+                  {selectedAssets.size} bearbeiten
+                </Button>
+                <Button
                   className="bg-blue-600 hover:bg-blue-700"
                   onClick={() => {
                     // Get the selected assets data for bulk printing
