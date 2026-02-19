@@ -5284,6 +5284,171 @@ async def update_unassigned_asset(warehouse_asset_id: str, update: UnassignedAss
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/inventory/bulk-edit")
+async def bulk_edit_assets(request: BulkEditRequest):
+    """
+    Bulk-Bearbeitung: Mehrere Assets gleichzeitig aktualisieren.
+    
+    Felder die aktualisiert werden können:
+    - Hersteller (manufacturer)
+    - Modell (model)
+    - Lieferant (supplier)
+    - Kaufdatum (purchase_date)
+    - Garantie Start/Ende (warranty_start, warranty_end)
+    - Garantie in Monaten (warranty_months) - berechnet warranty_end automatisch
+    - Installationsdatum (installation_date)
+    - Lizenz aktiviert (license_activated)
+    - Lizenz läuft ab (license_expires)
+    - Lizenztyp (license_type)
+    - Lizenzschlüssel (license_key)
+    - Land (country)
+    - Notizen (notes)
+    
+    Nur die übergebenen Felder (nicht None) werden aktualisiert.
+    """
+    try:
+        from services.audit_service import log_audit, AuditAction
+        from dateutil.relativedelta import relativedelta
+        
+        if not request.asset_ids:
+            raise HTTPException(status_code=400, detail="Keine Asset-IDs angegeben")
+        
+        if len(request.asset_ids) > 500:
+            raise HTTPException(status_code=400, detail="Maximal 500 Assets pro Anfrage")
+        
+        now = datetime.now(timezone.utc).isoformat()
+        technician = request.technician or "system"
+        
+        # Build update document from provided fields
+        update_fields = {}
+        
+        if request.manufacturer is not None:
+            update_fields["manufacturer"] = request.manufacturer
+        if request.model is not None:
+            update_fields["model"] = request.model
+        if request.supplier is not None:
+            update_fields["supplier"] = request.supplier
+        if request.purchase_date is not None:
+            update_fields["purchase_date"] = request.purchase_date
+        if request.warranty_start is not None:
+            update_fields["warranty_start"] = request.warranty_start
+        if request.warranty_end is not None:
+            update_fields["warranty_end"] = request.warranty_end
+        if request.warranty_months is not None and request.purchase_date:
+            # Calculate warranty_end from purchase_date + months
+            try:
+                purchase = datetime.fromisoformat(request.purchase_date.replace('Z', '+00:00'))
+                warranty_end = purchase + relativedelta(months=request.warranty_months)
+                update_fields["warranty_end"] = warranty_end.isoformat()
+                update_fields["warranty_months"] = request.warranty_months
+            except:
+                pass
+        if request.installation_date is not None:
+            update_fields["installation_date"] = request.installation_date
+        if request.license_activated is not None:
+            update_fields["license_activated"] = request.license_activated
+        if request.license_expires is not None:
+            update_fields["license_expires"] = request.license_expires
+        if request.license_type is not None:
+            update_fields["license_type"] = request.license_type
+        if request.license_key is not None:
+            update_fields["license_key"] = request.license_key
+        if request.country is not None:
+            update_fields["country"] = request.country
+        if request.notes is not None:
+            update_fields["notes"] = request.notes
+        
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="Keine Felder zum Aktualisieren angegeben")
+        
+        # Add metadata
+        update_fields["updated_at"] = now
+        
+        # History entry
+        history_entry = {
+            "date": now,
+            "event": f"Bulk-Bearbeitung: {', '.join(update_fields.keys())}",
+            "event_type": "bulk_edit",
+            "notes": f"Aktualisierte Felder: {list(update_fields.keys())}",
+            "technician": technician
+        }
+        
+        # Process each asset
+        updated = []
+        failed = []
+        
+        for asset_id in request.asset_ids:
+            try:
+                # Find asset
+                asset = await db.tsrid_assets.find_one({
+                    "$or": [
+                        {"asset_id": asset_id},
+                        {"warehouse_asset_id": asset_id}
+                    ]
+                })
+                
+                if not asset:
+                    failed.append({"asset_id": asset_id, "error": "Nicht gefunden"})
+                    continue
+                
+                # Store before state for audit
+                data_before = dict(asset)
+                
+                # Update asset
+                result = await db.tsrid_assets.update_one(
+                    {"_id": asset["_id"]},
+                    {
+                        "$set": update_fields,
+                        "$push": {"history": history_entry}
+                    }
+                )
+                
+                if result.modified_count > 0:
+                    # Get updated asset
+                    updated_asset = await db.tsrid_assets.find_one({"_id": asset["_id"]})
+                    
+                    # Audit log
+                    try:
+                        await log_audit(
+                            action=AuditAction.UPDATE,
+                            collection="tsrid_assets",
+                            document_id=asset_id,
+                            user=technician,
+                            data_before=data_before,
+                            data_after=dict(updated_asset) if updated_asset else None,
+                            metadata={
+                                "operation": "bulk_edit",
+                                "updated_fields": list(update_fields.keys()),
+                                "batch_size": len(request.asset_ids)
+                            },
+                            app_source="web_portal"
+                        )
+                    except Exception as audit_error:
+                        import logging
+                        logging.error(f"Audit logging failed for {asset_id}: {audit_error}")
+                    
+                    updated.append(asset_id)
+                else:
+                    failed.append({"asset_id": asset_id, "error": "Keine Änderung"})
+                    
+            except Exception as e:
+                failed.append({"asset_id": asset_id, "error": str(e)})
+        
+        return {
+            "success": True,
+            "message": f"{len(updated)} von {len(request.asset_ids)} Assets aktualisiert",
+            "updated_count": len(updated),
+            "failed_count": len(failed),
+            "updated_ids": updated,
+            "failed": failed[:10] if failed else [],  # Limit failed list
+            "updated_fields": list(update_fields.keys())
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/inventory/id-history/{warehouse_asset_id}")
 async def get_warehouse_id_history(warehouse_asset_id: str):
