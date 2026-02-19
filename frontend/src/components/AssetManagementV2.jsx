@@ -3076,6 +3076,20 @@ const AssetManagementV2 = ({ theme }) => {
         asset={selectedItem?.type === 'asset' ? selectedItem?.data : null}
         isDark={isDark}
       />
+      
+      {/* Bulk Edit Modal */}
+      <BulkEditModal
+        isOpen={showBulkEditModal}
+        onClose={() => setShowBulkEditModal(false)}
+        selectedAssets={Array.from(selectedAssets)}
+        assets={assets}
+        onSuccess={() => {
+          setSelectedAssets(new Set());
+          fetchAssets();
+          toast.success('Assets erfolgreich aktualisiert');
+        }}
+        theme={theme}
+      />
     </div>
   );
 };
