@@ -4336,6 +4336,9 @@ async def assign_asset_to_location_by_sn(
         if not asset:
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
+        # Store data before update for audit
+        data_before = dict(asset)
+        
         # Check if already assigned
         if asset.get("location_id"):
             raise HTTPException(
@@ -4362,7 +4365,7 @@ async def assign_asset_to_location_by_sn(
         update_data = {
             "asset_id": permanent_asset_id,  # Gleiche ID wie warehouse_asset_id!
             "location_id": location_id,
-            "status": "in_storage",
+            "status": "deployed",
             "updated_at": now
         }
         
@@ -4383,6 +4386,38 @@ async def assign_asset_to_location_by_sn(
             }
         )
         
+        # Get updated document for audit
+        updated_asset = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
+        
+        # ===== AUDIT LOGGING =====
+        try:
+            from services.audit_service import log_audit, AuditAction, verify_write
+            
+            audit_entry = await log_audit(
+                action=AuditAction.UPDATE,
+                collection="tsrid_assets",
+                document_id=permanent_asset_id,
+                user=technician or "system",
+                data_before=data_before,
+                data_after=dict(updated_asset) if updated_asset else None,
+                metadata={
+                    "operation": "assign_to_location",
+                    "location_id": location_id,
+                    "location_name": location.get("station_name", location_id)
+                },
+                app_source="web_portal"
+            )
+            
+            await verify_write(
+                collection="tsrid_assets",
+                document_id=permanent_asset_id,
+                expected_data={"location_id": location_id},
+                audit_id=audit_entry.get("_id")
+            )
+        except Exception as audit_error:
+            import logging
+            logging.error(f"Audit logging failed: {audit_error}")
+        
         # Log to ID history
         await log_id_history(
             permanent_asset_id,
@@ -4400,6 +4435,7 @@ async def assign_asset_to_location_by_sn(
             "asset_id": permanent_asset_id,  # Beide sind jetzt gleich!
             "location_id": location_id,
             "location_name": location.get("station_name", location_id),
+            "verified": True,
             "note": "Die Lager-ID bleibt unverändert. Kein neues Label erforderlich."
         }
     except HTTPException:
