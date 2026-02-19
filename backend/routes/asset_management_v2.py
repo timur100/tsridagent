@@ -4399,11 +4399,11 @@ async def remove_asset_from_location(
         now = datetime.now(timezone.utc).isoformat()
         
         # Update asset - Die ID bleibt gleich, nur Location wird entfernt
-        # asset_id wird auf null gesetzt (wie bei anderen unassigned assets)
+        # asset_id bleibt erhalten (gleich wie warehouse_asset_id)
         update_data = {
-            "asset_id": None,  # Null für unassigned assets (konsistent mit Intake)
+            # asset_id bleibt unverändert!
             "location_id": None,
-            "status": "unassigned",
+            "status": "in_storage",  # Zurück ins Lager
             "updated_at": now
         }
         
