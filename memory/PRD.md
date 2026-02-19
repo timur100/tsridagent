@@ -647,3 +647,28 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - Collection: `tsrid_kit_templates` - Kit templates with asset + inventory components
 - Collection: `tsrid_assets` - Assets with serial numbers
 - Collection: `tsrid_kits` - Assembled kits
+- Collection: `audit_logs` - System-wide audit trail for all CUD operations
+
+---
+
+## Roadmap / Upcoming Tasks
+
+### P0 - Highest Priority
+- **Mobile App: Offline-Synchronisation** - Add offline data storage and sync when device reconnects
+- **Mobile App: Native Scanner Integration** - Integrate Zebra DataWedge API for native barcode scanning
+- **Mobile App: Bluetooth Printer Integration** - Implement printing to Zebra ZQ630 and Brother QL-820NWB
+
+### P1 - High Priority
+- **Mobile App: Configurable Modules** - Settings screen for module visibility (Wareneingang, Asset Management)
+- **Bulk Edit in Asset Management** - Extend bulk edit feature from Wareneingang to AssetManagementV2 view
+- **Bulk Print User Verification** - Confirm browser print functionality works with Brother QL-820NWB
+
+### P2 - Medium Priority
+- **Asset Detail Modal Refactoring** - Improve modal in AssetManagementV2
+- **Nachbestellungs-Funktion** - Reordering function for low-stock items
+- **Webcam Integration** - Asset photo capture via webcam
+
+### P3 - Future/Backlog
+- **ESP32 Integration** - Hardware integration for IoT devices
+- **Regula & Desko USB Scanner Deeper Integration** - Advanced scanner features
+- **Kit Management Phase 2** - Extended kit functionality
