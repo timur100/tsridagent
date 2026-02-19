@@ -365,32 +365,38 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             <span className="font-medium">Filter:</span>
           </div>
           
-          <Select value={filterCollection} onValueChange={setFilterCollection}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Collection" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Alle</SelectItem>
-              <SelectItem value="tsrid_assets">Assets</SelectItem>
-              <SelectItem value="tenant_locations">Standorte</SelectItem>
-              <SelectItem value="tsrid_bundles">Bundles</SelectItem>
-              <SelectItem value="id_scans">ID-Scans</SelectItem>
-            </SelectContent>
-          </Select>
+          <select 
+            value={filterCollection} 
+            onChange={(e) => setFilterCollection(e.target.value)}
+            className={`w-48 px-3 py-2 rounded-md border ${
+              isDark 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="">Alle Collections</option>
+            <option value="tsrid_assets">Assets</option>
+            <option value="tenant_locations">Standorte</option>
+            <option value="tsrid_bundles">Bundles</option>
+            <option value="id_scans">ID-Scans</option>
+          </select>
           
-          <Select value={filterAction} onValueChange={setFilterAction}>
-            <SelectTrigger className="w-48">
-              <SelectValue placeholder="Aktion" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="">Alle</SelectItem>
-              <SelectItem value="CREATE">Erstellt</SelectItem>
-              <SelectItem value="UPDATE">Aktualisiert</SelectItem>
-              <SelectItem value="DELETE">Gelöscht</SelectItem>
-              <SelectItem value="ARCHIVE">Archiviert</SelectItem>
-              <SelectItem value="RESTORE">Wiederhergestellt</SelectItem>
-            </SelectContent>
-          </Select>
+          <select 
+            value={filterAction} 
+            onChange={(e) => setFilterAction(e.target.value)}
+            className={`w-48 px-3 py-2 rounded-md border ${
+              isDark 
+                ? 'bg-gray-700 border-gray-600 text-white' 
+                : 'bg-white border-gray-300 text-gray-900'
+            }`}
+          >
+            <option value="">Alle Aktionen</option>
+            <option value="CREATE">Erstellt</option>
+            <option value="UPDATE">Aktualisiert</option>
+            <option value="DELETE">Gelöscht</option>
+            <option value="ARCHIVE">Archiviert</option>
+            <option value="RESTORE">Wiederhergestellt</option>
+          </select>
           
           <Input
             placeholder="Benutzer..."
