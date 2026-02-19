@@ -28,7 +28,27 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-19 (Current)
 
-#### NEW: React Native Mobile App für Zebra TC78 (IMPLEMENTED)
+#### NEW: Mobile App Vorschau im Admin Portal (IMPLEMENTED)
+- **Location**: R&D → Mobile Entwicklung → Mobile App Vorschau
+- **Features**:
+  - Interaktiver iPhone-ähnlicher Phone-Frame
+  - Login mit echtem Backend (Demo-Daten Button)
+  - Dashboard mit Live-Statistiken
+  - **Scanner mit Barcode-Lookup**: Manuelle Eingabe, Asset-Suche in DB, Scan-Historie
+  - **Wareneingang-Modul**: Bulk-Erfassung, Offline-Queue, Asset-Anlage
+  - **Offline-Synchronisation**: Netzwerk-Toggle, Queue-Anzeige, Pending-Status
+  - Settings mit Offline-Test-Button
+- **Komponente**: `/app/frontend/src/components/MobileAppPreview.jsx`
+- **Test-Status**: ✅ Visuell verifiziert
+
+#### NEW: Bulk-Edit in Asset Management V2 (IMPLEMENTED)
+- **Feature**: Mehrfachauswahl von Assets mit Checkboxen
+- **Bulk-Actions-Bar**: Erscheint bei Auswahl, zeigt Anzahl
+- **Massenbearbeitung**: Button öffnet BulkEditModal
+- **Komponente**: `/app/frontend/src/components/AssetManagementV2.jsx`
+- **Test-Status**: ✅ Implementiert
+
+#### React Native Mobile App für Zebra TC78 (SCAFFOLDED)
 - **Ziel**: Separate Mobile App für Zebra TC78 Handheld-Geräte
 - **Framework**: React Native mit Expo (SDK 50)
 - **Features**:
