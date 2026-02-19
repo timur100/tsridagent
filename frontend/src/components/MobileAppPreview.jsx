@@ -1308,14 +1308,24 @@ const MobileAppPreview = () => {
             stats={stats} 
             serverStatus={serverStatus}
             onNavigate={setActiveTab}
+            isOnline={isOnline}
+          />
+        );
+      case 'wareneingang':
+        return (
+          <MobileWareneingangScreen 
+            assets={assets}
+            onCreateAsset={handleCreateAsset}
+            offlineQueue={offlineQueue.length}
+            isOnline={isOnline}
           />
         );
       case 'scanner':
-        return <MobileScannerScreen />;
+        return <MobileScannerScreen assets={assets} onLookupAsset={() => {}} />;
       case 'assets':
         return <MobileAssetsScreen assets={assets} loading={assetsLoading} />;
       case 'settings':
-        return <MobileSettingsScreen user={mobileUser} onLogout={handleLogout} />;
+        return <MobileSettingsScreen user={mobileUser} onLogout={handleLogout} isOnline={isOnline} onToggleOnline={toggleOnlineStatus} />;
       default:
         return null;
     }
@@ -1338,11 +1348,16 @@ const MobileAppPreview = () => {
           {/* Phone Preview */}
           <PhoneFrame>
             <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-hidden">
+              <div className="flex-1 overflow-hidden relative">
                 {renderScreen()}
               </div>
               {isLoggedIn && (
-                <MobileTabBar activeTab={activeTab} onTabChange={setActiveTab} />
+                <MobileTabBar 
+                  activeTab={activeTab} 
+                  onTabChange={setActiveTab}
+                  offlineQueue={offlineQueue.length}
+                  isOnline={isOnline}
+                />
               )}
             </div>
           </PhoneFrame>
@@ -1358,6 +1373,28 @@ const MobileAppPreview = () => {
                 <div className="flex items-center gap-2">
                   <div className={`w-3 h-3 rounded-full ${isLoggedIn ? 'bg-green-500' : 'bg-yellow-500'}`} />
                   <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    {isLoggedIn ? `Eingeloggt als ${mobileUser?.email}` : 'Nicht eingeloggt'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${serverStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    Server: {serverStatus === 'online' ? 'Verbunden' : serverStatus === 'checking' ? 'Prüfe...' : 'Offline'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${isOnline ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
+                    Netzwerk: {isOnline ? 'Online' : 'Offline-Modus'}
+                  </span>
+                  {offlineQueue.length > 0 && (
+                    <span className="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-500">
+                      {offlineQueue.length} ausstehend
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
                     {isLoggedIn ? `Eingeloggt als ${mobileUser?.email}` : 'Nicht eingeloggt'}
                   </span>
                 </div>
