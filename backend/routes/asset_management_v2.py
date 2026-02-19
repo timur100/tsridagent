@@ -418,6 +418,27 @@ class AssetAssignToLocation(BaseModel):
     notes: Optional[str] = ""
 
 
+class BulkEditRequest(BaseModel):
+    """Request for bulk editing multiple assets"""
+    asset_ids: List[str]  # List of asset_id or warehouse_asset_id
+    # Fields to update (all optional - only provided fields will be updated)
+    manufacturer: Optional[str] = None
+    model: Optional[str] = None
+    supplier: Optional[str] = None
+    purchase_date: Optional[str] = None  # ISO date string
+    warranty_start: Optional[str] = None
+    warranty_end: Optional[str] = None
+    warranty_months: Optional[int] = None  # Alternative: set warranty by months from purchase
+    installation_date: Optional[str] = None
+    license_activated: Optional[str] = None  # ISO date string
+    license_expires: Optional[str] = None  # ISO date string
+    license_type: Optional[str] = None
+    license_key: Optional[str] = None
+    notes: Optional[str] = None
+    country: Optional[str] = None
+    technician: Optional[str] = None  # Who made the changes
+
+
 # ============ SUPPLIER & PRODUCT MANAGEMENT MODELS ============
 
 class SupplierContact(BaseModel):
