@@ -1149,10 +1149,60 @@ const AssetManagementV2 = ({ theme }) => {
   // Render Assets Table
   const AssetsTable = () => (
     <div className={`rounded-lg border overflow-hidden ${cardBg}`}>
+      {/* Bulk Actions Bar */}
+      {selectedAssets.size > 0 && (
+        <div className={`px-4 py-3 flex items-center justify-between border-b ${isDark ? 'bg-[#2a2a2a] border-gray-700' : 'bg-blue-50 border-blue-200'}`}>
+          <div className="flex items-center gap-3">
+            <Checkbox 
+              checked={selectedAssets.size === assets.length}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  setSelectedAssets(new Set(assets.map(a => a.asset_id || a.warehouse_asset_id)));
+                } else {
+                  setSelectedAssets(new Set());
+                }
+              }}
+            />
+            <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              {selectedAssets.size} von {assets.length} ausgewählt
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={() => setShowBulkEditModal(true)}
+              className="gap-2"
+            >
+              <ListChecks className="h-4 w-4" />
+              Massenbearbeitung
+            </Button>
+            <Button 
+              size="sm" 
+              variant="ghost"
+              onClick={() => setSelectedAssets(new Set())}
+            >
+              Auswahl aufheben
+            </Button>
+          </div>
+        </div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className={isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}>
             <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold w-10">
+                <Checkbox 
+                  checked={selectedAssets.size === assets.length && assets.length > 0}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedAssets(new Set(assets.map(a => a.asset_id || a.warehouse_asset_id)));
+                    } else {
+                      setSelectedAssets(new Set());
+                    }
+                  }}
+                />
+              </th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Asset ID</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Typ</th>
               <th className="px-4 py-3 text-left text-xs font-semibold">Hersteller</th>
@@ -1173,12 +1223,29 @@ const AssetManagementV2 = ({ theme }) => {
                 new Date(asset.warranty_until) < new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
               // Use asset_id, warehouse_asset_id, or manufacturer_sn as fallback for detail view
               const assetIdentifier = asset.asset_id || asset.warehouse_asset_id || asset.manufacturer_sn;
+              const isSelected = selectedAssets.has(assetIdentifier);
               return (
                 <tr 
                   key={asset.asset_id || asset.manufacturer_sn} 
-                  className={`border-t cursor-pointer hover:bg-opacity-50 ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
+                  className={`border-t cursor-pointer hover:bg-opacity-50 ${
+                    isSelected ? (isDark ? 'bg-blue-900/20' : 'bg-blue-50') : ''
+                  } ${isDark ? 'border-gray-700 hover:bg-gray-700' : 'border-gray-200 hover:bg-gray-50'}`}
                   onClick={() => openDetailModal('asset', assetIdentifier)}
                 >
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox 
+                      checked={isSelected}
+                      onCheckedChange={(checked) => {
+                        const newSelected = new Set(selectedAssets);
+                        if (checked) {
+                          newSelected.add(assetIdentifier);
+                        } else {
+                          newSelected.delete(assetIdentifier);
+                        }
+                        setSelectedAssets(newSelected);
+                      }}
+                    />
+                  </td>
                   <td className={`px-4 py-3 font-medium ${isDark ? 'text-white' : ''}`}>{asset.asset_id || '-'}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
