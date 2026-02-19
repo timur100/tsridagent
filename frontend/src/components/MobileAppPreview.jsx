@@ -851,13 +851,275 @@ const MobileSettingsScreen = ({ user, onLogout }) => {
   );
 };
 
+// Wareneingang (Goods Receipt) Screen
+const MobileWareneingangScreen = ({ assets, onCreateAsset, offlineQueue, isOnline }) => {
+  const [scannedItems, setScannedItems] = useState([]);
+  const [manualInput, setManualInput] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [newAsset, setNewAsset] = useState({
+    type_label: 'Scanner',
+    manufacturer: '',
+    model: '',
+    manufacturer_sn: '',
+  });
+
+  const deviceTypes = [
+    'Scanner', 'Tablet', 'Smartphone', 'Drucker', 'Laptop', 
+    'Monitor', 'Docking Station', 'Kabel', 'Adapter', 'Sonstiges'
+  ];
+
+  const addScannedItem = () => {
+    if (manualInput.trim()) {
+      // Check if already in assets
+      const existingAsset = assets.find(a => 
+        a.manufacturer_sn === manualInput.trim() || 
+        a.warehouse_asset_id === manualInput.trim()
+      );
+
+      setScannedItems(prev => [...prev, {
+        id: Date.now(),
+        code: manualInput.trim(),
+        timestamp: new Date().toLocaleString('de-DE'),
+        isNew: !existingAsset,
+        existingAsset
+      }]);
+      setManualInput('');
+    }
+  };
+
+  const removeItem = (id) => {
+    setScannedItems(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleCreateAsset = () => {
+    if (newAsset.manufacturer_sn) {
+      const asset = {
+        ...newAsset,
+        created_at: new Date().toISOString(),
+        status: 'Verfügbar',
+        isOffline: !isOnline
+      };
+      
+      if (onCreateAsset) {
+        onCreateAsset(asset);
+      }
+
+      setScannedItems(prev => [...prev, {
+        id: Date.now(),
+        code: newAsset.manufacturer_sn,
+        timestamp: new Date().toLocaleString('de-DE'),
+        isNew: true,
+        pendingCreate: true,
+        asset
+      }]);
+
+      setNewAsset({
+        type_label: 'Scanner',
+        manufacturer: '',
+        model: '',
+        manufacturer_sn: '',
+      });
+      setShowForm(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col h-full" style={{ backgroundColor: mobileTheme.colors.background }}>
+      {/* Header */}
+      <div className="p-4 flex justify-between items-center" style={{ backgroundColor: mobileTheme.colors.primary }}>
+        <h1 className="text-lg font-bold text-white">Wareneingang</h1>
+        <div className="flex items-center gap-2">
+          {!isOnline && (
+            <span className="px-2 py-1 rounded text-xs bg-yellow-500/20 text-yellow-500">
+              <CloudOff className="w-3 h-3 inline mr-1" />
+              Offline
+            </span>
+          )}
+          <span className="text-xs text-white/70">{scannedItems.length} erfasst</span>
+        </div>
+      </div>
+
+      {/* Quick Input */}
+      <div className="p-3 border-b" style={{ borderColor: mobileTheme.colors.border }}>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={manualInput}
+            onChange={(e) => setManualInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && addScannedItem()}
+            placeholder="Seriennummer scannen/eingeben..."
+            className="flex-1 px-3 py-2 rounded-lg text-white text-sm outline-none"
+            style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+          />
+          <button
+            onClick={addScannedItem}
+            className="px-3 py-2 rounded-lg"
+            style={{ backgroundColor: mobileTheme.colors.primary }}
+          >
+            <Plus className="w-5 h-5 text-white" />
+          </button>
+          <button
+            onClick={() => setShowForm(true)}
+            className="px-3 py-2 rounded-lg"
+            style={{ backgroundColor: mobileTheme.colors.surface }}
+          >
+            <Edit className="w-5 h-5 text-white" />
+          </button>
+        </div>
+      </div>
+
+      {/* New Asset Form Modal */}
+      {showForm && (
+        <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 p-4">
+          <div className="w-full max-w-sm rounded-xl p-4" style={{ backgroundColor: mobileTheme.colors.background }}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-white font-semibold">Neues Asset</h2>
+              <button onClick={() => setShowForm(false)}>
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: mobileTheme.colors.textMuted }}>Gerätetyp</label>
+                <select
+                  value={newAsset.type_label}
+                  onChange={(e) => setNewAsset(prev => ({ ...prev, type_label: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg text-white text-sm outline-none"
+                  style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+                >
+                  {deviceTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: mobileTheme.colors.textMuted }}>Seriennummer *</label>
+                <input
+                  type="text"
+                  value={newAsset.manufacturer_sn}
+                  onChange={(e) => setNewAsset(prev => ({ ...prev, manufacturer_sn: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg text-white text-sm outline-none"
+                  style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+                />
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: mobileTheme.colors.textMuted }}>Hersteller</label>
+                <input
+                  type="text"
+                  value={newAsset.manufacturer}
+                  onChange={(e) => setNewAsset(prev => ({ ...prev, manufacturer: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg text-white text-sm outline-none"
+                  style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+                />
+              </div>
+              <div>
+                <label className="text-xs mb-1 block" style={{ color: mobileTheme.colors.textMuted }}>Modell</label>
+                <input
+                  type="text"
+                  value={newAsset.model}
+                  onChange={(e) => setNewAsset(prev => ({ ...prev, model: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-lg text-white text-sm outline-none"
+                  style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={handleCreateAsset}
+              disabled={!newAsset.manufacturer_sn}
+              className="w-full mt-4 py-3 rounded-lg font-semibold text-white disabled:opacity-50"
+              style={{ backgroundColor: mobileTheme.colors.primary }}
+            >
+              <Save className="w-4 h-4 inline mr-2" />
+              Asset anlegen
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Scanned Items List */}
+      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        {scannedItems.length === 0 ? (
+          <div className="text-center py-8">
+            <Truck className="w-12 h-12 mx-auto mb-2" style={{ color: mobileTheme.colors.textMuted }} />
+            <p style={{ color: mobileTheme.colors.textMuted }}>Keine Artikel erfasst</p>
+            <p className="text-xs mt-1" style={{ color: mobileTheme.colors.textMuted }}>
+              Scannen Sie Barcodes oder geben Sie Seriennummern ein
+            </p>
+          </div>
+        ) : (
+          scannedItems.map((item) => (
+            <div 
+              key={item.id}
+              className="p-3 rounded-lg flex justify-between items-start"
+              style={{ backgroundColor: mobileTheme.colors.surface }}
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="font-semibold text-white">{item.code}</p>
+                  {item.isNew && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-green-500/20 text-green-500">
+                      NEU
+                    </span>
+                  )}
+                  {item.pendingCreate && !isOnline && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] bg-yellow-500/20 text-yellow-500">
+                      PENDING
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>{item.timestamp}</p>
+                {item.existingAsset && (
+                  <p className="text-xs mt-1" style={{ color: mobileTheme.colors.primary }}>
+                    {item.existingAsset.warehouse_asset_id} • {item.existingAsset.type_label}
+                  </p>
+                )}
+                {item.asset && (
+                  <p className="text-xs mt-1" style={{ color: mobileTheme.colors.success }}>
+                    {item.asset.type_label} • {item.asset.manufacturer || 'Kein Hersteller'}
+                  </p>
+                )}
+              </div>
+              <button onClick={() => removeItem(item.id)} className="p-1">
+                <Trash2 className="w-4 h-4" style={{ color: mobileTheme.colors.error }} />
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Offline Queue Info */}
+      {offlineQueue > 0 && (
+        <div className="p-3 border-t" style={{ borderColor: mobileTheme.colors.border, backgroundColor: 'rgba(245,158,11,0.1)' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CloudOff className="w-4 h-4" style={{ color: mobileTheme.colors.warning }} />
+              <span className="text-sm" style={{ color: mobileTheme.colors.warning }}>
+                {offlineQueue} Änderungen warten auf Sync
+              </span>
+            </div>
+            <button 
+              className="text-xs px-2 py-1 rounded"
+              style={{ backgroundColor: mobileTheme.colors.warning, color: '#000' }}
+            >
+              Sync
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Tab Bar Component
-const MobileTabBar = ({ activeTab, onTabChange }) => {
+const MobileTabBar = ({ activeTab, onTabChange, offlineQueue, isOnline }) => {
   const tabs = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'scanner', icon: Camera, label: 'Scanner' },
+    { id: 'dashboard', icon: Home, label: 'Home' },
+    { id: 'wareneingang', icon: Truck, label: 'Eingang' },
+    { id: 'scanner', icon: Camera, label: 'Scan' },
     { id: 'assets', icon: Package, label: 'Assets' },
-    { id: 'settings', icon: Settings, label: 'Settings' },
+    { id: 'settings', icon: Settings, label: 'Setup' },
   ];
 
   return (
