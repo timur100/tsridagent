@@ -3081,8 +3081,7 @@ const AssetManagementV2 = ({ theme }) => {
       <BulkEditModal
         isOpen={showBulkEditModal}
         onClose={() => setShowBulkEditModal(false)}
-        selectedAssets={Array.from(selectedAssets)}
-        assets={assets}
+        selectedAssets={assets.filter(a => selectedAssets.has(a.asset_id || a.warehouse_asset_id))}
         onSuccess={() => {
           setSelectedAssets(new Set());
           fetchAssets();
