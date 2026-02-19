@@ -4110,8 +4110,10 @@ async def inventory_intake_with_auto_id(
         
         now = datetime.now(timezone.utc).isoformat()
         
+        # NEUES SYSTEM: asset_id = warehouse_asset_id von Anfang an
+        # Die ID ist permanent und ändert sich nie!
         asset_doc = {
-            "asset_id": None,  # Location-based ID (set when assigned)
+            "asset_id": warehouse_id,  # SOFORT gleich wie warehouse_asset_id
             "warehouse_asset_id": warehouse_id,  # Permanent warehouse ID
             "original_warehouse_id": warehouse_id,  # Never changes - for history
             "manufacturer_sn": item.manufacturer_sn,
@@ -4122,8 +4124,8 @@ async def inventory_intake_with_auto_id(
             "mac": item.mac if item.mac and item.mac.strip() else None,
             "manufacturer": item.manufacturer,
             "model": item.model,
-            "status": "unassigned",
-            "location_id": None,
+            "status": "in_storage",  # Im Lager (nicht "unassigned")
+            "location_id": None,  # Noch kein Standort zugewiesen
             "country": None,
             "bundle_id": None,
             "assigned_to_kit": None,
@@ -4134,7 +4136,7 @@ async def inventory_intake_with_auto_id(
                 "date": now,
                 "event": f"Wareneingang: {ASSET_TYPE_LABELS.get(item.type, item.type)}",
                 "event_type": "intake",
-                "notes": f"SN: {item.manufacturer_sn}, Lager-ID: {warehouse_id}",
+                "notes": f"SN: {item.manufacturer_sn}, Asset-ID: {warehouse_id}",
                 "technician": received_by
             }],
             "created_at": now,
