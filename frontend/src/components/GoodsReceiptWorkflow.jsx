@@ -17,6 +17,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import Barcode from 'react-barcode';
 import { useAuth } from '../contexts/AuthContext';
 import { printAssetLabel, printAssetLabelWithTemplate, printMultipleLabelsWithTemplate, LabelPrintModal, LabelPreview } from './PrintableLabel';
+import BulkEditModal from './BulkEditModal';
 import { Palette, FileText } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
