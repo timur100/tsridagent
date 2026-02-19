@@ -471,6 +471,10 @@ app.include_router(label_templates_router)
 # Label Printer API (Brother QL-820NWB)
 app.include_router(label_printer_router)
 
+# Audit & Data Integrity API
+from routes.audit_routes import router as audit_router
+app.include_router(audit_router)
+
 # Include the router in the main app
 app.include_router(api_router)
 
