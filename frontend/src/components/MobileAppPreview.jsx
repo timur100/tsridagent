@@ -1617,7 +1617,20 @@ const MobileAppPreview = () => {
       case 'assets':
         return <MobileAssetsScreen assets={assets} loading={assetsLoading} />;
       case 'settings':
-        return <MobileSettingsScreen user={mobileUser} onLogout={handleLogout} isOnline={isOnline} onToggleOnline={toggleOnlineStatus} />;
+        return (
+          <MobileSettingsScreen 
+            user={mobileUser} 
+            onLogout={handleLogout} 
+            isOnline={isOnline} 
+            onToggleOnline={toggleOnlineStatus}
+            enabledModules={enabledModules}
+            onToggleModule={toggleModule}
+            connectedPrinter={connectedPrinter}
+            onConnectPrinter={handleConnectPrinter}
+            notifications={notifications}
+            onToggleNotifications={toggleNotification}
+          />
+        );
       default:
         return null;
     }
