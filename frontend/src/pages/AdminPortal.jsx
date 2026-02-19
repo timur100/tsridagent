@@ -41,6 +41,7 @@ import AssetSettings from '../components/AssetSettings';
 import AssetIdConfigManager from '../components/AssetIdConfigManager';
 import AssetManagement from '../components/AssetManagement';
 import AssetManagementV2 from '../components/AssetManagementV2';
+import AuditDashboard from '../components/AuditDashboard';
 import BrandingSettings from '../components/BrandingSettings';
 import LicenseManagement from '../components/LicenseManagement';
 import HardwareLicenseManagement from '../components/HardwareLicenseManagement';
