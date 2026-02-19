@@ -310,20 +310,60 @@ const MobileDashboardScreen = ({ user, stats, serverStatus, onNavigate }) => {
   );
 };
 
-// Scanner Screen
-const MobileScannerScreen = () => {
+// Scanner Screen with real barcode lookup
+const MobileScannerScreen = ({ assets, onLookupAsset }) => {
   const [flashOn, setFlashOn] = useState(false);
-  const [scanMode, setScanMode] = useState('barcode');
+  const [scanMode, setScanMode] = useState('camera');
   const [lastScan, setLastScan] = useState(null);
+  const [scanHistory, setScanHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [manualBarcode, setManualBarcode] = useState('');
+  const [scanning, setScanning] = useState(false);
+
+  const performLookup = async (code) => {
+    setScanning(true);
+    const timestamp = new Date().toLocaleString('de-DE');
+    
+    // Look up in assets by various fields
+    const foundAsset = assets.find(a => 
+      a.warehouse_asset_id === code ||
+      a.manufacturer_sn === code ||
+      a.imei === code ||
+      a.mac === code ||
+      a.asset_id === code
+    );
+
+    const scanResult = {
+      code,
+      timestamp,
+      found: !!foundAsset,
+      asset: foundAsset || null
+    };
+
+    setLastScan(scanResult);
+    setScanHistory(prev => [scanResult, ...prev].slice(0, 50)); // Keep last 50 scans
+    setScanning(false);
+    setManualBarcode('');
+    
+    return scanResult;
+  };
+
+  const handleManualScan = () => {
+    if (manualBarcode.trim()) {
+      performLookup(manualBarcode.trim());
+    }
+  };
 
   const simulateScan = () => {
-    const mockCodes = [
-      { code: 'TSRID-SC-001', type: 'QR', asset: { id: 'TSRID-SC-001', type: 'Scanner', status: 'Verfügbar' } },
-      { code: '4012345678901', type: 'EAN-13', asset: null },
-      { code: 'TSRID-TB-042', type: 'QR', asset: { id: 'TSRID-TB-042', type: 'Tablet', status: 'Zugewiesen' } },
-    ];
-    const scan = mockCodes[Math.floor(Math.random() * mockCodes.length)];
-    setLastScan({ ...scan, timestamp: new Date().toLocaleString('de-DE') });
+    // Simulate scanning a random asset or unknown code
+    const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+    const codes = [
+      randomAsset?.warehouse_asset_id,
+      randomAsset?.manufacturer_sn,
+      'UNKNOWN-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
+    ].filter(Boolean);
+    const code = codes[Math.floor(Math.random() * codes.length)];
+    performLookup(code);
   };
 
   return (
