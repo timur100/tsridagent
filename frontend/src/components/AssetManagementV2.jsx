@@ -2657,6 +2657,10 @@ const AssetManagementV2 = ({ theme }) => {
               </Badge>
             )}
           </TabsTrigger>
+          <TabsTrigger value="audit" className="flex items-center gap-2" data-testid="audit-tab">
+            <Shield className="h-4 w-4" />
+            Audit
+          </TabsTrigger>
         </TabsList>
 
         {/* Filters - only show for data tables */}
