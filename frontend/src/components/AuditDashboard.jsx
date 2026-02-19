@@ -148,28 +148,47 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
   // Initial load
   useEffect(() => {
-    fetchStatistics();
-    fetchAuditLog();
-    fetchArchivedItems();
-  }, [fetchStatistics, fetchAuditLog, fetchArchivedItems]);
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        await Promise.all([
+          fetchStatistics(),
+          fetchAuditLog(),
+          fetchArchivedItems()
+        ]);
+      } catch (e) {
+        console.error('Error loading data:', e);
+        setError('Fehler beim Laden der Daten');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   // Refresh on filter change
   useEffect(() => {
-    fetchAuditLog();
-  }, [fetchAuditLog, page]);
+    if (filterCollection || filterAction || filterUser || searchDocId || page > 0) {
+      fetchAuditLog();
+    }
+  }, [filterCollection, filterAction, filterUser, searchDocId, page]);
 
   // Format timestamp
   const formatTime = (timestamp) => {
     if (!timestamp) return '-';
-    const date = new Date(timestamp);
-    return date.toLocaleString('de-DE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch {
+      return timestamp;
+    }
   };
 
   // Get action badge color
@@ -186,8 +205,25 @@ const AuditDashboard = ({ theme = 'dark' }) => {
     return colors[action] || 'bg-gray-500';
   };
 
+  // Error state
+  if (error) {
+    return (
+      <div className={`p-6 min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+        <Card className={`p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+          <div className="flex items-center gap-3 text-red-500">
+            <AlertTriangle className="w-6 h-6" />
+            <span>{error}</span>
+          </div>
+          <Button onClick={() => { setError(null); fetchStatistics(); fetchAuditLog(); }} className="mt-4">
+            Erneut versuchen
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
   return (
-    <div className={`p-6 min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={`p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
