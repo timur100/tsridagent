@@ -1,20 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Shield, History, AlertTriangle, CheckCircle, RefreshCw, 
-  Download, Search, Filter, RotateCcw, Archive, Eye,
-  Clock, User, Database, Activity, XCircle, ChevronDown, ChevronRight
+  Search, Filter, RotateCcw, Archive, Eye,
+  Database, Activity, XCircle
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Input } from './ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import toast from 'react-hot-toast';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 
-const AuditDashboard = ({ theme }) => {
+const AuditDashboard = ({ theme = 'dark' }) => {
   const isDark = theme === 'dark';
   
   // State
@@ -23,6 +22,7 @@ const AuditDashboard = ({ theme }) => {
   const [auditLog, setAuditLog] = useState([]);
   const [archivedItems, setArchivedItems] = useState([]);
   const [integrityCheck, setIntegrityCheck] = useState(null);
+  const [error, setError] = useState(null);
   
   // Filters
   const [filterCollection, setFilterCollection] = useState('');
