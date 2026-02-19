@@ -1395,17 +1395,6 @@ const MobileAppPreview = () => {
                 </div>
               </div>
             </div>
-                    {isLoggedIn ? `Eingeloggt als ${mobileUser?.email}` : 'Nicht eingeloggt'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${serverStatus === 'online' ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className={theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}>
-                    Server: {serverStatus === 'online' ? 'Verbunden' : serverStatus === 'checking' ? 'Prüfe...' : 'Offline'}
-                  </span>
-                </div>
-              </div>
-            </div>
 
             {/* Features */}
             <div className={`p-4 rounded-xl ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'} shadow`}>
@@ -1416,11 +1405,14 @@ const MobileAppPreview = () => {
                 {[
                   { label: 'Login mit Backend-Auth', done: true },
                   { label: 'Dashboard mit Live-Statistiken', done: true },
-                  { label: 'Scanner-UI (simuliert)', done: true },
+                  { label: 'Scanner mit Barcode-Lookup', done: true },
+                  { label: 'Manuelle Barcode-Eingabe', done: true },
+                  { label: 'Scan-Historie', done: true },
                   { label: 'Asset-Liste mit Suche & Filter', done: true },
                   { label: 'Asset-Details Modal', done: true },
-                  { label: 'Einstellungen-Screen', done: true },
-                  { label: 'Offline-Synchronisation', done: false },
+                  { label: 'Wareneingang-Modul', done: true },
+                  { label: 'Offline-Synchronisation', done: true },
+                  { label: 'Offline-Queue', done: true },
                   { label: 'Native Zebra Scanner', done: false },
                   { label: 'Bluetooth-Drucker', done: false },
                 ].map((feature, i) => (
