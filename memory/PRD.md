@@ -28,7 +28,7 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-19 (Current)
 
-#### NEW: Mobile App Vorschau im Admin Portal (IMPLEMENTED)
+#### NEW: Mobile App Vorschau im Admin Portal (FULLY IMPLEMENTED)
 - **Location**: R&D → Mobile Entwicklung → Mobile App Vorschau
 - **Features**:
   - Interaktiver iPhone-ähnlicher Phone-Frame
@@ -37,7 +37,9 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
   - **Scanner mit Barcode-Lookup**: Manuelle Eingabe, Asset-Suche in DB, Scan-Historie
   - **Wareneingang-Modul**: Bulk-Erfassung, Offline-Queue, Asset-Anlage
   - **Offline-Synchronisation**: Netzwerk-Toggle, Queue-Anzeige, Pending-Status
-  - Settings mit Offline-Test-Button
+  - **Konfigurierbare Module**: Settings zum Ein-/Ausblenden von Modulen
+  - **Bluetooth-Drucker UI**: Drucker-Suche und Verbindung simuliert
+  - **Benachrichtigungs-Settings**: Sync, Assets, Drucker-Status
 - **Komponente**: `/app/frontend/src/components/MobileAppPreview.jsx`
 - **Test-Status**: ✅ Visuell verifiziert
 
@@ -47,6 +49,15 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - **Massenbearbeitung**: Button öffnet BulkEditModal
 - **Komponente**: `/app/frontend/src/components/AssetManagementV2.jsx`
 - **Test-Status**: ✅ Implementiert
+
+#### NEW: Native Mobile App Services (CODE COMPLETE)
+- **Zebra DataWedge Service**: `/app/mobile/src/services/dataWedgeService.js`
+  - Profile-Erstellung, Scanner-Konfiguration, Scan-Events
+- **Bluetooth Printer Service**: `/app/mobile/src/services/bluetoothPrinterService.js`
+  - Zebra ZQ630 (ZPL) und Brother QL-820NWB Support
+  - Label-Templates für Assets, QR, Inventar
+- **Push Notification Service**: `/app/mobile/src/services/pushNotificationService.js`
+  - Sync-Status, Asset-Updates, Drucker-Status
 
 #### React Native Mobile App für Zebra TC78 (SCAFFOLDED)
 - **Ziel**: Separate Mobile App für Zebra TC78 Handheld-Geräte
