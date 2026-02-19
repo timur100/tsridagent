@@ -20,7 +20,7 @@ import GoodsReceiptWorkflow from './GoodsReceiptWorkflow';
 import KitAssemblyWorkflow from './KitAssemblyWorkflow';
 import KitDetailModal from './KitDetailModal';
 import AuditDashboard from './AuditDashboard';
-import BulkEditModal from './admin/BulkEditModal';
+import BulkEditModal from './BulkEditModal';
 import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
