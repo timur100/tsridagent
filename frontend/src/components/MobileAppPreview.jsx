@@ -1440,6 +1440,43 @@ const MobileAppPreview = () => {
   const [isOnline, setIsOnline] = useState(true);
   const [offlineQueue, setOfflineQueue] = useState([]);
   const [lastSyncTime, setLastSyncTime] = useState(null);
+  
+  // Printer state
+  const [connectedPrinter, setConnectedPrinter] = useState(null);
+  
+  // Module configuration state
+  const [enabledModules, setEnabledModules] = useState({
+    dashboard: true,
+    wareneingang: true,
+    scanner: true,
+    assets: true,
+    locations: true,
+    kits: false,
+    inventory: false,
+  });
+  
+  // Notification settings
+  const [notifications, setNotifications] = useState({
+    sync: true,
+    assets: true,
+    printer: false,
+  });
+
+  // Toggle module visibility
+  const toggleModule = (moduleId) => {
+    setEnabledModules(prev => ({
+      ...prev,
+      [moduleId]: !prev[moduleId]
+    }));
+  };
+
+  // Toggle notification setting
+  const toggleNotification = (key) => {
+    setNotifications(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
+  };
 
   // Simulate network status toggle
   const toggleOnlineStatus = () => {
@@ -1469,6 +1506,16 @@ const MobileAppPreview = () => {
     } else {
       // Queue for later sync
       setOfflineQueue(prev => [...prev, { type: 'create_asset', data: asset, timestamp: new Date() }]);
+    }
+  };
+
+  // Handle printer connection
+  const handleConnectPrinter = (printer) => {
+    setConnectedPrinter(printer);
+    if (printer) {
+      console.log('Connected to printer:', printer.name);
+    } else {
+      console.log('Printer disconnected');
     }
   };
 
