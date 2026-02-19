@@ -2077,6 +2077,11 @@ const AdminPortalContent = () => {
               {/* Main Content */}
               <div className="flex-1 overflow-y-auto">
                 <div className="p-4 sm:p-6 w-full">
+                  {/* Mobile App Preview */}
+                  {rndTab === 'mobile-app-preview' && (
+                    <MobileAppPreview />
+                  )}
+                  
                   {/* Facematch */}
                     {rndTab === 'facematch' && (
                       <div className="w-full">
