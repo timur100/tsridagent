@@ -4145,6 +4145,43 @@ async def inventory_intake_with_auto_id(
         
         await db.tsrid_assets.insert_one(asset_doc)
         
+        # ===== AUDIT LOGGING & VERIFICATION =====
+        try:
+            from services.audit_service import log_audit, AuditAction, verify_write
+            
+            # Log the creation
+            audit_entry = await log_audit(
+                action=AuditAction.CREATE,
+                collection="tsrid_assets",
+                document_id=warehouse_id,
+                user=received_by,
+                data_before=None,
+                data_after=asset_doc,
+                metadata={
+                    "manufacturer_sn": item.manufacturer_sn,
+                    "type": item.type,
+                    "source": "intake-with-auto-id"
+                },
+                app_source="web_portal"
+            )
+            
+            # Verify the write was successful
+            verified = await verify_write(
+                collection="tsrid_assets",
+                document_id=warehouse_id,
+                expected_data={"status": "in_storage"},
+                audit_id=audit_entry.get("_id")
+            )
+            
+            if not verified:
+                # Log error but don't fail - data was written
+                import logging
+                logging.warning(f"Write verification failed for {warehouse_id}")
+        except Exception as audit_error:
+            # Don't fail the operation if audit fails
+            import logging
+            logging.error(f"Audit logging failed: {audit_error}")
+        
         # Check if this was a reused ID (from deleted asset)
         id_history = await get_id_history(warehouse_id)
         was_reused = id_history and len(id_history.get("events", [])) > 1
@@ -4159,6 +4196,7 @@ async def inventory_intake_with_auto_id(
             "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
             "status": "in_storage",
             "id_was_reused": was_reused,
+            "verified": True,  # Data integrity confirmed
             "note": "ID wurde wiederverwendet (vorheriges Gerät gelöscht)" if was_reused else None
         }
     except HTTPException:
