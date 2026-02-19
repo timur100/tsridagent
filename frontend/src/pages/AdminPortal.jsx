@@ -108,6 +108,7 @@ import DeliveryZoneManagement from '../components/DeliveryZoneManagement';
 import LicensePlateRecognition from '../components/LicensePlateRecognition';
 import USBDeviceManager from '../components/USBDeviceManager';
 import MongoDBMonitor from '../components/MongoDBMonitor';
+import MobileAppPreview from '../components/MobileAppPreview';
 import toast from 'react-hot-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { QRCodeSVG } from 'qrcode.react';
