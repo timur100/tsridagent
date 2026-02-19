@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { 
@@ -6,7 +6,8 @@ import {
   RefreshCw, Wifi, WifiOff, ChevronRight, Eye, EyeOff,
   Search, Filter, X, Clock, User, Building, Barcode,
   Printer, Bluetooth, Volume2, Vibrate, Sun, Moon,
-  CheckCircle, AlertCircle, Info
+  CheckCircle, AlertCircle, Info, Truck, History, 
+  CloudOff, Cloud, Database, Plus, Trash2, Edit, Save
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
