@@ -4152,11 +4152,12 @@ async def inventory_intake_with_auto_id(
         return {
             "success": True,
             "message": f"Gerät erfasst mit ID: {warehouse_id}",
+            "asset_id": warehouse_id,  # SOFORT verfügbar
             "warehouse_asset_id": warehouse_id,
             "manufacturer_sn": item.manufacturer_sn,
             "type": item.type,
             "type_label": ASSET_TYPE_LABELS.get(item.type, item.type),
-            "status": "unassigned",
+            "status": "in_storage",
             "id_was_reused": was_reused,
             "note": "ID wurde wiederverwendet (vorheriges Gerät gelöscht)" if was_reused else None
         }
