@@ -725,8 +725,8 @@ const MobileAssetsScreen = ({ assets, loading }) => {
   );
 };
 
-// Settings Screen
-const MobileSettingsScreen = ({ user, onLogout }) => {
+// Settings Screen with offline toggle
+const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline }) => {
   return (
     <div className="flex flex-col h-full overflow-y-auto" style={{ backgroundColor: mobileTheme.colors.background }}>
       {/* Header */}
@@ -735,6 +735,43 @@ const MobileSettingsScreen = ({ user, onLogout }) => {
       </div>
 
       <div className="p-4 space-y-4">
+        {/* Network Status Card */}
+        <div 
+          className="p-4 rounded-xl border"
+          style={{ 
+            backgroundColor: isOnline ? 'rgba(34,197,94,0.1)' : 'rgba(245,158,11,0.1)',
+            borderColor: isOnline ? mobileTheme.colors.success : mobileTheme.colors.warning
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              {isOnline ? (
+                <Cloud className="w-6 h-6" style={{ color: mobileTheme.colors.success }} />
+              ) : (
+                <CloudOff className="w-6 h-6" style={{ color: mobileTheme.colors.warning }} />
+              )}
+              <div>
+                <p className="font-semibold text-white">
+                  {isOnline ? 'Online' : 'Offline-Modus'}
+                </p>
+                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                  {isOnline ? 'Daten werden synchronisiert' : 'Änderungen werden lokal gespeichert'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onToggleOnline}
+              className="px-3 py-1.5 rounded text-xs font-semibold"
+              style={{ 
+                backgroundColor: isOnline ? mobileTheme.colors.warning : mobileTheme.colors.success,
+                color: '#000'
+              }}
+            >
+              {isOnline ? 'Offline testen' : 'Online gehen'}
+            </button>
+          </div>
+        </div>
+
         {/* Profile Card */}
         <div className="flex items-center p-4 rounded-xl" style={{ backgroundColor: mobileTheme.colors.surface }}>
           <div 
