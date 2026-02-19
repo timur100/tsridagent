@@ -16,6 +16,12 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const AuditDashboard = ({ theme = 'dark' }) => {
   const isDark = theme === 'dark';
   
+  // Design tokens matching AssetManagementV2
+  const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
+  const headerBg = isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50';
+  const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300';
+  const accentColor = '#c00000';
+  
   // State
   const [loading, setLoading] = useState(false);
   const [statistics, setStatistics] = useState(null);
@@ -193,28 +199,33 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
   // Get action badge color
   const getActionBadge = (action) => {
-    const colors = {
-      'CREATE': 'bg-green-500',
-      'UPDATE': 'bg-blue-500',
-      'DELETE': 'bg-red-500',
-      'ARCHIVE': 'bg-orange-500',
-      'RESTORE': 'bg-purple-500',
-      'BULK_CREATE': 'bg-green-600',
-      'BULK_DELETE': 'bg-red-600'
+    const configs = {
+      'CREATE': { bg: 'bg-green-500/20', text: 'text-green-400' },
+      'UPDATE': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+      'DELETE': { bg: 'bg-red-500/20', text: 'text-red-400' },
+      'ARCHIVE': { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+      'RESTORE': { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+      'BULK_CREATE': { bg: 'bg-green-600/20', text: 'text-green-400' },
+      'BULK_DELETE': { bg: 'bg-red-600/20', text: 'text-red-400' },
+      'LEGACY_IMPORT': { bg: 'bg-gray-500/20', text: 'text-gray-400' }
     };
-    return colors[action] || 'bg-gray-500';
+    return configs[action] || { bg: 'bg-gray-500/20', text: 'text-gray-400' };
   };
 
   // Error state
   if (error) {
     return (
-      <div className={`p-6 min-h-screen ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
-        <Card className={`p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+      <div className="p-6">
+        <Card className={`p-6 ${cardBg}`}>
           <div className="flex items-center gap-3 text-red-500">
             <AlertTriangle className="w-6 h-6" />
             <span>{error}</span>
           </div>
-          <Button onClick={() => { setError(null); fetchStatistics(); fetchAuditLog(); }} className="mt-4">
+          <Button 
+            onClick={() => { setError(null); fetchStatistics(); fetchAuditLog(); }} 
+            className="mt-4"
+            style={{ backgroundColor: accentColor }}
+          >
             Erneut versuchen
           </Button>
         </Card>
@@ -223,13 +234,15 @@ const AuditDashboard = ({ theme = 'dark' }) => {
   }
 
   return (
-    <div className={`p-6 ${isDark ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Shield className="w-8 h-8 text-blue-500" />
+          <div className="p-2 rounded-lg" style={{ backgroundColor: `${accentColor}20` }}>
+            <Shield className="w-6 h-6" style={{ color: accentColor }} />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold">Audit & Datenintegrität</h1>
+            <h2 className="text-xl font-bold">Audit & Datenintegrität</h2>
             <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
               Vollständige Nachvollziehbarkeit aller Datenänderungen
             </p>
@@ -239,7 +252,8 @@ const AuditDashboard = ({ theme = 'dark' }) => {
           <Button 
             onClick={runIntegrityCheck}
             disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700"
+            style={{ backgroundColor: accentColor }}
+            className="hover:opacity-90"
           >
             <Activity className="w-4 h-4 mr-2" />
             Integritätsprüfung
@@ -248,6 +262,7 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             onClick={() => { fetchStatistics(); fetchAuditLog(); fetchArchivedItems(); }}
             variant="outline"
             disabled={loading}
+            className={isDark ? 'border-gray-600 hover:bg-gray-700' : ''}
           >
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Aktualisieren
@@ -257,11 +272,11 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
       {/* Statistics Cards */}
       {statistics && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          <Card className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card className={`p-4 ${cardBg}`}>
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg">
-                <Database className="w-6 h-6 text-blue-500" />
+              <div className="p-2 rounded-lg" style={{ backgroundColor: `${accentColor}20` }}>
+                <Database className="w-5 h-5" style={{ color: accentColor }} />
               </div>
               <div>
                 <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Aktionen (7 Tage)</p>
@@ -270,13 +285,13 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             </div>
           </Card>
           
-          <Card className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+          <Card className={`p-4 ${cardBg}`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${statistics.unverified_count > 0 ? 'bg-red-500/20' : 'bg-green-500/20'}`}>
                 {statistics.unverified_count > 0 ? (
-                  <AlertTriangle className="w-6 h-6 text-red-500" />
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
                 ) : (
-                  <CheckCircle className="w-6 h-6 text-green-500" />
+                  <CheckCircle className="w-5 h-5 text-green-400" />
                 )}
               </div>
               <div>
@@ -286,10 +301,10 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             </div>
           </Card>
           
-          <Card className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+          <Card className={`p-4 ${cardBg}`}>
             <div className="flex items-center gap-3">
               <div className="p-2 bg-orange-500/20 rounded-lg">
-                <Archive className="w-6 h-6 text-orange-500" />
+                <Archive className="w-5 h-5 text-orange-400" />
               </div>
               <div>
                 <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>Archiviert</p>
@@ -298,17 +313,17 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             </div>
           </Card>
           
-          <Card className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+          <Card className={`p-4 ${cardBg}`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${
                 integrityCheck?.status === 'healthy' ? 'bg-green-500/20' :
                 integrityCheck?.status === 'warning' ? 'bg-yellow-500/20' :
                 integrityCheck?.status === 'critical' ? 'bg-red-500/20' : 'bg-gray-500/20'
               }`}>
-                <Shield className={`w-6 h-6 ${
-                  integrityCheck?.status === 'healthy' ? 'text-green-500' :
-                  integrityCheck?.status === 'warning' ? 'text-yellow-500' :
-                  integrityCheck?.status === 'critical' ? 'text-red-500' : 'text-gray-500'
+                <Shield className={`w-5 h-5 ${
+                  integrityCheck?.status === 'healthy' ? 'text-green-400' :
+                  integrityCheck?.status === 'warning' ? 'text-yellow-400' :
+                  integrityCheck?.status === 'critical' ? 'text-red-400' : 'text-gray-400'
                 }`} />
               </div>
               <div>
@@ -322,9 +337,9 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
       {/* Integrity Issues */}
       {integrityCheck?.issues?.length > 0 && (
-        <Card className={`p-4 mb-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+        <Card className={`p-4 ${cardBg}`}>
           <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <AlertTriangle className="w-5 h-5 text-yellow-500" />
+            <AlertTriangle className="w-5 h-5 text-yellow-400" />
             Integritätsprobleme
           </h3>
           <div className="space-y-2">
@@ -332,8 +347,8 @@ const AuditDashboard = ({ theme = 'dark' }) => {
               <div 
                 key={idx}
                 className={`p-3 rounded-lg ${
-                  issue.severity === 'critical' ? 'bg-red-500/10 border border-red-500/20' :
-                  'bg-yellow-500/10 border border-yellow-500/20'
+                  issue.severity === 'critical' ? 'bg-red-500/10 border border-red-500/30' :
+                  'bg-yellow-500/10 border border-yellow-500/30'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -350,36 +365,36 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
       {/* Archived Items */}
       {archivedItems.length > 0 && (
-        <Card className={`p-4 mb-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+        <Card className={`p-4 ${cardBg}`}>
           <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <Archive className="w-5 h-5 text-orange-500" />
+            <Archive className="w-5 h-5 text-orange-400" />
             Archivierte Geräte ({archivedItems.length})
           </h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead>
+              <thead className={headerBg}>
                 <tr className={isDark ? 'border-b border-gray-700' : 'border-b'}>
-                  <th className="text-left p-2">Asset-ID</th>
-                  <th className="text-left p-2">Typ</th>
-                  <th className="text-left p-2">Archiviert am</th>
-                  <th className="text-left p-2">Von</th>
-                  <th className="text-left p-2">Grund</th>
-                  <th className="text-left p-2">Aktion</th>
+                  <th className="text-left p-3 font-medium">Asset-ID</th>
+                  <th className="text-left p-3 font-medium">Typ</th>
+                  <th className="text-left p-3 font-medium">Archiviert am</th>
+                  <th className="text-left p-3 font-medium">Von</th>
+                  <th className="text-left p-3 font-medium">Grund</th>
+                  <th className="text-left p-3 font-medium">Aktion</th>
                 </tr>
               </thead>
               <tbody>
                 {archivedItems.slice(0, 10).map((item, idx) => (
-                  <tr key={idx} className={isDark ? 'border-b border-gray-700' : 'border-b'}>
-                    <td className="p-2 font-mono">{item.id}</td>
-                    <td className="p-2">{item.type}</td>
-                    <td className="p-2">{formatTime(item.archived_at)}</td>
-                    <td className="p-2">{item.archived_by}</td>
-                    <td className="p-2">{item.archive_reason}</td>
-                    <td className="p-2">
+                  <tr key={idx} className={`${isDark ? 'border-b border-gray-700 hover:bg-[#1a1a1a]' : 'border-b hover:bg-gray-50'}`}>
+                    <td className="p-3 font-mono text-sm">{item.id}</td>
+                    <td className="p-3">{item.type}</td>
+                    <td className="p-3">{formatTime(item.archived_at)}</td>
+                    <td className="p-3">{item.archived_by}</td>
+                    <td className="p-3">{item.archive_reason}</td>
+                    <td className="p-3">
                       <Button
                         size="sm"
                         onClick={() => { setItemToRestore(item); setShowRestoreModal(true); }}
-                        className="bg-purple-600 hover:bg-purple-700"
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
                       >
                         <RotateCcw className="w-3 h-3 mr-1" />
                         Wiederherstellen
@@ -394,7 +409,7 @@ const AuditDashboard = ({ theme = 'dark' }) => {
       )}
 
       {/* Filters */}
-      <Card className={`p-4 mb-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+      <Card className={`p-4 ${cardBg}`}>
         <div className="flex flex-wrap gap-4 items-center">
           <div className="flex items-center gap-2">
             <Filter className="w-4 h-4" />
@@ -404,14 +419,11 @@ const AuditDashboard = ({ theme = 'dark' }) => {
           <select 
             value={filterCollection} 
             onChange={(e) => setFilterCollection(e.target.value)}
-            className={`w-48 px-3 py-2 rounded-md border ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-300 text-gray-900'
-            }`}
+            className={`px-3 py-2 rounded-md border text-sm ${inputBg}`}
           >
             <option value="">Alle Collections</option>
             <option value="tsrid_assets">Assets</option>
+            <option value="assets">Verification Assets</option>
             <option value="tenant_locations">Standorte</option>
             <option value="tsrid_bundles">Bundles</option>
             <option value="id_scans">ID-Scans</option>
@@ -420,11 +432,7 @@ const AuditDashboard = ({ theme = 'dark' }) => {
           <select 
             value={filterAction} 
             onChange={(e) => setFilterAction(e.target.value)}
-            className={`w-48 px-3 py-2 rounded-md border ${
-              isDark 
-                ? 'bg-gray-700 border-gray-600 text-white' 
-                : 'bg-white border-gray-300 text-gray-900'
-            }`}
+            className={`px-3 py-2 rounded-md border text-sm ${inputBg}`}
           >
             <option value="">Alle Aktionen</option>
             <option value="CREATE">Erstellt</option>
@@ -432,23 +440,29 @@ const AuditDashboard = ({ theme = 'dark' }) => {
             <option value="DELETE">Gelöscht</option>
             <option value="ARCHIVE">Archiviert</option>
             <option value="RESTORE">Wiederhergestellt</option>
+            <option value="LEGACY_IMPORT">Legacy-Import</option>
           </select>
           
           <Input
             placeholder="Benutzer..."
             value={filterUser}
             onChange={(e) => setFilterUser(e.target.value)}
-            className="w-48"
+            className={`w-40 ${inputBg}`}
           />
           
           <Input
             placeholder="Dokument-ID..."
             value={searchDocId}
             onChange={(e) => setSearchDocId(e.target.value)}
-            className="w-48"
+            className={`w-48 ${inputBg}`}
           />
           
-          <Button onClick={fetchAuditLog} disabled={loading}>
+          <Button 
+            onClick={fetchAuditLog} 
+            disabled={loading}
+            style={{ backgroundColor: accentColor }}
+            className="hover:opacity-90"
+          >
             <Search className="w-4 h-4 mr-2" />
             Suchen
           </Button>
@@ -456,149 +470,172 @@ const AuditDashboard = ({ theme = 'dark' }) => {
       </Card>
 
       {/* Audit Log Table */}
-      <Card className={`p-4 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
-        <h3 className="font-semibold mb-3 flex items-center gap-2">
+      <Card className={`p-4 ${cardBg}`}>
+        <h3 className="font-semibold mb-4 flex items-center gap-2">
           <History className="w-5 h-5" />
           Audit-Log ({totalEntries} Einträge)
         </h3>
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead>
+            <thead className={headerBg}>
               <tr className={isDark ? 'border-b border-gray-700' : 'border-b'}>
-                <th className="text-left p-2">Zeit</th>
-                <th className="text-left p-2">Aktion</th>
-                <th className="text-left p-2">Collection</th>
-                <th className="text-left p-2">Dokument</th>
-                <th className="text-left p-2">Benutzer</th>
-                <th className="text-left p-2">Verifiziert</th>
-                <th className="text-left p-2">Details</th>
+                <th className="text-left p-3 font-medium">Zeit</th>
+                <th className="text-left p-3 font-medium">Aktion</th>
+                <th className="text-left p-3 font-medium">Collection</th>
+                <th className="text-left p-3 font-medium">Dokument</th>
+                <th className="text-left p-3 font-medium">Benutzer</th>
+                <th className="text-left p-3 font-medium">Verifiziert</th>
+                <th className="text-left p-3 font-medium">Details</th>
               </tr>
             </thead>
             <tbody>
-              {auditLog.map((entry, idx) => (
-                <tr key={idx} className={`${isDark ? 'border-b border-gray-700 hover:bg-gray-700/50' : 'border-b hover:bg-gray-50'}`}>
-                  <td className="p-2 whitespace-nowrap">{formatTime(entry.timestamp)}</td>
-                  <td className="p-2">
-                    <Badge className={`${getActionBadge(entry.action)} text-white`}>
-                      {entry.action}
-                    </Badge>
-                  </td>
-                  <td className="p-2 font-mono text-xs">{entry.collection}</td>
-                  <td className="p-2 font-mono text-xs">{entry.document_id}</td>
-                  <td className="p-2">{entry.user}</td>
-                  <td className="p-2">
-                    {entry.verified ? (
-                      <CheckCircle className="w-4 h-4 text-green-500" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-red-500" />
-                    )}
-                  </td>
-                  <td className="p-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline"
-                      onClick={() => { setSelectedEntry(entry); setShowDetailModal(true); }}
-                    >
-                      <Eye className="w-3 h-3" />
-                    </Button>
+              {loading ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center">
+                    <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2" />
+                    <p className="text-gray-400">Laden...</p>
                   </td>
                 </tr>
-              ))}
+              ) : auditLog.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-gray-400">
+                    Keine Einträge gefunden
+                  </td>
+                </tr>
+              ) : (
+                auditLog.map((entry, idx) => {
+                  const badge = getActionBadge(entry.action);
+                  return (
+                    <tr key={idx} className={`${isDark ? 'border-b border-gray-700 hover:bg-[#1a1a1a]' : 'border-b hover:bg-gray-50'}`}>
+                      <td className="p-3 whitespace-nowrap text-sm">{formatTime(entry.timestamp)}</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${badge.bg} ${badge.text}`}>
+                          {entry.action}
+                        </span>
+                      </td>
+                      <td className="p-3 font-mono text-xs">{entry.collection}</td>
+                      <td className="p-3 font-mono text-xs">{entry.document_id}</td>
+                      <td className="p-3 text-sm">{entry.user}</td>
+                      <td className="p-3">
+                        {entry.verified ? (
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <XCircle className="w-4 h-4 text-red-400" />
+                        )}
+                      </td>
+                      <td className="p-3">
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => { setSelectedEntry(entry); setShowDetailModal(true); }}
+                          className={isDark ? 'border-gray-600 hover:bg-gray-700' : ''}
+                        >
+                          <Eye className="w-3 h-3" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
         
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4">
-          <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Seite {page + 1} von {Math.ceil(totalEntries / limit)}
-          </span>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
-            >
-              Zurück
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setPage(p => p + 1)}
-              disabled={(page + 1) * limit >= totalEntries}
-            >
-              Weiter
-            </Button>
+        {totalEntries > limit && (
+          <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
+            <span className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
+              Seite {page + 1} von {Math.ceil(totalEntries / limit)}
+            </span>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setPage(p => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className={isDark ? 'border-gray-600 hover:bg-gray-700' : ''}
+              >
+                Zurück
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setPage(p => p + 1)}
+                disabled={(page + 1) * limit >= totalEntries}
+                className={isDark ? 'border-gray-600 hover:bg-gray-700' : ''}
+              >
+                Weiter
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </Card>
 
       {/* Detail Modal */}
       <Dialog open={showDetailModal} onOpenChange={setShowDetailModal}>
-        <DialogContent className={`max-w-3xl ${isDark ? 'bg-gray-800 text-white' : ''}`}>
+        <DialogContent className={`max-w-3xl ${isDark ? 'bg-[#2d2d2d] text-white border-gray-700' : ''}`}>
           <DialogHeader>
             <DialogTitle>Audit-Eintrag Details</DialogTitle>
           </DialogHeader>
           {selectedEntry && (
             <div className="space-y-4 max-h-[60vh] overflow-y-auto">
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm text-gray-500">Zeitstempel</label>
-                  <p className="font-mono">{formatTime(selectedEntry.timestamp)}</p>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Zeitstempel</label>
+                  <p className="font-mono text-sm">{formatTime(selectedEntry.timestamp)}</p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Aktion</label>
-                  <Badge className={`${getActionBadge(selectedEntry.action)} text-white`}>
-                    {selectedEntry.action}
-                  </Badge>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Aktion</label>
+                  <p>
+                    <span className={`px-2 py-1 rounded text-xs font-medium ${getActionBadge(selectedEntry.action).bg} ${getActionBadge(selectedEntry.action).text}`}>
+                      {selectedEntry.action}
+                    </span>
+                  </p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Collection</label>
-                  <p className="font-mono">{selectedEntry.collection}</p>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Collection</label>
+                  <p className="font-mono text-sm">{selectedEntry.collection}</p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Dokument-ID</label>
-                  <p className="font-mono">{selectedEntry.document_id}</p>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Dokument-ID</label>
+                  <p className="font-mono text-sm">{selectedEntry.document_id}</p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Benutzer</label>
-                  <p>{selectedEntry.user}</p>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Benutzer</label>
+                  <p className="text-sm">{selectedEntry.user}</p>
                 </div>
-                <div>
-                  <label className="text-sm text-gray-500">Quelle</label>
-                  <p>{selectedEntry.app_source}</p>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase">Quelle</label>
+                  <p className="text-sm">{selectedEntry.app_source}</p>
                 </div>
               </div>
               
               {selectedEntry.changes && selectedEntry.changes.length > 0 && (
-                <div>
-                  <label className="text-sm text-gray-500">Änderungen</label>
-                  <div className={`p-3 rounded-lg mt-1 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-                    {selectedEntry.changes.map((change, idx) => (
-                      <div key={idx} className="mb-2">
-                        <span className="font-medium">{change.field}:</span>
-                        <span className="text-red-500 ml-2 line-through">{JSON.stringify(change.old_value)}</span>
-                        <span className="mx-2">→</span>
-                        <span className="text-green-500">{JSON.stringify(change.new_value)}</span>
-                      </div>
-                    ))}
-                  </div>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase mb-2 block">Änderungen</label>
+                  {selectedEntry.changes.map((change, idx) => (
+                    <div key={idx} className="mb-2 text-sm">
+                      <span className="font-medium">{change.field}:</span>
+                      <span className="text-red-400 ml-2 line-through">{JSON.stringify(change.old_value)}</span>
+                      <span className="mx-2">→</span>
+                      <span className="text-green-400">{JSON.stringify(change.new_value)}</span>
+                    </div>
+                  ))}
                 </div>
               )}
               
               {selectedEntry.metadata && Object.keys(selectedEntry.metadata).length > 0 && (
-                <div>
-                  <label className="text-sm text-gray-500">Metadata</label>
-                  <pre className={`p-3 rounded-lg mt-1 text-xs overflow-x-auto ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
+                <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                  <label className="text-xs text-gray-400 uppercase mb-2 block">Metadata</label>
+                  <pre className="text-xs overflow-x-auto">
                     {JSON.stringify(selectedEntry.metadata, null, 2)}
                   </pre>
                 </div>
               )}
               
-              <div>
-                <label className="text-sm text-gray-500">Integritäts-Hash</label>
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <label className="text-xs text-gray-400 uppercase">Integritäts-Hash</label>
                 <p className="font-mono text-xs break-all">{selectedEntry.integrity_hash}</p>
               </div>
             </div>
@@ -608,26 +645,30 @@ const AuditDashboard = ({ theme = 'dark' }) => {
 
       {/* Restore Confirmation Modal */}
       <Dialog open={showRestoreModal} onOpenChange={setShowRestoreModal}>
-        <DialogContent className={isDark ? 'bg-gray-800 text-white' : ''}>
+        <DialogContent className={isDark ? 'bg-[#2d2d2d] text-white border-gray-700' : ''}>
           <DialogHeader>
             <DialogTitle>Gerät wiederherstellen?</DialogTitle>
           </DialogHeader>
           {itemToRestore && (
             <div className="py-4">
-              <p>Möchten Sie das folgende Gerät wiederherstellen?</p>
-              <div className={`p-3 rounded-lg mt-3 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-                <p><strong>Asset-ID:</strong> {itemToRestore.id}</p>
-                <p><strong>Typ:</strong> {itemToRestore.type}</p>
-                <p><strong>Archiviert am:</strong> {formatTime(itemToRestore.archived_at)}</p>
+              <p className="mb-3">Möchten Sie das folgende Gerät wiederherstellen?</p>
+              <div className={`p-4 rounded-lg ${isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
+                <p className="mb-1"><strong>Asset-ID:</strong> {itemToRestore.id}</p>
+                <p className="mb-1"><strong>Typ:</strong> {itemToRestore.type}</p>
+                <p className="mb-1"><strong>Archiviert am:</strong> {formatTime(itemToRestore.archived_at)}</p>
                 <p><strong>Grund:</strong> {itemToRestore.archive_reason}</p>
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowRestoreModal(false)}>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowRestoreModal(false)}
+              className={isDark ? 'border-gray-600 hover:bg-gray-700' : ''}
+            >
               Abbrechen
             </Button>
-            <Button onClick={restoreItem} className="bg-purple-600 hover:bg-purple-700">
+            <Button onClick={restoreItem} className="bg-purple-600 hover:bg-purple-700 text-white">
               <RotateCcw className="w-4 h-4 mr-2" />
               Wiederherstellen
             </Button>
