@@ -251,6 +251,10 @@ const AssetManagementV2 = ({ theme }) => {
   const [editAssetData, setEditAssetData] = useState({});
   const [showLabelPrintModalInDetail, setShowLabelPrintModalInDetail] = useState(false);
   
+  // Bulk Edit states
+  const [selectedAssets, setSelectedAssets] = useState(new Set());
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false);
+  
   // Filter options from API
   const [filterOptions, setFilterOptions] = useState({
     countries: [],
