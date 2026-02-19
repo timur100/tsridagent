@@ -2873,6 +2873,18 @@ const GoodsReceiptWorkflow = ({ theme, onRefreshStats }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Bulk Edit Modal */}
+      <BulkEditModal
+        isOpen={showBulkEditModal}
+        onClose={() => setShowBulkEditModal(false)}
+        selectedAssets={unassignedAssets.filter(a => selectedAssets.has(a.manufacturer_sn))}
+        theme={theme}
+        onSuccess={() => {
+          fetchUnassignedAssets();
+          setSelectedAssets(new Set());
+        }}
+      />
     </div>
   );
 };
