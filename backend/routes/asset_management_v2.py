@@ -4923,24 +4923,34 @@ async def delete_unassigned_assets_bulk(serial_numbers: List[str], reason: str =
 
 
 @router.delete("/inventory/unassigned/{manufacturer_sn}")
-async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Manuell gelöscht"), user: str = Query("system")):
+async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Manuell gelöscht"), user: str = Query("system"), hard_delete: bool = Query(False)):
     """
-    Löscht ein Gerät aus dem Lager (ohne Location-Zuweisung).
-    Nur Geräte ohne location_id können gelöscht werden.
+    SOFT DELETE: Archiviert ein Gerät aus dem Lager (ohne Location-Zuweisung).
+    Das Gerät wird NICHT gelöscht, sondern auf Status 'archived' gesetzt.
+    Es kann jederzeit wiederhergestellt werden.
     
-    Die gelöschte ID wird in der Historie protokolliert und steht für neue Geräte wieder zur Verfügung.
+    Nur Geräte ohne location_id können archiviert werden.
+    Mit hard_delete=true kann ein echtes Löschen erzwungen werden (Admin only).
     """
     try:
+        from services.audit_service import log_audit, AuditAction, verify_write
+        
         # Find the asset without location assignment
         asset = await db.tsrid_assets.find_one({
             "manufacturer_sn": manufacturer_sn,
-            "location_id": None
+            "location_id": None,
+            "status": {"$ne": "archived"}  # Don't delete already archived
         })
         
         if not asset:
             # Check if asset exists but is assigned to a location
             existing = await db.tsrid_assets.find_one({"manufacturer_sn": manufacturer_sn})
             if existing:
+                if existing.get("status") == "archived":
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Gerät {manufacturer_sn} ist bereits archiviert"
+                    )
                 raise HTTPException(
                     status_code=400,
                     detail=f"Gerät {manufacturer_sn} ist einem Standort zugewiesen ({existing.get('location_id')}) und kann nicht gelöscht werden"
@@ -4948,40 +4958,128 @@ async def delete_unassigned_asset(manufacturer_sn: str, reason: str = Query("Man
             raise HTTPException(status_code=404, detail=f"Gerät mit SN {manufacturer_sn} nicht gefunden")
         
         warehouse_id = asset.get("warehouse_asset_id")
+        data_before = dict(asset)
+        now = datetime.now(timezone.utc).isoformat()
         
-        # Delete the asset
-        result = await db.tsrid_assets.delete_one({
-            "manufacturer_sn": manufacturer_sn,
-            "location_id": None
-        })
-        
-        if result.deleted_count == 0:
-            raise HTTPException(status_code=500, detail="Fehler beim Löschen des Geräts")
-        
-        # Log to ID history - this ID is now available for reuse
-        if warehouse_id:
-            await log_id_history(
-                warehouse_id=warehouse_id,
-                action="deleted",
-                asset_sn=manufacturer_sn,
+        if hard_delete:
+            # HARD DELETE - only for special cases
+            result = await db.tsrid_assets.delete_one({
+                "manufacturer_sn": manufacturer_sn,
+                "location_id": None
+            })
+            
+            if result.deleted_count == 0:
+                raise HTTPException(status_code=500, detail="Fehler beim Löschen des Geräts")
+            
+            # Log audit
+            audit_entry = await log_audit(
+                action=AuditAction.DELETE,
+                collection="tsrid_assets",
+                document_id=warehouse_id,
                 user=user,
-                reason=reason,
-                details={
-                    "imei": asset.get("imei"),
-                    "mac": asset.get("mac"),
-                    "type": asset.get("type"),
-                    "manufacturer": asset.get("manufacturer"),
-                    "model": asset.get("model")
+                data_before=data_before,
+                data_after=None,
+                metadata={"reason": reason, "hard_delete": True}
+            )
+            
+            # Log to ID history
+            if warehouse_id:
+                await log_id_history(
+                    warehouse_id=warehouse_id,
+                    action="deleted",
+                    asset_sn=manufacturer_sn,
+                    user=user,
+                    reason=reason,
+                    details={
+                        "imei": asset.get("imei"),
+                        "mac": asset.get("mac"),
+                        "type": asset.get("type"),
+                        "hard_delete": True
+                    }
+                )
+            
+            return {
+                "success": True,
+                "message": f"Gerät {manufacturer_sn} wurde PERMANENT gelöscht",
+                "deleted_sn": manufacturer_sn,
+                "freed_id": warehouse_id,
+                "hard_delete": True,
+                "audit_id": audit_entry.get("_id"),
+                "note": f"Die ID {warehouse_id} steht jetzt für ein neues Gerät zur Verfügung."
+            }
+        else:
+            # SOFT DELETE - Archive the asset
+            update_result = await db.tsrid_assets.update_one(
+                {"_id": asset["_id"]},
+                {
+                    "$set": {
+                        "status": "archived",
+                        "archived_at": now,
+                        "archived_by": user,
+                        "archive_reason": reason,
+                        "previous_status": asset.get("status", "in_storage"),
+                        "updated_at": now
+                    },
+                    "$push": {
+                        "history": {
+                            "date": now,
+                            "event": f"Archiviert: {reason}",
+                            "event_type": "archived",
+                            "technician": user
+                        }
+                    }
                 }
             )
-        
-        return {
-            "success": True,
-            "message": f"Gerät {manufacturer_sn} wurde gelöscht",
-            "deleted_sn": manufacturer_sn,
-            "freed_id": warehouse_id,
-            "note": f"Die ID {warehouse_id} steht jetzt für ein neues Gerät zur Verfügung und wurde in der Historie protokolliert."
-        }
+            
+            # Get updated document for verification
+            updated_asset = await db.tsrid_assets.find_one({"_id": asset["_id"]})
+            
+            # Log audit
+            audit_entry = await log_audit(
+                action=AuditAction.ARCHIVE,
+                collection="tsrid_assets",
+                document_id=warehouse_id,
+                user=user,
+                data_before=data_before,
+                data_after=dict(updated_asset) if updated_asset else None,
+                metadata={"reason": reason, "soft_delete": True}
+            )
+            
+            # Verify the write was successful
+            verified = await verify_write(
+                collection="tsrid_assets",
+                document_id=warehouse_id,
+                expected_data={"status": "archived"},
+                audit_id=audit_entry.get("_id")
+            )
+            
+            # Log to ID history
+            if warehouse_id:
+                await log_id_history(
+                    warehouse_id=warehouse_id,
+                    action="archived",
+                    asset_sn=manufacturer_sn,
+                    user=user,
+                    reason=reason,
+                    details={
+                        "imei": asset.get("imei"),
+                        "mac": asset.get("mac"),
+                        "type": asset.get("type"),
+                        "can_restore": True
+                    }
+                )
+            
+            return {
+                "success": True,
+                "message": f"Gerät {manufacturer_sn} wurde archiviert (kann wiederhergestellt werden)",
+                "archived_sn": manufacturer_sn,
+                "warehouse_id": warehouse_id,
+                "archived_at": now,
+                "audit_id": audit_entry.get("_id"),
+                "verified": verified,
+                "can_restore": True,
+                "note": "Das Gerät wurde NICHT gelöscht, sondern archiviert. Es kann über /api/audit/restore wiederhergestellt werden."
+            }
     except HTTPException:
         raise
     except Exception as e:
