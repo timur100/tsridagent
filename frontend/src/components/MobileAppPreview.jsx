@@ -329,86 +329,188 @@ const MobileScannerScreen = () => {
   return (
     <div className="flex flex-col h-full" style={{ backgroundColor: mobileTheme.colors.background }}>
       {/* Header */}
-      <div className="p-4" style={{ backgroundColor: mobileTheme.colors.primary }}>
+      <div className="p-4 flex justify-between items-center" style={{ backgroundColor: mobileTheme.colors.primary }}>
         <h1 className="text-lg font-bold text-white">Scanner</h1>
+        <button 
+          onClick={() => setShowHistory(!showHistory)}
+          className="p-2 rounded-lg bg-white/20"
+        >
+          <History className="w-5 h-5 text-white" />
+        </button>
       </div>
 
-      {/* Camera Preview Simulation */}
-      <div className="flex-1 relative bg-black flex items-center justify-center">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div 
-            className="w-56 h-56 border-2 relative"
-            style={{ borderColor: mobileTheme.colors.primary }}
-          >
-            {/* Corner markers */}
-            {['top-0 left-0 border-t-4 border-l-4', 'top-0 right-0 border-t-4 border-r-4', 'bottom-0 left-0 border-b-4 border-l-4', 'bottom-0 right-0 border-b-4 border-r-4'].map((pos, i) => (
-              <div key={i} className={`absolute w-6 h-6 ${pos}`} style={{ borderColor: mobileTheme.colors.primary }} />
-            ))}
-            {/* Scan line */}
-            <div 
-              className="absolute left-0 right-0 top-1/2 h-0.5 animate-pulse"
-              style={{ backgroundColor: mobileTheme.colors.primary, opacity: 0.8 }}
-            />
+      {showHistory ? (
+        /* Scan History View */
+        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-white font-semibold">Scan-Historie</h2>
+            {scanHistory.length > 0 && (
+              <button 
+                onClick={() => setScanHistory([])}
+                className="text-xs px-2 py-1 rounded"
+                style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: mobileTheme.colors.error }}
+              >
+                Löschen
+              </button>
+            )}
           </div>
+          {scanHistory.length === 0 ? (
+            <div className="text-center py-8">
+              <History className="w-12 h-12 mx-auto mb-2" style={{ color: mobileTheme.colors.textMuted }} />
+              <p style={{ color: mobileTheme.colors.textMuted }}>Keine Scans vorhanden</p>
+            </div>
+          ) : (
+            scanHistory.map((scan, i) => (
+              <div key={i} className="p-3 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <p className="font-semibold text-white">{scan.code}</p>
+                    <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>{scan.timestamp}</p>
+                  </div>
+                  <span 
+                    className="px-2 py-0.5 rounded text-xs"
+                    style={{ 
+                      backgroundColor: scan.found ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)',
+                      color: scan.found ? mobileTheme.colors.success : mobileTheme.colors.error
+                    }}
+                  >
+                    {scan.found ? 'Gefunden' : 'Nicht gefunden'}
+                  </span>
+                </div>
+                {scan.asset && (
+                  <div className="mt-2 pt-2 border-t" style={{ borderColor: mobileTheme.colors.border }}>
+                    <p className="text-sm" style={{ color: mobileTheme.colors.primary }}>{scan.asset.warehouse_asset_id}</p>
+                    <p className="text-xs" style={{ color: mobileTheme.colors.textSecondary }}>{scan.asset.type_label} • {scan.asset.status}</p>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
-        <div className="absolute top-4 left-0 right-0 text-center">
-          <p className="text-white font-semibold text-shadow">Barcode oder QR-Code scannen</p>
-        </div>
-        {/* Simulated camera feed background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-gray-900/80" />
-      </div>
+      ) : (
+        /* Scanner View */
+        <>
+          {/* Camera Preview Simulation */}
+          <div className="flex-1 relative bg-black flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div 
+                className="w-56 h-56 border-2 relative"
+                style={{ borderColor: mobileTheme.colors.primary }}
+              >
+                {['top-0 left-0 border-t-4 border-l-4', 'top-0 right-0 border-t-4 border-r-4', 'bottom-0 left-0 border-b-4 border-l-4', 'bottom-0 right-0 border-b-4 border-r-4'].map((pos, i) => (
+                  <div key={i} className={`absolute w-6 h-6 ${pos}`} style={{ borderColor: mobileTheme.colors.primary }} />
+                ))}
+                <div 
+                  className="absolute left-0 right-0 top-1/2 h-0.5 animate-pulse"
+                  style={{ backgroundColor: mobileTheme.colors.primary, opacity: 0.8 }}
+                />
+              </div>
+            </div>
+            <div className="absolute top-4 left-0 right-0 text-center">
+              <p className="text-white font-semibold text-shadow">
+                {scanMode === 'manual' ? 'Barcode manuell eingeben' : 'Barcode oder QR-Code scannen'}
+              </p>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-gray-900/80" />
+          </div>
 
-      {/* Controls */}
-      <div className="p-4 space-y-3" style={{ backgroundColor: mobileTheme.colors.background }}>
-        {/* Mode Toggle */}
-        <div className="flex p-1 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
-          {['barcode', 'qrcode'].map((mode) => (
-            <button
-              key={mode}
-              onClick={() => setScanMode(mode)}
-              className="flex-1 py-2 rounded font-medium text-white transition-all"
-              style={{ backgroundColor: scanMode === mode ? mobileTheme.colors.primary : 'transparent' }}
-            >
-              {mode === 'barcode' ? 'Barcode' : 'QR-Code'}
-            </button>
-          ))}
-        </div>
+          {/* Controls */}
+          <div className="p-3 space-y-2" style={{ backgroundColor: mobileTheme.colors.background }}>
+            {/* Mode Toggle */}
+            <div className="flex p-1 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
+              {['camera', 'manual'].map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setScanMode(mode)}
+                  className="flex-1 py-2 rounded font-medium text-white transition-all text-sm"
+                  style={{ backgroundColor: scanMode === mode ? mobileTheme.colors.primary : 'transparent' }}
+                >
+                  {mode === 'camera' ? '📷 Kamera' : '⌨️ Manuell'}
+                </button>
+              ))}
+            </div>
 
-        {/* Action Buttons */}
-        <div className="flex gap-2 justify-center">
-          <button
-            onClick={() => setFlashOn(!flashOn)}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg transition-all"
-            style={{ backgroundColor: flashOn ? mobileTheme.colors.primary : mobileTheme.colors.surface }}
-          >
-            <span>💡</span>
-            <span className="text-white font-medium">Blitz</span>
-          </button>
-          <button
-            onClick={simulateScan}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold"
-            style={{ backgroundColor: mobileTheme.colors.primary }}
-          >
-            <Camera className="w-5 h-5" />
-            <span>Scan simulieren</span>
-          </button>
-        </div>
+            {/* Manual Input */}
+            {scanMode === 'manual' && (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualBarcode}
+                  onChange={(e) => setManualBarcode(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleManualScan()}
+                  placeholder="Barcode eingeben..."
+                  className="flex-1 px-3 py-2 rounded-lg text-white outline-none"
+                  style={{ backgroundColor: mobileTheme.colors.surface, border: `1px solid ${mobileTheme.colors.border}` }}
+                />
+                <button
+                  onClick={handleManualScan}
+                  disabled={!manualBarcode || scanning}
+                  className="px-4 py-2 rounded-lg font-semibold text-white disabled:opacity-50"
+                  style={{ backgroundColor: mobileTheme.colors.primary }}
+                >
+                  {scanning ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+                </button>
+              </div>
+            )}
 
-        {/* Last Scan */}
-        {lastScan && (
-          <div className="p-3 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
-            <p className="text-xs mb-1" style={{ color: mobileTheme.colors.textMuted }}>Letzter Scan</p>
-            <p className="text-base font-semibold text-white">{lastScan.code}</p>
-            <p className="text-xs" style={{ color: mobileTheme.colors.textSecondary }}>{lastScan.timestamp}</p>
-            {lastScan.asset && (
-              <div className="flex justify-between mt-2 pt-2 border-t" style={{ borderColor: mobileTheme.colors.border }}>
-                <span style={{ color: mobileTheme.colors.primary }} className="font-semibold">{lastScan.asset.id}</span>
-                <span style={{ color: mobileTheme.colors.success }} className="font-medium">{lastScan.asset.status}</span>
+            {/* Camera Mode Buttons */}
+            {scanMode === 'camera' && (
+              <div className="flex gap-2 justify-center">
+                <button
+                  onClick={() => setFlashOn(!flashOn)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
+                  style={{ backgroundColor: flashOn ? mobileTheme.colors.primary : mobileTheme.colors.surface }}
+                >
+                  <span>💡</span>
+                  <span className="text-white text-sm">Blitz</span>
+                </button>
+                <button
+                  onClick={simulateScan}
+                  disabled={scanning}
+                  className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold disabled:opacity-50"
+                  style={{ backgroundColor: mobileTheme.colors.primary }}
+                >
+                  {scanning ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
+                  <span className="text-sm">Scannen</span>
+                </button>
+              </div>
+            )}
+
+            {/* Last Scan Result */}
+            {lastScan && (
+              <div 
+                className="p-3 rounded-lg border"
+                style={{ 
+                  backgroundColor: mobileTheme.colors.surface,
+                  borderColor: lastScan.found ? mobileTheme.colors.success : mobileTheme.colors.warning
+                }}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>Letzter Scan</p>
+                  <span 
+                    className="px-2 py-0.5 rounded text-xs font-medium"
+                    style={{ 
+                      backgroundColor: lastScan.found ? 'rgba(34,197,94,0.2)' : 'rgba(245,158,11,0.2)',
+                      color: lastScan.found ? mobileTheme.colors.success : mobileTheme.colors.warning
+                    }}
+                  >
+                    {lastScan.found ? '✓ Gefunden' : '? Unbekannt'}
+                  </span>
+                </div>
+                <p className="text-base font-semibold text-white">{lastScan.code}</p>
+                {lastScan.asset && (
+                  <div className="mt-2 pt-2 border-t" style={{ borderColor: mobileTheme.colors.border }}>
+                    <p style={{ color: mobileTheme.colors.primary }} className="font-semibold">{lastScan.asset.warehouse_asset_id}</p>
+                    <p className="text-xs" style={{ color: mobileTheme.colors.textSecondary }}>
+                      {lastScan.asset.type_label} • {lastScan.asset.manufacturer || '-'} • {lastScan.asset.status}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   );
 };
