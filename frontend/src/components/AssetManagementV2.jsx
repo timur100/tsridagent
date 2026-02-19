@@ -2692,7 +2692,7 @@ const AssetManagementV2 = ({ theme }) => {
         )}
 
         {/* Pagination - only for data tables */}
-        {!loading && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && (
+        {!loading && activeTab !== 'goods-receipt' && activeTab !== 'kit-assembly' && activeTab !== 'audit' && (
           <div className="mt-4">
             <TablePagination
               currentPage={pagination[activeTab]?.page || 1}
