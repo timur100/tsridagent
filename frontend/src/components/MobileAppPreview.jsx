@@ -725,8 +725,34 @@ const MobileAssetsScreen = ({ assets, loading }) => {
   );
 };
 
-// Settings Screen with offline toggle
-const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline }) => {
+// Settings Screen with offline toggle, modules config, printer, and notifications
+const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enabledModules, onToggleModule, connectedPrinter, onConnectPrinter, notifications, onToggleNotifications }) => {
+  const [showPrinterModal, setShowPrinterModal] = useState(false);
+  const [showModulesModal, setShowModulesModal] = useState(false);
+  const [scanningPrinters, setScanningPrinters] = useState(false);
+  const [availablePrinters, setAvailablePrinters] = useState([]);
+
+  const simulatePrinterScan = () => {
+    setScanningPrinters(true);
+    setTimeout(() => {
+      setAvailablePrinters([
+        { id: 'zq630-1', name: 'ZQ630-ABC123', type: 'Zebra ZQ630', signal: -45 },
+        { id: 'brother-1', name: 'QL-820NWB-XYZ', type: 'Brother QL-820NWB', signal: -52 },
+      ]);
+      setScanningPrinters(false);
+    }, 2000);
+  };
+
+  const moduleOptions = [
+    { id: 'dashboard', label: 'Dashboard', icon: '🏠', required: true },
+    { id: 'wareneingang', label: 'Wareneingang', icon: '📦' },
+    { id: 'scanner', label: 'Scanner', icon: '📷' },
+    { id: 'assets', label: 'Assets', icon: '🏷️' },
+    { id: 'locations', label: 'Standorte', icon: '📍' },
+    { id: 'kits', label: 'Kit-Verwaltung', icon: '🧰' },
+    { id: 'inventory', label: 'Inventur', icon: '📋' },
+  ];
+
   return (
     <div className="flex flex-col h-full overflow-y-auto" style={{ backgroundColor: mobileTheme.colors.background }}>
       {/* Header */}
@@ -772,6 +798,31 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline }) => {
           </div>
         </div>
 
+        {/* Printer Status Card */}
+        <div 
+          className="p-4 rounded-xl border cursor-pointer"
+          style={{ 
+            backgroundColor: connectedPrinter ? 'rgba(34,197,94,0.1)' : mobileTheme.colors.surface,
+            borderColor: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.border
+          }}
+          onClick={() => setShowPrinterModal(true)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Printer className="w-6 h-6" style={{ color: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.textMuted }} />
+              <div>
+                <p className="font-semibold text-white">
+                  {connectedPrinter ? connectedPrinter.name : 'Kein Drucker'}
+                </p>
+                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                  {connectedPrinter ? connectedPrinter.type : 'Tippen zum Verbinden'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5" style={{ color: mobileTheme.colors.textMuted }} />
+          </div>
+        </div>
+
         {/* Profile Card */}
         <div className="flex items-center p-4 rounded-xl" style={{ backgroundColor: mobileTheme.colors.surface }}>
           <div 
@@ -794,6 +845,29 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline }) => {
           </div>
         </div>
 
+        {/* Module Configuration */}
+        <div>
+          <h3 className="text-sm font-semibold mb-2 px-1" style={{ color: mobileTheme.colors.textMuted }}>
+            Module
+          </h3>
+          <div 
+            className="p-3 rounded-xl flex items-center justify-between cursor-pointer"
+            style={{ backgroundColor: mobileTheme.colors.surface }}
+            onClick={() => setShowModulesModal(true)}
+          >
+            <div className="flex items-center gap-3">
+              <Database className="w-5 h-5" style={{ color: mobileTheme.colors.textSecondary }} />
+              <div>
+                <span className="text-white">Sichtbare Module</span>
+                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                  {Object.values(enabledModules || {}).filter(Boolean).length} von {moduleOptions.length} aktiv
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-5 h-5" style={{ color: mobileTheme.colors.textMuted }} />
+          </div>
+        </div>
+
         {/* Settings Sections */}
         {[
           {
@@ -806,10 +880,11 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline }) => {
             ]
           },
           {
-            title: 'Drucker',
+            title: 'Benachrichtigungen',
             items: [
-              { icon: <Bluetooth className="w-5 h-5" />, label: 'Bluetooth-Drucker', value: 'Nicht verbunden' },
-              { icon: <Barcode className="w-5 h-5" />, label: 'Label-Format', value: '50x30mm' },
+              { icon: <AlertCircle className="w-5 h-5" />, label: 'Sync-Status', toggle: true, value: notifications?.sync ?? true },
+              { icon: <Package className="w-5 h-5" />, label: 'Neue Assets', toggle: true, value: notifications?.assets ?? true },
+              { icon: <Printer className="w-5 h-5" />, label: 'Drucker-Status', toggle: true, value: notifications?.printer ?? false },
             ]
           },
           {
