@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://intake-restore.preview.emergentagent.com/portal/admin/id-checks
+   https://tc78-fieldwork-app.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

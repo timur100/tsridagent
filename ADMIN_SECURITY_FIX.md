@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://intake-restore.preview.emergentagent.com/portal/admin
+https://tc78-fieldwork-app.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

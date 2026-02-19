@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://intake-restore.preview.emergentagent.com/api/dhl"
+API_URL="https://tc78-fieldwork-app.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://intake-restore.preview.emergentagent.com
+│   └── Lädt: https://tc78-fieldwork-app.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```
