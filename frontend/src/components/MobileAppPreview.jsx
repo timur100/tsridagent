@@ -959,6 +959,139 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
           <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>© 2024 TSRID GmbH</p>
         </div>
       </div>
+
+      {/* Printer Modal */}
+      {showPrinterModal && (
+        <div className="absolute inset-0 bg-black/50 flex items-end z-20">
+          <div className="w-full rounded-t-2xl" style={{ backgroundColor: mobileTheme.colors.background, maxHeight: '70%' }}>
+            <div className="p-4 flex justify-between items-center border-b" style={{ borderColor: mobileTheme.colors.border }}>
+              <h2 className="text-lg font-bold text-white">Bluetooth-Drucker</h2>
+              <button onClick={() => setShowPrinterModal(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4">
+              <button
+                onClick={simulatePrinterScan}
+                disabled={scanningPrinters}
+                className="w-full py-3 rounded-lg font-semibold text-white mb-4 flex items-center justify-center gap-2"
+                style={{ backgroundColor: mobileTheme.colors.primary }}
+              >
+                {scanningPrinters ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Suche läuft...</span>
+                  </>
+                ) : (
+                  <>
+                    <Bluetooth className="w-5 h-5" />
+                    <span>Nach Druckern suchen</span>
+                  </>
+                )}
+              </button>
+              
+              {availablePrinters.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs mb-2" style={{ color: mobileTheme.colors.textMuted }}>Gefundene Drucker:</p>
+                  {availablePrinters.map((printer) => (
+                    <div
+                      key={printer.id}
+                      className="p-3 rounded-lg flex items-center justify-between cursor-pointer"
+                      style={{ backgroundColor: mobileTheme.colors.surface }}
+                      onClick={() => {
+                        onConnectPrinter?.(printer);
+                        setShowPrinterModal(false);
+                      }}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Printer className="w-5 h-5" style={{ color: mobileTheme.colors.primary }} />
+                        <div>
+                          <p className="text-white font-medium">{printer.name}</p>
+                          <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>{printer.type}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="flex gap-0.5">
+                          {[1,2,3,4].map(i => (
+                            <div 
+                              key={i} 
+                              className={`w-1 rounded-full ${Math.abs(printer.signal) < 50 + i * 10 ? 'bg-green-500' : 'bg-gray-600'}`} 
+                              style={{ height: 4 + i * 2 }} 
+                            />
+                          ))}
+                        </div>
+                        <ChevronRight className="w-4 h-4" style={{ color: mobileTheme.colors.textMuted }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+              {connectedPrinter && (
+                <button
+                  onClick={() => {
+                    onConnectPrinter?.(null);
+                    setShowPrinterModal(false);
+                  }}
+                  className="w-full py-2 mt-4 rounded-lg text-sm"
+                  style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: mobileTheme.colors.error }}
+                >
+                  Drucker trennen
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modules Configuration Modal */}
+      {showModulesModal && (
+        <div className="absolute inset-0 bg-black/50 flex items-end z-20">
+          <div className="w-full rounded-t-2xl" style={{ backgroundColor: mobileTheme.colors.background, maxHeight: '80%' }}>
+            <div className="p-4 flex justify-between items-center border-b" style={{ borderColor: mobileTheme.colors.border }}>
+              <h2 className="text-lg font-bold text-white">Sichtbare Module</h2>
+              <button onClick={() => setShowModulesModal(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4 space-y-2 overflow-y-auto" style={{ maxHeight: 400 }}>
+              <p className="text-xs mb-3" style={{ color: mobileTheme.colors.textMuted }}>
+                Wählen Sie die Module, die in der App angezeigt werden sollen:
+              </p>
+              {moduleOptions.map((module) => {
+                const isEnabled = enabledModules?.[module.id] ?? true;
+                return (
+                  <div
+                    key={module.id}
+                    className="p-3 rounded-lg flex items-center justify-between"
+                    style={{ backgroundColor: mobileTheme.colors.surface }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-xl">{module.icon}</span>
+                      <div>
+                        <p className="text-white font-medium">{module.label}</p>
+                        {module.required && (
+                          <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>Erforderlich</p>
+                        )}
+                      </div>
+                    </div>
+                    <div 
+                      className={`w-10 h-6 rounded-full p-1 cursor-pointer transition-all ${module.required ? 'opacity-50' : ''}`}
+                      style={{ backgroundColor: isEnabled ? mobileTheme.colors.primary : mobileTheme.colors.border }}
+                      onClick={() => !module.required && onToggleModule?.(module.id)}
+                    >
+                      <div 
+                        className="w-4 h-4 rounded-full bg-white transition-all"
+                        style={{ marginLeft: isEnabled ? 16 : 0 }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
