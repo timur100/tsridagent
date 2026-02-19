@@ -1112,7 +1112,7 @@ const MobileWareneingangScreen = ({ assets, onCreateAsset, offlineQueue, isOnlin
   );
 };
 
-// Tab Bar Component
+// Tab Bar Component with offline indicator
 const MobileTabBar = ({ activeTab, onTabChange, offlineQueue, isOnline }) => {
   const tabs = [
     { id: 'dashboard', icon: Home, label: 'Home' },
@@ -1123,32 +1123,55 @@ const MobileTabBar = ({ activeTab, onTabChange, offlineQueue, isOnline }) => {
   ];
 
   return (
-    <div 
-      className="flex border-t"
-      style={{ backgroundColor: mobileTheme.colors.surface, borderColor: mobileTheme.colors.border }}
-    >
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const isActive = activeTab === tab.id;
-        return (
-          <button
-            key={tab.id}
-            onClick={() => onTabChange(tab.id)}
-            className="flex-1 flex flex-col items-center py-2 transition-all"
-          >
-            <Icon 
-              className="w-6 h-6 mb-0.5" 
-              style={{ color: isActive ? mobileTheme.colors.primary : mobileTheme.colors.textMuted }}
-            />
-            <span 
-              className="text-xs font-medium"
-              style={{ color: isActive ? mobileTheme.colors.primary : mobileTheme.colors.textMuted }}
+    <div className="relative">
+      {/* Offline indicator bar */}
+      {!isOnline && (
+        <div 
+          className="absolute -top-6 left-0 right-0 h-6 flex items-center justify-center gap-2"
+          style={{ backgroundColor: 'rgba(245,158,11,0.2)' }}
+        >
+          <CloudOff className="w-3 h-3" style={{ color: mobileTheme.colors.warning }} />
+          <span className="text-xs" style={{ color: mobileTheme.colors.warning }}>
+            Offline-Modus {offlineQueue > 0 && `• ${offlineQueue} ausstehend`}
+          </span>
+        </div>
+      )}
+      <div 
+        className="flex border-t"
+        style={{ backgroundColor: mobileTheme.colors.surface, borderColor: mobileTheme.colors.border }}
+      >
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          const showBadge = tab.id === 'wareneingang' && offlineQueue > 0;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => onTabChange(tab.id)}
+              className="flex-1 flex flex-col items-center py-2 transition-all relative"
             >
-              {tab.label}
-            </span>
-          </button>
-        );
-      })}
+              <Icon 
+                className="w-5 h-5 mb-0.5" 
+                style={{ color: isActive ? mobileTheme.colors.primary : mobileTheme.colors.textMuted }}
+              />
+              <span 
+                className="text-[10px] font-medium"
+                style={{ color: isActive ? mobileTheme.colors.primary : mobileTheme.colors.textMuted }}
+              >
+                {tab.label}
+              </span>
+              {showBadge && (
+                <div 
+                  className="absolute top-1 right-1/4 w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white"
+                  style={{ backgroundColor: mobileTheme.colors.warning }}
+                >
+                  {offlineQueue}
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -1167,6 +1190,42 @@ const MobileAppPreview = () => {
   const [stats, setStats] = useState({});
   const [assets, setAssets] = useState([]);
   const [assetsLoading, setAssetsLoading] = useState(false);
+  
+  // Offline sync state
+  const [isOnline, setIsOnline] = useState(true);
+  const [offlineQueue, setOfflineQueue] = useState([]);
+  const [lastSyncTime, setLastSyncTime] = useState(null);
+
+  // Simulate network status toggle
+  const toggleOnlineStatus = () => {
+    setIsOnline(prev => !prev);
+    if (!isOnline) {
+      // Coming back online - sync pending items
+      syncOfflineData();
+    }
+  };
+
+  // Handle offline data sync
+  const syncOfflineData = async () => {
+    if (offlineQueue.length > 0 && isOnline) {
+      // In real app, would send queued items to server
+      console.log('Syncing', offlineQueue.length, 'items...');
+      setOfflineQueue([]);
+      setLastSyncTime(new Date());
+      loadAssets(); // Refresh data
+    }
+  };
+
+  // Handle asset creation (with offline support)
+  const handleCreateAsset = (asset) => {
+    if (isOnline) {
+      // Would send to server immediately
+      console.log('Creating asset online:', asset);
+    } else {
+      // Queue for later sync
+      setOfflineQueue(prev => [...prev, { type: 'create_asset', data: asset, timestamp: new Date() }]);
+    }
+  };
 
   // Load data when logged in
   useEffect(() => {
