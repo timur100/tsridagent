@@ -2675,6 +2675,10 @@ const AssetManagementV2 = ({ theme }) => {
           <TabsContent value="kit-assembly">
             <KitAssemblyWorkflow theme={theme} onRefreshStats={fetchStats} />
           </TabsContent>
+        ) : activeTab === 'audit' ? (
+          <TabsContent value="audit">
+            <AuditDashboard theme={theme} />
+          </TabsContent>
         ) : loading ? (
           <TableSkeleton rows={10} columns={7} theme={theme} />
         ) : (
