@@ -4,7 +4,7 @@ import {
   ChevronRight, ChevronDown, Clock, CheckCircle, AlertCircle, XCircle,
   Building2, Monitor, Printer, Cable, Box, Filter, ExternalLink, History,
   ArrowRight, Unplug, Plug, Link2, LinkIcon, Smartphone, Wifi, WifiOff,
-  PackageOpen, Wrench, Truck, Shield
+  PackageOpen, Wrench, Truck, Shield, ListChecks
 } from 'lucide-react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
@@ -20,6 +20,7 @@ import GoodsReceiptWorkflow from './GoodsReceiptWorkflow';
 import KitAssemblyWorkflow from './KitAssemblyWorkflow';
 import KitDetailModal from './KitDetailModal';
 import AuditDashboard from './AuditDashboard';
+import BulkEditModal from './admin/BulkEditModal';
 import { useTenant } from '../contexts/TenantContext';
 import toast from 'react-hot-toast';
 import { QRCodeSVG } from 'qrcode.react';
