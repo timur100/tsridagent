@@ -5497,26 +5497,38 @@ async def get_asset_by_serial_number(manufacturer_sn: str):
 @router.post("/inventory/fix-unassigned-asset-ids")
 async def fix_unassigned_asset_ids():
     """
-    Korrigiert Inkonsistenzen bei unassigned Assets.
-    Setzt asset_id auf null für alle Assets die status='unassigned' und location_id=None haben.
-    Die warehouse_asset_id bleibt erhalten.
+    Migriert bestehende Assets zum neuen System:
+    - Setzt asset_id = warehouse_asset_id für alle Assets wo asset_id null ist
+    - Ändert status von "unassigned" zu "in_storage" für Assets ohne location
     """
     try:
-        result = await db.tsrid_assets.update_many(
+        # 1. Set asset_id = warehouse_asset_id where asset_id is null
+        result1 = await db.tsrid_assets.update_many(
             {
-                "status": "unassigned",
+                "asset_id": None,
+                "warehouse_asset_id": {"$ne": None}
+            },
+            [
+                {"$set": {"asset_id": "$warehouse_asset_id"}}
+            ]
+        )
+        
+        # 2. Update status to "in_storage" for assets without location
+        result2 = await db.tsrid_assets.update_many(
+            {
                 "location_id": None,
-                "asset_id": {"$ne": None}
+                "status": "unassigned"
             },
             {
-                "$set": {"asset_id": None}
+                "$set": {"status": "in_storage"}
             }
         )
         
         return {
             "success": True,
-            "message": f"{result.modified_count} Assets korrigiert",
-            "modified_count": result.modified_count
+            "message": f"Migration abgeschlossen",
+            "asset_ids_set": result1.modified_count,
+            "status_updated": result2.modified_count
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
