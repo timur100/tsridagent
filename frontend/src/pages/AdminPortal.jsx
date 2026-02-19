@@ -1872,6 +1872,19 @@ const AdminPortalContent = () => {
                   <Boxes className="h-5 w-5" />
                   Kit-Vorlagen
                 </button>
+                <button
+                  onClick={() => setInventoryTab('audit')}
+                  className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
+                    inventoryTab === 'audit'
+                      ? 'bg-[#c00000] text-white'
+                      : theme === 'dark'
+                      ? 'text-gray-400 hover:bg-[#3a3a3a]'
+                      : 'text-gray-700 hover:bg-gray-100'
+                  }`}
+                >
+                  <Shield className="h-5 w-5" />
+                  Audit
+                </button>
               </div>
             </div>
 
@@ -1899,6 +1912,10 @@ const AdminPortalContent = () => {
                 theme={theme}
                 tenants={availableTenants}
               />
+            )}
+
+            {inventoryTab === 'audit' && (
+              <AuditDashboard theme={theme} />
             )}
           </div>
         )}
