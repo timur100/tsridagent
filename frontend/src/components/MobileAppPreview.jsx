@@ -1718,8 +1718,11 @@ const MobileAppPreview = () => {
                   { label: 'Wareneingang-Modul', done: true },
                   { label: 'Offline-Synchronisation', done: true },
                   { label: 'Offline-Queue', done: true },
-                  { label: 'Native Zebra Scanner', done: false },
-                  { label: 'Bluetooth-Drucker', done: false },
+                  { label: 'Konfigurierbare Module', done: true },
+                  { label: 'Bluetooth-Drucker UI', done: true },
+                  { label: 'Benachrichtigungs-Settings', done: true },
+                  { label: 'Native Zebra Scanner (Code)', done: true },
+                  { label: 'Bluetooth-Drucker (Code)', done: true },
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-2">
                     {feature.done ? (
@@ -1744,7 +1747,8 @@ const MobileAppPreview = () => {
                 <li>Klicken Sie auf "Demo-Daten einfügen"</li>
                 <li>Klicken Sie auf "Anmelden"</li>
                 <li>Navigieren Sie über die Tab-Bar</li>
-                <li>Testen Sie Scanner, Assets und Einstellungen</li>
+                <li>In Settings: Drucker verbinden, Module konfigurieren</li>
+                <li>Offline-Modus mit "Offline testen" simulieren</li>
               </ol>
             </div>
 
