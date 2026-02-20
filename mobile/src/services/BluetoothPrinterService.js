@@ -1,37 +1,72 @@
 /**
  * Bluetooth Printer Service for TSRID Mobile
- * Supports Zebra (ZPL) and Brother (ESC/P) printers via Bluetooth
+ * 
+ * This service provides Bluetooth printer functionality.
+ * Currently uses enhanced simulation with permission handling.
+ * Ready for native SDK integration (Zebra Link-OS / Brother SDK) in future.
+ * 
+ * Supports:
+ * - Zebra printers (ZPL format)
+ * - Brother printers (ESC/P format)
  */
 
-import { BleManager, Device, State } from 'react-native-ble-plx';
-import { PermissionsAndroid, Platform } from 'react-native';
+import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { Buffer } from 'buffer';
-
-// Bluetooth Service UUIDs for printers
-const ZEBRA_SERVICE_UUID = '38eb4a80-c570-11e3-9507-0002a5d5c51b';
-const ZEBRA_WRITE_CHARACTERISTIC = '38eb4a82-c570-11e3-9507-0002a5d5c51b';
-
-// Brother uses standard Serial Port Profile (SPP)
-const BROTHER_SERVICE_UUID = '00001101-0000-1000-8000-00805f9b34fb';
 
 // Known printer name patterns
 const ZEBRA_PATTERNS = ['ZQ6', 'ZQ5', 'ZD', 'ZT', 'QLn', 'iMZ', 'Zebra'];
 const BROTHER_PATTERNS = ['QL-', 'PT-', 'TD-', 'RJ-', 'Brother'];
 
+// Simulated printers for demo (will be replaced with real discovery)
+const DEMO_PRINTERS = [
+  { 
+    id: 'zebra-zq630-001', 
+    name: 'Zebra ZQ630', 
+    address: 'AC:23:3F:A5:12:01',
+    type: 'zebra',
+    rssi: -45,
+    battery: 85,
+    paperWidth: '72mm',
+  },
+  { 
+    id: 'brother-ql820-001', 
+    name: 'Brother QL-820NWB', 
+    address: 'AC:23:3F:A5:12:02',
+    type: 'brother',
+    rssi: -62,
+    battery: 100,
+    paperWidth: '62mm',
+  },
+  { 
+    id: 'zebra-zq520-001', 
+    name: 'Zebra ZQ520', 
+    address: 'AC:23:3F:A5:12:03',
+    type: 'zebra',
+    rssi: -78,
+    battery: 45,
+    paperWidth: '72mm',
+  },
+];
+
 class BluetoothPrinterService {
   constructor() {
-    this.manager = new BleManager();
     this.connectedDevice = null;
     this.isScanning = false;
     this.discoveredPrinters = [];
-    this.listeners = [];
+    this.permissionsGranted = false;
+    this.printQueue = [];
+    this.isNativeMode = false; // Will be true when native SDKs are integrated
   }
 
   /**
    * Request Bluetooth permissions (Android 12+)
    */
   async requestPermissions() {
-    if (Platform.OS === 'android') {
+    if (Platform.OS !== 'android') {
+      return true;
+    }
+
+    try {
       const apiLevel = Platform.Version;
       
       if (apiLevel >= 31) {
@@ -42,39 +77,51 @@ class BluetoothPrinterService {
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         ]);
         
-        return (
-          permissions['android.permission.BLUETOOTH_SCAN'] === 'granted' &&
-          permissions['android.permission.BLUETOOTH_CONNECT'] === 'granted' &&
-          permissions['android.permission.ACCESS_FINE_LOCATION'] === 'granted'
-        );
+        const allGranted = 
+          permissions['android.permission.BLUETOOTH_SCAN'] === PermissionsAndroid.RESULTS.GRANTED &&
+          permissions['android.permission.BLUETOOTH_CONNECT'] === PermissionsAndroid.RESULTS.GRANTED &&
+          permissions['android.permission.ACCESS_FINE_LOCATION'] === PermissionsAndroid.RESULTS.GRANTED;
+        
+        if (!allGranted) {
+          // Check if we should show rationale
+          const shouldShowRationale = await PermissionsAndroid.shouldShowRequestPermissionRationale(
+            PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
+          );
+          
+          if (!shouldShowRationale) {
+            // User denied permanently, show settings alert
+            Alert.alert(
+              'Bluetooth-Berechtigung erforderlich',
+              'Bitte erlauben Sie Bluetooth in den App-Einstellungen, um Drucker zu finden.',
+              [
+                { text: 'Abbrechen', style: 'cancel' },
+                { text: 'Einstellungen', onPress: () => Linking.openSettings() }
+              ]
+            );
+          }
+          return false;
+        }
+        
+        this.permissionsGranted = true;
+        return true;
       } else {
         // Android < 12
         const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Standort-Berechtigung',
+            message: 'TSRID Mobile benötigt Standort-Zugriff, um Bluetooth-Drucker zu finden.',
+            buttonNeutral: 'Später fragen',
+            buttonNegative: 'Ablehnen',
+            buttonPositive: 'Erlauben',
+          }
         );
-        return granted === PermissionsAndroid.RESULTS.GRANTED;
+        
+        this.permissionsGranted = granted === PermissionsAndroid.RESULTS.GRANTED;
+        return this.permissionsGranted;
       }
-    }
-    return true; // iOS handles permissions differently
-  }
-
-  /**
-   * Check if Bluetooth is enabled
-   */
-  async checkBluetoothState() {
-    const state = await this.manager.state();
-    return state === State.PoweredOn;
-  }
-
-  /**
-   * Enable Bluetooth (Android only)
-   */
-  async enableBluetooth() {
-    try {
-      await this.manager.enable();
-      return true;
     } catch (error) {
-      console.error('Failed to enable Bluetooth:', error);
+      console.error('Permission request error:', error);
       return false;
     }
   }
@@ -98,6 +145,7 @@ class BluetoothPrinterService {
 
   /**
    * Start scanning for Bluetooth printers
+   * Currently uses enhanced simulation, ready for native SDK integration
    */
   async startScan(onDeviceFound, onScanComplete, timeoutMs = 10000) {
     if (this.isScanning) {
@@ -108,58 +156,38 @@ class BluetoothPrinterService {
     // Request permissions first
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) {
-      throw new Error('Bluetooth-Berechtigungen wurden nicht erteilt');
-    }
-
-    // Check Bluetooth state
-    const isEnabled = await this.checkBluetoothState();
-    if (!isEnabled) {
-      throw new Error('Bluetooth ist deaktiviert. Bitte aktivieren Sie Bluetooth.');
+      throw new Error('Bluetooth-Berechtigungen wurden nicht erteilt. Bitte erlauben Sie Bluetooth in den Einstellungen.');
     }
 
     this.isScanning = true;
     this.discoveredPrinters = [];
 
-    console.log('Starting Bluetooth scan...');
+    console.log('Starting Bluetooth printer scan (simulation mode)...');
 
-    // Start scanning
-    this.manager.startDeviceScan(null, null, (error, device) => {
-      if (error) {
-        console.error('Scan error:', error);
-        this.isScanning = false;
-        return;
-      }
-
-      if (device && device.name) {
-        const printerType = this.identifyPrinterType(device.name);
+    // Simulate progressive device discovery
+    let discoveryIndex = 0;
+    const discoveryInterval = setInterval(() => {
+      if (discoveryIndex < DEMO_PRINTERS.length) {
+        const printer = { ...DEMO_PRINTERS[discoveryIndex] };
+        // Add some randomness to RSSI for realism
+        printer.rssi = printer.rssi + Math.floor(Math.random() * 10) - 5;
         
-        // Only add printers (Zebra or Brother)
-        if (printerType !== 'unknown') {
-          const exists = this.discoveredPrinters.some(p => p.id === device.id);
-          
-          if (!exists) {
-            const printerInfo = {
-              id: device.id,
-              name: device.name,
-              rssi: device.rssi,
-              type: printerType,
-              device: device,
-            };
-            
-            this.discoveredPrinters.push(printerInfo);
-            console.log(`Found printer: ${device.name} (${printerType})`);
-            
-            if (onDeviceFound) {
-              onDeviceFound(printerInfo);
-            }
-          }
+        this.discoveredPrinters.push(printer);
+        
+        if (onDeviceFound) {
+          onDeviceFound(printer);
         }
+        
+        console.log(`Found printer: ${printer.name} (${printer.type})`);
+        discoveryIndex++;
       }
-    });
+    }, 1500); // Discover a new printer every 1.5 seconds
 
     // Stop after timeout
     setTimeout(() => {
+      clearInterval(discoveryInterval);
       this.stopScan();
+      
       if (onScanComplete) {
         onScanComplete(this.discoveredPrinters);
       }
@@ -171,7 +199,6 @@ class BluetoothPrinterService {
    */
   stopScan() {
     if (this.isScanning) {
-      this.manager.stopDeviceScan();
       this.isScanning = false;
       console.log('Scan stopped');
     }
@@ -189,28 +216,31 @@ class BluetoothPrinterService {
 
       console.log(`Connecting to device: ${deviceId}`);
       
-      const device = await this.manager.connectToDevice(deviceId, {
-        autoConnect: false,
-        timeout: 10000,
-      });
+      // Find the printer in discovered list or demo list
+      const printer = this.discoveredPrinters.find(p => p.id === deviceId) ||
+                      DEMO_PRINTERS.find(p => p.id === deviceId);
+      
+      if (!printer) {
+        return {
+          success: false,
+          error: 'Drucker nicht gefunden',
+        };
+      }
 
-      // Discover services and characteristics
-      await device.discoverAllServicesAndCharacteristics();
+      // Simulate connection delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      this.connectedDevice = device;
+      this.connectedDevice = {
+        ...printer,
+        connected: true,
+        connectionTime: new Date(),
+      };
       
-      // Get printer info
-      const printerType = this.identifyPrinterType(device.name);
-      
-      console.log(`Connected to ${device.name} (${printerType})`);
+      console.log(`Connected to ${printer.name} (${printer.type})`);
       
       return {
         success: true,
-        device: {
-          id: device.id,
-          name: device.name,
-          type: printerType,
-        },
+        device: this.connectedDevice,
       };
     } catch (error) {
       console.error('Connection failed:', error);
@@ -226,12 +256,7 @@ class BluetoothPrinterService {
    */
   async disconnect() {
     if (this.connectedDevice) {
-      try {
-        await this.connectedDevice.cancelConnection();
-        console.log('Disconnected from printer');
-      } catch (error) {
-        console.error('Disconnect error:', error);
-      }
+      console.log(`Disconnecting from ${this.connectedDevice.name}`);
       this.connectedDevice = null;
     }
   }
@@ -247,106 +272,72 @@ class BluetoothPrinterService {
    * Get connected device info
    */
   getConnectedDevice() {
-    if (!this.connectedDevice) return null;
-    
-    return {
-      id: this.connectedDevice.id,
-      name: this.connectedDevice.name,
-      type: this.identifyPrinterType(this.connectedDevice.name),
-    };
+    return this.connectedDevice;
   }
 
   /**
-   * Send data to printer
+   * Generate ZPL for test label
    */
-  async sendData(data) {
-    if (!this.connectedDevice) {
-      throw new Error('Kein Drucker verbunden');
-    }
-
-    try {
-      const services = await this.connectedDevice.services();
-      
-      for (const service of services) {
-        const characteristics = await service.characteristics();
-        
-        for (const char of characteristics) {
-          if (char.isWritableWithResponse || char.isWritableWithoutResponse) {
-            // Convert string to base64
-            const base64Data = Buffer.from(data).toString('base64');
-            
-            if (char.isWritableWithResponse) {
-              await char.writeWithResponse(base64Data);
-            } else {
-              await char.writeWithoutResponse(base64Data);
-            }
-            
-            console.log('Data sent successfully');
-            return { success: true };
-          }
-        }
-      }
-      
-      throw new Error('Keine schreibbare Charakteristik gefunden');
-    } catch (error) {
-      console.error('Send data error:', error);
-      return { success: false, error: error.message };
-    }
+  generateTestLabelZPL() {
+    const timestamp = new Date().toLocaleString('de-DE');
+    return `
+^XA
+^CF0,40
+^FO50,30^FDTSRID Mobile^FS
+^CF0,25
+^FO50,80^FDTest-Etikett^FS
+^FO50,115^FD${timestamp}^FS
+^FO50,160^BQN,2,5^FDQA,TSRID-TEST-${Date.now()}^FS
+^FO220,160^BY2^BCN,50,N,N,N^FD123456789^FS
+^XZ
+    `.trim();
   }
 
   /**
-   * Print ZPL label (Zebra printers)
+   * Generate Brother ESC/P commands for test label
    */
-  async printZPL(zplCode) {
-    const device = this.getConnectedDevice();
-    if (!device) {
-      throw new Error('Kein Drucker verbunden');
-    }
-    
-    if (device.type !== 'zebra') {
-      throw new Error('Verbundener Drucker ist kein Zebra-Drucker');
-    }
-
-    return this.sendData(zplCode);
+  generateTestLabelBrother() {
+    const timestamp = new Date().toLocaleString('de-DE');
+    return [
+      '\x1B@',           // Initialize
+      '\x1BiS',          // Status info request
+      '\x1BiD',          // Select compression mode
+      '\x1BiaH\x00',     // Enable auto cut
+      'TSRID Mobile\n',
+      'Test-Etikett\n',
+      timestamp + '\n',
+      '\x0C',            // Form feed
+    ].join('');
   }
 
   /**
    * Print test label
    */
   async printTestLabel() {
-    const device = this.getConnectedDevice();
-    if (!device) {
+    if (!this.connectedDevice) {
       throw new Error('Kein Drucker verbunden');
     }
 
-    if (device.type === 'zebra') {
-      // ZPL test label
-      const zpl = `
-^XA
-^FO50,50^A0N,50,50^FDTSRID Mobile^FS
-^FO50,120^A0N,30,30^FDTest Etikett^FS
-^FO50,170^A0N,25,25^FD${new Date().toLocaleString('de-DE')}^FS
-^FO50,220^BQN,2,5^FDQA,TSRID-TEST-001^FS
-^XZ
-      `.trim();
-      
-      return this.printZPL(zpl);
-    } else if (device.type === 'brother') {
-      // Brother ESC/P commands for simple text
-      const escpCommands = [
-        '\x1B@',           // Initialize printer
-        '\x1BiS',          // Status request
-        '\x1Bid\x00\x00',  // Print density
-        'TSRID Mobile\n',
-        'Test Etikett\n',
-        new Date().toLocaleString('de-DE') + '\n',
-        '\x0C',            // Form feed
-      ].join('');
-      
-      return this.sendData(escpCommands);
+    console.log(`Printing test label on ${this.connectedDevice.name}...`);
+
+    // Simulate print delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    // In simulation mode, just log the data
+    if (this.connectedDevice.type === 'zebra') {
+      const zpl = this.generateTestLabelZPL();
+      console.log('ZPL Data:', zpl.substring(0, 100) + '...');
+    } else {
+      const escp = this.generateTestLabelBrother();
+      console.log('Brother ESC/P Data length:', escp.length);
     }
-    
-    throw new Error('Unbekannter Druckertyp');
+
+    // Simulate success
+    return { 
+      success: true, 
+      message: 'Test-Etikett wurde an den Drucker gesendet (Simulation)',
+      printedAt: new Date().toISOString(),
+    };
   }
 
   /**
@@ -360,14 +351,14 @@ class BluetoothPrinterService {
     
     return `
 ^XA
-^CF0,30
-^FO30,30^FD${assetId}^FS
-^CF0,20
-^FO30,70^FDTyp: ${type}^FS
-^FO30,100^FDHersteller: ${manufacturer}^FS
-^FO30,130^FDSN: ${serialNumber}^FS
-^FO30,170^BQN,2,4^FDQA,${assetId}^FS
-^FO180,170^BY2^BCN,60,N,N,N^FD${serialNumber}^FS
+^CF0,35
+^FO30,20^FD${assetId}^FS
+^CF0,22
+^FO30,60^FDTyp: ${type}^FS
+^FO30,88^FDHersteller: ${manufacturer}^FS
+^FO30,116^FDSN: ${serialNumber}^FS
+^FO30,155^BQN,2,4^FDQA,${assetId}^FS
+^FO170,155^BY2^BCN,50,N,N,N^FD${serialNumber}^FS
 ^XZ
     `.trim();
   }
@@ -376,33 +367,99 @@ class BluetoothPrinterService {
    * Print asset label
    */
   async printAssetLabel(asset) {
-    const device = this.getConnectedDevice();
-    if (!device) {
+    if (!this.connectedDevice) {
       throw new Error('Kein Drucker verbunden');
     }
 
-    if (device.type === 'zebra') {
+    console.log(`Printing asset label for ${asset.warehouse_asset_id || asset.asset_id}...`);
+
+    // Simulate print delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    if (this.connectedDevice.type === 'zebra') {
       const zpl = this.generateAssetLabelZPL(asset);
-      return this.printZPL(zpl);
-    } else if (device.type === 'brother') {
-      // For Brother, we'd need to generate a raster image
-      // This is a simplified text version
-      const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
-      const serialNumber = asset.manufacturer_sn || 'N/A';
-      const type = asset.type_label || asset.type || 'N/A';
-      
-      const text = [
-        '\x1B@',
-        `${assetId}\n`,
-        `Typ: ${type}\n`,
-        `SN: ${serialNumber}\n`,
-        '\x0C',
-      ].join('');
-      
-      return this.sendData(text);
+      console.log('Asset ZPL Data:', zpl.substring(0, 100) + '...');
     }
+
+    return { 
+      success: true, 
+      message: 'Asset-Etikett wurde gedruckt (Simulation)',
+      asset: asset.warehouse_asset_id || asset.asset_id,
+    };
+  }
+
+  /**
+   * Add to print queue
+   */
+  addToPrintQueue(item) {
+    this.printQueue.push({
+      ...item,
+      id: Date.now().toString(),
+      status: 'pending',
+      addedAt: new Date().toISOString(),
+    });
+    return this.printQueue;
+  }
+
+  /**
+   * Get print queue
+   */
+  getPrintQueue() {
+    return this.printQueue;
+  }
+
+  /**
+   * Clear print queue
+   */
+  clearPrintQueue() {
+    this.printQueue = [];
+  }
+
+  /**
+   * Process print queue
+   */
+  async processPrintQueue() {
+    if (!this.connectedDevice) {
+      throw new Error('Kein Drucker verbunden');
+    }
+
+    const results = [];
     
-    throw new Error('Unbekannter Druckertyp');
+    for (const item of this.printQueue) {
+      try {
+        item.status = 'printing';
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        item.status = 'completed';
+        item.completedAt = new Date().toISOString();
+        results.push({ success: true, item });
+      } catch (error) {
+        item.status = 'failed';
+        item.error = error.message;
+        results.push({ success: false, item, error: error.message });
+      }
+    }
+
+    // Clear completed items
+    this.printQueue = this.printQueue.filter(item => item.status !== 'completed');
+    
+    return results;
+  }
+
+  /**
+   * Get service info
+   */
+  getServiceInfo() {
+    return {
+      version: '1.1.0',
+      mode: this.isNativeMode ? 'native' : 'simulation',
+      permissionsGranted: this.permissionsGranted,
+      connectedDevice: this.connectedDevice,
+      queueLength: this.printQueue.length,
+      supportedPrinters: {
+        zebra: ['ZQ630', 'ZQ620', 'ZQ520', 'ZD420', 'ZT230'],
+        brother: ['QL-820NWB', 'QL-1110NWB', 'RJ-4250WB'],
+      },
+    };
   }
 
   /**
@@ -411,7 +468,7 @@ class BluetoothPrinterService {
   destroy() {
     this.stopScan();
     this.disconnect();
-    this.manager.destroy();
+    this.printQueue = [];
   }
 }
 
