@@ -1610,6 +1610,178 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
         </div>
       )}
 
+      {/* Push Notifications Settings Modal */}
+      {showNotificationsModal && (
+        <div className="absolute inset-0 bg-black/50 flex items-end z-20">
+          <div className="w-full rounded-t-2xl" style={{ backgroundColor: mobileTheme.colors.background, maxHeight: '85%' }}>
+            <div className="p-4 flex justify-between items-center border-b" style={{ borderColor: mobileTheme.colors.border }}>
+              <h2 className="text-lg font-bold text-white">🔔 Benachrichtigungen</h2>
+              <button onClick={() => setShowNotificationsModal(false)}>
+                <X className="w-6 h-6 text-gray-500" />
+              </button>
+            </div>
+            <div className="p-4 space-y-4 overflow-y-auto" style={{ maxHeight: '70vh' }}>
+              {/* Master Toggle */}
+              <div 
+                className="p-4 rounded-xl border"
+                style={{ 
+                  backgroundColor: notificationSettings.enabled ? 'rgba(34,197,94,0.1)' : mobileTheme.colors.surface,
+                  borderColor: notificationSettings.enabled ? mobileTheme.colors.success : mobileTheme.colors.border
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-semibold text-white">Push-Benachrichtigungen</p>
+                    <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                      {notificationSettings.enabled ? 'Aktiviert' : 'Deaktiviert'}
+                    </p>
+                  </div>
+                  <div 
+                    className="w-12 h-7 rounded-full p-1 cursor-pointer transition-all"
+                    style={{ backgroundColor: notificationSettings.enabled ? mobileTheme.colors.success : mobileTheme.colors.border }}
+                    onClick={() => setNotificationSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
+                  >
+                    <div 
+                      className="w-5 h-5 rounded-full bg-white transition-all"
+                      style={{ marginLeft: notificationSettings.enabled ? 20 : 0 }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Categories */}
+              {notificationSettings.enabled && (
+                <>
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 px-1" style={{ color: mobileTheme.colors.textMuted }}>
+                      Kategorien
+                    </h3>
+                    <div className="space-y-2">
+                      {Object.entries(notificationSettings.categories).map(([id, category]) => (
+                        <div
+                          key={id}
+                          className="p-3 rounded-lg flex items-center justify-between"
+                          style={{ backgroundColor: mobileTheme.colors.surface }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span className="text-xl">{category.icon}</span>
+                            <div>
+                              <p className="text-white font-medium">{category.label}</p>
+                              <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                                {category.description}
+                              </p>
+                            </div>
+                          </div>
+                          <div 
+                            className="w-10 h-6 rounded-full p-1 cursor-pointer transition-all"
+                            style={{ backgroundColor: category.enabled ? mobileTheme.colors.primary : mobileTheme.colors.border }}
+                            onClick={() => toggleNotificationCategory(id)}
+                          >
+                            <div 
+                              className="w-4 h-4 rounded-full bg-white transition-all"
+                              style={{ marginLeft: category.enabled ? 16 : 0 }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quiet Hours */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 px-1" style={{ color: mobileTheme.colors.textMuted }}>
+                      Stille Stunden
+                    </h3>
+                    <div 
+                      className="p-4 rounded-xl"
+                      style={{ backgroundColor: mobileTheme.colors.surface }}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <p className="text-white font-medium">Nicht stören</p>
+                          <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                            Keine Benachrichtigungen während der stillen Stunden
+                          </p>
+                        </div>
+                        <div 
+                          className="w-10 h-6 rounded-full p-1 cursor-pointer transition-all"
+                          style={{ backgroundColor: notificationSettings.quietHours.enabled ? mobileTheme.colors.primary : mobileTheme.colors.border }}
+                          onClick={toggleQuietHours}
+                        >
+                          <div 
+                            className="w-4 h-4 rounded-full bg-white transition-all"
+                            style={{ marginLeft: notificationSettings.quietHours.enabled ? 16 : 0 }}
+                          />
+                        </div>
+                      </div>
+                      {notificationSettings.quietHours.enabled && (
+                        <div className="flex items-center gap-3 pt-3 border-t" style={{ borderColor: mobileTheme.colors.border }}>
+                          <div className="flex-1">
+                            <p className="text-xs mb-1" style={{ color: mobileTheme.colors.textMuted }}>Von</p>
+                            <div className="px-3 py-2 rounded-lg text-center text-white font-mono" style={{ backgroundColor: mobileTheme.colors.background }}>
+                              {notificationSettings.quietHours.start}
+                            </div>
+                          </div>
+                          <span style={{ color: mobileTheme.colors.textMuted }}>→</span>
+                          <div className="flex-1">
+                            <p className="text-xs mb-1" style={{ color: mobileTheme.colors.textMuted }}>Bis</p>
+                            <div className="px-3 py-2 rounded-lg text-center text-white font-mono" style={{ backgroundColor: mobileTheme.colors.background }}>
+                              {notificationSettings.quietHours.end}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Notification Style */}
+                  <div>
+                    <h3 className="text-sm font-semibold mb-2 px-1" style={{ color: mobileTheme.colors.textMuted }}>
+                      Benachrichtigungs-Stil
+                    </h3>
+                    <div className="rounded-xl overflow-hidden" style={{ backgroundColor: mobileTheme.colors.surface }}>
+                      {[
+                        { id: 'sound', label: 'Ton', icon: <Volume2 className="w-5 h-5" />, value: notificationSettings.sound },
+                        { id: 'vibration', label: 'Vibration', icon: <Vibrate className="w-5 h-5" />, value: notificationSettings.vibration },
+                        { id: 'badge', label: 'Badge-Zähler', icon: <AlertCircle className="w-5 h-5" />, value: notificationSettings.badge },
+                      ].map((item, i) => (
+                        <div 
+                          key={item.id}
+                          className="flex items-center justify-between p-3 border-b last:border-b-0"
+                          style={{ borderColor: mobileTheme.colors.border }}
+                        >
+                          <div className="flex items-center gap-3">
+                            <span style={{ color: mobileTheme.colors.textSecondary }}>{item.icon}</span>
+                            <span className="text-white">{item.label}</span>
+                          </div>
+                          <div 
+                            className="w-10 h-6 rounded-full p-1 cursor-pointer transition-all"
+                            style={{ backgroundColor: item.value ? mobileTheme.colors.primary : mobileTheme.colors.border }}
+                            onClick={() => setNotificationSettings(prev => ({ ...prev, [item.id]: !prev[item.id] }))}
+                          >
+                            <div 
+                              className="w-4 h-4 rounded-full bg-white transition-all"
+                              style={{ marginLeft: item.value ? 16 : 0 }}
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Info Box */}
+              <div className="p-3 rounded-lg" style={{ backgroundColor: 'rgba(59,130,246,0.1)' }}>
+                <p className="text-xs" style={{ color: mobileTheme.colors.info }}>
+                  💡 Push-Benachrichtigungen erfordern eine Internetverbindung. Im Offline-Modus werden Benachrichtigungen zwischengespeichert.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modules Configuration Modal */}
       {showModulesModal && (
         <div className="absolute inset-0 bg-black/50 flex items-end z-20">
