@@ -69,8 +69,7 @@
         {
           "cameraPermission": "Erlauben Sie TSRID Mobile, die Kamera zum Scannen von Barcodes zu verwenden."
         }
-      ],
-      "expo-dev-client"
+      ]
     ],
     "runtimeVersion": {
       "policy": "sdkVersion"
