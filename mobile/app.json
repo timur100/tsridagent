@@ -52,10 +52,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://asset-scanner-sim.preview.emergentagent.com",
-      "eas": {
-        "projectId": "tsrid-mobile"
-      }
+      "apiUrl": "https://asset-scanner-sim.preview.emergentagent.com"
     },
     "plugins": [
       [
