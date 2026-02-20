@@ -35,6 +35,18 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - **Location**: `/app/frontend/src/components/MobileAppPreview.jsx` Zeile 1545-1559
 - **Test-Status**: ✅ Verifiziert - 100 Assets werden jetzt korrekt angezeigt
 
+#### NEW: Zebra DataWedge Scanner-Simulation (IMPLEMENTED)
+- **Feature**: Realistische Simulation des Zebra TC78 Hardware-Scanners
+- **Komponenten**:
+  - **DataWedge Status Bar**: Zeigt Verbindungsstatus und Profil-Name
+  - **Hardware-Trigger Button**: Simuliert den physischen Scan-Trigger
+  - **Laser-Animation**: Roter Laser-Effekt beim Scannen
+  - **Scan-Feedback**: Grün (gefunden), Gelb (unbekannt), Rot (Fehler)
+  - **Keyboard-Shortcut**: [Leertaste] löst Scan aus
+- **Modi**: 📡 Zebra (DataWedge), 📷 Kamera, ⌨️ Manuell
+- **Location**: `/app/frontend/src/components/MobileAppPreview.jsx`
+- **Test-Status**: ✅ Verifiziert - Scannt Assets und zeigt "DataWedge" Badge
+
 #### Enhancement: Data-TestIDs für Mobile Tab Bar
 - Hinzugefügt: `data-testid="mobile-tab-{id}"` zu allen Tabs in der Mobile App Preview
 - Verbessert: Testbarkeit der Mobile-App-Vorschau-Komponente
