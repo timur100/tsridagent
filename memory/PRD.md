@@ -28,6 +28,35 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-20 (Current)
 
+#### APK V4 - ECHTE Bluetooth-Integration (2025-02-20) ✅
+- **Build-ID V4**: `40b27f4e-7f5b-4912-96ab-6b757f2bd6ed`
+- **APK Download V4**: https://expo.dev/artifacts/eas/8ZniTwPRGLamvMMvAyUnYH.apk
+- **WICHTIG**: Dies ist ein PRODUCTION-READY Build mit echtem Bluetooth!
+
+**Technische Details:**
+- Expo SDK 51 (upgrade von 50)
+- `react-native-ble-plx` Native Modul für echte BLE-Kommunikation
+- `expo-dev-client@4.0.29` für Development Build
+- Node.js 20.18.0 auf EAS Build Server
+
+**Echte Bluetooth-Features:**
+1. **Geräte-Scan**: Echte BLE-Suche nach Druckern
+2. **Verbindung**: Echte Bluetooth-Verbindung zu Zebra/Brother Druckern
+3. **ZPL-Druck**: Echte ZPL-Befehle an Zebra-Drucker senden
+4. **ESC/P-Druck**: Brother-Drucker Unterstützung
+
+**Unterstützte Drucker:**
+- Zebra: ZQ630, ZQ620, ZQ520, ZD420, ZT230 (ZPL)
+- Brother: QL-820NWB, QL-1110NWB (ESC/P)
+
+**Geänderte Dateien:**
+- `app.json` - SDK 51 + BLE Plugin Konfiguration
+- `eas.json` - Node 20 + zebra-tc78 Profil
+- `package.json` - SDK 51 Dependencies
+- `BluetoothPrinterService.js` - Echter BLE Service
+
+- **Status**: ✅ PRODUCTION READY mit echtem Bluetooth
+
 #### APK V3 - Verbesserte Bluetooth-Simulation (2025-02-20)
 - **Build-ID V3**: `888139bd-2460-433e-8cbc-c2229d69be8e`
 - **APK Download V3**: https://expo.dev/artifacts/eas/hREexBhAxTV1QCe6QXbacd.apk
