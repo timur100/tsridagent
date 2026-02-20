@@ -47,6 +47,18 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - **Location**: `/app/frontend/src/components/MobileAppPreview.jsx`
 - **Test-Status**: ✅ Verifiziert - Scannt Assets und zeigt "DataWedge" Badge
 
+#### NEW: Bluetooth-Drucker-Simulation (IMPLEMENTED)
+- **Feature**: Realistische Simulation von Bluetooth-Druckern (ZQ630, QL-820NWB)
+- **Komponenten**:
+  - **Drucker-Karte**: Zeigt verbundenen Drucker mit Status, Batterie, Signal
+  - **Drucker-Modal**: Suche nach Bluetooth-Druckern mit Scan-Animation
+  - **Druckerliste**: 3 simulierte Drucker mit Details (Batterie%, Signal, Etikettenbreite)
+  - **Test-Druck**: Button zum Simulieren eines Test-Etiketts
+  - **Druckwarteschlange**: Modal zur Anzeige ausstehender Druckaufträge
+- **Unterstützte Drucker**: Zebra ZQ630 (ZPL), Brother QL-820NWB (DK)
+- **Location**: `/app/frontend/src/components/MobileAppPreview.jsx`
+- **Test-Status**: ✅ Verifiziert - Modal öffnet, zeigt 3 Drucker mit Details
+
 #### Enhancement: Data-TestIDs für Mobile Tab Bar
 - Hinzugefügt: `data-testid="mobile-tab-{id}"` zu allen Tabs in der Mobile App Preview
 - Verbessert: Testbarkeit der Mobile-App-Vorschau-Komponente
