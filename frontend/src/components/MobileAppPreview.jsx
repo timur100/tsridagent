@@ -310,17 +310,108 @@ const MobileDashboardScreen = ({ user, stats, serverStatus, onNavigate }) => {
   );
 };
 
-// Scanner Screen with real barcode lookup
-const MobileScannerScreen = ({ assets, onLookupAsset }) => {
+// Zebra DataWedge Status Component
+const DataWedgeStatus = ({ isConnected, profileName, lastEvent }) => {
+  return (
+    <div 
+      className="absolute top-16 left-2 right-2 p-2 rounded-lg z-10"
+      style={{ backgroundColor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(4px)' }}
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div 
+            className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}
+          />
+          <span className="text-xs font-medium text-white">DataWedge</span>
+        </div>
+        <span className="text-[10px] text-gray-400">{profileName}</span>
+      </div>
+      {lastEvent && (
+        <p className="text-[10px] text-gray-500 mt-1 truncate">
+          {lastEvent}
+        </p>
+      )}
+    </div>
+  );
+};
+
+// Scanner Screen with Zebra DataWedge Simulation
+const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true }) => {
   const [flashOn, setFlashOn] = useState(false);
-  const [scanMode, setScanMode] = useState('camera');
+  const [scanMode, setScanMode] = useState('datawedge'); // 'datawedge', 'camera', 'manual'
   const [lastScan, setLastScan] = useState(null);
   const [scanHistory, setScanHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [manualBarcode, setManualBarcode] = useState('');
   const [scanning, setScanning] = useState(false);
+  
+  // DataWedge Simulation State
+  const [dataWedgeConnected, setDataWedgeConnected] = useState(true);
+  const [dataWedgeProfile, setDataWedgeProfile] = useState('TSRID_Scanner');
+  const [dataWedgeEvent, setDataWedgeEvent] = useState('Profile aktiv');
+  const [laserActive, setLaserActive] = useState(false);
+  const [triggerPressed, setTriggerPressed] = useState(false);
+  const [scanFeedback, setScanFeedback] = useState(null); // 'success', 'error', 'unknown'
 
-  const performLookup = async (code) => {
+  // Simulate DataWedge scan with realistic timing
+  const simulateDataWedgeScan = useCallback(async () => {
+    if (scanning || !dataWedgeConnected) return;
+    
+    // Simulate trigger press
+    setTriggerPressed(true);
+    setLaserActive(true);
+    setDataWedgeEvent('Scanner-Trigger aktiviert');
+    
+    // Simulate laser scanning (300-800ms)
+    const scanDuration = 300 + Math.random() * 500;
+    
+    await new Promise(resolve => setTimeout(resolve, scanDuration));
+    
+    // 90% chance of successful decode
+    const decodeSuccess = Math.random() < 0.9;
+    
+    if (decodeSuccess && assets.length > 0) {
+      // Pick a random asset to "scan"
+      const randomIndex = Math.floor(Math.random() * assets.length);
+      const randomAsset = assets[randomIndex];
+      
+      // Randomly choose which barcode field to return
+      const barcodeFields = [
+        randomAsset.warehouse_asset_id,
+        randomAsset.manufacturer_sn,
+        randomAsset.asset_id,
+      ].filter(Boolean);
+      
+      const scannedCode = barcodeFields[Math.floor(Math.random() * barcodeFields.length)] || 
+        `SN-${Math.random().toString(36).substr(2, 10).toUpperCase()}`;
+      
+      setDataWedgeEvent(`Dekodiert: ${scannedCode.substring(0, 20)}...`);
+      await performLookup(scannedCode, 'datawedge');
+    } else {
+      // Decode failed or no assets
+      setDataWedgeEvent('Dekodierung fehlgeschlagen');
+      setScanFeedback('error');
+      setTimeout(() => setScanFeedback(null), 1000);
+    }
+    
+    setLaserActive(false);
+    setTriggerPressed(false);
+  }, [scanning, dataWedgeConnected, assets]);
+
+  // Keyboard shortcut for trigger simulation (Space or Enter)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (scanMode === 'datawedge' && (e.code === 'Space' || e.code === 'Enter') && !e.repeat) {
+        e.preventDefault();
+        simulateDataWedgeScan();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [scanMode, simulateDataWedgeScan]);
+
+  const performLookup = async (code, source = 'manual') => {
     setScanning(true);
     const timestamp = new Date().toLocaleString('de-DE');
     
@@ -337,11 +428,16 @@ const MobileScannerScreen = ({ assets, onLookupAsset }) => {
       code,
       timestamp,
       found: !!foundAsset,
-      asset: foundAsset || null
+      asset: foundAsset || null,
+      source, // 'datawedge', 'camera', 'manual'
     };
 
+    // Visual feedback
+    setScanFeedback(foundAsset ? 'success' : 'unknown');
+    setTimeout(() => setScanFeedback(null), 1500);
+
     setLastScan(scanResult);
-    setScanHistory(prev => [scanResult, ...prev].slice(0, 50)); // Keep last 50 scans
+    setScanHistory(prev => [scanResult, ...prev].slice(0, 50));
     setScanning(false);
     setManualBarcode('');
     
@@ -350,12 +446,12 @@ const MobileScannerScreen = ({ assets, onLookupAsset }) => {
 
   const handleManualScan = () => {
     if (manualBarcode.trim()) {
-      performLookup(manualBarcode.trim());
+      performLookup(manualBarcode.trim(), 'manual');
     }
   };
 
-  const simulateScan = () => {
-    // Simulate scanning a random asset or unknown code
+  const simulateCameraScan = () => {
+    // Simulate camera scanning a random asset or unknown code
     const randomAsset = assets[Math.floor(Math.random() * assets.length)];
     const codes = [
       randomAsset?.warehouse_asset_id,
@@ -363,7 +459,16 @@ const MobileScannerScreen = ({ assets, onLookupAsset }) => {
       'UNKNOWN-' + Math.random().toString(36).substr(2, 8).toUpperCase(),
     ].filter(Boolean);
     const code = codes[Math.floor(Math.random() * codes.length)];
-    performLookup(code);
+    performLookup(code, 'camera');
+  };
+
+  // Toggle DataWedge connection (for demo)
+  const toggleDataWedge = () => {
+    setDataWedgeConnected(prev => {
+      const newState = !prev;
+      setDataWedgeEvent(newState ? 'Verbindung hergestellt' : 'Verbindung getrennt');
+      return newState;
+    });
   };
 
   return (
