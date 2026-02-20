@@ -1,23 +1,15 @@
 /**
- * Real Bluetooth Printer Service for TSRID Mobile
- * Uses react-native-ble-plx for actual Bluetooth Low Energy communication
+ * Bluetooth Printer Service for TSRID Mobile
  * 
- * Supports:
- * - Zebra printers (ZPL format) - ZQ630, ZQ620, ZQ520, ZD series
- * - Brother printers (ESC/P format) - QL-820NWB, QL-1110NWB
+ * Supports BOTH:
+ * - Bluetooth Low Energy (BLE) for Zebra printers via react-native-ble-plx
+ * - Bluetooth Classic (SPP) for Brother printers via react-native-bluetooth-classic
  */
 
-import { BleManager, State } from 'react-native-ble-plx';
+import { BleManager, State as BleState } from 'react-native-ble-plx';
+import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { Buffer } from 'buffer';
-
-// Zebra printer service UUIDs (Link-OS)
-const ZEBRA_WRITE_SERVICE = '38eb4a80-c570-11e3-9507-0002a5d5c51b';
-const ZEBRA_WRITE_CHARACTERISTIC = '38eb4a82-c570-11e3-9507-0002a5d5c51b';
-const ZEBRA_READ_CHARACTERISTIC = '38eb4a81-c570-11e3-9507-0002a5d5c51b';
-
-// Standard Serial Port Profile UUID (used by many printers)
-const SPP_SERVICE_UUID = '00001101-0000-1000-8000-00805f9b34fb';
 
 // Known printer name patterns
 const ZEBRA_PATTERNS = ['ZQ6', 'ZQ5', 'ZD', 'ZT', 'QLn', 'iMZ', 'ZEBRA', 'Zebra'];
@@ -25,44 +17,20 @@ const BROTHER_PATTERNS = ['QL-', 'PT-', 'TD-', 'RJ-', 'BROTHER', 'Brother'];
 
 class BluetoothPrinterService {
   constructor() {
-    this.manager = new BleManager();
+    // BLE Manager for Zebra printers
+    this.bleManager = new BleManager();
+    
+    // Connection state
     this.connectedDevice = null;
     this.writeCharacteristic = null;
     this.isScanning = false;
     this.discoveredPrinters = [];
     this.permissionsGranted = false;
-    this.printQueue = [];
     this.connectionSubscription = null;
   }
 
   /**
-   * Initialize the BLE manager and check state
-   */
-  async initialize() {
-    return new Promise((resolve, reject) => {
-      const subscription = this.manager.onStateChange((state) => {
-        if (state === State.PoweredOn) {
-          subscription.remove();
-          resolve(true);
-        } else if (state === State.PoweredOff) {
-          subscription.remove();
-          reject(new Error('Bluetooth ist ausgeschaltet. Bitte aktivieren Sie Bluetooth.'));
-        } else if (state === State.Unauthorized) {
-          subscription.remove();
-          reject(new Error('Bluetooth-Berechtigung wurde nicht erteilt.'));
-        }
-      }, true);
-      
-      // Timeout after 10 seconds
-      setTimeout(() => {
-        subscription.remove();
-        reject(new Error('Bluetooth-Initialisierung Timeout'));
-      }, 10000);
-    });
-  }
-
-  /**
-   * Request Bluetooth permissions (Android 12+)
+   * Request all Bluetooth permissions (Android 12+)
    */
   async requestPermissions() {
     if (Platform.OS !== 'android') {
@@ -132,6 +100,33 @@ class BluetoothPrinterService {
   }
 
   /**
+   * Check if Bluetooth is enabled
+   */
+  async isBluetoothEnabled() {
+    try {
+      // Check Classic Bluetooth
+      const classicEnabled = await RNBluetoothClassic.isBluetoothEnabled();
+      return classicEnabled;
+    } catch (error) {
+      console.error('Bluetooth check error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Request to enable Bluetooth
+   */
+  async requestBluetoothEnabled() {
+    try {
+      const enabled = await RNBluetoothClassic.requestBluetoothEnabled();
+      return enabled;
+    } catch (error) {
+      console.error('Enable Bluetooth error:', error);
+      return false;
+    }
+  }
+
+  /**
    * Identify printer type from device name
    */
   identifyPrinterType(deviceName) {
@@ -155,7 +150,18 @@ class BluetoothPrinterService {
   }
 
   /**
-   * Start scanning for Bluetooth printers
+   * Determine Bluetooth type for printer
+   * Brother uses Classic, Zebra uses BLE
+   */
+  getBluetoothType(printerType) {
+    if (printerType === 'brother') {
+      return 'classic';
+    }
+    return 'ble'; // Zebra and generic use BLE
+  }
+
+  /**
+   * Start scanning for ALL Bluetooth printers (both BLE and Classic)
    */
   async startScan(onDeviceFound, onScanComplete, timeoutMs = 15000) {
     if (this.isScanning) {
@@ -169,62 +175,133 @@ class BluetoothPrinterService {
       throw new Error('Bluetooth-Berechtigungen wurden nicht erteilt.');
     }
 
-    // Initialize BLE
-    try {
-      await this.initialize();
-    } catch (error) {
-      throw error;
+    // Check if Bluetooth is enabled
+    const btEnabled = await this.isBluetoothEnabled();
+    if (!btEnabled) {
+      const enabled = await this.requestBluetoothEnabled();
+      if (!enabled) {
+        throw new Error('Bluetooth ist deaktiviert. Bitte aktivieren Sie Bluetooth.');
+      }
     }
 
     this.isScanning = true;
     this.discoveredPrinters = [];
 
-    console.log('Starting real Bluetooth scan...');
+    console.log('Starting combined Bluetooth scan (BLE + Classic)...');
 
-    // Start scanning for all devices
-    this.manager.startDeviceScan(
-      null, // Scan for all services
-      { allowDuplicates: false },
-      (error, device) => {
-        if (error) {
-          console.error('Scan error:', error);
-          return;
-        }
-
-        if (device && device.name) {
-          const printerType = this.identifyPrinterType(device.name);
+    // Scan for Bluetooth Classic devices (Brother printers)
+    try {
+      console.log('Scanning for Bluetooth Classic devices...');
+      
+      // Get already paired devices
+      const pairedDevices = await RNBluetoothClassic.getBondedDevices();
+      console.log(`Found ${pairedDevices.length} paired Classic devices`);
+      
+      for (const device of pairedDevices) {
+        const printerType = this.identifyPrinterType(device.name);
+        if (printerType !== 'unknown') {
+          const printerInfo = {
+            id: device.address,
+            name: device.name,
+            address: device.address,
+            rssi: -50, // Paired devices don't have RSSI
+            type: printerType,
+            bluetoothType: 'classic',
+            paired: true,
+            device: device,
+          };
           
-          // Accept all printer types (zebra, brother, generic)
-          if (printerType !== 'unknown') {
-            const exists = this.discoveredPrinters.some(p => p.id === device.id);
-            
-            if (!exists) {
-              const printerInfo = {
-                id: device.id,
-                name: device.name,
-                localName: device.localName,
-                rssi: device.rssi,
-                type: printerType,
-                manufacturerData: device.manufacturerData,
-                serviceUUIDs: device.serviceUUIDs,
-                device: device,
-              };
-              
-              this.discoveredPrinters.push(printerInfo);
-              console.log(`Found printer: ${device.name} (${printerType}) RSSI: ${device.rssi}`);
-              
-              if (onDeviceFound) {
-                onDeviceFound(printerInfo);
-              }
+          const exists = this.discoveredPrinters.some(p => p.id === printerInfo.id);
+          if (!exists) {
+            this.discoveredPrinters.push(printerInfo);
+            console.log(`Found paired printer: ${device.name} (${printerType}) - Classic`);
+            if (onDeviceFound) {
+              onDeviceFound(printerInfo);
             }
           }
         }
       }
-    );
+
+      // Start discovery for unpaired devices
+      console.log('Starting Classic Bluetooth discovery...');
+      const unpaired = await RNBluetoothClassic.startDiscovery();
+      console.log(`Discovery found ${unpaired.length} devices`);
+      
+      for (const device of unpaired) {
+        const printerType = this.identifyPrinterType(device.name);
+        if (printerType !== 'unknown') {
+          const printerInfo = {
+            id: device.address,
+            name: device.name,
+            address: device.address,
+            rssi: device.rssi || -60,
+            type: printerType,
+            bluetoothType: 'classic',
+            paired: false,
+            device: device,
+          };
+          
+          const exists = this.discoveredPrinters.some(p => p.id === printerInfo.id);
+          if (!exists) {
+            this.discoveredPrinters.push(printerInfo);
+            console.log(`Found printer: ${device.name} (${printerType}) - Classic`);
+            if (onDeviceFound) {
+              onDeviceFound(printerInfo);
+            }
+          }
+        }
+      }
+    } catch (classicError) {
+      console.error('Classic Bluetooth scan error:', classicError);
+    }
+
+    // Also scan for BLE devices (Zebra printers)
+    try {
+      console.log('Scanning for BLE devices...');
+      
+      this.bleManager.startDeviceScan(
+        null,
+        { allowDuplicates: false },
+        (error, device) => {
+          if (error) {
+            console.error('BLE scan error:', error);
+            return;
+          }
+
+          if (device && device.name) {
+            const printerType = this.identifyPrinterType(device.name);
+            
+            if (printerType !== 'unknown') {
+              const printerInfo = {
+                id: device.id,
+                name: device.name,
+                address: device.id,
+                rssi: device.rssi,
+                type: printerType,
+                bluetoothType: 'ble',
+                paired: false,
+                device: device,
+              };
+              
+              const exists = this.discoveredPrinters.some(p => p.id === printerInfo.id);
+              if (!exists) {
+                this.discoveredPrinters.push(printerInfo);
+                console.log(`Found printer: ${device.name} (${printerType}) - BLE`);
+                if (onDeviceFound) {
+                  onDeviceFound(printerInfo);
+                }
+              }
+            }
+          }
+        }
+      );
+    } catch (bleError) {
+      console.error('BLE scan error:', bleError);
+    }
 
     // Stop after timeout
-    setTimeout(() => {
-      this.stopScan();
+    setTimeout(async () => {
+      await this.stopScan();
       console.log(`Scan complete. Found ${this.discoveredPrinters.length} printers.`);
       if (onScanComplete) {
         onScanComplete(this.discoveredPrinters);
@@ -235,16 +312,29 @@ class BluetoothPrinterService {
   /**
    * Stop scanning
    */
-  stopScan() {
+  async stopScan() {
     if (this.isScanning) {
-      this.manager.stopDeviceScan();
+      try {
+        // Stop Classic discovery
+        await RNBluetoothClassic.cancelDiscovery();
+      } catch (e) {
+        console.log('Classic discovery stop:', e.message);
+      }
+      
+      try {
+        // Stop BLE scan
+        this.bleManager.stopDeviceScan();
+      } catch (e) {
+        console.log('BLE scan stop:', e.message);
+      }
+      
       this.isScanning = false;
       console.log('Bluetooth scan stopped');
     }
   }
 
   /**
-   * Connect to a printer
+   * Connect to a printer (handles both Classic and BLE)
    */
   async connect(deviceId) {
     try {
@@ -253,76 +343,25 @@ class BluetoothPrinterService {
         await this.disconnect();
       }
 
-      console.log(`Connecting to device: ${deviceId}`);
-
-      // Connect to device
-      const device = await this.manager.connectToDevice(deviceId, {
-        autoConnect: false,
-        timeout: 15000,
-      });
-
-      console.log(`Connected to ${device.name}, discovering services...`);
-
-      // Discover all services and characteristics
-      await device.discoverAllServicesAndCharacteristics();
-
-      // Find writable characteristic
-      const services = await device.services();
-      let writeChar = null;
-
-      for (const service of services) {
-        const characteristics = await service.characteristics();
-        console.log(`Service: ${service.uuid}, Characteristics: ${characteristics.length}`);
-        
-        for (const char of characteristics) {
-          console.log(`  Characteristic: ${char.uuid}, Writable: ${char.isWritableWithResponse || char.isWritableWithoutResponse}`);
-          
-          if (char.isWritableWithResponse || char.isWritableWithoutResponse) {
-            // Prefer Zebra-specific characteristic
-            if (char.uuid.toLowerCase().includes('38eb4a82')) {
-              writeChar = char;
-              console.log('Found Zebra write characteristic');
-              break;
-            }
-            // Otherwise use first writable characteristic
-            if (!writeChar) {
-              writeChar = char;
-            }
-          }
-        }
-        
-        if (writeChar && writeChar.uuid.toLowerCase().includes('38eb4a82')) {
-          break;
-        }
+      // Find the printer in discovered list
+      const printer = this.discoveredPrinters.find(p => p.id === deviceId);
+      
+      if (!printer) {
+        return {
+          success: false,
+          error: 'Drucker nicht gefunden. Bitte erneut suchen.',
+        };
       }
 
-      if (!writeChar) {
-        throw new Error('Keine schreibbare Charakteristik gefunden. Drucker möglicherweise nicht kompatibel.');
+      console.log(`Connecting to ${printer.name} via ${printer.bluetoothType}...`);
+
+      if (printer.bluetoothType === 'classic') {
+        // Connect via Bluetooth Classic
+        return await this.connectClassic(printer);
+      } else {
+        // Connect via BLE
+        return await this.connectBLE(printer);
       }
-
-      this.writeCharacteristic = writeChar;
-      this.connectedDevice = {
-        id: device.id,
-        name: device.name,
-        type: this.identifyPrinterType(device.name),
-        device: device,
-        writeCharacteristic: writeChar,
-        connectedAt: new Date(),
-      };
-
-      // Monitor connection state
-      this.connectionSubscription = device.onDisconnected((error, disconnectedDevice) => {
-        console.log(`Device ${disconnectedDevice?.name} disconnected`);
-        this.connectedDevice = null;
-        this.writeCharacteristic = null;
-      });
-
-      console.log(`Successfully connected to ${device.name}`);
-
-      return {
-        success: true,
-        device: this.connectedDevice,
-      };
     } catch (error) {
       console.error('Connection failed:', error);
       return {
@@ -333,24 +372,136 @@ class BluetoothPrinterService {
   }
 
   /**
+   * Connect via Bluetooth Classic (for Brother printers)
+   */
+  async connectClassic(printer) {
+    try {
+      console.log(`Connecting to Classic device: ${printer.address}`);
+      
+      // Connect to the device
+      const device = await RNBluetoothClassic.connectToDevice(printer.address, {
+        connectorType: 'rfcomm',
+        delimiter: '\n',
+        charset: 'utf-8',
+      });
+
+      if (!device) {
+        throw new Error('Verbindung fehlgeschlagen');
+      }
+
+      this.connectedDevice = {
+        id: printer.id,
+        name: printer.name,
+        address: printer.address,
+        type: printer.type,
+        bluetoothType: 'classic',
+        device: device,
+        connectedAt: new Date(),
+      };
+
+      console.log(`Connected to ${printer.name} via Bluetooth Classic`);
+
+      return {
+        success: true,
+        device: this.connectedDevice,
+      };
+    } catch (error) {
+      console.error('Classic connection error:', error);
+      return {
+        success: false,
+        error: `Verbindung fehlgeschlagen: ${error.message}`,
+      };
+    }
+  }
+
+  /**
+   * Connect via BLE (for Zebra printers)
+   */
+  async connectBLE(printer) {
+    try {
+      console.log(`Connecting to BLE device: ${printer.id}`);
+      
+      const device = await this.bleManager.connectToDevice(printer.id, {
+        autoConnect: false,
+        timeout: 15000,
+      });
+
+      await device.discoverAllServicesAndCharacteristics();
+
+      // Find writable characteristic
+      const services = await device.services();
+      let writeChar = null;
+
+      for (const service of services) {
+        const characteristics = await service.characteristics();
+        
+        for (const char of characteristics) {
+          if (char.isWritableWithResponse || char.isWritableWithoutResponse) {
+            if (char.uuid.toLowerCase().includes('38eb4a82')) {
+              writeChar = char;
+              break;
+            }
+            if (!writeChar) {
+              writeChar = char;
+            }
+          }
+        }
+        if (writeChar && writeChar.uuid.toLowerCase().includes('38eb4a82')) {
+          break;
+        }
+      }
+
+      if (!writeChar) {
+        throw new Error('Keine schreibbare Charakteristik gefunden');
+      }
+
+      this.writeCharacteristic = writeChar;
+      this.connectedDevice = {
+        id: printer.id,
+        name: printer.name,
+        address: printer.id,
+        type: printer.type,
+        bluetoothType: 'ble',
+        device: device,
+        writeCharacteristic: writeChar,
+        connectedAt: new Date(),
+      };
+
+      console.log(`Connected to ${printer.name} via BLE`);
+
+      return {
+        success: true,
+        device: this.connectedDevice,
+      };
+    } catch (error) {
+      console.error('BLE connection error:', error);
+      return {
+        success: false,
+        error: `Verbindung fehlgeschlagen: ${error.message}`,
+      };
+    }
+  }
+
+  /**
    * Disconnect from printer
    */
   async disconnect() {
-    if (this.connectionSubscription) {
-      this.connectionSubscription.remove();
-      this.connectionSubscription = null;
-    }
+    if (!this.connectedDevice) return;
 
-    if (this.connectedDevice?.device) {
-      try {
-        const isConnected = await this.connectedDevice.device.isConnected();
-        if (isConnected) {
-          await this.connectedDevice.device.cancelConnection();
+    try {
+      if (this.connectedDevice.bluetoothType === 'classic') {
+        await RNBluetoothClassic.disconnectFromDevice(this.connectedDevice.address);
+      } else {
+        if (this.connectedDevice.device) {
+          const isConnected = await this.connectedDevice.device.isConnected();
+          if (isConnected) {
+            await this.connectedDevice.device.cancelConnection();
+          }
         }
-        console.log('Disconnected from printer');
-      } catch (error) {
-        console.error('Disconnect error:', error);
       }
+      console.log('Disconnected from printer');
+    } catch (error) {
+      console.error('Disconnect error:', error);
     }
 
     this.connectedDevice = null;
@@ -373,49 +524,47 @@ class BluetoothPrinterService {
       id: this.connectedDevice.id,
       name: this.connectedDevice.name,
       type: this.connectedDevice.type,
+      bluetoothType: this.connectedDevice.bluetoothType,
       connectedAt: this.connectedDevice.connectedAt,
     };
   }
 
   /**
-   * Send raw data to printer
+   * Send data to printer
    */
   async sendData(data) {
-    if (!this.connectedDevice || !this.writeCharacteristic) {
+    if (!this.connectedDevice) {
       throw new Error('Kein Drucker verbunden');
     }
 
     try {
-      // Convert string to base64
-      const base64Data = Buffer.from(data, 'utf-8').toString('base64');
-      
-      // Send in chunks if data is large (BLE MTU is typically 20-512 bytes)
-      const chunkSize = 200; // Safe chunk size
-      const chunks = [];
-      
-      for (let i = 0; i < base64Data.length; i += chunkSize) {
-        chunks.push(base64Data.slice(i, i + chunkSize));
-      }
-
-      console.log(`Sending ${chunks.length} chunks to printer...`);
-
-      for (let i = 0; i < chunks.length; i++) {
-        const chunk = chunks[i];
+      if (this.connectedDevice.bluetoothType === 'classic') {
+        // Send via Bluetooth Classic
+        await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, data);
+        console.log('Data sent via Classic Bluetooth');
+        return { success: true };
+      } else {
+        // Send via BLE
+        const base64Data = Buffer.from(data, 'utf-8').toString('base64');
+        const chunkSize = 200;
         
-        if (this.writeCharacteristic.isWritableWithResponse) {
-          await this.writeCharacteristic.writeWithResponse(chunk);
-        } else {
-          await this.writeCharacteristic.writeWithoutResponse(chunk);
+        for (let i = 0; i < base64Data.length; i += chunkSize) {
+          const chunk = base64Data.slice(i, i + chunkSize);
+          
+          if (this.writeCharacteristic.isWritableWithResponse) {
+            await this.writeCharacteristic.writeWithResponse(chunk);
+          } else {
+            await this.writeCharacteristic.writeWithoutResponse(chunk);
+          }
+          
+          if (i + chunkSize < base64Data.length) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
         }
         
-        // Small delay between chunks
-        if (i < chunks.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 50));
-        }
+        console.log('Data sent via BLE');
+        return { success: true };
       }
-
-      console.log('Data sent successfully');
-      return { success: true };
     } catch (error) {
       console.error('Send data error:', error);
       return { success: false, error: error.message };
@@ -423,7 +572,7 @@ class BluetoothPrinterService {
   }
 
   /**
-   * Generate ZPL for test label
+   * Generate ZPL for test label (Zebra)
    */
   generateTestLabelZPL() {
     const timestamp = new Date().toLocaleString('de-DE');
@@ -434,17 +583,25 @@ class BluetoothPrinterService {
 ^FO50,80^FDTest-Etikett^FS
 ^FO50,115^FD${timestamp}^FS
 ^FO50,160^BQN,2,5^FDQA,TSRID-TEST-${Date.now()}^FS
-^FO220,160^BY2^BCN,50,N,N,N^FD123456789^FS
 ^XZ`;
   }
 
   /**
-   * Generate Brother ESC/P commands for test label
+   * Generate ESC/P commands for Brother printers
    */
   generateTestLabelBrother() {
     const timestamp = new Date().toLocaleString('de-DE');
-    // Brother QL printers use raster commands, simplified text version
-    return `\x1B@\x1BiS\x1Bid\x00\x00TSRID Mobile\nTest-Etikett\n${timestamp}\n\x0C`;
+    // Brother QL uses ESC/P commands
+    const ESC = '\x1B';
+    const commands = [
+      `${ESC}@`,              // Initialize
+      `${ESC}iS`,             // Status info
+      `TSRID Mobile\n`,
+      `Test-Etikett\n`,
+      `${timestamp}\n`,
+      '\x0C',                 // Form feed / cut
+    ];
+    return commands.join('');
   }
 
   /**
@@ -463,7 +620,7 @@ class BluetoothPrinterService {
     } else if (this.connectedDevice.type === 'brother') {
       data = this.generateTestLabelBrother();
     } else {
-      // Generic: try ZPL
+      // Default to ZPL for generic
       data = this.generateTestLabelZPL();
     }
 
@@ -473,7 +630,6 @@ class BluetoothPrinterService {
       return { 
         success: true, 
         message: 'Test-Etikett wurde gedruckt',
-        printedAt: new Date().toISOString(),
       };
     } else {
       throw new Error(result.error || 'Druck fehlgeschlagen');
@@ -497,8 +653,25 @@ class BluetoothPrinterService {
 ^FO30,88^FDHersteller: ${manufacturer}^FS
 ^FO30,116^FDSN: ${serialNumber}^FS
 ^FO30,155^BQN,2,4^FDQA,${assetId}^FS
-^FO170,155^BY2^BCN,50,N,N,N^FD${serialNumber}^FS
 ^XZ`;
+  }
+
+  /**
+   * Generate Brother ESC/P for asset label
+   */
+  generateAssetLabelBrother(asset) {
+    const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
+    const serialNumber = asset.manufacturer_sn || 'N/A';
+    const type = asset.type_label || asset.type || 'N/A';
+    const ESC = '\x1B';
+    
+    return [
+      `${ESC}@`,
+      `${assetId}\n`,
+      `Typ: ${type}\n`,
+      `SN: ${serialNumber}\n`,
+      '\x0C',
+    ].join('');
   }
 
   /**
@@ -509,10 +682,16 @@ class BluetoothPrinterService {
       throw new Error('Kein Drucker verbunden');
     }
 
-    console.log(`Printing asset label for ${asset.warehouse_asset_id || asset.asset_id}...`);
+    let data;
+    if (this.connectedDevice.type === 'zebra') {
+      data = this.generateAssetLabelZPL(asset);
+    } else if (this.connectedDevice.type === 'brother') {
+      data = this.generateAssetLabelBrother(asset);
+    } else {
+      data = this.generateAssetLabelZPL(asset);
+    }
 
-    const zpl = this.generateAssetLabelZPL(asset);
-    const result = await this.sendData(zpl);
+    const result = await this.sendData(data);
     
     if (result.success) {
       return { 
@@ -526,48 +705,26 @@ class BluetoothPrinterService {
   }
 
   /**
-   * Print multiple labels
-   */
-  async printMultipleLabels(assets) {
-    if (!this.connectedDevice) {
-      throw new Error('Kein Drucker verbunden');
-    }
-
-    const results = [];
-    
-    for (const asset of assets) {
-      try {
-        const result = await this.printAssetLabel(asset);
-        results.push({ success: true, asset: asset.warehouse_asset_id || asset.asset_id });
-        // Small delay between prints
-        await new Promise(resolve => setTimeout(resolve, 500));
-      } catch (error) {
-        results.push({ success: false, asset: asset.warehouse_asset_id || asset.asset_id, error: error.message });
-      }
-    }
-
-    return {
-      total: assets.length,
-      successful: results.filter(r => r.success).length,
-      failed: results.filter(r => !r.success).length,
-      results,
-    };
-  }
-
-  /**
    * Get service status
    */
   async getStatus() {
-    const bleState = await this.manager.state();
+    let btEnabled = false;
+    try {
+      btEnabled = await this.isBluetoothEnabled();
+    } catch (e) {}
     
     return {
-      version: '2.0.0',
-      mode: 'native',
-      bleState: bleState,
+      version: '2.1.0',
+      mode: 'native-hybrid',
+      bluetoothEnabled: btEnabled,
       permissionsGranted: this.permissionsGranted,
       isScanning: this.isScanning,
       connectedDevice: this.getConnectedDevice(),
       discoveredPrinters: this.discoveredPrinters.length,
+      supportedTypes: {
+        zebra: 'BLE (Bluetooth Low Energy)',
+        brother: 'Classic (SPP)',
+      },
     };
   }
 
@@ -577,8 +734,8 @@ class BluetoothPrinterService {
   destroy() {
     this.stopScan();
     this.disconnect();
-    if (this.manager) {
-      this.manager.destroy();
+    if (this.bleManager) {
+      this.bleManager.destroy();
     }
   }
 }
