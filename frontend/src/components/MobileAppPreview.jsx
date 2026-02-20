@@ -1331,29 +1331,34 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
               {section.items.map((item, ii) => (
                 <div 
                   key={ii}
-                  className="flex items-center justify-between p-3 border-b last:border-b-0"
+                  className={`flex items-center justify-between p-3 border-b last:border-b-0 ${item.onClick ? 'cursor-pointer' : ''}`}
                   style={{ borderColor: mobileTheme.colors.border }}
+                  onClick={item.onClick}
                 >
                   <div className="flex items-center gap-3">
                     <span style={{ color: mobileTheme.colors.textSecondary }}>{item.icon}</span>
                     <span className="text-white">{item.label}</span>
                   </div>
-                  {item.toggle ? (
-                    <div 
-                      className="w-10 h-6 rounded-full p-1 cursor-pointer transition-all"
-                      style={{ backgroundColor: item.value ? mobileTheme.colors.primary : mobileTheme.colors.border }}
-                    >
+                  <div className="flex items-center gap-2">
+                    {item.toggle && (
                       <div 
-                        className="w-4 h-4 rounded-full bg-white transition-all"
-                        style={{ marginLeft: item.value ? 16 : 0 }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-1">
+                        className="w-10 h-6 rounded-full p-1 cursor-pointer transition-all"
+                        style={{ backgroundColor: item.value ? mobileTheme.colors.primary : mobileTheme.colors.border }}
+                        onClick={(e) => { e.stopPropagation(); }}
+                      >
+                        <div 
+                          className="w-4 h-4 rounded-full bg-white transition-all"
+                          style={{ marginLeft: item.value ? 16 : 0 }}
+                        />
+                      </div>
+                    )}
+                    {!item.toggle && item.value && (
                       <span className="text-sm" style={{ color: mobileTheme.colors.textMuted }}>{item.value}</span>
-                      {!item.noArrow && <ChevronRight className="w-4 h-4" style={{ color: mobileTheme.colors.textMuted }} />}
-                    </div>
-                  )}
+                    )}
+                    {(item.hasChevron || (!item.toggle && !item.noArrow)) && (
+                      <ChevronRight className="w-4 h-4" style={{ color: mobileTheme.colors.textMuted }} />
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
