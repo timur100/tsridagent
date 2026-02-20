@@ -59,6 +59,31 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 - **Location**: `/app/frontend/src/components/MobileAppPreview.jsx`
 - **Test-Status**: ✅ Verifiziert - Modal öffnet, zeigt 3 Drucker mit Details
 
+#### NEW: Push-Notification Einstellungen Modal (IMPLEMENTED)
+- **Feature**: Vollständige Benachrichtigungs-Konfiguration in der Mobile Preview
+- **Komponenten**:
+  - **Master-Toggle**: Push-Benachrichtigungen aktivieren/deaktivieren
+  - **Kategorien**: 6 konfigurierbare Kategorien (Sync, Assets, Drucker, Wareneingang, System, Erinnerungen)
+  - **Stille Stunden**: "Nicht stören" Zeitfenster (22:00-07:00)
+  - **Stil-Optionen**: Ton, Vibration, Badge-Zähler
+- **Location**: `/app/frontend/src/components/MobileAppPreview.jsx`
+- **Test-Status**: ✅ Verifiziert - Modal zeigt alle 6 Kategorien mit Toggles
+
+#### NEW: React Native App Services (CREATED)
+- **Zebra DataWedge Service** (`/app/mobile/src/services/datawedge.js`)
+  - Vollständige DataWedge API Integration
+  - Automatische Profil-Konfiguration für TSRID_Mobile
+  - Hardware-Trigger (START/STOP/TOGGLE)
+  - Event-basierte Scan-Ergebnisse
+  - Fallback für Nicht-Zebra-Geräte
+  
+- **Bluetooth Printer Service** (`/app/mobile/src/services/bluetoothPrinter.js`)
+  - Bluetooth-Drucker-Suche und -Verbindung
+  - ZPL II Label-Generation für Zebra ZQ630
+  - Brother ESC/P für QL-820NWB
+  - Druckwarteschlange mit Status-Tracking
+  - Test-Etikett-Funktion
+
 #### Enhancement: Data-TestIDs für Mobile Tab Bar
 - Hinzugefügt: `data-testid="mobile-tab-{id}"` zu allen Tabs in der Mobile App Preview
 - Verbessert: Testbarkeit der Mobile-App-Vorschau-Komponente
