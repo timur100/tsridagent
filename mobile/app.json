@@ -69,7 +69,16 @@
         {
           "cameraPermission": "Erlauben Sie TSRID Mobile, die Kamera zum Scannen von Barcodes zu verwenden."
         }
-      ]
+      ],
+      [
+        "react-native-ble-plx",
+        {
+          "isBackgroundEnabled": false,
+          "modes": ["peripheral", "central"],
+          "bluetoothAlwaysPermission": "Erlauben Sie TSRID Mobile, Bluetooth-Drucker zu finden und zu verbinden."
+        }
+      ],
+      "expo-dev-client"
     ],
     "runtimeVersion": {
       "policy": "sdkVersion"
