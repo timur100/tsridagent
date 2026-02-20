@@ -1392,6 +1392,7 @@ const MobileTabBar = ({ activeTab, onTabChange, offlineQueue, isOnline }) => {
           return (
             <button
               key={tab.id}
+              data-testid={`mobile-tab-${tab.id}`}
               onClick={() => onTabChange(tab.id)}
               className="flex-1 flex flex-col items-center py-2 transition-all relative"
             >
