@@ -476,12 +476,22 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
       {/* Header */}
       <div className="p-4 flex justify-between items-center" style={{ backgroundColor: mobileTheme.colors.primary }}>
         <h1 className="text-lg font-bold text-white">Scanner</h1>
-        <button 
-          onClick={() => setShowHistory(!showHistory)}
-          className="p-2 rounded-lg bg-white/20"
-        >
-          <History className="w-5 h-5 text-white" />
-        </button>
+        <div className="flex items-center gap-2">
+          {/* DataWedge Toggle */}
+          <button 
+            onClick={toggleDataWedge}
+            className={`p-2 rounded-lg ${dataWedgeConnected ? 'bg-green-500/30' : 'bg-red-500/30'}`}
+            title={dataWedgeConnected ? 'DataWedge verbunden' : 'DataWedge getrennt'}
+          >
+            <Barcode className={`w-5 h-5 ${dataWedgeConnected ? 'text-green-400' : 'text-red-400'}`} />
+          </button>
+          <button 
+            onClick={() => setShowHistory(!showHistory)}
+            className="p-2 rounded-lg bg-white/20"
+          >
+            <History className="w-5 h-5 text-white" />
+          </button>
+        </div>
       </div>
 
       {showHistory ? (
@@ -509,7 +519,12 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
               <div key={i} className="p-3 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
                 <div className="flex justify-between items-start">
                   <div>
-                    <p className="font-semibold text-white">{scan.code}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-white">{scan.code}</p>
+                      {scan.source === 'datawedge' && (
+                        <span className="px-1.5 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">DW</span>
+                      )}
+                    </div>
                     <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>{scan.timestamp}</p>
                   </div>
                   <span 
