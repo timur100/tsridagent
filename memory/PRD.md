@@ -28,20 +28,25 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-20 (Current)
 
-#### ✅ APK-Build für Zebra TC78 - ERFOLGREICH ABGESCHLOSSEN
+#### ✅ APK-Build für Zebra TC78 - VERSION 2 ERFOLGREICH
 - **Aufgabe**: Android APK-Build für Zebra TC78 Handheld-Gerät erstellen
-- **Build-ID**: `38f819bc-656a-43b0-a05c-5f7c7a6a15f9`
-- **APK Download**: https://expo.dev/artifacts/eas/8323ssZPwrARheBHCKEBRk.apk
-- **Probleme gelöst**:
-  1. **crypto-Modul Fehler**: `axios` verwendete Node.js-spezifisches `crypto`-Modul
-     - **Lösung**: `axios` Version von `^1.6.5` auf `1.6.0` geändert
-     - **Lösung**: `metro.config.js` erstellt, um Node.js-Module zu ignorieren
-  2. **Fehlende Assets**: Icon- und Splash-Bilder wurden vom vorherigen Agenten generiert
-  3. **Paket-Versionen**: Dependencies wurden für Expo SDK 50 korrigiert
-- **Geänderte Dateien**:
-  - `/app/mobile/package.json` - axios Version korrigiert
-  - `/app/mobile/metro.config.js` - NEU: Node.js-Module-Resolver
-- **Status**: ✅ Build erfolgreich, APK bereit zum Download
+- **Build-ID V2**: `a41ceeb6-fb2c-40ab-92ad-656962cd9788`
+- **APK Download V2**: https://expo.dev/artifacts/eas/mgoHRHt4xu5vuNkBJhD2Gd.apk
+- **Probleme aus V1 gelöst**:
+  1. **crypto-Modul Fehler**: `axios` Version auf `1.6.0` + `metro.config.js`
+  2. **Fehlende Assets**: Icon- und Splash-Bilder generiert
+  3. **Paket-Versionen**: Dependencies für Expo SDK 50 korrigiert
+
+- **Neue Fixes in V2** (nach User-Test auf TC78):
+  1. **Dashboard zeigt 0**: API-Response-Format korrigiert in `DashboardScreen.js`
+  2. **Keine Assets sichtbar**: Multiple Response-Formate unterstützt in `AssetsScreen.js`  
+  3. **Einstellungen nicht konfigurierbar**: Funktionale Toggles + Bluetooth-Modal in `SettingsScreen.js`
+  
+- **Bekannte Einschränkungen**:
+  - Kamera-Berechtigung muss ggf. manuell in Android-Einstellungen erteilt werden
+  - Bluetooth-Drucker-Integration ist simuliert (echte SDKs erforderlich)
+  
+- **Status**: ✅ V2 Build erfolgreich, APK bereit zum Download
 
 #### Bug Fix: Mobile App Preview - Assets Not Loading (CRITICAL FIX - VERIFIED)
 - **Problem**: Assets wurden nicht in der Mobile App Vorschau angezeigt ("Keine Assets gefunden")
