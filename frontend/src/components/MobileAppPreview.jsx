@@ -1552,40 +1552,6 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
           </div>
         </div>
       )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="flex gap-0.5">
-                          {[1,2,3,4].map(i => (
-                            <div 
-                              key={i} 
-                              className={`w-1 rounded-full ${Math.abs(printer.signal) < 50 + i * 10 ? 'bg-green-500' : 'bg-gray-600'}`} 
-                              style={{ height: 4 + i * 2 }} 
-                            />
-                          ))}
-                        </div>
-                        <ChevronRight className="w-4 h-4" style={{ color: mobileTheme.colors.textMuted }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              
-              {connectedPrinter && (
-                <button
-                  onClick={() => {
-                    onConnectPrinter?.(null);
-                    setShowPrinterModal(false);
-                  }}
-                  className="w-full py-2 mt-4 rounded-lg text-sm"
-                  style={{ backgroundColor: 'rgba(239,68,68,0.2)', color: mobileTheme.colors.error }}
-                >
-                  Drucker trennen
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modules Configuration Modal */}
       {showModulesModal && (
