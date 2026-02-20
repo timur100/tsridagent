@@ -40,11 +40,15 @@
       "intentFilters": [
         {
           "action": "com.tsrid.mobile.SCAN",
-          "category": ["DEFAULT"]
+          "category": [
+            "DEFAULT"
+          ]
         },
         {
           "action": "com.symbol.datawedge.api.NOTIFICATION_ACTION",
-          "category": ["DEFAULT"]
+          "category": [
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -69,7 +73,8 @@
         {
           "cameraPermission": "Erlauben Sie TSRID Mobile, die Kamera zum Scannen von Barcodes zu verwenden."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "runtimeVersion": {
       "policy": "sdkVersion"
