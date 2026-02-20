@@ -577,14 +577,14 @@ class BluetoothPrinterService {
     }
 
     console.log(`Printing test label on ${this.connectedDevice.name}...`);
-    console.log(`Format: ${this.labelFormat}, Template: ${this.labelTemplate}`);
+    console.log(`Printer type: ${this.connectedDevice.type}`);
 
     let data;
     
     if (this.connectedDevice.type === 'brother') {
-      // Brother with proper binary commands
-      data = generateBrotherTestLabel();
-      console.log('Brother test label generated, length:', data.length);
+      // Brother: Generate raster graphics data
+      data = createBrotherTestLabel();
+      console.log('Brother raster test label generated, length:', data.length, 'bytes');
     } else {
       // Zebra ZPL
       const timestamp = new Date().toLocaleString('de-DE');
@@ -607,24 +607,25 @@ class BluetoothPrinterService {
   }
 
   /**
-   * Print asset label
+   * Print asset label (TSRID Standard Format)
    */
   async printAssetLabel(asset) {
     if (!this.connectedDevice) {
       throw new Error('Kein Drucker verbunden');
     }
 
-    console.log(`Printing asset label for ${asset.warehouse_asset_id || asset.asset_id}...`);
-    console.log(`Format: ${this.labelFormat}, Template: ${this.labelTemplate}`);
+    const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
+    console.log(`Printing asset label for ${assetId}...`);
+    console.log(`Printer type: ${this.connectedDevice.type}`);
 
     let data;
     
     if (this.connectedDevice.type === 'brother') {
-      data = generateBrotherAssetLabel(asset, this.labelTemplate);
-      console.log('Brother asset label generated, length:', data.length);
+      // Brother: Generate raster graphics with QR code
+      data = createBrotherAssetLabel(asset);
+      console.log('Brother raster asset label generated, length:', data.length, 'bytes');
     } else {
       // Zebra ZPL
-      const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
       const serialNumber = asset.manufacturer_sn || 'N/A';
       const type = asset.type_label || asset.type || 'N/A';
       
