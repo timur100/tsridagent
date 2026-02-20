@@ -1,87 +1,148 @@
 # TSRID Mobile App
 
-Mobile Anwendung für Zebra TC78 Handheld-Geräte zur Echtzeit-Asset-Verwaltung, Barcode-Scanning und Label-Druck.
+React Native Mobile App für Zebra TC78 Handheld-Geräte und andere Android-Smartphones.
 
 ## Features
 
-- **Login**: Sichere Authentifizierung über bestehende Backend-API
-- **Dashboard**: Systemübersicht mit Statistiken und Schnellzugriff
-- **Scanner**: Barcode/QR-Code Scanning mit Kamera
-- **Assets**: Asset-Verwaltung und -Suche
-- **Einstellungen**: Scanner-, Drucker- und Sync-Konfiguration
+### Implementiert
+- ✅ **Authentifizierung** - Login/Logout mit Backend-Integration
+- ✅ **Dashboard** - Live-Statistiken und Systemübersicht
+- ✅ **Scanner** - Kamera-basierter Barcode/QR-Code Scanner
+- ✅ **Asset-Liste** - Anzeige und Suche von Assets
+- ✅ **Einstellungen** - App-Konfiguration
 
-## Technologie-Stack
+### Zebra DataWedge Integration
+Die App unterstützt native Hardware-Scanner auf Zebra-Geräten (TC78, TC72, etc.) über die DataWedge-API:
 
-- **Framework**: React Native mit Expo
-- **Navigation**: React Navigation 6
-- **State Management**: React Context API
-- **API-Client**: Axios
-- **Secure Storage**: Expo SecureStore
+- **Automatische Erkennung** von Zebra-Geräten
+- **Hardware-Trigger** - Physische Scan-Tasten
+- **Profilkonfiguration** - Automatische DataWedge-Profilerstellung
+- **Fallback** - Kamera-Scanner auf Nicht-Zebra-Geräten
+
+```javascript
+import { dataWedgeService } from './src/services/datawedge';
+
+// Initialisieren
+await dataWedgeService.initialize(
+  (scanResult) => console.log('Gescannt:', scanResult),
+  (status) => console.log('Status:', status)
+);
+
+// Soft-Scan auslösen
+dataWedgeService.triggerScan();
+```
+
+### Bluetooth-Drucker
+Unterstützung für mobile Etikettendrucker:
+
+- **Zebra ZQ630** - ZPL II Labels
+- **Brother QL-820NWB** - DK Labels
+
+```javascript
+import { bluetoothPrinterService } from './src/services/bluetoothPrinter';
+
+// Drucker suchen
+const printers = await bluetoothPrinterService.scanForPrinters();
+
+// Verbinden
+await bluetoothPrinterService.connect(printers[0]);
+
+// Etikett drucken
+await bluetoothPrinterService.printLabel({
+  title: 'Asset Label',
+  barcode: 'ASSET-001',
+  text: 'Beschreibung',
+});
+```
 
 ## Installation
 
 ```bash
-cd /app/mobile
+# Dependencies installieren
 yarn install
+
+# iOS (nur Mac)
+cd ios && pod install && cd ..
+
+# Starten
+yarn start
 ```
 
 ## Entwicklung
 
+### Expo Go (Entwicklung)
 ```bash
-# Expo Start
 yarn start
+```
 
-# Android Emulator
+### Build für Zebra-Geräte
+```bash
+# Android APK
 yarn android
 
-# iOS Simulator (nur macOS)
-yarn ios
+# Signed Release APK
+cd android && ./gradlew assembleRelease
 ```
 
-## Design
-
-Die App verwendet das gleiche Design wie das Admin Portal:
-- Primärfarbe: #c00000 (Rot)
-- Hintergrund: #1a1a1a (Dunkel)
-- Oberflächen: #2a2a2a (Dunkelgrau)
-
-## Zielgerät
-
-- **Zebra TC78**: Android Enterprise Handheld
-- **Unterstützte Drucker**:
-  - Zebra ZQ630 (Bluetooth)
-  - Brother QL-820NWB (Bluetooth/WiFi)
-
-## API-Endpoints
-
-Die App verwendet die bestehenden Backend-APIs:
-- `/api/portal/auth/login` - Authentifizierung
-- `/api/asset-mgmt/inventory/all` - Assets laden
-- `/api/tenants/stats` - Dashboard-Statistiken
-- `/api/health` - Server-Status
-
-## Ordnerstruktur
+## Projektstruktur
 
 ```
-/app/mobile/
-├── App.js                 # Haupt-App-Komponente
-├── app.json               # Expo-Konfiguration
-├── package.json           # Dependencies
+/app/mobile
+├── App.js                      # App Entry Point
+├── app.json                    # Expo Konfiguration
+├── package.json                # Dependencies
 ├── src/
-│   ├── components/        # Wiederverwendbare Komponenten
-│   ├── contexts/          # React Context (Auth)
-│   ├── navigation/        # Navigation Setup
-│   ├── screens/           # App-Screens
-│   ├── services/          # API-Services
-│   ├── store/             # State Management (zukünftig)
-│   └── utils/             # Hilfsfunktionen & Theme
-└── assets/                # Bilder & Icons
+│   ├── components/             # Wiederverwendbare Komponenten
+│   ├── contexts/
+│   │   └── AuthContext.js      # Authentifizierungs-State
+│   ├── navigation/
+│   │   └── AppNavigator.js     # Stack & Tab Navigation
+│   ├── screens/
+│   │   ├── LoginScreen.js      # Login-Bildschirm
+│   │   ├── DashboardScreen.js  # Dashboard
+│   │   ├── ScannerScreen.js    # Barcode-Scanner
+│   │   ├── AssetsScreen.js     # Asset-Liste
+│   │   └── SettingsScreen.js   # Einstellungen
+│   ├── services/
+│   │   ├── api.js              # Backend-API Client
+│   │   ├── datawedge.js        # Zebra DataWedge Integration
+│   │   └── bluetoothPrinter.js # Bluetooth-Drucker
+│   ├── store/                  # State Management
+│   └── utils/
+│       └── theme.js            # Design System
+└── assets/                     # Bilder, Fonts
 ```
 
-## Geplante Features
+## API Endpoints
 
-- [ ] Offline-Synchronisation
-- [ ] Native Zebra DataWedge Scanner-Integration
-- [ ] Bluetooth-Drucker-Anbindung
-- [ ] Konfigurierbare Module
-- [ ] Push-Benachrichtigungen
+Die App kommuniziert mit dem TSRID Backend:
+
+| Endpoint | Beschreibung |
+|----------|--------------|
+| `/api/portal/auth/login` | Login |
+| `/api/portal/auth/logout` | Logout |
+| `/api/asset-mgmt/assets` | Assets abrufen |
+| `/api/asset-mgmt/inventory` | Wareneingang |
+| `/api/portal/locations/list` | Standorte |
+| `/api/tenants/stats` | Dashboard-Stats |
+
+## Theme & Design
+
+Das Theme basiert auf dem TSRID Admin Portal mit dunklem Farbschema:
+
+```javascript
+const theme = {
+  colors: {
+    primary: '#dc2626',      // Rot
+    background: '#0f0f0f',   // Dunkel
+    surface: '#1a1a1a',      // Karten
+    textPrimary: '#ffffff',  // Weiß
+    success: '#22c55e',      // Grün
+    error: '#ef4444',        // Rot
+  }
+};
+```
+
+## Lizenz
+
+Proprietär - TSRID GmbH
