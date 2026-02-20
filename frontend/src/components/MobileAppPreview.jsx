@@ -1298,9 +1298,14 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
           {
             title: 'Benachrichtigungen',
             items: [
-              { icon: <AlertCircle className="w-5 h-5" />, label: 'Sync-Status', toggle: true, value: notifications?.sync ?? true },
-              { icon: <Package className="w-5 h-5" />, label: 'Neue Assets', toggle: true, value: notifications?.assets ?? true },
-              { icon: <Printer className="w-5 h-5" />, label: 'Drucker-Status', toggle: true, value: notifications?.printer ?? false },
+              { 
+                icon: <AlertCircle className="w-5 h-5" />, 
+                label: 'Push-Benachrichtigungen', 
+                toggle: true, 
+                value: notificationSettings.enabled,
+                onClick: () => setShowNotificationsModal(true),
+                hasChevron: true
+              },
             ]
           },
           {
