@@ -5,6 +5,7 @@
 
 import { BleManager, Device, State } from 'react-native-ble-plx';
 import { PermissionsAndroid, Platform } from 'react-native';
+import { Buffer } from 'buffer';
 
 // Bluetooth Service UUIDs for printers
 const ZEBRA_SERVICE_UUID = '38eb4a80-c570-11e3-9507-0002a5d5c51b';
