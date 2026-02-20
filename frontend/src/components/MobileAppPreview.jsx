@@ -1546,10 +1546,14 @@ const MobileAppPreview = () => {
     setAssetsLoading(true);
     try {
       const result = await apiCall('/api/asset-mgmt/assets');
-      if (result?.success && result?.assets) {
-        setAssets(result.assets);
-      } else if (Array.isArray(result)) {
-        setAssets(result);
+      // apiCall returns { success, data, status } - assets are in data.assets
+      if (result?.success && result?.data?.assets) {
+        setAssets(result.data.assets);
+      } else if (result?.data && Array.isArray(result.data)) {
+        setAssets(result.data);
+      } else {
+        console.warn('Unexpected assets response format:', result);
+        setAssets([]);
       }
     } catch (error) {
       console.error('Error loading assets:', error);
