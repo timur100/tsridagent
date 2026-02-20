@@ -13,8 +13,10 @@ import {
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import bluetoothPrinterService from '../services/BluetoothPrinterService';
+import { BROTHER_LABEL_FORMATS, LABEL_TEMPLATES } from '../services/BrotherPrinterConfig';
 import theme from '../utils/theme';
 
+// Settings Components
 const SettingsSection = ({ title, children }) => (
   <View style={styles.section}>
     <Text style={styles.sectionTitle}>{title}</Text>
@@ -34,11 +36,7 @@ const SettingsRow = ({ icon, label, value, onPress, showArrow = true, disabled =
     </View>
     <View style={styles.settingsRowRight}>
       {value && (
-        <Text style={[
-          styles.settingsValue, 
-          disabled && styles.textDisabled,
-          valueColor && { color: valueColor }
-        ]}>
+        <Text style={[styles.settingsValue, disabled && styles.textDisabled, valueColor && { color: valueColor }]}>
           {value}
         </Text>
       )}
@@ -63,54 +61,28 @@ const SettingsToggle = ({ icon, label, value, onValueChange, disabled = false })
   </View>
 );
 
-// Printer Item Component
+// Printer Item
 const PrinterItem = ({ printer, onConnect, isConnecting }) => {
-  const getSignalStrength = (rssi) => {
-    if (rssi >= -50) return { bars: 4, label: 'Ausgezeichnet' };
-    if (rssi >= -60) return { bars: 3, label: 'Gut' };
-    if (rssi >= -70) return { bars: 2, label: 'Mittel' };
-    return { bars: 1, label: 'Schwach' };
-  };
-
-  const signal = getSignalStrength(printer.rssi);
-  const typeLabel = printer.type === 'zebra' ? 'Zebra (ZPL)' : 'Brother (ESC/P)';
+  const signal = printer.rssi >= -50 ? 4 : printer.rssi >= -60 ? 3 : printer.rssi >= -70 ? 2 : 1;
+  const typeLabel = printer.type === 'zebra' ? 'Zebra (BLE)' : 'Brother (Classic)';
   const typeIcon = printer.type === 'zebra' ? '🦓' : '🏷️';
+  const btType = printer.bluetoothType === 'classic' ? 'Classic' : 'BLE';
 
   return (
-    <TouchableOpacity 
-      style={styles.printerItem}
-      onPress={() => onConnect(printer)}
-      disabled={isConnecting}
-    >
+    <TouchableOpacity style={styles.printerItem} onPress={() => onConnect(printer)} disabled={isConnecting}>
       <View style={styles.printerIconContainer}>
         <Text style={styles.printerTypeIcon}>{typeIcon}</Text>
       </View>
       <View style={styles.printerInfo}>
         <Text style={styles.printerName}>{printer.name}</Text>
-        <Text style={styles.printerDetails}>{typeLabel}</Text>
-        <View style={styles.signalContainer}>
-          <View style={styles.signalBars}>
-            {[1, 2, 3, 4].map((bar) => (
-              <View 
-                key={bar}
-                style={[
-                  styles.signalBar,
-                  { height: bar * 4 },
-                  bar <= signal.bars ? styles.signalBarActive : styles.signalBarInactive
-                ]}
-              />
-            ))}
-          </View>
-          <Text style={styles.signalLabel}>{signal.label}</Text>
-        </View>
+        <Text style={styles.printerDetails}>{typeLabel} • {btType}</Text>
+        {printer.paired && <Text style={styles.pairedBadge}>Gekoppelt</Text>}
       </View>
-      <View style={styles.connectButtonContainer}>
-        {isConnecting ? (
-          <ActivityIndicator size="small" color={theme.colors.primary} />
-        ) : (
-          <Text style={styles.connectText}>Verbinden</Text>
-        )}
-      </View>
+      {isConnecting ? (
+        <ActivityIndicator size="small" color={theme.colors.primary} />
+      ) : (
+        <Text style={styles.connectText}>Verbinden</Text>
+      )}
     </TouchableOpacity>
   );
 };
@@ -124,7 +96,6 @@ const BluetoothPrinterModal = ({ visible, onClose, onPrinterConnected }) => {
 
   useEffect(() => {
     if (!visible) {
-      // Cleanup when modal closes
       bluetoothPrinterService.stopScan();
       setScanning(false);
       setPrinters([]);
@@ -139,22 +110,13 @@ const BluetoothPrinterModal = ({ visible, onClose, onPrinterConnected }) => {
 
     try {
       await bluetoothPrinterService.startScan(
-        // onDeviceFound
-        (printer) => {
-          setPrinters(prev => {
-            const exists = prev.some(p => p.id === printer.id);
-            if (exists) return prev;
-            return [...prev, printer];
-          });
-        },
-        // onScanComplete
+        (printer) => setPrinters(prev => [...prev.filter(p => p.id !== printer.id), printer]),
         (allPrinters) => {
           setScanning(false);
           if (allPrinters.length === 0) {
-            setError('Keine Drucker gefunden. Stellen Sie sicher, dass der Drucker eingeschaltet und im Pairing-Modus ist.');
+            setError('Keine Drucker gefunden. Stellen Sie sicher, dass der Brother-Drucker in den Android-Einstellungen gekoppelt ist.');
           }
         },
-        // timeout
         15000
       );
     } catch (err) {
@@ -171,37 +133,15 @@ const BluetoothPrinterModal = ({ visible, onClose, onPrinterConnected }) => {
       const result = await bluetoothPrinterService.connect(printer.id);
       
       if (result.success) {
-        Alert.alert(
-          'Verbunden',
-          `Erfolgreich mit ${printer.name} verbunden.`,
-          [
-            {
-              text: 'Test-Etikett drucken',
-              onPress: async () => {
-                try {
-                  await bluetoothPrinterService.printTestLabel();
-                  Alert.alert('Erfolg', 'Test-Etikett wurde gedruckt.');
-                } catch (printErr) {
-                  Alert.alert('Fehler', printErr.message);
-                }
-              }
-            },
-            {
-              text: 'OK',
-              onPress: () => {
-                if (onPrinterConnected) {
-                  onPrinterConnected(result.device);
-                }
-                onClose();
-              }
-            }
-          ]
-        );
+        Alert.alert('Verbunden', `Erfolgreich mit ${printer.name} verbunden.`, [
+          { text: 'Test drucken', onPress: () => bluetoothPrinterService.printTestLabel().catch(e => Alert.alert('Fehler', e.message)) },
+          { text: 'OK', onPress: () => { onPrinterConnected?.(result.device); onClose(); } }
+        ]);
       } else {
-        setError(`Verbindung fehlgeschlagen: ${result.error}`);
+        setError(result.error);
       }
     } catch (err) {
-      setError(`Verbindung fehlgeschlagen: ${err.message}`);
+      setError(err.message);
     } finally {
       setConnectingId(null);
     }
@@ -218,84 +158,32 @@ const BluetoothPrinterModal = ({ visible, onClose, onPrinterConnected }) => {
         </View>
 
         <View style={styles.modalContent}>
-          {/* Info Text */}
           <View style={styles.infoCard}>
-            <Text style={styles.infoIcon}>ℹ️</Text>
             <Text style={styles.infoText}>
-              Unterstützte Drucker:{'\n'}
-              • Zebra ZQ620, ZQ630, ZD-Serie (ZPL){'\n'}
-              • Brother QL-820NWB, QL-1110NWB (ESC/P)
+              Brother-Drucker müssen zuerst in den Android-Einstellungen gekoppelt werden!
             </Text>
           </View>
 
-          {/* Scan Button */}
-          <TouchableOpacity 
-            style={[styles.scanButton, scanning && styles.scanButtonDisabled]} 
-            onPress={startScan}
-            disabled={scanning}
-          >
-            {scanning ? (
-              <>
-                <ActivityIndicator color="#fff" size="small" />
-                <Text style={styles.scanButtonText}>Suche läuft...</Text>
-              </>
-            ) : (
-              <>
-                <Text style={styles.scanButtonIcon}>🔍</Text>
-                <Text style={styles.scanButtonText}>Drucker suchen</Text>
-              </>
-            )}
+          <TouchableOpacity style={[styles.scanButton, scanning && styles.scanButtonDisabled]} onPress={startScan} disabled={scanning}>
+            {scanning ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.scanButtonIcon}>🔍</Text>}
+            <Text style={styles.scanButtonText}>{scanning ? 'Suche...' : 'Drucker suchen'}</Text>
           </TouchableOpacity>
 
-          {/* Error Message */}
           {error && (
             <View style={styles.errorCard}>
-              <Text style={styles.errorIcon}>⚠️</Text>
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
 
-          {/* Printer List */}
           {printers.length > 0 && (
-            <View style={styles.printerList}>
-              <Text style={styles.printerListTitle}>Gefundene Drucker ({printers.length}):</Text>
-              <FlatList
-                data={printers}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <PrinterItem 
-                    printer={item} 
-                    onConnect={connectPrinter}
-                    isConnecting={connectingId === item.id}
-                  />
-                )}
-                style={styles.printerFlatList}
-              />
-            </View>
-          )}
-
-          {/* Empty State */}
-          {!scanning && printers.length === 0 && !error && (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>🖨️</Text>
-              <Text style={styles.emptyText}>Keine Drucker gefunden</Text>
-              <Text style={styles.emptySubtext}>
-                Tippen Sie auf "Drucker suchen" um{'\n'}Bluetooth-Drucker in der Nähe zu finden
-              </Text>
-            </View>
-          )}
-
-          {/* Scanning Animation */}
-          {scanning && (
-            <View style={styles.scanningContainer}>
-              <View style={styles.scanningAnimation}>
-                <View style={[styles.scanningRing, styles.scanningRing1]} />
-                <View style={[styles.scanningRing, styles.scanningRing2]} />
-                <View style={[styles.scanningRing, styles.scanningRing3]} />
-                <Text style={styles.scanningIcon}>📡</Text>
-              </View>
-              <Text style={styles.scanningText}>Suche nach Druckern...</Text>
-            </View>
+            <FlatList
+              data={printers}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <PrinterItem printer={item} onConnect={connectPrinter} isConnecting={connectingId === item.id} />
+              )}
+              style={styles.printerList}
+            />
           )}
         </View>
       </View>
@@ -303,12 +191,95 @@ const BluetoothPrinterModal = ({ visible, onClose, onPrinterConnected }) => {
   );
 };
 
+// Label Format Modal
+const LabelFormatModal = ({ visible, onClose, currentFormat, onSelect }) => {
+  const formats = Object.values(BROTHER_LABEL_FORMATS);
+  
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Label-Format</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView style={styles.modalContent}>
+          <Text style={styles.sectionSubtitle}>Endlos-Rollen</Text>
+          {formats.filter(f => f.type === 'continuous').map(format => (
+            <TouchableOpacity 
+              key={format.id} 
+              style={[styles.optionItem, currentFormat === format.id && styles.optionItemSelected]}
+              onPress={() => { onSelect(format.id); onClose(); }}
+            >
+              <View style={styles.optionInfo}>
+                <Text style={styles.optionName}>{format.name}</Text>
+                <Text style={styles.optionDescription}>{format.description}</Text>
+              </View>
+              {currentFormat === format.id && <Text style={styles.checkmark}>✓</Text>}
+            </TouchableOpacity>
+          ))}
+          
+          <Text style={[styles.sectionSubtitle, { marginTop: 20 }]}>Gestanzte Etiketten</Text>
+          {formats.filter(f => f.type === 'die-cut').map(format => (
+            <TouchableOpacity 
+              key={format.id} 
+              style={[styles.optionItem, currentFormat === format.id && styles.optionItemSelected]}
+              onPress={() => { onSelect(format.id); onClose(); }}
+            >
+              <View style={styles.optionInfo}>
+                <Text style={styles.optionName}>{format.name}</Text>
+                <Text style={styles.optionDescription}>{format.description}</Text>
+              </View>
+              {currentFormat === format.id && <Text style={styles.checkmark}>✓</Text>}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+};
+
+// Label Template Modal
+const LabelTemplateModal = ({ visible, onClose, currentTemplate, onSelect }) => {
+  const templates = Object.values(LABEL_TEMPLATES);
+  
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Label-Vorlage</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView style={styles.modalContent}>
+          {templates.map(template => (
+            <TouchableOpacity 
+              key={template.id} 
+              style={[styles.optionItem, currentTemplate === template.id && styles.optionItemSelected]}
+              onPress={() => { onSelect(template.id); onClose(); }}
+            >
+              <View style={styles.optionInfo}>
+                <Text style={styles.optionName}>{template.name}</Text>
+                <Text style={styles.optionDescription}>{template.description}</Text>
+                <Text style={styles.optionMeta}>Min. Breite: {template.minWidth}mm</Text>
+              </View>
+              {currentTemplate === template.id && <Text style={styles.checkmark}>✓</Text>}
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+};
+
+// Main Settings Screen
 const SettingsScreen = () => {
   const { user, logout } = useAuth();
   
   // Scanner settings
   const [autoFocus, setAutoFocus] = useState(true);
-  const [autoFlash, setAutoFlash] = useState(false);
   const [scanSound, setScanSound] = useState(true);
   const [scanVibrate, setScanVibrate] = useState(true);
   
@@ -317,43 +288,43 @@ const SettingsScreen = () => {
   
   // Printer state
   const [connectedPrinter, setConnectedPrinter] = useState(null);
+  const [labelFormat, setLabelFormat] = useState('DK-22205');
+  const [labelTemplate, setLabelTemplate] = useState('asset-standard');
+  
+  // Modals
   const [printerModalVisible, setPrinterModalVisible] = useState(false);
+  const [formatModalVisible, setFormatModalVisible] = useState(false);
+  const [templateModalVisible, setTemplateModalVisible] = useState(false);
 
-  // Check for connected printer on mount
   useEffect(() => {
     const device = bluetoothPrinterService.getConnectedDevice();
-    if (device) {
-      setConnectedPrinter(device);
-    }
+    if (device) setConnectedPrinter(device);
+    
+    // Load saved label settings
+    const format = bluetoothPrinterService.getCurrentLabelFormat();
+    const template = bluetoothPrinterService.getCurrentLabelTemplate();
+    if (format) setLabelFormat(format.id);
+    if (template) setLabelTemplate(template.id);
   }, []);
 
-  const handleLogout = () => {
-    Alert.alert(
-      'Abmelden',
-      'Möchten Sie sich wirklich abmelden?',
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        { text: 'Abmelden', style: 'destructive', onPress: logout },
-      ]
-    );
+  const handleLabelFormatChange = async (formatId) => {
+    await bluetoothPrinterService.setLabelFormat(formatId);
+    setLabelFormat(formatId);
+  };
+
+  const handleLabelTemplateChange = async (templateId) => {
+    await bluetoothPrinterService.setLabelTemplate(templateId);
+    setLabelTemplate(templateId);
   };
 
   const handleDisconnectPrinter = () => {
-    Alert.alert(
-      'Drucker trennen',
-      `Möchten Sie die Verbindung zu ${connectedPrinter?.name} trennen?`,
-      [
-        { text: 'Abbrechen', style: 'cancel' },
-        { 
-          text: 'Trennen', 
-          style: 'destructive',
-          onPress: async () => {
-            await bluetoothPrinterService.disconnect();
-            setConnectedPrinter(null);
-          }
-        },
-      ]
-    );
+    Alert.alert('Drucker trennen', `${connectedPrinter?.name} trennen?`, [
+      { text: 'Abbrechen', style: 'cancel' },
+      { text: 'Trennen', style: 'destructive', onPress: async () => {
+        await bluetoothPrinterService.disconnect();
+        setConnectedPrinter(null);
+      }}
+    ]);
   };
 
   const handlePrintTestLabel = async () => {
@@ -365,571 +336,252 @@ const SettingsScreen = () => {
     }
   };
 
-  const showSyncAlert = () => {
-    Alert.alert(
-      'Synchronisation',
-      'Daten werden mit dem Server synchronisiert...',
-      [{ text: 'OK' }]
-    );
+  const handleLogout = () => {
+    Alert.alert('Abmelden', 'Möchten Sie sich abmelden?', [
+      { text: 'Abbrechen', style: 'cancel' },
+      { text: 'Abmelden', style: 'destructive', onPress: logout }
+    ]);
   };
 
-  const showNotImplemented = (feature) => {
-    Alert.alert(
-      'Hinweis',
-      `${feature} wird in einer zukünftigen Version verfügbar sein.`,
-      [{ text: 'OK' }]
-    );
+  const getCurrentFormatName = () => {
+    const format = BROTHER_LABEL_FORMATS[labelFormat];
+    return format ? format.name : '62mm Endlos';
   };
 
-  const getPrinterStatusText = () => {
-    if (connectedPrinter) {
-      return connectedPrinter.name;
-    }
-    return 'Nicht verbunden';
-  };
-
-  const getPrinterStatusColor = () => {
-    if (connectedPrinter) {
-      return theme.colors.success;
-    }
-    return theme.colors.textMuted;
+  const getCurrentTemplateName = () => {
+    const template = LABEL_TEMPLATES[labelTemplate];
+    return template ? template.name : 'Standard';
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* User Profile Section */}
+      {/* Profile */}
       <View style={styles.profileCard}>
         <View style={styles.avatarContainer}>
-          <Text style={styles.avatarText}>
-            {(user?.name || user?.email || 'U').charAt(0).toUpperCase()}
-          </Text>
+          <Text style={styles.avatarText}>{(user?.name || user?.email || 'U').charAt(0).toUpperCase()}</Text>
         </View>
         <View style={styles.profileInfo}>
           <Text style={styles.profileName}>{user?.name || 'Benutzer'}</Text>
           <Text style={styles.profileEmail}>{user?.email}</Text>
-          <View style={styles.roleBadge}>
-            <Text style={styles.roleText}>{user?.role || 'Benutzer'}</Text>
-          </View>
         </View>
       </View>
 
-      {/* Scanner Settings */}
+      {/* Scanner */}
       <SettingsSection title="Scanner">
-        <SettingsToggle
-          icon="📷"
-          label="Automatischer Fokus"
-          value={autoFocus}
-          onValueChange={setAutoFocus}
-        />
-        <SettingsToggle
-          icon="💡"
-          label="Blitz automatisch"
-          value={autoFlash}
-          onValueChange={setAutoFlash}
-        />
-        <SettingsToggle
-          icon="🔊"
-          label="Ton bei Scan"
-          value={scanSound}
-          onValueChange={setScanSound}
-        />
-        <SettingsToggle
-          icon="📳"
-          label="Vibration bei Scan"
-          value={scanVibrate}
-          onValueChange={setScanVibrate}
-        />
+        <SettingsToggle icon="📷" label="Automatischer Fokus" value={autoFocus} onValueChange={setAutoFocus} />
+        <SettingsToggle icon="🔊" label="Ton bei Scan" value={scanSound} onValueChange={setScanSound} />
+        <SettingsToggle icon="📳" label="Vibration bei Scan" value={scanVibrate} onValueChange={setScanVibrate} />
       </SettingsSection>
 
-      {/* Printer Settings */}
+      {/* Drucker */}
       <SettingsSection title="Drucker">
         <SettingsRow
           icon="🖨️"
           label="Bluetooth-Drucker"
-          value={getPrinterStatusText()}
-          valueColor={getPrinterStatusColor()}
-          onPress={() => {
-            if (connectedPrinter) {
-              handleDisconnectPrinter();
-            } else {
-              setPrinterModalVisible(true);
-            }
-          }}
+          value={connectedPrinter ? connectedPrinter.name : 'Nicht verbunden'}
+          valueColor={connectedPrinter ? theme.colors.success : theme.colors.textMuted}
+          onPress={() => connectedPrinter ? handleDisconnectPrinter() : setPrinterModalVisible(true)}
         />
         {connectedPrinter && (
-          <>
-            <SettingsRow
-              icon="🧪"
-              label="Test-Etikett drucken"
-              onPress={handlePrintTestLabel}
-            />
-            <SettingsRow
-              icon="🔌"
-              label="Verbindung trennen"
-              value=""
-              onPress={handleDisconnectPrinter}
-            />
-          </>
+          <SettingsRow icon="🧪" label="Test-Etikett drucken" onPress={handlePrintTestLabel} />
         )}
         <SettingsRow
-          icon="🏷️"
+          icon="📏"
           label="Label-Format"
-          value="62mm Endlos"
-          onPress={() => showNotImplemented('Label-Format Auswahl')}
+          value={getCurrentFormatName()}
+          onPress={() => setFormatModalVisible(true)}
         />
         <SettingsRow
           icon="📐"
           label="Label-Vorlage"
-          value="Standard"
-          onPress={() => showNotImplemented('Label-Vorlagen')}
+          value={getCurrentTemplateName()}
+          onPress={() => setTemplateModalVisible(true)}
         />
       </SettingsSection>
 
-      {/* Sync Settings */}
+      {/* Sync */}
       <SettingsSection title="Synchronisation">
-        <SettingsToggle
-          icon="🔄"
-          label="Automatische Sync"
-          value={autoSync}
-          onValueChange={setAutoSync}
-        />
-        <SettingsRow
-          icon="📶"
-          label="Sync-Intervall"
-          value="5 Minuten"
-          onPress={() => showNotImplemented('Sync-Intervall')}
-        />
-        <SettingsRow
-          icon="💾"
-          label="Offline-Daten"
-          value="0 MB"
-          onPress={() => showNotImplemented('Offline-Daten Verwaltung')}
-        />
-        <SettingsRow
-          icon="🔃"
-          label="Jetzt synchronisieren"
-          onPress={showSyncAlert}
-        />
+        <SettingsToggle icon="🔄" label="Automatische Sync" value={autoSync} onValueChange={setAutoSync} />
       </SettingsSection>
 
-      {/* App Settings */}
+      {/* App Info */}
       <SettingsSection title="App">
-        <SettingsRow
-          icon="🌐"
-          label="Server-URL"
-          value="production"
-          showArrow={false}
-        />
-        <SettingsRow
-          icon="ℹ️"
-          label="App-Version"
-          value="1.1.0"
-          showArrow={false}
-        />
-        <SettingsRow
-          icon="📱"
-          label="Gerät"
-          value="Zebra TC78"
-          showArrow={false}
-        />
+        <SettingsRow icon="ℹ️" label="Version" value="1.3.0" showArrow={false} />
+        <SettingsRow icon="📱" label="Gerät" value="Zebra TC78" showArrow={false} />
       </SettingsSection>
 
       {/* Logout */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutIcon}>🚪</Text>
         <Text style={styles.logoutText}>Abmelden</Text>
       </TouchableOpacity>
 
-      {/* Footer */}
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>TSRID Mobile v1.1.0</Text>
-        <Text style={styles.footerSubtext}>© 2024 TSRID GmbH</Text>
-      </View>
-
-      {/* Bluetooth Printer Modal */}
+      {/* Modals */}
       <BluetoothPrinterModal 
         visible={printerModalVisible} 
         onClose={() => setPrinterModalVisible(false)}
-        onPrinterConnected={(device) => setConnectedPrinter(device)}
+        onPrinterConnected={setConnectedPrinter}
+      />
+      <LabelFormatModal
+        visible={formatModalVisible}
+        onClose={() => setFormatModalVisible(false)}
+        currentFormat={labelFormat}
+        onSelect={handleLabelFormatChange}
+      />
+      <LabelTemplateModal
+        visible={templateModalVisible}
+        onClose={() => setTemplateModalVisible(false)}
+        currentTemplate={labelTemplate}
+        onSelect={handleLabelTemplateChange}
       />
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  content: {
-    padding: theme.spacing.md,
-  },
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  content: { padding: 16 },
+  
   profileCard: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.lg,
+    borderRadius: 12,
+    padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: theme.spacing.lg,
-    ...theme.shadow.md,
+    marginBottom: 20,
   },
   avatarContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: theme.spacing.md,
+    marginRight: 12,
   },
-  avatarText: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  profileInfo: {
-    flex: 1,
-  },
-  profileName: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: 4,
-  },
-  profileEmail: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.sm,
-  },
-  roleBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: `${theme.colors.primary}20`,
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 4,
-    borderRadius: theme.borderRadius.full,
-  },
-  roleText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.primary,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  section: {
-    marginBottom: theme.spacing.lg,
-  },
-  sectionTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.textMuted,
-    marginBottom: theme.spacing.sm,
-    paddingLeft: theme.spacing.sm,
-  },
-  sectionContent: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    overflow: 'hidden',
-  },
+  avatarText: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  profileInfo: { flex: 1 },
+  profileName: { fontSize: 18, fontWeight: '600', color: theme.colors.textPrimary },
+  profileEmail: { fontSize: 14, color: theme.colors.textSecondary, marginTop: 2 },
+
+  section: { marginBottom: 20 },
+  sectionTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textMuted, marginBottom: 8, paddingLeft: 4 },
+  sectionContent: { backgroundColor: theme.colors.surface, borderRadius: 12, overflow: 'hidden' },
+  sectionSubtitle: { fontSize: 13, fontWeight: '600', color: theme.colors.textMuted, marginBottom: 8, marginTop: 8 },
+
   settingsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.md,
+    padding: 14,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
-  settingsRowDisabled: {
-    opacity: 0.5,
-  },
-  settingsRowLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  settingsIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.md,
-  },
-  settingsLabel: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textPrimary,
-  },
-  textDisabled: {
-    color: theme.colors.textMuted,
-  },
-  settingsRowRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  settingsValue: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-    marginRight: theme.spacing.sm,
-  },
-  arrow: {
-    fontSize: 20,
-    color: theme.colors.textMuted,
-  },
+  settingsRowDisabled: { opacity: 0.5 },
+  settingsRowLeft: { flexDirection: 'row', alignItems: 'center' },
+  settingsIcon: { fontSize: 18, marginRight: 12 },
+  settingsLabel: { fontSize: 16, color: theme.colors.textPrimary },
+  textDisabled: { color: theme.colors.textMuted },
+  settingsRowRight: { flexDirection: 'row', alignItems: 'center' },
+  settingsValue: { fontSize: 14, color: theme.colors.textMuted, marginRight: 8 },
+  arrow: { fontSize: 18, color: theme.colors.textMuted },
+
   logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginTop: theme.spacing.md,
-    marginBottom: theme.spacing.lg,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    marginTop: 10,
     borderWidth: 1,
     borderColor: 'rgba(239, 68, 68, 0.3)',
   },
-  logoutIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.sm,
-  },
-  logoutText: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.error,
-  },
-  footer: {
-    alignItems: 'center',
-    paddingVertical: theme.spacing.lg,
-  },
-  footerText: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
-  footerSubtext: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textMuted,
-    marginTop: 4,
-  },
-  // Modal Styles
-  modalContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
+  logoutText: { fontSize: 16, fontWeight: '600', color: '#EF4444' },
+
+  // Modal
+  modalContainer: { flex: 1, backgroundColor: theme.colors.background },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.md,
+    padding: 16,
     backgroundColor: theme.colors.primary,
   },
-  modalTitle: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  closeButton: {
-    padding: theme.spacing.sm,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: '#fff',
-  },
-  modalContent: {
-    flex: 1,
-    padding: theme.spacing.md,
-  },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
+  closeButton: { padding: 8 },
+  closeButtonText: { fontSize: 24, color: '#fff' },
+  modalContent: { flex: 1, padding: 16 },
+
   infoCard: {
-    flexDirection: 'row',
     backgroundColor: 'rgba(59, 130, 246, 0.1)',
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(59, 130, 246, 0.3)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
   },
-  infoIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.sm,
+  infoText: { fontSize: 14, color: theme.colors.textSecondary },
+
+  errorCard: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 12,
   },
-  infoText: {
-    flex: 1,
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    lineHeight: 20,
-  },
+  errorText: { fontSize: 14, color: '#EF4444' },
+
   scanButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.primary,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
-    gap: theme.spacing.sm,
+    padding: 14,
+    borderRadius: 12,
+    gap: 8,
   },
-  scanButtonDisabled: {
-    backgroundColor: theme.colors.textMuted,
-  },
-  scanButtonIcon: {
-    fontSize: 20,
-  },
-  scanButtonText: {
-    color: '#fff',
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-  },
-  errorCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginTop: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: 'rgba(239, 68, 68, 0.3)',
-  },
-  errorIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.sm,
-  },
-  errorText: {
-    flex: 1,
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.error,
-  },
-  printerList: {
-    marginTop: theme.spacing.lg,
-    flex: 1,
-  },
-  printerListTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
-  },
-  printerFlatList: {
-    maxHeight: 300,
-  },
+  scanButtonDisabled: { backgroundColor: theme.colors.textMuted },
+  scanButtonIcon: { fontSize: 18 },
+  scanButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+
+  printerList: { marginTop: 16 },
   printerItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    padding: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
-    marginBottom: theme.spacing.sm,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 8,
   },
   printerIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: `${theme.colors.primary}20`,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: theme.spacing.md,
+    marginRight: 12,
   },
-  printerTypeIcon: {
-    fontSize: 24,
-  },
-  printerInfo: {
-    flex: 1,
-  },
-  printerName: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-  },
-  printerDetails: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-    marginTop: 2,
-  },
-  signalContainer: {
+  printerTypeIcon: { fontSize: 22 },
+  printerInfo: { flex: 1 },
+  printerName: { fontSize: 16, fontWeight: '600', color: theme.colors.textPrimary },
+  printerDetails: { fontSize: 13, color: theme.colors.textMuted, marginTop: 2 },
+  pairedBadge: { fontSize: 11, color: theme.colors.success, marginTop: 2 },
+  connectText: { color: theme.colors.primary, fontWeight: '600' },
+
+  // Option items (for format/template selection)
+  optionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 4,
+    backgroundColor: theme.colors.surface,
+    padding: 14,
+    borderRadius: 12,
+    marginBottom: 8,
   },
-  signalBars: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    marginRight: theme.spacing.xs,
-    gap: 2,
-  },
-  signalBar: {
-    width: 4,
-    borderRadius: 2,
-  },
-  signalBarActive: {
-    backgroundColor: theme.colors.success,
-  },
-  signalBarInactive: {
-    backgroundColor: theme.colors.border,
-  },
-  signalLabel: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textMuted,
-  },
-  connectButtonContainer: {
-    paddingLeft: theme.spacing.md,
-  },
-  connectText: {
-    color: theme.colors.primary,
-    fontWeight: '600',
-    fontSize: theme.fontSize.sm,
-  },
-  emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: theme.spacing.xxl,
-    flex: 1,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: theme.spacing.md,
-  },
-  emptyText: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-  },
-  emptySubtext: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-    marginTop: theme.spacing.xs,
-    textAlign: 'center',
-  },
-  scanningContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: theme.spacing.xxl,
-    flex: 1,
-  },
-  scanningAnimation: {
-    width: 120,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: theme.spacing.md,
-  },
-  scanningRing: {
-    position: 'absolute',
+  optionItemSelected: {
     borderWidth: 2,
     borderColor: theme.colors.primary,
-    borderRadius: 100,
-    opacity: 0.3,
   },
-  scanningRing1: {
-    width: 60,
-    height: 60,
-  },
-  scanningRing2: {
-    width: 90,
-    height: 90,
-    opacity: 0.2,
-  },
-  scanningRing3: {
-    width: 120,
-    height: 120,
-    opacity: 0.1,
-  },
-  scanningIcon: {
-    fontSize: 32,
-  },
-  scanningText: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textSecondary,
-  },
+  optionInfo: { flex: 1 },
+  optionName: { fontSize: 16, fontWeight: '600', color: theme.colors.textPrimary },
+  optionDescription: { fontSize: 13, color: theme.colors.textMuted, marginTop: 2 },
+  optionMeta: { fontSize: 11, color: theme.colors.textMuted, marginTop: 4 },
+  checkmark: { fontSize: 20, color: theme.colors.primary, marginLeft: 12 },
 });
 
 export default SettingsScreen;
