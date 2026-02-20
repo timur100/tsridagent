@@ -8,30 +8,20 @@ import {
   Dimensions,
   Vibration,
 } from 'react-native';
-import { Camera } from 'expo-camera';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { assetsAPI } from '../services/api';
 import theme from '../utils/theme';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const SCANNER_SIZE = width * 0.75;
 
 const ScannerScreen = ({ navigation }) => {
-  const [hasPermission, setHasPermission] = useState(null);
+  const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState(false);
-  const [scanMode, setScanMode] = useState('barcode'); // barcode or qrcode
+  const [scanMode, setScanMode] = useState('all'); // all, qr, barcode
   const [flashOn, setFlashOn] = useState(false);
   const [lastScan, setLastScan] = useState(null);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    requestCameraPermission();
-  }, []);
-
-  const requestCameraPermission = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
-    setHasPermission(status === 'granted');
-  };
 
   const handleBarCodeScanned = async ({ type, data }) => {
     if (scanned || loading) return;
@@ -39,6 +29,8 @@ const ScannerScreen = ({ navigation }) => {
     setScanned(true);
     setLoading(true);
     Vibration.vibrate(100);
+
+    console.log(`Scanned: ${type} - ${data}`);
 
     try {
       // Try to find asset by barcode
@@ -62,8 +54,8 @@ const ScannerScreen = ({ navigation }) => {
         );
       } else {
         Alert.alert(
-          'Unbekannter Code',
-          `Code: ${data}\nTyp: ${getScanTypeName(type)}`,
+          'Code gescannt',
+          `Code: ${data}\nTyp: ${type}`,
           [
             { text: 'Neues Asset anlegen', onPress: () => {} },
             { text: 'Weiter scannen', onPress: () => setScanned(false) },
@@ -71,6 +63,7 @@ const ScannerScreen = ({ navigation }) => {
         );
       }
     } catch (error) {
+      console.error('Scan error:', error);
       Alert.alert(
         'Code gescannt',
         `Code: ${data}`,
@@ -81,58 +74,52 @@ const ScannerScreen = ({ navigation }) => {
     }
   };
 
-  const getScanTypeName = (type) => {
-    const types = {
-      [BarCodeScanner.Constants.BarCodeType.qr]: 'QR-Code',
-      [BarCodeScanner.Constants.BarCodeType.ean13]: 'EAN-13',
-      [BarCodeScanner.Constants.BarCodeType.ean8]: 'EAN-8',
-      [BarCodeScanner.Constants.BarCodeType.code128]: 'Code 128',
-      [BarCodeScanner.Constants.BarCodeType.code39]: 'Code 39',
-      [BarCodeScanner.Constants.BarCodeType.upc_a]: 'UPC-A',
-      [BarCodeScanner.Constants.BarCodeType.datamatrix]: 'DataMatrix',
-    };
-    return types[type] || 'Unbekannt';
-  };
-
-  if (hasPermission === null) {
+  // Permission loading
+  if (!permission) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.messageText}>Kameraberechtigung wird angefordert...</Text>
+      <View style={styles.centerContainer}>
+        <Text style={styles.messageText}>Kameraberechtigung wird geladen...</Text>
       </View>
     );
   }
 
-  if (hasPermission === false) {
+  // Permission not granted
+  if (!permission.granted) {
     return (
-      <View style={styles.container}>
+      <View style={styles.centerContainer}>
         <Text style={styles.messageText}>Kein Zugriff auf die Kamera</Text>
-        <TouchableOpacity style={styles.button} onPress={requestCameraPermission}>
-          <Text style={styles.buttonText}>Berechtigung erteilen</Text>
+        <Text style={styles.subText}>
+          Die Kamera wird benötigt, um Barcodes und QR-Codes zu scannen.
+        </Text>
+        <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
+          <Text style={styles.permissionButtonText}>Kamera-Berechtigung erteilen</Text>
         </TouchableOpacity>
       </View>
     );
   }
 
+  // Get barcode types based on scan mode
+  const getBarcodeTypes = () => {
+    if (scanMode === 'qr') {
+      return ['qr'];
+    } else if (scanMode === 'barcode') {
+      return ['ean13', 'ean8', 'code128', 'code39', 'upc_a', 'upc_e', 'codabar'];
+    }
+    // all
+    return ['qr', 'ean13', 'ean8', 'code128', 'code39', 'upc_a', 'upc_e', 'codabar', 'datamatrix', 'aztec'];
+  };
+
   return (
     <View style={styles.container}>
       {/* Camera View */}
-      <Camera
+      <CameraView
         style={styles.camera}
-        type={Camera.Constants.Type.back}
-        flashMode={flashOn ? Camera.Constants.FlashMode.torch : Camera.Constants.FlashMode.off}
-        barCodeScannerSettings={{
-          barCodeTypes: scanMode === 'qrcode' 
-            ? [BarCodeScanner.Constants.BarCodeType.qr]
-            : [
-                BarCodeScanner.Constants.BarCodeType.ean13,
-                BarCodeScanner.Constants.BarCodeType.ean8,
-                BarCodeScanner.Constants.BarCodeType.code128,
-                BarCodeScanner.Constants.BarCodeType.code39,
-                BarCodeScanner.Constants.BarCodeType.qr,
-                BarCodeScanner.Constants.BarCodeType.datamatrix,
-              ],
+        facing="back"
+        enableTorch={flashOn}
+        barcodeScannerSettings={{
+          barcodeTypes: getBarcodeTypes(),
         }}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       >
         {/* Scanner Overlay */}
         <View style={styles.overlay}>
@@ -149,10 +136,8 @@ const ScannerScreen = ({ navigation }) => {
               <View style={[styles.corner, styles.cornerBottomLeft]} />
               <View style={[styles.corner, styles.cornerBottomRight]} />
               
-              {/* Scan Line Animation Placeholder */}
-              {!scanned && (
-                <View style={styles.scanLine} />
-              )}
+              {/* Scan Line */}
+              {!scanned && <View style={styles.scanLine} />}
             </View>
             <View style={styles.overlaySection} />
           </View>
@@ -167,23 +152,29 @@ const ScannerScreen = ({ navigation }) => {
             {scanned ? 'Code erkannt!' : 'Barcode oder QR-Code scannen'}
           </Text>
         </View>
-      </Camera>
+      </CameraView>
 
       {/* Controls */}
       <View style={styles.controls}>
         {/* Mode Toggle */}
         <View style={styles.modeToggle}>
           <TouchableOpacity
+            style={[styles.modeButton, scanMode === 'all' && styles.modeButtonActive]}
+            onPress={() => setScanMode('all')}
+          >
+            <Text style={[styles.modeButtonText, scanMode === 'all' && styles.modeButtonTextActive]}>Alle</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[styles.modeButton, scanMode === 'barcode' && styles.modeButtonActive]}
             onPress={() => setScanMode('barcode')}
           >
-            <Text style={styles.modeButtonText}>Barcode</Text>
+            <Text style={[styles.modeButtonText, scanMode === 'barcode' && styles.modeButtonTextActive]}>Barcode</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.modeButton, scanMode === 'qrcode' && styles.modeButtonActive]}
-            onPress={() => setScanMode('qrcode')}
+            style={[styles.modeButton, scanMode === 'qr' && styles.modeButtonActive]}
+            onPress={() => setScanMode('qr')}
           >
-            <Text style={styles.modeButtonText}>QR-Code</Text>
+            <Text style={[styles.modeButtonText, scanMode === 'qr' && styles.modeButtonTextActive]}>QR-Code</Text>
           </TouchableOpacity>
         </View>
 
@@ -193,8 +184,10 @@ const ScannerScreen = ({ navigation }) => {
             style={[styles.actionButton, flashOn && styles.actionButtonActive]}
             onPress={() => setFlashOn(!flashOn)}
           >
-            <Text style={styles.actionIcon}>💡</Text>
-            <Text style={styles.actionText}>Blitz</Text>
+            <Text style={styles.actionIcon}>{flashOn ? '🔦' : '💡'}</Text>
+            <Text style={[styles.actionText, flashOn && styles.actionTextActive]}>
+              {flashOn ? 'Blitz An' : 'Blitz'}
+            </Text>
           </TouchableOpacity>
           
           {scanned && (
@@ -212,7 +205,7 @@ const ScannerScreen = ({ navigation }) => {
         {lastScan && (
           <View style={styles.lastScanCard}>
             <Text style={styles.lastScanTitle}>Letzter Scan</Text>
-            <Text style={styles.lastScanCode}>{lastScan.code}</Text>
+            <Text style={styles.lastScanCode} numberOfLines={1}>{lastScan.code}</Text>
             <Text style={styles.lastScanTime}>{lastScan.timestamp}</Text>
             {lastScan.asset && (
               <View style={styles.assetInfo}>
@@ -231,6 +224,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
+  },
+  centerContainer: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
   camera: {
     flex: 1,
@@ -259,34 +259,14 @@ const styles = StyleSheet.create({
     height: 30,
     borderColor: theme.colors.primary,
   },
-  cornerTopLeft: {
-    top: -2,
-    left: -2,
-    borderTopWidth: 4,
-    borderLeftWidth: 4,
-  },
-  cornerTopRight: {
-    top: -2,
-    right: -2,
-    borderTopWidth: 4,
-    borderRightWidth: 4,
-  },
-  cornerBottomLeft: {
-    bottom: -2,
-    left: -2,
-    borderBottomWidth: 4,
-    borderLeftWidth: 4,
-  },
-  cornerBottomRight: {
-    bottom: -2,
-    right: -2,
-    borderBottomWidth: 4,
-    borderRightWidth: 4,
-  },
+  cornerTopLeft: { top: -2, left: -2, borderTopWidth: 4, borderLeftWidth: 4 },
+  cornerTopRight: { top: -2, right: -2, borderTopWidth: 4, borderRightWidth: 4 },
+  cornerBottomLeft: { bottom: -2, left: -2, borderBottomWidth: 4, borderLeftWidth: 4 },
+  cornerBottomRight: { bottom: -2, right: -2, borderBottomWidth: 4, borderRightWidth: 4 },
   scanLine: {
     position: 'absolute',
-    left: 0,
-    right: 0,
+    left: 10,
+    right: 10,
     top: '50%',
     height: 2,
     backgroundColor: theme.colors.primary,
@@ -301,7 +281,7 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     color: '#fff',
-    fontSize: theme.fontSize.lg,
+    fontSize: 18,
     fontWeight: '600',
     textShadowColor: 'rgba(0,0,0,0.75)',
     textShadowOffset: { width: 1, height: 1 },
@@ -309,56 +289,66 @@ const styles = StyleSheet.create({
   },
   messageText: {
     color: theme.colors.textPrimary,
-    fontSize: theme.fontSize.lg,
+    fontSize: 18,
     textAlign: 'center',
-    marginBottom: theme.spacing.md,
+    marginBottom: 10,
   },
-  button: {
+  subText: {
+    color: theme.colors.textSecondary,
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+  },
+  permissionButton: {
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: 12,
   },
-  buttonText: {
+  permissionButtonText: {
     color: '#fff',
-    fontSize: theme.fontSize.md,
+    fontSize: 16,
     fontWeight: '600',
   },
   controls: {
-    padding: theme.spacing.md,
+    padding: 16,
     backgroundColor: theme.colors.background,
   },
   modeToggle: {
     flexDirection: 'row',
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
+    borderRadius: 12,
     padding: 4,
-    marginBottom: theme.spacing.md,
+    marginBottom: 12,
   },
   modeButton: {
     flex: 1,
-    paddingVertical: theme.spacing.sm,
+    paddingVertical: 10,
     alignItems: 'center',
-    borderRadius: theme.borderRadius.md,
+    borderRadius: 8,
   },
   modeButtonActive: {
     backgroundColor: theme.colors.primary,
   },
   modeButtonText: {
-    color: theme.colors.textPrimary,
+    color: theme.colors.textSecondary,
     fontWeight: '600',
+  },
+  modeButtonTextActive: {
+    color: '#fff',
   },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: theme.spacing.md,
-    marginBottom: theme.spacing.md,
+    gap: 12,
+    marginBottom: 12,
   },
   actionButton: {
     backgroundColor: theme.colors.surface,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -366,24 +356,27 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   actionIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.sm,
+    fontSize: 18,
+    marginRight: 8,
   },
   actionText: {
     color: theme.colors.textPrimary,
     fontWeight: '500',
   },
+  actionTextActive: {
+    color: '#fff',
+  },
   scanAgainButton: {
     backgroundColor: theme.colors.primary,
-    paddingHorizontal: theme.spacing.lg,
-    paddingVertical: theme.spacing.md,
-    borderRadius: theme.borderRadius.lg,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
   scanAgainIcon: {
-    fontSize: 20,
-    marginRight: theme.spacing.sm,
+    fontSize: 18,
+    marginRight: 8,
   },
   scanAgainText: {
     color: '#fff',
@@ -391,28 +384,27 @@ const styles = StyleSheet.create({
   },
   lastScanCard: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    ...theme.shadow.sm,
+    borderRadius: 12,
+    padding: 14,
   },
   lastScanTitle: {
-    fontSize: theme.fontSize.sm,
+    fontSize: 12,
     color: theme.colors.textMuted,
-    marginBottom: theme.spacing.xs,
+    marginBottom: 4,
   },
   lastScanCode: {
-    fontSize: theme.fontSize.lg,
+    fontSize: 16,
     fontWeight: '600',
     color: theme.colors.textPrimary,
     marginBottom: 4,
   },
   lastScanTime: {
-    fontSize: theme.fontSize.sm,
+    fontSize: 12,
     color: theme.colors.textSecondary,
   },
   assetInfo: {
-    marginTop: theme.spacing.sm,
-    paddingTop: theme.spacing.sm,
+    marginTop: 10,
+    paddingTop: 10,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
     flexDirection: 'row',
