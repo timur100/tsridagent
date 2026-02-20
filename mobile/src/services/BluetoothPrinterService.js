@@ -18,9 +18,9 @@ import {
   LABEL_TEMPLATES,
 } from './BrotherPrinterConfig';
 import {
-  generateTestLabel as generateBrotherTestLabel,
-  generateAssetLabel as generateBrotherAssetLabel,
-} from './BrotherPrinterCommands';
+  createTestLabel as createBrotherTestLabel,
+  createAssetLabel as createBrotherAssetLabel,
+} from './BrotherRasterGenerator';
 
 // Storage keys
 const STORAGE_KEYS = {
