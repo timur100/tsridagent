@@ -74,12 +74,32 @@ const DashboardScreen = ({ navigation }) => {
     try {
       // Load dashboard stats
       const [statsResult, healthResult] = await Promise.all([
-        dashboardAPI.getStats().catch(err => ({ success: false })),
-        healthAPI.check().catch(err => ({ status: 'error' })),
+        dashboardAPI.getStats().catch(err => {
+          console.error('Stats error:', err);
+          return null;
+        }),
+        healthAPI.check().catch(err => {
+          console.error('Health error:', err);
+          return { status: 'error' };
+        }),
       ]);
 
-      if (statsResult?.success && statsResult?.data) {
-        setStats(statsResult.data);
+      // Handle stats - API returns direct data without success wrapper
+      if (statsResult) {
+        // Check if response has data wrapper or is direct
+        const statsData = statsResult.data || statsResult;
+        if (statsData.total_devices !== undefined || statsData.total_tenants !== undefined) {
+          setStats({
+            total_tenants: statsData.total_tenants || 0,
+            total_users: statsData.total_users || 0,
+            total_devices: statsData.total_devices || 0,
+            online_devices: statsData.online_devices || 0,
+            offline_devices: statsData.offline_devices || 0,
+            in_preparation: statsData.in_preparation || 0,
+            total_locations: statsData.total_locations || 0,
+            total_assets: statsData.total_assets || 0,
+          });
+        }
       }
 
       setServerStatus(healthResult?.status === 'healthy' ? 'online' : 'offline');
