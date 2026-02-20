@@ -947,21 +947,78 @@ const MobileAssetsScreen = ({ assets, loading }) => {
 };
 
 // Settings Screen with offline toggle, modules config, printer, and notifications
-const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enabledModules, onToggleModule, connectedPrinter, onConnectPrinter, notifications, onToggleNotifications }) => {
+const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enabledModules, onToggleModule, connectedPrinter, onConnectPrinter, notifications, onToggleNotifications, printQueue, onPrint }) => {
   const [showPrinterModal, setShowPrinterModal] = useState(false);
   const [showModulesModal, setShowModulesModal] = useState(false);
+  const [showPrintQueueModal, setShowPrintQueueModal] = useState(false);
   const [scanningPrinters, setScanningPrinters] = useState(false);
   const [availablePrinters, setAvailablePrinters] = useState([]);
+  const [printerStatus, setPrinterStatus] = useState('ready'); // 'ready', 'printing', 'error', 'paper_low'
+  const [testPrinting, setTestPrinting] = useState(false);
 
   const simulatePrinterScan = () => {
     setScanningPrinters(true);
     setTimeout(() => {
       setAvailablePrinters([
-        { id: 'zq630-1', name: 'ZQ630-ABC123', type: 'Zebra ZQ630', signal: -45 },
-        { id: 'brother-1', name: 'QL-820NWB-XYZ', type: 'Brother QL-820NWB', signal: -52 },
+        { 
+          id: 'zq630-1', 
+          name: 'ZQ630-ABC123', 
+          type: 'Zebra ZQ630', 
+          signal: -45,
+          battery: 85,
+          labelType: 'ZPL',
+          paperWidth: '50mm',
+          features: ['ZPL II', 'Bluetooth 4.0', 'WiFi', 'NFC']
+        },
+        { 
+          id: 'brother-1', 
+          name: 'QL-820NWB-XYZ', 
+          type: 'Brother QL-820NWB', 
+          signal: -52,
+          battery: 72,
+          labelType: 'DK',
+          paperWidth: '62mm',
+          features: ['AirPrint', 'Bluetooth', 'WiFi', 'USB']
+        },
+        { 
+          id: 'zq630-2', 
+          name: 'ZQ630-DEF456', 
+          type: 'Zebra ZQ630', 
+          signal: -68,
+          battery: 45,
+          labelType: 'ZPL',
+          paperWidth: '50mm',
+          features: ['ZPL II', 'Bluetooth 4.0']
+        },
       ]);
       setScanningPrinters(false);
     }, 2000);
+  };
+
+  const simulateTestPrint = () => {
+    if (!connectedPrinter) return;
+    
+    setTestPrinting(true);
+    setPrinterStatus('printing');
+    
+    // Simulate print process
+    setTimeout(() => {
+      setPrinterStatus('ready');
+      setTestPrinting(false);
+    }, 3000);
+  };
+
+  const getPrinterStatusInfo = () => {
+    switch (printerStatus) {
+      case 'printing':
+        return { color: mobileTheme.colors.info, text: 'Druckt...', icon: '🖨️' };
+      case 'error':
+        return { color: mobileTheme.colors.error, text: 'Fehler', icon: '⚠️' };
+      case 'paper_low':
+        return { color: mobileTheme.colors.warning, text: 'Papier niedrig', icon: '📄' };
+      default:
+        return { color: mobileTheme.colors.success, text: 'Bereit', icon: '✅' };
+    }
   };
 
   const moduleOptions = [
