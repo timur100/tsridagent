@@ -550,33 +550,89 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
       ) : (
         /* Scanner View */
         <>
-          {/* Camera Preview Simulation */}
-          <div className="flex-1 relative bg-black flex items-center justify-center">
-            <div className="absolute inset-0 flex items-center justify-center">
+          {/* DataWedge Status Bar */}
+          {scanMode === 'datawedge' && (
+            <DataWedgeStatus 
+              isConnected={dataWedgeConnected}
+              profileName={dataWedgeProfile}
+              lastEvent={dataWedgeEvent}
+            />
+          )}
+
+          {/* Scanner Preview with Laser Simulation */}
+          <div className="flex-1 relative bg-black flex items-center justify-center overflow-hidden">
+            {/* Scan Feedback Overlay */}
+            {scanFeedback && (
               <div 
-                className="w-56 h-56 border-2 relative"
-                style={{ borderColor: mobileTheme.colors.primary }}
+                className={`absolute inset-0 z-20 flex items-center justify-center transition-opacity duration-300 ${
+                  scanFeedback === 'success' ? 'bg-green-500/30' : 
+                  scanFeedback === 'error' ? 'bg-red-500/30' : 'bg-yellow-500/30'
+                }`}
               >
-                {['top-0 left-0 border-t-4 border-l-4', 'top-0 right-0 border-t-4 border-r-4', 'bottom-0 left-0 border-b-4 border-l-4', 'bottom-0 right-0 border-b-4 border-r-4'].map((pos, i) => (
-                  <div key={i} className={`absolute w-6 h-6 ${pos}`} style={{ borderColor: mobileTheme.colors.primary }} />
-                ))}
+                <div className="text-center">
+                  {scanFeedback === 'success' && <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />}
+                  {scanFeedback === 'error' && <AlertCircle className="w-16 h-16 text-red-500 mx-auto" />}
+                  {scanFeedback === 'unknown' && <AlertCircle className="w-16 h-16 text-yellow-500 mx-auto" />}
+                </div>
+              </div>
+            )}
+
+            {/* Laser Line Animation for DataWedge */}
+            {laserActive && scanMode === 'datawedge' && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <div 
-                  className="absolute left-0 right-0 top-1/2 h-0.5 animate-pulse"
-                  style={{ backgroundColor: mobileTheme.colors.primary, opacity: 0.8 }}
+                  className="w-64 h-1 rounded-full animate-pulse"
+                  style={{ 
+                    backgroundColor: '#ff0000',
+                    boxShadow: '0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000'
+                  }}
                 />
               </div>
+            )}
+
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div 
+                className={`w-56 h-56 border-2 relative transition-all duration-200 ${
+                  triggerPressed ? 'scale-105' : ''
+                }`}
+                style={{ 
+                  borderColor: laserActive ? '#ff0000' : mobileTheme.colors.primary,
+                  boxShadow: laserActive ? '0 0 20px rgba(255,0,0,0.5)' : 'none'
+                }}
+              >
+                {['top-0 left-0 border-t-4 border-l-4', 'top-0 right-0 border-t-4 border-r-4', 'bottom-0 left-0 border-b-4 border-l-4', 'bottom-0 right-0 border-b-4 border-r-4'].map((pos, i) => (
+                  <div 
+                    key={i} 
+                    className={`absolute w-6 h-6 ${pos}`} 
+                    style={{ borderColor: laserActive ? '#ff0000' : mobileTheme.colors.primary }} 
+                  />
+                ))}
+                {/* Scan line for camera mode */}
+                {scanMode !== 'datawedge' && (
+                  <div 
+                    className="absolute left-0 right-0 top-1/2 h-0.5 animate-pulse"
+                    style={{ backgroundColor: mobileTheme.colors.primary, opacity: 0.8 }}
+                  />
+                )}
+              </div>
             </div>
-            <div className="absolute top-4 left-0 right-0 text-center">
+
+            <div className="absolute top-4 left-0 right-0 text-center z-5">
               <p className="text-white font-semibold text-shadow">
-                {scanMode === 'manual' ? 'Barcode manuell eingeben' : 'Barcode oder QR-Code scannen'}
+                {scanMode === 'datawedge' 
+                  ? (triggerPressed ? '🔴 Scanne...' : 'Drücken Sie den Trigger oder [Leertaste]')
+                  : scanMode === 'manual' 
+                    ? 'Barcode manuell eingeben' 
+                    : 'Barcode oder QR-Code scannen'
+                }
               </p>
             </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-gray-900/80" />
+            <div className="absolute inset-0 bg-gradient-to-b from-gray-900/50 to-gray-900/80 -z-0" />
           </div>
 
           {/* Controls */}
           <div className="p-3 space-y-2" style={{ backgroundColor: mobileTheme.colors.background }}>
-            {/* Mode Toggle */}
+            {/* Mode Toggle - Now includes DataWedge */}
             <div className="flex p-1 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
               {['camera', 'manual'].map((mode) => (
                 <button
