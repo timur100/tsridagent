@@ -507,18 +507,30 @@ class BluetoothPrinterService {
 
     try {
       if (this.connectedDevice.bluetoothType === 'classic') {
-        // Brother: Send as binary data using latin1/binary encoding
+        // Brother: Send binary raster data
         console.log('Sending to Brother via Classic BT, data length:', data.length);
         
-        // Split into chunks for reliability
-        const chunkSize = 512;
-        for (let i = 0; i < data.length; i += chunkSize) {
-          const chunk = data.slice(i, i + chunkSize);
+        // Convert Uint8Array to string for sending
+        let dataStr;
+        if (data instanceof Uint8Array) {
+          // Convert binary to latin1 string
+          dataStr = '';
+          for (let i = 0; i < data.length; i++) {
+            dataStr += String.fromCharCode(data[i]);
+          }
+        } else {
+          dataStr = data;
+        }
+        
+        // Split into chunks for reliability (Brother can handle ~1KB chunks)
+        const chunkSize = 1024;
+        for (let i = 0; i < dataStr.length; i += chunkSize) {
+          const chunk = dataStr.slice(i, i + chunkSize);
           await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
           
-          // Small delay between chunks
-          if (i + chunkSize < data.length) {
-            await new Promise(resolve => setTimeout(resolve, 50));
+          // Delay between chunks
+          if (i + chunkSize < dataStr.length) {
+            await new Promise(resolve => setTimeout(resolve, 100));
           }
         }
         
@@ -527,7 +539,13 @@ class BluetoothPrinterService {
       } else {
         // Zebra: Send via BLE
         console.log('Sending to Zebra via BLE, data length:', data.length);
-        const base64Data = Buffer.from(data, 'utf-8').toString('base64');
+        
+        let dataToSend = data;
+        if (data instanceof Uint8Array) {
+          dataToSend = new TextDecoder('latin1').decode(data);
+        }
+        
+        const base64Data = Buffer.from(dataToSend, 'latin1').toString('base64');
         const chunkSize = 200;
         
         for (let i = 0; i < base64Data.length; i += chunkSize) {
