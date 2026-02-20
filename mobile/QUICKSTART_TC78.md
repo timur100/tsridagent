@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://asset-scanner-sim.preview.emergentagent.com`
+`https://scanner-printer-app.preview.emergentagent.com`
 
 ---
 

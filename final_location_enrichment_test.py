@@ -15,7 +15,7 @@ import sys
 import random
 
 # Backend URL from environment
-BACKEND_URL = "https://asset-scanner-sim.preview.emergentagent.com"
+BACKEND_URL = "https://scanner-printer-app.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class FinalLocationEnrichmentTester:

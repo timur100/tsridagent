@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://asset-scanner-sim.preview.emergentagent.com
+│   └── Lädt: https://scanner-printer-app.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

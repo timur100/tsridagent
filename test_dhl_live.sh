@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-scanner-sim.preview.emergentagent.com/api/dhl"
+API_URL="https://scanner-printer-app.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

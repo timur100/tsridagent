@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://asset-scanner-sim.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://scanner-printer-app.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

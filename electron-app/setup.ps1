@@ -196,7 +196,7 @@ function Initialize-Directories {
 function Download-OfflineData {
     Write-Info "Lade Offline-Standortdaten..."
     
-    $url = "https://asset-scanner-sim.preview.emergentagent.com/api/agent/locations/export"
+    $url = "https://scanner-printer-app.preview.emergentagent.com/api/agent/locations/export"
     $outputFile = Join-Path $ScriptDir "offline-data\locations_cache.json"
     
     try {

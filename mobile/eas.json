@@ -34,7 +34,7 @@
         }
       },
       "env": {
-        "API_URL": "https://asset-scanner-sim.preview.emergentagent.com"
+        "API_URL": "https://scanner-printer-app.preview.emergentagent.com"
       }
     }
   },
