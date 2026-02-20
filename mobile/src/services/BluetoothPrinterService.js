@@ -16,10 +16,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   BROTHER_LABEL_FORMATS,
   LABEL_TEMPLATES,
-  generateBrotherLabelCommands,
-  generateAssetLabelContent,
-  generateTestLabelContent,
 } from './BrotherPrinterConfig';
+import {
+  generateTestLabel as generateBrotherTestLabel,
+  generateAssetLabel as generateBrotherAssetLabel,
+} from './BrotherPrinterCommands';
 
 // Storage keys
 const STORAGE_KEYS = {
