@@ -24,18 +24,58 @@
         "backgroundColor": "#1a1a1a"
       },
       "package": "com.tsrid.mobile",
+      "versionCode": 1,
       "permissions": [
-        "CAMERA",
-        "BLUETOOTH",
-        "BLUETOOTH_ADMIN",
-        "ACCESS_FINE_LOCATION"
+        "android.permission.CAMERA",
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.VIBRATE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
+      "intentFilters": [
+        {
+          "action": "com.tsrid.mobile.SCAN",
+          "category": ["DEFAULT"]
+        },
+        {
+          "action": "com.symbol.datawedge.api.NOTIFICATION_ACTION",
+          "category": ["DEFAULT"]
+        }
       ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://asset-scanner-sim.preview.emergentagent.com"
+      "apiUrl": "https://asset-scanner-sim.preview.emergentagent.com",
+      "eas": {
+        "projectId": "tsrid-mobile"
+      }
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Erlauben Sie TSRID Mobile, die Kamera zum Scannen von Barcodes zu verwenden."
+        }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Erlauben Sie TSRID Mobile, die Kamera zum Scannen von Barcodes zu verwenden."
+        }
+      ]
+    ],
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://asset-scanner-sim.preview.emergentagent.com/api/mobile/updates"
     }
   }
 }
