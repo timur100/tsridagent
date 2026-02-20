@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://tc78-fieldwork-app.preview.emergentagent.com/api/dhl"
+API_URL="https://asset-scanner-sim.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""

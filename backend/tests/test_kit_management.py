@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tc78-fieldwork-app.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://asset-scanner-sim.preview.emergentagent.com')
 
 class TestKitManagementAPIs:
     """Test Kit Management CRUD operations"""

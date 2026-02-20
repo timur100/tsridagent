@@ -14,7 +14,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tc78-fieldwork-app.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://asset-scanner-sim.preview.emergentagent.com')
 
 class TestStorageOverviewAPI:
     """Tests for /api/device-lifecycle/storage/overview endpoint"""

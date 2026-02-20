@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tc78-fieldwork-app.preview.emergentagent.com';
+    this.serverUrl = 'https://asset-scanner-sim.preview.emergentagent.com';
   }
 
   /**

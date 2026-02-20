@@ -35,7 +35,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://tc78-fieldwork-app.preview.emergentagent.com"
+      "apiUrl": "https://asset-scanner-sim.preview.emergentagent.com"
     }
   }
 }
