@@ -1076,18 +1076,121 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
           </div>
         </div>
 
-        {/* Printer Status Card */}
+        {/* Printer Status Card - Enhanced */}
         <div 
-          className="p-4 rounded-xl border cursor-pointer"
+          className="p-4 rounded-xl border"
           style={{ 
             backgroundColor: connectedPrinter ? 'rgba(34,197,94,0.1)' : mobileTheme.colors.surface,
             borderColor: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.border
           }}
-          onClick={() => setShowPrinterModal(true)}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
-              <Printer className="w-6 h-6" style={{ color: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.textMuted }} />
+              <div className="relative">
+                <Printer className="w-6 h-6" style={{ color: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.textMuted }} />
+                {connectedPrinter && (
+                  <div 
+                    className="absolute -top-1 -right-1 w-3 h-3 rounded-full border-2"
+                    style={{ 
+                      backgroundColor: getPrinterStatusInfo().color,
+                      borderColor: mobileTheme.colors.background
+                    }}
+                  />
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-white">
+                  {connectedPrinter ? connectedPrinter.name : 'Kein Drucker'}
+                </p>
+                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
+                  {connectedPrinter ? `${connectedPrinter.type} • ${getPrinterStatusInfo().text}` : 'Tippen zum Verbinden'}
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowPrinterModal(true)}
+              className="p-2 rounded-lg"
+              style={{ backgroundColor: mobileTheme.colors.surface }}
+            >
+              <ChevronRight className="w-5 h-5" style={{ color: mobileTheme.colors.textMuted }} />
+            </button>
+          </div>
+          
+          {/* Printer Details when connected */}
+          {connectedPrinter && (
+            <div className="space-y-2 pt-2 border-t" style={{ borderColor: mobileTheme.colors.border }}>
+              {/* Battery & Signal */}
+              <div className="flex gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>🔋</span>
+                  <div className="flex items-center gap-1">
+                    <div 
+                      className="h-2 rounded-full"
+                      style={{ 
+                        width: 40,
+                        backgroundColor: mobileTheme.colors.border
+                      }}
+                    >
+                      <div 
+                        className="h-full rounded-full"
+                        style={{ 
+                          width: `${connectedPrinter.battery || 85}%`,
+                          backgroundColor: (connectedPrinter.battery || 85) > 20 ? mobileTheme.colors.success : mobileTheme.colors.error
+                        }}
+                      />
+                    </div>
+                    <span className="text-xs text-white">{connectedPrinter.battery || 85}%</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Bluetooth className="w-3 h-3" style={{ color: mobileTheme.colors.info }} />
+                  <div className="flex gap-0.5">
+                    {[1,2,3,4].map(i => (
+                      <div 
+                        key={i} 
+                        className="w-1 rounded-full"
+                        style={{ 
+                          height: 4 + i * 2,
+                          backgroundColor: Math.abs(connectedPrinter.signal || -45) < 40 + i * 10 ? mobileTheme.colors.success : mobileTheme.colors.border
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Quick Actions */}
+              <div className="flex gap-2">
+                <button
+                  onClick={simulateTestPrint}
+                  disabled={testPrinting || printerStatus !== 'ready'}
+                  className="flex-1 py-2 rounded-lg text-xs font-medium text-white flex items-center justify-center gap-1 disabled:opacity-50"
+                  style={{ backgroundColor: mobileTheme.colors.primary }}
+                >
+                  {testPrinting ? (
+                    <>
+                      <RefreshCw className="w-3 h-3 animate-spin" />
+                      <span>Druckt...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="w-3 h-3" />
+                      <span>Test-Etikett</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => setShowPrintQueueModal(true)}
+                  className="px-3 py-2 rounded-lg text-xs font-medium text-white flex items-center gap-1"
+                  style={{ backgroundColor: mobileTheme.colors.surface }}
+                >
+                  <span>📋</span>
+                  <span>{printQueue?.length || 0}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
               <div>
                 <p className="font-semibold text-white">
                   {connectedPrinter ? connectedPrinter.name : 'Kein Drucker'}
