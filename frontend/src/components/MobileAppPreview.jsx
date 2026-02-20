@@ -1078,11 +1078,13 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
 
         {/* Printer Status Card - Enhanced */}
         <div 
-          className="p-4 rounded-xl border"
+          className="p-4 rounded-xl border cursor-pointer"
           style={{ 
             backgroundColor: connectedPrinter ? 'rgba(34,197,94,0.1)' : mobileTheme.colors.surface,
             borderColor: connectedPrinter ? mobileTheme.colors.success : mobileTheme.colors.border
           }}
+          onClick={() => setShowPrinterModal(true)}
+          data-testid="printer-card"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-3">
