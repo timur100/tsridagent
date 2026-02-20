@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
@@ -18,36 +20,145 @@ const SettingsSection = ({ title, children }) => (
   </View>
 );
 
-const SettingsRow = ({ icon, label, value, onPress, showArrow = true }) => (
-  <TouchableOpacity style={styles.settingsRow} onPress={onPress} disabled={!onPress}>
+const SettingsRow = ({ icon, label, value, onPress, showArrow = true, disabled = false }) => (
+  <TouchableOpacity 
+    style={[styles.settingsRow, disabled && styles.settingsRowDisabled]} 
+    onPress={onPress} 
+    disabled={!onPress || disabled}
+  >
     <View style={styles.settingsRowLeft}>
       <Text style={styles.settingsIcon}>{icon}</Text>
-      <Text style={styles.settingsLabel}>{label}</Text>
+      <Text style={[styles.settingsLabel, disabled && styles.textDisabled]}>{label}</Text>
     </View>
     <View style={styles.settingsRowRight}>
-      {value && <Text style={styles.settingsValue}>{value}</Text>}
+      {value && <Text style={[styles.settingsValue, disabled && styles.textDisabled]}>{value}</Text>}
       {showArrow && onPress && <Text style={styles.arrow}>›</Text>}
     </View>
   </TouchableOpacity>
 );
 
-const SettingsToggle = ({ icon, label, value, onValueChange }) => (
-  <View style={styles.settingsRow}>
+const SettingsToggle = ({ icon, label, value, onValueChange, disabled = false }) => (
+  <View style={[styles.settingsRow, disabled && styles.settingsRowDisabled]}>
     <View style={styles.settingsRowLeft}>
       <Text style={styles.settingsIcon}>{icon}</Text>
-      <Text style={styles.settingsLabel}>{label}</Text>
+      <Text style={[styles.settingsLabel, disabled && styles.textDisabled]}>{label}</Text>
     </View>
     <Switch
       value={value}
       onValueChange={onValueChange}
       trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
       thumbColor="#fff"
+      disabled={disabled}
     />
   </View>
 );
 
+// Bluetooth Printer Modal
+const BluetoothPrinterModal = ({ visible, onClose }) => {
+  const [scanning, setScanning] = useState(false);
+  const [printers, setPrinters] = useState([]);
+
+  const startScan = () => {
+    setScanning(true);
+    setPrinters([]);
+    
+    // Simulate finding printers after delay
+    setTimeout(() => {
+      setPrinters([
+        { id: '1', name: 'Zebra ZQ630', address: 'XX:XX:XX:XX:XX:01', connected: false },
+        { id: '2', name: 'Brother QL-820NWB', address: 'XX:XX:XX:XX:XX:02', connected: false },
+      ]);
+      setScanning(false);
+    }, 3000);
+  };
+
+  const connectPrinter = (printer) => {
+    Alert.alert(
+      'Bluetooth nicht verfügbar',
+      'Die echte Bluetooth-Verbindung erfordert native Zebra/Brother SDKs, die noch nicht implementiert sind.\n\nDies ist eine Vorschau-Version.',
+      [{ text: 'OK' }]
+    );
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Bluetooth-Drucker</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+            <Text style={styles.closeButtonText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.modalContent}>
+          <Text style={styles.infoText}>
+            Suchen Sie nach Bluetooth-Druckern in der Nähe.
+          </Text>
+
+          <TouchableOpacity 
+            style={[styles.scanButton, scanning && styles.scanButtonDisabled]} 
+            onPress={startScan}
+            disabled={scanning}
+          >
+            {scanning ? (
+              <>
+                <ActivityIndicator color="#fff" size="small" />
+                <Text style={styles.scanButtonText}>Suche läuft...</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.scanButtonIcon}>🔍</Text>
+                <Text style={styles.scanButtonText}>Drucker suchen</Text>
+              </>
+            )}
+          </TouchableOpacity>
+
+          {printers.length > 0 && (
+            <View style={styles.printerList}>
+              <Text style={styles.printerListTitle}>Gefundene Drucker:</Text>
+              {printers.map((printer) => (
+                <TouchableOpacity 
+                  key={printer.id} 
+                  style={styles.printerItem}
+                  onPress={() => connectPrinter(printer)}
+                >
+                  <View style={styles.printerInfo}>
+                    <Text style={styles.printerName}>{printer.name}</Text>
+                    <Text style={styles.printerAddress}>{printer.address}</Text>
+                  </View>
+                  <Text style={styles.connectText}>Verbinden</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {!scanning && printers.length === 0 && (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyIcon}>🖨️</Text>
+              <Text style={styles.emptyText}>Keine Drucker gefunden</Text>
+              <Text style={styles.emptySubtext}>Stellen Sie sicher, dass Bluetooth aktiviert ist</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
 const SettingsScreen = () => {
   const { user, logout } = useAuth();
+  
+  // Scanner settings
+  const [autoFocus, setAutoFocus] = useState(true);
+  const [autoFlash, setAutoFlash] = useState(false);
+  const [scanSound, setScanSound] = useState(true);
+  const [scanVibrate, setScanVibrate] = useState(true);
+  
+  // Sync settings
+  const [autoSync, setAutoSync] = useState(true);
+  
+  // Modals
+  const [printerModalVisible, setPrinterModalVisible] = useState(false);
 
   const handleLogout = () => {
     Alert.alert(
@@ -57,6 +168,22 @@ const SettingsScreen = () => {
         { text: 'Abbrechen', style: 'cancel' },
         { text: 'Abmelden', style: 'destructive', onPress: logout },
       ]
+    );
+  };
+
+  const showSyncAlert = () => {
+    Alert.alert(
+      'Synchronisation',
+      'Daten werden mit dem Server synchronisiert...',
+      [{ text: 'OK' }]
+    );
+  };
+
+  const showNotImplemented = (feature) => {
+    Alert.alert(
+      'Hinweis',
+      `${feature} wird in einer zukünftigen Version verfügbar sein.`,
+      [{ text: 'OK' }]
     );
   };
 
@@ -83,26 +210,26 @@ const SettingsScreen = () => {
         <SettingsToggle
           icon="📷"
           label="Automatischer Fokus"
-          value={true}
-          onValueChange={() => {}}
+          value={autoFocus}
+          onValueChange={setAutoFocus}
         />
         <SettingsToggle
           icon="💡"
           label="Blitz automatisch"
-          value={false}
-          onValueChange={() => {}}
+          value={autoFlash}
+          onValueChange={setAutoFlash}
         />
         <SettingsToggle
           icon="🔊"
           label="Ton bei Scan"
-          value={true}
-          onValueChange={() => {}}
+          value={scanSound}
+          onValueChange={setScanSound}
         />
         <SettingsToggle
           icon="📳"
           label="Vibration bei Scan"
-          value={true}
-          onValueChange={() => {}}
+          value={scanVibrate}
+          onValueChange={setScanVibrate}
         />
       </SettingsSection>
 
@@ -112,19 +239,19 @@ const SettingsScreen = () => {
           icon="🖨️"
           label="Bluetooth-Drucker"
           value="Nicht verbunden"
-          onPress={() => Alert.alert('Drucker', 'Bluetooth-Drucker werden gesucht...')}
+          onPress={() => setPrinterModalVisible(true)}
         />
         <SettingsRow
           icon="🏷️"
           label="Label-Format"
-          value="50x30mm"
-          onPress={() => {}}
+          value="62mm Endlos"
+          onPress={() => showNotImplemented('Label-Format Auswahl')}
         />
         <SettingsRow
           icon="📐"
           label="Label-Vorlage"
           value="Standard"
-          onPress={() => {}}
+          onPress={() => showNotImplemented('Label-Vorlagen')}
         />
       </SettingsSection>
 
@@ -133,25 +260,25 @@ const SettingsScreen = () => {
         <SettingsToggle
           icon="🔄"
           label="Automatische Sync"
-          value={true}
-          onValueChange={() => {}}
+          value={autoSync}
+          onValueChange={setAutoSync}
         />
         <SettingsRow
           icon="📶"
           label="Sync-Intervall"
           value="5 Minuten"
-          onPress={() => {}}
+          onPress={() => showNotImplemented('Sync-Intervall')}
         />
         <SettingsRow
           icon="💾"
           label="Offline-Daten"
-          value="12 MB"
-          onPress={() => {}}
+          value="0 MB"
+          onPress={() => showNotImplemented('Offline-Daten Verwaltung')}
         />
         <SettingsRow
           icon="🔃"
           label="Jetzt synchronisieren"
-          onPress={() => Alert.alert('Sync', 'Daten werden synchronisiert...')}
+          onPress={showSyncAlert}
         />
       </SettingsSection>
 
@@ -161,7 +288,7 @@ const SettingsScreen = () => {
           icon="🌐"
           label="Server-URL"
           value="production"
-          onPress={() => {}}
+          showArrow={false}
         />
         <SettingsRow
           icon="ℹ️"
@@ -188,6 +315,12 @@ const SettingsScreen = () => {
         <Text style={styles.footerText}>TSRID Mobile v1.0.0</Text>
         <Text style={styles.footerSubtext}>© 2024 TSRID GmbH</Text>
       </View>
+
+      {/* Bluetooth Printer Modal */}
+      <BluetoothPrinterModal 
+        visible={printerModalVisible} 
+        onClose={() => setPrinterModalVisible(false)} 
+      />
     </ScrollView>
   );
 };
@@ -273,6 +406,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
+  settingsRowDisabled: {
+    opacity: 0.5,
+  },
   settingsRowLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -284,6 +420,9 @@ const styles = StyleSheet.create({
   settingsLabel: {
     fontSize: theme.fontSize.md,
     color: theme.colors.textPrimary,
+  },
+  textDisabled: {
+    color: theme.colors.textMuted,
   },
   settingsRowRight: {
     flexDirection: 'row',
@@ -331,6 +470,112 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.xs,
     color: theme.colors.textMuted,
     marginTop: 4,
+  },
+  // Modal Styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: theme.spacing.md,
+    backgroundColor: theme.colors.primary,
+  },
+  modalTitle: {
+    fontSize: theme.fontSize.xl,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  closeButton: {
+    padding: theme.spacing.sm,
+  },
+  closeButtonText: {
+    fontSize: 24,
+    color: '#fff',
+  },
+  modalContent: {
+    padding: theme.spacing.md,
+  },
+  infoText: {
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+  },
+  scanButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.lg,
+    gap: theme.spacing.sm,
+  },
+  scanButtonDisabled: {
+    backgroundColor: theme.colors.textMuted,
+  },
+  scanButtonIcon: {
+    fontSize: 20,
+  },
+  scanButtonText: {
+    color: '#fff',
+    fontSize: theme.fontSize.md,
+    fontWeight: '600',
+  },
+  printerList: {
+    marginTop: theme.spacing.lg,
+  },
+  printerListTitle: {
+    fontSize: theme.fontSize.md,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginBottom: theme.spacing.sm,
+  },
+  printerItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
+    borderRadius: theme.borderRadius.lg,
+    marginBottom: theme.spacing.sm,
+  },
+  printerInfo: {
+    flex: 1,
+  },
+  printerName: {
+    fontSize: theme.fontSize.md,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+  },
+  printerAddress: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textMuted,
+    marginTop: 2,
+  },
+  connectText: {
+    color: theme.colors.primary,
+    fontWeight: '600',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xxl,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: theme.spacing.md,
+  },
+  emptyText: {
+    fontSize: theme.fontSize.lg,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+  },
+  emptySubtext: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textMuted,
+    marginTop: theme.spacing.xs,
   },
 });
 
