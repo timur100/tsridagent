@@ -547,12 +547,9 @@ class BluetoothPrinterService {
     let data;
     
     if (this.connectedDevice.type === 'brother') {
-      // Brother with proper label format
-      const content = generateTestLabelContent();
-      data = generateBrotherLabelCommands(content, {
-        labelFormat: this.labelFormat,
-        autoCut: this.autoCut,
-      });
+      // Brother with proper binary commands
+      data = generateBrotherTestLabel();
+      console.log('Brother test label generated, length:', data.length);
     } else {
       // Zebra ZPL
       const timestamp = new Date().toLocaleString('de-DE');
@@ -588,11 +585,8 @@ class BluetoothPrinterService {
     let data;
     
     if (this.connectedDevice.type === 'brother') {
-      const content = generateAssetLabelContent(asset, this.labelTemplate);
-      data = generateBrotherLabelCommands(content, {
-        labelFormat: this.labelFormat,
-        autoCut: this.autoCut,
-      });
+      data = generateBrotherAssetLabel(asset, this.labelTemplate);
+      console.log('Brother asset label generated, length:', data.length);
     } else {
       // Zebra ZPL
       const assetId = asset.warehouse_asset_id || asset.asset_id || 'N/A';
