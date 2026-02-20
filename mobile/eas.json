@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.0.0"
+    "version": ">= 5.0.0",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -14,7 +15,8 @@
     "preview": {
       "distribution": "internal",
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "withoutCredentials": true
       }
     },
     "production": {
@@ -26,6 +28,7 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk",
+        "withoutCredentials": true,
         "env": {
           "DEVICE_TYPE": "zebra-tc78"
         }
