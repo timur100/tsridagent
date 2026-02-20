@@ -2145,6 +2145,7 @@ const MobileAppPreview = () => {
             onConnectPrinter={handleConnectPrinter}
             notifications={notifications}
             onToggleNotifications={toggleNotification}
+            printQueue={[]}
           />
         );
       default:
