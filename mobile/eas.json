@@ -19,6 +19,17 @@
         "withoutCredentials": true
       }
     },
+    "preview-bluetooth": {
+      "distribution": "internal",
+      "developmentClient": false,
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://scanner-printer-app.preview.emergentagent.com"
+      }
+    },
     "production": {
       "android": {
         "buildType": "apk"
