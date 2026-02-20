@@ -11,39 +11,29 @@
         "buildType": "apk",
         "gradleCommand": ":app:assembleDebug"
       },
-      "env": {
-        "NODE_ENV": "development"
-      }
+      "node": "20.18.0"
     },
     "preview": {
       "distribution": "internal",
+      "developmentClient": false,
       "android": {
         "buildType": "apk",
         "withoutCredentials": true
       },
       "node": "20.18.0"
     },
-    "preview-bluetooth": {
+    "production": {
       "distribution": "internal",
-      "developmentClient": true,
+      "developmentClient": false,
       "android": {
         "buildType": "apk",
         "withoutCredentials": true
-      },
-      "node": "20.18.0",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://scanner-printer-app.preview.emergentagent.com"
-      }
-    },
-    "production": {
-      "android": {
-        "buildType": "apk"
       },
       "node": "20.18.0"
     },
     "zebra-tc78": {
       "distribution": "internal",
-      "developmentClient": true,
+      "developmentClient": false,
       "android": {
         "buildType": "apk",
         "withoutCredentials": true
