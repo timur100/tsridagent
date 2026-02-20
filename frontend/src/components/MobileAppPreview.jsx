@@ -951,10 +951,55 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
   const [showPrinterModal, setShowPrinterModal] = useState(false);
   const [showModulesModal, setShowModulesModal] = useState(false);
   const [showPrintQueueModal, setShowPrintQueueModal] = useState(false);
+  const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [scanningPrinters, setScanningPrinters] = useState(false);
   const [availablePrinters, setAvailablePrinters] = useState([]);
   const [printerStatus, setPrinterStatus] = useState('ready'); // 'ready', 'printing', 'error', 'paper_low'
   const [testPrinting, setTestPrinting] = useState(false);
+  
+  // Notification Settings State
+  const [notificationSettings, setNotificationSettings] = useState({
+    enabled: true,
+    categories: {
+      sync: { enabled: true, label: 'Synchronisation', description: 'Status-Updates bei Sync-Vorgängen', icon: '🔄' },
+      assets: { enabled: true, label: 'Asset-Änderungen', description: 'Neue Assets, Status-Updates', icon: '📦' },
+      printer: { enabled: false, label: 'Drucker-Status', description: 'Verbindung, Papier, Fehler', icon: '🖨️' },
+      wareneingang: { enabled: true, label: 'Wareneingang', description: 'Neue Lieferungen, Scan-Ergebnisse', icon: '📥' },
+      system: { enabled: true, label: 'System', description: 'App-Updates, Wartung', icon: '⚙️' },
+      reminders: { enabled: false, label: 'Erinnerungen', description: 'Inventur, Wartung fällig', icon: '⏰' },
+    },
+    quietHours: {
+      enabled: false,
+      start: '22:00',
+      end: '07:00',
+    },
+    sound: true,
+    vibration: true,
+    badge: true,
+  });
+
+  const toggleNotificationCategory = (categoryId) => {
+    setNotificationSettings(prev => ({
+      ...prev,
+      categories: {
+        ...prev.categories,
+        [categoryId]: {
+          ...prev.categories[categoryId],
+          enabled: !prev.categories[categoryId].enabled
+        }
+      }
+    }));
+  };
+
+  const toggleQuietHours = () => {
+    setNotificationSettings(prev => ({
+      ...prev,
+      quietHours: {
+        ...prev.quietHours,
+        enabled: !prev.quietHours.enabled
+      }
+    }));
+  };
 
   const simulatePrinterScan = () => {
     setScanningPrinters(true);
