@@ -1191,18 +1191,6 @@ const MobileSettingsScreen = ({ user, onLogout, isOnline, onToggleOnline, enable
             </div>
           )}
         </div>
-              <div>
-                <p className="font-semibold text-white">
-                  {connectedPrinter ? connectedPrinter.name : 'Kein Drucker'}
-                </p>
-                <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>
-                  {connectedPrinter ? connectedPrinter.type : 'Tippen zum Verbinden'}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5" style={{ color: mobileTheme.colors.textMuted }} />
-          </div>
-        </div>
 
         {/* Profile Card */}
         <div className="flex items-center p-4 rounded-xl" style={{ backgroundColor: mobileTheme.colors.surface }}>
