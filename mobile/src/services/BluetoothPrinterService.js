@@ -507,11 +507,26 @@ class BluetoothPrinterService {
 
     try {
       if (this.connectedDevice.bluetoothType === 'classic') {
-        // Brother: Send as raw bytes
-        await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, data, 'utf-8');
+        // Brother: Send as binary data using latin1/binary encoding
+        console.log('Sending to Brother via Classic BT, data length:', data.length);
+        
+        // Split into chunks for reliability
+        const chunkSize = 512;
+        for (let i = 0; i < data.length; i += chunkSize) {
+          const chunk = data.slice(i, i + chunkSize);
+          await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
+          
+          // Small delay between chunks
+          if (i + chunkSize < data.length) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+          }
+        }
+        
+        console.log('Data sent successfully to Brother');
         return { success: true };
       } else {
         // Zebra: Send via BLE
+        console.log('Sending to Zebra via BLE, data length:', data.length);
         const base64Data = Buffer.from(data, 'utf-8').toString('base64');
         const chunkSize = 200;
         
@@ -526,9 +541,11 @@ class BluetoothPrinterService {
             await new Promise(resolve => setTimeout(resolve, 50));
           }
         }
+        console.log('Data sent successfully to Zebra');
         return { success: true };
       }
     } catch (error) {
+      console.error('Send data error:', error);
       return { success: false, error: error.message };
     }
   }
