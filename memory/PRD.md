@@ -28,6 +28,27 @@ Build an "Offline-First Electron Agent" with an expanded Asset Management module
 
 ### Session: 2025-02-20 (Current)
 
+#### APK V3 - Verbesserte Bluetooth-Simulation (2025-02-20)
+- **Build-ID V3**: `888139bd-2460-433e-8cbc-c2229d69be8e`
+- **APK Download V3**: https://expo.dev/artifacts/eas/hREexBhAxTV1QCe6QXbacd.apk
+- **Neue Features**:
+  1. **Bluetooth-Drucker-Simulation**: Realistische UI mit simulierten Druckern
+  2. **Berechtigungsanforderung**: Korrekte Android 12+ Bluetooth-Berechtigungen
+  3. **Drucker-Typen**: Zebra (ZPL) und Brother (ESC/P) Unterstützung
+  4. **Signal-Stärke-Anzeige**: RSSI-basierte Signalqualität
+  
+- **Technische Details**:
+  - `BluetoothPrinterService.js` - Komplett neu geschrieben
+  - `SettingsScreen.js` - Verbesserte Bluetooth-Modal-UI
+  - Expo SDK 50 managed workflow (ohne native BLE)
+  
+- **Bekannte Einschränkungen**:
+  - SIMULATIONSMODUS: Echte Bluetooth-Geräte werden nicht erkannt
+  - Für echte Drucker-Verbindung: Expo SDK 51+ mit Dev Client erforderlich
+  - Native Zebra/Brother SDKs noch nicht integriert
+
+- **Status**: ✅ Build erfolgreich, SIMULATION MODE
+
 #### ✅ APK-Build für Zebra TC78 - VERSION 2 ERFOLGREICH
 - **Aufgabe**: Android APK-Build für Zebra TC78 Handheld-Gerät erstellen
 - **Build-ID V2**: `a41ceeb6-fb2c-40ab-92ad-656962cd9788`
