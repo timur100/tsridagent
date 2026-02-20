@@ -634,17 +634,57 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
           <div className="p-3 space-y-2" style={{ backgroundColor: mobileTheme.colors.background }}>
             {/* Mode Toggle - Now includes DataWedge */}
             <div className="flex p-1 rounded-lg" style={{ backgroundColor: mobileTheme.colors.surface }}>
-              {['camera', 'manual'].map((mode) => (
+              {[
+                { id: 'datawedge', label: '📡 Zebra', icon: Barcode },
+                { id: 'camera', label: '📷 Kamera', icon: Camera },
+                { id: 'manual', label: '⌨️ Manuell', icon: Search },
+              ].map((mode) => (
                 <button
-                  key={mode}
-                  onClick={() => setScanMode(mode)}
-                  className="flex-1 py-2 rounded font-medium text-white transition-all text-sm"
-                  style={{ backgroundColor: scanMode === mode ? mobileTheme.colors.primary : 'transparent' }}
+                  key={mode.id}
+                  onClick={() => setScanMode(mode.id)}
+                  className="flex-1 py-2 rounded font-medium text-white transition-all text-xs"
+                  style={{ backgroundColor: scanMode === mode.id ? mobileTheme.colors.primary : 'transparent' }}
                 >
-                  {mode === 'camera' ? '📷 Kamera' : '⌨️ Manuell'}
+                  {mode.label}
                 </button>
               ))}
             </div>
+
+            {/* DataWedge Mode - Hardware Trigger Simulation */}
+            {scanMode === 'datawedge' && (
+              <div className="space-y-2">
+                <button
+                  onClick={simulateDataWedgeScan}
+                  disabled={scanning || !dataWedgeConnected}
+                  className={`w-full py-4 rounded-lg font-semibold text-white transition-all ${
+                    triggerPressed ? 'scale-95' : ''
+                  } ${!dataWedgeConnected ? 'opacity-50' : ''}`}
+                  style={{ 
+                    backgroundColor: triggerPressed ? '#ff0000' : mobileTheme.colors.primary,
+                    boxShadow: triggerPressed ? '0 0 20px rgba(255,0,0,0.5)' : 'none'
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    {scanning ? (
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Barcode className="w-5 h-5" />
+                    )}
+                    <span>{scanning ? 'Dekodiere...' : 'Hardware-Trigger simulieren'}</span>
+                  </div>
+                  <p className="text-[10px] mt-1 opacity-70">
+                    oder [Leertaste] drücken
+                  </p>
+                </button>
+                {!dataWedgeConnected && (
+                  <div className="p-2 rounded-lg text-center" style={{ backgroundColor: 'rgba(239,68,68,0.2)' }}>
+                    <p className="text-xs" style={{ color: mobileTheme.colors.error }}>
+                      DataWedge nicht verbunden. Klicken Sie auf das Barcode-Icon oben.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Manual Input */}
             {scanMode === 'manual' && (
@@ -681,7 +721,7 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
                   <span className="text-white text-sm">Blitz</span>
                 </button>
                 <button
-                  onClick={simulateScan}
+                  onClick={simulateCameraScan}
                   disabled={scanning}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-semibold disabled:opacity-50"
                   style={{ backgroundColor: mobileTheme.colors.primary }}
@@ -702,7 +742,12 @@ const MobileScannerScreen = ({ assets, onLookupAsset, dataWedgeEnabled = true })
                 }}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>Letzter Scan</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs" style={{ color: mobileTheme.colors.textMuted }}>Letzter Scan</p>
+                    {lastScan.source === 'datawedge' && (
+                      <span className="px-1 py-0.5 rounded text-[9px] bg-blue-500/20 text-blue-400">DataWedge</span>
+                    )}
+                  </div>
                   <span 
                     className="px-2 py-0.5 rounded text-xs font-medium"
                     style={{ 
