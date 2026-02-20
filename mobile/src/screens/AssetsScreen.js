@@ -188,13 +188,31 @@ const AssetsScreen = ({ navigation, route }) => {
   const loadAssets = async () => {
     try {
       const result = await assetsAPI.getAll();
-      if (result?.success && result?.data?.assets) {
+      console.log('Assets API result:', JSON.stringify(result).substring(0, 200));
+      
+      // Handle different response formats
+      if (result?.success && result?.assets) {
+        // Format: { success: true, assets: [...] }
+        setAssets(result.assets);
+      } else if (result?.success && result?.data?.assets) {
+        // Format: { success: true, data: { assets: [...] } }
         setAssets(result.data.assets);
+      } else if (Array.isArray(result?.assets)) {
+        // Format: { assets: [...] }
+        setAssets(result.assets);
       } else if (Array.isArray(result?.data)) {
+        // Format: { data: [...] }
         setAssets(result.data);
+      } else if (Array.isArray(result)) {
+        // Format: [...]
+        setAssets(result);
+      } else {
+        console.log('Unknown assets format, setting empty array');
+        setAssets([]);
       }
     } catch (error) {
       console.error('Error loading assets:', error);
+      setAssets([]);
     } finally {
       setLoading(false);
     }
