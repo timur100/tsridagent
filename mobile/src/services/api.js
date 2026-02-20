@@ -93,18 +93,27 @@ export const authAPI = {
 // Assets API
 export const assetsAPI = {
   getAll: async (params = {}) => {
-    const response = await api.get('/api/asset-mgmt/inventory/all', { params });
+    const response = await api.get('/api/asset-mgmt/assets', { params });
     return response.data;
   },
   
   getById: async (assetId) => {
-    const response = await api.get(`/api/asset-mgmt/inventory/${assetId}`);
+    const response = await api.get(`/api/asset-mgmt/assets/${assetId}`);
     return response.data;
   },
   
   getByBarcode: async (barcode) => {
-    const response = await api.get(`/api/asset-mgmt/inventory/barcode/${barcode}`);
-    return response.data;
+    // Search by serial number or asset ID
+    const response = await api.get('/api/asset-mgmt/assets', { 
+      params: { search: barcode } 
+    });
+    const assets = response.data?.assets || [];
+    const found = assets.find(a => 
+      a.manufacturer_sn === barcode || 
+      a.warehouse_asset_id === barcode ||
+      a.asset_id === barcode
+    );
+    return { success: !!found, data: found };
   },
   
   update: async (assetId, data) => {
