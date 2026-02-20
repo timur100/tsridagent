@@ -1545,11 +1545,11 @@ const MobileAppPreview = () => {
   const loadAssets = async () => {
     setAssetsLoading(true);
     try {
-      const result = await apiCall('/api/asset-mgmt/inventory/all');
-      if (result?.success && result?.data?.assets) {
-        setAssets(result.data.assets);
-      } else if (Array.isArray(result?.data)) {
-        setAssets(result.data);
+      const result = await apiCall('/api/asset-mgmt/assets');
+      if (result?.success && result?.assets) {
+        setAssets(result.assets);
+      } else if (Array.isArray(result)) {
+        setAssets(result);
       }
     } catch (error) {
       console.error('Error loading assets:', error);
