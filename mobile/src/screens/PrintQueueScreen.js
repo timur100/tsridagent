@@ -260,7 +260,7 @@ const PrintQueueScreen = ({ visible, onClose, assets = [], navigation }) => {
 };
 
 /**
- * Label Preview Modal
+ * Label Preview Modal - IMPROVED
  */
 const LabelPreviewModal = ({ visible, asset, onClose }) => {
   if (!asset) return null;
@@ -281,30 +281,40 @@ const LabelPreviewModal = ({ visible, asset, onClose }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Label Preview */}
+          {/* Label Preview - Realistic */}
           <View style={styles.labelPreview}>
-            {/* QR Code Placeholder */}
-            <View style={styles.qrPlaceholder}>
-              <View style={styles.qrPattern}>
-                <View style={styles.qrCorner} />
-                <View style={[styles.qrCorner, { right: 0 }]} />
-                <View style={[styles.qrCorner, { bottom: 0 }]} />
+            {/* QR Code Area */}
+            <View style={styles.qrPreviewArea}>
+              <View style={styles.qrPreviewBox}>
+                {/* Simple QR representation */}
+                <View style={styles.qrCornerTL} />
+                <View style={styles.qrCornerTR} />
+                <View style={styles.qrCornerBL} />
+                <View style={styles.qrPatternCenter}>
+                  <Text style={styles.qrText}>QR</Text>
+                </View>
               </View>
-              <Text style={styles.qrText}>QR</Text>
             </View>
 
-            {/* Text Content */}
-            <View style={styles.labelTextContent}>
-              <Text style={styles.labelAssetId}>{assetId}</Text>
-              <Text style={styles.labelType}>{typeLabel}</Text>
-              <Text style={styles.labelSn}>SN: {serialNumber}</Text>
-              {location ? <Text style={styles.labelLocation}>{location}</Text> : null}
+            {/* Text Content - Large */}
+            <View style={styles.labelTextArea}>
+              <Text style={styles.previewAssetId}>{assetId}</Text>
+              <Text style={styles.previewType}>{typeLabel}</Text>
+              <Text style={styles.previewSn}>SN: {serialNumber}</Text>
+              {location ? <Text style={styles.previewLocation}>📍 {location}</Text> : null}
             </View>
           </View>
 
-          <Text style={styles.previewNote}>
-            62mm × 29mm | Brother QL-820NWB
-          </Text>
+          {/* Label Info */}
+          <View style={styles.labelInfo}>
+            <Text style={styles.labelInfoText}>62mm × 29mm | Brother QL-820NWB</Text>
+            <Text style={styles.labelInfoText}>Format: TSRID Standard</Text>
+          </View>
+
+          {/* Close Button */}
+          <TouchableOpacity style={styles.previewCloseButton} onPress={onClose}>
+            <Text style={styles.previewCloseButtonText}>Schließen</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
