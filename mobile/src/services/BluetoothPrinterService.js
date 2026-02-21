@@ -250,6 +250,9 @@ class BluetoothPrinterService {
 
     this.isScanning = true;
     this.discoveredPrinters = [];
+    
+    // Track paired device addresses
+    const pairedAddresses = new Set();
 
     console.log('Starting Bluetooth scan...');
 
@@ -257,9 +260,10 @@ class BluetoothPrinterService {
     try {
       // Get paired devices first
       const pairedDevices = await RNBluetoothClassic.getBondedDevices();
-      console.log(`Found ${pairedDevices.length} paired devices`);
+      console.log(`Found ${pairedDevices.length} bonded devices`);
       
       for (const device of pairedDevices) {
+        pairedAddresses.add(device.address);
         const printerType = this.identifyPrinterType(device.name);
         if (printerType !== 'unknown') {
           const printerInfo = {
@@ -269,21 +273,25 @@ class BluetoothPrinterService {
             rssi: -50,
             type: printerType,
             bluetoothType: 'classic',
-            paired: true,
+            bonded: true, // Actually bonded in Android settings
             device: device,
           };
           
           if (!this.discoveredPrinters.some(p => p.id === printerInfo.id)) {
             this.discoveredPrinters.push(printerInfo);
-            console.log(`Found paired: ${device.name} (${printerType})`);
+            console.log(`Found bonded: ${device.name} (${printerType})`);
             if (onDeviceFound) onDeviceFound(printerInfo);
           }
         }
       }
 
-      // Discovery for unpaired
-      const unpaired = await RNBluetoothClassic.startDiscovery();
-      for (const device of unpaired) {
+      // Discovery for new devices (skip already bonded)
+      console.log('Starting discovery for new devices...');
+      const discovered = await RNBluetoothClassic.startDiscovery();
+      for (const device of discovered) {
+        // Skip if already in bonded list
+        if (pairedAddresses.has(device.address)) continue;
+        
         const printerType = this.identifyPrinterType(device.name);
         if (printerType !== 'unknown') {
           const printerInfo = {
@@ -293,13 +301,13 @@ class BluetoothPrinterService {
             rssi: device.rssi || -60,
             type: printerType,
             bluetoothType: 'classic',
-            paired: false,
+            bonded: false,
             device: device,
           };
           
           if (!this.discoveredPrinters.some(p => p.id === printerInfo.id)) {
             this.discoveredPrinters.push(printerInfo);
-            console.log(`Found: ${device.name} (${printerType})`);
+            console.log(`Found new: ${device.name} (${printerType})`);
             if (onDeviceFound) onDeviceFound(printerInfo);
           }
         }
