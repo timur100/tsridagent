@@ -571,6 +571,12 @@ class BluetoothPrinterService {
       throw new Error('Kein Drucker verbunden');
     }
 
+    // Ensure connection is still active
+    const isConnected = await this.ensureConnected();
+    if (!isConnected) {
+      throw new Error('Verbindung zum Drucker verloren. Bitte erneut verbinden.');
+    }
+
     try {
       if (this.connectedDevice.bluetoothType === 'classic') {
         // Brother: Send binary raster data
@@ -588,17 +594,20 @@ class BluetoothPrinterService {
           dataStr = data;
         }
         
-        // Split into chunks for reliability (Brother can handle ~1KB chunks)
-        const chunkSize = 1024;
+        // Send in larger chunks for Brother (it can handle more)
+        const chunkSize = 2048;
         for (let i = 0; i < dataStr.length; i += chunkSize) {
           const chunk = dataStr.slice(i, i + chunkSize);
           await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
           
           // Delay between chunks
           if (i + chunkSize < dataStr.length) {
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 50));
           }
         }
+        
+        // Wait for printer to process
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         console.log('Data sent successfully to Brother');
         return { success: true };
