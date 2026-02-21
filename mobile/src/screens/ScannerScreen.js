@@ -432,6 +432,19 @@ const styles = StyleSheet.create({
     color: theme.colors.success,
     fontWeight: '500',
   },
+  matchTypeBadge: {
+    marginTop: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: `${theme.colors.primary}20`,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  matchTypeText: {
+    fontSize: 12,
+    color: theme.colors.primary,
+    fontWeight: '500',
+  },
 });
 
 export default ScannerScreen;
