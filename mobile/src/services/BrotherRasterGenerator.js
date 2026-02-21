@@ -237,11 +237,11 @@ async function createLabelBitmap(assetId, typeLabel, serialNumber, location, wid
   const font = createSimpleFont();
   
   // === QR CODE (LEFT) - LARGE ===
-  const qrSize = 220;
+  const qrSize = 220; // Large QR
   const qrX = 15;
   const qrY = Math.floor((height - qrSize) / 2);
   
-  const qrMatrix = generateQRMatrix(assetId, qrSize);
+  const qrMatrix = await generateQRMatrix(assetId, qrSize);
   for (let y = 0; y < qrMatrix.length && (qrY + y) < height; y++) {
     for (let x = 0; x < qrMatrix[y].length && (qrX + x) < width; x++) {
       if (qrMatrix[y][x] === 1) {
