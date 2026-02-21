@@ -1,22 +1,21 @@
 /**
  * Brother QL Raster Generator for Mobile
  * 
- * Generates Brother QL compatible raster data for Bluetooth printing
- * With TSRID Logo, real QR codes, and LARGE text that doesn't get cut off
+ * TSRID Standard Label with:
+ * - Large QR Code (left)
+ * - Large Text (right) - no cutoff
+ * - Fingerprint Logo (bottom right)
+ * - Large Serial Number
  */
 
 import QRCode from 'qrcode';
 
-// Label dimensions for 62mm continuous roll at 300dpi
 const LABEL_WIDTH_PX = 696;
-const LABEL_HEIGHT_PX = 271; // ~29mm at 300dpi
+const LABEL_HEIGHT_PX = 271;
 
-// TSRID Logo bitmap (simplified fingerprint pattern)
-const LOGO_SIZE = 50;
+// TSRID Fingerprint Logo - simplified pattern for bottom right
+const LOGO_SIZE = 40;
 
-/**
- * Generate TSRID Logo bitmap pattern (simplified fingerprint)
- */
 function generateLogoBitmap(size) {
   const bitmap = [];
   const center = size / 2;
@@ -24,29 +23,22 @@ function generateLogoBitmap(size) {
   for (let y = 0; y < size; y++) {
     const row = [];
     for (let x = 0; x < size; x++) {
-      // Create fingerprint-like concentric pattern
       const dx = x - center;
       const dy = y - center;
       const dist = Math.sqrt(dx * dx + dy * dy);
       
-      // Fingerprint ridges
-      const ridge = Math.sin(dist * 0.8) > 0.3;
-      const inCircle = dist < center - 2;
+      // Fingerprint ridge pattern
+      const ridge = Math.sin(dist * 0.6 + Math.atan2(dy, dx) * 0.5) > 0.2;
+      const inCircle = dist < center - 1;
       
-      // Add some variation for fingerprint effect
-      const noise = Math.sin(x * 0.5) * Math.cos(y * 0.3) > 0;
-      
-      row.push(inCircle && ridge && (dist > 5 || noise) ? 1 : 0);
+      row.push(inCircle && ridge ? 1 : 0);
     }
     bitmap.push(row);
   }
   return bitmap;
 }
 
-/**
- * Generate QR Code as a 2D binary matrix
- */
-async function generateQRMatrix(content, size = 150) {
+async function generateQRMatrix(content, size = 200) {
   try {
     const qrModules = await QRCode.create(content, {
       errorCorrectionLevel: 'M',
@@ -70,38 +62,33 @@ async function generateQRMatrix(content, size = 150) {
       }
       matrix.push(row);
     }
-    
     return matrix;
   } catch (error) {
-    console.error('QR generation error:', error);
+    console.error('QR error:', error);
     return generateFallbackQR(size);
   }
 }
 
-/**
- * Fallback QR pattern
- */
 function generateFallbackQR(size) {
   const matrix = [];
+  const cs = Math.floor(size * 0.22); // Corner size
+  
   for (let y = 0; y < size; y++) {
     const row = [];
     for (let x = 0; x < size; x++) {
       const inBorder = x < 2 || x >= size - 2 || y < 2 || y >= size - 2;
-      const cornerSize = Math.floor(size * 0.25);
-      const inTopLeft = x < cornerSize && y < cornerSize;
-      const inTopRight = x >= size - cornerSize && y < cornerSize;
-      const inBottomLeft = x < cornerSize && y >= size - cornerSize;
+      const inTL = x < cs && y < cs;
+      const inTR = x >= size - cs && y < cs;
+      const inBL = x < cs && y >= size - cs;
       
       if (inBorder) {
         row.push(1);
-      } else if (inTopLeft || inTopRight || inBottomLeft) {
-        // Finder pattern
-        const localX = inTopLeft ? x : (inTopRight ? x - (size - cornerSize) : x);
-        const localY = inTopLeft || inTopRight ? y : y - (size - cornerSize);
-        const inOuter = localX === 0 || localX === cornerSize - 1 || localY === 0 || localY === cornerSize - 1;
-        const inInner = localX >= Math.floor(cornerSize * 0.3) && localX < Math.floor(cornerSize * 0.7) &&
-                        localY >= Math.floor(cornerSize * 0.3) && localY < Math.floor(cornerSize * 0.7);
-        row.push(inOuter || inInner ? 1 : 0);
+      } else if (inTL || inTR || inBL) {
+        const lx = inTL ? x : (inTR ? x - (size - cs) : x);
+        const ly = inTL || inTR ? y : y - (size - cs);
+        const outer = lx === 0 || lx === cs - 1 || ly === 0 || ly === cs - 1;
+        const inner = lx >= cs * 0.3 && lx < cs * 0.7 && ly >= cs * 0.3 && ly < cs * 0.7;
+        row.push(outer || inner ? 1 : 0);
       } else {
         row.push(((x * 17 + y * 13) % 7) < 2 ? 1 : 0);
       }
@@ -111,13 +98,8 @@ function generateFallbackQR(size) {
   return matrix;
 }
 
-/**
- * Simple 8x8 font
- */
 function createSimpleFont() {
   const font = {};
-  
-  // Numbers
   font['0'] = [0x3C, 0x66, 0x6E, 0x76, 0x66, 0x66, 0x3C, 0x00];
   font['1'] = [0x18, 0x38, 0x18, 0x18, 0x18, 0x18, 0x7E, 0x00];
   font['2'] = [0x3C, 0x66, 0x06, 0x1C, 0x30, 0x60, 0x7E, 0x00];
@@ -128,8 +110,6 @@ function createSimpleFont() {
   font['7'] = [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x30, 0x30, 0x00];
   font['8'] = [0x3C, 0x66, 0x66, 0x3C, 0x66, 0x66, 0x3C, 0x00];
   font['9'] = [0x3C, 0x66, 0x66, 0x3E, 0x06, 0x0C, 0x38, 0x00];
-  
-  // Uppercase
   font['A'] = [0x18, 0x3C, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x00];
   font['B'] = [0x7C, 0x66, 0x66, 0x7C, 0x66, 0x66, 0x7C, 0x00];
   font['C'] = [0x3C, 0x66, 0x60, 0x60, 0x60, 0x66, 0x3C, 0x00];
@@ -156,18 +136,13 @@ function createSimpleFont() {
   font['X'] = [0x66, 0x66, 0x3C, 0x18, 0x3C, 0x66, 0x66, 0x00];
   font['Y'] = [0x66, 0x66, 0x66, 0x3C, 0x18, 0x18, 0x18, 0x00];
   font['Z'] = [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x60, 0x7E, 0x00];
-  
-  // Special
   font['-'] = [0x00, 0x00, 0x00, 0x7E, 0x00, 0x00, 0x00, 0x00];
   font[':'] = [0x00, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00, 0x00];
   font['.'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x18, 0x00];
   font[' '] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
   font['_'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00];
   font['/'] = [0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80, 0x00];
-  font['('] = [0x0C, 0x18, 0x30, 0x30, 0x30, 0x18, 0x0C, 0x00];
-  font[')'] = [0x30, 0x18, 0x0C, 0x0C, 0x0C, 0x18, 0x30, 0x00];
   
-  // Lowercase = Uppercase
   'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => {
     font[c] = font[c.toUpperCase()];
   });
@@ -175,32 +150,10 @@ function createSimpleFont() {
   return font;
 }
 
-/**
- * Draw text - with auto-scaling to fit available width
- */
-function drawTextFit(bitmap, width, rowBytes, text, x, y, font, maxWidth, baseScale = 3) {
-  // Calculate text width at base scale
-  const charWidth = 8 * baseScale;
-  const textWidth = text.length * charWidth;
-  
-  // Scale down if needed to fit
-  let scale = baseScale;
-  if (textWidth > maxWidth && text.length > 0) {
-    scale = Math.max(1, Math.floor(maxWidth / (text.length * 8)));
-  }
-  
-  drawText(bitmap, width, rowBytes, text, x, y, font, scale);
-  return scale; // Return actual scale used
-}
-
-/**
- * Draw text on bitmap
- */
 function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
   const charWidth = 8 * scale;
   let curX = x;
-  
-  const upperText = text.toUpperCase();
+  const upperText = (text || '').toUpperCase();
   
   for (let i = 0; i < upperText.length; i++) {
     const char = upperText[i];
@@ -221,14 +174,11 @@ function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
         }
       }
     }
-    
     curX += charWidth;
   }
+  return curX; // Return end position
 }
 
-/**
- * Set pixel
- */
 function setPixel(bitmap, rowBytes, width, x, y) {
   const byteIdx = y * rowBytes + Math.floor(x / 8);
   const bitIdx = 7 - (x % 8);
@@ -238,36 +188,25 @@ function setPixel(bitmap, rowBytes, width, x, y) {
 }
 
 /**
- * Create label bitmap - FULL WIDTH TEXT, NO CUTOFF
- * Layout: Logo (top-left), QR (below logo), Text fills entire right side
+ * Create label bitmap
+ * Layout:
+ * - QR Code: LEFT (large, ~220px)
+ * - Text: RIGHT side, full width
+ * - Logo: BOTTOM RIGHT corner
  */
 async function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height) {
   const rowBytes = Math.ceil(width / 8);
   const bitmap = new Uint8Array(rowBytes * height);
   bitmap.fill(0);
   
-  // Logo in top-left corner
-  const logoSize = 45;
-  const logoX = 10;
-  const logoY = 10;
-  const logoBitmap = generateLogoBitmap(logoSize);
+  const font = createSimpleFont();
   
-  // Draw logo
-  for (let y = 0; y < logoSize && (logoY + y) < height; y++) {
-    for (let x = 0; x < logoSize && (logoX + x) < width; x++) {
-      if (logoBitmap[y] && logoBitmap[y][x] === 1) {
-        setPixel(bitmap, rowBytes, width, logoX + x, logoY + y);
-      }
-    }
-  }
-  
-  // QR Code below logo
-  const qrSize = Math.min(height - logoSize - 30, 180);
-  const qrX = 10;
-  const qrY = logoY + logoSize + 10;
+  // === QR CODE (LEFT) - LARGE ===
+  const qrSize = 220; // Large QR
+  const qrX = 15;
+  const qrY = Math.floor((height - qrSize) / 2);
   
   const qrMatrix = await generateQRMatrix(assetId, qrSize);
-  
   for (let y = 0; y < qrMatrix.length && (qrY + y) < height; y++) {
     for (let x = 0; x < qrMatrix[y].length && (qrX + x) < width; x++) {
       if (qrMatrix[y][x] === 1) {
@@ -276,36 +215,44 @@ async function createLabelBitmap(assetId, typeLabel, serialNumber, location, wid
     }
   }
   
-  // Text area - use ALL space to the right of QR/Logo
-  const textX = Math.max(qrX + qrSize, logoX + logoSize) + 15;
-  const textMaxWidth = width - textX - 10; // Leave small margin on right
+  // === TEXT AREA (RIGHT) ===
+  const textX = qrX + qrSize + 20;
+  const textMaxWidth = width - textX - LOGO_SIZE - 20; // Reserve space for logo
   
-  const font = createSimpleFont();
+  // Asset ID - LARGE (scale 4 = 32px)
+  const idY = 20;
+  drawText(bitmap, width, rowBytes, assetId || 'N/A', textX, idY, font, 4);
   
-  // Asset ID - LARGE, auto-scaled to fit
-  const idY = 25;
-  drawTextFit(bitmap, width, rowBytes, assetId, textX, idY, font, textMaxWidth, 4);
+  // Type Label - MEDIUM (scale 3 = 24px)
+  const typeY = idY + 40;
+  drawText(bitmap, width, rowBytes, (typeLabel || '').substring(0, 20), textX, typeY, font, 3);
   
-  // Type Label - Medium, auto-scaled
-  const typeY = idY + 45;
-  drawTextFit(bitmap, width, rowBytes, typeLabel, textX, typeY, font, textMaxWidth, 3);
-  
-  // Serial Number - Smaller
+  // Serial Number - LARGE (scale 3 = 24px) - Made bigger!
   const snY = typeY + 35;
-  drawTextFit(bitmap, width, rowBytes, 'SN: ' + (serialNumber || 'N/A'), textX, snY, font, textMaxWidth, 2);
+  drawText(bitmap, width, rowBytes, 'SN: ' + (serialNumber || 'N/A'), textX, snY, font, 3);
   
-  // Location if present
+  // Location - MEDIUM (scale 2 = 16px)
   if (location) {
-    const locY = snY + 25;
-    drawTextFit(bitmap, width, rowBytes, location, textX, locY, font, textMaxWidth, 2);
+    const locY = snY + 35;
+    drawText(bitmap, width, rowBytes, location.substring(0, 25), textX, locY, font, 2);
+  }
+  
+  // === TSRID LOGO (BOTTOM RIGHT) ===
+  const logoX = width - LOGO_SIZE - 15;
+  const logoY = height - LOGO_SIZE - 15;
+  const logoBitmap = generateLogoBitmap(LOGO_SIZE);
+  
+  for (let y = 0; y < LOGO_SIZE && (logoY + y) < height; y++) {
+    for (let x = 0; x < LOGO_SIZE && (logoX + x) < width; x++) {
+      if (logoBitmap[y] && logoBitmap[y][x] === 1) {
+        setPixel(bitmap, rowBytes, width, logoX + x, logoY + y);
+      }
+    }
   }
   
   return bitmap;
 }
 
-/**
- * Create Brother raster label
- */
 export async function createBrotherRasterLabel(options = {}) {
   const {
     assetId = 'TEST-001',
@@ -319,29 +266,20 @@ export async function createBrotherRasterLabel(options = {}) {
 
   const data = [];
 
-  // Initialization
+  // Init
   for (let i = 0; i < 200; i++) data.push(0x00);
   data.push(0x1B, 0x40);
-
-  // Raster mode
   data.push(0x1B, 0x69, 0x61, 0x01);
-
-  // Print info
-  data.push(0x1B, 0x69, 0x7A);
-  data.push(0x86, 0x0A, 0x3E, 0x00);
+  data.push(0x1B, 0x69, 0x7A, 0x86, 0x0A, 0x3E, 0x00);
   data.push(height & 0xFF, (height >> 8) & 0xFF);
   data.push(0x00, 0x00, 0x00, 0x00);
-
-  // Auto cut
   data.push(0x1B, 0x69, 0x4D, autoCut ? 0x40 : 0x00);
   data.push(0x1B, 0x69, 0x4B, 0x08);
   data.push(0x1B, 0x69, 0x64, 0x00, 0x00);
 
-  // Generate bitmap
   const bitmap = await createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height);
   const rowBytes = Math.ceil(width / 8);
   
-  // Send rows with mirroring
   for (let y = 0; y < height; y++) {
     data.push(0x67, 0x00, rowBytes);
     for (let byteIdx = rowBytes - 1; byteIdx >= 0; byteIdx--) {
@@ -361,9 +299,9 @@ export async function createBrotherRasterLabel(options = {}) {
 export async function createTestLabel() {
   return await createBrotherRasterLabel({
     assetId: 'AAHC01-01',
-    typeLabel: 'ZEBRA TC78 SCANNER',
-    serialNumber: 'SN-2024-ABCDEF123',
-    location: 'BERLIN ZENTRAL',
+    typeLabel: 'ZEBRA TC78',
+    serialNumber: '22105525802581',
+    location: 'AACHEN',
   });
 }
 
