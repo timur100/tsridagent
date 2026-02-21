@@ -2,18 +2,14 @@
  * Brother QL Raster Generator for Mobile
  * 
  * TSRID Standard Label with:
- * - Large QR Code (left)
+ * - Large QR Code (left) - generated without external library
  * - Large Text (right) - no cutoff
  * - Fingerprint Logo (bottom right)
  * - Large Serial Number
  */
 
-import QRCode from 'qrcode';
-
 const LABEL_WIDTH_PX = 696;
 const LABEL_HEIGHT_PX = 271;
-
-// TSRID Fingerprint Logo - simplified pattern for bottom right
 const LOGO_SIZE = 40;
 
 function generateLogoBitmap(size) {
