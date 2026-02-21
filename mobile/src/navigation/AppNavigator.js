@@ -12,6 +12,7 @@ import ScannerScreen from '../screens/ScannerScreen';
 import AssetsScreen from '../screens/AssetsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LocationsScreen from '../screens/LocationsScreen';
+import GoodsReceiptScreen from '../screens/GoodsReceiptScreen';
 
 // Simple icon components (Lucide-style)
 const IconHome = ({ color, size }) => (
