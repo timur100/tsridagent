@@ -227,28 +227,28 @@ function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
 }
 
 /**
- * Draw a simple QR-like pattern (placeholder)
+ * Draw a simple QR-like pattern (placeholder) - NOT MIRRORED
  */
 function drawQRPlaceholder(bitmap, width, rowBytes, x, y, size, data) {
   // Draw border
   for (let i = 0; i < size; i++) {
-    setPixel(bitmap, rowBytes, x + i, y);
-    setPixel(bitmap, rowBytes, x + i, y + size - 1);
-    setPixel(bitmap, rowBytes, x, y + i);
-    setPixel(bitmap, rowBytes, x + size - 1, y + i);
+    setPixel(bitmap, rowBytes, width, x + i, y);
+    setPixel(bitmap, rowBytes, width, x + i, y + size - 1);
+    setPixel(bitmap, rowBytes, width, x, y + i);
+    setPixel(bitmap, rowBytes, width, x + size - 1, y + i);
   }
   
   // Draw corner squares (like QR finder patterns)
   const cornerSize = Math.floor(size / 5);
   
   // Top-left corner
-  drawFilledSquare(bitmap, rowBytes, x + 4, y + 4, cornerSize);
+  drawFilledSquare(bitmap, rowBytes, width, x + 4, y + 4, cornerSize);
   
   // Top-right corner
-  drawFilledSquare(bitmap, rowBytes, x + size - cornerSize - 4, y + 4, cornerSize);
+  drawFilledSquare(bitmap, rowBytes, width, x + size - cornerSize - 4, y + 4, cornerSize);
   
   // Bottom-left corner
-  drawFilledSquare(bitmap, rowBytes, x + 4, y + size - cornerSize - 4, cornerSize);
+  drawFilledSquare(bitmap, rowBytes, width, x + 4, y + size - cornerSize - 4, cornerSize);
   
   // Add some data pattern in the middle
   const hash = simpleHash(data);
@@ -259,30 +259,33 @@ function drawQRPlaceholder(bitmap, width, rowBytes, x, y, size, data) {
   for (let i = 0; i < 8; i++) {
     for (let j = 0; j < 8; j++) {
       if ((hash >> ((i * 8 + j) % 32)) & 1) {
-        drawFilledSquare(bitmap, rowBytes, startX + i * patternSize, startY + j * patternSize, patternSize - 1);
+        drawFilledSquare(bitmap, rowBytes, width, startX + i * patternSize, startY + j * patternSize, patternSize - 1);
       }
     }
   }
 }
 
 /**
- * Draw a filled square
+ * Draw a filled square - NOT MIRRORED
  */
-function drawFilledSquare(bitmap, rowBytes, x, y, size) {
+function drawFilledSquare(bitmap, rowBytes, width, x, y, size) {
   for (let dy = 0; dy < size; dy++) {
     for (let dx = 0; dx < size; dx++) {
-      setPixel(bitmap, rowBytes, x + dx, y + dy);
+      setPixel(bitmap, rowBytes, width, x + dx, y + dy);
     }
   }
 }
 
 /**
- * Set a pixel in the bitmap (1 = black)
+ * Set a pixel in the bitmap (1 = black) - CORRECT ORIENTATION for Brother
+ * Brother QL prints from RIGHT to LEFT, so we need to mirror horizontally
  */
-function setPixel(bitmap, rowBytes, x, y) {
-  const byteIdx = y * rowBytes + Math.floor(x / 8);
-  const bitIdx = 7 - (x % 8);
-  if (byteIdx < bitmap.length) {
+function setPixel(bitmap, rowBytes, width, x, y) {
+  // Mirror X coordinate for correct printing orientation
+  const mirroredX = width - 1 - x;
+  const byteIdx = y * rowBytes + Math.floor(mirroredX / 8);
+  const bitIdx = 7 - (mirroredX % 8);
+  if (byteIdx >= 0 && byteIdx < bitmap.length) {
     bitmap[byteIdx] |= (1 << bitIdx);
   }
 }
