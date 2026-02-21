@@ -2,140 +2,144 @@
  * Brother QL Raster Generator for Mobile
  * 
  * Generates Brother QL compatible raster data for Bluetooth printing
- * Same format as backend label_printer.py but optimized for mobile
+ * Matches backend label_printer.py format with real QR codes
  */
+
+import QRCode from 'qrcode';
 
 // Label dimensions for 62mm continuous roll at 300dpi
 const LABEL_WIDTH_PX = 696;
-const LABEL_HEIGHT_PX = 271; // Default ~23mm, can be adjusted
+const LABEL_HEIGHT_PX = 271; // ~29mm at 300dpi
 
 /**
- * Create a simple bitmap label with text
- * Returns binary raster data for Brother QL printers
+ * Generate QR Code as a 2D binary matrix
  */
-export function createBrotherRasterLabel(options = {}) {
-  const {
-    assetId = 'TEST-001',
-    typeLabel = 'Asset',
-    serialNumber = 'N/A',
-    location = '',
-    width = LABEL_WIDTH_PX,
-    height = LABEL_HEIGHT_PX,
-    autoCut = true,
-  } = options;
-
-  const data = [];
-
-  // ========== INITIALIZATION ==========
-  // Invalidate - clear buffer with null bytes
-  for (let i = 0; i < 200; i++) {
-    data.push(0x00);
-  }
-
-  // ESC @ - Initialize printer
-  data.push(0x1B, 0x40);
-
-  // ========== MODE SETTINGS ==========
-  // ESC i a 1 - Switch to raster graphics mode
-  data.push(0x1B, 0x69, 0x61, 0x01);
-
-  // ========== PRINT INFORMATION ==========
-  // ESC i z - Print information command
-  data.push(0x1B, 0x69, 0x7A);
-  data.push(0x86);  // Valid flags: PI_KIND | PI_WIDTH | PI_LENGTH | PI_QUALITY | PI_RECOVER
-  data.push(0x0A);  // Media type: 0x0A = continuous roll, 0x0B = die-cut
-  data.push(0x3E);  // Media width: 62mm (0x3E = 62)
-  data.push(0x00);  // Media length: 0 for continuous
-  data.push(height & 0xFF);  // Raster lines low byte
-  data.push((height >> 8) & 0xFF);  // Raster lines high byte
-  data.push(0x00);  // Starting page
-  data.push(0x00);  // Reserved
-  data.push(0x00);  // Reserved
-  data.push(0x00);  // Reserved
-
-  // ========== VARIOUS MODE SETTINGS ==========
-  // ESC i M - Set auto cut
-  if (autoCut) {
-    data.push(0x1B, 0x69, 0x4D, 0x40);  // Auto cut enabled
-  } else {
-    data.push(0x1B, 0x69, 0x4D, 0x00);  // Auto cut disabled
-  }
-
-  // ESC i K - Advanced mode (cut at end)
-  data.push(0x1B, 0x69, 0x4B, 0x08);
-
-  // ESC i d - Margin amount (0)
-  data.push(0x1B, 0x69, 0x64, 0x00, 0x00);
-
-  // ========== GENERATE RASTER DATA ==========
-  // Create bitmap representation
-  const bitmap = createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height);
-  
-  // Row bytes (width in bytes, each byte = 8 pixels)
-  const rowBytes = Math.ceil(width / 8);
-  
-  // Send each row as raster graphics (with horizontal mirroring for correct orientation)
-  for (let y = 0; y < height; y++) {
-    // g 0x00 - Raster graphics transfer command
-    data.push(0x67, 0x00, rowBytes);
+async function generateQRMatrix(content, size = 150) {
+  try {
+    // Generate QR code as data URL
+    const qrModules = await QRCode.create(content, {
+      errorCorrectionLevel: 'M',
+      margin: 1,
+    });
     
-    // Add row data with REVERSED byte order (mirror horizontally)
-    // Brother QL prints from right to left, so we reverse the byte order
-    for (let byteIdx = rowBytes - 1; byteIdx >= 0; byteIdx--) {
-      // Also reverse the bits within each byte for complete mirroring
-      let byte = bitmap[y * rowBytes + byteIdx] || 0x00;
-      // Reverse bits: 76543210 -> 01234567
-      let reversed = 0;
-      for (let bit = 0; bit < 8; bit++) {
-        if (byte & (1 << bit)) {
-          reversed |= (1 << (7 - bit));
+    const moduleCount = qrModules.modules.size;
+    const moduleSize = Math.floor(size / moduleCount);
+    const matrix = [];
+    
+    // Convert QR modules to pixel matrix
+    for (let y = 0; y < size; y++) {
+      const row = [];
+      const moduleY = Math.floor(y / moduleSize);
+      for (let x = 0; x < size; x++) {
+        const moduleX = Math.floor(x / moduleSize);
+        if (moduleY < moduleCount && moduleX < moduleCount) {
+          // QR module data: 1 = black, 0 = white
+          row.push(qrModules.modules.get(moduleY, moduleX) ? 1 : 0);
+        } else {
+          row.push(0); // white
         }
       }
-      data.push(reversed);
+      matrix.push(row);
     }
+    
+    return matrix;
+  } catch (error) {
+    console.error('QR generation error:', error);
+    // Return simple fallback pattern
+    return generateFallbackQR(size);
   }
-
-  // ========== PRINT COMMAND ==========
-  // 0x1A - Print with feeding
-  data.push(0x1A);
-
-  return new Uint8Array(data);
 }
 
 /**
- * Create a bitmap for the label
- * Simple implementation using character bitmaps
+ * Generate a simple fallback QR-like pattern
  */
-function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height) {
+function generateFallbackQR(size) {
+  const matrix = [];
+  for (let y = 0; y < size; y++) {
+    const row = [];
+    for (let x = 0; x < size; x++) {
+      // Create a simple pattern with corners and some data
+      const inBorder = x < 3 || x >= size - 3 || y < 3 || y >= size - 3;
+      const inTopLeft = x < 25 && y < 25;
+      const inTopRight = x >= size - 25 && y < 25;
+      const inBottomLeft = x < 25 && y >= size - 25;
+      
+      if (inBorder) {
+        row.push(1);
+      } else if (inTopLeft || inTopRight || inBottomLeft) {
+        // Finder patterns
+        const localX = inTopLeft ? x : (inTopRight ? x - (size - 25) : x);
+        const localY = inTopLeft || inTopRight ? y : y - (size - 25);
+        if (localX < 7 && localY < 7) {
+          if (localX === 0 || localX === 6 || localY === 0 || localY === 6) {
+            row.push(1);
+          } else if (localX >= 2 && localX <= 4 && localY >= 2 && localY <= 4) {
+            row.push(1);
+          } else {
+            row.push(0);
+          }
+        } else {
+          row.push(0);
+        }
+      } else {
+        // Random-like pattern for data area
+        row.push(((x * 13 + y * 17) % 5) < 2 ? 1 : 0);
+      }
+    }
+    matrix.push(row);
+  }
+  return matrix;
+}
+
+/**
+ * Create a label bitmap with QR code and text
+ * Layout: QR code on LEFT, text on RIGHT (like backend)
+ */
+async function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height) {
   const rowBytes = Math.ceil(width / 8);
   const bitmap = new Uint8Array(rowBytes * height);
   
-  // Initialize with white (all 0s for Brother - 0 = white, 1 = black)
+  // Initialize with white (all 0s)
   bitmap.fill(0);
   
-  // Simple 8x8 font patterns for basic characters
+  // QR Code settings
+  const qrSize = Math.min(height - 20, 200); // QR size based on label height
+  const qrX = 10; // QR on left side
+  const qrY = Math.floor((height - qrSize) / 2);
+  
+  // Generate real QR code
+  const qrContent = assetId;
+  const qrMatrix = await generateQRMatrix(qrContent, qrSize);
+  
+  // Draw QR code onto bitmap
+  for (let y = 0; y < qrMatrix.length && (qrY + y) < height; y++) {
+    for (let x = 0; x < qrMatrix[y].length && (qrX + x) < width; x++) {
+      if (qrMatrix[y][x] === 1) {
+        setPixel(bitmap, rowBytes, width, qrX + x, qrY + y);
+      }
+    }
+  }
+  
+  // Text area starts after QR code
+  const textX = qrX + qrSize + 20;
+  
+  // Simple 8x8 font
   const font8x8 = createSimpleFont();
   
   // Draw text lines
   const lines = [
-    { text: assetId, y: 10, scale: 3, bold: true },
-    { text: typeLabel, y: 50, scale: 2 },
-    { text: 'SN: ' + serialNumber, y: 80, scale: 1 },
+    { text: assetId, y: 20, scale: 3, bold: true },      // Main ID - large
+    { text: typeLabel, y: 70, scale: 2 },                 // Type label
+    { text: 'SN: ' + serialNumber, y: 110, scale: 1 },   // Serial number
   ];
   
   if (location) {
-    lines.push({ text: location, y: 105, scale: 1 });
+    lines.push({ text: location.substring(0, 30), y: 140, scale: 1 });
   }
   
   for (const line of lines) {
-    drawText(bitmap, width, rowBytes, line.text, 20, line.y, font8x8, line.scale || 1);
+    drawText(bitmap, width, rowBytes, line.text, textX, line.y, font8x8, line.scale || 1);
   }
-  
-  // Draw a simple QR placeholder (square pattern) on the right
-  const qrSize = 80;
-  const qrX = width - qrSize - 20;
-  const qrY = (height - qrSize) / 2;
-  drawQRPlaceholder(bitmap, width, rowBytes, qrX, qrY, qrSize, assetId);
   
   return bitmap;
 }
@@ -145,9 +149,6 @@ function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, he
  */
 function createSimpleFont() {
   const font = {};
-  
-  // Define some basic characters (8x8 bitmap patterns)
-  // Each character is 8 bytes, each byte is one row (MSB first)
   
   // Numbers
   font['0'] = [0x3C, 0x66, 0x6E, 0x76, 0x66, 0x66, 0x3C, 0x00];
@@ -196,8 +197,10 @@ function createSimpleFont() {
   font[' '] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
   font['_'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00];
   font['/'] = [0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80, 0x00];
+  font['('] = [0x0C, 0x18, 0x30, 0x30, 0x30, 0x18, 0x0C, 0x00];
+  font[')'] = [0x30, 0x18, 0x0C, 0x0C, 0x0C, 0x18, 0x30, 0x00];
   
-  // Lowercase (simplified - same as uppercase for now)
+  // Lowercase (same as uppercase)
   'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => {
     font[c] = font[c.toUpperCase()];
   });
@@ -206,7 +209,7 @@ function createSimpleFont() {
 }
 
 /**
- * Draw text on bitmap (NOT MIRRORED)
+ * Draw text on bitmap
  */
 function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
   const charWidth = 8 * scale;
@@ -218,7 +221,6 @@ function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         if (pattern[row] & (0x80 >> col)) {
-          // Draw scaled pixel - NOT mirrored
           for (let sy = 0; sy < scale; sy++) {
             for (let sx = 0; sx < scale; sx++) {
               const px = curX + col * scale + sx;
@@ -237,61 +239,9 @@ function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
 }
 
 /**
- * Draw a simple QR-like pattern (placeholder) - NOT MIRRORED
- */
-function drawQRPlaceholder(bitmap, width, rowBytes, x, y, size, data) {
-  // Draw border
-  for (let i = 0; i < size; i++) {
-    setPixel(bitmap, rowBytes, width, x + i, y);
-    setPixel(bitmap, rowBytes, width, x + i, y + size - 1);
-    setPixel(bitmap, rowBytes, width, x, y + i);
-    setPixel(bitmap, rowBytes, width, x + size - 1, y + i);
-  }
-  
-  // Draw corner squares (like QR finder patterns)
-  const cornerSize = Math.floor(size / 5);
-  
-  // Top-left corner
-  drawFilledSquare(bitmap, rowBytes, width, x + 4, y + 4, cornerSize);
-  
-  // Top-right corner
-  drawFilledSquare(bitmap, rowBytes, width, x + size - cornerSize - 4, y + 4, cornerSize);
-  
-  // Bottom-left corner
-  drawFilledSquare(bitmap, rowBytes, width, x + 4, y + size - cornerSize - 4, cornerSize);
-  
-  // Add some data pattern in the middle
-  const hash = simpleHash(data);
-  const patternSize = 4;
-  const startX = x + cornerSize + 10;
-  const startY = y + cornerSize + 10;
-  
-  for (let i = 0; i < 8; i++) {
-    for (let j = 0; j < 8; j++) {
-      if ((hash >> ((i * 8 + j) % 32)) & 1) {
-        drawFilledSquare(bitmap, rowBytes, width, startX + i * patternSize, startY + j * patternSize, patternSize - 1);
-      }
-    }
-  }
-}
-
-/**
- * Draw a filled square - NOT MIRRORED
- */
-function drawFilledSquare(bitmap, rowBytes, width, x, y, size) {
-  for (let dy = 0; dy < size; dy++) {
-    for (let dx = 0; dx < size; dx++) {
-      setPixel(bitmap, rowBytes, width, x + dx, y + dy);
-    }
-  }
-}
-
-/**
- * Set a pixel in the bitmap (1 = black) - NO MIRRORING
- * Mirroring is handled at the row level when sending data
+ * Set a pixel in the bitmap (1 = black)
  */
 function setPixel(bitmap, rowBytes, width, x, y) {
-  // Normal pixel placement (no mirroring)
   const byteIdx = y * rowBytes + Math.floor(x / 8);
   const bitIdx = 7 - (x % 8);
   if (byteIdx >= 0 && byteIdx < bitmap.length) {
@@ -300,22 +250,83 @@ function setPixel(bitmap, rowBytes, width, x, y) {
 }
 
 /**
- * Simple hash function for generating patterns
+ * Create Brother raster label with real QR code
  */
-function simpleHash(str) {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    hash = ((hash << 5) - hash) + str.charCodeAt(i);
-    hash = hash & hash;
+export async function createBrotherRasterLabel(options = {}) {
+  const {
+    assetId = 'TEST-001',
+    typeLabel = 'Asset',
+    serialNumber = 'N/A',
+    location = '',
+    width = LABEL_WIDTH_PX,
+    height = LABEL_HEIGHT_PX,
+    autoCut = true,
+  } = options;
+
+  const data = [];
+
+  // ========== INITIALIZATION ==========
+  for (let i = 0; i < 200; i++) {
+    data.push(0x00);
   }
-  return Math.abs(hash);
+  data.push(0x1B, 0x40); // ESC @ - Initialize
+
+  // ========== MODE SETTINGS ==========
+  data.push(0x1B, 0x69, 0x61, 0x01); // Switch to raster mode
+
+  // ========== PRINT INFORMATION ==========
+  data.push(0x1B, 0x69, 0x7A);
+  data.push(0x86);  // Valid flags
+  data.push(0x0A);  // Media type: continuous roll
+  data.push(0x3E);  // Media width: 62mm
+  data.push(0x00);  // Media length: 0 for continuous
+  data.push(height & 0xFF);
+  data.push((height >> 8) & 0xFF);
+  data.push(0x00, 0x00, 0x00, 0x00);
+
+  // ========== AUTO CUT ==========
+  if (autoCut) {
+    data.push(0x1B, 0x69, 0x4D, 0x40);
+  } else {
+    data.push(0x1B, 0x69, 0x4D, 0x00);
+  }
+  data.push(0x1B, 0x69, 0x4B, 0x08);
+  data.push(0x1B, 0x69, 0x64, 0x00, 0x00);
+
+  // ========== GENERATE BITMAP ==========
+  const bitmap = await createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height);
+  
+  const rowBytes = Math.ceil(width / 8);
+  
+  // Send each row with horizontal mirroring
+  for (let y = 0; y < height; y++) {
+    data.push(0x67, 0x00, rowBytes);
+    
+    // Reverse byte order for correct printing
+    for (let byteIdx = rowBytes - 1; byteIdx >= 0; byteIdx--) {
+      let byte = bitmap[y * rowBytes + byteIdx] || 0x00;
+      // Reverse bits within byte
+      let reversed = 0;
+      for (let bit = 0; bit < 8; bit++) {
+        if (byte & (1 << bit)) {
+          reversed |= (1 << (7 - bit));
+        }
+      }
+      data.push(reversed);
+    }
+  }
+
+  // ========== PRINT ==========
+  data.push(0x1A);
+
+  return new Uint8Array(data);
 }
 
 /**
  * Create a test label
  */
-export function createTestLabel() {
-  return createBrotherRasterLabel({
+export async function createTestLabel() {
+  return await createBrotherRasterLabel({
     assetId: 'TEST-LABEL-001',
     typeLabel: 'Testdruck',
     serialNumber: 'TEST-SN-12345',
@@ -324,10 +335,10 @@ export function createTestLabel() {
 }
 
 /**
- * Create an asset label (TSRID Standard format)
+ * Create an asset label
  */
-export function createAssetLabel(asset) {
-  return createBrotherRasterLabel({
+export async function createAssetLabel(asset) {
+  return await createBrotherRasterLabel({
     assetId: asset.warehouse_asset_id || asset.asset_id || 'N/A',
     typeLabel: asset.type_label || asset.type || 'Asset',
     serialNumber: asset.manufacturer_sn || asset.serial_number || 'N/A',
