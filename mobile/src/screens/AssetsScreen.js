@@ -499,6 +499,21 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: theme.colors.background },
   loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
   
+  // Multi-Select Mode Header
+  selectModeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: theme.colors.primary,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  cancelButton: { padding: 4 },
+  cancelButtonText: { color: '#fff', fontSize: 14, fontWeight: '500' },
+  selectedCount: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  selectAllButton: { padding: 4 },
+  selectAllButtonText: { color: '#fff', fontSize: 14, fontWeight: '500' },
+  
   // Compact Search
   searchBar: {
     flexDirection: 'row',
@@ -528,7 +543,17 @@ const styles = StyleSheet.create({
   filterChipText: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: '500' },
   filterChipTextActive: { color: '#fff' },
   
-  countText: { paddingHorizontal: 12, paddingVertical: 4, fontSize: 11, color: theme.colors.textMuted },
+  // Count Row
+  countRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+  countText: { fontSize: 11, color: theme.colors.textMuted },
+  hintText: { fontSize: 10, color: theme.colors.textMuted, fontStyle: 'italic' },
+  
   listContent: { padding: 10, paddingTop: 0 },
   
   // Asset Card
@@ -537,6 +562,37 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  assetCardSelected: {
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+  },
+  selectCheckbox: {
+    marginRight: 10,
+    paddingTop: 2,
+  },
+  checkboxInner: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: theme.colors.border,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxChecked: {
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
+  },
+  checkmark: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
+  assetContent: {
+    flex: 1,
   },
   assetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   assetId: { fontSize: 16, fontWeight: '700', color: theme.colors.primary },
@@ -554,6 +610,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   printButtonText: { fontSize: 13, color: theme.colors.primary, fontWeight: '600' },
+  
+  // Multi-Select Action Bar
+  multiSelectBar: {
+    backgroundColor: theme.colors.surface,
+    padding: 12,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
+  batchPrintButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  batchPrintText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   
   // Empty
   emptyContainer: { alignItems: 'center', paddingVertical: 40 },
