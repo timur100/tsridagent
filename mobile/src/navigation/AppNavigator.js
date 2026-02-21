@@ -106,6 +106,18 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
+        name="GoodsReceipt"
+        component={GoodsReceiptScreen}
+        options={{
+          title: 'Wareneingang',
+          tabBarIcon: ({ color, size }) => (
+            <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={{ color, fontSize: size * 0.8 }}>📥</Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
