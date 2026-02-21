@@ -93,8 +93,8 @@ function generateFallbackQR(size) {
 }
 
 /**
- * Create a label bitmap with QR code and text
- * Layout: QR code on LEFT, text on RIGHT (like backend)
+ * Create a label bitmap with TSRID Logo, QR code and text
+ * Layout: Logo top-left, QR code below logo, text on RIGHT (like backend)
  */
 async function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height) {
   const rowBytes = Math.ceil(width / 8);
@@ -103,10 +103,38 @@ async function createLabelBitmap(assetId, typeLabel, serialNumber, location, wid
   // Initialize with white (all 0s)
   bitmap.fill(0);
   
-  // QR Code settings
-  const qrSize = Math.min(height - 20, 200); // QR size based on label height
-  const qrX = 10; // QR on left side
-  const qrY = Math.floor((height - qrSize) / 2);
+  // Decode TSRID logo
+  let logoData;
+  try {
+    logoData = decodeLogo();
+  } catch (e) {
+    console.log('Logo decode error:', e);
+    logoData = null;
+  }
+  
+  // Draw TSRID Logo (top-left area)
+  const logoX = 10;
+  const logoY = 10;
+  const logoScale = 0.8; // Scale down a bit
+  const scaledLogoW = Math.floor(LOGO_WIDTH * logoScale);
+  const scaledLogoH = Math.floor(LOGO_HEIGHT * logoScale);
+  
+  if (logoData) {
+    for (let y = 0; y < scaledLogoH && (logoY + y) < height; y++) {
+      for (let x = 0; x < scaledLogoW && (logoX + x) < width; x++) {
+        const srcX = Math.floor(x / logoScale);
+        const srcY = Math.floor(y / logoScale);
+        if (getLogoPixel(logoData, srcX, srcY)) {
+          setPixel(bitmap, rowBytes, width, logoX + x, logoY + y);
+        }
+      }
+    }
+  }
+  
+  // QR Code settings - below logo
+  const qrSize = Math.min(height - scaledLogoH - 30, 150);
+  const qrX = 10;
+  const qrY = logoY + scaledLogoH + 10;
   
   // Generate real QR code
   const qrContent = assetId;
@@ -121,21 +149,21 @@ async function createLabelBitmap(assetId, typeLabel, serialNumber, location, wid
     }
   }
   
-  // Text area starts after QR code
-  const textX = qrX + qrSize + 20;
+  // Text area starts after logo/QR area
+  const textX = Math.max(qrX + qrSize + 20, logoX + scaledLogoW + 20);
   
   // Simple 8x8 font
   const font8x8 = createSimpleFont();
   
   // Draw text lines
   const lines = [
-    { text: assetId, y: 20, scale: 3, bold: true },      // Main ID - large
-    { text: typeLabel, y: 70, scale: 2 },                 // Type label
-    { text: 'SN: ' + serialNumber, y: 110, scale: 1 },   // Serial number
+    { text: assetId, y: 30, scale: 3, bold: true },      // Main ID - large
+    { text: typeLabel, y: 90, scale: 2 },                 // Type label
+    { text: 'SN: ' + serialNumber, y: 140, scale: 1 },   // Serial number
   ];
   
   if (location) {
-    lines.push({ text: location.substring(0, 30), y: 140, scale: 1 });
+    lines.push({ text: location.substring(0, 25), y: 170, scale: 1 });
   }
   
   for (const line of lines) {
