@@ -463,6 +463,27 @@ const AssetsScreen = ({ navigation, route }) => {
         }
       />
 
+      {/* Multi-Select Action Bar */}
+      {selectMode && selectedAssets.length > 0 && (
+        <View style={styles.multiSelectBar}>
+          <TouchableOpacity style={styles.batchPrintButton} onPress={openPrintQueue}>
+            <Text style={styles.batchPrintText}>🖨️ {selectedAssets.length} Labels drucken</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Print Queue Modal */}
+      <PrintQueueScreen
+        visible={printQueueVisible}
+        onClose={() => {
+          setPrintQueueVisible(false);
+          setSelectedAssets([]);
+          setSelectMode(false);
+        }}
+        assets={selectedAssets}
+        navigation={navigation}
+      />
+
       {/* Detail Modal */}
       <AssetDetailModal
         visible={modalVisible}
