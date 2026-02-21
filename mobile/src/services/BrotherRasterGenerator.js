@@ -2,10 +2,11 @@
  * Brother QL Raster Generator for Mobile
  * 
  * Generates Brother QL compatible raster data for Bluetooth printing
- * Matches backend label_printer.py format with real QR codes
+ * Matches backend label_printer.py format with real QR codes and TSRID logo
  */
 
 import QRCode from 'qrcode';
+import { LOGO_WIDTH, LOGO_HEIGHT, LOGO_ROW_BYTES, decodeLogo, getLogoPixel } from './TSRIDLogo';
 
 // Label dimensions for 62mm continuous roll at 300dpi
 const LABEL_WIDTH_PX = 696;
