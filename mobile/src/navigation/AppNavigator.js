@@ -97,6 +97,14 @@ const MainTabs = () => {
         }}
       />
       <Tab.Screen
+        name="Locations"
+        component={LocationsScreen}
+        options={{
+          title: 'Standorte',
+          tabBarIcon: ({ color, size }) => <IconLocation color={color} size={size} />,
+        }}
+      />
+      <Tab.Screen
         name="Settings"
         component={SettingsScreen}
         options={{
