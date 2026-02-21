@@ -283,6 +283,57 @@ export const tenantsAPI = {
   },
 };
 
+// Locations API - Tenant Locations (AAHC01, AGBC02, etc.)
+export const locationsAPI = {
+  getAll: async () => {
+    try {
+      // Try tenant-locations first (stations with code, name, etc.)
+      const response = await api.get('/api/tenant-locations/list');
+      if (response.data?.locations?.length > 0) {
+        return response.data;
+      }
+      // Fallback to portal locations
+      const fallback = await api.get('/api/portal/locations/list');
+      return fallback.data;
+    } catch (error) {
+      console.log('Locations error:', error.message);
+      return { locations: [], total: 0 };
+    }
+  },
+  
+  getByTenant: async (tenantId) => {
+    try {
+      const response = await api.get(`/api/tenant-locations/list?tenant_id=${tenantId}`);
+      return response.data;
+    } catch (error) {
+      return { locations: [], total: 0 };
+    }
+  },
+};
+
+// Goods Receipt API (Wareneingang)
+export const goodsReceiptAPI = {
+  getAll: async () => {
+    try {
+      const response = await api.get('/api/goods-receipt/list');
+      return response.data;
+    } catch (error) {
+      console.log('Goods receipt error:', error.message);
+      return { receipts: [] };
+    }
+  },
+  
+  create: async (data) => {
+    const response = await api.post('/api/goods-receipt/create', data);
+    return response.data;
+  },
+  
+  getById: async (id) => {
+    const response = await api.get(`/api/goods-receipt/${id}`);
+    return response.data;
+  },
+};
+
 // Health/Status API
 export const healthAPI = {
   check: async () => {
