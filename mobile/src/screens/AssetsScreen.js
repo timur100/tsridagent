@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { assetsAPI } from '../services/api';
 import bluetoothPrinterService from '../services/BluetoothPrinterService';
+import PrintQueueScreen from './PrintQueueScreen';
 import theme from '../utils/theme';
 
 const StatusBadge = ({ status }) => {
@@ -48,22 +49,39 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const AssetCard = ({ asset, onPress, onPrintLabel }) => (
-  <TouchableOpacity style={styles.assetCard} onPress={() => onPress(asset)}>
-    <View style={styles.assetHeader}>
-      <Text style={styles.assetId}>{asset.warehouse_asset_id || asset.asset_id || 'Keine ID'}</Text>
-      <StatusBadge status={asset.status} />
-    </View>
-    <View style={styles.assetDetails}>
-      <DetailRow label="Typ" value={asset.type_label || asset.type} />
-      <DetailRow label="SN" value={asset.manufacturer_sn} />
-      {asset.tenant_name && <DetailRow label="Kunde" value={asset.tenant_name} />}
-      {asset.location_name && <DetailRow label="Standort" value={asset.location_name} />}
-    </View>
-    <View style={styles.assetActions}>
-      <TouchableOpacity style={styles.printButton} onPress={() => onPrintLabel(asset)}>
-        <Text style={styles.printButtonText}>🏷️ Label drucken</Text>
-      </TouchableOpacity>
+const AssetCard = ({ asset, onPress, onPrintLabel, isSelected, onToggleSelect, selectMode }) => (
+  <TouchableOpacity 
+    style={[styles.assetCard, isSelected && styles.assetCardSelected]} 
+    onPress={() => selectMode ? onToggleSelect(asset) : onPress(asset)}
+    onLongPress={() => onToggleSelect(asset)}
+  >
+    {/* Selection Indicator */}
+    {selectMode && (
+      <View style={styles.selectCheckbox}>
+        <View style={[styles.checkboxInner, isSelected && styles.checkboxChecked]}>
+          {isSelected && <Text style={styles.checkmark}>✓</Text>}
+        </View>
+      </View>
+    )}
+    
+    <View style={styles.assetContent}>
+      <View style={styles.assetHeader}>
+        <Text style={styles.assetId}>{asset.warehouse_asset_id || asset.asset_id || 'Keine ID'}</Text>
+        <StatusBadge status={asset.status} />
+      </View>
+      <View style={styles.assetDetails}>
+        <DetailRow label="Typ" value={asset.type_label || asset.type} />
+        <DetailRow label="SN" value={asset.manufacturer_sn} />
+        {asset.tenant_name && <DetailRow label="Kunde" value={asset.tenant_name} />}
+        {asset.location_name && <DetailRow label="Standort" value={asset.location_name} />}
+      </View>
+      {!selectMode && (
+        <View style={styles.assetActions}>
+          <TouchableOpacity style={styles.printButton} onPress={() => onPrintLabel(asset)}>
+            <Text style={styles.printButtonText}>🏷️ Label drucken</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
   </TouchableOpacity>
 );
