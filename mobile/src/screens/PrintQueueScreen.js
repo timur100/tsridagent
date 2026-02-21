@@ -499,7 +499,7 @@ const styles = StyleSheet.create({
   // Preview Modal
   previewOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.7)',
+    backgroundColor: 'rgba(0,0,0,0.8)',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     width: '100%',
-    maxWidth: 350,
+    maxWidth: 380,
   },
   previewHeader: {
     flexDirection: 'row',
@@ -523,76 +523,121 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
   },
   previewClose: {
-    fontSize: 20,
+    fontSize: 22,
     color: theme.colors.textMuted,
+    padding: 4,
   },
   
-  // Label Preview
+  // Label Preview - Realistic representation
   labelPreview: {
     flexDirection: 'row',
     backgroundColor: '#fff',
     borderRadius: 8,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#e5e5e5',
     marginBottom: 12,
+    minHeight: 120,
   },
-  qrPlaceholder: {
-    width: 70,
-    height: 70,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 4,
+  qrPreviewArea: {
+    width: 90,
+    marginRight: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
   },
-  qrPattern: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
+  qrPreviewBox: {
+    width: 80,
+    height: 80,
+    backgroundColor: '#f8f8f8',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    position: 'relative',
   },
-  qrCorner: {
+  qrCornerTL: {
     position: 'absolute',
-    width: 15,
-    height: 15,
-    borderWidth: 3,
-    borderColor: '#333',
-    borderRightWidth: 0,
-    borderBottomWidth: 0,
+    top: 4,
+    left: 4,
+    width: 18,
+    height: 18,
+    borderWidth: 4,
+    borderColor: '#000',
+    backgroundColor: '#fff',
+  },
+  qrCornerTR: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderWidth: 4,
+    borderColor: '#000',
+    backgroundColor: '#fff',
+  },
+  qrCornerBL: {
+    position: 'absolute',
+    bottom: 4,
+    left: 4,
+    width: 18,
+    height: 18,
+    borderWidth: 4,
+    borderColor: '#000',
+    backgroundColor: '#fff',
+  },
+  qrPatternCenter: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -12 }, { translateY: -8 }],
   },
   qrText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#999',
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
-  labelTextContent: {
+  labelTextArea: {
     flex: 1,
     justifyContent: 'center',
   },
-  labelAssetId: {
-    fontSize: 16,
-    fontWeight: '700',
+  previewAssetId: {
+    fontSize: 22,
+    fontWeight: '800',
     color: '#000',
+    marginBottom: 6,
+  },
+  previewType: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 4,
   },
-  labelType: {
+  previewSn: {
     fontSize: 12,
-    color: '#333',
+    color: '#666',
     marginBottom: 2,
   },
-  labelSn: {
-    fontSize: 10,
-    color: '#666',
+  previewLocation: {
+    fontSize: 11,
+    color: '#888',
+    marginTop: 4,
   },
-  labelLocation: {
-    fontSize: 10,
-    color: '#666',
-    marginTop: 2,
+  labelInfo: {
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  previewNote: {
-    textAlign: 'center',
+  labelInfoText: {
     fontSize: 11,
     color: theme.colors.textMuted,
+  },
+  previewCloseButton: {
+    backgroundColor: theme.colors.primary,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  previewCloseButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
