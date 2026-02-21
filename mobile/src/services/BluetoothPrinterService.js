@@ -392,10 +392,18 @@ class BluetoothPrinterService {
    */
   async connectClassic(printer) {
     try {
+      console.log(`Connecting to Classic device: ${printer.address}`);
+      
+      // Check if already connected
+      const isConnected = await RNBluetoothClassic.isDeviceConnected(printer.address);
+      if (isConnected) {
+        console.log('Device already connected, reusing connection');
+      }
+      
       const device = await RNBluetoothClassic.connectToDevice(printer.address, {
         connectorType: 'rfcomm',
-        delimiter: '\n',
-        charset: 'utf-8',
+        delimiter: '\r\n',
+        charset: 'latin1', // Use latin1 for binary data
       });
 
       this.connectedDevice = {
@@ -408,6 +416,9 @@ class BluetoothPrinterService {
         connectedAt: new Date(),
       };
 
+      // Set up disconnect listener
+      this.setupDisconnectListener();
+
       // Save as last connected printer
       await AsyncStorage.setItem(STORAGE_KEYS.LAST_PRINTER, JSON.stringify({
         id: printer.id,
@@ -416,9 +427,56 @@ class BluetoothPrinterService {
         type: printer.type,
       }));
 
+      console.log(`Connected to ${printer.name}`);
       return { success: true, device: this.connectedDevice };
     } catch (error) {
+      console.error('Classic connection error:', error);
+      this.connectedDevice = null;
       return { success: false, error: error.message };
+    }
+  }
+
+  /**
+   * Setup disconnect listener for Classic Bluetooth
+   */
+  setupDisconnectListener() {
+    if (this.disconnectSubscription) {
+      this.disconnectSubscription.remove();
+    }
+    
+    if (this.connectedDevice?.address) {
+      this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(
+        this.connectedDevice.address,
+        (device) => {
+          console.log(`Device ${device?.name || 'unknown'} disconnected`);
+          // Don't clear connectedDevice immediately - allow reconnection
+        }
+      );
+    }
+  }
+
+  /**
+   * Check if currently connected and reconnect if needed
+   */
+  async ensureConnected() {
+    if (!this.connectedDevice) {
+      return false;
+    }
+    
+    try {
+      if (this.connectedDevice.bluetoothType === 'classic') {
+        const isConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
+        if (!isConnected) {
+          console.log('Connection lost, attempting to reconnect...');
+          const result = await this.connectClassic(this.connectedDevice);
+          return result.success;
+        }
+        return true;
+      }
+      return true;
+    } catch (error) {
+      console.error('ensureConnected error:', error);
+      return false;
     }
   }
 
