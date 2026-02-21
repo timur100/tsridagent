@@ -529,18 +529,28 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
   clearIcon: { fontSize: 16, color: theme.colors.textMuted, padding: 4 },
   
-  // Filters
-  filterScroll: { maxHeight: 44 },
-  filterContent: { paddingHorizontal: 10, paddingVertical: 6, gap: 6 },
+  // Filters - Horizontal scroll, no cutoff
+  filterScroll: { 
+    maxHeight: 48,
+    flexGrow: 0,
+  },
+  filterContent: { 
+    paddingHorizontal: 10, 
+    paddingVertical: 8, 
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     backgroundColor: theme.colors.surface,
-    borderRadius: 16,
-    marginRight: 6,
+    borderRadius: 18,
+    marginRight: 8,
+    minWidth: 70,
+    alignItems: 'center',
   },
   filterChipActive: { backgroundColor: theme.colors.primary },
-  filterChipText: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: '500' },
+  filterChipText: { fontSize: 13, color: theme.colors.textSecondary, fontWeight: '500' },
   filterChipTextActive: { color: '#fff' },
   
   // Count Row
