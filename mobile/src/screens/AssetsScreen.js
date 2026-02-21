@@ -382,6 +382,19 @@ const AssetsScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      {/* Multi-Select Mode Header */}
+      {selectMode && (
+        <View style={styles.selectModeHeader}>
+          <TouchableOpacity onPress={cancelSelection} style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>✕ Abbrechen</Text>
+          </TouchableOpacity>
+          <Text style={styles.selectedCount}>{selectedAssets.length} ausgewählt</Text>
+          <TouchableOpacity onPress={selectAllFiltered} style={styles.selectAllButton}>
+            <Text style={styles.selectAllButtonText}>Alle</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      
       {/* Compact Search */}
       <View style={styles.searchBar}>
         <Text style={styles.searchIcon}>🔍</Text>
@@ -414,20 +427,32 @@ const AssetsScreen = ({ navigation, route }) => {
         ))}
       </ScrollView>
 
-      {/* Count */}
-      <Text style={styles.countText}>{filteredAssets.length} Assets</Text>
+      {/* Count & Multi-Select Hint */}
+      <View style={styles.countRow}>
+        <Text style={styles.countText}>{filteredAssets.length} Assets</Text>
+        {!selectMode && (
+          <Text style={styles.hintText}>Lange drücken für Mehrfachauswahl</Text>
+        )}
+      </View>
 
       {/* List */}
       <FlatList
         data={filteredAssets}
         keyExtractor={(item) => item.asset_id || item._id || Math.random().toString()}
-        renderItem={({ item }) => (
-          <AssetCard 
-            asset={item} 
-            onPress={(asset) => { setSelectedAsset(asset); setModalVisible(true); }}
-            onPrintLabel={handlePrintLabel}
-          />
-        )}
+        renderItem={({ item }) => {
+          const assetId = item.asset_id || item.warehouse_asset_id;
+          const isSelected = selectedAssets.some(a => (a.asset_id || a.warehouse_asset_id) === assetId);
+          return (
+            <AssetCard 
+              asset={item} 
+              onPress={(asset) => { setSelectedAsset(asset); setModalVisible(true); }}
+              onPrintLabel={handlePrintLabel}
+              isSelected={isSelected}
+              onToggleSelect={toggleAssetSelect}
+              selectMode={selectMode}
+            />
+          );
+        }}
         contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
         ListEmptyComponent={
