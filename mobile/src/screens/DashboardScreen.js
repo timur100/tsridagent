@@ -70,6 +70,7 @@ const DashboardScreen = ({ navigation }) => {
     total_assets: 0,
   });
   const [serverStatus, setServerStatus] = useState('checking');
+  const [currentTenant, setCurrentTenant] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -96,7 +97,19 @@ const DashboardScreen = ({ navigation }) => {
             total_assets: statsData.total_assets || 0,
           });
         }
+        // Set current tenant from stats or user
+        if (statsData.tenant_name || statsData.tenant) {
+          setCurrentTenant(statsData.tenant_name || statsData.tenant);
+        }
       }
+      
+      // Get tenant from user data
+      if (user?.tenant_name) {
+        setCurrentTenant(user.tenant_name);
+      } else if (user?.tenant_id) {
+        setCurrentTenant(user.tenant_id);
+      }
+      
       setServerStatus(healthResult?.status === 'healthy' ? 'online' : 'offline');
     } catch (error) {
       console.error('Dashboard load error:', error);
