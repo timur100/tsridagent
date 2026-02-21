@@ -3,80 +3,132 @@ import {
   View,
   Text,
   StyleSheet,
-  ScrollView,
-  RefreshControl,
   TouchableOpacity,
   ActivityIndicator,
+  Modal,
+  ScrollView,
+  Dimensions,
+  RefreshControl,
 } from 'react-native';
-import { dashboardAPI, healthAPI, tenantsAPI, locationsAPI } from '../services/api';
+import { dashboardAPI, healthAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
 
-// Status Badge Component
-const StatusBadge = ({ status, label }) => {
-  const isOnline = status === 'online';
-  return (
-    <View style={[styles.statusBadge, { backgroundColor: isOnline ? '#22c55e20' : '#f59e0b20' }]}>
-      <View style={[styles.statusDot, { backgroundColor: isOnline ? '#22c55e' : '#f59e0b' }]} />
-      <Text style={[styles.statusLabel, { color: isOnline ? '#22c55e' : '#f59e0b' }]}>{label}</Text>
-    </View>
-  );
-};
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Stat Card with large numbers
-const StatCard = ({ icon, title, value, subtitle, color, onPress }) => (
+// Compact Stat Card
+const StatCard = ({ icon, value, label, onPress, color }) => (
   <TouchableOpacity 
     style={styles.statCard} 
     onPress={onPress}
     activeOpacity={onPress ? 0.7 : 1}
   >
-    <View style={styles.statCardHeader}>
-      <Text style={styles.statCardIcon}>{icon}</Text>
-      <Text style={styles.statCardTitle}>{title}</Text>
-    </View>
-    <Text style={[styles.statCardValue, color && { color }]}>{value || 0}</Text>
-    {subtitle && <Text style={styles.statCardSubtitle}>{subtitle}</Text>}
+    <Text style={styles.statIcon}>{icon}</Text>
+    <Text style={[styles.statValue, color && { color }]}>{value || 0}</Text>
+    <Text style={styles.statLabel}>{label}</Text>
   </TouchableOpacity>
 );
 
-// Quick Action Button
+// Quick Action
 const QuickAction = ({ icon, label, onPress }) => (
   <TouchableOpacity style={styles.quickAction} onPress={onPress}>
-    <Text style={styles.quickActionIcon}>{icon}</Text>
-    <Text style={styles.quickActionLabel}>{label}</Text>
+    <Text style={styles.qaIcon}>{icon}</Text>
+    <Text style={styles.qaLabel}>{label}</Text>
   </TouchableOpacity>
 );
 
-// Tenant/Customer List Item
-const TenantItem = ({ name, deviceCount, locationCount }) => (
-  <View style={styles.tenantItem}>
-    <Text style={styles.tenantIcon}>🏢</Text>
-    <View style={styles.tenantInfo}>
-      <Text style={styles.tenantName}>{name}</Text>
-      <Text style={styles.tenantStats}>{deviceCount} Geräte • {locationCount} Standorte</Text>
-    </View>
-  </View>
+// Burger Menu Modal
+const BurgerMenu = ({ visible, onClose, navigation, user, onLogout }) => (
+  <Modal visible={visible} animationType="slide" transparent>
+    <TouchableOpacity style={styles.menuOverlay} onPress={onClose} activeOpacity={1}>
+      <View style={styles.menuContainer}>
+        <View style={styles.menuHeader}>
+          <Text style={styles.menuTitle}>Menü</Text>
+          <TouchableOpacity onPress={onClose}>
+            <Text style={styles.menuClose}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.menuUser}>
+          <Text style={styles.menuUserIcon}>👤</Text>
+          <View>
+            <Text style={styles.menuUserName}>{user?.name || 'Benutzer'}</Text>
+            <Text style={styles.menuUserEmail}>{user?.email || ''}</Text>
+          </View>
+        </View>
+        
+        <View style={styles.menuDivider} />
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Dashboard'); }}>
+          <Text style={styles.menuItemIcon}>🏠</Text>
+          <Text style={styles.menuItemText}>Dashboard</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Scanner'); }}>
+          <Text style={styles.menuItemIcon}>📷</Text>
+          <Text style={styles.menuItemText}>Scanner</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Assets'); }}>
+          <Text style={styles.menuItemIcon}>📦</Text>
+          <Text style={styles.menuItemText}>Assets / Geräte</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Locations'); }}>
+          <Text style={styles.menuItemIcon}>📍</Text>
+          <Text style={styles.menuItemText}>Standorte</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('GoodsReceipt'); }}>
+          <Text style={styles.menuItemIcon}>📥</Text>
+          <Text style={styles.menuItemText}>Wareneingang</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
+          <Text style={styles.menuItemIcon}>⚙️</Text>
+          <Text style={styles.menuItemText}>Einstellungen</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.menuDivider} />
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
+          <Text style={styles.menuItemIcon}>🖨️</Text>
+          <Text style={styles.menuItemText}>Drucker</Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
+          <Text style={styles.menuItemIcon}>🏷️</Text>
+          <Text style={styles.menuItemText}>Labels drucken</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.menuDivider} />
+        
+        <TouchableOpacity style={[styles.menuItem, styles.menuItemLogout]} onPress={onLogout}>
+          <Text style={styles.menuItemIcon}>🚪</Text>
+          <Text style={[styles.menuItemText, { color: theme.colors.error }]}>Abmelden</Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.menuVersion}>TSRID Mobile v2.1.0</Text>
+      </View>
+    </TouchableOpacity>
+  </Modal>
 );
 
 const DashboardScreen = ({ navigation }) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
   const [stats, setStats] = useState({
-    total_tenants: 0,
-    total_customers: 0,
-    total_locations: 0,
     total_devices: 0,
-    total_users: 0,
     online_devices: 0,
     offline_devices: 0,
     in_preparation: 0,
-    total_assets: 0,
+    total_locations: 0,
+    total_customers: 0,
+    total_users: 0,
   });
   const [serverStatus, setServerStatus] = useState('checking');
-  const [currentTenant, setCurrentTenant] = useState(null);
-  const [tenants, setTenants] = useState([]);
-  const [locations, setLocations] = useState([]);
 
   useEffect(() => {
     loadData();
@@ -84,50 +136,25 @@ const DashboardScreen = ({ navigation }) => {
 
   const loadData = async () => {
     try {
-      // Load all data in parallel
-      const [statsResult, healthResult, tenantsResult, locationsResult] = await Promise.all([
-        dashboardAPI.getStats().catch(err => { console.log('Stats error:', err); return null; }),
-        healthAPI.check().catch(err => ({ status: 'error' })),
-        tenantsAPI?.getAll?.().catch(err => null) || Promise.resolve(null),
-        locationsAPI?.getAll?.().catch(err => null) || Promise.resolve(null),
+      const [statsResult, healthResult] = await Promise.all([
+        dashboardAPI.getStats().catch(() => null),
+        healthAPI.check().catch(() => ({ status: 'error' })),
       ]);
-
-      console.log('Dashboard stats loaded:', statsResult);
 
       if (statsResult) {
         setStats({
-          total_tenants: statsResult.total_tenants || statsResult.tenants_count || 0,
-          total_customers: statsResult.total_customers || statsResult.customers_count || 0,
-          total_locations: statsResult.total_locations || statsResult.locations_count || 0,
           total_devices: statsResult.total_devices || statsResult.devices_count || 0,
-          total_users: statsResult.total_users || statsResult.users_count || 0,
           online_devices: statsResult.online_devices || 0,
           offline_devices: statsResult.offline_devices || 0,
           in_preparation: statsResult.in_preparation || 0,
-          total_assets: statsResult.total_assets || statsResult.total_devices || 0,
+          total_locations: statsResult.total_locations || statsResult.locations_count || 0,
+          total_customers: statsResult.total_customers || statsResult.total_tenants || 0,
+          total_users: statsResult.total_users || statsResult.users_count || 0,
         });
       }
-      
-      // Set tenants list
-      if (tenantsResult?.tenants) {
-        setTenants(tenantsResult.tenants.slice(0, 5)); // Show top 5
-      }
-      
-      // Set locations list
-      if (locationsResult?.locations) {
-        setLocations(locationsResult.locations.slice(0, 5)); // Show top 5
-      }
-      
-      // Get tenant from user data
-      if (user?.company) {
-        setCurrentTenant(user.company);
-      } else if (user?.tenant_name) {
-        setCurrentTenant(user.tenant_name);
-      }
-      
       setServerStatus(healthResult?.status === 'healthy' ? 'online' : 'offline');
     } catch (error) {
-      console.error('Dashboard load error:', error);
+      console.error('Dashboard error:', error);
       setServerStatus('offline');
     } finally {
       setLoading(false);
@@ -140,6 +167,11 @@ const DashboardScreen = ({ navigation }) => {
     setRefreshing(false);
   };
 
+  const handleLogout = async () => {
+    setMenuVisible(false);
+    await logout();
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -149,122 +181,86 @@ const DashboardScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView 
-      style={styles.container} 
-      contentContainerStyle={styles.content}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
-    >
-      {/* Header with User & Status */}
+    <View style={styles.container}>
+      {/* Custom Header with Burger Menu */}
       <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.greeting}>Hallo, {user?.name?.split(' ')[0] || 'Benutzer'}</Text>
-          <StatusBadge status={serverStatus} label={serverStatus === 'online' ? 'Online' : 'Offline'} />
+        <View style={styles.headerContent}>
+          <View style={styles.headerLeft}>
+            <Text style={styles.greeting}>Hallo, {user?.name?.split(' ')[0] || 'Benutzer'}</Text>
+            <View style={[styles.statusBadge, { backgroundColor: serverStatus === 'online' ? '#22c55e20' : '#f59e0b20' }]}>
+              <View style={[styles.statusDot, { backgroundColor: serverStatus === 'online' ? '#22c55e' : '#f59e0b' }]} />
+              <Text style={[styles.statusText, { color: serverStatus === 'online' ? '#22c55e' : '#f59e0b' }]}>
+                {serverStatus === 'online' ? 'Online' : 'Offline'}
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.burgerButton} onPress={() => setMenuVisible(true)}>
+            <Text style={styles.burgerIcon}>☰</Text>
+          </TouchableOpacity>
         </View>
       </View>
-      
-      {/* Current Tenant/Customer Info */}
-      {currentTenant && (
-        <View style={styles.tenantBar}>
-          <Text style={styles.tenantBarIcon}>🏢</Text>
-          <View style={styles.tenantBarInfo}>
-            <Text style={styles.tenantBarLabel}>Aktiver Kunde</Text>
-            <Text style={styles.tenantBarName}>{currentTenant}</Text>
+
+      <ScrollView 
+        style={styles.content}
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Main Device Stats - Large */}
+        <View style={styles.mainStats}>
+          <View style={styles.mainStatCard}>
+            <Text style={styles.mainStatIcon}>📦</Text>
+            <Text style={styles.mainStatValue}>{stats.total_devices}</Text>
+            <Text style={styles.mainStatLabel}>Geräte</Text>
+          </View>
+          
+          <View style={styles.deviceStatusCol}>
+            <View style={styles.deviceStatus}>
+              <View style={[styles.statusIndicator, { backgroundColor: '#22c55e' }]} />
+              <Text style={styles.deviceStatusValue}>{stats.online_devices}</Text>
+              <Text style={styles.deviceStatusLabel}>Online</Text>
+            </View>
+            <View style={styles.deviceStatus}>
+              <View style={[styles.statusIndicator, { backgroundColor: '#ef4444' }]} />
+              <Text style={styles.deviceStatusValue}>{stats.offline_devices}</Text>
+              <Text style={styles.deviceStatusLabel}>Offline</Text>
+            </View>
+            <View style={styles.deviceStatus}>
+              <View style={[styles.statusIndicator, { backgroundColor: '#f59e0b' }]} />
+              <Text style={styles.deviceStatusValue}>{stats.in_preparation}</Text>
+              <Text style={styles.deviceStatusLabel}>Vorbereitung</Text>
+            </View>
           </View>
         </View>
-      )}
 
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <QuickAction icon="📷" label="Scannen" onPress={() => navigation.navigate('Scanner')} />
-        <QuickAction icon="📦" label="Assets" onPress={() => navigation.navigate('Assets')} />
-        <QuickAction icon="🏷️" label="Labels" onPress={() => navigation.navigate('Settings')} />
-        <QuickAction icon="📍" label="Standorte" onPress={() => navigation.navigate('Locations')} />
-      </View>
-
-      {/* Main Stats - Devices */}
-      <Text style={styles.sectionTitle}>Geräte Übersicht</Text>
-      <View style={styles.mainStatsRow}>
-        <TouchableOpacity 
-          style={styles.mainStatCard}
-          onPress={() => navigation.navigate('Assets')}
-        >
-          <Text style={styles.mainStatIcon}>📦</Text>
-          <Text style={styles.mainStatValue}>{stats.total_devices}</Text>
-          <Text style={styles.mainStatLabel}>Geräte gesamt</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.deviceStatusCards}>
-          <TouchableOpacity style={styles.deviceStatusCard}>
-            <View style={[styles.statusIndicator, { backgroundColor: '#22c55e' }]} />
-            <Text style={styles.deviceStatusValue}>{stats.online_devices}</Text>
-            <Text style={styles.deviceStatusLabel}>Online</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.deviceStatusCard}>
-            <View style={[styles.statusIndicator, { backgroundColor: '#ef4444' }]} />
-            <Text style={styles.deviceStatusValue}>{stats.offline_devices}</Text>
-            <Text style={styles.deviceStatusLabel}>Offline</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.deviceStatusCard}>
-            <View style={[styles.statusIndicator, { backgroundColor: '#f59e0b' }]} />
-            <Text style={styles.deviceStatusValue}>{stats.in_preparation}</Text>
-            <Text style={styles.deviceStatusLabel}>Vorbereitung</Text>
-          </TouchableOpacity>
+        {/* Secondary Stats Row */}
+        <View style={styles.statsRow}>
+          <StatCard icon="📍" value={stats.total_locations} label="Standorte" onPress={() => navigation.navigate('Locations')} />
+          <StatCard icon="🏢" value={stats.total_customers} label="Kunden" />
+          <StatCard icon="👥" value={stats.total_users} label="Benutzer" />
         </View>
-      </View>
 
-      {/* Secondary Stats Grid */}
-      <Text style={styles.sectionTitle}>Systemübersicht</Text>
-      <View style={styles.statsGrid}>
-        <StatCard 
-          icon="🏢" 
-          title="Kunden" 
-          value={stats.total_customers || stats.total_tenants}
-          onPress={() => navigation.navigate('Assets')}
-        />
-        <StatCard 
-          icon="📍" 
-          title="Standorte" 
-          value={stats.total_locations}
-          onPress={() => navigation.navigate('Locations')}
-        />
-        <StatCard 
-          icon="👥" 
-          title="Benutzer" 
-          value={stats.total_users}
-          onPress={() => navigation.navigate('Assets')}
-        />
-        <StatCard 
-          icon="🏷️" 
-          title="Assets" 
-          value={stats.total_assets}
-          onPress={() => navigation.navigate('Assets')}
-        />
-      </View>
+        {/* Quick Actions */}
+        <Text style={styles.sectionTitle}>Schnellzugriff</Text>
+        <View style={styles.quickActionsGrid}>
+          <QuickAction icon="📷" label="Scannen" onPress={() => navigation.navigate('Scanner')} />
+          <QuickAction icon="📦" label="Assets" onPress={() => navigation.navigate('Assets')} />
+          <QuickAction icon="📍" label="Standorte" onPress={() => navigation.navigate('Locations')} />
+          <QuickAction icon="🏷️" label="Labels" onPress={() => navigation.navigate('Settings')} />
+          <QuickAction icon="📥" label="Wareneingang" onPress={() => navigation.navigate('GoodsReceipt')} />
+          <QuickAction icon="⚙️" label="Einstellungen" onPress={() => navigation.navigate('Settings')} />
+        </View>
+      </ScrollView>
 
-      {/* Tenants List */}
-      {tenants.length > 0 && (
-        <>
-          <Text style={styles.sectionTitle}>Kunden</Text>
-          <View style={styles.tenantsList}>
-            {tenants.map((tenant, index) => (
-              <TenantItem 
-                key={tenant.id || index}
-                name={tenant.name || tenant.company_name || `Kunde ${index + 1}`}
-                deviceCount={tenant.device_count || 0}
-                locationCount={tenant.location_count || 0}
-              />
-            ))}
-          </View>
-        </>
-      )}
-
-      {/* App Info Footer */}
-      <View style={styles.appInfo}>
-        <Text style={styles.appInfoText}>TSRID Mobile v1.8.0</Text>
-      </View>
-    </ScrollView>
+      {/* Burger Menu */}
+      <BurgerMenu 
+        visible={menuVisible} 
+        onClose={() => setMenuVisible(false)}
+        navigation={navigation}
+        user={user}
+        onLogout={handleLogout}
+      />
+    </View>
   );
 };
 
@@ -272,10 +268,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: theme.colors.background,
-  },
-  content: {
-    padding: 12,
-    paddingBottom: 30,
   },
   loadingContainer: {
     flex: 1,
@@ -286,10 +278,15 @@ const styles = StyleSheet.create({
   
   // Header
   header: {
+    backgroundColor: theme.colors.primary,
+    paddingTop: 8,
+    paddingBottom: 12,
+    paddingHorizontal: 16,
+  },
+  headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-end', // Align to bottom
   },
   headerLeft: {
     flexDirection: 'row',
@@ -299,16 +296,14 @@ const styles = StyleSheet.create({
   greeting: {
     fontSize: 18,
     fontWeight: '600',
-    color: theme.colors.textPrimary,
+    color: '#fff',
   },
-  
-  // Status Badge
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingVertical: 3,
+    borderRadius: 10,
     gap: 4,
   },
   statusDot: {
@@ -316,110 +311,63 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
   },
-  statusLabel: {
-    fontSize: 11,
+  statusText: {
+    fontSize: 10,
     fontWeight: '500',
   },
+  burgerButton: {
+    padding: 6,
+  },
+  burgerIcon: {
+    fontSize: 26,
+    color: '#fff',
+  },
   
-  // Tenant Bar
-  tenantBar: {
+  // Content
+  content: {
+    flex: 1,
+  },
+  contentContainer: {
+    padding: 12,
+    paddingBottom: 20,
+  },
+  
+  // Main Stats
+  mainStats: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: `${theme.colors.primary}15`,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 10,
+    gap: 10,
     marginBottom: 12,
-    gap: 10,
-  },
-  tenantBarIcon: {
-    fontSize: 24,
-  },
-  tenantBarInfo: {
-    flex: 1,
-  },
-  tenantBarLabel: {
-    fontSize: 11,
-    color: theme.colors.textSecondary,
-  },
-  tenantBarName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: theme.colors.primary,
-  },
-  
-  // Quick Actions
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    gap: 8,
-  },
-  quickAction: {
-    flex: 1,
-    backgroundColor: theme.colors.surface,
-    paddingVertical: 12,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  quickActionIcon: {
-    fontSize: 22,
-    marginBottom: 4,
-  },
-  quickActionLabel: {
-    fontSize: 11,
-    color: theme.colors.textSecondary,
-    fontWeight: '500',
-  },
-  
-  // Section Title
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: 10,
-    marginTop: 4,
-  },
-  
-  // Main Stats Row
-  mainStatsRow: {
-    flexDirection: 'row',
-    gap: 10,
-    marginBottom: 16,
   },
   mainStatCard: {
-    flex: 1,
+    flex: 1.2,
     backgroundColor: theme.colors.primary,
-    borderRadius: 12,
+    borderRadius: 14,
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
   mainStatIcon: {
-    fontSize: 28,
-    marginBottom: 6,
+    fontSize: 30,
+    marginBottom: 4,
   },
   mainStatValue: {
-    fontSize: 36,
+    fontSize: 42,
     fontWeight: '700',
     color: '#fff',
   },
   mainStatLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: 'rgba(255,255,255,0.8)',
-    marginTop: 4,
   },
-  
-  // Device Status Cards
-  deviceStatusCards: {
+  deviceStatusCol: {
     flex: 1,
-    gap: 8,
+    gap: 6,
   },
-  deviceStatusCard: {
+  deviceStatus: {
     flex: 1,
     backgroundColor: theme.colors.surface,
     borderRadius: 10,
-    padding: 10,
+    padding: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -433,89 +381,150 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: theme.colors.textPrimary,
+    minWidth: 30,
   },
   deviceStatusLabel: {
     fontSize: 11,
     color: theme.colors.textSecondary,
   },
   
-  // Stats Grid
-  statsGrid: {
+  // Stats Row
+  statsRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 8,
     marginBottom: 16,
   },
   statCard: {
-    width: '48%',
+    flex: 1,
     backgroundColor: theme.colors.surface,
-    borderRadius: 10,
-    padding: 14,
-  },
-  statCardHeader: {
-    flexDirection: 'row',
+    borderRadius: 12,
+    padding: 12,
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 8,
   },
-  statCardIcon: {
-    fontSize: 16,
+  statIcon: {
+    fontSize: 20,
+    marginBottom: 4,
   },
-  statCardTitle: {
-    fontSize: 12,
-    color: theme.colors.textSecondary,
-  },
-  statCardValue: {
-    fontSize: 26,
+  statValue: {
+    fontSize: 24,
     fontWeight: '700',
     color: theme.colors.textPrimary,
   },
-  statCardSubtitle: {
+  statLabel: {
     fontSize: 10,
-    color: theme.colors.textMuted,
-    marginTop: 4,
-  },
-  
-  // Tenants List
-  tenantsList: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 16,
-  },
-  tenantItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  tenantIcon: {
-    fontSize: 20,
-    marginRight: 10,
-  },
-  tenantInfo: {
-    flex: 1,
-  },
-  tenantName: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-  },
-  tenantStats: {
-    fontSize: 11,
     color: theme.colors.textMuted,
     marginTop: 2,
   },
   
-  // App Info
-  appInfo: {
-    alignItems: 'center',
-    marginTop: 10,
+  // Section Title
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginBottom: 10,
   },
-  appInfoText: {
+  
+  // Quick Actions Grid
+  quickActionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  quickAction: {
+    width: '31%',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: 'center',
+  },
+  qaIcon: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  qaLabel: {
+    fontSize: 11,
+    color: theme.colors.textSecondary,
+    fontWeight: '500',
+  },
+  
+  // Menu
+  menuOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end',
+  },
+  menuContainer: {
+    backgroundColor: theme.colors.surface,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingBottom: 30,
+    maxHeight: '80%',
+  },
+  menuHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  menuTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+  },
+  menuClose: {
+    fontSize: 22,
+    color: theme.colors.textMuted,
+  },
+  menuUser: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    gap: 12,
+  },
+  menuUserIcon: {
+    fontSize: 36,
+  },
+  menuUserName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+  },
+  menuUserEmail: {
+    fontSize: 12,
+    color: theme.colors.textMuted,
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginVertical: 8,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    gap: 14,
+  },
+  menuItemIcon: {
+    fontSize: 20,
+    width: 28,
+    textAlign: 'center',
+  },
+  menuItemText: {
+    fontSize: 15,
+    color: theme.colors.textPrimary,
+  },
+  menuItemLogout: {
+    marginTop: 8,
+  },
+  menuVersion: {
+    textAlign: 'center',
     fontSize: 11,
     color: theme.colors.textMuted,
+    marginTop: 16,
   },
 });
 
