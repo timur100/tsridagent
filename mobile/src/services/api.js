@@ -90,6 +90,32 @@ export const authAPI = {
   },
 };
 
+// Helper to identify what type of identifier matched
+function identifyMatchType(asset, identifier) {
+  const normalizedId = identifier.replace(/[:\-\s]/g, '').toUpperCase();
+  
+  if (asset.warehouse_asset_id === identifier) return 'Asset-ID';
+  if (asset.asset_id === identifier) return 'Asset-ID';
+  if (asset.manufacturer_sn === identifier) return 'Seriennummer';
+  
+  const normalizedMac = (asset.mac || '').replace(/[:\-\s]/g, '').toUpperCase();
+  if (normalizedMac === normalizedId) return 'MAC-Adresse';
+  
+  const normalizedMacWifi = (asset.mac_wifi || '').replace(/[:\-\s]/g, '').toUpperCase();
+  if (normalizedMacWifi === normalizedId) return 'MAC WiFi';
+  
+  const normalizedMacBt = (asset.mac_bluetooth || '').replace(/[:\-\s]/g, '').toUpperCase();
+  if (normalizedMacBt === normalizedId) return 'MAC Bluetooth';
+  
+  if (asset.imei === identifier) return 'IMEI';
+  if (asset.imei2 === identifier) return 'IMEI 2';
+  if (asset.eid === identifier) return 'EID';
+  if (asset.sim_number === identifier) return 'SIM-Nummer';
+  
+  return 'Unbekannt';
+}
+
+
 // Assets API
 export const assetsAPI = {
   getAll: async (params = {}) => {
@@ -103,17 +129,85 @@ export const assetsAPI = {
   },
   
   getByBarcode: async (barcode) => {
-    // Search by serial number or asset ID
+    // Search by serial number, asset ID, MAC, or IMEI
     const response = await api.get('/api/asset-mgmt/assets', { 
       params: { search: barcode } 
     });
     const assets = response.data?.assets || [];
-    const found = assets.find(a => 
-      a.manufacturer_sn === barcode || 
-      a.warehouse_asset_id === barcode ||
-      a.asset_id === barcode
-    );
-    return { success: !!found, data: found };
+    
+    // Normalize barcode for comparison (remove colons, dashes, spaces)
+    const normalizedBarcode = barcode.replace(/[:\-\s]/g, '').toUpperCase();
+    
+    // Find asset matching any identifier
+    const found = assets.find(a => {
+      // Direct matches
+      if (a.manufacturer_sn === barcode) return true;
+      if (a.warehouse_asset_id === barcode) return true;
+      if (a.asset_id === barcode) return true;
+      
+      // Normalized MAC address comparison
+      const normalizedMac = (a.mac || '').replace(/[:\-\s]/g, '').toUpperCase();
+      const normalizedMacWifi = (a.mac_wifi || '').replace(/[:\-\s]/g, '').toUpperCase();
+      const normalizedMacBt = (a.mac_bluetooth || '').replace(/[:\-\s]/g, '').toUpperCase();
+      if (normalizedMac === normalizedBarcode) return true;
+      if (normalizedMacWifi === normalizedBarcode) return true;
+      if (normalizedMacBt === normalizedBarcode) return true;
+      
+      // IMEI comparison
+      if (a.imei === barcode || a.imei2 === barcode) return true;
+      
+      // EID comparison
+      if (a.eid === barcode) return true;
+      
+      // SIM number comparison
+      if (a.sim_number === barcode) return true;
+      
+      return false;
+    });
+    
+    return { 
+      success: !!found, 
+      data: found,
+      matchType: found ? identifyMatchType(found, barcode) : null
+    };
+  },
+  
+  // Enhanced search that returns match details
+  searchByIdentifier: async (identifier) => {
+    const response = await api.get('/api/asset-mgmt/assets', { 
+      params: { search: identifier } 
+    });
+    const assets = response.data?.assets || [];
+    const normalizedId = identifier.replace(/[:\-\s]/g, '').toUpperCase();
+    
+    // Find all matching assets and their match types
+    const matches = assets.filter(a => {
+      const normalizedMac = (a.mac || '').replace(/[:\-\s]/g, '').toUpperCase();
+      const normalizedMacWifi = (a.mac_wifi || '').replace(/[:\-\s]/g, '').toUpperCase();
+      const normalizedMacBt = (a.mac_bluetooth || '').replace(/[:\-\s]/g, '').toUpperCase();
+      
+      return (
+        a.manufacturer_sn === identifier ||
+        a.warehouse_asset_id === identifier ||
+        a.asset_id === identifier ||
+        normalizedMac === normalizedId ||
+        normalizedMacWifi === normalizedId ||
+        normalizedMacBt === normalizedId ||
+        a.imei === identifier ||
+        a.imei2 === identifier ||
+        a.eid === identifier ||
+        a.sim_number === identifier
+      );
+    }).map(asset => ({
+      asset,
+      matchType: identifyMatchType(asset, identifier)
+    }));
+    
+    return { 
+      success: matches.length > 0, 
+      matches,
+      count: matches.length
+    };
   },
   
   update: async (assetId, data) => {
