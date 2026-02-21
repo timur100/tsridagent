@@ -196,7 +196,7 @@ function createSimpleFont() {
 }
 
 /**
- * Draw text on bitmap
+ * Draw text on bitmap (NOT MIRRORED)
  */
 function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
   const charWidth = 8 * scale;
@@ -208,13 +208,13 @@ function drawText(bitmap, width, rowBytes, text, x, y, font, scale = 1) {
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         if (pattern[row] & (0x80 >> col)) {
-          // Draw scaled pixel
+          // Draw scaled pixel - NOT mirrored
           for (let sy = 0; sy < scale; sy++) {
             for (let sx = 0; sx < scale; sx++) {
               const px = curX + col * scale + sx;
               const py = y + row * scale + sy;
               if (px < width && py < bitmap.length / rowBytes) {
-                setPixel(bitmap, rowBytes, px, py);
+                setPixel(bitmap, rowBytes, width, px, py);
               }
             }
           }
