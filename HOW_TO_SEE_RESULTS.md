@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://scanner-printer-app.preview.emergentagent.com/portal/admin
+https://printer-label-app.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://scanner-printer-app.preview.emergentagent.com/portal/admin
+**URL:** https://printer-label-app.preview.emergentagent.com/portal/admin

@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://scanner-printer-app.preview.emergentagent.com/portal/admin/id-checks
+   https://printer-label-app.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

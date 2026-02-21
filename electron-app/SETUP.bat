@@ -260,7 +260,7 @@ exit /b 0
 :DOWNLOAD_OFFLINE_DATA
 if not exist "offline-data" mkdir "offline-data"
 echo  Lade Standorte von Server...
-curl -s "https://scanner-printer-app.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
+curl -s "https://printer-label-app.preview.emergentagent.com/api/agent/locations/export" > "offline-data\locations_cache.json" 2>nul
 if %errorLevel% equ 0 (
     echo  [OK] Standortdaten aktualisiert
 ) else (

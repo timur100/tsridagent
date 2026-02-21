@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://scanner-printer-app.preview.emergentagent.com';
+    this.serverUrl = 'https://printer-label-app.preview.emergentagent.com';
   }
 
   /**

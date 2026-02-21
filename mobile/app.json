@@ -62,7 +62,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://scanner-printer-app.preview.emergentagent.com",
+      "apiUrl": "https://printer-label-app.preview.emergentagent.com",
       "eas": {
         "projectId": "04b6a1cf-1065-4a2f-8fc6-f6e9f172b65d"
       }
@@ -95,7 +95,7 @@
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://scanner-printer-app.preview.emergentagent.com/api/mobile/updates"
+      "url": "https://printer-label-app.preview.emergentagent.com/api/mobile/updates"
     }
   }
 }
