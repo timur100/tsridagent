@@ -705,8 +705,8 @@ class BluetoothPrinterService {
     let data;
     
     if (this.connectedDevice.type === 'brother') {
-      // Brother: Generate raster graphics data
-      data = createBrotherTestLabel();
+      // Brother: Generate raster graphics data with real QR code
+      data = await createBrotherTestLabel();
       console.log('Brother raster test label generated, length:', data.length, 'bytes');
     } else {
       // Zebra ZPL
