@@ -243,7 +243,10 @@ const AssetsScreen = ({ navigation, route }) => {
     if (route.params?.filter) {
       setStatusFilter(route.params.filter);
     }
-  }, [route.params?.assetId, route.params?.filter, assets]);
+    if (route.params?.searchQuery) {
+      setSearchQuery(route.params.searchQuery);
+    }
+  }, [route.params?.assetId, route.params?.filter, route.params?.searchQuery, assets]);
 
   const loadAssets = async () => {
     try {
