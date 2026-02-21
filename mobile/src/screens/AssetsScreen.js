@@ -9,8 +9,11 @@ import {
   RefreshControl,
   ActivityIndicator,
   Modal,
+  ScrollView,
+  Alert,
 } from 'react-native';
 import { assetsAPI } from '../services/api';
+import bluetoothPrinterService from '../services/BluetoothPrinterService';
 import theme from '../utils/theme';
 
 const StatusBadge = ({ status }) => {
@@ -30,13 +33,14 @@ const StatusBadge = ({ status }) => {
       case 'defect':
       case 'defekt':
         return { bg: '#ef444420', color: '#ef4444', label: 'Defekt' };
+      case 'installed':
+      case 'installiert':
+        return { bg: '#8b5cf620', color: '#8b5cf6', label: 'Installiert' };
       default:
         return { bg: '#6b728020', color: '#6b7280', label: status || 'Unbekannt' };
     }
   };
-
   const style = getStatusStyle();
-
   return (
     <View style={[styles.statusBadge, { backgroundColor: style.bg }]}>
       <Text style={[styles.statusText, { color: style.color }]}>{style.label}</Text>
@@ -44,44 +48,42 @@ const StatusBadge = ({ status }) => {
   );
 };
 
-const AssetCard = ({ asset, onPress }) => (
+const AssetCard = ({ asset, onPress, onPrintLabel }) => (
   <TouchableOpacity style={styles.assetCard} onPress={() => onPress(asset)}>
     <View style={styles.assetHeader}>
       <Text style={styles.assetId}>{asset.warehouse_asset_id || asset.asset_id || 'Keine ID'}</Text>
       <StatusBadge status={asset.status} />
     </View>
     <View style={styles.assetDetails}>
-      <View style={styles.assetRow}>
-        <Text style={styles.assetLabel}>Typ:</Text>
-        <Text style={styles.assetValue}>{asset.type_label || asset.type || '-'}</Text>
-      </View>
-      <View style={styles.assetRow}>
-        <Text style={styles.assetLabel}>Hersteller:</Text>
-        <Text style={styles.assetValue}>{asset.manufacturer || '-'}</Text>
-      </View>
-      <View style={styles.assetRow}>
-        <Text style={styles.assetLabel}>Seriennr.:</Text>
-        <Text style={styles.assetValue}>{asset.manufacturer_sn || '-'}</Text>
-      </View>
+      <DetailRow label="Typ" value={asset.type_label || asset.type} />
+      <DetailRow label="SN" value={asset.manufacturer_sn} />
+      {asset.tenant_name && <DetailRow label="Kunde" value={asset.tenant_name} />}
+      {asset.location_name && <DetailRow label="Standort" value={asset.location_name} />}
     </View>
-    <View style={styles.assetFooter}>
-      <Text style={styles.assetTimestamp}>
-        {asset.created_at ? new Date(asset.created_at).toLocaleDateString('de-DE') : '-'}
-      </Text>
+    <View style={styles.assetActions}>
+      <TouchableOpacity style={styles.printButton} onPress={() => onPrintLabel(asset)}>
+        <Text style={styles.printButtonText}>🏷️ Label drucken</Text>
+      </TouchableOpacity>
     </View>
   </TouchableOpacity>
 );
 
-const AssetDetailModal = ({ visible, asset, onClose }) => {
+const DetailRow = ({ label, value }) => {
+  if (!value) return null;
+  return (
+    <View style={styles.detailRow}>
+      <Text style={styles.detailLabel}>{label}:</Text>
+      <Text style={styles.detailValue} numberOfLines={1}>{value}</Text>
+    </View>
+  );
+};
+
+// Comprehensive Asset Detail Modal
+const AssetDetailModal = ({ visible, asset, onClose, onPrintLabel }) => {
   if (!asset) return null;
 
   return (
-    <Modal
-      visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
-      onRequestClose={onClose}
-    >
+    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <View style={styles.modalContainer}>
         <View style={styles.modalHeader}>
           <Text style={styles.modalTitle}>Asset Details</Text>
@@ -90,75 +92,132 @@ const AssetDetailModal = ({ visible, asset, onClose }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.modalContent}>
-          {/* Asset ID */}
-          <View style={styles.detailSection}>
-            <Text style={styles.detailLabel}>Asset-ID</Text>
-            <Text style={styles.detailValueLarge}>{asset.warehouse_asset_id || asset.asset_id}</Text>
-          </View>
-
-          {/* Status */}
-          <View style={styles.detailSection}>
-            <Text style={styles.detailLabel}>Status</Text>
+        <ScrollView style={styles.modalContent}>
+          {/* Asset ID & Status */}
+          <View style={styles.idSection}>
+            <Text style={styles.assetIdLarge}>{asset.warehouse_asset_id || asset.asset_id}</Text>
             <StatusBadge status={asset.status} />
           </View>
 
+          {/* Print Button */}
+          <TouchableOpacity style={styles.printLabelButton} onPress={() => onPrintLabel(asset)}>
+            <Text style={styles.printLabelIcon}>🏷️</Text>
+            <Text style={styles.printLabelText}>Asset-Label drucken</Text>
+          </TouchableOpacity>
+
+          {/* Customer/Tenant Info */}
+          {(asset.tenant_name || asset.tenant_id) && (
+            <View style={styles.infoCard}>
+              <Text style={styles.cardTitle}>🏢 Kunde / Tenant</Text>
+              <InfoRow label="Name" value={asset.tenant_name} />
+              <InfoRow label="ID" value={asset.tenant_id} />
+            </View>
+          )}
+
+          {/* Location Info */}
+          {(asset.location_name || asset.location_id) && (
+            <View style={styles.infoCard}>
+              <Text style={styles.cardTitle}>📍 Standort</Text>
+              <InfoRow label="Name" value={asset.location_name} />
+              <InfoRow label="Adresse" value={asset.location_address} />
+              <InfoRow label="ID" value={asset.location_id} />
+            </View>
+          )}
+
           {/* General Info */}
-          <View style={styles.detailCard}>
-            <Text style={styles.detailCardTitle}>Allgemein</Text>
-            <DetailRow label="Typ" value={asset.type_label || asset.type} />
-            <DetailRow label="Hersteller" value={asset.manufacturer} />
-            <DetailRow label="Modell" value={asset.model} />
-            <DetailRow label="Seriennummer" value={asset.manufacturer_sn} />
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>📦 Allgemein</Text>
+            <InfoRow label="Typ" value={asset.type_label || asset.type} />
+            <InfoRow label="Hersteller" value={asset.manufacturer} />
+            <InfoRow label="Modell" value={asset.model} />
+            <InfoRow label="Seriennummer" value={asset.manufacturer_sn} />
           </View>
 
-          {/* Technical Info */}
-          <View style={styles.detailCard}>
-            <Text style={styles.detailCardTitle}>Technisch</Text>
-            <DetailRow label="IMEI" value={asset.imei} />
-            <DetailRow label="MAC-Adresse" value={asset.mac} />
+          {/* Technical Details */}
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>🔧 Technische Details</Text>
+            <InfoRow label="IMEI" value={asset.imei} />
+            <InfoRow label="IMEI 2" value={asset.imei2} />
+            <InfoRow label="MAC-Adresse" value={asset.mac} />
+            <InfoRow label="MAC WiFi" value={asset.mac_wifi} />
+            <InfoRow label="MAC BT" value={asset.mac_bluetooth} />
+            <InfoRow label="EID" value={asset.eid} />
+            <InfoRow label="SIM" value={asset.sim_number} />
+          </View>
+
+          {/* Stock/Inventory Info */}
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>📊 Bestand</Text>
+            <View style={styles.stockRow}>
+              <View style={styles.stockItem}>
+                <Text style={styles.stockLabel}>Auf Lager</Text>
+                <Text style={[styles.stockValue, { color: theme.colors.success }]}>
+                  {asset.stock_available || 0}
+                </Text>
+              </View>
+              <View style={styles.stockItem}>
+                <Text style={styles.stockLabel}>Im Umlauf</Text>
+                <Text style={[styles.stockValue, { color: theme.colors.primary }]}>
+                  {asset.stock_in_use || 0}
+                </Text>
+              </View>
+              <View style={styles.stockItem}>
+                <Text style={styles.stockLabel}>Installiert</Text>
+                <Text style={[styles.stockValue, { color: theme.colors.warning }]}>
+                  {asset.stock_installed || 0}
+                </Text>
+              </View>
+            </View>
           </View>
 
           {/* Purchase Info */}
-          <View style={styles.detailCard}>
-            <Text style={styles.detailCardTitle}>Einkauf</Text>
-            <DetailRow label="Lieferant" value={asset.supplier_name || asset.supplier} />
-            <DetailRow 
-              label="Kaufdatum" 
-              value={asset.purchase_date ? new Date(asset.purchase_date).toLocaleDateString('de-DE') : null} 
-            />
-            <DetailRow 
-              label="Kaufpreis" 
-              value={asset.purchase_price ? `${asset.purchase_price} €` : null} 
-            />
-            <DetailRow 
-              label="Garantie bis" 
-              value={asset.warranty_until ? new Date(asset.warranty_until).toLocaleDateString('de-DE') : null} 
-            />
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>💰 Einkauf</Text>
+            <InfoRow label="Lieferant" value={asset.supplier_name || asset.supplier} />
+            <InfoRow label="Kaufdatum" value={asset.purchase_date ? new Date(asset.purchase_date).toLocaleDateString('de-DE') : null} />
+            <InfoRow label="Kaufpreis" value={asset.purchase_price ? `${asset.purchase_price} €` : null} />
+            <InfoRow label="Garantie bis" value={asset.warranty_until ? new Date(asset.warranty_until).toLocaleDateString('de-DE') : null} />
           </View>
 
           {/* Notes */}
           {asset.notes && (
-            <View style={styles.detailCard}>
-              <Text style={styles.detailCardTitle}>Notizen</Text>
+            <View style={styles.infoCard}>
+              <Text style={styles.cardTitle}>📝 Notizen</Text>
               <Text style={styles.notesText}>{asset.notes}</Text>
             </View>
           )}
-        </View>
+
+          {/* Timestamps */}
+          <View style={styles.infoCard}>
+            <Text style={styles.cardTitle}>📅 Zeitstempel</Text>
+            <InfoRow label="Erstellt" value={asset.created_at ? new Date(asset.created_at).toLocaleString('de-DE') : null} />
+            <InfoRow label="Aktualisiert" value={asset.updated_at ? new Date(asset.updated_at).toLocaleString('de-DE') : null} />
+          </View>
+        </ScrollView>
       </View>
     </Modal>
   );
 };
 
-const DetailRow = ({ label, value }) => {
+const InfoRow = ({ label, value }) => {
   if (!value) return null;
   return (
-    <View style={styles.detailRow}>
-      <Text style={styles.detailRowLabel}>{label}</Text>
-      <Text style={styles.detailRowValue}>{value}</Text>
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={styles.infoValue} selectable>{value}</Text>
     </View>
   );
 };
+
+// Filter Chips - Scrollable
+const FILTERS = [
+  { id: 'all', label: 'Alle' },
+  { id: 'verfügbar', label: 'Verfügbar' },
+  { id: 'zugewiesen', label: 'Zugewiesen' },
+  { id: 'installiert', label: 'Installiert' },
+  { id: 'wartung', label: 'Wartung' },
+  { id: 'defekt', label: 'Defekt' },
+];
 
 const AssetsScreen = ({ navigation, route }) => {
   const [assets, setAssets] = useState([]);
@@ -173,41 +232,33 @@ const AssetsScreen = ({ navigation, route }) => {
     loadAssets();
   }, []);
 
-  // Handle deep linking from scanner
   useEffect(() => {
     if (route.params?.assetId) {
-      // Find and show the asset
       const asset = assets.find(a => a.asset_id === route.params.assetId);
       if (asset) {
         setSelectedAsset(asset);
         setModalVisible(true);
       }
     }
-  }, [route.params?.assetId, assets]);
+    if (route.params?.filter) {
+      setStatusFilter(route.params.filter);
+    }
+  }, [route.params?.assetId, route.params?.filter, assets]);
 
   const loadAssets = async () => {
     try {
       const result = await assetsAPI.getAll();
-      console.log('Assets API result:', JSON.stringify(result).substring(0, 200));
-      
-      // Handle different response formats
       if (result?.success && result?.assets) {
-        // Format: { success: true, assets: [...] }
         setAssets(result.assets);
       } else if (result?.success && result?.data?.assets) {
-        // Format: { success: true, data: { assets: [...] } }
         setAssets(result.data.assets);
       } else if (Array.isArray(result?.assets)) {
-        // Format: { assets: [...] }
         setAssets(result.assets);
       } else if (Array.isArray(result?.data)) {
-        // Format: { data: [...] }
         setAssets(result.data);
       } else if (Array.isArray(result)) {
-        // Format: [...]
         setAssets(result);
       } else {
-        console.log('Unknown assets format, setting empty array');
         setAssets([]);
       }
     } catch (error) {
@@ -224,343 +275,236 @@ const AssetsScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-  const filteredAssets = assets.filter(asset => {
-    // Search filter
-    const matchesSearch = 
-      !searchQuery ||
-      asset.warehouse_asset_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asset.manufacturer_sn?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asset.manufacturer?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      asset.type_label?.toLowerCase().includes(searchQuery.toLowerCase());
+  const handlePrintLabel = async (asset) => {
+    const isConnected = bluetoothPrinterService.isConnected();
+    if (!isConnected) {
+      Alert.alert(
+        'Drucker nicht verbunden',
+        'Bitte verbinden Sie zuerst einen Drucker in den Einstellungen.',
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          { text: 'Einstellungen', onPress: () => navigation.navigate('Settings') },
+        ]
+      );
+      return;
+    }
 
-    // Status filter
-    const matchesStatus = 
-      statusFilter === 'all' ||
-      asset.status?.toLowerCase() === statusFilter.toLowerCase();
+    try {
+      Alert.alert('Drucke...', 'Label wird gedruckt...');
+      await bluetoothPrinterService.printAssetLabel(asset);
+      Alert.alert('Erfolg', `Label für ${asset.warehouse_asset_id || asset.asset_id} wurde gedruckt.`);
+    } catch (error) {
+      Alert.alert('Fehler', error.message);
+    }
+  };
+
+  const filteredAssets = assets.filter(asset => {
+    const query = searchQuery.toLowerCase();
+    const matchesSearch = !searchQuery ||
+      asset.warehouse_asset_id?.toLowerCase().includes(query) ||
+      asset.asset_id?.toLowerCase().includes(query) ||
+      asset.manufacturer_sn?.toLowerCase().includes(query) ||
+      asset.imei?.toLowerCase().includes(query) ||
+      asset.mac?.toLowerCase().includes(query) ||
+      asset.manufacturer?.toLowerCase().includes(query) ||
+      asset.type_label?.toLowerCase().includes(query) ||
+      asset.tenant_name?.toLowerCase().includes(query) ||
+      asset.location_name?.toLowerCase().includes(query);
+
+    const matchesStatus = statusFilter === 'all' ||
+      asset.status?.toLowerCase().includes(statusFilter.toLowerCase());
 
     return matchesSearch && matchesStatus;
   });
-
-  const handleAssetPress = (asset) => {
-    setSelectedAsset(asset);
-    setModalVisible(true);
-  };
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
-        <Text style={styles.loadingText}>Assets werden geladen...</Text>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputWrapper}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Asset suchen..."
-            placeholderTextColor={theme.colors.textMuted}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-          {searchQuery ? (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Text style={styles.clearIcon}>✕</Text>
-            </TouchableOpacity>
-          ) : null}
-        </View>
+      {/* Compact Search */}
+      <View style={styles.searchBar}>
+        <Text style={styles.searchIcon}>🔍</Text>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="ID, SN, IMEI, MAC, Kunde..."
+          placeholderTextColor={theme.colors.textMuted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery ? (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <Text style={styles.clearIcon}>✕</Text>
+          </TouchableOpacity>
+        ) : null}
       </View>
 
-      {/* Filter Bar */}
-      <View style={styles.filterBar}>
-        {['all', 'verfügbar', 'zugewiesen', 'wartung', 'defekt'].map((filter) => (
+      {/* Scrollable Filters */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterContent}>
+        {FILTERS.map((filter) => (
           <TouchableOpacity
-            key={filter}
-            style={[styles.filterButton, statusFilter === filter && styles.filterButtonActive]}
-            onPress={() => setStatusFilter(filter)}
+            key={filter.id}
+            style={[styles.filterChip, statusFilter === filter.id && styles.filterChipActive]}
+            onPress={() => setStatusFilter(filter.id)}
           >
-            <Text style={[styles.filterText, statusFilter === filter && styles.filterTextActive]}>
-              {filter === 'all' ? 'Alle' : filter.charAt(0).toUpperCase() + filter.slice(1)}
+            <Text style={[styles.filterChipText, statusFilter === filter.id && styles.filterChipTextActive]}>
+              {filter.label}
             </Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
-      {/* Results Count */}
-      <Text style={styles.resultCount}>
-        {filteredAssets.length} Asset{filteredAssets.length !== 1 ? 's' : ''} gefunden
-      </Text>
+      {/* Count */}
+      <Text style={styles.countText}>{filteredAssets.length} Assets</Text>
 
-      {/* Asset List */}
+      {/* List */}
       <FlatList
         data={filteredAssets}
         keyExtractor={(item) => item.asset_id || item._id || Math.random().toString()}
-        renderItem={({ item }) => <AssetCard asset={item} onPress={handleAssetPress} />}
-        contentContainerStyle={styles.listContent}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={theme.colors.primary}
+        renderItem={({ item }) => (
+          <AssetCard 
+            asset={item} 
+            onPress={(asset) => { setSelectedAsset(asset); setModalVisible(true); }}
+            onPrintLabel={handlePrintLabel}
           />
-        }
+        )}
+        contentContainerStyle={styles.listContent}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>📦</Text>
-            <Text style={styles.emptyTitle}>Keine Assets gefunden</Text>
-            <Text style={styles.emptySubtitle}>
-              {searchQuery ? 'Versuchen Sie eine andere Suche' : 'Noch keine Assets vorhanden'}
-            </Text>
+            <Text style={styles.emptyText}>Keine Assets gefunden</Text>
           </View>
         }
       />
 
-      {/* Asset Detail Modal */}
+      {/* Detail Modal */}
       <AssetDetailModal
         visible={modalVisible}
         asset={selectedAsset}
-        onClose={() => {
-          setModalVisible(false);
-          setSelectedAsset(null);
-        }}
+        onClose={() => { setModalVisible(false); setSelectedAsset(null); }}
+        onPrintLabel={handlePrintLabel}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background,
-  },
-  loadingText: {
-    color: theme.colors.textSecondary,
-    marginTop: theme.spacing.md,
-  },
-  searchContainer: {
-    padding: theme.spacing.md,
-    paddingBottom: 0,
-  },
-  searchInputWrapper: {
+  container: { flex: 1, backgroundColor: theme.colors.background },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background },
+  
+  // Compact Search
+  searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    paddingHorizontal: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    margin: 10,
+    marginBottom: 0,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 42,
   },
-  searchIcon: {
-    fontSize: 18,
-    marginRight: theme.spacing.sm,
-  },
-  searchInput: {
-    flex: 1,
-    height: 48,
-    color: theme.colors.textPrimary,
-    fontSize: theme.fontSize.md,
-  },
-  clearIcon: {
-    fontSize: 18,
-    color: theme.colors.textMuted,
-    padding: theme.spacing.sm,
-  },
-  filterBar: {
-    flexDirection: 'row',
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    gap: theme.spacing.sm,
-  },
-  filterButton: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
+  searchIcon: { fontSize: 16, marginRight: 8 },
+  searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
+  clearIcon: { fontSize: 16, color: theme.colors.textMuted, padding: 4 },
+  
+  // Filters
+  filterScroll: { maxHeight: 44 },
+  filterContent: { paddingHorizontal: 10, paddingVertical: 6, gap: 6 },
+  filterChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.full,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+    borderRadius: 16,
+    marginRight: 6,
   },
-  filterButtonActive: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  filterText: {
-    color: theme.colors.textSecondary,
-    fontSize: theme.fontSize.sm,
-    fontWeight: '500',
-  },
-  filterTextActive: {
-    color: '#fff',
-  },
-  resultCount: {
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: theme.spacing.sm,
-    color: theme.colors.textMuted,
-    fontSize: theme.fontSize.sm,
-  },
-  listContent: {
-    padding: theme.spacing.md,
-    paddingTop: 0,
-  },
+  filterChipActive: { backgroundColor: theme.colors.primary },
+  filterChipText: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: '500' },
+  filterChipTextActive: { color: '#fff' },
+  
+  countText: { paddingHorizontal: 12, paddingVertical: 4, fontSize: 11, color: theme.colors.textMuted },
+  listContent: { padding: 10, paddingTop: 0 },
+  
+  // Asset Card
   assetCard: {
     backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    ...theme.shadow.sm,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 8,
   },
-  assetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  assetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  assetId: { fontSize: 16, fontWeight: '700', color: theme.colors.primary },
+  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 10 },
+  statusText: { fontSize: 10, fontWeight: '600' },
+  assetDetails: { marginBottom: 8 },
+  detailRow: { flexDirection: 'row', marginBottom: 2 },
+  detailLabel: { width: 60, fontSize: 12, color: theme.colors.textMuted },
+  detailValue: { flex: 1, fontSize: 12, color: theme.colors.textPrimary },
+  assetActions: { borderTopWidth: 1, borderTopColor: theme.colors.border, paddingTop: 8 },
+  printButton: {
+    backgroundColor: `${theme.colors.primary}15`,
+    paddingVertical: 8,
+    borderRadius: 8,
     alignItems: 'center',
-    marginBottom: theme.spacing.sm,
   },
-  assetId: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-  },
-  statusBadge: {
-    paddingHorizontal: theme.spacing.sm,
-    paddingVertical: 4,
-    borderRadius: theme.borderRadius.full,
-  },
-  statusText: {
-    fontSize: theme.fontSize.xs,
-    fontWeight: '600',
-  },
-  assetDetails: {
-    marginBottom: theme.spacing.sm,
-  },
-  assetRow: {
-    flexDirection: 'row',
-    marginBottom: 4,
-  },
-  assetLabel: {
-    width: 90,
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-  },
-  assetValue: {
-    flex: 1,
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textPrimary,
-  },
-  assetFooter: {
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-    paddingTop: theme.spacing.sm,
-  },
-  assetTimestamp: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textMuted,
-  },
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: theme.spacing.xxl,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: theme.spacing.md,
-  },
-  emptyTitle: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
-  },
-  emptySubtitle: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textMuted,
-  },
-  // Modal Styles
-  modalContainer: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
+  printButtonText: { fontSize: 13, color: theme.colors.primary, fontWeight: '600' },
+  
+  // Empty
+  emptyContainer: { alignItems: 'center', paddingVertical: 40 },
+  emptyIcon: { fontSize: 48, marginBottom: 8 },
+  emptyText: { fontSize: 14, color: theme.colors.textMuted },
+  
+  // Modal
+  modalContainer: { flex: 1, backgroundColor: theme.colors.background },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: theme.spacing.md,
+    padding: 12,
     backgroundColor: theme.colors.primary,
   },
-  modalTitle: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  closeButton: {
-    padding: theme.spacing.sm,
-  },
-  closeButtonText: {
-    fontSize: 24,
-    color: '#fff',
-  },
-  modalContent: {
-    padding: theme.spacing.md,
-  },
-  detailSection: {
-    marginBottom: theme.spacing.md,
-  },
-  detailLabel: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
-    marginBottom: theme.spacing.xs,
-  },
-  detailValueLarge: {
-    fontSize: theme.fontSize.xxl,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-  },
-  detailCard: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.lg,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-  },
-  detailCardTitle: {
-    fontSize: theme.fontSize.md,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: theme.spacing.sm,
-    paddingBottom: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
-  },
-  detailRow: {
+  modalTitle: { fontSize: 18, fontWeight: '700', color: '#fff' },
+  closeButton: { padding: 4 },
+  closeButtonText: { fontSize: 22, color: '#fff' },
+  modalContent: { padding: 12 },
+  
+  idSection: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
+  assetIdLarge: { fontSize: 22, fontWeight: '700', color: theme.colors.primary },
+  
+  printLabelButton: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: theme.colors.primary,
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 16,
+    gap: 8,
   },
-  detailRowLabel: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textMuted,
+  printLabelIcon: { fontSize: 18 },
+  printLabelText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  
+  infoCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 10,
+    padding: 12,
+    marginBottom: 10,
   },
-  detailRowValue: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textPrimary,
-    fontWeight: '500',
-  },
-  notesText: {
-    fontSize: theme.fontSize.sm,
-    color: theme.colors.textSecondary,
-    lineHeight: 20,
-  },
+  cardTitle: { fontSize: 14, fontWeight: '600', color: theme.colors.textPrimary, marginBottom: 10 },
+  infoRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: theme.colors.border },
+  infoLabel: { fontSize: 13, color: theme.colors.textMuted },
+  infoValue: { fontSize: 13, color: theme.colors.textPrimary, fontWeight: '500', maxWidth: '60%', textAlign: 'right' },
+  notesText: { fontSize: 13, color: theme.colors.textSecondary, lineHeight: 18 },
+  
+  stockRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  stockItem: { alignItems: 'center' },
+  stockLabel: { fontSize: 11, color: theme.colors.textMuted, marginBottom: 4 },
+  stockValue: { fontSize: 20, fontWeight: '700' },
 });
 
 export default AssetsScreen;
