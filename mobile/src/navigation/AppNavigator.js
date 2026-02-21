@@ -48,18 +48,21 @@ const MainTabs = () => {
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
-          height: 60,
-          paddingBottom: 8,
+          height: 56,
+          paddingBottom: 6,
         },
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textMuted,
         headerStyle: {
           backgroundColor: theme.colors.primary,
+          height: 50, // Smaller header
         },
-        headerTintColor: theme.colors.textPrimary,
+        headerTintColor: '#fff',
         headerTitleStyle: {
           fontWeight: '600',
+          fontSize: 16,
         },
+        headerStatusBarHeight: 0, // Reduce status bar padding
       }}
     >
       <Tab.Screen
