@@ -3,13 +3,12 @@
  * 
  * Supports:
  * - Bluetooth Low Energy (BLE) for Zebra printers
- * - Bluetooth Classic (SPP) for Brother printers
+ * - Bluetooth Classic (SPP) for Brother printers (if available)
  * 
  * With configurable label formats and templates
  */
 
 import { BleManager, State as BleState } from 'react-native-ble-plx';
-import RNBluetoothClassic from 'react-native-bluetooth-classic';
 import { PermissionsAndroid, Platform, Alert, Linking } from 'react-native';
 import { Buffer } from 'buffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,6 +20,14 @@ import {
   createTestLabel as createBrotherTestLabel,
   createAssetLabel as createBrotherAssetLabel,
 } from './BrotherRasterGenerator';
+
+// Try to import Bluetooth Classic (optional)
+let RNBluetoothClassic = null;
+try {
+  RNBluetoothClassic = require('react-native-bluetooth-classic').default;
+} catch (e) {
+  console.log('Bluetooth Classic not available, using BLE only');
+}
 
 // Storage keys
 const STORAGE_KEYS = {
