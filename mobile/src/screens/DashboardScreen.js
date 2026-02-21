@@ -221,16 +221,19 @@ const DashboardScreen = ({ navigation }) => {
           icon="🏢" 
           title="Kunden" 
           value={stats.total_customers || stats.total_tenants}
+          onPress={() => navigation.navigate('Assets')}
         />
         <StatCard 
           icon="📍" 
           title="Standorte" 
           value={stats.total_locations}
+          onPress={() => navigation.navigate('Locations')}
         />
         <StatCard 
           icon="👥" 
           title="Benutzer" 
           value={stats.total_users}
+          onPress={() => navigation.navigate('Assets')}
         />
         <StatCard 
           icon="🏷️" 
