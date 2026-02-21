@@ -571,10 +571,15 @@ class BluetoothPrinterService {
       throw new Error('Kein Drucker verbunden');
     }
 
-    // Ensure connection is still active
-    const isConnected = await this.ensureConnected();
+    // Ensure connection is still active (with retry)
+    let isConnected = await this.ensureConnected();
     if (!isConnected) {
-      throw new Error('Verbindung zum Drucker verloren. Bitte erneut verbinden.');
+      // Try one more time after a short delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      isConnected = await this.ensureConnected();
+      if (!isConnected) {
+        throw new Error('Verbindung zum Drucker verloren. Bitte erneut verbinden.');
+      }
     }
 
     try {
@@ -594,20 +599,49 @@ class BluetoothPrinterService {
           dataStr = data;
         }
         
-        // Send in larger chunks for Brother (it can handle more)
-        const chunkSize = 2048;
+        // Send in chunks with proper pacing for Brother
+        const chunkSize = 1024; // Smaller chunks for stability
         for (let i = 0; i < dataStr.length; i += chunkSize) {
           const chunk = dataStr.slice(i, i + chunkSize);
+          
+          // Verify connection before each chunk
+          const stillConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
+          if (!stillConnected) {
+            console.log('Connection lost during send, reconnecting...');
+            await RNBluetoothClassic.connectToDevice(this.connectedDevice.address, {
+              connectorType: 'rfcomm',
+              delimiter: '\r\n',
+              charset: 'latin1',
+            });
+          }
+          
           await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
           
-          // Delay between chunks
+          // Delay between chunks for printer to process
           if (i + chunkSize < dataStr.length) {
-            await new Promise(resolve => setTimeout(resolve, 50));
+            await new Promise(resolve => setTimeout(resolve, 30));
           }
         }
         
-        // Wait for printer to process
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Wait for printer to finish processing
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Re-verify connection after print (Brother printers sometimes disconnect)
+        setTimeout(async () => {
+          try {
+            const stillConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
+            if (!stillConnected && this.connectedDevice) {
+              console.log('Reconnecting after print job...');
+              await RNBluetoothClassic.connectToDevice(this.connectedDevice.address, {
+                connectorType: 'rfcomm',
+                delimiter: '\r\n',
+                charset: 'latin1',
+              });
+            }
+          } catch (e) {
+            console.log('Post-print reconnection check:', e.message);
+          }
+        }, 2000);
         
         console.log('Data sent successfully to Brother');
         return { success: true };
