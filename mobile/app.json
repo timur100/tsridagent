@@ -2,7 +2,7 @@
   "expo": {
     "name": "TSRID Mobile",
     "slug": "tsrid-mobile",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
@@ -28,7 +28,7 @@
         "backgroundColor": "#1a1a1a"
       },
       "package": "com.tsrid.mobile",
-      "versionCode": 15,
+      "versionCode": 16,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.BLUETOOTH",
