@@ -216,6 +216,11 @@ const ScannerScreen = ({ navigation }) => {
             <Text style={styles.lastScanTitle}>Letzter Scan</Text>
             <Text style={styles.lastScanCode} numberOfLines={1}>{lastScan.code}</Text>
             <Text style={styles.lastScanTime}>{lastScan.timestamp}</Text>
+            {lastScan.matchType && (
+              <View style={styles.matchTypeBadge}>
+                <Text style={styles.matchTypeText}>Erkannt als: {lastScan.matchType}</Text>
+              </View>
+            )}
             {lastScan.asset && (
               <View style={styles.assetInfo}>
                 <Text style={styles.assetId}>{lastScan.asset.warehouse_asset_id}</Text>
