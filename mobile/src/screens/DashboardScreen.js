@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
     paddingVertical: 4,
   },
   headerLeft: {
@@ -278,9 +278,29 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   greeting: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: theme.colors.textPrimary,
+  },
+  // Tenant Bar
+  tenantBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${theme.colors.primary}15`,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginBottom: 12,
+    gap: 8,
+  },
+  tenantLabel: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+  },
+  tenantName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: theme.colors.primary,
   },
   statusBadge: {
     flexDirection: 'row',
