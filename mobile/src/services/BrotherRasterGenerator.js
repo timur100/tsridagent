@@ -74,14 +74,24 @@ export function createBrotherRasterLabel(options = {}) {
   // Row bytes (width in bytes, each byte = 8 pixels)
   const rowBytes = Math.ceil(width / 8);
   
-  // Send each row as raster graphics
+  // Send each row as raster graphics (with horizontal mirroring for correct orientation)
   for (let y = 0; y < height; y++) {
     // g 0x00 - Raster graphics transfer command
     data.push(0x67, 0x00, rowBytes);
     
-    // Add row data
-    for (let byteIdx = 0; byteIdx < rowBytes; byteIdx++) {
-      data.push(bitmap[y * rowBytes + byteIdx] || 0x00);
+    // Add row data with REVERSED byte order (mirror horizontally)
+    // Brother QL prints from right to left, so we reverse the byte order
+    for (let byteIdx = rowBytes - 1; byteIdx >= 0; byteIdx--) {
+      // Also reverse the bits within each byte for complete mirroring
+      let byte = bitmap[y * rowBytes + byteIdx] || 0x00;
+      // Reverse bits: 76543210 -> 01234567
+      let reversed = 0;
+      for (let bit = 0; bit < 8; bit++) {
+        if (byte & (1 << bit)) {
+          reversed |= (1 << (7 - bit));
+        }
+      }
+      data.push(reversed);
     }
   }
 
