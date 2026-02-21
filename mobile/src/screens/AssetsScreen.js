@@ -301,27 +301,56 @@ const AssetsScreen = ({ navigation, route }) => {
     setRefreshing(false);
   };
 
-  const handlePrintLabel = async (asset) => {
-    const isConnected = bluetoothPrinterService.isConnected();
-    if (!isConnected) {
-      Alert.alert(
-        'Drucker nicht verbunden',
-        'Bitte verbinden Sie zuerst einen Drucker in den Einstellungen.',
-        [
-          { text: 'Abbrechen', style: 'cancel' },
-          { text: 'Einstellungen', onPress: () => navigation.navigate('Settings') },
-        ]
-      );
+  // Toggle asset selection
+  const toggleAssetSelect = (asset) => {
+    const assetId = asset.asset_id || asset.warehouse_asset_id;
+    
+    setSelectedAssets(prev => {
+      const isSelected = prev.some(a => (a.asset_id || a.warehouse_asset_id) === assetId);
+      if (isSelected) {
+        const newSelection = prev.filter(a => (a.asset_id || a.warehouse_asset_id) !== assetId);
+        if (newSelection.length === 0) {
+          setSelectMode(false);
+        }
+        return newSelection;
+      } else {
+        if (!selectMode) setSelectMode(true);
+        return [...prev, asset];
+      }
+    });
+  };
+
+  // Cancel multi-select
+  const cancelSelection = () => {
+    setSelectMode(false);
+    setSelectedAssets([]);
+  };
+
+  // Open print queue with selected assets
+  const openPrintQueue = () => {
+    if (selectedAssets.length === 0) {
+      Alert.alert('Keine Auswahl', 'Bitte wählen Sie mindestens ein Asset aus.');
       return;
     }
+    setPrintQueueVisible(true);
+  };
 
-    try {
-      Alert.alert('Drucke...', 'Label wird gedruckt...');
-      await bluetoothPrinterService.printAssetLabel(asset);
-      Alert.alert('Erfolg', `Label für ${asset.warehouse_asset_id || asset.asset_id} wurde gedruckt.`);
-    } catch (error) {
-      Alert.alert('Fehler', error.message);
+  // Select all filtered assets
+  const selectAllFiltered = () => {
+    setSelectMode(true);
+    setSelectedAssets(filteredAssets);
+  };
+
+  const handlePrintLabel = async (asset) => {
+    // If in select mode, toggle selection instead
+    if (selectMode) {
+      toggleAssetSelect(asset);
+      return;
     }
+    
+    // Open print queue with single asset for preview
+    setSelectedAssets([asset]);
+    setPrintQueueVisible(true);
   };
 
   const filteredAssets = assets.filter(asset => {
