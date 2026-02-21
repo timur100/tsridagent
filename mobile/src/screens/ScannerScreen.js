@@ -33,31 +33,40 @@ const ScannerScreen = ({ navigation }) => {
     console.log(`Scanned: ${type} - ${data}`);
 
     try {
-      // Try to find asset by barcode
+      // Try to find asset by any identifier (Asset-ID, SN, MAC, IMEI, etc.)
       const result = await assetsAPI.getByBarcode(data);
       
       setLastScan({
         code: data,
         type: type,
         asset: result?.success ? result.data : null,
+        matchType: result?.matchType || null,
         timestamp: new Date().toLocaleString('de-DE'),
       });
 
       if (result?.success && result?.data) {
+        const asset = result.data;
+        const matchInfo = result.matchType ? `\nGefunden über: ${result.matchType}` : '';
+        
         Alert.alert(
-          'Asset gefunden',
-          `ID: ${result.data.warehouse_asset_id || result.data.asset_id}\nTyp: ${result.data.type_label || result.data.type}\nStatus: ${result.data.status}`,
+          '✅ Asset gefunden',
+          `ID: ${asset.warehouse_asset_id || asset.asset_id}\n` +
+          `Typ: ${asset.type_label || asset.type}\n` +
+          `Status: ${asset.status}` +
+          matchInfo +
+          (asset.tenant_name ? `\nKunde: ${asset.tenant_name}` : '') +
+          (asset.location_name ? `\nStandort: ${asset.location_name}` : ''),
           [
-            { text: 'Details', onPress: () => navigation.navigate('Assets', { assetId: result.data.asset_id }) },
+            { text: 'Details', onPress: () => navigation.navigate('Assets', { assetId: asset.asset_id }) },
             { text: 'Weiter scannen', onPress: () => setScanned(false) },
           ]
         );
       } else {
         Alert.alert(
-          'Code gescannt',
-          `Code: ${data}\nTyp: ${type}`,
+          '⚠️ Kein Asset gefunden',
+          `Gescannter Code: ${data}\nCode-Typ: ${type}\n\nDieser Code ist keinem Asset zugeordnet.`,
           [
-            { text: 'Neues Asset anlegen', onPress: () => {} },
+            { text: 'In Assets suchen', onPress: () => navigation.navigate('Assets', { searchQuery: data }) },
             { text: 'Weiter scannen', onPress: () => setScanned(false) },
           ]
         );
@@ -65,8 +74,8 @@ const ScannerScreen = ({ navigation }) => {
     } catch (error) {
       console.error('Scan error:', error);
       Alert.alert(
-        'Code gescannt',
-        `Code: ${data}`,
+        '❌ Fehler',
+        `Code: ${data}\nFehler bei der Suche: ${error.message}`,
         [{ text: 'OK', onPress: () => setScanned(false) }]
       );
     } finally {
