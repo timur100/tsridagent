@@ -178,7 +178,7 @@ const DashboardScreen = ({ navigation }) => {
         <QuickAction icon="📷" label="Scannen" onPress={() => navigation.navigate('Scanner')} />
         <QuickAction icon="📦" label="Assets" onPress={() => navigation.navigate('Assets')} />
         <QuickAction icon="🏷️" label="Labels" onPress={() => navigation.navigate('Settings')} />
-        <QuickAction icon="📍" label="Standorte" onPress={() => navigation.navigate('Assets')} />
+        <QuickAction icon="📍" label="Standorte" onPress={() => navigation.navigate('Locations')} />
       </View>
 
       {/* Main Stats - Devices */}
