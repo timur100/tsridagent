@@ -11,6 +11,7 @@ import DashboardScreen from '../screens/DashboardScreen';
 import ScannerScreen from '../screens/ScannerScreen';
 import AssetsScreen from '../screens/AssetsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import LocationsScreen from '../screens/LocationsScreen';
 
 // Simple icon components (Lucide-style)
 const IconHome = ({ color, size }) => (
@@ -28,6 +29,12 @@ const IconScan = ({ color, size }) => (
 const IconBox = ({ color, size }) => (
   <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
     <Text style={{ color, fontSize: size * 0.8 }}>📦</Text>
+  </View>
+);
+
+const IconLocation = ({ color, size }) => (
+  <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+    <Text style={{ color, fontSize: size * 0.8 }}>📍</Text>
   </View>
 );
 
