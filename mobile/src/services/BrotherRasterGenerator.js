@@ -277,14 +277,13 @@ function drawFilledSquare(bitmap, rowBytes, width, x, y, size) {
 }
 
 /**
- * Set a pixel in the bitmap (1 = black) - CORRECT ORIENTATION for Brother
- * Brother QL prints from RIGHT to LEFT, so we need to mirror horizontally
+ * Set a pixel in the bitmap (1 = black) - NO MIRRORING
+ * Mirroring is handled at the row level when sending data
  */
 function setPixel(bitmap, rowBytes, width, x, y) {
-  // Mirror X coordinate for correct printing orientation
-  const mirroredX = width - 1 - x;
-  const byteIdx = y * rowBytes + Math.floor(mirroredX / 8);
-  const bitIdx = 7 - (mirroredX % 8);
+  // Normal pixel placement (no mirroring)
+  const byteIdx = y * rowBytes + Math.floor(x / 8);
+  const bitIdx = 7 - (x % 8);
   if (byteIdx >= 0 && byteIdx < bitmap.length) {
     bitmap[byteIdx] |= (1 << bitIdx);
   }
