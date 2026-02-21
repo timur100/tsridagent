@@ -245,6 +245,11 @@ const AssetsScreen = ({ navigation, route }) => {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Multi-select state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedAssets, setSelectedAssets] = useState([]);
+  const [printQueueVisible, setPrintQueueVisible] = useState(false);
 
   useEffect(() => {
     loadAssets();
