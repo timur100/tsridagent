@@ -139,13 +139,21 @@ const DashboardScreen = ({ navigation }) => {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
     >
-      {/* Compact Header */}
+      {/* Compact Header with Tenant Info */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.greeting}>Hallo, {user?.name?.split(' ')[0] || 'Benutzer'}</Text>
           <StatusBadge status={serverStatus} label={serverStatus === 'online' ? 'Online' : 'Offline'} />
         </View>
       </View>
+      
+      {/* Current Tenant Info */}
+      {currentTenant && (
+        <View style={styles.tenantBar}>
+          <Text style={styles.tenantLabel}>🏢 Aktiver Tenant:</Text>
+          <Text style={styles.tenantName}>{currentTenant}</Text>
+        </View>
+      )}
 
       {/* Quick Actions */}
       <View style={styles.quickActions}>
