@@ -265,6 +265,24 @@ export const dashboardAPI = {
   },
 };
 
+// Tenants API
+export const tenantsAPI = {
+  getAll: async () => {
+    try {
+      const response = await api.get('/api/tenants/list');
+      return response.data;
+    } catch (error) {
+      console.log('Tenants list error, trying alt endpoint');
+      try {
+        const response = await api.get('/api/portal/tenants');
+        return response.data;
+      } catch (e) {
+        return { tenants: [] };
+      }
+    }
+  },
+};
+
 // Health/Status API
 export const healthAPI = {
   check: async () => {
