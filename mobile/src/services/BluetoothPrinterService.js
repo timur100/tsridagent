@@ -441,17 +441,31 @@ class BluetoothPrinterService {
    */
   setupDisconnectListener() {
     if (this.disconnectSubscription) {
-      this.disconnectSubscription.remove();
+      try {
+        this.disconnectSubscription.remove();
+      } catch (e) {
+        console.log('Error removing disconnect subscription:', e);
+      }
+      this.disconnectSubscription = null;
     }
     
     if (this.connectedDevice?.address) {
-      this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(
-        this.connectedDevice.address,
-        (device) => {
-          console.log(`Device ${device?.name || 'unknown'} disconnected`);
-          // Don't clear connectedDevice immediately - allow reconnection
-        }
-      );
+      try {
+        // react-native-bluetooth-classic uses a different API
+        // The callback should be the only argument for the subscription
+        this.disconnectSubscription = RNBluetoothClassic.onDeviceDisconnected(
+          (event) => {
+            console.log('Device disconnected event:', event);
+            if (event?.device?.address === this.connectedDevice?.address) {
+              console.log(`Device ${event?.device?.name || 'unknown'} disconnected`);
+              // Don't clear connectedDevice immediately - allow reconnection
+            }
+          }
+        );
+      } catch (e) {
+        console.log('Error setting up disconnect listener:', e);
+        // Continue without listener - not critical
+      }
     }
   }
 
