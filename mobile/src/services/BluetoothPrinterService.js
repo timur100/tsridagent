@@ -649,6 +649,11 @@ class BluetoothPrinterService {
           dataStr = data;
         }
         
+        // Ensure RNBluetoothClassic is available
+        if (!RNBluetoothClassic) {
+          throw new Error('Bluetooth Classic ist nicht verfügbar.');
+        }
+        
         // Send in chunks with proper pacing for Brother
         const chunkSize = 1024; // Smaller chunks for stability
         for (let i = 0; i < dataStr.length; i += chunkSize) {
@@ -679,6 +684,7 @@ class BluetoothPrinterService {
         // Re-verify connection after print (Brother printers sometimes disconnect)
         setTimeout(async () => {
           try {
+            if (!RNBluetoothClassic) return;
             const stillConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
             if (!stillConnected && this.connectedDevice) {
               console.log('Reconnecting after print job...');
