@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,11 @@ import {
   Modal,
   ScrollView,
   TextInput,
+  Vibration,
 } from 'react-native';
 import { locationsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import { useWebSocket, useRealtimeUpdates } from '../contexts/WebSocketContext';
 import theme from '../utils/theme';
 
 // Location Detail Modal
