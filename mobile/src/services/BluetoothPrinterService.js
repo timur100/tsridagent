@@ -203,9 +203,24 @@ class BluetoothPrinterService {
    */
   async isBluetoothEnabled() {
     try {
-      return await RNBluetoothClassic.isBluetoothEnabled();
+      // Try Bluetooth Classic first if available
+      if (RNBluetoothClassic) {
+        const enabled = await RNBluetoothClassic.isBluetoothEnabled();
+        return enabled;
+      }
+      
+      // Fallback to BLE state check
+      const state = await this.bleManager.state();
+      return state === BleState.PoweredOn;
     } catch (error) {
-      return false;
+      console.log('Bluetooth check error:', error.message);
+      // Try BLE as fallback
+      try {
+        const state = await this.bleManager.state();
+        return state === BleState.PoweredOn;
+      } catch (e) {
+        return false;
+      }
     }
   }
 
@@ -214,8 +229,14 @@ class BluetoothPrinterService {
    */
   async requestBluetoothEnabled() {
     try {
-      return await RNBluetoothClassic.requestBluetoothEnabled();
+      if (RNBluetoothClassic) {
+        return await RNBluetoothClassic.requestBluetoothEnabled();
+      }
+      // For BLE, we can't programmatically enable, just check state
+      const state = await this.bleManager.state();
+      return state === BleState.PoweredOn;
     } catch (error) {
+      console.log('Request BT enable error:', error.message);
       return false;
     }
   }
