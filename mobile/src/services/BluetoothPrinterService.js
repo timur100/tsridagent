@@ -886,8 +886,7 @@ class BluetoothPrinterService {
     
     if (this.connectedDevice.type === 'brother') {
       // Brother: Generate raster graphics with barcode
-      const { createLocationLabel } = require('./BrotherRasterGenerator');
-      data = await createLocationLabel(location);
+      data = await createBrotherLocationLabel(location);
       console.log('Brother raster location label generated, length:', data.length, 'bytes');
     } else {
       // Zebra ZPL for location label
