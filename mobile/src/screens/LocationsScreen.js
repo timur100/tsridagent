@@ -160,9 +160,14 @@ const LocationsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header with Tenant Info */}
       <View style={styles.header}>
-        <Text style={styles.title}>Standorte</Text>
+        <View>
+          <Text style={styles.title}>Standorte</Text>
+          {user?.tenant_name && (
+            <Text style={styles.tenantLabel}>{user.tenant_name}</Text>
+          )}
+        </View>
         <Text style={styles.count}>{locations.length} Standorte</Text>
       </View>
 
