@@ -38,8 +38,8 @@ const QuickAction = ({ icon, label, onPress }) => (
   </TouchableOpacity>
 );
 
-// Burger Menu Modal
-const BurgerMenu = ({ visible, onClose, navigation, user, onLogout }) => (
+// Burger Menu Modal - Exportiert für andere Screens
+export const BurgerMenu = ({ visible, onClose, navigation, user, onLogout }) => (
   <Modal visible={visible} animationType="slide" transparent>
     <TouchableOpacity style={styles.menuOverlay} onPress={onClose} activeOpacity={1}>
       <View style={styles.menuContainer}>
