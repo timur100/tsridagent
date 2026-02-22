@@ -302,7 +302,7 @@ export async function createLocationLabel(location) {
     }
   }
   
-  d.push(0x1A);
+  d.push(0x1B, 0x1A, 0x0C); // Print command with feeding: ESC SUB FF
   return new Uint8Array(d);
 }
 
@@ -383,7 +383,7 @@ export async function createDeviceLabel(device) {
     }
   }
   
-  d.push(0x1A);
+  d.push(0x1B, 0x1A, 0x0C); // Print command with feeding: ESC SUB FF
   return new Uint8Array(d);
 }
 
