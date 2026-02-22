@@ -193,22 +193,7 @@ const LocationCard = ({ location, onPress }) => {
             {location.postal_code || ''} {location.city || '-'}
           </Text>
         </View>
-        <View style={styles.detailsRight}>
-          <Text style={styles.deviceCount}>
-            {onlineCount}/{deviceCount} Geräte
-          </Text>
-        </View>
       </View>
-    </TouchableOpacity>
-  );
-};>
-          <Text style={styles.deviceCount}>
-            {onlineCount}/{deviceCount} Geräte
-          </Text>
-        </View>
-      </View>
-      
-      <Text style={styles.cardArrow}>›</Text>
     </TouchableOpacity>
   );
 };
