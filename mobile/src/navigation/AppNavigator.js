@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
 
 // Screens
 import LoginScreen from '../screens/LoginScreen';
-import DashboardScreen from '../screens/DashboardScreen';
+import DashboardScreen, { BurgerMenu } from '../screens/DashboardScreen';
 import ScannerScreen from '../screens/ScannerScreen';
 import AssetsScreen from '../screens/AssetsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -48,84 +48,175 @@ const IconSettings = ({ color, size }) => (
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Custom Header with Burger Menu
+const CustomHeader = ({ title, navigation, showMenu, onMenuPress }) => (
+  <View style={{
+    backgroundColor: theme.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    height: 44,
+  }}>
+    <Text style={{ 
+      color: '#fff', 
+      fontSize: 16, 
+      fontWeight: '600',
+    }} numberOfLines={1}>
+      {title}
+    </Text>
+    {showMenu && (
+      <TouchableOpacity onPress={onMenuPress} style={{ padding: 4 }}>
+        <Text style={{ fontSize: 22, color: '#fff' }}>☰</Text>
+      </TouchableOpacity>
+    )}
+  </View>
+);
+
 // Main Tab Navigator (after login)
 const MainTabs = () => {
+  const { user, logout } = useAuth();
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const handleLogout = async () => {
+    setMenuVisible(false);
+    await logout();
+  };
+
+  // Screen options generator with burger menu
+  const getScreenOptions = (title, IconComponent, navigation) => ({
+    title,
+    tabBarIcon: ({ color, size }) => <IconComponent color={color} size={size} />,
+    header: () => (
+      <CustomHeader 
+        title={title} 
+        navigation={navigation}
+        showMenu={true}
+        onMenuPress={() => setMenuVisible(true)}
+      />
+    ),
+  });
+
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.border,
-          height: 56,
-          paddingBottom: 6,
-        },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.textMuted,
-        headerStyle: {
-          backgroundColor: theme.colors.primary,
-          height: 50, // Smaller header
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 16,
-        },
-        headerStatusBarHeight: 0, // Reduce status bar padding
-      }}
-    >
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardScreen}
-        options={{
-          title: 'Dashboard',
-          tabBarIcon: ({ color, size }) => <IconHome color={color} size={size} />,
-        }}
+    <>
+      <Tab.Navigator
+        screenOptions={({ navigation }) => ({
+          tabBarStyle: {
+            backgroundColor: theme.colors.surface,
+            borderTopColor: theme.colors.border,
+            height: 56,
+            paddingBottom: 6,
+          },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.colors.textMuted,
+          headerShown: true,
+        })}
+      >
+        <Tab.Screen
+          name="Dashboard"
+          component={DashboardScreen}
+          options={({ navigation }) => ({
+            title: 'Dashboard',
+            tabBarIcon: ({ color, size }) => <IconHome color={color} size={size} />,
+            headerShown: false, // Dashboard has its own header
+          })}
+        />
+        <Tab.Screen
+          name="Scanner"
+          component={ScannerScreen}
+          options={({ navigation }) => ({
+            title: 'Scanner',
+            tabBarIcon: ({ color, size }) => <IconScan color={color} size={size} />,
+            header: () => (
+              <CustomHeader 
+                title="Scanner" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
+          name="Assets"
+          component={AssetsScreen}
+          options={({ navigation }) => ({
+            title: 'Assets',
+            tabBarIcon: ({ color, size }) => <IconBox color={color} size={size} />,
+            header: () => (
+              <CustomHeader 
+                title="Assets" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
+          name="Locations"
+          component={LocationsScreen}
+          options={({ navigation }) => ({
+            title: 'Standorte',
+            tabBarIcon: ({ color, size }) => <IconLocation color={color} size={size} />,
+            header: () => (
+              <CustomHeader 
+                title="Standorte" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
+          name="GoodsReceipt"
+          component={GoodsReceiptScreen}
+          options={({ navigation }) => ({
+            title: 'Wareneingang',
+            tabBarIcon: ({ color, size }) => (
+              <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color, fontSize: size * 0.8 }}>📥</Text>
+              </View>
+            ),
+            header: () => (
+              <CustomHeader 
+                title="Wareneingang" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={({ navigation }) => ({
+            title: 'Einstellungen',
+            tabBarIcon: ({ color, size }) => <IconSettings color={color} size={size} />,
+            header: () => (
+              <CustomHeader 
+                title="Einstellungen" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+              />
+            ),
+          })}
+        />
+      </Tab.Navigator>
+      
+      {/* Global Burger Menu */}
+      <BurgerMenu 
+        visible={menuVisible} 
+        onClose={() => setMenuVisible(false)}
+        navigation={null}
+        user={user}
+        onLogout={handleLogout}
       />
-      <Tab.Screen
-        name="Scanner"
-        component={ScannerScreen}
-        options={{
-          title: 'Scanner',
-          tabBarIcon: ({ color, size }) => <IconScan color={color} size={size} />,
-        }}
-      />
-      <Tab.Screen
-        name="Assets"
-        component={AssetsScreen}
-        options={{
-          title: 'Assets',
-          tabBarIcon: ({ color, size }) => <IconBox color={color} size={size} />,
-        }}
-      />
-      <Tab.Screen
-        name="Locations"
-        component={LocationsScreen}
-        options={{
-          title: 'Standorte',
-          tabBarIcon: ({ color, size }) => <IconLocation color={color} size={size} />,
-        }}
-      />
-      <Tab.Screen
-        name="GoodsReceipt"
-        component={GoodsReceiptScreen}
-        options={{
-          title: 'Wareneingang',
-          tabBarIcon: ({ color, size }) => (
-            <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-              <Text style={{ color, fontSize: size * 0.8 }}>📥</Text>
-            </View>
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
-        options={{
-          title: 'Einstellungen',
-          tabBarIcon: ({ color, size }) => <IconSettings color={color} size={size} />,
-        }}
-      />
-    </Tab.Navigator>
+    </>
   );
 };
 
