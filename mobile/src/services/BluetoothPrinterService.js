@@ -869,6 +869,56 @@ class BluetoothPrinterService {
   }
 
   /**
+   * Print location/station label
+   * Contains station code as barcode for scanning to navigate to the station
+   */
+  async printLocationLabel(location) {
+    if (!this.connectedDevice) {
+      throw new Error('Kein Drucker verbunden');
+    }
+
+    const locationCode = location.location_code || 'N/A';
+    console.log(`Printing location label for ${locationCode}...`);
+    console.log(`Printer type: ${this.connectedDevice.type}`);
+
+    let data;
+    
+    if (this.connectedDevice.type === 'brother') {
+      // Brother: Generate raster graphics with barcode
+      const { createLocationLabel } = require('./BrotherRasterGenerator');
+      data = await createLocationLabel(location);
+      console.log('Brother raster location label generated, length:', data.length, 'bytes');
+    } else {
+      // Zebra ZPL for location label
+      const stationName = (location.station_name || 'N/A').substring(0, 30);
+      const street = (location.street || '-').substring(0, 35);
+      const cityLine = `${location.postal_code || ''} ${location.city || '-'}`.substring(0, 35);
+      const phone = location.phone || '-';
+      const manager = (location.manager || '-').substring(0, 25);
+      
+      data = `^XA
+^CF0,40
+^FO30,20^FD${locationCode}^FS
+^CF0,25
+^FO30,70^FD${stationName}^FS
+^FO30,100^FD${street}^FS
+^FO30,130^FD${cityLine}^FS
+^CF0,20
+^FO30,165^FDTel: ${phone}^FS
+^FO30,190^FDManager: ${manager}^FS
+^FO30,230^BY2^BCN,60,Y,N,N^FD${locationCode}^FS
+^XZ`;
+    }
+
+    const result = await this.sendData(data);
+    if (result.success) {
+      return { success: true, message: 'Standort-Etikett wurde gedruckt' };
+    } else {
+      throw new Error(result.error || 'Druck fehlgeschlagen');
+    }
+  }
+
+  /**
    * Get service status
    */
   async getStatus() {
