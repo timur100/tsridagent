@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     paddingBottom: 30,
-    maxHeight: '80%',
+    maxHeight: '85%',
   },
   menuHeader: {
     flexDirection: 'row',
@@ -483,6 +483,9 @@ const styles = StyleSheet.create({
   menuUserIcon: {
     fontSize: 36,
   },
+  menuUserInfo: {
+    flex: 1,
+  },
   menuUserName: {
     fontSize: 16,
     fontWeight: '600',
@@ -491,6 +494,20 @@ const styles = StyleSheet.create({
   menuUserEmail: {
     fontSize: 12,
     color: theme.colors.textMuted,
+  },
+  menuLogoutSmall: {
+    backgroundColor: `${theme.colors.error}15`,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  menuLogoutSmallText: {
+    fontSize: 12,
+    color: theme.colors.error,
+    fontWeight: '500',
+  },
+  menuScroll: {
+    maxHeight: 350,
   },
   menuDivider: {
     height: 1,
