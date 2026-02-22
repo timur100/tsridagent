@@ -245,6 +245,28 @@ const MainTabs = () => {
           })}
         />
         <Tab.Screen
+          name="GoodsReceipt"
+          component={GoodsReceiptScreen}
+          options={({ navigation }) => ({
+            title: 'Wareneingang',
+            tabBarIcon: ({ color, size }) => (
+              <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color, fontSize: size * 0.8 }}>📥</Text>
+              </View>
+            ),
+            header: () => (
+              <CustomHeader 
+                title="Wareneingang" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
           name="Settings"
           component={SettingsScreen}
           options={({ navigation }) => ({
