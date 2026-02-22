@@ -722,42 +722,40 @@ class BluetoothPrinterService {
           throw new Error('Bluetooth Classic ist nicht verfügbar.');
         }
         
-        // Send in chunks with proper pacing for Brother
-        const chunkSize = 1024; // Smaller chunks for stability
-        for (let i = 0; i < dataStr.length; i += chunkSize) {
-          const chunk = dataStr.slice(i, i + chunkSize);
+        // Send data using the device object if available
+        if (this.connectedDevice.device && typeof this.connectedDevice.device.write === 'function') {
+          // Use device.write() method
+          console.log('Using device.write() method');
+          await this.connectedDevice.device.write(dataStr, 'latin1');
+        } else {
+          // Fallback to writeToDevice
+          console.log('Using writeToDevice() method');
           
-          // Verify connection before each chunk
-          const stillConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
-          if (!stillConnected) {
-            console.log('Connection lost during send, reconnecting...');
-            await RNBluetoothClassic.connectToDevice(this.connectedDevice.address, {
-              connectorType: 'rfcomm',
-              delimiter: '\r\n',
-              charset: 'latin1',
-            });
-          }
-          
-          await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
-          
-          // Delay between chunks for printer to process
-          if (i + chunkSize < dataStr.length) {
-            await new Promise(resolve => setTimeout(resolve, 30));
+          // Send in chunks with proper pacing for Brother
+          const chunkSize = 512; // Smaller chunks for better stability
+          for (let i = 0; i < dataStr.length; i += chunkSize) {
+            const chunk = dataStr.slice(i, i + chunkSize);
+            
+            try {
+              await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
+            } catch (writeError) {
+              console.log('Write error, retrying...', writeError.message);
+              // Wait and retry once
+              await new Promise(resolve => setTimeout(resolve, 200));
+              await RNBluetoothClassic.writeToDevice(this.connectedDevice.address, chunk, 'latin1');
+            }
+            
+            // Delay between chunks for printer to process
+            if (i + chunkSize < dataStr.length) {
+              await new Promise(resolve => setTimeout(resolve, 50));
+            }
           }
         }
         
         // Wait for printer to finish processing
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Re-verify connection after print (Brother printers sometimes disconnect)
-        setTimeout(async () => {
-          try {
-            if (!RNBluetoothClassic) return;
-            const stillConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
-            if (!stillConnected && this.connectedDevice) {
-              console.log('Reconnecting after print job...');
-              await RNBluetoothClassic.connectToDevice(this.connectedDevice.address, {
-                connectorType: 'rfcomm',
+        console.log('Data sent successfully to Brother printer');
                 delimiter: '\r\n',
                 charset: 'latin1',
               });
