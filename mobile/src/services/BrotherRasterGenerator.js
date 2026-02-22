@@ -218,4 +218,142 @@ export async function createAssetLabel(asset) {
   });
 }
 
-export default { createBrotherRasterLabel, createTestLabel, createAssetLabel, LABEL_WIDTH, LABEL_HEIGHT };
+/**
+ * Create location/station label with barcode
+ * Barcode contains location_code for scanning
+ */
+export async function createLocationLabel(location) {
+  const locationCode = location.location_code || 'N/A';
+  const stationName = location.station_name || '-';
+  const street = location.street || '-';
+  const cityLine = `${location.postal_code || ''} ${location.city || ''}`.trim() || '-';
+  const phone = location.phone || '-';
+  const manager = location.manager || '-';
+  const deviceInfo = `Geräte: ${location.device_count || 0}`;
+  
+  const width = LABEL_WIDTH;
+  const height = LABEL_HEIGHT;
+  const bmp = new Uint8Array(Math.ceil(width / 8) * height);
+  const rb = Math.ceil(width / 8);
+  
+  // Helper to set pixel
+  const setPixel = (x, y) => {
+    if (x < 0 || x >= width || y < 0 || y >= height) return;
+    const byteIndex = y * rb + Math.floor(x / 8);
+    const bitIndex = 7 - (x % 8);
+    bmp[byteIndex] |= (1 << bitIndex);
+  };
+  
+  // Draw text using font
+  const drawText = (text, x, y, scale = 1) => {
+    let cx = x;
+    for (const char of text) {
+      const g = F[char.toUpperCase()] || F[' '];
+      if (g) {
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            if (g[row] & (0x80 >> col)) {
+              for (let sy = 0; sy < scale; sy++) {
+                for (let sx = 0; sx < scale; sx++) {
+                  setPixel(cx + col * scale + sx, y + row * scale + sy);
+                }
+              }
+            }
+          }
+        }
+      }
+      cx += 8 * scale + scale;
+    }
+  };
+  
+  // Generate barcode (Code128-like pattern for location_code)
+  const generateBarcode = (text, startX, startY, height, moduleWidth = 2) => {
+    // Simple barcode pattern - alternating bars based on character values
+    let x = startX;
+    
+    // Start pattern
+    for (let i = 0; i < 3; i++) {
+      for (let w = 0; w < moduleWidth; w++) {
+        for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+      }
+      x += moduleWidth * 2;
+    }
+    
+    // Encode each character
+    for (const char of text) {
+      const code = char.charCodeAt(0);
+      // Create bar pattern based on character code
+      for (let bit = 7; bit >= 0; bit--) {
+        const isBar = (code >> bit) & 1;
+        if (isBar) {
+          for (let w = 0; w < moduleWidth; w++) {
+            for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+          }
+        }
+        x += moduleWidth;
+      }
+    }
+    
+    // End pattern
+    for (let i = 0; i < 3; i++) {
+      for (let w = 0; w < moduleWidth; w++) {
+        for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+      }
+      x += moduleWidth * 2;
+    }
+  };
+  
+  // Layout:
+  // Row 1: Location Code (large) - scale 4
+  drawText(locationCode.substring(0, 10), 10, 5, 4);
+  
+  // Row 2: Station Name - scale 2
+  drawText(stationName.substring(0, 30).toUpperCase(), 10, 45, 2);
+  
+  // Row 3: Street - scale 2
+  drawText(street.substring(0, 35).toUpperCase(), 10, 70, 2);
+  
+  // Row 4: City - scale 2
+  drawText(cityLine.substring(0, 35).toUpperCase(), 10, 95, 2);
+  
+  // Row 5: Phone and Manager - scale 1
+  drawText(`TEL: ${phone.substring(0, 20)}`, 10, 120, 1);
+  drawText(`MANAGER: ${manager.substring(0, 15)}`.toUpperCase(), 250, 120, 1);
+  
+  // Row 6: Device count - scale 1
+  drawText(deviceInfo.toUpperCase(), 10, 135, 1);
+  
+  // Barcode at bottom (location_code encoded)
+  generateBarcode(locationCode, 10, 155, 60, 3);
+  
+  // Barcode text below
+  drawText(locationCode, 10, 220, 2);
+  
+  // Build raster data
+  const d = [];
+  d.push(...[0x00].concat(Array(199).fill(0)));
+  d.push(0x1B, 0x40);
+  d.push(0x1B, 0x69, 0x61, 0x01);
+  d.push(0x1B, 0x69, 0x21, 0x00);
+  d.push(0x1B, 0x69, 0x7A, 0x0A, 0x0A, 62, 0, 0, 0, height & 0xFF, (height >> 8) & 0xFF, 0, 0);
+  d.push(0x1B, 0x69, 0x4D, 0x40); // Auto-cut
+  d.push(0x1B, 0x69, 0x41, 0x01);
+  d.push(0x1B, 0x69, 0x4B, 0x08);
+  d.push(0x1B, 0x69, 0x64, 0, 0);
+  
+  // Add raster lines (mirrored)
+  for (let y = 0; y < height; y++) {
+    d.push(0x67, 0x00, rb);
+    for (let bi = rb - 1; bi >= 0; bi--) {
+      let b = bmp[y * rb + bi] || 0;
+      let r = 0;
+      for (let i = 0; i < 8; i++) if (b & (1 << i)) r |= (1 << (7 - i));
+      d.push(r);
+    }
+  }
+  
+  d.push(0x1A);
+  return new Uint8Array(d);
+}
+
+export default { createBrotherRasterLabel, createTestLabel, createAssetLabel, createLocationLabel, LABEL_WIDTH, LABEL_HEIGHT };
