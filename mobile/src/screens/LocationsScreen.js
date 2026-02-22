@@ -196,8 +196,8 @@ const LocationsScreen = ({ navigation }) => {
     try {
       // Load tenant-specific locations
       let result;
-      if (user?.tenant_id) {
-        result = await locationsAPI.getByTenant(user.tenant_id);
+      if (tenantId) {
+        result = await locationsAPI.getByTenant(tenantId);
       } else {
         result = await locationsAPI.getAll();
       }
