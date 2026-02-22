@@ -81,7 +81,7 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{device.device_id || device.deviceId}</Text>
+            <Text style={styles.modalTitle}>{device.device_id || '-'}</Text>
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>✕</Text>
             </TouchableOpacity>
@@ -94,31 +94,34 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
             
             <View style={styles.modalSection}>
               <Text style={styles.sectionTitle}>Standort</Text>
-              <Text style={styles.modalValue}>{device.location_code || device.location || '-'}</Text>
-              <Text style={styles.modalSubValue}>{device.street || device.strasse || '-'}</Text>
+              <Text style={styles.modalValue}>{device.locationcode || device.location_code || '-'}</Text>
+              <Text style={styles.modalSubValue}>{device.street || '-'}</Text>
               <Text style={styles.modalSubValue}>
-                {device.zip || device.plz || ''} {device.city || device.stadt || '-'}
+                {device.zip || ''} {device.city || '-'}
               </Text>
-              <Text style={styles.modalSubValue}>{device.country || device.land || 'Deutschland'}</Text>
             </View>
             
             <View style={styles.modalSection}>
               <Text style={styles.sectionTitle}>Geräteinformationen</Text>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Seriennummer:</Text>
-                <Text style={styles.infoValue}>{device.serial_number || device.sn_pc || '-'}</Text>
+                <Text style={styles.infoLabel}>Device-ID:</Text>
+                <Text style={styles.infoValue}>{device.device_id || '-'}</Text>
               </View>
               <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>MAC-Adresse:</Text>
+                <Text style={styles.infoLabel}>SN-PC:</Text>
+                <Text style={styles.infoValue}>{device.sn_pc || '-'}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>SN-SC:</Text>
+                <Text style={styles.infoValue}>{device.sn_sc || '-'}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>TV-ID:</Text>
+                <Text style={styles.infoValue}>{device.teamviewer_id || device.tv_id || '-'}</Text>
+              </View>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>MAC:</Text>
                 <Text style={styles.infoValue}>{device.mac_address || '-'}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>IMEI:</Text>
-                <Text style={styles.infoValue}>{device.imei || '-'}</Text>
-              </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Typ:</Text>
-                <Text style={styles.infoValue}>{device.device_type || device.type || '-'}</Text>
               </View>
             </View>
             
