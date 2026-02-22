@@ -4,112 +4,97 @@
 Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Assets, Etikettendruck über Bluetooth (Brother QL-820NWB / Zebra), und Barcode-Scanning.
 
 ## Aktuelle Version
-- **Version:** 2.1.0
-- **Status:** In Entwicklung (Änderungen am 22. Februar 2026)
-- **Letzter APK Download:** https://expo.dev/artifacts/eas/isreH9DCRwHsuTkFudvz69.apk (V10)
+- **Version:** 2.2.0
+- **Status:** Build in Arbeit (22. Februar 2026)
+- **Letzter APK Build:** https://expo.dev/accounts/timur100/projects/tsrid-mobile/builds/2913f4fc-0524-4a9f-afeb-385622e57981
 
-## Letzte Änderungen (22.02.2026)
+## Änderungen in V2.2.0 (22.02.2026)
 
-### Implementiert (Code-Änderungen, kein neuer Build)
-1. **API-Endpunkte korrigiert:**
-   - `locationsAPI` verwendet jetzt `/api/tenant-locations/{tenant_id}` statt veralteter Endpunkte
-   - `devicesAPI` verwendet jetzt `/api/tenant-devices/{tenant_id}` mit korrekter Response-Struktur
-   
-2. **LocationsScreen verbessert:**
-   - Neue tabellenartige Darstellung mit Spalten: Online-Status, Status, Code, Stationsname
-   - Suchfunktion hinzugefügt
-   - Filter nach Online/Offline Status
-   - Statistik-Karten (Gesamt, Online, Offline)
-   - Korrekte Feldnamen aus Backend (station_name, location_code, postal_code, etc.)
-   
-3. **DevicesScreen verbessert:**
-   - Korrekte Backend-Feldnamen (device_id, locationcode, sn_pc, sn_sc, etc.)
-   - Backend-Summary-Stats werden verwendet
-   - Verbesserte Such- und Filterfunktionen
-   
-4. **Tenant-ID Unterstützung:**
-   - Screens unterstützen jetzt sowohl `tenant_id` (singular) als auch `tenant_ids` (array)
-   - Erster tenant_id aus dem Array wird automatisch verwendet
+### Implementiert
+1. **Fix: Label-Druck (P0) - Korrekter Print-Befehl:**
+   - Problem: Drucker zeigte "Receiving Data..." aber druckte nicht
+   - Ursache: Falscher Beendigungsbefehl (`0x1A` allein)
+   - Lösung: Korrekter Brother Raster-Befehl `ESC SUB FF` (`0x1B 0x1A 0x0C`) implementiert
+   - Geänderte Dateien:
+     - `BrotherRasterGenerator.js`: `createBrotherRasterLabel`, `createLocationLabel`, `createDeviceLabel`
 
-### Status der beantragten Aufgaben
-- ✅ **Standorte (LocationsScreen):** Code-Änderungen abgeschlossen, wartet auf Build + Test
-- ✅ **Geräte-Bildschirm (DevicesScreen):** Code-Änderungen abgeschlossen, wartet auf Build + Test  
-- ✅ **Online-Status auf allen Seiten:** Bereits implementiert in CustomHeader im AppNavigator
+2. **Assets-Screen Debugging hinzugefügt:**
+   - Console.log-Ausgaben zur Diagnose des leeren Bildschirms
+   - API-Response-Logging für bessere Fehleranalyse
 
-## Implementierte Features
+## Bekannte Probleme (Priorisiert)
+
+### P1 - Assets-Screen ist leer (Regression)
+- **Beschreibung:** Benutzer meldet "Assets erscheinen nicht mehr"
+- **Status:** Debugging-Logs hinzugefügt, wartet auf APK-Test
+- **Debug-Checklist:**
+  1. APK bauen und installieren
+  2. Logs in Console prüfen (`[AssetsScreen] ...`)
+  3. API-Response-Struktur verifizieren
+
+### P2 - Echtzeit-Updates funktionieren nicht automatisch
+- **Beschreibung:** Daten aktualisieren sich nicht ohne manuellen Refresh
+- **Status:** WebSocket + Polling-Fallback (30s) implementiert
+- **Nächste Schritte:**
+  1. WebSocket-Verbindung in App-Logs überprüfen
+  2. Backend-WebSocket-Events verifizieren
+
+### P3 - Brother Drucker Verbindungsfehler
+- **Beschreibung:** `java.io.IOException` bei Verbindung
+- **Status:** Niedrige Priorität, wartet auf P0-Bestätigung
+
+## Implementierte Features (Alle Versionen)
 
 ### APK V10 (21.02.2026)
-- **Fix: Scanner-Erweiterung** - Erkennt jetzt zusätzlich zu Asset-IDs auch:
-  - Seriennummern (SN)
-  - MAC-Adressen (inkl. WiFi, Bluetooth)
-  - IMEI / IMEI2
-  - EID
-  - SIM-Nummern
-- **Fix: Spiegelverkehrter Druck** - Raster-Daten werden jetzt horizontal gespiegelt
-- **Fix: Bluetooth-Verbindungsstabilität** - Verbesserte Reconnection-Logik
-- **Verbesserung: Match-Typ-Anzeige** - Scanner zeigt an, über welchen Identifier das Asset gefunden wurde
+- Scanner-Erweiterung: SN, MAC, IMEI, EID, SIM
+- Spiegelverkehrter Druck behoben
+- Bluetooth-Verbindungsstabilität verbessert
 
-### Frühere Versionen (V1-V9)
-- Authentifizierung gegen Backend
-- Dashboard mit System-Statistiken
-- Asset-Liste mit Filterung und Suche
-- Asset-Details mit umfangreichen Informationen
-- Scanner mit Kamera (QR, Barcode)
-- Bluetooth-Integration (BLE für Zebra, Classic für Brother)
-- Brother QL-820NWB Raster-Druck-Protokoll
-- Label-Format- und Template-Auswahl in Einstellungen
-- Asset-Label-Druck (TSRID Standard-Format)
+### Frühere Features
+- Authentifizierung, Dashboard, Asset-Liste
+- Scanner mit Kamera
+- Brother QL-820NWB Raster-Druck
+- Label-Format- und Template-Auswahl
+- WebSocket für Echtzeit-Updates
+- Anruf-Button (funktioniert)
+- Navigations-Button (funktioniert)
 
 ## Code-Architektur
 ```
 /app/mobile/
 ├── src/
-│   ├── navigation/
-│   │   └── AppNavigator.js          # Tab-Navigation mit CustomHeader
 │   ├── screens/
-│   │   ├── DashboardScreen.js       # Statistiken, Burger-Menu
-│   │   ├── DevicesScreen.js         # Geräteliste (aktualisiert)
-│   │   ├── LocationsScreen.js       # Standortliste (aktualisiert)
-│   │   ├── AssetsScreen.js
-│   │   ├── ScannerScreen.js
-│   │   ├── SettingsScreen.js
-│   │   └── LoginScreen.js
+│   │   ├── AssetsScreen.js       # P1-Bug (leer)
+│   │   ├── DevicesScreen.js      # Funktioniert
+│   │   ├── LocationsScreen.js    # Funktioniert
+│   │   └── ...
 │   ├── services/
-│   │   ├── api.js                   # Backend-Kommunikation (aktualisiert)
+│   │   ├── BrotherRasterGenerator.js  # P0-Fix implementiert
 │   │   ├── BluetoothPrinterService.js
-│   │   ├── BrotherRasterGenerator.js
-│   │   └── BrotherPrinterConfig.js
-│   ├── contexts/
-│   │   └── AuthContext.js
-│   └── utils/
-│       └── theme.js
-├── app.json
-├── eas.json
-└── package.json
+│   │   └── WebSocketService.js
+│   └── contexts/
+│       ├── AuthContext.js
+│       └── WebSocketContext.js
+└── app.json (v2.2.0, versionCode 18)
 ```
 
-## Bekannte Probleme / Offene Punkte
-
-### Nächster Build erforderlich
-1. **LocationsScreen/DevicesScreen Änderungen** - Code ist fertig, APK Build erforderlich
-2. **Brother Drucker Verbindungsfehler** - `java.io.IOException` beim Koppeln (P1)
-
-### Ausstehende Features (P2)
-- Nachbestellungs-Funktion
-- Offline-Modus
-- DataWedge-Integration für Hardware-Scanner
-
 ## Backend API Endpunkte
-
 | Endpunkt | Beschreibung |
 |----------|--------------|
 | `/api/portal/auth/login` | Authentifizierung |
-| `/api/tenant-locations/{tenant_id}` | Standorte eines Tenants |
-| `/api/tenant-devices/{tenant_id}` | Geräte eines Tenants |
-| `/api/asset-mgmt/assets` | Asset-Verwaltung |
-| `/api/tenants/stats` | Dashboard-Statistiken |
+| `/api/asset-mgmt/assets` | Assets (funktioniert) |
+| `/api/tenant-locations/{tenant_id}` | Standorte |
+| `/api/tenant-devices/{tenant_id}` | Geräte |
 | `/api/health` | Health-Check |
 
-## Test-Credentials
-- Web-Portal: admin@tsrid.com / admin123
-- Expo Account: timur100 (via EXPO_TOKEN)
+## Test-Workflow
+1. APK bauen: `eas build --platform android --profile preview`
+2. APK auf TC78 installieren
+3. App testen, Logs sammeln
+4. Feedback an Entwicklung
+
+## Nächste Schritte
+1. APK-Build abwarten
+2. Benutzer testet Label-Druck (P0)
+3. Falls P0 funktioniert: P1 (Assets) debuggen
+4. WebSocket-Verbindung prüfen (P2)
