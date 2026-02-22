@@ -187,6 +187,20 @@ const LocationsScreen = ({ navigation }) => {
   // Get tenant_id (support both single and array format)
   const tenantId = user?.tenant_id || (user?.tenant_ids && user?.tenant_ids[0]) || null;
 
+  // Handle realtime location updates
+  const handleLocationUpdate = useCallback((data) => {
+    console.log('[LocationsScreen] Realtime update received:', data);
+    
+    // Vibrate to indicate update
+    Vibration.vibrate(100);
+    
+    // Reload locations to get fresh data
+    loadLocations();
+  }, [tenantId]);
+
+  // Subscribe to realtime updates
+  useRealtimeUpdates('location_update', handleLocationUpdate);
+
   useEffect(() => {
     loadLocations();
   }, [tenantId]);
