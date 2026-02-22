@@ -223,9 +223,8 @@ function createRasterCommands(bitmap, width, height, autoCut = true) {
     commands.push(0x00);      // Compression indicator (0 = uncompressed)
     commands.push(bytesPerRow); // 87 bytes (0x57)
     
-    // Brother erwartet die Daten von rechts nach links (gespiegelt)
-    // und MSB = linkstes Pixel
-    for (let byteIdx = bytesPerRow - 1; byteIdx >= 0; byteIdx--) {
+    // Bytes von LINKS nach RECHTS senden (normal, nicht gespiegelt)
+    for (let byteIdx = 0; byteIdx < bytesPerRow; byteIdx++) {
       // Hole Byte aus Bitmap (oder 0 wenn außerhalb)
       const srcIdx = y * srcBytesPerRow + byteIdx;
       commands.push(srcIdx < bitmap.length ? bitmap[srcIdx] : 0);
