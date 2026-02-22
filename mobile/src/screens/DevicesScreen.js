@@ -98,7 +98,7 @@ const DeviceCard = ({ device, onPress }) => {
 };
 
 // Device Detail Modal - Fullscreen
-const DeviceDetailModal = ({ visible, device, onClose }) => {
+const DeviceDetailModal = ({ visible, device, onClose, onPrintLabel }) => {
   if (!device) return null;
   
   const phone = device.phone || device.telefon || null;
@@ -115,12 +115,34 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
         </View>
         
         <ScrollView style={styles.fullscreenContent}>
-          {/* Status Card */}
+          {/* Status Card with Actions */}
           <View style={styles.statusCard}>
             <StatusBadge status={device.status} />
             <Text style={styles.statusCardText}>
               {device.status?.toLowerCase() === 'online' ? 'Gerät ist online' : 'Gerät ist offline'}
             </Text>
+          </View>
+          
+          {/* Action Buttons */}
+          <View style={styles.actionButtonsRow}>
+            {/* Call Button */}
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.actionButtonCall, !phone && styles.actionButtonDisabled]}
+              onPress={() => phone && makePhoneCall(phone)}
+              disabled={!phone}
+            >
+              <Text style={styles.actionButtonIcon}>📞</Text>
+              <Text style={styles.actionButtonText}>Anrufen</Text>
+            </TouchableOpacity>
+            
+            {/* Print Label Button */}
+            <TouchableOpacity 
+              style={[styles.actionButton, styles.actionButtonPrint]}
+              onPress={() => onPrintLabel && onPrintLabel(device)}
+            >
+              <Text style={styles.actionButtonIcon}>🏷️</Text>
+              <Text style={styles.actionButtonText}>Label drucken</Text>
+            </TouchableOpacity>
           </View>
           
           {/* Location Section */}
@@ -134,20 +156,6 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
               </Text>
             </View>
           </View>
-          
-          {/* Phone Section */}
-          {phone && (
-            <View style={styles.fullscreenSection}>
-              <Text style={styles.fullscreenSectionTitle}>📞 Kontakt</Text>
-              <TouchableOpacity 
-                style={styles.phoneButton}
-                onPress={() => makePhoneCall(phone)}
-              >
-                <Text style={styles.phoneButtonText}>{phone}</Text>
-                <Text style={styles.phoneButtonIcon}>Anrufen →</Text>
-              </TouchableOpacity>
-            </View>
-          )}
           
           {/* Device Info Section */}
           <View style={styles.fullscreenSection}>
@@ -173,6 +181,12 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
                 <Text style={styles.infoGridLabel}>MAC-Adresse</Text>
                 <Text style={styles.infoGridValue}>{device.mac_address || '-'}</Text>
               </View>
+              {phone && (
+                <View style={styles.infoGridRow}>
+                  <Text style={styles.infoGridLabel}>Telefon</Text>
+                  <Text style={styles.infoGridValue}>{phone}</Text>
+                </View>
+              )}
             </View>
           </View>
           
