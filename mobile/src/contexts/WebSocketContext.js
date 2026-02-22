@@ -158,6 +158,12 @@ export const WebSocketProvider = ({ children }) => {
     }
   }, [tenantId]);
 
+  // Force manual refresh
+  const triggerRefresh = useCallback(() => {
+    console.log('[WS Context] Manual refresh triggered');
+    setPollTrigger(prev => prev + 1);
+  }, []);
+
   const value = {
     isConnected,
     lastUpdate,
@@ -165,6 +171,8 @@ export const WebSocketProvider = ({ children }) => {
     subscribe,
     requestUpdate,
     reconnect,
+    triggerRefresh,
+    pollTrigger, // Screens can watch this to know when to refresh
     tenantId,
   };
 
@@ -197,6 +205,27 @@ export const useRealtimeUpdates = (eventType, callback) => {
     const unsubscribe = subscribe(eventType, callback);
     return unsubscribe;
   }, [eventType, callback, subscribe]);
+};
+
+/**
+ * Hook für Auto-Polling-Updates
+ * Wird alle 30 Sekunden getriggert und bei WebSocket-Events
+ */
+export const usePollingUpdates = (callback) => {
+  const { pollTrigger } = useWebSocket();
+  const callbackRef = useRef(callback);
+  
+  // Update callback ref when callback changes
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+  
+  // Trigger callback when pollTrigger changes
+  useEffect(() => {
+    if (pollTrigger > 0) {
+      callbackRef.current?.();
+    }
+  }, [pollTrigger]);
 };
 
 export default WebSocketContext;
