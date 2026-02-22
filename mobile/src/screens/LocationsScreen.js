@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { locationsAPI } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
 
 // Location Detail Modal
