@@ -194,10 +194,15 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Compact Header with Online Status and Burger Menu */}
+      {/* Compact Header with Tenant, Online Status and Burger Menu */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <Text style={styles.headerTitle}>Dashboard</Text>
+          <View style={styles.headerLeft}>
+            <Text style={styles.headerTitle}>Dashboard</Text>
+            {user?.tenant_name && (
+              <Text style={styles.tenantName}>{user.tenant_name}</Text>
+            )}
+          </View>
           <View style={styles.headerRight}>
             <View style={[styles.statusBadge, { backgroundColor: serverStatus === 'online' ? '#22c55e20' : '#f59e0b20' }]}>
               <View style={[styles.statusDot, { backgroundColor: serverStatus === 'online' ? '#22c55e' : '#f59e0b' }]} />
@@ -218,30 +223,43 @@ const DashboardScreen = ({ navigation }) => {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.primary} />}
         showsVerticalScrollIndicator={false}
       >
-        {/* Main Device Stats - Large */}
+        {/* Main Device Stats - Large - CLICKABLE */}
         <View style={styles.mainStats}>
-          <View style={styles.mainStatCard}>
+          <TouchableOpacity 
+            style={styles.mainStatCard} 
+            onPress={() => navigation.navigate('Assets')}
+            activeOpacity={0.8}
+          >
             <Text style={styles.mainStatIcon}>📦</Text>
             <Text style={styles.mainStatValue}>{stats.total_devices}</Text>
             <Text style={styles.mainStatLabel}>Geräte</Text>
-          </View>
+          </TouchableOpacity>
           
           <View style={styles.deviceStatusCol}>
-            <View style={styles.deviceStatus}>
+            <TouchableOpacity 
+              style={styles.deviceStatus} 
+              onPress={() => navigation.navigate('Assets', { filter: 'online' })}
+            >
               <View style={[styles.statusIndicator, { backgroundColor: '#22c55e' }]} />
               <Text style={styles.deviceStatusValue}>{stats.online_devices}</Text>
               <Text style={styles.deviceStatusLabel}>Online</Text>
-            </View>
-            <View style={styles.deviceStatus}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.deviceStatus}
+              onPress={() => navigation.navigate('Assets', { filter: 'offline' })}
+            >
               <View style={[styles.statusIndicator, { backgroundColor: '#ef4444' }]} />
               <Text style={styles.deviceStatusValue}>{stats.offline_devices}</Text>
               <Text style={styles.deviceStatusLabel}>Offline</Text>
-            </View>
-            <View style={styles.deviceStatus}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.deviceStatus}
+              onPress={() => navigation.navigate('Assets', { filter: 'vorbereitung' })}
+            >
               <View style={[styles.statusIndicator, { backgroundColor: '#f59e0b' }]} />
               <Text style={styles.deviceStatusValue}>{stats.in_preparation}</Text>
               <Text style={styles.deviceStatusLabel}>Vorbereitung</Text>
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
 
