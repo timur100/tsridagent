@@ -173,8 +173,8 @@ const DevicesScreen = ({ navigation, route }) => {
   const loadDevices = async () => {
     try {
       let result;
-      if (user?.tenant_id) {
-        result = await devicesAPI.getByTenant(user.tenant_id);
+      if (tenantId) {
+        result = await devicesAPI.getByTenant(tenantId);
       } else {
         result = await devicesAPI.getAll();
       }
