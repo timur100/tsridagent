@@ -756,16 +756,6 @@ class BluetoothPrinterService {
         await new Promise(resolve => setTimeout(resolve, 1500));
         
         console.log('Data sent successfully to Brother printer');
-                delimiter: '\r\n',
-                charset: 'latin1',
-              });
-            }
-          } catch (e) {
-            console.log('Post-print reconnection check:', e.message);
-          }
-        }, 2000);
-        
-        console.log('Data sent successfully to Brother');
         return { success: true };
       } else {
         // Zebra: Send via BLE
