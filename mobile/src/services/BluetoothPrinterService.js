@@ -314,36 +314,37 @@ class BluetoothPrinterService {
         }
       }
 
-      // Discovery for new devices (skip already bonded)
-      console.log('Starting discovery for new devices...');
-      const discovered = await RNBluetoothClassic.startDiscovery();
-      for (const device of discovered) {
-        // Skip if already in bonded list
-        if (pairedAddresses.has(device.address)) continue;
-        
-        const printerType = this.identifyPrinterType(device.name);
-        if (printerType !== 'unknown') {
-          const printerInfo = {
-            id: device.address,
-            name: device.name,
-            address: device.address,
-            rssi: device.rssi || -60,
-            type: printerType,
-            bluetoothType: 'classic',
-            bonded: false,
-            device: device,
-          };
+        // Discovery for new devices (skip already bonded)
+        console.log('Starting discovery for new devices...');
+        const discovered = await RNBluetoothClassic.startDiscovery();
+        for (const device of discovered) {
+          // Skip if already in bonded list
+          if (pairedAddresses.has(device.address)) continue;
           
-          if (!this.discoveredPrinters.some(p => p.id === printerInfo.id)) {
-            this.discoveredPrinters.push(printerInfo);
-            console.log(`Found new: ${device.name} (${printerType})`);
-            if (onDeviceFound) onDeviceFound(printerInfo);
+          const printerType = this.identifyPrinterType(device.name);
+          if (printerType !== 'unknown') {
+            const printerInfo = {
+              id: device.address,
+              name: device.name,
+              address: device.address,
+              rssi: device.rssi || -60,
+              type: printerType,
+              bluetoothType: 'classic',
+              bonded: false,
+              device: device,
+            };
+            
+            if (!this.discoveredPrinters.some(p => p.id === printerInfo.id)) {
+              this.discoveredPrinters.push(printerInfo);
+              console.log(`Found new: ${device.name} (${printerType})`);
+              if (onDeviceFound) onDeviceFound(printerInfo);
+            }
           }
         }
+      } catch (error) {
+        console.error('Classic scan error:', error);
       }
-    } catch (error) {
-      console.error('Classic scan error:', error);
-    }
+    } // End of RNBluetoothClassic check
 
     // Scan BLE (for Zebra)
     try {
@@ -386,7 +387,9 @@ class BluetoothPrinterService {
    */
   async stopScan() {
     if (this.isScanning) {
-      try { await RNBluetoothClassic.cancelDiscovery(); } catch (e) {}
+      if (RNBluetoothClassic) {
+        try { await RNBluetoothClassic.cancelDiscovery(); } catch (e) {}
+      }
       try { this.bleManager.stopDeviceScan(); } catch (e) {}
       this.isScanning = false;
     }
