@@ -1,243 +1,183 @@
 /**
  * Brother QL Raster Generator for Mobile
  * 
- * TSRID Standard Label with:
- * - REAL QR Code (left) - using qrcode library
- * - Auto-scaling Text (right) - no cutoff
- * - TSRID Fingerprint Logo (bottom right)
- * - Large Serial Number
+ * TSRID Standard Label Layout:
+ * - QR Code (LEFT) - ~40% width, scannable
+ * - Text (RIGHT) - Large, readable
+ * - Logo (BOTTOM RIGHT) - TSRID fingerprint
  */
 
 import QRCode from 'qrcode';
 
-const LABEL_WIDTH_PX = 696;
-const LABEL_HEIGHT_PX = 271;
-const LOGO_SIZE = 50;
+// Brother QL-820NWB label dimensions for 62mm endless
+const LABEL_WIDTH_PX = 696;  // 62mm at 300dpi
+const LABEL_HEIGHT_PX = 271; // ~23mm height
 
 /**
- * Generate TSRID Logo bitmap
- * Vertical fingerprint with scanner brackets
- * Based on the actual TSRID logo design
+ * Generate a REAL scannable QR Code matrix
  */
-function generateLogoBitmap(size) {
-  const bitmap = [];
-  const centerX = size / 2;
-  const centerY = size / 2;
-  const bracketSize = Math.floor(size * 0.15);
-  const bracketThickness = Math.max(2, Math.floor(size * 0.04));
-  
-  for (let y = 0; y < size; y++) {
-    const row = [];
-    for (let x = 0; x < size; x++) {
-      let isPixel = false;
-      
-      // Scanner brackets (corners)
-      const inTop = y < bracketSize;
-      const inBottom = y >= size - bracketSize;
-      const inLeft = x < bracketSize;
-      const inRight = x >= size - bracketSize;
-      
-      // Top-left bracket
-      if (inTop && inLeft) {
-        if (y < bracketThickness || x < bracketThickness) isPixel = true;
-      }
-      // Top-right bracket
-      if (inTop && inRight) {
-        if (y < bracketThickness || x >= size - bracketThickness) isPixel = true;
-      }
-      // Bottom-left bracket
-      if (inBottom && inLeft) {
-        if (y >= size - bracketThickness || x < bracketThickness) isPixel = true;
-      }
-      // Bottom-right bracket
-      if (inBottom && inRight) {
-        if (y >= size - bracketThickness || x >= size - bracketThickness) isPixel = true;
-      }
-      
-      // Fingerprint pattern (vertical ellipse with curved lines)
-      const fpMargin = bracketSize + 2;
-      if (x >= fpMargin && x < size - fpMargin && y >= fpMargin && y < size - fpMargin) {
-        const fpCenterX = size / 2;
-        const fpCenterY = size / 2;
-        const dx = (x - fpCenterX) / (size * 0.25); // Narrower horizontally
-        const dy = (y - fpCenterY) / (size * 0.4);  // Taller vertically
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        // Create concentric elliptical ridges
-        const ridgeSpacing = 0.25;
-        const ridgePhase = dist / ridgeSpacing;
-        const isRidge = Math.sin(ridgePhase * Math.PI * 2) > 0.3;
-        
-        // Fingerprint boundary (ellipse)
-        if (dist < 1.0 && isRidge) {
-          // Add some natural variation
-          const variation = Math.sin(y * 0.3 + x * 0.1) * 0.1;
-          if (dist < 0.95 + variation) {
-            isPixel = true;
-          }
-        }
-        
-        // Center core (smaller curves at the center)
-        if (dist < 0.3) {
-          const coreRidge = Math.sin((dy + 0.5) * 8) > 0.2;
-          if (coreRidge) isPixel = true;
-        }
-      }
-      
-      row.push(isPixel ? 1 : 0);
-    }
-    bitmap.push(row);
-  }
-  return bitmap;
-}
-
-/**
- * Generate REAL QR Code as a 2D binary matrix
- * Uses qrcode library for proper scannable QR codes
- */
-async function generateRealQRMatrix(content, targetSize = 200) {
+async function generateQRCodeMatrix(content, modulePixelSize = 5) {
   try {
-    // Generate QR code as data URL
-    const qrDataUrl = await QRCode.toDataURL(content, {
-      errorCorrectionLevel: 'M',
-      margin: 1,
-      width: targetSize,
-      color: {
-        dark: '#000000',
-        light: '#FFFFFF'
-      }
-    });
-    
-    // Parse the QR code to get module data
-    const qrModules = await QRCode.create(content, {
+    // Create QR code
+    const qr = await QRCode.create(content, {
       errorCorrectionLevel: 'M',
     });
     
-    const moduleCount = qrModules.modules.size;
-    const moduleSize = Math.floor(targetSize / (moduleCount + 2)); // +2 for quiet zone
-    const actualSize = moduleSize * (moduleCount + 2);
+    const moduleCount = qr.modules.size;
+    const quietZone = 2; // White border around QR
+    const totalModules = moduleCount + (quietZone * 2);
+    const totalSize = totalModules * modulePixelSize;
     
     // Create pixel matrix
     const matrix = [];
-    for (let y = 0; y < actualSize; y++) {
+    
+    for (let pixelY = 0; pixelY < totalSize; pixelY++) {
       const row = [];
-      const moduleY = Math.floor(y / moduleSize) - 1; // -1 for quiet zone
+      const moduleY = Math.floor(pixelY / modulePixelSize) - quietZone;
       
-      for (let x = 0; x < actualSize; x++) {
-        const moduleX = Math.floor(x / moduleSize) - 1; // -1 for quiet zone
+      for (let pixelX = 0; pixelX < totalSize; pixelX++) {
+        const moduleX = Math.floor(pixelX / modulePixelSize) - quietZone;
         
-        // Quiet zone (white border)
+        // Quiet zone = white
         if (moduleX < 0 || moduleX >= moduleCount || moduleY < 0 || moduleY >= moduleCount) {
           row.push(0);
         } else {
-          // Get actual QR module value
+          // Get QR module value
           const idx = moduleY * moduleCount + moduleX;
-          const isDark = qrModules.modules.data[idx] === 1;
-          row.push(isDark ? 1 : 0);
+          const isDark = qr.modules.data[idx] ? 1 : 0;
+          row.push(isDark);
         }
       }
       matrix.push(row);
     }
     
-    return { matrix, size: actualSize };
+    return { matrix, size: totalSize, moduleCount, modulePixelSize };
   } catch (error) {
     console.error('QR generation error:', error);
-    // Fallback to simple pattern
-    return { matrix: generateFallbackQR(targetSize), size: targetSize };
+    return { matrix: [], size: 0, moduleCount: 0, modulePixelSize: 0 };
   }
 }
 
 /**
- * Fallback QR pattern if library fails
+ * Generate TSRID Logo - Fingerprint with scanner brackets
+ * Matches the actual TSRID branding
  */
-function generateFallbackQR(size) {
-  const matrix = [];
-  const cs = Math.floor(size * 0.22);
+function generateTSRIDLogo(size) {
+  const bitmap = [];
+  const bracketLen = Math.floor(size * 0.25);
+  const bracketWidth = Math.max(2, Math.floor(size * 0.06));
+  const margin = Math.floor(size * 0.08);
   
   for (let y = 0; y < size; y++) {
     const row = [];
     for (let x = 0; x < size; x++) {
-      const inBorder = x < 4 || x >= size - 4 || y < 4 || y >= size - 4;
-      const inTL = x < cs && y < cs;
-      const inTR = x >= size - cs && y < cs;
-      const inBL = x < cs && y >= size - cs;
+      let pixel = 0;
       
-      if (inBorder) {
-        row.push(0); // White border
-      } else if (inTL || inTR || inBL) {
-        const lx = inTL ? x : (inTR ? x - (size - cs) : x);
-        const ly = inTL || inTR ? y : y - (size - cs);
-        const outer = lx < 7 || lx >= cs - 7 || ly < 7 || ly >= cs - 7;
-        const inner = lx >= cs * 0.35 && lx < cs * 0.65 && ly >= cs * 0.35 && ly < cs * 0.65;
-        row.push(outer || inner ? 1 : 0);
-      } else {
-        row.push(((x * 17 + y * 13) % 5) < 2 ? 1 : 0);
+      // === SCANNER BRACKETS ===
+      // Top-left corner
+      if (x >= margin && x < margin + bracketLen && y >= margin && y < margin + bracketWidth) pixel = 1;
+      if (x >= margin && x < margin + bracketWidth && y >= margin && y < margin + bracketLen) pixel = 1;
+      
+      // Top-right corner  
+      if (x >= size - margin - bracketLen && x < size - margin && y >= margin && y < margin + bracketWidth) pixel = 1;
+      if (x >= size - margin - bracketWidth && x < size - margin && y >= margin && y < margin + bracketLen) pixel = 1;
+      
+      // Bottom-left corner
+      if (x >= margin && x < margin + bracketLen && y >= size - margin - bracketWidth && y < size - margin) pixel = 1;
+      if (x >= margin && x < margin + bracketWidth && y >= size - margin - bracketLen && y < size - margin) pixel = 1;
+      
+      // Bottom-right corner
+      if (x >= size - margin - bracketLen && x < size - margin && y >= size - margin - bracketWidth && y < size - margin) pixel = 1;
+      if (x >= size - margin - bracketWidth && x < size - margin && y >= size - margin - bracketLen && y < size - margin) pixel = 1;
+      
+      // === FINGERPRINT (vertical ellipse with ridges) ===
+      const fpMargin = margin + bracketLen * 0.3;
+      const fpWidth = size - fpMargin * 2;
+      const fpHeight = size - fpMargin * 2;
+      const fpCenterX = size / 2;
+      const fpCenterY = size / 2;
+      
+      // Normalized coordinates
+      const nx = (x - fpCenterX) / (fpWidth * 0.35);
+      const ny = (y - fpCenterY) / (fpHeight * 0.45);
+      const dist = Math.sqrt(nx * nx + ny * ny);
+      
+      // Inside fingerprint ellipse
+      if (dist < 1.0) {
+        // Create ridge pattern - curved horizontal lines that get closer together toward edges
+        const ridgeFreq = 4.5 + dist * 2;
+        const ridgeOffset = nx * 0.3; // Slight curve
+        const ridge = Math.sin((ny + ridgeOffset) * ridgeFreq * Math.PI);
+        
+        if (ridge > 0.15 && ridge < 0.85) {
+          pixel = 1;
+        }
       }
+      
+      row.push(pixel);
     }
-    matrix.push(row);
+    bitmap.push(row);
   }
-  return matrix;
+  
+  return bitmap;
 }
 
 /**
- * 8x8 pixel font for label text
+ * 8x8 bitmap font for text rendering
  */
-function createSimpleFont() {
-  const font = {};
-  font['0'] = [0x3C, 0x66, 0x6E, 0x76, 0x66, 0x66, 0x3C, 0x00];
-  font['1'] = [0x18, 0x38, 0x18, 0x18, 0x18, 0x18, 0x7E, 0x00];
-  font['2'] = [0x3C, 0x66, 0x06, 0x1C, 0x30, 0x60, 0x7E, 0x00];
-  font['3'] = [0x3C, 0x66, 0x06, 0x1C, 0x06, 0x66, 0x3C, 0x00];
-  font['4'] = [0x0C, 0x1C, 0x3C, 0x6C, 0x7E, 0x0C, 0x0C, 0x00];
-  font['5'] = [0x7E, 0x60, 0x7C, 0x06, 0x06, 0x66, 0x3C, 0x00];
-  font['6'] = [0x1C, 0x30, 0x60, 0x7C, 0x66, 0x66, 0x3C, 0x00];
-  font['7'] = [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x30, 0x30, 0x00];
-  font['8'] = [0x3C, 0x66, 0x66, 0x3C, 0x66, 0x66, 0x3C, 0x00];
-  font['9'] = [0x3C, 0x66, 0x66, 0x3E, 0x06, 0x0C, 0x38, 0x00];
-  font['A'] = [0x18, 0x3C, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x00];
-  font['B'] = [0x7C, 0x66, 0x66, 0x7C, 0x66, 0x66, 0x7C, 0x00];
-  font['C'] = [0x3C, 0x66, 0x60, 0x60, 0x60, 0x66, 0x3C, 0x00];
-  font['D'] = [0x78, 0x6C, 0x66, 0x66, 0x66, 0x6C, 0x78, 0x00];
-  font['E'] = [0x7E, 0x60, 0x60, 0x7C, 0x60, 0x60, 0x7E, 0x00];
-  font['F'] = [0x7E, 0x60, 0x60, 0x7C, 0x60, 0x60, 0x60, 0x00];
-  font['G'] = [0x3C, 0x66, 0x60, 0x6E, 0x66, 0x66, 0x3C, 0x00];
-  font['H'] = [0x66, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x66, 0x00];
-  font['I'] = [0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x7E, 0x00];
-  font['J'] = [0x06, 0x06, 0x06, 0x06, 0x66, 0x66, 0x3C, 0x00];
-  font['K'] = [0x66, 0x6C, 0x78, 0x70, 0x78, 0x6C, 0x66, 0x00];
-  font['L'] = [0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x7E, 0x00];
-  font['M'] = [0x63, 0x77, 0x7F, 0x6B, 0x63, 0x63, 0x63, 0x00];
-  font['N'] = [0x66, 0x76, 0x7E, 0x7E, 0x6E, 0x66, 0x66, 0x00];
-  font['O'] = [0x3C, 0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x00];
-  font['P'] = [0x7C, 0x66, 0x66, 0x7C, 0x60, 0x60, 0x60, 0x00];
-  font['Q'] = [0x3C, 0x66, 0x66, 0x66, 0x6A, 0x6C, 0x36, 0x00];
-  font['R'] = [0x7C, 0x66, 0x66, 0x7C, 0x6C, 0x66, 0x66, 0x00];
-  font['S'] = [0x3C, 0x66, 0x60, 0x3C, 0x06, 0x66, 0x3C, 0x00];
-  font['T'] = [0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x00];
-  font['U'] = [0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x00];
-  font['V'] = [0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x18, 0x00];
-  font['W'] = [0x63, 0x63, 0x63, 0x6B, 0x7F, 0x77, 0x63, 0x00];
-  font['X'] = [0x66, 0x66, 0x3C, 0x18, 0x3C, 0x66, 0x66, 0x00];
-  font['Y'] = [0x66, 0x66, 0x66, 0x3C, 0x18, 0x18, 0x18, 0x00];
-  font['Z'] = [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x60, 0x7E, 0x00];
-  font['-'] = [0x00, 0x00, 0x00, 0x7E, 0x00, 0x00, 0x00, 0x00];
-  font[':'] = [0x00, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00, 0x00];
-  font['.'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x18, 0x00];
-  font[' '] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
-  font['_'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00];
-  font['/'] = [0x06, 0x0C, 0x18, 0x30, 0x60, 0xC0, 0x80, 0x00];
-  font['('] = [0x0C, 0x18, 0x30, 0x30, 0x30, 0x18, 0x0C, 0x00];
-  font[')'] = [0x30, 0x18, 0x0C, 0x0C, 0x0C, 0x18, 0x30, 0x00];
-  
-  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => {
-    font[c] = font[c.toUpperCase()];
-  });
-  
-  return font;
-}
+const FONT_8X8 = {
+  '0': [0x3C, 0x66, 0x6E, 0x76, 0x66, 0x66, 0x3C, 0x00],
+  '1': [0x18, 0x38, 0x18, 0x18, 0x18, 0x18, 0x7E, 0x00],
+  '2': [0x3C, 0x66, 0x06, 0x1C, 0x30, 0x60, 0x7E, 0x00],
+  '3': [0x3C, 0x66, 0x06, 0x1C, 0x06, 0x66, 0x3C, 0x00],
+  '4': [0x0C, 0x1C, 0x3C, 0x6C, 0x7E, 0x0C, 0x0C, 0x00],
+  '5': [0x7E, 0x60, 0x7C, 0x06, 0x06, 0x66, 0x3C, 0x00],
+  '6': [0x1C, 0x30, 0x60, 0x7C, 0x66, 0x66, 0x3C, 0x00],
+  '7': [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x30, 0x30, 0x00],
+  '8': [0x3C, 0x66, 0x66, 0x3C, 0x66, 0x66, 0x3C, 0x00],
+  '9': [0x3C, 0x66, 0x66, 0x3E, 0x06, 0x0C, 0x38, 0x00],
+  'A': [0x18, 0x3C, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x00],
+  'B': [0x7C, 0x66, 0x66, 0x7C, 0x66, 0x66, 0x7C, 0x00],
+  'C': [0x3C, 0x66, 0x60, 0x60, 0x60, 0x66, 0x3C, 0x00],
+  'D': [0x78, 0x6C, 0x66, 0x66, 0x66, 0x6C, 0x78, 0x00],
+  'E': [0x7E, 0x60, 0x60, 0x7C, 0x60, 0x60, 0x7E, 0x00],
+  'F': [0x7E, 0x60, 0x60, 0x7C, 0x60, 0x60, 0x60, 0x00],
+  'G': [0x3C, 0x66, 0x60, 0x6E, 0x66, 0x66, 0x3C, 0x00],
+  'H': [0x66, 0x66, 0x66, 0x7E, 0x66, 0x66, 0x66, 0x00],
+  'I': [0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x7E, 0x00],
+  'J': [0x06, 0x06, 0x06, 0x06, 0x66, 0x66, 0x3C, 0x00],
+  'K': [0x66, 0x6C, 0x78, 0x70, 0x78, 0x6C, 0x66, 0x00],
+  'L': [0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x7E, 0x00],
+  'M': [0x63, 0x77, 0x7F, 0x6B, 0x63, 0x63, 0x63, 0x00],
+  'N': [0x66, 0x76, 0x7E, 0x7E, 0x6E, 0x66, 0x66, 0x00],
+  'O': [0x3C, 0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x00],
+  'P': [0x7C, 0x66, 0x66, 0x7C, 0x60, 0x60, 0x60, 0x00],
+  'Q': [0x3C, 0x66, 0x66, 0x66, 0x6A, 0x6C, 0x36, 0x00],
+  'R': [0x7C, 0x66, 0x66, 0x7C, 0x6C, 0x66, 0x66, 0x00],
+  'S': [0x3C, 0x66, 0x60, 0x3C, 0x06, 0x66, 0x3C, 0x00],
+  'T': [0x7E, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x00],
+  'U': [0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x00],
+  'V': [0x66, 0x66, 0x66, 0x66, 0x66, 0x3C, 0x18, 0x00],
+  'W': [0x63, 0x63, 0x63, 0x6B, 0x7F, 0x77, 0x63, 0x00],
+  'X': [0x66, 0x66, 0x3C, 0x18, 0x3C, 0x66, 0x66, 0x00],
+  'Y': [0x66, 0x66, 0x66, 0x3C, 0x18, 0x18, 0x18, 0x00],
+  'Z': [0x7E, 0x06, 0x0C, 0x18, 0x30, 0x60, 0x7E, 0x00],
+  '-': [0x00, 0x00, 0x00, 0x7E, 0x00, 0x00, 0x00, 0x00],
+  ':': [0x00, 0x18, 0x18, 0x00, 0x18, 0x18, 0x00, 0x00],
+  '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x18, 0x00],
+  ' ': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+};
 
-function setPixel(bitmap, rowBytes, width, x, y) {
-  if (x < 0 || x >= width || y < 0) return;
+// Add lowercase as uppercase
+'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => {
+  FONT_8X8[c] = FONT_8X8[c.toUpperCase()];
+});
+
+/**
+ * Set a pixel in the bitmap
+ */
+function setPixel(bitmap, rowBytes, x, y, maxHeight) {
+  if (x < 0 || y < 0 || y >= maxHeight) return;
   const byteIdx = y * rowBytes + Math.floor(x / 8);
   const bitIdx = 7 - (x % 8);
   if (byteIdx >= 0 && byteIdx < bitmap.length) {
@@ -246,48 +186,25 @@ function setPixel(bitmap, rowBytes, width, x, y) {
 }
 
 /**
- * Draw text with auto-scaling to fit available width
+ * Draw text at specified position and scale
  */
-function drawTextAutoScale(bitmap, width, rowBytes, text, x, y, maxWidth, font, maxScale = 4, minScale = 1) {
+function drawText(bitmap, rowBytes, maxWidth, maxHeight, text, x, y, scale) {
   const upperText = (text || '').toUpperCase();
-  if (!upperText) return x;
-  
-  // Calculate required width at each scale
-  const charBaseWidth = 8;
-  let scale = maxScale;
-  
-  while (scale >= minScale) {
-    const requiredWidth = upperText.length * charBaseWidth * scale;
-    if (requiredWidth <= maxWidth) {
-      break;
-    }
-    scale--;
-  }
-  
-  // Ensure minimum scale
-  scale = Math.max(scale, minScale);
-  
-  // Draw text
-  const charWidth = charBaseWidth * scale;
+  const charWidth = 8 * scale;
   let curX = x;
   
-  for (let i = 0; i < upperText.length; i++) {
-    const char = upperText[i];
-    const pattern = font[char] || font[' '];
+  for (const char of upperText) {
+    if (curX + charWidth > maxWidth) break; // Stop at edge
     
-    // Check if we're about to exceed the width
-    if (curX + charWidth > x + maxWidth) {
-      break; // Stop if we would exceed
-    }
+    const pattern = FONT_8X8[char] || FONT_8X8[' '];
     
     for (let row = 0; row < 8; row++) {
       for (let col = 0; col < 8; col++) {
         if (pattern[row] & (0x80 >> col)) {
+          // Draw scaled pixel
           for (let sy = 0; sy < scale; sy++) {
             for (let sx = 0; sx < scale; sx++) {
-              const px = curX + col * scale + sx;
-              const py = y + row * scale + sy;
-              setPixel(bitmap, rowBytes, width, px, py);
+              setPixel(bitmap, rowBytes, curX + col * scale + sx, y + row * scale + sy, maxHeight);
             }
           }
         }
@@ -300,64 +217,81 @@ function drawTextAutoScale(bitmap, width, rowBytes, text, x, y, maxWidth, font, 
 }
 
 /**
- * Create label bitmap
+ * Create the label bitmap
+ * 
  * Layout:
- * - QR Code: LEFT (large, scannable)
- * - Text: RIGHT side, auto-scaled to fit
- * - Logo: BOTTOM RIGHT corner
+ * +------------------------------------------+
+ * |         |  TSRID-SCA-TSR-0001 (BIG)      |
+ * |   QR    |  TSRID SCANNER (medium)        |
+ * |  CODE   |  SN: 7E91145BA4244 (medium)    |
+ * |         |                         [LOGO] |
+ * +------------------------------------------+
  */
 async function createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height) {
   const rowBytes = Math.ceil(width / 8);
   const bitmap = new Uint8Array(rowBytes * height);
   bitmap.fill(0);
   
-  const font = createSimpleFont();
+  // Layout parameters
+  const padding = 10;
+  const qrAreaWidth = Math.floor(height * 0.95); // QR code takes ~square area based on height
+  const textStartX = qrAreaWidth + 20;
+  const logoSize = 60;
+  const textMaxWidth = width - textStartX - logoSize - 20;
   
-  // === QR CODE (LEFT) - REAL SCANNABLE ===
-  const qrTargetSize = Math.min(220, height - 30);
-  const qrX = 15;
-  const { matrix: qrMatrix, size: qrActualSize } = await generateRealQRMatrix(assetId, qrTargetSize);
-  const qrY = Math.floor((height - qrActualSize) / 2);
+  // === 1. QR CODE (LEFT SIDE) ===
+  // Calculate module size to fit in available height
+  const qrContent = assetId || 'TSRID-TEST';
+  const targetQRSize = height - padding * 2;
+  const modulePixelSize = Math.floor(targetQRSize / 37); // QR v3 = ~33 modules + quiet zone
   
-  for (let y = 0; y < qrMatrix.length && (qrY + y) < height; y++) {
-    for (let x = 0; x < qrMatrix[y].length && (qrX + x) < width; x++) {
-      if (qrMatrix[y][x] === 1) {
-        setPixel(bitmap, rowBytes, width, qrX + x, qrY + y);
+  const qrResult = await generateQRCodeMatrix(qrContent, Math.max(4, modulePixelSize));
+  
+  if (qrResult.matrix.length > 0) {
+    const qrX = padding;
+    const qrY = Math.floor((height - qrResult.size) / 2);
+    
+    for (let y = 0; y < qrResult.matrix.length && qrY + y < height; y++) {
+      for (let x = 0; x < qrResult.matrix[y].length && qrX + x < width; x++) {
+        if (qrResult.matrix[y][x] === 1) {
+          setPixel(bitmap, rowBytes, qrX + x, qrY + y, height);
+        }
       }
     }
   }
   
-  // === TEXT AREA (RIGHT) ===
-  const textX = qrX + qrActualSize + 25;
-  const textMaxWidth = width - textX - LOGO_SIZE - 25;
+  // === 2. TEXT (RIGHT SIDE) ===
   
-  // Asset ID - LARGE, auto-scale to fit
-  const idY = 25;
-  drawTextAutoScale(bitmap, width, rowBytes, assetId || 'N/A', textX, idY, textMaxWidth, font, 4, 2);
+  // Line 1: Asset ID - BIGGEST (scale 4 = 32px height)
+  const line1Y = 15;
+  const scale1 = 4;
+  drawText(bitmap, rowBytes, width, height, assetId || 'N/A', textStartX, line1Y, scale1);
   
-  // Type Label - MEDIUM
-  const typeY = idY + 45;
-  drawTextAutoScale(bitmap, width, rowBytes, typeLabel || '', textX, typeY, textMaxWidth, font, 3, 2);
+  // Line 2: Type Label - Large (scale 3 = 24px height)
+  const line2Y = line1Y + (8 * scale1) + 12;
+  const scale2 = 3;
+  drawText(bitmap, rowBytes, width, height, typeLabel || '', textStartX, line2Y, scale2);
   
-  // Serial Number - LARGE
-  const snY = typeY + 40;
-  drawTextAutoScale(bitmap, width, rowBytes, 'SN: ' + (serialNumber || 'N/A'), textX, snY, textMaxWidth, font, 3, 2);
+  // Line 3: Serial Number - Large (scale 3 = 24px height)
+  const line3Y = line2Y + (8 * scale2) + 10;
+  const scale3 = 3;
+  drawText(bitmap, rowBytes, width, height, 'SN: ' + (serialNumber || 'N/A'), textStartX, line3Y, scale3);
   
-  // Location - MEDIUM (if provided)
+  // Line 4: Location (optional) - Medium (scale 2 = 16px height)
   if (location) {
-    const locY = snY + 40;
-    drawTextAutoScale(bitmap, width, rowBytes, location, textX, locY, textMaxWidth, font, 2, 1);
+    const line4Y = line3Y + (8 * scale3) + 8;
+    drawText(bitmap, rowBytes, width, height, location, textStartX, line4Y, 2);
   }
   
-  // === TSRID FINGERPRINT LOGO (BOTTOM RIGHT) ===
-  const logoX = width - LOGO_SIZE - 20;
-  const logoY = height - LOGO_SIZE - 15;
-  const logoBitmap = generateLogoBitmap(LOGO_SIZE);
+  // === 3. TSRID LOGO (BOTTOM RIGHT) ===
+  const logoX = width - logoSize - padding;
+  const logoY = height - logoSize - padding;
+  const logoBitmap = generateTSRIDLogo(logoSize);
   
-  for (let y = 0; y < LOGO_SIZE && (logoY + y) < height; y++) {
-    for (let x = 0; x < LOGO_SIZE && (logoX + x) < width; x++) {
+  for (let y = 0; y < logoSize && logoY + y < height; y++) {
+    for (let x = 0; x < logoSize && logoX + x < width; x++) {
       if (logoBitmap[y] && logoBitmap[y][x] === 1) {
-        setPixel(bitmap, rowBytes, width, logoX + x, logoY + y);
+        setPixel(bitmap, rowBytes, logoX + x, logoY + y, height);
       }
     }
   }
@@ -366,7 +300,7 @@ async function createLabelBitmap(assetId, typeLabel, serialNumber, location, wid
 }
 
 /**
- * Create Brother QL Raster Label
+ * Create Brother QL Raster Command Data
  */
 export async function createBrotherRasterLabel(options = {}) {
   const {
@@ -381,38 +315,51 @@ export async function createBrotherRasterLabel(options = {}) {
 
   const data = [];
 
-  // Brother QL initialization sequence
-  // Invalidate buffer
+  // === BROTHER QL INITIALIZATION ===
+  
+  // Invalidate (clear buffer)
   for (let i = 0; i < 200; i++) data.push(0x00);
   
-  // Initialize
+  // Initialize printer
   data.push(0x1B, 0x40); // ESC @
   
-  // Switch to raster mode
+  // Enter raster mode
   data.push(0x1B, 0x69, 0x61, 0x01); // ESC i a 1
   
-  // Print info command - 62mm endless
-  data.push(0x1B, 0x69, 0x7A, 0x86, 0x0A, 0x3E, 0x00);
-  data.push(height & 0xFF, (height >> 8) & 0xFF);
-  data.push(0x00, 0x00, 0x00, 0x00);
+  // Print information command (62mm continuous)
+  data.push(0x1B, 0x69, 0x7A);
+  data.push(0x86);        // Valid flag
+  data.push(0x0A);        // Media type: continuous
+  data.push(0x3E);        // Media width: 62mm
+  data.push(0x00);        // Media length (0 for continuous)
+  data.push(height & 0xFF, (height >> 8) & 0xFF); // Raster lines
+  data.push(0x00, 0x00, 0x00, 0x00); // Page/start page
   
-  // Various mode settings
-  data.push(0x1B, 0x69, 0x4D, autoCut ? 0x40 : 0x00); // Auto cut
-  data.push(0x1B, 0x69, 0x4B, 0x08); // Cut type
-  data.push(0x1B, 0x69, 0x64, 0x00, 0x00); // Margins
+  // Auto cut setting
+  data.push(0x1B, 0x69, 0x4D, autoCut ? 0x40 : 0x00);
+  
+  // Cut every N labels (1)
+  data.push(0x1B, 0x69, 0x41, 0x01);
+  
+  // Expanded mode
+  data.push(0x1B, 0x69, 0x4B, 0x08);
+  
+  // Margins
+  data.push(0x1B, 0x69, 0x64, 0x00, 0x00);
 
-  // Generate bitmap
+  // === GENERATE AND SEND BITMAP ===
   const bitmap = await createLabelBitmap(assetId, typeLabel, serialNumber, location, width, height);
   const rowBytes = Math.ceil(width / 8);
   
-  // Send raster data
+  // Send raster data line by line
   for (let y = 0; y < height; y++) {
-    data.push(0x67, 0x00, rowBytes); // Raster line command
+    // Raster graphics command
+    data.push(0x67, 0x00, rowBytes);
     
-    // Send row data (reversed for Brother)
+    // Send row data (Brother expects MSB first, rightmost byte first)
     for (let byteIdx = rowBytes - 1; byteIdx >= 0; byteIdx--) {
       let byte = bitmap[y * rowBytes + byteIdx] || 0x00;
-      // Reverse bits within byte
+      // Reverse bits
       let reversed = 0;
       for (let bit = 0; bit < 8; bit++) {
         if (byte & (1 << bit)) reversed |= (1 << (7 - bit));
@@ -421,8 +368,8 @@ export async function createBrotherRasterLabel(options = {}) {
     }
   }
 
-  // Print and feed
-  data.push(0x1A); // Print command
+  // Print command
+  data.push(0x1A);
   
   return new Uint8Array(data);
 }
@@ -432,15 +379,15 @@ export async function createBrotherRasterLabel(options = {}) {
  */
 export async function createTestLabel() {
   return await createBrotherRasterLabel({
-    assetId: 'AAHC01-01',
-    typeLabel: 'ZEBRA TC78',
-    serialNumber: '22105525802581',
-    location: 'AACHEN',
+    assetId: 'TSRID-SCA-TSR-0001',
+    typeLabel: 'TSRID SCANNER',
+    serialNumber: '7E91145BA4244',
+    location: '',
   });
 }
 
 /**
- * Create label for an asset object
+ * Create label from asset object
  */
 export async function createAssetLabel(asset) {
   return await createBrotherRasterLabel({
