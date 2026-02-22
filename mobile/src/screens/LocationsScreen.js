@@ -82,22 +82,46 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Location Card
-const LocationCard = ({ location, onPress }) => (
-  <TouchableOpacity style={styles.locationCard} onPress={() => onPress(location)}>
-    <View style={styles.cardLeft}>
-      <Text style={styles.cardIcon}>📍</Text>
-    </View>
-    <View style={styles.cardContent}>
-      <Text style={styles.cardName}>{location.name}</Text>
-      <Text style={styles.cardId}>{location.location_id}</Text>
-      <Text style={styles.cardAddress}>
-        {[location.address, location.city, location.country].filter(Boolean).join(', ')}
-      </Text>
-    </View>
-    <Text style={styles.cardArrow}>›</Text>
-  </TouchableOpacity>
-);
+// Location Card - Updated for tenant_locations format
+const LocationCard = ({ location, onPress }) => {
+  // Status bestimmen
+  const deviceCount = location.device_count || location.online_count || 0;
+  const onlineCount = location.online_count || 0;
+  const isOnline = onlineCount > 0;
+  
+  return (
+    <TouchableOpacity style={styles.locationCard} onPress={() => onPress(location)}>
+      {/* Status Badge */}
+      <View style={styles.cardStatusCol}>
+        <View style={[styles.statusBadge, { backgroundColor: isOnline ? '#22c55e20' : '#ef444420' }]}>
+          <Text style={[styles.statusText, { color: isOnline ? '#22c55e' : '#ef4444' }]}>
+            {isOnline ? 'Online' : 'Offline'}
+          </Text>
+        </View>
+      </View>
+      
+      {/* Code */}
+      <View style={styles.cardCodeCol}>
+        <Text style={styles.cardCode}>{location.location_code || location.code || '-'}</Text>
+      </View>
+      
+      {/* Name & Details */}
+      <View style={styles.cardDetailsCol}>
+        <Text style={styles.cardName} numberOfLines={1}>
+          {location.name || location.station_name || location.stationsname || '-'}
+        </Text>
+        <Text style={styles.cardAddress} numberOfLines={1}>
+          {location.street || location.strasse || '-'}
+        </Text>
+        <Text style={styles.cardCity} numberOfLines={1}>
+          {location.zip || location.plz || ''} {location.city || location.stadt || '-'}
+        </Text>
+      </View>
+      
+      <Text style={styles.cardArrow}>›</Text>
+    </TouchableOpacity>
+  );
+};
 
 const LocationsScreen = ({ navigation }) => {
   const { user } = useAuth();
