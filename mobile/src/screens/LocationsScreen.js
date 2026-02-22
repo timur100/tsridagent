@@ -148,41 +148,85 @@ const LocationCard = ({ location, onPress }) => {
 const LocationsScreen = ({ navigation }) => {
   const { user } = useAuth();
   const [locations, setLocations] = useState([]);
+  const [filteredLocations, setFilteredLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  
+  // Stats
+  const [stats, setStats] = useState({
+    total: 0,
+    online: 0,
+    offline: 0,
+  });
 
   useEffect(() => {
     loadLocations();
   }, [user?.tenant_id]);
 
+  useEffect(() => {
+    filterLocations();
+  }, [locations, searchQuery, statusFilter]);
+
   const loadLocations = async () => {
     try {
-      // Try to load tenant-specific locations first
+      // Load tenant-specific locations
       let result;
       if (user?.tenant_id) {
         result = await locationsAPI.getByTenant(user.tenant_id);
-      }
-      
-      // Fallback to all locations
-      if (!result?.locations?.length) {
+      } else {
         result = await locationsAPI.getAll();
       }
       
-      if (result?.locations) {
-        setLocations(result.locations);
-      } else if (Array.isArray(result)) {
-        setLocations(result);
-      } else {
-        setLocations([]);
-      }
+      const locationList = result?.locations || [];
+      setLocations(locationList);
+      
+      // Calculate stats
+      const online = locationList.filter(l => (l.online_device_count || 0) > 0).length;
+      const offline = locationList.filter(l => (l.online_device_count || 0) === 0).length;
+      
+      setStats({
+        total: locationList.length,
+        online,
+        offline,
+      });
     } catch (error) {
       console.error('Error loading locations:', error);
       setLocations([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  const filterLocations = () => {
+    let filtered = [...locations];
+    
+    // Status filter
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(l => {
+        const hasOnlineDevices = (l.online_device_count || 0) > 0;
+        if (statusFilter === 'online') return hasOnlineDevices;
+        if (statusFilter === 'offline') return !hasOnlineDevices;
+        return true;
+      });
+    }
+    
+    // Search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(l => 
+        (l.location_code || '').toLowerCase().includes(query) ||
+        (l.station_name || '').toLowerCase().includes(query) ||
+        (l.city || '').toLowerCase().includes(query) ||
+        (l.postal_code || '').toLowerCase().includes(query) ||
+        (l.street || '').toLowerCase().includes(query)
+      );
+    }
+    
+    setFilteredLocations(filtered);
   };
 
   const onRefresh = async () => {
@@ -200,6 +244,7 @@ const LocationsScreen = ({ navigation }) => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
+        <Text style={styles.loadingText}>Lade Standorte...</Text>
       </View>
     );
   }
@@ -214,13 +259,54 @@ const LocationsScreen = ({ navigation }) => {
             <Text style={styles.tenantLabel}>{user.tenant_name}</Text>
           )}
         </View>
-        <Text style={styles.count}>{locations.length} Standorte</Text>
+        <Text style={styles.count}>{filteredLocations.length} von {stats.total}</Text>
+      </View>
+
+      {/* Stats Cards */}
+      <View style={styles.statsRow}>
+        <TouchableOpacity 
+          style={[styles.statCard, statusFilter === 'all' && styles.statCardActive]}
+          onPress={() => setStatusFilter('all')}
+        >
+          <Text style={styles.statValue}>{stats.total}</Text>
+          <Text style={styles.statLabel}>Gesamt</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.statCard, statusFilter === 'online' && styles.statCardActive]}
+          onPress={() => setStatusFilter('online')}
+        >
+          <Text style={[styles.statValue, { color: '#22c55e' }]}>{stats.online}</Text>
+          <Text style={styles.statLabel}>Online</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.statCard, statusFilter === 'offline' && styles.statCardActive]}
+          onPress={() => setStatusFilter('offline')}
+        >
+          <Text style={[styles.statValue, { color: '#ef4444' }]}>{stats.offline}</Text>
+          <Text style={styles.statLabel}>Offline</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Search */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Suche nach Code, Station, Stadt..."
+          placeholderTextColor={theme.colors.textMuted}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearSearch}>
+            <Text style={styles.clearSearchText}>✕</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* List */}
       <FlatList
-        data={locations}
-        keyExtractor={(item) => item.location_id || item.id || Math.random().toString()}
+        data={filteredLocations}
+        keyExtractor={(item) => item.location_id || item.location_code || Math.random().toString()}
         renderItem={({ item }) => (
           <LocationCard location={item} onPress={handleLocationPress} />
         )}
@@ -236,6 +322,9 @@ const LocationsScreen = ({ navigation }) => {
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>📍</Text>
             <Text style={styles.emptyText}>Keine Standorte gefunden</Text>
+            <Text style={styles.emptySubtext}>
+              {searchQuery ? 'Versuchen Sie eine andere Suche' : 'Keine Standorte verfügbar'}
+            </Text>
           </View>
         }
       />
