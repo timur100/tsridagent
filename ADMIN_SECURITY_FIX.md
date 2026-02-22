@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://zebra-asset-scan.preview.emergentagent.com/portal/admin
+https://tc78-device-portal.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

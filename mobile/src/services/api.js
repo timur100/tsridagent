@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
 // Get API URL from app config or use default
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://zebra-asset-scan.preview.emergentagent.com';
+const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://tc78-device-portal.preview.emergentagent.com';
 
 // Create axios instance
 const api = axios.create({

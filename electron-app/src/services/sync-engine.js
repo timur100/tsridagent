@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://zebra-asset-scan.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://tc78-device-portal.preview.emergentagent.com');
 }
 
 /**

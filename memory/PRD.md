@@ -88,7 +88,7 @@ Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Asset
 - Expo SDK: 51
 
 ### Backend API
-- Base URL: https://zebra-asset-scan.preview.emergentagent.com
+- Base URL: https://tc78-device-portal.preview.emergentagent.com
 - Auth: `/api/portal/auth/login`
 - Assets: `/api/asset-mgmt/assets`
 - Stats: `/api/tenants/stats`

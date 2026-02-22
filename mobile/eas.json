@@ -41,7 +41,7 @@
       "node": "20.18.0",
       "env": {
         "DEVICE_TYPE": "zebra-tc78",
-        "API_URL": "https://zebra-asset-scan.preview.emergentagent.com"
+        "API_URL": "https://tc78-device-portal.preview.emergentagent.com"
       }
     }
   },

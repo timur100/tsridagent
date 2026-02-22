@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://zebra-asset-scan.preview.emergentagent.com/portal/admin/id-checks
+   https://tc78-device-portal.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

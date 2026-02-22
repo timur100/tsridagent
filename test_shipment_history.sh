@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://zebra-asset-scan.preview.emergentagent.com/api/dhl"
+API_URL="https://tc78-device-portal.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

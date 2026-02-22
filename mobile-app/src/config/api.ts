@@ -7,7 +7,7 @@
 
 // API-URL aus Environment oder Fallback
 export const API_BASE_URL = __DEV__ 
-  ? 'https://zebra-asset-scan.preview.emergentagent.com'  // Development
+  ? 'https://tc78-device-portal.preview.emergentagent.com'  // Development
   : 'https://your-production-url.com';                   // Production
 
 // API Endpoints (identisch mit Admin Portal)
