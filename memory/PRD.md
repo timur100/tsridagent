@@ -4,9 +4,37 @@
 Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Assets, Etikettendruck über Bluetooth (Brother QL-820NWB / Zebra), und Barcode-Scanning.
 
 ## Aktuelle Version
-- **Version:** 1.6.0 (Build 10 / APK V10)
-- **Build-Datum:** 21. Februar 2026
-- **Download:** https://expo.dev/artifacts/eas/isreH9DCRwHsuTkFudvz69.apk
+- **Version:** 2.1.0
+- **Status:** In Entwicklung (Änderungen am 22. Februar 2026)
+- **Letzter APK Download:** https://expo.dev/artifacts/eas/isreH9DCRwHsuTkFudvz69.apk (V10)
+
+## Letzte Änderungen (22.02.2026)
+
+### Implementiert (Code-Änderungen, kein neuer Build)
+1. **API-Endpunkte korrigiert:**
+   - `locationsAPI` verwendet jetzt `/api/tenant-locations/{tenant_id}` statt veralteter Endpunkte
+   - `devicesAPI` verwendet jetzt `/api/tenant-devices/{tenant_id}` mit korrekter Response-Struktur
+   
+2. **LocationsScreen verbessert:**
+   - Neue tabellenartige Darstellung mit Spalten: Online-Status, Status, Code, Stationsname
+   - Suchfunktion hinzugefügt
+   - Filter nach Online/Offline Status
+   - Statistik-Karten (Gesamt, Online, Offline)
+   - Korrekte Feldnamen aus Backend (station_name, location_code, postal_code, etc.)
+   
+3. **DevicesScreen verbessert:**
+   - Korrekte Backend-Feldnamen (device_id, locationcode, sn_pc, sn_sc, etc.)
+   - Backend-Summary-Stats werden verwendet
+   - Verbesserte Such- und Filterfunktionen
+   
+4. **Tenant-ID Unterstützung:**
+   - Screens unterstützen jetzt sowohl `tenant_id` (singular) als auch `tenant_ids` (array)
+   - Erster tenant_id aus dem Array wird automatisch verwendet
+
+### Status der beantragten Aufgaben
+- ✅ **Standorte (LocationsScreen):** Code-Änderungen abgeschlossen, wartet auf Build + Test
+- ✅ **Geräte-Bildschirm (DevicesScreen):** Code-Änderungen abgeschlossen, wartet auf Build + Test  
+- ✅ **Online-Status auf allen Seiten:** Bereits implementiert in CustomHeader im AppNavigator
 
 ## Implementierte Features
 
@@ -17,10 +45,9 @@ Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Asset
   - IMEI / IMEI2
   - EID
   - SIM-Nummern
-- **Fix: Spiegelverkehrter Druck** - Raster-Daten werden jetzt horizontal gespiegelt (Byte-Reihenfolge + Bit-Reihenfolge pro Zeile umgekehrt)
-- **Fix: Bluetooth-Verbindungsstabilität** - Verbesserte Reconnection-Logik nach Druckjobs
+- **Fix: Spiegelverkehrter Druck** - Raster-Daten werden jetzt horizontal gespiegelt
+- **Fix: Bluetooth-Verbindungsstabilität** - Verbesserte Reconnection-Logik
 - **Verbesserung: Match-Typ-Anzeige** - Scanner zeigt an, über welchen Identifier das Asset gefunden wurde
-- **Verbesserung: AssetsScreen** - Übernimmt jetzt auch `searchQuery` aus Navigation
 
 ### Frühere Versionen (V1-V9)
 - Authentifizierung gegen Backend
@@ -37,65 +64,51 @@ Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Asset
 ```
 /app/mobile/
 ├── src/
+│   ├── navigation/
+│   │   └── AppNavigator.js          # Tab-Navigation mit CustomHeader
 │   ├── screens/
-│   │   ├── DashboardScreen.js
+│   │   ├── DashboardScreen.js       # Statistiken, Burger-Menu
+│   │   ├── DevicesScreen.js         # Geräteliste (aktualisiert)
+│   │   ├── LocationsScreen.js       # Standortliste (aktualisiert)
 │   │   ├── AssetsScreen.js
 │   │   ├── ScannerScreen.js
 │   │   ├── SettingsScreen.js
 │   │   └── LoginScreen.js
 │   ├── services/
-│   │   ├── BluetoothPrinterService.js  # Zentrale Drucker-Logik
-│   │   ├── BrotherRasterGenerator.js    # Raster-Daten-Generierung
-│   │   ├── BrotherPrinterConfig.js      # Label-Formate
-│   │   └── api.js                        # Backend-Kommunikation
+│   │   ├── api.js                   # Backend-Kommunikation (aktualisiert)
+│   │   ├── BluetoothPrinterService.js
+│   │   ├── BrotherRasterGenerator.js
+│   │   └── BrotherPrinterConfig.js
 │   ├── contexts/
 │   │   └── AuthContext.js
 │   └── utils/
 │       └── theme.js
-├── app.json                              # Expo-Konfiguration
-├── eas.json                              # EAS Build-Profile
+├── app.json
+├── eas.json
 └── package.json
 ```
 
 ## Bekannte Probleme / Offene Punkte
 
-### Zu Testen (APK V10)
-1. **Spiegelverkehrter Druck** - Fix implementiert, benötigt Benutzer-Test
-2. **Bluetooth-Verbindung** - Verbesserte Stabilität, benötigt Test
-3. **Scanner mit SN/MAC/IMEI** - Neues Feature, benötigt Test
+### Nächster Build erforderlich
+1. **LocationsScreen/DevicesScreen Änderungen** - Code ist fertig, APK Build erforderlich
+2. **Brother Drucker Verbindungsfehler** - `java.io.IOException` beim Koppeln (P1)
 
 ### Ausstehende Features (P2)
-- Dashboard "Labels" und "Standorte" Schnellzugriffe könnten erweitert werden
-- Standorte-Filter im AssetsScreen könnte dedizierte Standort-Liste zeigen
-
-## Backlog / Zukünftige Features
-
-### Mobile App
 - Nachbestellungs-Funktion
 - Offline-Modus
 - DataWedge-Integration für Hardware-Scanner
 
-### Web-Portal
-- Webcam-Integration für Asset-Fotos
-- Refactoring Asset Detail Modal
+## Backend API Endpunkte
 
-## Technische Details
-
-### EAS Build
-- Profil: `production`
-- Platform: Android APK
-- Node: 20.18.0
-- Expo SDK: 51
-
-### Backend API
-- Base URL: https://tc78-device-portal.preview.emergentagent.com
-- Auth: `/api/portal/auth/login`
-- Assets: `/api/asset-mgmt/assets`
-- Stats: `/api/tenants/stats`
-
-### Drucker-Support
-- **Zebra**: BLE-Verbindung, ZPL-Befehle
-- **Brother QL-820NWB**: Bluetooth Classic (SPP), ESC/P Raster-Modus
+| Endpunkt | Beschreibung |
+|----------|--------------|
+| `/api/portal/auth/login` | Authentifizierung |
+| `/api/tenant-locations/{tenant_id}` | Standorte eines Tenants |
+| `/api/tenant-devices/{tenant_id}` | Geräte eines Tenants |
+| `/api/asset-mgmt/assets` | Asset-Verwaltung |
+| `/api/tenants/stats` | Dashboard-Statistiken |
+| `/api/health` | Health-Check |
 
 ## Test-Credentials
 - Web-Portal: admin@tsrid.com / admin123
