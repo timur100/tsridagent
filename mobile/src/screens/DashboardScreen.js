@@ -39,81 +39,91 @@ const QuickAction = ({ icon, label, onPress }) => (
 );
 
 // Burger Menu Modal - Exportiert für andere Screens
-export const BurgerMenu = ({ visible, onClose, navigation, user, onLogout }) => (
-  <Modal visible={visible} animationType="slide" transparent>
-    <TouchableOpacity style={styles.menuOverlay} onPress={onClose} activeOpacity={1}>
-      <View style={styles.menuContainer}>
-        <View style={styles.menuHeader}>
-          <Text style={styles.menuTitle}>Menü</Text>
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.menuClose}>✕</Text>
-          </TouchableOpacity>
-        </View>
-        
-        <View style={styles.menuUser}>
-          <Text style={styles.menuUserIcon}>👤</Text>
-          <View>
-            <Text style={styles.menuUserName}>{user?.name || 'Benutzer'}</Text>
-            <Text style={styles.menuUserEmail}>{user?.email || ''}</Text>
+export const BurgerMenu = ({ visible, onClose, navigation: propNavigation, user, onLogout }) => {
+  const navHook = useNavigation();
+  const nav = propNavigation || navHook;
+  
+  const handleNavigate = (screen) => {
+    onClose();
+    nav.navigate(screen);
+  };
+  
+  return (
+    <Modal visible={visible} animationType="slide" transparent>
+      <TouchableOpacity style={styles.menuOverlay} onPress={onClose} activeOpacity={1}>
+        <View style={styles.menuContainer}>
+          <View style={styles.menuHeader}>
+            <Text style={styles.menuTitle}>Menü</Text>
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.menuClose}>✕</Text>
+            </TouchableOpacity>
           </View>
+          
+          <View style={styles.menuUser}>
+            <Text style={styles.menuUserIcon}>👤</Text>
+            <View>
+              <Text style={styles.menuUserName}>{user?.name || 'Benutzer'}</Text>
+              <Text style={styles.menuUserEmail}>{user?.email || ''}</Text>
+            </View>
+          </View>
+          
+          <View style={styles.menuDivider} />
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Dashboard')}>
+            <Text style={styles.menuItemIcon}>🏠</Text>
+            <Text style={styles.menuItemText}>Dashboard</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Scanner')}>
+            <Text style={styles.menuItemIcon}>📷</Text>
+            <Text style={styles.menuItemText}>Scanner</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Assets')}>
+            <Text style={styles.menuItemIcon}>📦</Text>
+            <Text style={styles.menuItemText}>Assets / Geräte</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Locations')}>
+            <Text style={styles.menuItemIcon}>📍</Text>
+            <Text style={styles.menuItemText}>Standorte</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('GoodsReceipt')}>
+            <Text style={styles.menuItemIcon}>📥</Text>
+            <Text style={styles.menuItemText}>Wareneingang</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+            <Text style={styles.menuItemIcon}>⚙️</Text>
+            <Text style={styles.menuItemText}>Einstellungen</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.menuDivider} />
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+            <Text style={styles.menuItemIcon}>🖨️</Text>
+            <Text style={styles.menuItemText}>Drucker</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+            <Text style={styles.menuItemIcon}>🏷️</Text>
+            <Text style={styles.menuItemText}>Labels drucken</Text>
+          </TouchableOpacity>
+          
+          <View style={styles.menuDivider} />
+          
+          <TouchableOpacity style={[styles.menuItem, styles.menuItemLogout]} onPress={onLogout}>
+            <Text style={styles.menuItemIcon}>🚪</Text>
+            <Text style={[styles.menuItemText, { color: theme.colors.error }]}>Abmelden</Text>
+          </TouchableOpacity>
+          
+          <Text style={styles.menuVersion}>TSRID Mobile v2.1.0</Text>
         </View>
-        
-        <View style={styles.menuDivider} />
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Dashboard'); }}>
-          <Text style={styles.menuItemIcon}>🏠</Text>
-          <Text style={styles.menuItemText}>Dashboard</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Scanner'); }}>
-          <Text style={styles.menuItemIcon}>📷</Text>
-          <Text style={styles.menuItemText}>Scanner</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Assets'); }}>
-          <Text style={styles.menuItemIcon}>📦</Text>
-          <Text style={styles.menuItemText}>Assets / Geräte</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Locations'); }}>
-          <Text style={styles.menuItemIcon}>📍</Text>
-          <Text style={styles.menuItemText}>Standorte</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('GoodsReceipt'); }}>
-          <Text style={styles.menuItemIcon}>📥</Text>
-          <Text style={styles.menuItemText}>Wareneingang</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
-          <Text style={styles.menuItemIcon}>⚙️</Text>
-          <Text style={styles.menuItemText}>Einstellungen</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.menuDivider} />
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
-          <Text style={styles.menuItemIcon}>🖨️</Text>
-          <Text style={styles.menuItemText}>Drucker</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style={styles.menuItem} onPress={() => { onClose(); navigation.navigate('Settings'); }}>
-          <Text style={styles.menuItemIcon}>🏷️</Text>
-          <Text style={styles.menuItemText}>Labels drucken</Text>
-        </TouchableOpacity>
-        
-        <View style={styles.menuDivider} />
-        
-        <TouchableOpacity style={[styles.menuItem, styles.menuItemLogout]} onPress={onLogout}>
-          <Text style={styles.menuItemIcon}>🚪</Text>
-          <Text style={[styles.menuItemText, { color: theme.colors.error }]}>Abmelden</Text>
-        </TouchableOpacity>
-        
-        <Text style={styles.menuVersion}>TSRID Mobile v2.1.0</Text>
-      </View>
-    </TouchableOpacity>
-  </Modal>
-);
+      </TouchableOpacity>
+    </Modal>
+  );
+};
 
 const DashboardScreen = ({ navigation }) => {
   const { user, logout } = useAuth();
