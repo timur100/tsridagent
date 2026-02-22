@@ -167,6 +167,7 @@ const LocationCard = ({ location, onPress }) => {
 
 const LocationsScreen = ({ navigation }) => {
   const { user } = useAuth();
+  const { isConnected } = useWebSocket();
   const [locations, setLocations] = useState([]);
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [loading, setLoading] = useState(true);
