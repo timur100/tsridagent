@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://tc78-device-portal.preview.emergentagent.com
+│   └── Lädt: https://asset-label-print.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

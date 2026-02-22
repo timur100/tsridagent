@@ -57,7 +57,7 @@ export const fetchCategories = async () => {
   }
 
   // Neuen Request starten
-  categoriesPromise = fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://tc78-device-portal.preview.emergentagent.com'}/api/categories/list?active_only=true`)
+  categoriesPromise = fetch(`${process.env.REACT_APP_BACKEND_URL || 'https://asset-label-print.preview.emergentagent.com'}/api/categories/list?active_only=true`)
     .then(response => response.json())
     .then(data => {
       if (data.success && data.categories) {

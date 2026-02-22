@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tc78-device-portal.preview.emergentagent.com/portal/admin/id-checks
+   https://asset-label-print.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

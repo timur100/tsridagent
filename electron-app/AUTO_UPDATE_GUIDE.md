@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://tc78-device-portal.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://asset-label-print.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

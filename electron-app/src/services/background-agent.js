@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tc78-device-portal.preview.emergentagent.com';
+    this.serverUrl = 'https://asset-label-print.preview.emergentagent.com';
   }
 
   /**

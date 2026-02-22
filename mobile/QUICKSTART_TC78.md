@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tc78-device-portal.preview.emergentagent.com`
+`https://asset-label-print.preview.emergentagent.com`
 
 ---
 

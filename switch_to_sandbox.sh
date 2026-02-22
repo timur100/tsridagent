@@ -21,5 +21,5 @@ sleep 5
 
 echo ""
 echo "Test mit Sandbox..."
-curl -s "https://tc78-device-portal.preview.emergentagent.com/api/dhl/health" | jq '.'
+curl -s "https://asset-label-print.preview.emergentagent.com/api/dhl/health" | jq '.'
 

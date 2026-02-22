@@ -14,7 +14,7 @@ import os
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://tc78-device-portal.preview.emergentagent.com"
+BACKEND_URL = "https://asset-label-print.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OpeningHoursTester:
