@@ -215,9 +215,9 @@ const DevicesScreen = ({ navigation, route }) => {
   // Get tenant_id (support both single and array format)
   const tenantId = user?.tenant_id || (user?.tenant_ids && user?.tenant_ids[0]) || null;
 
-  // Handle realtime device updates
+  // Handle realtime device updates via WebSocket
   const handleDeviceUpdate = useCallback((data) => {
-    console.log('[DevicesScreen] Realtime update received:', data);
+    console.log('[DevicesScreen] WebSocket update received:', data);
     setLastRealtimeUpdate(new Date());
     
     // Vibrate to indicate update
@@ -227,8 +227,14 @@ const DevicesScreen = ({ navigation, route }) => {
     loadDevices();
   }, [tenantId]);
 
-  // Subscribe to realtime updates
+  // Subscribe to WebSocket updates
   useRealtimeUpdates('device_update', handleDeviceUpdate);
+  
+  // Subscribe to polling updates (fallback every 30 seconds)
+  usePollingUpdates(useCallback(() => {
+    console.log('[DevicesScreen] Polling update triggered');
+    loadDevices();
+  }, [tenantId]));
 
   useEffect(() => {
     loadDevices();
