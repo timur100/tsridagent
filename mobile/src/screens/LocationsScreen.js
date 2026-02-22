@@ -229,6 +229,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: theme.colors.textPrimary,
   },
+  tenantLabel: {
+    fontSize: 12,
+    color: theme.colors.primary,
+    marginTop: 2,
+  },
   count: {
     fontSize: 13,
     color: theme.colors.textMuted,
