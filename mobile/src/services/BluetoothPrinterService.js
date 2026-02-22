@@ -24,9 +24,11 @@ import {
 // Try to import Bluetooth Classic (optional)
 let RNBluetoothClassic = null;
 try {
-  RNBluetoothClassic = require('react-native-bluetooth-classic').default;
+  const BluetoothClassicModule = require('react-native-bluetooth-classic');
+  RNBluetoothClassic = BluetoothClassicModule.default || BluetoothClassicModule;
+  console.log('Bluetooth Classic module loaded successfully');
 } catch (e) {
-  console.log('Bluetooth Classic not available, using BLE only');
+  console.log('Bluetooth Classic not available, using BLE only:', e.message);
 }
 
 // Storage keys
