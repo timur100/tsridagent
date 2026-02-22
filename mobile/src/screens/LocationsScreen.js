@@ -516,6 +516,7 @@ const LocationsScreen = ({ navigation }) => {
         visible={modalVisible}
         location={selectedLocation}
         onClose={() => { setModalVisible(false); setSelectedLocation(null); }}
+        onPrintLabel={handlePrintLabel}
       />
     </View>
   );
