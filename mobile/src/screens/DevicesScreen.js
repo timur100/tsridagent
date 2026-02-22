@@ -45,36 +45,55 @@ const StatusBadge = ({ status }) => {
   );
 };
 
+// Helper function to make phone call
+const makePhoneCall = (phoneNumber) => {
+  if (!phoneNumber || phoneNumber === '-') return;
+  const cleanNumber = phoneNumber.replace(/[^0-9+]/g, '');
+  const url = Platform.OS === 'android' ? `tel:${cleanNumber}` : `telprompt:${cleanNumber}`;
+  Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    }
+  });
+};
+
 // Device Card component
-const DeviceCard = ({ device, onPress }) => (
-  <TouchableOpacity style={styles.deviceCard} onPress={() => onPress(device)}>
-    <View style={styles.deviceHeader}>
-      <Text style={styles.deviceId}>{device.device_id || '-'}</Text>
-      <StatusBadge status={device.status} />
-    </View>
-    
-    <View style={styles.deviceDetails}>
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Standort:</Text>
-        <Text style={styles.detailValue}>{device.locationcode || device.location_code || '-'}</Text>
+const DeviceCard = ({ device, onPress }) => {
+  const phone = device.phone || device.telefon || null;
+  
+  return (
+    <TouchableOpacity style={styles.deviceCard} onPress={() => onPress(device)}>
+      <View style={styles.deviceHeader}>
+        <Text style={styles.deviceId}>{device.device_id || '-'}</Text>
+        <StatusBadge status={device.status} />
       </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Straße:</Text>
-        <Text style={styles.detailValue} numberOfLines={1}>{device.street || '-'}</Text>
-      </View>
-      <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>PLZ/Ort:</Text>
-        <Text style={styles.detailValue}>{device.zip || ''} {device.city || '-'}</Text>
-      </View>
-      {device.sn_pc && (
+      
+      <View style={styles.deviceDetails}>
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>SN-PC:</Text>
-          <Text style={styles.detailValue}>{device.sn_pc}</Text>
+          <Text style={styles.detailLabel}>Standort:</Text>
+          <Text style={styles.detailValue}>{device.locationcode || device.location_code || '-'}</Text>
         </View>
-      )}
-    </View>
-  </TouchableOpacity>
-);
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Straße:</Text>
+          <Text style={styles.detailValue} numberOfLines={1}>{device.street || '-'}</Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>PLZ/Ort:</Text>
+          <Text style={styles.detailValue}>{device.zip || ''} {device.city || '-'}</Text>
+        </View>
+        {phone && (
+          <TouchableOpacity 
+            style={styles.detailRow} 
+            onPress={() => makePhoneCall(phone)}
+          >
+            <Text style={styles.detailLabel}>Telefon:</Text>
+            <Text style={[styles.detailValue, styles.phoneLink]}>{phone} 📞</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 // Device Detail Modal
 const DeviceDetailModal = ({ visible, device, onClose }) => {
