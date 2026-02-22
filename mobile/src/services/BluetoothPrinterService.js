@@ -422,7 +422,7 @@ class BluetoothPrinterService {
   }
 
   /**
-   * Connect via Bluetooth Classic
+   * Connect via Bluetooth Classic with retry logic
    */
   async connectClassic(printer) {
     if (!RNBluetoothClassic) {
@@ -432,17 +432,76 @@ class BluetoothPrinterService {
     try {
       console.log(`Connecting to Classic device: ${printer.address}`);
       
-      // Check if already connected
-      const isConnected = await RNBluetoothClassic.isDeviceConnected(printer.address);
-      if (isConnected) {
-        console.log('Device already connected, reusing connection');
+      // First, check if already connected and disconnect
+      try {
+        const isConnected = await RNBluetoothClassic.isDeviceConnected(printer.address);
+        if (isConnected) {
+          console.log('Device already connected, disconnecting first...');
+          await RNBluetoothClassic.disconnectFromDevice(printer.address);
+          await new Promise(resolve => setTimeout(resolve, 500));
+        }
+      } catch (e) {
+        console.log('Pre-connection check:', e.message);
       }
-      
-      const device = await RNBluetoothClassic.connectToDevice(printer.address, {
-        connectorType: 'rfcomm',
-        delimiter: '\r\n',
-        charset: 'latin1', // Use latin1 for binary data
-      });
+
+      // Connection options to try
+      const connectionOptions = [
+        // Option 1: Standard RFCOMM
+        {
+          connectorType: 'rfcomm',
+          delimiter: '\n',
+          charset: 'latin1',
+        },
+        // Option 2: RFCOMM with different settings
+        {
+          connectorType: 'rfcomm',
+          delimiter: '',
+          charset: 'ascii',
+        },
+        // Option 3: Default connection
+        {},
+      ];
+
+      let device = null;
+      let lastError = null;
+
+      for (let i = 0; i < connectionOptions.length; i++) {
+        const options = connectionOptions[i];
+        console.log(`Connection attempt ${i + 1}/${connectionOptions.length}...`);
+        
+        try {
+          // Small delay between attempts
+          if (i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+          
+          device = await RNBluetoothClassic.connectToDevice(printer.address, options);
+          
+          if (device) {
+            console.log(`Connected successfully with option ${i + 1}`);
+            break;
+          }
+        } catch (error) {
+          console.log(`Attempt ${i + 1} failed:`, error.message);
+          lastError = error;
+          
+          // If socket error, wait longer before retry
+          if (error.message.includes('socket') || error.message.includes('timeout')) {
+            await new Promise(resolve => setTimeout(resolve, 2000));
+          }
+        }
+      }
+
+      if (!device) {
+        // Final fallback: Try to pair first if not bonded
+        if (!printer.bonded) {
+          return { 
+            success: false, 
+            error: 'Verbindung fehlgeschlagen. Bitte koppeln Sie den Drucker zuerst in den Android Bluetooth-Einstellungen und versuchen Sie es erneut.' 
+          };
+        }
+        throw lastError || new Error('Verbindung konnte nicht hergestellt werden.');
+      }
 
       this.connectedDevice = {
         id: printer.id,
@@ -470,7 +529,14 @@ class BluetoothPrinterService {
     } catch (error) {
       console.error('Classic connection error:', error);
       this.connectedDevice = null;
-      return { success: false, error: error.message };
+      
+      // Provide helpful error message
+      let errorMessage = error.message;
+      if (error.message.includes('socket') || error.message.includes('read failed')) {
+        errorMessage = 'Bluetooth-Verbindungsfehler. Bitte:\n1. Öffnen Sie Android Bluetooth-Einstellungen\n2. Entkoppeln Sie den Drucker\n3. Koppeln Sie ihn erneut\n4. Versuchen Sie es dann nochmal';
+      }
+      
+      return { success: false, error: errorMessage };
     }
   }
 
