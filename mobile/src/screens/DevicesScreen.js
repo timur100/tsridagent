@@ -190,10 +190,6 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
     </Modal>
   );
 };
-      </View>
-    </Modal>
-  );
-};
 
 const DevicesScreen = ({ navigation, route }) => {
   const { user } = useAuth();
