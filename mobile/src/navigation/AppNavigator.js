@@ -52,8 +52,8 @@ const IconSettings = ({ color, size }) => (
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Custom Header with Burger Menu - With StatusBar padding
-const CustomHeader = ({ title, navigation, showMenu, onMenuPress }) => (
+// Custom Header with Burger Menu, Online Status and Tenant - With StatusBar padding
+const CustomHeader = ({ title, navigation, showMenu, onMenuPress, serverStatus, tenantName }) => (
   <View style={{
     backgroundColor: theme.colors.primary,
     paddingTop: STATUSBAR_HEIGHT + 8,
@@ -65,18 +65,51 @@ const CustomHeader = ({ title, navigation, showMenu, onMenuPress }) => (
       alignItems: 'center',
       justifyContent: 'space-between',
     }}>
-      <Text style={{ 
-        color: '#fff', 
-        fontSize: 18, 
-        fontWeight: '700',
-      }} numberOfLines={1}>
-        {title}
-      </Text>
-      {showMenu && (
-        <TouchableOpacity onPress={onMenuPress} style={{ padding: 8 }}>
-          <Text style={{ fontSize: 24, color: '#fff' }}>☰</Text>
-        </TouchableOpacity>
-      )}
+      <View style={{ flexDirection: 'column' }}>
+        <Text style={{ 
+          color: '#fff', 
+          fontSize: 18, 
+          fontWeight: '700',
+        }} numberOfLines={1}>
+          {title}
+        </Text>
+        {tenantName && (
+          <Text style={{ color: 'rgba(255,255,255,0.8)', fontSize: 11, marginTop: 2 }}>
+            {tenantName}
+          </Text>
+        )}
+      </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+        {/* Online Status Badge */}
+        <View style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+          borderRadius: 10,
+          backgroundColor: serverStatus === 'online' ? '#22c55e20' : '#f59e0b20',
+          gap: 4,
+        }}>
+          <View style={{
+            width: 6,
+            height: 6,
+            borderRadius: 3,
+            backgroundColor: serverStatus === 'online' ? '#22c55e' : '#f59e0b',
+          }} />
+          <Text style={{
+            fontSize: 10,
+            fontWeight: '500',
+            color: serverStatus === 'online' ? '#22c55e' : '#f59e0b',
+          }}>
+            {serverStatus === 'online' ? 'Online' : 'Offline'}
+          </Text>
+        </View>
+        {showMenu && (
+          <TouchableOpacity onPress={onMenuPress} style={{ padding: 8 }}>
+            <Text style={{ fontSize: 24, color: '#fff' }}>☰</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   </View>
 );
