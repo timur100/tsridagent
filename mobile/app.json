@@ -88,7 +88,6 @@
           "bluetoothAlwaysPermission": "TSRID Mobile benötigt Bluetooth, um Drucker zu finden und zu verbinden."
         }
       ],
-      "react-native-bluetooth-classic",
       "expo-secure-store",
       "expo-dev-client"
     ],
