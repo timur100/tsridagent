@@ -33,22 +33,40 @@ const LocationDetailModal = ({ visible, location, onClose }) => {
         <ScrollView style={styles.modalContent}>
           <View style={styles.detailCard}>
             <Text style={styles.locationIcon}>📍</Text>
-            <Text style={styles.locationName}>{location.name}</Text>
-            <Text style={styles.locationId}>{location.location_id}</Text>
+            <Text style={styles.locationName}>{location.station_name || '-'}</Text>
+            <Text style={styles.locationId}>{location.location_code || '-'}</Text>
           </View>
           
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>Adresse</Text>
-            <InfoRow label="Straße" value={location.address} />
-            <InfoRow label="Stadt" value={location.city} />
+            <InfoRow label="Straße" value={location.street} />
+            <InfoRow label="PLZ / Stadt" value={`${location.postal_code || ''} ${location.city || ''}`} />
+            <InfoRow label="Bundesland" value={location.state} />
             <InfoRow label="Land" value={location.country} />
-            {location.latitude && <InfoRow label="Koordinaten" value={`${location.latitude}, ${location.longitude}`} />}
+            <InfoRow label="Kontinent" value={location.continent} />
+          </View>
+          
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>Kontakt</Text>
+            <InfoRow label="Manager" value={location.manager} />
+            <InfoRow label="Telefon" value={location.phone} />
+            <InfoRow label="Telefon Int." value={location.phone_internal} />
+            <InfoRow label="E-Mail" value={location.email} />
+          </View>
+          
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>Geräte</Text>
+            <InfoRow label="Geräte" value={`${location.online_device_count || 0} / ${location.device_count || 0} online`} />
+            <InfoRow label="SN-PC" value={location.sn_pc} />
+            <InfoRow label="SN-SC" value={location.sn_sc} />
+            <InfoRow label="TV-ID" value={location.tv_id} />
           </View>
           
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>Details</Text>
             <InfoRow label="Standort-ID" value={location.location_id} />
-            <InfoRow label="Tenant-ID" value={location.tenant_id} />
+            <InfoRow label="Typ" value={location.main_type} />
+            <InfoRow label="Status" value={location.status} />
             <InfoRow label="Erstellt" value={formatDate(location.created_at)} />
             <InfoRow label="Aktualisiert" value={formatDate(location.updated_at)} />
           </View>
