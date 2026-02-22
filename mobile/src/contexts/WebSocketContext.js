@@ -1,5 +1,6 @@
 /**
  * WebSocket Context für Echtzeit-Updates in der gesamten App
+ * Mit Fallback-Polling für zuverlässige Updates
  */
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { AppState } from 'react-native';
@@ -8,11 +9,15 @@ import webSocketService from '../services/WebSocketService';
 
 const WebSocketContext = createContext(null);
 
+// Polling interval in ms (30 seconds as fallback)
+const POLLING_INTERVAL = 30000;
+
 export const WebSocketProvider = ({ children }) => {
   const { user, isAuthenticated } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
   const appStateRef = useRef(AppState.currentState);
+  const pollingIntervalRef = useRef(null);
   
   // Data state that will be updated in real-time
   const [realtimeData, setRealtimeData] = useState({
@@ -20,36 +25,66 @@ export const WebSocketProvider = ({ children }) => {
     locations: null,
     dashboardStats: null,
   });
+  
+  // Polling trigger - increments to force data refresh
+  const [pollTrigger, setPollTrigger] = useState(0);
 
   // Get tenant_id (support both single and array format)
   const tenantId = user?.tenant_id || (user?.tenant_ids && user?.tenant_ids[0]) || null;
+
+  // Start polling as fallback
+  const startPolling = useCallback(() => {
+    if (pollingIntervalRef.current) return;
+    
+    console.log('[WS Context] Starting fallback polling');
+    pollingIntervalRef.current = setInterval(() => {
+      console.log('[WS Context] Polling for updates...');
+      setPollTrigger(prev => prev + 1);
+    }, POLLING_INTERVAL);
+  }, []);
+
+  // Stop polling
+  const stopPolling = useCallback(() => {
+    if (pollingIntervalRef.current) {
+      clearInterval(pollingIntervalRef.current);
+      pollingIntervalRef.current = null;
+      console.log('[WS Context] Stopped fallback polling');
+    }
+  }, []);
 
   // Connect/disconnect based on auth state
   useEffect(() => {
     if (isAuthenticated && tenantId) {
       webSocketService.connect(tenantId);
+      // Start polling as fallback (will work even if WebSocket fails)
+      startPolling();
     } else {
       webSocketService.disconnect();
+      stopPolling();
     }
 
     return () => {
       webSocketService.disconnect();
+      stopPolling();
     };
-  }, [isAuthenticated, tenantId]);
+  }, [isAuthenticated, tenantId, startPolling, stopPolling]);
 
   // Handle app state changes (background/foreground)
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (appStateRef.current.match(/inactive|background/) && nextAppState === 'active') {
-        // App came to foreground - reconnect if needed
-        console.log('[WS Context] App came to foreground, checking connection');
-        if (isAuthenticated && tenantId && !webSocketService.isConnected) {
-          webSocketService.connect(tenantId);
+        // App came to foreground - reconnect and trigger immediate poll
+        console.log('[WS Context] App came to foreground, refreshing');
+        if (isAuthenticated && tenantId) {
+          if (!webSocketService.isConnected) {
+            webSocketService.connect(tenantId);
+          }
+          // Trigger immediate data refresh
+          setPollTrigger(prev => prev + 1);
         }
       } else if (nextAppState.match(/inactive|background/)) {
-        // App going to background - optionally disconnect to save battery
+        // App going to background
         console.log('[WS Context] App going to background');
-        // Note: We keep the connection for now to receive updates
       }
       appStateRef.current = nextAppState;
     });
