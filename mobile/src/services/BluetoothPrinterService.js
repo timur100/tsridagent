@@ -485,7 +485,7 @@ class BluetoothPrinterService {
       this.disconnectSubscription = null;
     }
     
-    if (this.connectedDevice?.address) {
+    if (this.connectedDevice?.address && RNBluetoothClassic) {
       try {
         // react-native-bluetooth-classic uses a different API
         // The callback should be the only argument for the subscription
@@ -514,7 +514,7 @@ class BluetoothPrinterService {
     }
     
     try {
-      if (this.connectedDevice.bluetoothType === 'classic') {
+      if (this.connectedDevice.bluetoothType === 'classic' && RNBluetoothClassic) {
         const isConnected = await RNBluetoothClassic.isDeviceConnected(this.connectedDevice.address);
         if (!isConnected) {
           console.log('Connection lost, attempting to reconnect...');
