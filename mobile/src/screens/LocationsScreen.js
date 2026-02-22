@@ -627,23 +627,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   
-  cardCode: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: theme.colors.textPrimary,
-  },
-  cardStation: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-  },
-  
-  // Row 2 - Details
+  // Row - Details
   cardRowDetails: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingRight: 20,
   },
   detailsLeft: {
     flex: 1,
@@ -664,13 +652,6 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: theme.colors.primary,
     fontWeight: '500',
-  },
-  cardArrow: {
-    position: 'absolute',
-    right: 12,
-    top: '50%',
-    fontSize: 24,
-    color: theme.colors.textMuted,
   },
   
   // Empty
