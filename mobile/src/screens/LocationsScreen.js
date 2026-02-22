@@ -11,11 +11,46 @@ import {
   ScrollView,
   TextInput,
   Vibration,
+  Linking,
+  Platform,
 } from 'react-native';
 import { locationsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket, useRealtimeUpdates } from '../contexts/WebSocketContext';
 import theme from '../utils/theme';
+
+// Helper function to open navigation
+const openNavigation = (location) => {
+  if (!location) return;
+  
+  // Build address for navigation
+  const address = [
+    location.street,
+    location.postal_code,
+    location.city,
+    location.country || 'Deutschland'
+  ].filter(Boolean).join(', ');
+  
+  // Use Google Maps for navigation
+  const encodedAddress = encodeURIComponent(address);
+  const url = Platform.select({
+    ios: `maps://app?daddr=${encodedAddress}`,
+    android: `google.navigation:q=${encodedAddress}`,
+  });
+  
+  // Fallback to Google Maps URL
+  const fallbackUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+  
+  Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      Linking.openURL(fallbackUrl);
+    }
+  }).catch(() => {
+    Linking.openURL(fallbackUrl);
+  });
+};
 
 // Location Detail Modal
 const LocationDetailModal = ({ visible, location, onClose }) => {
