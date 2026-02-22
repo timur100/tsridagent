@@ -173,21 +173,19 @@ const DevicesScreen = ({ navigation, route }) => {
         result = await devicesAPI.getAll();
       }
       
-      const deviceList = result?.devices || result || [];
+      const deviceList = result?.devices || [];
+      const summary = result?.summary || { total: 0, online: 0, offline: 0, in_vorbereitung: 0 };
+      
       setDevices(deviceList);
       
-      // Calculate stats
-      const online = deviceList.filter(d => d.status?.toLowerCase() === 'online').length;
-      const offline = deviceList.filter(d => d.status?.toLowerCase() === 'offline').length;
-      const prep = deviceList.filter(d => 
-        d.status?.toLowerCase() === 'vorbereitung' || d.status?.toLowerCase() === 'preparation'
-      ).length;
-      
+      // Use backend summary stats if available
       setStats({
-        total: deviceList.length,
-        online,
-        offline,
-        preparation: prep,
+        total: summary.total || deviceList.length,
+        online: summary.online || deviceList.filter(d => d.status?.toLowerCase() === 'online').length,
+        offline: summary.offline || deviceList.filter(d => d.status?.toLowerCase() === 'offline').length,
+        preparation: summary.in_vorbereitung || deviceList.filter(d => 
+          d.status?.toLowerCase() === 'in_vorbereitung' || d.status?.toLowerCase() === 'vorbereitung'
+        ).length,
       });
     } catch (error) {
       console.error('Error loading devices:', error);
