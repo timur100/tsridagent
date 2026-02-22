@@ -295,11 +295,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   
-  // Header - Compact
+  // Header - With StatusBar padding
   header: {
     backgroundColor: theme.colors.primary,
-    paddingTop: 4,
-    paddingBottom: 8,
+    paddingTop: STATUSBAR_HEIGHT + 8,
+    paddingBottom: 12,
     paddingHorizontal: 12,
   },
   headerContent: {
@@ -307,10 +307,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  headerLeft: {
+    flexDirection: 'column',
+  },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 18,
+    fontWeight: '700',
     color: '#fff',
+  },
+  tenantName: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
   },
   headerRight: {
     flexDirection: 'row',
@@ -321,7 +329,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 10,
     gap: 4,
   },
@@ -331,14 +339,14 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   statusText: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: '500',
   },
   burgerButton: {
-    padding: 4,
+    padding: 8,
   },
   burgerIcon: {
-    fontSize: 22,
+    fontSize: 24,
     color: '#fff',
   },
   
