@@ -20,6 +20,7 @@ import {
   createTestLabel as createBrotherTestLabel,
   createAssetLabel as createBrotherAssetLabel,
   createLocationLabel as createBrotherLocationLabel,
+  createDeviceLabel as createBrotherDeviceLabel,
 } from './BrotherRasterGenerator';
 
 // Try to import Bluetooth Classic (optional)
