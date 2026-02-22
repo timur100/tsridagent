@@ -423,6 +423,10 @@ class BluetoothPrinterService {
    * Connect via Bluetooth Classic
    */
   async connectClassic(printer) {
+    if (!RNBluetoothClassic) {
+      return { success: false, error: 'Bluetooth Classic ist nicht verfügbar.' };
+    }
+    
     try {
       console.log(`Connecting to Classic device: ${printer.address}`);
       
