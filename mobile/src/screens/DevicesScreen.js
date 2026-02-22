@@ -291,9 +291,17 @@ const DevicesScreen = ({ navigation, route }) => {
         (d.locationcode || d.location_code || '').toLowerCase().includes(query) ||
         (d.city || '').toLowerCase().includes(query) ||
         (d.sn_pc || '').toLowerCase().includes(query) ||
-        (d.street || '').toLowerCase().includes(query)
+        (d.street || '').toLowerCase().includes(query) ||
+        (d.phone || d.telefon || '').toLowerCase().includes(query)
       );
     }
+    
+    // Sort alphabetically by device_id
+    filtered.sort((a, b) => {
+      const idA = (a.device_id || '').toLowerCase();
+      const idB = (b.device_id || '').toLowerCase();
+      return idA.localeCompare(idB, 'de');
+    });
     
     setFilteredDevices(filtered);
   };
