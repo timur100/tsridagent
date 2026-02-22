@@ -118,25 +118,31 @@ const CustomHeader = ({ title, navigation, showMenu, onMenuPress, serverStatus, 
 const MainTabs = () => {
   const { user, logout } = useAuth();
   const [menuVisible, setMenuVisible] = useState(false);
+  const [serverStatus, setServerStatus] = useState('checking');
+
+  // Check server status periodically
+  useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        await healthAPI.check();
+        setServerStatus('online');
+      } catch (error) {
+        setServerStatus('offline');
+      }
+    };
+    
+    checkStatus();
+    const interval = setInterval(checkStatus, 30000); // Check every 30 seconds
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = async () => {
     setMenuVisible(false);
     await logout();
   };
 
-  // Screen options generator with burger menu
-  const getScreenOptions = (title, IconComponent, navigation) => ({
-    title,
-    tabBarIcon: ({ color, size }) => <IconComponent color={color} size={size} />,
-    header: () => (
-      <CustomHeader 
-        title={title} 
-        navigation={navigation}
-        showMenu={true}
-        onMenuPress={() => setMenuVisible(true)}
-      />
-    ),
-  });
+  // Get tenant name
+  const tenantName = user?.tenant_name || null;
 
   return (
     <>
@@ -174,6 +180,8 @@ const MainTabs = () => {
                 navigation={navigation}
                 showMenu={true}
                 onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
               />
             ),
           })}
@@ -190,6 +198,30 @@ const MainTabs = () => {
                 navigation={navigation}
                 showMenu={true}
                 onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
+              />
+            ),
+          })}
+        />
+        <Tab.Screen
+          name="Devices"
+          component={DevicesScreen}
+          options={({ navigation }) => ({
+            title: 'Geräte',
+            tabBarIcon: ({ color, size }) => (
+              <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
+                <Text style={{ color, fontSize: size * 0.8 }}>💻</Text>
+              </View>
+            ),
+            header: () => (
+              <CustomHeader 
+                title="Geräte" 
+                navigation={navigation}
+                showMenu={true}
+                onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
               />
             ),
           })}
@@ -206,26 +238,8 @@ const MainTabs = () => {
                 navigation={navigation}
                 showMenu={true}
                 onMenuPress={() => setMenuVisible(true)}
-              />
-            ),
-          })}
-        />
-        <Tab.Screen
-          name="GoodsReceipt"
-          component={GoodsReceiptScreen}
-          options={({ navigation }) => ({
-            title: 'Wareneingang',
-            tabBarIcon: ({ color, size }) => (
-              <View style={{ width: size, height: size, justifyContent: 'center', alignItems: 'center' }}>
-                <Text style={{ color, fontSize: size * 0.8 }}>📥</Text>
-              </View>
-            ),
-            header: () => (
-              <CustomHeader 
-                title="Wareneingang" 
-                navigation={navigation}
-                showMenu={true}
-                onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
               />
             ),
           })}
@@ -242,6 +256,8 @@ const MainTabs = () => {
                 navigation={navigation}
                 showMenu={true}
                 onMenuPress={() => setMenuVisible(true)}
+                serverStatus={serverStatus}
+                tenantName={tenantName}
               />
             ),
           })}
