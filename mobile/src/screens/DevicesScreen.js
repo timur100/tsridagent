@@ -11,6 +11,8 @@ import {
   ScrollView,
   TextInput,
   Vibration,
+  Linking,
+  Platform,
 } from 'react-native';
 import { devicesAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
