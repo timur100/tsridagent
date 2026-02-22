@@ -221,37 +221,6 @@ export const assetsAPI = {
   },
 };
 
-// Goods Receipt (Wareneingang) API
-export const goodsReceiptAPI = {
-  getAll: async (params = {}) => {
-    const response = await api.get('/api/asset-mgmt/inventory/all', { params });
-    return response.data;
-  },
-  
-  create: async (data) => {
-    const response = await api.post('/api/asset-mgmt/inventory', data);
-    return response.data;
-  },
-  
-  assignToLocation: async (assetId, locationId) => {
-    const response = await api.post(`/api/asset-mgmt/inventory/${assetId}/assign`, { location_id: locationId });
-    return response.data;
-  },
-};
-
-// Locations API
-export const locationsAPI = {
-  getAll: async () => {
-    const response = await api.get('/api/portal/locations/list');
-    return response.data;
-  },
-  
-  getById: async (locationId) => {
-    const response = await api.get(`/api/portal/locations/${locationId}`);
-    return response.data;
-  },
-};
-
 // Dashboard API
 export const dashboardAPI = {
   getStats: async () => {
