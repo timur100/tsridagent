@@ -72,6 +72,15 @@ const LocationDetailModal = ({ visible, location, onClose }) => {
             <Text style={styles.locationIcon}>📍</Text>
             <Text style={styles.locationName}>{location.station_name || '-'}</Text>
             <Text style={styles.locationId}>{location.location_code || '-'}</Text>
+            
+            {/* Navigation Button */}
+            <TouchableOpacity 
+              style={styles.navButton}
+              onPress={() => openNavigation(location)}
+            >
+              <Text style={styles.navButtonIcon}>🧭</Text>
+              <Text style={styles.navButtonText}>Navigation starten</Text>
+            </TouchableOpacity>
           </View>
           
           <View style={styles.infoSection}>
