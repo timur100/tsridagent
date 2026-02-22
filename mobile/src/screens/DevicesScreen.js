@@ -722,6 +722,120 @@ const styles = StyleSheet.create({
     color: theme.colors.textPrimary,
     fontWeight: '500',
   },
+  
+  // Phone Link
+  phoneLink: {
+    color: theme.colors.primary,
+    fontWeight: '500',
+  },
+  
+  // Fullscreen Modal
+  fullscreenModal: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  fullscreenHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    backgroundColor: theme.colors.primary,
+  },
+  backButton: {
+    paddingVertical: 4,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '500',
+  },
+  fullscreenTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  fullscreenContent: {
+    flex: 1,
+    padding: 16,
+  },
+  statusCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    gap: 12,
+  },
+  statusCardText: {
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    fontWeight: '500',
+  },
+  fullscreenSection: {
+    marginBottom: 20,
+  },
+  fullscreenSectionTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textMuted,
+    marginBottom: 10,
+  },
+  fullscreenCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    padding: 16,
+  },
+  locationCodeLarge: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: theme.colors.primary,
+    marginBottom: 8,
+  },
+  fullscreenText: {
+    fontSize: 15,
+    color: theme.colors.textPrimary,
+    marginBottom: 2,
+  },
+  fullscreenSubtext: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+  },
+  phoneButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#22c55e',
+    borderRadius: 12,
+    padding: 16,
+  },
+  phoneButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  phoneButtonIcon: {
+    fontSize: 14,
+    color: '#fff',
+    fontWeight: '500',
+  },
+  infoGridRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  infoGridLabel: {
+    fontSize: 14,
+    color: theme.colors.textMuted,
+  },
+  infoGridValue: {
+    fontSize: 14,
+    color: theme.colors.textPrimary,
+    fontWeight: '500',
+  },
 });
 
 export default DevicesScreen;
