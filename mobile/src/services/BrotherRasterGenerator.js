@@ -236,26 +236,25 @@ export async function createLocationLabel(location) {
   const bmp = new Uint8Array(Math.ceil(width / 8) * height);
   const rb = Math.ceil(width / 8);
   
-  // Helper to set pixel
-  const setPixel = (x, y) => {
-    if (x < 0 || x >= width || y < 0 || y >= height) return;
-    const byteIndex = y * rb + Math.floor(x / 8);
-    const bitIndex = 7 - (x % 8);
-    bmp[byteIndex] |= (1 << bitIndex);
+  // Helper to set pixel (using global setP function)
+  const setPixelLocal = (x, y) => {
+    setP(bmp, rb, x, y, height);
   };
   
-  // Draw text using font
-  const drawText = (text, x, y, scale = 1) => {
-    let cx = x;
-    for (const char of text) {
-      const g = F[char.toUpperCase()] || F[' '];
-      if (g) {
+  // Draw text using font F (global)
+  const drawTextLocal = (text, startX, startY, scale = 1) => {
+    let cx = startX;
+    const textStr = String(text || '');
+    for (let i = 0; i < textStr.length; i++) {
+      const char = textStr[i];
+      const glyph = F[char.toUpperCase()] || F[' '];
+      if (glyph) {
         for (let row = 0; row < 8; row++) {
           for (let col = 0; col < 8; col++) {
-            if (g[row] & (0x80 >> col)) {
+            if (glyph[row] & (0x80 >> col)) {
               for (let sy = 0; sy < scale; sy++) {
                 for (let sx = 0; sx < scale; sx++) {
-                  setPixel(cx + col * scale + sx, y + row * scale + sy);
+                  setPixelLocal(cx + col * scale + sx, startY + row * scale + sy);
                 }
               }
             }
@@ -266,38 +265,36 @@ export async function createLocationLabel(location) {
     }
   };
   
-  // Generate barcode (Code128-like pattern for location_code)
-  const generateBarcode = (text, startX, startY, height, moduleWidth = 2) => {
-    // Simple barcode pattern - alternating bars based on character values
+  // Generate simple barcode for location code
+  const generateBarcodeLocal = (text, startX, startY, barcodeHeight, moduleWidth = 2) => {
     let x = startX;
+    const textStr = String(text || '');
     
-    // Start pattern
+    // Start bars
     for (let i = 0; i < 3; i++) {
       for (let w = 0; w < moduleWidth; w++) {
-        for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+        for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
       }
       x += moduleWidth * 2;
     }
     
-    // Encode each character
-    for (const char of text) {
-      const code = char.charCodeAt(0);
-      // Create bar pattern based on character code
+    // Data bars from character codes
+    for (let i = 0; i < textStr.length; i++) {
+      const code = textStr.charCodeAt(i);
       for (let bit = 7; bit >= 0; bit--) {
-        const isBar = (code >> bit) & 1;
-        if (isBar) {
+        if ((code >> bit) & 1) {
           for (let w = 0; w < moduleWidth; w++) {
-            for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+            for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
           }
         }
         x += moduleWidth;
       }
     }
     
-    // End pattern
+    // End bars
     for (let i = 0; i < 3; i++) {
       for (let w = 0; w < moduleWidth; w++) {
-        for (let h = 0; h < height; h++) setPixel(x + w, startY + h);
+        for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
       }
       x += moduleWidth * 2;
     }
@@ -305,33 +302,33 @@ export async function createLocationLabel(location) {
   
   // Layout:
   // Row 1: Location Code (large) - scale 4
-  drawText(locationCode.substring(0, 10), 10, 5, 4);
+  drawTextLocal(locationCode.substring(0, 10), 10, 5, 4);
   
   // Row 2: Station Name - scale 2
-  drawText(stationName.substring(0, 30).toUpperCase(), 10, 45, 2);
+  drawTextLocal(stationName.substring(0, 30).toUpperCase(), 10, 45, 2);
   
   // Row 3: Street - scale 2
-  drawText(street.substring(0, 35).toUpperCase(), 10, 70, 2);
+  drawTextLocal(street.substring(0, 35).toUpperCase(), 10, 70, 2);
   
   // Row 4: City - scale 2
-  drawText(cityLine.substring(0, 35).toUpperCase(), 10, 95, 2);
+  drawTextLocal(cityLine.substring(0, 35).toUpperCase(), 10, 95, 2);
   
   // Row 5: Phone and Manager - scale 1
-  drawText(`TEL: ${phone.substring(0, 20)}`, 10, 120, 1);
-  drawText(`MANAGER: ${manager.substring(0, 15)}`.toUpperCase(), 250, 120, 1);
+  drawTextLocal('TEL: ' + phone.substring(0, 20), 10, 120, 1);
+  drawTextLocal('MANAGER: ' + manager.substring(0, 15).toUpperCase(), 250, 120, 1);
   
   // Row 6: Device count - scale 1
-  drawText(deviceInfo.toUpperCase(), 10, 135, 1);
+  drawTextLocal(deviceInfo.toUpperCase(), 10, 135, 1);
   
   // Barcode at bottom (location_code encoded)
-  generateBarcode(locationCode, 10, 155, 60, 3);
+  generateBarcodeLocal(locationCode, 10, 155, 60, 3);
   
   // Barcode text below
-  drawText(locationCode, 10, 220, 2);
+  drawTextLocal(locationCode, 10, 220, 2);
   
   // Build raster data
   const d = [];
-  d.push(...[0x00].concat(Array(199).fill(0)));
+  for (let i = 0; i < 200; i++) d.push(0);
   d.push(0x1B, 0x40);
   d.push(0x1B, 0x69, 0x61, 0x01);
   d.push(0x1B, 0x69, 0x21, 0x00);
@@ -356,4 +353,138 @@ export async function createLocationLabel(location) {
   return new Uint8Array(d);
 }
 
-export default { createBrotherRasterLabel, createTestLabel, createAssetLabel, createLocationLabel, LABEL_WIDTH, LABEL_HEIGHT };
+/**
+ * Create device label with all device data
+ */
+export async function createDeviceLabel(device) {
+  const deviceId = device.device_id || 'N/A';
+  const locationCode = device.locationcode || device.location_code || '-';
+  const street = device.street || '-';
+  const cityLine = `${device.zip || ''} ${device.city || ''}`.trim() || '-';
+  const phone = device.phone || device.telefon || '-';
+  const snPc = device.sn_pc || '-';
+  const snSc = device.sn_sc || '-';
+  const status = device.status || '-';
+  
+  const width = LABEL_WIDTH;
+  const height = LABEL_HEIGHT;
+  const bmp = new Uint8Array(Math.ceil(width / 8) * height);
+  const rb = Math.ceil(width / 8);
+  
+  // Helper to set pixel
+  const setPixelLocal = (x, y) => {
+    setP(bmp, rb, x, y, height);
+  };
+  
+  // Draw text using font F
+  const drawTextLocal = (text, startX, startY, scale = 1) => {
+    let cx = startX;
+    const textStr = String(text || '');
+    for (let i = 0; i < textStr.length; i++) {
+      const char = textStr[i];
+      const glyph = F[char.toUpperCase()] || F[' '];
+      if (glyph) {
+        for (let row = 0; row < 8; row++) {
+          for (let col = 0; col < 8; col++) {
+            if (glyph[row] & (0x80 >> col)) {
+              for (let sy = 0; sy < scale; sy++) {
+                for (let sx = 0; sx < scale; sx++) {
+                  setPixelLocal(cx + col * scale + sx, startY + row * scale + sy);
+                }
+              }
+            }
+          }
+        }
+      }
+      cx += 8 * scale + scale;
+    }
+  };
+  
+  // Generate barcode
+  const generateBarcodeLocal = (text, startX, startY, barcodeHeight, moduleWidth = 2) => {
+    let x = startX;
+    const textStr = String(text || '');
+    
+    for (let i = 0; i < 3; i++) {
+      for (let w = 0; w < moduleWidth; w++) {
+        for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
+      }
+      x += moduleWidth * 2;
+    }
+    
+    for (let i = 0; i < textStr.length; i++) {
+      const code = textStr.charCodeAt(i);
+      for (let bit = 7; bit >= 0; bit--) {
+        if ((code >> bit) & 1) {
+          for (let w = 0; w < moduleWidth; w++) {
+            for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
+          }
+        }
+        x += moduleWidth;
+      }
+    }
+    
+    for (let i = 0; i < 3; i++) {
+      for (let w = 0; w < moduleWidth; w++) {
+        for (let h = 0; h < barcodeHeight; h++) setPixelLocal(x + w, startY + h);
+      }
+      x += moduleWidth * 2;
+    }
+  };
+  
+  // Layout:
+  // Row 1: Device ID (large) - scale 3
+  drawTextLocal(deviceId.substring(0, 15), 10, 5, 3);
+  
+  // Row 2: Status - scale 2
+  drawTextLocal('STATUS: ' + status.toUpperCase(), 10, 35, 2);
+  
+  // Row 3: Location Code - scale 2
+  drawTextLocal('STANDORT: ' + locationCode, 10, 58, 2);
+  
+  // Row 4: Street - scale 1
+  drawTextLocal(street.substring(0, 40).toUpperCase(), 10, 82, 1);
+  
+  // Row 5: City - scale 1
+  drawTextLocal(cityLine.substring(0, 40).toUpperCase(), 10, 95, 1);
+  
+  // Row 6: Phone - scale 1
+  drawTextLocal('TEL: ' + phone.substring(0, 25), 10, 110, 1);
+  
+  // Row 7: Serial numbers - scale 1
+  drawTextLocal('SN-PC: ' + snPc.substring(0, 20), 10, 125, 1);
+  drawTextLocal('SN-SC: ' + snSc.substring(0, 20), 250, 125, 1);
+  
+  // Barcode at bottom (device_id encoded)
+  generateBarcodeLocal(deviceId, 10, 145, 55, 2);
+  
+  // Barcode text below
+  drawTextLocal(deviceId, 10, 205, 2);
+  
+  // Build raster data
+  const d = [];
+  for (let i = 0; i < 200; i++) d.push(0);
+  d.push(0x1B, 0x40);
+  d.push(0x1B, 0x69, 0x61, 0x01);
+  d.push(0x1B, 0x69, 0x21, 0x00);
+  d.push(0x1B, 0x69, 0x7A, 0x0A, 0x0A, 62, 0, 0, 0, height & 0xFF, (height >> 8) & 0xFF, 0, 0);
+  d.push(0x1B, 0x69, 0x4D, 0x40);
+  d.push(0x1B, 0x69, 0x41, 0x01);
+  d.push(0x1B, 0x69, 0x4B, 0x08);
+  d.push(0x1B, 0x69, 0x64, 0, 0);
+  
+  for (let y = 0; y < height; y++) {
+    d.push(0x67, 0x00, rb);
+    for (let bi = rb - 1; bi >= 0; bi--) {
+      let b = bmp[y * rb + bi] || 0;
+      let r = 0;
+      for (let i = 0; i < 8; i++) if (b & (1 << i)) r |= (1 << (7 - i));
+      d.push(r);
+    }
+  }
+  
+  d.push(0x1A);
+  return new Uint8Array(d);
+}
+
+export default { createBrotherRasterLabel, createTestLabel, createAssetLabel, createLocationLabel, createDeviceLabel, LABEL_WIDTH, LABEL_HEIGHT };
