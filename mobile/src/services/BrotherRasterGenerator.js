@@ -197,7 +197,9 @@ export async function createBrotherRasterLabel(opts = {}) {
     }
   }
 
-  d.push(0x1A);
+  // Print command with feeding: ESC SUB FF (0x1B 0x1A 0x0C)
+  // This is the correct sequence to trigger printing
+  d.push(0x1B, 0x1A, 0x0C);
   return new Uint8Array(d);
 }
 
