@@ -103,6 +103,33 @@ const DeviceDetailModal = ({ visible, device, onClose, onPrintLabel }) => {
   
   const phone = device.phone || device.telefon || null;
   
+  // Direct phone call handler inside modal
+  const handleCall = async () => {
+    if (!phone || phone === '-') {
+      Alert.alert('Fehler', 'Keine Telefonnummer verfügbar');
+      return;
+    }
+    
+    const cleanNumber = phone.replace(/[^0-9+]/g, '');
+    const url = `tel:${cleanNumber}`;
+    
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Phone call error:', error);
+      Alert.alert('Fehler', `Anruf fehlgeschlagen: ${error.message}`);
+    }
+  };
+  
+  // Direct print handler inside modal
+  const handlePrint = () => {
+    if (onPrintLabel) {
+      onPrintLabel(device);
+    } else {
+      Alert.alert('Fehler', 'Druckfunktion nicht verfügbar');
+    }
+  };
+  
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <View style={styles.fullscreenModal}>
@@ -128,7 +155,7 @@ const DeviceDetailModal = ({ visible, device, onClose, onPrintLabel }) => {
             {/* Call Button */}
             <TouchableOpacity 
               style={[styles.actionButton, styles.actionButtonCall, !phone && styles.actionButtonDisabled]}
-              onPress={() => phone && makePhoneCall(phone)}
+              onPress={handleCall}
               disabled={!phone}
             >
               <Text style={styles.actionButtonIcon}>📞</Text>
@@ -138,7 +165,7 @@ const DeviceDetailModal = ({ visible, device, onClose, onPrintLabel }) => {
             {/* Print Label Button */}
             <TouchableOpacity 
               style={[styles.actionButton, styles.actionButtonPrint]}
-              onPress={() => onPrintLabel && onPrintLabel(device)}
+              onPress={handlePrint}
             >
               <Text style={styles.actionButtonIcon}>🏷️</Text>
               <Text style={styles.actionButtonText}>Label drucken</Text>
