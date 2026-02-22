@@ -45,27 +45,27 @@ const StatusBadge = ({ status }) => {
 const DeviceCard = ({ device, onPress }) => (
   <TouchableOpacity style={styles.deviceCard} onPress={() => onPress(device)}>
     <View style={styles.deviceHeader}>
-      <Text style={styles.deviceId}>{device.device_id || device.deviceId || 'N/A'}</Text>
+      <Text style={styles.deviceId}>{device.device_id || '-'}</Text>
       <StatusBadge status={device.status} />
     </View>
     
     <View style={styles.deviceDetails}>
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Standort:</Text>
-        <Text style={styles.detailValue}>{device.location_code || device.location || '-'}</Text>
+        <Text style={styles.detailValue}>{device.locationcode || device.location_code || '-'}</Text>
       </View>
       <View style={styles.detailRow}>
         <Text style={styles.detailLabel}>Straße:</Text>
-        <Text style={styles.detailValue} numberOfLines={1}>{device.street || device.strasse || '-'}</Text>
+        <Text style={styles.detailValue} numberOfLines={1}>{device.street || '-'}</Text>
       </View>
       <View style={styles.detailRow}>
-        <Text style={styles.detailLabel}>Stadt:</Text>
-        <Text style={styles.detailValue}>{device.zip || device.plz || ''} {device.city || device.stadt || '-'}</Text>
+        <Text style={styles.detailLabel}>PLZ/Ort:</Text>
+        <Text style={styles.detailValue}>{device.zip || ''} {device.city || '-'}</Text>
       </View>
-      {device.serial_number && (
+      {device.sn_pc && (
         <View style={styles.detailRow}>
-          <Text style={styles.detailLabel}>S/N:</Text>
-          <Text style={styles.detailValue}>{device.serial_number}</Text>
+          <Text style={styles.detailLabel}>SN-PC:</Text>
+          <Text style={styles.detailValue}>{device.sn_pc}</Text>
         </View>
       )}
     </View>
