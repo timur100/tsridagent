@@ -350,6 +350,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: theme.colors.background,
   },
+  loadingText: {
+    marginTop: 12,
+    color: theme.colors.textMuted,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -373,55 +377,150 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: theme.colors.textMuted,
   },
-  listContent: {
-    padding: 12,
-  },
   
-  // Location Card
-  locationCard: {
+  // Stats Row
+  statsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    padding: 12,
+    gap: 8,
+  },
+  statCard: {
+    flex: 1,
     backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    padding: 14,
-    marginBottom: 10,
-  },
-  cardLeft: {
-    marginRight: 12,
-  },
-  
-  // Card Columns
-  cardStatusCol: {
-    width: 70,
-    marginRight: 8,
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
     borderRadius: 10,
+    padding: 10,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  statusText: {
-    fontSize: 10,
-    fontWeight: '600',
+  statCardActive: {
+    borderColor: theme.colors.primary,
   },
-  cardCodeCol: {
-    width: 70,
-    marginRight: 8,
-  },
-  cardCode: {
-    fontSize: 14,
+  statValue: {
+    fontSize: 20,
     fontWeight: '700',
     color: theme.colors.textPrimary,
   },
-  cardDetailsCol: {
-    flex: 1,
+  statLabel: {
+    fontSize: 10,
+    color: theme.colors.textMuted,
+    marginTop: 2,
   },
-  cardName: {
+  
+  // Search
+  searchContainer: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  searchInput: {
+    flex: 1,
+    backgroundColor: theme.colors.surface,
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    color: theme.colors.textPrimary,
     fontSize: 14,
+  },
+  clearSearch: {
+    position: 'absolute',
+    right: 24,
+    padding: 8,
+  },
+  clearSearchText: {
+    fontSize: 16,
+    color: theme.colors.textMuted,
+  },
+  
+  listContent: {
+    padding: 12,
+    paddingTop: 0,
+  },
+  
+  // Location Card - Table-like layout
+  locationCard: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 10,
+    position: 'relative',
+  },
+  cardRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  cardCol1: {
+    width: 70,
+  },
+  cardCol2: {
+    width: 55,
+    marginLeft: 4,
+  },
+  cardCol3: {
+    width: 70,
+    marginLeft: 4,
+  },
+  cardCol4: {
+    flex: 1,
+    marginLeft: 4,
+  },
+  
+  // Online Badge
+  onlineBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    gap: 4,
+  },
+  onlineDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  onlineText: {
+    fontSize: 9,
+    fontWeight: '600',
+  },
+  
+  // Status Badge
+  statusBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: 9,
+    fontWeight: '600',
+  },
+  
+  cardCode: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+  },
+  cardStation: {
+    fontSize: 13,
     fontWeight: '600',
     color: theme.colors.textPrimary,
-    marginBottom: 2,
+  },
+  
+  // Row 2 - Details
+  cardRowDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    paddingRight: 20,
+  },
+  detailsLeft: {
+    flex: 1,
+  },
+  detailsRight: {
+    alignItems: 'flex-end',
   },
   cardAddress: {
     fontSize: 11,
@@ -430,11 +529,19 @@ const styles = StyleSheet.create({
   cardCity: {
     fontSize: 11,
     color: theme.colors.textMuted,
+    marginTop: 1,
+  },
+  deviceCount: {
+    fontSize: 11,
+    color: theme.colors.primary,
+    fontWeight: '500',
   },
   cardArrow: {
+    position: 'absolute',
+    right: 12,
+    top: '50%',
     fontSize: 24,
     color: theme.colors.textMuted,
-    marginLeft: 8,
   },
   
   // Empty
@@ -447,7 +554,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
+    marginBottom: 4,
+  },
+  emptySubtext: {
+    fontSize: 13,
     color: theme.colors.textMuted,
   },
   
