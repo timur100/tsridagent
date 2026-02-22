@@ -83,6 +83,51 @@ const LocationDetailModal = ({ visible, location, onClose, onPrintLabel }) => {
   
   const phone = location.phone || location.telefon || null;
   
+  // Direct phone call handler inside modal
+  const handleCall = async () => {
+    if (!phone || phone === '-') {
+      Alert.alert('Fehler', 'Keine Telefonnummer verfügbar');
+      return;
+    }
+    
+    const cleanNumber = phone.replace(/[^0-9+]/g, '');
+    const url = `tel:${cleanNumber}`;
+    
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Phone call error:', error);
+      Alert.alert('Fehler', `Anruf fehlgeschlagen: ${error.message}`);
+    }
+  };
+  
+  // Direct navigation handler inside modal
+  const handleNavigation = () => {
+    const address = [
+      location.street,
+      location.postal_code,
+      location.city,
+      location.country || 'Deutschland'
+    ].filter(Boolean).join(', ');
+    
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+    
+    Linking.openURL(url).catch(err => {
+      console.error('Navigation error:', err);
+      Alert.alert('Fehler', 'Navigation konnte nicht gestartet werden');
+    });
+  };
+  
+  // Direct print handler inside modal
+  const handlePrint = () => {
+    if (onPrintLabel) {
+      onPrintLabel(location);
+    } else {
+      Alert.alert('Fehler', 'Druckfunktion nicht verfügbar');
+    }
+  };
+  
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
       <View style={styles.modalContainer}>
@@ -105,16 +150,16 @@ const LocationDetailModal = ({ visible, location, onClose, onPrintLabel }) => {
               {/* Navigation Button */}
               <TouchableOpacity 
                 style={styles.actionButton}
-                onPress={() => openNavigation(location)}
+                onPress={handleNavigation}
               >
                 <Text style={styles.actionButtonIcon}>🧭</Text>
-                <Text style={styles.actionButtonText}>Navigation</Text>
+                <Text style={styles.actionButtonText}>Navi</Text>
               </TouchableOpacity>
               
               {/* Call Button */}
               <TouchableOpacity 
                 style={[styles.actionButton, styles.actionButtonCall, !phone && styles.actionButtonDisabled]}
-                onPress={() => phone && makePhoneCall(phone)}
+                onPress={handleCall}
                 disabled={!phone}
               >
                 <Text style={styles.actionButtonIcon}>📞</Text>
@@ -124,7 +169,7 @@ const LocationDetailModal = ({ visible, location, onClose, onPrintLabel }) => {
               {/* Print Label Button */}
               <TouchableOpacity 
                 style={[styles.actionButton, styles.actionButtonPrint]}
-                onPress={() => onPrintLabel && onPrintLabel(location)}
+                onPress={handlePrint}
               >
                 <Text style={styles.actionButtonIcon}>🏷️</Text>
                 <Text style={styles.actionButtonText}>Label</Text>
@@ -138,32 +183,18 @@ const LocationDetailModal = ({ visible, location, onClose, onPrintLabel }) => {
             <InfoRow label="PLZ / Stadt" value={`${location.postal_code || ''} ${location.city || ''}`} />
             <InfoRow label="Bundesland" value={location.state} />
             <InfoRow label="Land" value={location.country} />
-            <InfoRow label="Kontinent" value={location.continent} />
           </View>
           
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>Kontakt</Text>
             <InfoRow label="Manager" value={location.manager} />
             <InfoRow label="Telefon" value={location.phone} />
-            <InfoRow label="Telefon Int." value={location.phone_internal} />
             <InfoRow label="E-Mail" value={location.email} />
           </View>
           
           <View style={styles.infoSection}>
             <Text style={styles.sectionTitle}>Geräte</Text>
-            <InfoRow label="Geräte" value={`${location.online_device_count || 0} / ${location.device_count || 0} online`} />
-            <InfoRow label="SN-PC" value={location.sn_pc} />
-            <InfoRow label="SN-SC" value={location.sn_sc} />
-            <InfoRow label="TV-ID" value={location.tv_id} />
-          </View>
-          
-          <View style={styles.infoSection}>
-            <Text style={styles.sectionTitle}>Details</Text>
-            <InfoRow label="Standort-ID" value={location.location_id} />
-            <InfoRow label="Typ" value={location.main_type} />
-            <InfoRow label="Status" value={location.status} />
-            <InfoRow label="Erstellt" value={formatDate(location.created_at)} />
-            <InfoRow label="Aktualisiert" value={formatDate(location.updated_at)} />
+            <InfoRow label="Online/Gesamt" value={`${location.online_device_count || 0} / ${location.device_count || 0}`} />
           </View>
         </ScrollView>
       </View>
