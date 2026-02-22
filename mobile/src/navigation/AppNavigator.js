@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
 
@@ -13,6 +13,8 @@ import AssetsScreen from '../screens/AssetsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LocationsScreen from '../screens/LocationsScreen';
 import GoodsReceiptScreen from '../screens/GoodsReceiptScreen';
+
+const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
 
 // Simple icon components (Lucide-style)
 const IconHome = ({ color, size }) => (
@@ -48,29 +50,32 @@ const IconSettings = ({ color, size }) => (
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Custom Header with Burger Menu
+// Custom Header with Burger Menu - With StatusBar padding
 const CustomHeader = ({ title, navigation, showMenu, onMenuPress }) => (
   <View style={{
     backgroundColor: theme.colors.primary,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    paddingTop: STATUSBAR_HEIGHT + 8,
+    paddingBottom: 12,
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    height: 44,
   }}>
-    <Text style={{ 
-      color: '#fff', 
-      fontSize: 16, 
-      fontWeight: '600',
-    }} numberOfLines={1}>
-      {title}
-    </Text>
-    {showMenu && (
-      <TouchableOpacity onPress={onMenuPress} style={{ padding: 4 }}>
-        <Text style={{ fontSize: 22, color: '#fff' }}>☰</Text>
-      </TouchableOpacity>
-    )}
+    <View style={{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }}>
+      <Text style={{ 
+        color: '#fff', 
+        fontSize: 18, 
+        fontWeight: '700',
+      }} numberOfLines={1}>
+        {title}
+      </Text>
+      {showMenu && (
+        <TouchableOpacity onPress={onMenuPress} style={{ padding: 8 }}>
+          <Text style={{ fontSize: 24, color: '#fff' }}>☰</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   </View>
 );
 
