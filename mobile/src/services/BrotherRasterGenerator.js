@@ -221,6 +221,7 @@ export async function createAssetLabel(asset) {
 /**
  * Create location/station label with barcode
  * Barcode contains location_code for scanning
+ * COMPACT VERSION - smaller data size for Brother printer
  */
 export async function createLocationLabel(location) {
   const locationCode = location.location_code || 'N/A';
@@ -228,20 +229,18 @@ export async function createLocationLabel(location) {
   const street = location.street || '-';
   const cityLine = `${location.postal_code || ''} ${location.city || ''}`.trim() || '-';
   const phone = location.phone || '-';
-  const manager = location.manager || '-';
-  const deviceInfo = `Geräte: ${location.device_count || 0}`;
   
   const w = LABEL_WIDTH;
-  const h = LABEL_HEIGHT;
+  const h = 150; // Reduced height for compact label
   const rb = Math.ceil(w / 8);
   const bmp = new Uint8Array(rb * h);
   
-  // Draw barcode function
+  // Draw barcode function - compact version
   const drawBarcode = (text, startX, startY, barH, modW) => {
     let x = startX;
-    const t = String(text || '');
+    const t = String(text || '').substring(0, 8); // Limit length
     // Start bars
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       for (let bw = 0; bw < modW; bw++) {
         for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
       }
@@ -250,7 +249,7 @@ export async function createLocationLabel(location) {
     // Data bars
     for (let i = 0; i < t.length; i++) {
       const code = t.charCodeAt(i);
-      for (let bit = 7; bit >= 0; bit--) {
+      for (let bit = 5; bit >= 0; bit--) { // Only 6 bits for smaller barcode
         if ((code >> bit) & 1) {
           for (let bw = 0; bw < modW; bw++) {
             for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
@@ -260,7 +259,7 @@ export async function createLocationLabel(location) {
       }
     }
     // End bars
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       for (let bw = 0; bw < modW; bw++) {
         for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
       }
@@ -268,21 +267,20 @@ export async function createLocationLabel(location) {
     }
   };
   
-  // Layout using existing drawTxt function
-  drawTxt(bmp, rb, w, h, locationCode.substring(0, 10), 10, 5, 4);
-  drawTxt(bmp, rb, w, h, stationName.substring(0, 28), 10, 45, 2);
-  drawTxt(bmp, rb, w, h, street.substring(0, 35), 10, 70, 2);
-  drawTxt(bmp, rb, w, h, cityLine.substring(0, 35), 10, 95, 2);
-  drawTxt(bmp, rb, w, h, 'TEL: ' + phone.substring(0, 18), 10, 120, 1);
-  drawTxt(bmp, rb, w, h, deviceInfo, 10, 135, 1);
+  // Compact layout
+  drawTxt(bmp, rb, w, h, locationCode.substring(0, 8), 10, 5, 3);          // Code large
+  drawTxt(bmp, rb, w, h, stationName.substring(0, 25), 10, 35, 2);         // Station name
+  drawTxt(bmp, rb, w, h, street.substring(0, 30), 10, 55, 1);              // Street small
+  drawTxt(bmp, rb, w, h, cityLine.substring(0, 25), 10, 68, 1);            // City small
+  drawTxt(bmp, rb, w, h, 'TEL: ' + phone.substring(0, 15), 10, 81, 1);     // Phone small
   
-  // Barcode at bottom
-  drawBarcode(locationCode, 10, 155, 55, 3);
-  drawTxt(bmp, rb, w, h, locationCode, 10, 215, 2);
+  // Barcode - smaller
+  drawBarcode(locationCode, 10, 95, 35, 2);
+  drawTxt(bmp, rb, w, h, locationCode, 10, 133, 1);
   
-  // Build raster data
+  // Build raster data - compact
   const d = [];
-  for (let i = 0; i < 200; i++) d.push(0);
+  for (let i = 0; i < 100; i++) d.push(0); // Reduced init
   d.push(0x1B, 0x40);
   d.push(0x1B, 0x69, 0x61, 0x01);
   d.push(0x1B, 0x69, 0x21, 0x00);
@@ -308,27 +306,25 @@ export async function createLocationLabel(location) {
 
 /**
  * Create device label with all device data
+ * COMPACT VERSION - smaller data size for Brother printer
  */
 export async function createDeviceLabel(device) {
   const deviceId = device.device_id || 'N/A';
   const locationCode = device.locationcode || device.location_code || '-';
-  const street = device.street || '-';
   const cityLine = `${device.zip || ''} ${device.city || ''}`.trim() || '-';
-  const phone = device.phone || device.telefon || '-';
   const snPc = device.sn_pc || '-';
-  const snSc = device.sn_sc || '-';
   const status = device.status || '-';
   
   const w = LABEL_WIDTH;
-  const h = LABEL_HEIGHT;
+  const h = 150; // Reduced height
   const rb = Math.ceil(w / 8);
   const bmp = new Uint8Array(rb * h);
   
-  // Draw barcode function
+  // Draw barcode function - compact
   const drawBarcode = (text, startX, startY, barH, modW) => {
     let x = startX;
-    const t = String(text || '');
-    for (let i = 0; i < 3; i++) {
+    const t = String(text || '').substring(0, 12);
+    for (let i = 0; i < 2; i++) {
       for (let bw = 0; bw < modW; bw++) {
         for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
       }
@@ -336,7 +332,7 @@ export async function createDeviceLabel(device) {
     }
     for (let i = 0; i < t.length; i++) {
       const code = t.charCodeAt(i);
-      for (let bit = 7; bit >= 0; bit--) {
+      for (let bit = 5; bit >= 0; bit--) {
         if ((code >> bit) & 1) {
           for (let bw = 0; bw < modW; bw++) {
             for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
@@ -345,7 +341,7 @@ export async function createDeviceLabel(device) {
         x += modW;
       }
     }
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 2; i++) {
       for (let bw = 0; bw < modW; bw++) {
         for (let bh = 0; bh < barH; bh++) setP(bmp, rb, x + bw, startY + bh, h);
       }
@@ -353,23 +349,19 @@ export async function createDeviceLabel(device) {
     }
   };
   
-  // Layout
-  drawTxt(bmp, rb, w, h, deviceId.substring(0, 15), 10, 5, 3);
-  drawTxt(bmp, rb, w, h, 'STATUS: ' + status.toUpperCase(), 10, 35, 2);
-  drawTxt(bmp, rb, w, h, 'STANDORT: ' + locationCode, 10, 58, 2);
-  drawTxt(bmp, rb, w, h, street.substring(0, 40), 10, 82, 1);
-  drawTxt(bmp, rb, w, h, cityLine.substring(0, 40), 10, 95, 1);
-  drawTxt(bmp, rb, w, h, 'TEL: ' + phone.substring(0, 25), 10, 110, 1);
-  drawTxt(bmp, rb, w, h, 'SN-PC: ' + snPc.substring(0, 18), 10, 125, 1);
-  drawTxt(bmp, rb, w, h, 'SN-SC: ' + snSc.substring(0, 18), 250, 125, 1);
+  // Compact layout
+  drawTxt(bmp, rb, w, h, deviceId.substring(0, 15), 10, 5, 2);             // Device ID
+  drawTxt(bmp, rb, w, h, status.toUpperCase() + ' | ' + locationCode, 10, 28, 2); // Status + Location
+  drawTxt(bmp, rb, w, h, cityLine.substring(0, 30), 10, 50, 1);            // City
+  drawTxt(bmp, rb, w, h, 'SN: ' + snPc.substring(0, 20), 10, 63, 1);       // Serial
   
   // Barcode
-  drawBarcode(deviceId, 10, 145, 50, 2);
-  drawTxt(bmp, rb, w, h, deviceId, 10, 200, 2);
+  drawBarcode(deviceId, 10, 80, 35, 2);
+  drawTxt(bmp, rb, w, h, deviceId, 10, 118, 1);
   
   // Build raster data
   const d = [];
-  for (let i = 0; i < 200; i++) d.push(0);
+  for (let i = 0; i < 100; i++) d.push(0);
   d.push(0x1B, 0x40);
   d.push(0x1B, 0x69, 0x61, 0x01);
   d.push(0x1B, 0x69, 0x21, 0x00);
