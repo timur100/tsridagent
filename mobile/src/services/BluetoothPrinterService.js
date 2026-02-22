@@ -989,6 +989,17 @@ class BluetoothPrinterService {
     };
   }
 
+  /**
+   * Get connection status for quick checks
+   */
+  getConnectionStatus() {
+    return {
+      isConnected: this.connectedDevice !== null,
+      deviceName: this.connectedDevice?.name || null,
+      deviceType: this.connectedDevice?.type || null,
+    };
+  }
+
   destroy() {
     this.stopScan();
     this.disconnect();
