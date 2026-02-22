@@ -272,7 +272,7 @@ class BluetoothPrinterService {
     if (!btEnabled) {
       const enabled = await this.requestBluetoothEnabled();
       if (!enabled) {
-        throw new Error('Bluetooth ist deaktiviert.');
+        throw new Error('Bluetooth ist deaktiviert. Bitte aktivieren Sie Bluetooth in den Android-Einstellungen.');
       }
     }
 
@@ -284,11 +284,12 @@ class BluetoothPrinterService {
 
     console.log('Starting Bluetooth scan...');
 
-    // Scan Bluetooth Classic (for Brother)
-    try {
-      // Get paired devices first
-      const pairedDevices = await RNBluetoothClassic.getBondedDevices();
-      console.log(`Found ${pairedDevices.length} bonded devices`);
+    // Scan Bluetooth Classic (for Brother) - only if available
+    if (RNBluetoothClassic) {
+      try {
+        // Get paired devices first
+        const pairedDevices = await RNBluetoothClassic.getBondedDevices();
+        console.log(`Found ${pairedDevices.length} bonded devices`);
       
       for (const device of pairedDevices) {
         pairedAddresses.add(device.address);
