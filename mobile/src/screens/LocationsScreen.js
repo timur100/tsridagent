@@ -52,9 +52,23 @@ const openNavigation = (location) => {
   });
 };
 
+// Helper function to make phone call
+const makePhoneCall = (phoneNumber) => {
+  if (!phoneNumber || phoneNumber === '-') return;
+  const cleanNumber = phoneNumber.replace(/[^0-9+]/g, '');
+  const url = Platform.OS === 'android' ? `tel:${cleanNumber}` : `telprompt:${cleanNumber}`;
+  Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    }
+  });
+};
+
 // Location Detail Modal
-const LocationDetailModal = ({ visible, location, onClose }) => {
+const LocationDetailModal = ({ visible, location, onClose, onPrintLabel }) => {
   if (!location) return null;
+  
+  const phone = location.phone || location.telefon || null;
   
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
@@ -73,14 +87,36 @@ const LocationDetailModal = ({ visible, location, onClose }) => {
             <Text style={styles.locationName}>{location.station_name || '-'}</Text>
             <Text style={styles.locationId}>{location.location_code || '-'}</Text>
             
-            {/* Navigation Button */}
-            <TouchableOpacity 
-              style={styles.navButton}
-              onPress={() => openNavigation(location)}
-            >
-              <Text style={styles.navButtonIcon}>🧭</Text>
-              <Text style={styles.navButtonText}>Navigation starten</Text>
-            </TouchableOpacity>
+            {/* Action Buttons Row */}
+            <View style={styles.actionButtonsRow}>
+              {/* Navigation Button */}
+              <TouchableOpacity 
+                style={styles.actionButton}
+                onPress={() => openNavigation(location)}
+              >
+                <Text style={styles.actionButtonIcon}>🧭</Text>
+                <Text style={styles.actionButtonText}>Navigation</Text>
+              </TouchableOpacity>
+              
+              {/* Call Button */}
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.actionButtonCall, !phone && styles.actionButtonDisabled]}
+                onPress={() => phone && makePhoneCall(phone)}
+                disabled={!phone}
+              >
+                <Text style={styles.actionButtonIcon}>📞</Text>
+                <Text style={styles.actionButtonText}>Anrufen</Text>
+              </TouchableOpacity>
+              
+              {/* Print Label Button */}
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.actionButtonPrint]}
+                onPress={() => onPrintLabel && onPrintLabel(location)}
+              >
+                <Text style={styles.actionButtonIcon}>🏷️</Text>
+                <Text style={styles.actionButtonText}>Label</Text>
+              </TouchableOpacity>
+            </View>
           </View>
           
           <View style={styles.infoSection}>
