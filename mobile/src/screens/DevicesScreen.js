@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { devicesAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { useWebSocket, useRealtimeUpdates } from '../contexts/WebSocketContext';
+import { useWebSocket, useRealtimeUpdates, usePollingUpdates } from '../contexts/WebSocketContext';
 import theme from '../utils/theme';
 
 // Status badge component
