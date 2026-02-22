@@ -725,6 +725,27 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: theme.colors.primary,
     fontWeight: '500',
+    marginBottom: 16,
+  },
+  
+  // Navigation Button
+  navButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 8,
+  },
+  navButtonIcon: {
+    fontSize: 20,
+  },
+  navButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
   },
   
   // Info Section
