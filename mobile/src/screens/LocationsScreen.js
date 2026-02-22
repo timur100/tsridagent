@@ -222,7 +222,7 @@ const LocationsScreen = ({ navigation }) => {
 
   // Handle realtime location updates
   const handleLocationUpdate = useCallback((data) => {
-    console.log('[LocationsScreen] Realtime update received:', data);
+    console.log('[LocationsScreen] WebSocket update received:', data);
     
     // Vibrate to indicate update
     Vibration.vibrate(100);
@@ -231,8 +231,14 @@ const LocationsScreen = ({ navigation }) => {
     loadLocations();
   }, [tenantId]);
 
-  // Subscribe to realtime updates
+  // Subscribe to WebSocket updates
   useRealtimeUpdates('location_update', handleLocationUpdate);
+  
+  // Subscribe to polling updates (fallback every 30 seconds)
+  usePollingUpdates(useCallback(() => {
+    console.log('[LocationsScreen] Polling update triggered');
+    loadLocations();
+  }, [tenantId]));
 
   useEffect(() => {
     loadLocations();
