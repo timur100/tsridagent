@@ -1,8 +1,6 @@
 /**
- * Brother QL Raster Generator - SIMPLIFIED
- * NO LOGO - Full width for text
- * 
- * Label: 62mm x 23mm = 696 x 271 pixels @ 300dpi
+ * Brother QL Raster Generator - LARGER TEXT VERSION
+ * QR smaller to allow bigger text
  */
 
 import QRCode from 'qrcode';
@@ -102,63 +100,57 @@ function calcScale(txt, maxW, maxSc) {
 }
 
 /**
- * Create Label Bitmap - SIMPLE LAYOUT, NO LOGO
- * 
- * +------------------------------------------+
- * |  +------+   TSRID-SCA-TSR-0001  (LARGE)  |
- * |  |  QR  |   TSRID SCANNER      (LARGE)  |
- * |  | CODE |   SN: 7E91145BA4244  (LARGE)  |
- * |  +------+                                |
- * +------------------------------------------+
+ * Create Label Bitmap
+ * QR: 180px (smaller to allow bigger text)
+ * Text: Uses remaining ~500px width
  */
 async function createBitmap(assetId, typeLabel, sn, loc, w, h) {
   const rb = Math.ceil(w / 8);
   const bmp = new Uint8Array(rb * h).fill(0);
   
-  const P = 8; // padding
+  // QR Code - smaller to give more room for text
+  const qrSize = 180;
+  const qrX = 10;
+  const qrY = Math.floor((h - qrSize) / 2);
   
-  // QR Code - full height
-  const qrSize = h - P * 2;
-  const qrX = P;
-  
-  // Text area - FULL WIDTH after QR
-  const textX = qrSize + P + 20;
-  const textW = w - textX - P;
+  // Text area - much wider now
+  const textX = qrSize + 25;
+  const textW = w - textX - 10; // ~480px available
   
   // === QR CODE ===
   const qr = await makeQRCode(assetId, qrSize);
   if (qr.bmp.length > 0) {
-    const qrY = Math.floor((h - qr.size) / 2);
+    const offsetY = Math.floor((h - qr.size) / 2);
     for (let y = 0; y < qr.bmp.length; y++) {
       for (let x = 0; x < qr.bmp[y].length; x++) {
-        if (qr.bmp[y][x]) setP(bmp, rb, qrX + x, qrY + y, h);
+        if (qr.bmp[y][x]) setP(bmp, rb, qrX + x, offsetY + y, h);
       }
     }
   }
   
-  // === TEXT - Use full available width ===
+  // === TEXT - BIGGER ===
   
-  // Line 1: Asset ID - LARGEST possible
+  // Line 1: Asset ID - Scale 4 = 32px height (fits 18 chars in 480px)
   const id = assetId || 'N/A';
-  const sc1 = calcScale(id, textW, 6);
-  const y1 = 15;
+  const sc1 = calcScale(id, textW, 4);
+  const y1 = 25;
   drawTxt(bmp, rb, w, h, id, textX, y1, sc1);
   
-  // Line 2: Type Label - Large
-  const y2 = y1 + sc1 * 8 + 15;
-  const sc2 = calcScale(typeLabel, textW, 5);
+  // Line 2: Type Label - Scale 4
+  const y2 = y1 + sc1 * 8 + 20;
+  const sc2 = calcScale(typeLabel, textW, 4);
   drawTxt(bmp, rb, w, h, typeLabel || '', textX, y2, sc2);
   
-  // Line 3: Serial Number - Large
+  // Line 3: Serial Number - Scale 4
   const snTxt = 'SN: ' + (sn || 'N/A');
-  const y3 = y2 + sc2 * 8 + 12;
-  const sc3 = calcScale(snTxt, textW, 5);
+  const y3 = y2 + sc2 * 8 + 20;
+  const sc3 = calcScale(snTxt, textW, 4);
   drawTxt(bmp, rb, w, h, snTxt, textX, y3, sc3);
   
   // Line 4: Location (if provided)
   if (loc) {
-    const y4 = y3 + sc3 * 8 + 10;
-    const sc4 = calcScale(loc, textW, 4);
+    const y4 = y3 + sc3 * 8 + 15;
+    const sc4 = calcScale(loc, textW, 3);
     drawTxt(bmp, rb, w, h, loc, textX, y4, sc4);
   }
   
@@ -181,31 +173,20 @@ export async function createBrotherRasterLabel(opts = {}) {
 
   const d = [];
   
-  // Invalidate
   for (let i = 0; i < 200; i++) d.push(0);
-  
-  // Init
   d.push(0x1B, 0x40);
-  
-  // Raster mode
   d.push(0x1B, 0x69, 0x61, 0x01);
-  
-  // Print info
   d.push(0x1B, 0x69, 0x7A, 0x86, 0x0A, 0x3E, 0x00);
   d.push(height & 0xFF, (height >> 8) & 0xFF);
   d.push(0, 0, 0, 0);
-  
-  // Settings
   d.push(0x1B, 0x69, 0x4D, autoCut ? 0x40 : 0);
   d.push(0x1B, 0x69, 0x41, 0x01);
   d.push(0x1B, 0x69, 0x4B, 0x08);
   d.push(0x1B, 0x69, 0x64, 0, 0);
 
-  // Bitmap
   const bmp = await createBitmap(assetId, typeLabel, serialNumber, location, width, height);
   const rb = Math.ceil(width / 8);
   
-  // Send lines
   for (let y = 0; y < height; y++) {
     d.push(0x67, 0x00, rb);
     for (let bi = rb - 1; bi >= 0; bi--) {
