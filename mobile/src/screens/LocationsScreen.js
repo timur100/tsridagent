@@ -827,22 +827,39 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   
-  // Navigation Button
-  navButton: {
+  // Action Buttons Row
+  actionButtonsRow: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    marginTop: 16,
+    flexWrap: 'wrap',
+  },
+  actionButton: {
+    flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#3b82f6',
-    paddingHorizontal: 20,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 12,
-    gap: 8,
-    marginTop: 8,
+    minWidth: 90,
   },
-  navButtonIcon: {
-    fontSize: 20,
+  actionButtonCall: {
+    backgroundColor: '#22c55e',
   },
-  navButtonText: {
-    fontSize: 15,
+  actionButtonPrint: {
+    backgroundColor: '#8b5cf6',
+  },
+  actionButtonDisabled: {
+    backgroundColor: '#6b7280',
+    opacity: 0.5,
+  },
+  actionButtonIcon: {
+    fontSize: 24,
+    marginBottom: 4,
+  },
+  actionButtonText: {
+    fontSize: 12,
     fontWeight: '600',
     color: '#fff',
   },
