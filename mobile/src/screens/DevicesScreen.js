@@ -276,10 +276,15 @@ const DevicesScreen = ({ navigation, route }) => {
         <View>
           <View style={styles.titleRow}>
             <Text style={styles.title}>Geräte</Text>
-            {isConnected && (
+            {isConnected ? (
               <View style={styles.liveBadge}>
                 <View style={styles.liveDot} />
                 <Text style={styles.liveText}>LIVE</Text>
+              </View>
+            ) : (
+              <View style={styles.offlineBadge}>
+                <View style={styles.offlineDot} />
+                <Text style={styles.offlineText}>OFFLINE</Text>
               </View>
             )}
           </View>
