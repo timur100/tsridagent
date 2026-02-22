@@ -273,22 +273,31 @@ const AssetsScreen = ({ navigation, route }) => {
 
   const loadAssets = async () => {
     try {
+      console.log('[AssetsScreen] Loading assets...');
       const result = await assetsAPI.getAll();
+      console.log('[AssetsScreen] API Response:', JSON.stringify(result).substring(0, 200));
+      
       if (result?.success && result?.assets) {
+        console.log('[AssetsScreen] Found assets (success+assets):', result.assets.length);
         setAssets(result.assets);
       } else if (result?.success && result?.data?.assets) {
+        console.log('[AssetsScreen] Found assets (success+data.assets):', result.data.assets.length);
         setAssets(result.data.assets);
       } else if (Array.isArray(result?.assets)) {
+        console.log('[AssetsScreen] Found assets (array assets):', result.assets.length);
         setAssets(result.assets);
       } else if (Array.isArray(result?.data)) {
+        console.log('[AssetsScreen] Found assets (array data):', result.data.length);
         setAssets(result.data);
       } else if (Array.isArray(result)) {
+        console.log('[AssetsScreen] Found assets (direct array):', result.length);
         setAssets(result);
       } else {
+        console.log('[AssetsScreen] No assets found in response structure');
         setAssets([]);
       }
     } catch (error) {
-      console.error('Error loading assets:', error);
+      console.error('[AssetsScreen] Error loading assets:', error);
       setAssets([]);
     } finally {
       setLoading(false);
