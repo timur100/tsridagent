@@ -207,7 +207,7 @@ const DevicesScreen = ({ navigation, route }) => {
         const status = d.status?.toLowerCase();
         if (statusFilter === 'online') return status === 'online';
         if (statusFilter === 'offline') return status === 'offline';
-        if (statusFilter === 'preparation') return status === 'vorbereitung' || status === 'preparation';
+        if (statusFilter === 'preparation') return status === 'in_vorbereitung' || status === 'vorbereitung' || status === 'preparation';
         return true;
       });
     }
@@ -216,10 +216,11 @@ const DevicesScreen = ({ navigation, route }) => {
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(d => 
-        (d.device_id || d.deviceId || '').toLowerCase().includes(query) ||
-        (d.location_code || d.location || '').toLowerCase().includes(query) ||
-        (d.city || d.stadt || '').toLowerCase().includes(query) ||
-        (d.serial_number || d.sn_pc || '').toLowerCase().includes(query)
+        (d.device_id || '').toLowerCase().includes(query) ||
+        (d.locationcode || d.location_code || '').toLowerCase().includes(query) ||
+        (d.city || '').toLowerCase().includes(query) ||
+        (d.sn_pc || '').toLowerCase().includes(query) ||
+        (d.street || '').toLowerCase().includes(query)
       );
     }
     
