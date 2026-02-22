@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, ActivityIndicator, TouchableOpacity, StatusBar, Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
+import { healthAPI } from '../services/api';
 import theme from '../utils/theme';
 
 // Screens
@@ -13,6 +14,7 @@ import AssetsScreen from '../screens/AssetsScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import LocationsScreen from '../screens/LocationsScreen';
 import GoodsReceiptScreen from '../screens/GoodsReceiptScreen';
+import DevicesScreen from '../screens/DevicesScreen';
 
 const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
 
