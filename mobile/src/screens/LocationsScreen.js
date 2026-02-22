@@ -55,15 +55,26 @@ const openNavigation = (location) => {
 };
 
 // Helper function to make phone call
-const makePhoneCall = (phoneNumber) => {
-  if (!phoneNumber || phoneNumber === '-') return;
+const makePhoneCall = async (phoneNumber) => {
+  if (!phoneNumber || phoneNumber === '-') {
+    Alert.alert('Fehler', 'Keine Telefonnummer verfügbar');
+    return;
+  }
+  
   const cleanNumber = phoneNumber.replace(/[^0-9+]/g, '');
-  const url = Platform.OS === 'android' ? `tel:${cleanNumber}` : `telprompt:${cleanNumber}`;
-  Linking.canOpenURL(url).then(supported => {
+  const url = `tel:${cleanNumber}`;
+  
+  try {
+    const supported = await Linking.canOpenURL(url);
     if (supported) {
-      Linking.openURL(url);
+      await Linking.openURL(url);
+    } else {
+      Alert.alert('Fehler', `Anruf nicht möglich: ${cleanNumber}`);
     }
-  });
+  } catch (error) {
+    console.error('Phone call error:', error);
+    Alert.alert('Fehler', `Anruf fehlgeschlagen: ${error.message}`);
+  }
 };
 
 // Location Detail Modal
