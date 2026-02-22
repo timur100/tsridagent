@@ -100,6 +100,7 @@ const LocationCard = ({ location, onPress }) => (
 );
 
 const LocationsScreen = ({ navigation }) => {
+  const { user } = useAuth();
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -108,11 +109,21 @@ const LocationsScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadLocations();
-  }, []);
+  }, [user?.tenant_id]);
 
   const loadLocations = async () => {
     try {
-      const result = await locationsAPI.getAll();
+      // Try to load tenant-specific locations first
+      let result;
+      if (user?.tenant_id) {
+        result = await locationsAPI.getByTenant(user.tenant_id);
+      }
+      
+      // Fallback to all locations
+      if (!result?.locations?.length) {
+        result = await locationsAPI.getAll();
+      }
+      
       if (result?.locations) {
         setLocations(result.locations);
       } else if (Array.isArray(result)) {
