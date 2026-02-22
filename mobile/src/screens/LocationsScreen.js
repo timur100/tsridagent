@@ -147,7 +147,7 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Location Card - Updated for tenant_locations format with table-like display
+// Location Card - Code top left, Station name on same row
 const LocationCard = ({ location, onPress }) => {
   // Determine online status based on device_count and online_device_count
   const deviceCount = location.device_count || 0;
@@ -160,34 +160,30 @@ const LocationCard = ({ location, onPress }) => {
   
   return (
     <TouchableOpacity style={styles.locationCard} onPress={() => onPress(location)}>
-      {/* Row 1: Online Status & Status Badge */}
-      <View style={styles.cardRow}>
-        <View style={styles.cardCol1}>
+      {/* Row 1: Code (top left) + Status Badges (right) */}
+      <View style={styles.cardHeaderRow}>
+        <Text style={styles.cardCodeTopLeft}>{location.location_code || '-'}</Text>
+        <View style={styles.badgesRow}>
           <View style={[styles.onlineBadge, { backgroundColor: isOnline ? '#22c55e20' : '#ef444420' }]}>
             <View style={[styles.onlineDot, { backgroundColor: isOnline ? '#22c55e' : '#ef4444' }]} />
             <Text style={[styles.onlineText, { color: isOnline ? '#22c55e' : '#ef4444' }]}>
               {isOnline ? 'Online' : 'Offline'}
             </Text>
           </View>
-        </View>
-        <View style={styles.cardCol2}>
           <View style={[styles.statusBadge, { backgroundColor: isActive ? '#3b82f620' : '#f59e0b20' }]}>
             <Text style={[styles.statusText, { color: isActive ? '#3b82f6' : '#f59e0b' }]}>
               {isActive ? 'Aktiv' : status}
             </Text>
           </View>
         </View>
-        <View style={styles.cardCol3}>
-          <Text style={styles.cardCode}>{location.location_code || '-'}</Text>
-        </View>
-        <View style={styles.cardCol4}>
-          <Text style={styles.cardStation} numberOfLines={1}>
-            {location.station_name || '-'}
-          </Text>
-        </View>
       </View>
       
-      {/* Row 2: Address Details */}
+      {/* Row 2: Station Name (full width) */}
+      <Text style={styles.cardStationFull} numberOfLines={2}>
+        {location.station_name || '-'}
+      </Text>
+      
+      {/* Row 3: Address Details */}
       <View style={styles.cardRowDetails}>
         <View style={styles.detailsLeft}>
           <Text style={styles.cardAddress} numberOfLines={1}>
@@ -198,6 +194,14 @@ const LocationCard = ({ location, onPress }) => {
           </Text>
         </View>
         <View style={styles.detailsRight}>
+          <Text style={styles.deviceCount}>
+            {onlineCount}/{deviceCount} Geräte
+          </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};>
           <Text style={styles.deviceCount}>
             {onlineCount}/{deviceCount} Geräte
           </Text>
