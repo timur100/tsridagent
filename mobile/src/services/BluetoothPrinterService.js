@@ -585,7 +585,7 @@ class BluetoothPrinterService {
     if (!this.connectedDevice) return;
 
     try {
-      if (this.connectedDevice.bluetoothType === 'classic') {
+      if (this.connectedDevice.bluetoothType === 'classic' && RNBluetoothClassic) {
         await RNBluetoothClassic.disconnectFromDevice(this.connectedDevice.address);
       } else if (this.connectedDevice.device) {
         const isConnected = await this.connectedDevice.device.isConnected();
