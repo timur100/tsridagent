@@ -792,6 +792,43 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   
+  // Action Buttons
+  actionButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 12,
+    paddingVertical: 14,
+    borderRadius: 12,
+  },
+  actionButtonCall: {
+    backgroundColor: '#22c55e',
+  },
+  actionButtonPrint: {
+    backgroundColor: '#8b5cf6',
+  },
+  actionButtonDisabled: {
+    backgroundColor: '#9ca3af',
+    opacity: 0.6,
+  },
+  actionButtonIcon: {
+    fontSize: 24,
+    marginBottom: 6,
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#fff',
+    textAlign: 'center',
+  },
+  
   // Fullscreen Modal
   fullscreenModal: {
     flex: 1,
