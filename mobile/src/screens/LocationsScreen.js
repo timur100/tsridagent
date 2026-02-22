@@ -842,18 +842,19 @@ const styles = StyleSheet.create({
   actionButtonsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 10,
+    gap: 8,
     marginTop: 16,
-    flexWrap: 'wrap',
+    width: '100%',
   },
   actionButton: {
+    flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#3b82f6',
-    paddingHorizontal: 16,
+    paddingHorizontal: 8,
     paddingVertical: 12,
     borderRadius: 12,
-    minWidth: 90,
+    minWidth: 80,
   },
   actionButtonCall: {
     backgroundColor: '#22c55e',
@@ -862,17 +863,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#8b5cf6',
   },
   actionButtonDisabled: {
-    backgroundColor: '#6b7280',
-    opacity: 0.5,
+    backgroundColor: '#9ca3af',
+    opacity: 0.6,
   },
   actionButtonIcon: {
-    fontSize: 24,
+    fontSize: 22,
     marginBottom: 4,
   },
   actionButtonText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#fff',
+    textAlign: 'center',
   },
   
   // Info Section
