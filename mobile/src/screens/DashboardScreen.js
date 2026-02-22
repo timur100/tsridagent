@@ -64,62 +64,60 @@ export const BurgerMenu = ({ visible, onClose, navigation: propNavigation, user,
           
           <View style={styles.menuUser}>
             <Text style={styles.menuUserIcon}>👤</Text>
-            <View>
+            <View style={styles.menuUserInfo}>
               <Text style={styles.menuUserName}>{user?.name || 'Benutzer'}</Text>
               <Text style={styles.menuUserEmail}>{user?.email || ''}</Text>
             </View>
+            <TouchableOpacity style={styles.menuLogoutSmall} onPress={onLogout}>
+              <Text style={styles.menuLogoutSmallText}>🚪 Abmelden</Text>
+            </TouchableOpacity>
           </View>
           
           <View style={styles.menuDivider} />
           
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Dashboard')}>
-            <Text style={styles.menuItemIcon}>🏠</Text>
-            <Text style={styles.menuItemText}>Dashboard</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Scanner')}>
-            <Text style={styles.menuItemIcon}>📷</Text>
-            <Text style={styles.menuItemText}>Scanner</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Assets')}>
-            <Text style={styles.menuItemIcon}>📦</Text>
-            <Text style={styles.menuItemText}>Assets / Geräte</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Locations')}>
-            <Text style={styles.menuItemIcon}>📍</Text>
-            <Text style={styles.menuItemText}>Standorte</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('GoodsReceipt')}>
-            <Text style={styles.menuItemIcon}>📥</Text>
-            <Text style={styles.menuItemText}>Wareneingang</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
-            <Text style={styles.menuItemIcon}>⚙️</Text>
-            <Text style={styles.menuItemText}>Einstellungen</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.menuDivider} />
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
-            <Text style={styles.menuItemIcon}>🖨️</Text>
-            <Text style={styles.menuItemText}>Drucker</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
-            <Text style={styles.menuItemIcon}>🏷️</Text>
-            <Text style={styles.menuItemText}>Labels drucken</Text>
-          </TouchableOpacity>
-          
-          <View style={styles.menuDivider} />
-          
-          <TouchableOpacity style={[styles.menuItem, styles.menuItemLogout]} onPress={onLogout}>
-            <Text style={styles.menuItemIcon}>🚪</Text>
-            <Text style={[styles.menuItemText, { color: theme.colors.error }]}>Abmelden</Text>
-          </TouchableOpacity>
+          <ScrollView style={styles.menuScroll} showsVerticalScrollIndicator={false}>
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Dashboard')}>
+              <Text style={styles.menuItemIcon}>🏠</Text>
+              <Text style={styles.menuItemText}>Dashboard</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Scanner')}>
+              <Text style={styles.menuItemIcon}>📷</Text>
+              <Text style={styles.menuItemText}>Scanner</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Assets')}>
+              <Text style={styles.menuItemIcon}>📦</Text>
+              <Text style={styles.menuItemText}>Assets / Geräte</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Locations')}>
+              <Text style={styles.menuItemIcon}>📍</Text>
+              <Text style={styles.menuItemText}>Standorte</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('GoodsReceipt')}>
+              <Text style={styles.menuItemIcon}>📥</Text>
+              <Text style={styles.menuItemText}>Wareneingang</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+              <Text style={styles.menuItemIcon}>⚙️</Text>
+              <Text style={styles.menuItemText}>Einstellungen</Text>
+            </TouchableOpacity>
+            
+            <View style={styles.menuDivider} />
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+              <Text style={styles.menuItemIcon}>🖨️</Text>
+              <Text style={styles.menuItemText}>Drucker</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigate('Settings')}>
+              <Text style={styles.menuItemIcon}>🏷️</Text>
+              <Text style={styles.menuItemText}>Labels drucken</Text>
+            </TouchableOpacity>
+          </ScrollView>
           
           <Text style={styles.menuVersion}>TSRID Mobile v2.1.0</Text>
         </View>
