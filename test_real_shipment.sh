@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://printer-label-app.preview.emergentagent.com/api/dhl"
+API_URL="https://zebra-asset-scan.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL PRODUKTIV-API Test mit Ihren Credentials ==="
 echo ""

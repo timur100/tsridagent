@@ -28,7 +28,7 @@ import time
 import uuid
 
 # Backend URL from environment
-BACKEND_URL = "https://printer-label-app.preview.emergentagent.com"
+BACKEND_URL = "https://zebra-asset-scan.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 # MongoDB connection for verification

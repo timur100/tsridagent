@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://printer-label-app.preview.emergentagent.com`
+`https://zebra-asset-scan.preview.emergentagent.com`
 
 ---
 

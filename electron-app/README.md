@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://printer-label-app.preview.emergentagent.com
+│   └── Lädt: https://zebra-asset-scan.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

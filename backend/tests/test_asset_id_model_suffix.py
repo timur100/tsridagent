@@ -19,7 +19,7 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://printer-label-app.preview.emergentagent.com"
+    BASE_URL = "https://zebra-asset-scan.preview.emergentagent.com"
 
 # Erwartete Suffixe laut Anforderung
 EXPECTED_SUFFIXES = {

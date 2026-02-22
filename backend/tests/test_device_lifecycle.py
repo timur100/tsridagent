@@ -7,7 +7,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://printer-label-app.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://zebra-asset-scan.preview.emergentagent.com')
 
 class TestDeviceLifecycleAPI:
     """Device Lifecycle Management API Tests"""
