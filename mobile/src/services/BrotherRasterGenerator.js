@@ -15,28 +15,75 @@ const LABEL_HEIGHT_PX = 271;
 const LOGO_SIZE = 50;
 
 /**
- * Generate TSRID Fingerprint Logo bitmap
- * Creates a recognizable fingerprint pattern
+ * Generate TSRID Logo bitmap
+ * Vertical fingerprint with scanner brackets
+ * Based on the actual TSRID logo design
  */
 function generateLogoBitmap(size) {
   const bitmap = [];
-  const center = size / 2;
+  const centerX = size / 2;
+  const centerY = size / 2;
+  const bracketSize = Math.floor(size * 0.15);
+  const bracketThickness = Math.max(2, Math.floor(size * 0.04));
   
   for (let y = 0; y < size; y++) {
     const row = [];
     for (let x = 0; x < size; x++) {
-      const dx = x - center;
-      const dy = y - center;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      let isPixel = false;
       
-      // Create fingerprint-like concentric pattern with ridges
-      const angle = Math.atan2(dy, dx);
-      const ridge1 = Math.sin(dist * 0.8) > 0.3;
-      const ridge2 = Math.sin(dist * 0.4 + angle * 2) > 0.4;
-      const inCircle = dist < center - 2;
-      const isRing = Math.abs(dist - center * 0.3) < 2 || Math.abs(dist - center * 0.6) < 2;
+      // Scanner brackets (corners)
+      const inTop = y < bracketSize;
+      const inBottom = y >= size - bracketSize;
+      const inLeft = x < bracketSize;
+      const inRight = x >= size - bracketSize;
       
-      const isPixel = inCircle && (ridge1 || ridge2 || isRing);
+      // Top-left bracket
+      if (inTop && inLeft) {
+        if (y < bracketThickness || x < bracketThickness) isPixel = true;
+      }
+      // Top-right bracket
+      if (inTop && inRight) {
+        if (y < bracketThickness || x >= size - bracketThickness) isPixel = true;
+      }
+      // Bottom-left bracket
+      if (inBottom && inLeft) {
+        if (y >= size - bracketThickness || x < bracketThickness) isPixel = true;
+      }
+      // Bottom-right bracket
+      if (inBottom && inRight) {
+        if (y >= size - bracketThickness || x >= size - bracketThickness) isPixel = true;
+      }
+      
+      // Fingerprint pattern (vertical ellipse with curved lines)
+      const fpMargin = bracketSize + 2;
+      if (x >= fpMargin && x < size - fpMargin && y >= fpMargin && y < size - fpMargin) {
+        const fpCenterX = size / 2;
+        const fpCenterY = size / 2;
+        const dx = (x - fpCenterX) / (size * 0.25); // Narrower horizontally
+        const dy = (y - fpCenterY) / (size * 0.4);  // Taller vertically
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        // Create concentric elliptical ridges
+        const ridgeSpacing = 0.25;
+        const ridgePhase = dist / ridgeSpacing;
+        const isRidge = Math.sin(ridgePhase * Math.PI * 2) > 0.3;
+        
+        // Fingerprint boundary (ellipse)
+        if (dist < 1.0 && isRidge) {
+          // Add some natural variation
+          const variation = Math.sin(y * 0.3 + x * 0.1) * 0.1;
+          if (dist < 0.95 + variation) {
+            isPixel = true;
+          }
+        }
+        
+        // Center core (smaller curves at the center)
+        if (dist < 0.3) {
+          const coreRidge = Math.sin((dy + 0.5) * 8) > 0.2;
+          if (coreRidge) isPixel = true;
+        }
+      }
+      
       row.push(isPixel ? 1 : 0);
     }
     bitmap.push(row);
