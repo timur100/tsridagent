@@ -28,7 +28,7 @@
         "backgroundColor": "#1a1a1a"
       },
       "package": "com.tsrid.mobile",
-      "versionCode": 16,
+      "versionCode": 17,
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.BLUETOOTH",
