@@ -158,10 +158,13 @@ const DevicesScreen = ({ navigation, route }) => {
     offline: 0,
     preparation: 0,
   });
+  
+  // Get tenant_id (support both single and array format)
+  const tenantId = user?.tenant_id || (user?.tenant_ids && user?.tenant_ids[0]) || null;
 
   useEffect(() => {
     loadDevices();
-  }, [user?.tenant_id]);
+  }, [tenantId]);
 
   useEffect(() => {
     filterDevices();
