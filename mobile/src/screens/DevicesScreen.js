@@ -95,69 +95,101 @@ const DeviceCard = ({ device, onPress }) => {
   );
 };
 
-// Device Detail Modal
+// Device Detail Modal - Fullscreen
 const DeviceDetailModal = ({ visible, device, onClose }) => {
   if (!device) return null;
   
+  const phone = device.phone || device.telefon || null;
+  
   return (
-    <Modal visible={visible} animationType="slide" transparent>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>{device.device_id || '-'}</Text>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Text style={styles.closeButtonText}>✕</Text>
-            </TouchableOpacity>
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
+      <View style={styles.fullscreenModal}>
+        <View style={styles.fullscreenHeader}>
+          <TouchableOpacity onPress={onClose} style={styles.backButton}>
+            <Text style={styles.backButtonText}>← Zurück</Text>
+          </TouchableOpacity>
+          <Text style={styles.fullscreenTitle}>{device.device_id || '-'}</Text>
+          <View style={{ width: 60 }} />
+        </View>
+        
+        <ScrollView style={styles.fullscreenContent}>
+          {/* Status Card */}
+          <View style={styles.statusCard}>
+            <StatusBadge status={device.status} />
+            <Text style={styles.statusCardText}>
+              {device.status?.toLowerCase() === 'online' ? 'Gerät ist online' : 'Gerät ist offline'}
+            </Text>
           </View>
           
-          <ScrollView style={styles.modalContent}>
-            <View style={styles.modalStatusRow}>
-              <StatusBadge status={device.status} />
-            </View>
-            
-            <View style={styles.modalSection}>
-              <Text style={styles.sectionTitle}>Standort</Text>
-              <Text style={styles.modalValue}>{device.locationcode || device.location_code || '-'}</Text>
-              <Text style={styles.modalSubValue}>{device.street || '-'}</Text>
-              <Text style={styles.modalSubValue}>
+          {/* Location Section */}
+          <View style={styles.fullscreenSection}>
+            <Text style={styles.fullscreenSectionTitle}>📍 Standort</Text>
+            <View style={styles.fullscreenCard}>
+              <Text style={styles.locationCodeLarge}>{device.locationcode || device.location_code || '-'}</Text>
+              <Text style={styles.fullscreenText}>{device.street || '-'}</Text>
+              <Text style={styles.fullscreenSubtext}>
                 {device.zip || ''} {device.city || '-'}
               </Text>
             </View>
-            
-            <View style={styles.modalSection}>
-              <Text style={styles.sectionTitle}>Geräteinformationen</Text>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>Device-ID:</Text>
-                <Text style={styles.infoValue}>{device.device_id || '-'}</Text>
+          </View>
+          
+          {/* Phone Section */}
+          {phone && (
+            <View style={styles.fullscreenSection}>
+              <Text style={styles.fullscreenSectionTitle}>📞 Kontakt</Text>
+              <TouchableOpacity 
+                style={styles.phoneButton}
+                onPress={() => makePhoneCall(phone)}
+              >
+                <Text style={styles.phoneButtonText}>{phone}</Text>
+                <Text style={styles.phoneButtonIcon}>Anrufen →</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          
+          {/* Device Info Section */}
+          <View style={styles.fullscreenSection}>
+            <Text style={styles.fullscreenSectionTitle}>💻 Geräteinformationen</Text>
+            <View style={styles.fullscreenCard}>
+              <View style={styles.infoGridRow}>
+                <Text style={styles.infoGridLabel}>Device-ID</Text>
+                <Text style={styles.infoGridValue}>{device.device_id || '-'}</Text>
               </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>SN-PC:</Text>
-                <Text style={styles.infoValue}>{device.sn_pc || '-'}</Text>
+              <View style={styles.infoGridRow}>
+                <Text style={styles.infoGridLabel}>SN-PC</Text>
+                <Text style={styles.infoGridValue}>{device.sn_pc || '-'}</Text>
               </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>SN-SC:</Text>
-                <Text style={styles.infoValue}>{device.sn_sc || '-'}</Text>
+              <View style={styles.infoGridRow}>
+                <Text style={styles.infoGridLabel}>SN-SC</Text>
+                <Text style={styles.infoGridValue}>{device.sn_sc || '-'}</Text>
               </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>TV-ID:</Text>
-                <Text style={styles.infoValue}>{device.teamviewer_id || device.tv_id || '-'}</Text>
+              <View style={styles.infoGridRow}>
+                <Text style={styles.infoGridLabel}>TeamViewer-ID</Text>
+                <Text style={styles.infoGridValue}>{device.teamviewer_id || device.tv_id || '-'}</Text>
               </View>
-              <View style={styles.infoRow}>
-                <Text style={styles.infoLabel}>MAC:</Text>
-                <Text style={styles.infoValue}>{device.mac_address || '-'}</Text>
+              <View style={styles.infoGridRow}>
+                <Text style={styles.infoGridLabel}>MAC-Adresse</Text>
+                <Text style={styles.infoGridValue}>{device.mac_address || '-'}</Text>
               </View>
             </View>
-            
-            {device.last_seen && (
-              <View style={styles.modalSection}>
-                <Text style={styles.sectionTitle}>Letzter Kontakt</Text>
-                <Text style={styles.modalValue}>
+          </View>
+          
+          {/* Last Seen Section */}
+          {device.last_seen && (
+            <View style={styles.fullscreenSection}>
+              <Text style={styles.fullscreenSectionTitle}>🕐 Letzter Kontakt</Text>
+              <View style={styles.fullscreenCard}>
+                <Text style={styles.fullscreenText}>
                   {new Date(device.last_seen).toLocaleString('de-DE')}
                 </Text>
               </View>
-            )}
-          </ScrollView>
-        </View>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    </Modal>
+  );
+};
       </View>
     </Modal>
   );
