@@ -339,6 +339,46 @@ const DevicesScreen = ({ navigation, route }) => {
     setModalVisible(true);
   };
 
+  // Handle label printing for a device
+  const handlePrintLabel = async (device) => {
+    try {
+      // Check if printer is connected
+      const printerStatus = BluetoothPrinterService.getConnectionStatus();
+      
+      if (!printerStatus.isConnected) {
+        Alert.alert(
+          'Drucker nicht verbunden',
+          'Bitte verbinden Sie zuerst einen Drucker in den Einstellungen.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+      
+      Alert.alert(
+        'Label drucken',
+        `Geräte-Label für ${device.device_id} drucken?`,
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          { 
+            text: 'Drucken', 
+            onPress: async () => {
+              try {
+                await BluetoothPrinterService.printDeviceLabel(device);
+                Alert.alert('Erfolg', 'Label wurde gedruckt!');
+              } catch (printError) {
+                console.error('Print error:', printError);
+                Alert.alert('Fehler', `Druckfehler: ${printError.message}`);
+              }
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Print label error:', error);
+      Alert.alert('Fehler', `Fehler: ${error.message}`);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
