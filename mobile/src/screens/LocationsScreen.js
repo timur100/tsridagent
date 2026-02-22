@@ -278,31 +278,52 @@ const styles = StyleSheet.create({
   cardLeft: {
     marginRight: 12,
   },
-  cardIcon: {
-    fontSize: 28,
+  
+  // Card Columns
+  cardStatusCol: {
+    width: 70,
+    marginRight: 8,
   },
-  cardContent: {
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
+  },
+  cardCodeCol: {
+    width: 70,
+    marginRight: 8,
+  },
+  cardCode: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: theme.colors.textPrimary,
+  },
+  cardDetailsCol: {
     flex: 1,
   },
   cardName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
     color: theme.colors.textPrimary,
     marginBottom: 2,
   },
-  cardId: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: theme.colors.primary,
-    marginBottom: 4,
-  },
   cardAddress: {
-    fontSize: 12,
+    fontSize: 11,
+    color: theme.colors.textSecondary,
+  },
+  cardCity: {
+    fontSize: 11,
     color: theme.colors.textMuted,
   },
   cardArrow: {
     fontSize: 24,
     color: theme.colors.textMuted,
+    marginLeft: 8,
   },
   
   // Empty
