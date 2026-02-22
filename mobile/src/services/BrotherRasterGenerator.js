@@ -1,13 +1,8 @@
 /**
- * Brother QL Raster Generator - FINAL VERSION
+ * Brother QL Raster Generator - SIMPLIFIED
+ * NO LOGO - Full width for text
  * 
  * Label: 62mm x 23mm = 696 x 271 pixels @ 300dpi
- * 
- * Layout:
- * - QR Code: LEFT, full height
- * - Asset ID: TOP RIGHT, large text, FULL WIDTH
- * - Type + SN: MIDDLE RIGHT
- * - Logo: BOTTOM RIGHT, large
  */
 
 import QRCode from 'qrcode';
@@ -16,19 +11,17 @@ const LABEL_WIDTH = 696;
 const LABEL_HEIGHT = 271;
 
 /**
- * Generate QR Code - Clean black/white modules
+ * Generate clean QR Code
  */
 async function makeQRCode(content, size) {
   try {
     const qr = await QRCode.create(content || 'TSRID', { errorCorrectionLevel: 'M' });
-    const modules = qr.modules;
-    const count = modules.size;
-    const quiet = 2; // quiet zone
+    const count = qr.modules.size;
+    const quiet = 2;
     const total = count + quiet * 2;
     const pxPerMod = Math.floor(size / total);
     const realSize = pxPerMod * total;
     
-    // Create clean bitmap
     const bmp = [];
     for (let py = 0; py < realSize; py++) {
       const row = [];
@@ -38,63 +31,15 @@ async function makeQRCode(content, size) {
         if (mx < 0 || mx >= count || my < 0 || my >= count) {
           row.push(0);
         } else {
-          row.push(modules.data[my * count + mx] ? 1 : 0);
+          row.push(qr.modules.data[my * count + mx] ? 1 : 0);
         }
       }
       bmp.push(row);
     }
     return { bmp, size: realSize };
   } catch (e) {
-    console.error('QR Error:', e);
     return { bmp: [], size: 0 };
   }
-}
-
-/**
- * TSRID Logo - Fingerprint with scanner frame
- * Made MUCH LARGER and clearer
- */
-function makeLogo(size) {
-  const bmp = [];
-  const frame = Math.floor(size * 0.2); // frame corner length
-  const thick = Math.max(4, Math.floor(size * 0.06)); // frame thickness
-  
-  for (let y = 0; y < size; y++) {
-    const row = [];
-    for (let x = 0; x < size; x++) {
-      let p = 0;
-      
-      // Frame corners (L-shaped brackets)
-      // Top-left
-      if ((x < frame && y < thick) || (x < thick && y < frame)) p = 1;
-      // Top-right
-      if ((x >= size - frame && y < thick) || (x >= size - thick && y < frame)) p = 1;
-      // Bottom-left
-      if ((x < frame && y >= size - thick) || (x < thick && y >= size - frame)) p = 1;
-      // Bottom-right
-      if ((x >= size - frame && y >= size - thick) || (x >= size - thick && y >= size - frame)) p = 1;
-      
-      // Fingerprint (ellipse with ridge lines)
-      const cx = size / 2;
-      const cy = size / 2;
-      const rx = size * 0.32;
-      const ry = size * 0.42;
-      const dx = (x - cx) / rx;
-      const dy = (y - cy) / ry;
-      const d = dx * dx + dy * dy;
-      
-      if (d < 1.0) {
-        // Ridge pattern - curved horizontal lines
-        const curve = dx * 0.3;
-        const wave = Math.sin((dy + curve + 0.5) * 5.5 * Math.PI);
-        if (wave > 0.0 && wave < 0.7) p = 1;
-      }
-      
-      row.push(p);
-    }
-    bmp.push(row);
-  }
-  return bmp;
 }
 
 // 8x8 Font
@@ -157,30 +102,30 @@ function calcScale(txt, maxW, maxSc) {
 }
 
 /**
- * Create Label Bitmap
+ * Create Label Bitmap - SIMPLE LAYOUT, NO LOGO
+ * 
+ * +------------------------------------------+
+ * |  +------+   TSRID-SCA-TSR-0001  (LARGE)  |
+ * |  |  QR  |   TSRID SCANNER      (LARGE)  |
+ * |  | CODE |   SN: 7E91145BA4244  (LARGE)  |
+ * |  +------+                                |
+ * +------------------------------------------+
  */
 async function createBitmap(assetId, typeLabel, sn, loc, w, h) {
   const rb = Math.ceil(w / 8);
   const bmp = new Uint8Array(rb * h).fill(0);
   
-  // === LAYOUT CALCULATION ===
-  const P = 5; // minimal padding
+  const P = 8; // padding
   
-  // QR Code - take up most of the height
-  const qrSize = h - P * 2; // ~261px
+  // QR Code - full height
+  const qrSize = h - P * 2;
   const qrX = P;
   
-  // Logo - bottom right, BIG (130x130)
-  const logoSize = 130;
-  const logoX = w - logoSize - P;
-  const logoY = h - logoSize - P;
+  // Text area - FULL WIDTH after QR
+  const textX = qrSize + P + 20;
+  const textW = w - textX - P;
   
-  // Text area
-  const textX = qrSize + P + 15;
-  const textW = w - textX - P; // Full width for line 1
-  const textWWithLogo = logoX - textX - 10; // Width for lines with logo
-  
-  // === 1. QR CODE ===
+  // === QR CODE ===
   const qr = await makeQRCode(assetId, qrSize);
   if (qr.bmp.length > 0) {
     const qrY = Math.floor((h - qr.size) / 2);
@@ -191,37 +136,30 @@ async function createBitmap(assetId, typeLabel, sn, loc, w, h) {
     }
   }
   
-  // === 2. TEXT ===
-  // Line 1: Asset ID - LARGE, full width available
+  // === TEXT - Use full available width ===
+  
+  // Line 1: Asset ID - LARGEST possible
   const id = assetId || 'N/A';
-  const sc1 = calcScale(id, textW, 5);
-  const y1 = 12;
+  const sc1 = calcScale(id, textW, 6);
+  const y1 = 15;
   drawTxt(bmp, rb, w, h, id, textX, y1, sc1);
   
-  // Line 2: Type - medium, avoid logo area
-  const y2 = y1 + sc1 * 8 + 12;
-  const sc2 = calcScale(typeLabel, textWWithLogo, 4);
+  // Line 2: Type Label - Large
+  const y2 = y1 + sc1 * 8 + 15;
+  const sc2 = calcScale(typeLabel, textW, 5);
   drawTxt(bmp, rb, w, h, typeLabel || '', textX, y2, sc2);
   
-  // Line 3: Serial Number - medium
+  // Line 3: Serial Number - Large
   const snTxt = 'SN: ' + (sn || 'N/A');
-  const y3 = y2 + sc2 * 8 + 10;
-  const sc3 = calcScale(snTxt, textWWithLogo, 4);
+  const y3 = y2 + sc2 * 8 + 12;
+  const sc3 = calcScale(snTxt, textW, 5);
   drawTxt(bmp, rb, w, h, snTxt, textX, y3, sc3);
   
-  // Line 4: Location (optional)
+  // Line 4: Location (if provided)
   if (loc) {
-    const y4 = y3 + sc3 * 8 + 8;
-    const sc4 = calcScale(loc, textWWithLogo, 3);
+    const y4 = y3 + sc3 * 8 + 10;
+    const sc4 = calcScale(loc, textW, 4);
     drawTxt(bmp, rb, w, h, loc, textX, y4, sc4);
-  }
-  
-  // === 3. LOGO ===
-  const logo = makeLogo(logoSize);
-  for (let y = 0; y < logoSize; y++) {
-    for (let x = 0; x < logoSize; x++) {
-      if (logo[y] && logo[y][x]) setP(bmp, rb, logoX + x, logoY + y, h);
-    }
   }
   
   return bmp;
