@@ -529,19 +529,22 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, color: theme.colors.textPrimary, fontSize: 14 },
   clearIcon: { fontSize: 16, color: theme.colors.textMuted, padding: 4 },
   
-  // Filters - Horizontal scroll, no cutoff
+  // Filters - Horizontal scroll, ensure no cutoff
   filterScroll: { 
-    maxHeight: 48,
+    minHeight: 50,
+    maxHeight: 50,
     flexGrow: 0,
+    flexShrink: 0,
   },
   filterContent: { 
     paddingHorizontal: 10, 
     paddingVertical: 8, 
     flexDirection: 'row',
     alignItems: 'center',
+    paddingRight: 20, // Extra padding at end
   },
   filterChip: {
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 8,
     backgroundColor: theme.colors.surface,
     borderRadius: 18,
