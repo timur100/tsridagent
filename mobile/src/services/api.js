@@ -256,14 +256,9 @@ export const tenantsAPI = {
 export const locationsAPI = {
   getAll: async () => {
     try {
-      // Try unified locations endpoint first
-      const response = await api.get('/api/unified-locations/locations');
-      if (response.data?.locations?.length > 0) {
-        return response.data;
-      }
-      // Fallback to location management
-      const fallback = await api.get('/api/locations/list');
-      return fallback.data;
+      // Use tenant-locations endpoint with 'all' for all locations
+      const response = await api.get('/api/tenant-locations/all');
+      return response.data;
     } catch (error) {
       console.log('Locations error:', error.message);
       return { locations: [], total: 0 };
@@ -272,18 +267,22 @@ export const locationsAPI = {
   
   getByTenant: async (tenantId) => {
     try {
-      // Use the location management endpoint with tenant_id filter
-      const response = await api.get(`/api/locations/list?tenant_id=${tenantId}`);
+      // Use the tenant-locations endpoint with tenant_id
+      const response = await api.get(`/api/tenant-locations/${tenantId}`);
       return response.data;
     } catch (error) {
       console.log('Tenant locations error:', error.message);
-      // Fallback to unified locations
-      try {
-        const fallback = await api.get(`/api/unified-locations/locations?tenant_id=${tenantId}`);
-        return fallback.data;
-      } catch (e) {
-        return { locations: [], total: 0 };
-      }
+      return { locations: [], total: 0 };
+    }
+  },
+  
+  getDetails: async (locationId) => {
+    try {
+      const response = await api.get(`/api/tenant-locations/details/${locationId}`);
+      return response.data;
+    } catch (error) {
+      console.log('Location details error:', error.message);
+      return { location: null };
     }
   },
 };
