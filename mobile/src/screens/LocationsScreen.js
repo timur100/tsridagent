@@ -355,6 +355,60 @@ const LocationsScreen = ({ navigation }) => {
     setModalVisible(true);
   };
 
+  // Handle label printing for a location
+  const handlePrintLabel = async (location) => {
+    try {
+      // Check if printer is connected
+      const printerStatus = BluetoothPrinterService.getConnectionStatus();
+      
+      if (!printerStatus.isConnected) {
+        Alert.alert(
+          'Drucker nicht verbunden',
+          'Bitte verbinden Sie zuerst einen Drucker in den Einstellungen.',
+          [
+            { text: 'OK' }
+          ]
+        );
+        return;
+      }
+      
+      // Build location data for label
+      const locationData = {
+        location_code: location.location_code || '-',
+        station_name: location.station_name || '-',
+        street: location.street || '-',
+        postal_code: location.postal_code || '',
+        city: location.city || '-',
+        phone: location.phone || '-',
+        manager: location.manager || '-',
+        device_count: location.device_count || 0,
+      };
+      
+      Alert.alert(
+        'Label drucken',
+        `Standort-Label für ${locationData.location_code} drucken?`,
+        [
+          { text: 'Abbrechen', style: 'cancel' },
+          { 
+            text: 'Drucken', 
+            onPress: async () => {
+              try {
+                await BluetoothPrinterService.printLocationLabel(locationData);
+                Alert.alert('Erfolg', 'Label wurde gedruckt!');
+              } catch (printError) {
+                console.error('Print error:', printError);
+                Alert.alert('Fehler', `Druckfehler: ${printError.message}`);
+              }
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Print label error:', error);
+      Alert.alert('Fehler', `Fehler: ${error.message}`);
+    }
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
