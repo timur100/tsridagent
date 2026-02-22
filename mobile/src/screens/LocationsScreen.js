@@ -567,33 +567,33 @@ const styles = StyleSheet.create({
     paddingTop: 0,
   },
   
-  // Location Card - Table-like layout
+  // Location Card - Code top left layout
   locationCard: {
     backgroundColor: theme.colors.surface,
     borderRadius: 12,
     padding: 12,
     marginBottom: 10,
-    position: 'relative',
   },
-  cardRow: {
+  cardHeaderRow: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 6,
+  },
+  cardCodeTopLeft: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: theme.colors.primary,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  cardStationFull: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.textPrimary,
     marginBottom: 8,
-  },
-  cardCol1: {
-    width: 70,
-  },
-  cardCol2: {
-    width: 55,
-    marginLeft: 4,
-  },
-  cardCol3: {
-    width: 70,
-    marginLeft: 4,
-  },
-  cardCol4: {
-    flex: 1,
-    marginLeft: 4,
   },
   
   // Online Badge
