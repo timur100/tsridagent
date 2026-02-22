@@ -9,6 +9,8 @@ import {
   ScrollView,
   Dimensions,
   RefreshControl,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { dashboardAPI, healthAPI } from '../services/api';
@@ -16,6 +18,7 @@ import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const STATUSBAR_HEIGHT = Platform.OS === 'android' ? StatusBar.currentHeight || 24 : 44;
 
 // Compact Stat Card
 const StatCard = ({ icon, value, label, onPress, color }) => (
