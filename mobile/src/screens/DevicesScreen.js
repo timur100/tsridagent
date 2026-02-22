@@ -144,6 +144,7 @@ const DeviceDetailModal = ({ visible, device, onClose }) => {
 
 const DevicesScreen = ({ navigation, route }) => {
   const { user } = useAuth();
+  const { isConnected } = useWebSocket();
   const [devices, setDevices] = useState([]);
   const [filteredDevices, setFilteredDevices] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -152,6 +153,7 @@ const DevicesScreen = ({ navigation, route }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [lastRealtimeUpdate, setLastRealtimeUpdate] = useState(null);
   
   // Stats
   const [stats, setStats] = useState({
@@ -163,6 +165,21 @@ const DevicesScreen = ({ navigation, route }) => {
   
   // Get tenant_id (support both single and array format)
   const tenantId = user?.tenant_id || (user?.tenant_ids && user?.tenant_ids[0]) || null;
+
+  // Handle realtime device updates
+  const handleDeviceUpdate = useCallback((data) => {
+    console.log('[DevicesScreen] Realtime update received:', data);
+    setLastRealtimeUpdate(new Date());
+    
+    // Vibrate to indicate update
+    Vibration.vibrate(100);
+    
+    // Reload devices to get fresh data
+    loadDevices();
+  }, [tenantId]);
+
+  // Subscribe to realtime updates
+  useRealtimeUpdates('device_update', handleDeviceUpdate);
 
   useEffect(() => {
     loadDevices();
