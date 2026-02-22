@@ -256,13 +256,13 @@ export const tenantsAPI = {
 export const locationsAPI = {
   getAll: async () => {
     try {
-      // Try tenant-locations first (stations with code, name, etc.)
-      const response = await api.get('/api/tenant-locations/list');
+      // Try unified locations endpoint first
+      const response = await api.get('/api/unified-locations/locations');
       if (response.data?.locations?.length > 0) {
         return response.data;
       }
-      // Fallback to portal locations
-      const fallback = await api.get('/api/portal/locations/list');
+      // Fallback to location management
+      const fallback = await api.get('/api/locations/list');
       return fallback.data;
     } catch (error) {
       console.log('Locations error:', error.message);
@@ -272,10 +272,55 @@ export const locationsAPI = {
   
   getByTenant: async (tenantId) => {
     try {
-      const response = await api.get(`/api/tenant-locations/list?tenant_id=${tenantId}`);
+      // Use the location management endpoint with tenant_id filter
+      const response = await api.get(`/api/locations/list?tenant_id=${tenantId}`);
       return response.data;
     } catch (error) {
-      return { locations: [], total: 0 };
+      console.log('Tenant locations error:', error.message);
+      // Fallback to unified locations
+      try {
+        const fallback = await api.get(`/api/unified-locations/locations?tenant_id=${tenantId}`);
+        return fallback.data;
+      } catch (e) {
+        return { locations: [], total: 0 };
+      }
+    }
+  },
+};
+
+// Devices API - Tenant Devices (AAHC01-01, BERC01-01, etc.)
+export const devicesAPI = {
+  getAll: async (tenantId = null) => {
+    try {
+      let url = '/api/tenant-devices/';
+      if (tenantId) {
+        url = `/api/tenant-devices/${tenantId}`;
+      }
+      const response = await api.get(url);
+      return response.data;
+    } catch (error) {
+      console.log('Devices error:', error.message);
+      return { devices: [], total: 0 };
+    }
+  },
+  
+  getByTenant: async (tenantId) => {
+    try {
+      const response = await api.get(`/api/tenant-devices/${tenantId}`);
+      return response.data;
+    } catch (error) {
+      console.log('Tenant devices error:', error.message);
+      return { devices: [], total: 0 };
+    }
+  },
+  
+  getStats: async (tenantId) => {
+    try {
+      const response = await api.get(`/api/tenant-devices/${tenantId}/stats`);
+      return response.data;
+    } catch (error) {
+      console.log('Device stats error:', error.message);
+      return { total: 0, online: 0, offline: 0, in_preparation: 0 };
     }
   },
 };
