@@ -920,6 +920,58 @@ class BluetoothPrinterService {
   }
 
   /**
+   * Print device label
+   * Contains device_id as barcode for scanning
+   */
+  async printDeviceLabel(device) {
+    if (!this.connectedDevice) {
+      throw new Error('Kein Drucker verbunden');
+    }
+
+    const deviceId = device.device_id || 'N/A';
+    console.log(`Printing device label for ${deviceId}...`);
+    console.log(`Printer type: ${this.connectedDevice.type}`);
+
+    let data;
+    
+    if (this.connectedDevice.type === 'brother') {
+      // Brother: Generate raster graphics with barcode
+      data = await createBrotherDeviceLabel(device);
+      console.log('Brother raster device label generated, length:', data.length, 'bytes');
+    } else {
+      // Zebra ZPL for device label
+      const locationCode = device.locationcode || device.location_code || '-';
+      const street = (device.street || '-').substring(0, 35);
+      const cityLine = `${device.zip || ''} ${device.city || '-'}`.substring(0, 35);
+      const phone = device.phone || device.telefon || '-';
+      const snPc = device.sn_pc || '-';
+      const snSc = device.sn_sc || '-';
+      const status = device.status || '-';
+      
+      data = `^XA
+^CF0,40
+^FO30,20^FD${deviceId}^FS
+^CF0,22
+^FO30,65^FDSTATUS: ${status.toUpperCase()}^FS
+^FO30,90^FDSTANDORT: ${locationCode}^FS
+^CF0,18
+^FO30,120^FD${street}^FS
+^FO30,142^FD${cityLine}^FS
+^FO30,165^FDTEL: ${phone}^FS
+^FO30,188^FDSN-PC: ${snPc}  SN-SC: ${snSc}^FS
+^FO30,220^BY2^BCN,50,Y,N,N^FD${deviceId}^FS
+^XZ`;
+    }
+
+    const result = await this.sendData(data);
+    if (result.success) {
+      return { success: true, message: 'Geräte-Etikett wurde gedruckt' };
+    } else {
+      throw new Error(result.error || 'Druck fehlgeschlagen');
+    }
+  }
+
+  /**
    * Get service status
    */
   async getStatus() {
