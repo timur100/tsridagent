@@ -13,10 +13,12 @@ import {
   Vibration,
   Linking,
   Platform,
+  Alert,
 } from 'react-native';
 import { locationsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useWebSocket, useRealtimeUpdates, usePollingUpdates } from '../contexts/WebSocketContext';
+import BluetoothPrinterService from '../services/BluetoothPrinterService';
 import theme from '../utils/theme';
 
 // Helper function to open navigation
