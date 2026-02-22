@@ -492,6 +492,7 @@ const DevicesScreen = ({ navigation, route }) => {
           setModalVisible(false);
           setSelectedDevice(null);
         }}
+        onPrintLabel={handlePrintLabel}
       />
     </View>
   );
