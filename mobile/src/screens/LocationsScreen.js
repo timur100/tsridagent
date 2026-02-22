@@ -289,10 +289,18 @@ const LocationsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header with Tenant Info */}
+      {/* Header with Tenant Info and Live Indicator */}
       <View style={styles.header}>
         <View>
-          <Text style={styles.title}>Standorte</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>Standorte</Text>
+            {isConnected && (
+              <View style={styles.liveBadge}>
+                <View style={styles.liveDot} />
+                <Text style={styles.liveText}>LIVE</Text>
+              </View>
+            )}
+          </View>
           {user?.tenant_name && (
             <Text style={styles.tenantLabel}>{user.tenant_name}</Text>
           )}
