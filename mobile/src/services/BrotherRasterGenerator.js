@@ -66,6 +66,7 @@ const FONT = {
   '-':[0,0,0,0x7E,0,0,0,0], ':':[0,0x18,0x18,0,0x18,0x18,0,0],
   '.':[0,0,0,0,0,0x18,0x18,0], ' ':[0,0,0,0,0,0,0,0],
   '/':[0x02,0x06,0x0C,0x18,0x30,0x60,0x40,0],
+  '|':[0x18,0x18,0x18,0x18,0x18,0x18,0x18,0],
 };
 // Kleinbuchstaben auf Großbuchstaben mappen
 'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => FONT[c] = FONT[c.toUpperCase()]);
@@ -107,6 +108,81 @@ function drawText(bmp, bytesPerRow, width, height, text, x, y, scale) {
 }
 
 /**
+ * Zeichne Barcode in die Bitmap (Code128-ähnlich)
+ */
+function drawBarcode(bmp, bytesPerRow, width, height, text, startX, startY, barHeight, moduleWidth) {
+  let x = startX;
+  const t = String(text || '').substring(0, 20);
+  
+  // Start-Muster
+  const startPattern = [1,1,0,1,0,0,1,1,0,1];
+  for (let i = 0; i < startPattern.length; i++) {
+    if (startPattern[i]) {
+      for (let bw = 0; bw < moduleWidth; bw++) {
+        for (let bh = 0; bh < barHeight; bh++) {
+          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
+        }
+      }
+    }
+    x += moduleWidth;
+  }
+  
+  // Daten-Bars (vereinfachte Codierung)
+  for (let i = 0; i < t.length; i++) {
+    const code = t.charCodeAt(i);
+    for (let bit = 7; bit >= 0; bit--) {
+      if ((code >> bit) & 1) {
+        for (let bw = 0; bw < moduleWidth; bw++) {
+          for (let bh = 0; bh < barHeight; bh++) {
+            setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
+          }
+        }
+      }
+      x += moduleWidth;
+    }
+  }
+  
+  // End-Muster
+  const endPattern = [1,1,0,0,1,0,1,1,0,1,1];
+  for (let i = 0; i < endPattern.length; i++) {
+    if (endPattern[i]) {
+      for (let bw = 0; bw < moduleWidth; bw++) {
+        for (let bh = 0; bh < barHeight; bh++) {
+          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
+        }
+      }
+    }
+    x += moduleWidth;
+  }
+}
+
+/**
+ * Spiegelt Bitmap horizontal (für Brother QL Drucker)
+ */
+function mirrorBitmapHorizontal(bmp, bytesPerRow, height) {
+  const mirrored = new Uint8Array(bmp.length);
+  const width = bytesPerRow * 8;
+  
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < width; x++) {
+      // Hole Pixel von Position x
+      const srcByteIdx = y * bytesPerRow + Math.floor(x / 8);
+      const srcBitPos = 7 - (x % 8);
+      const pixel = (bmp[srcByteIdx] >> srcBitPos) & 1;
+      
+      // Setze Pixel an gespiegelter Position (width - 1 - x)
+      const dstX = width - 1 - x;
+      const dstByteIdx = y * bytesPerRow + Math.floor(dstX / 8);
+      const dstBitPos = 7 - (dstX % 8);
+      if (pixel) {
+        mirrored[dstByteIdx] |= (1 << dstBitPos);
+      }
+    }
+  }
+  return mirrored;
+}
+
+/**
  * Berechne optimale Schriftgröße
  */
 function calcScale(text, maxWidth, maxScale) {
@@ -118,63 +194,18 @@ function calcScale(text, maxWidth, maxScale) {
 }
 
 /**
- * Erstelle Bitmap für Asset-Label
- */
-async function createAssetBitmap(assetId, typeLabel, serialNumber, location, width, height) {
-  const bytesPerRow = Math.ceil(width / 8);
-  const bmp = new Uint8Array(bytesPerRow * height).fill(0);
-  
-  // QR Code - links
-  const qrSize = 180;
-  const qrX = 10;
-  
-  // Text-Bereich rechts vom QR
-  const textX = qrSize + 25;
-  const textW = width - textX - 10;
-  
-  // QR Code zeichnen
-  const qr = await makeQRCode(assetId, qrSize);
-  if (qr.bmp.length > 0) {
-    const offsetY = Math.floor((height - qr.size) / 2);
-    for (let y = 0; y < qr.bmp.length; y++) {
-      for (let x = 0; x < qr.bmp[y].length; x++) {
-        if (qr.bmp[y][x]) setPixel(bmp, bytesPerRow, qrX + x, offsetY + y, height);
-      }
-    }
-  }
-  
-  // Text zeichnen
-  const id = assetId || 'N/A';
-  const sc1 = calcScale(id, textW, 4);
-  drawText(bmp, bytesPerRow, width, height, id, textX, 25, sc1);
-  
-  const y2 = 25 + sc1 * 8 + 20;
-  const sc2 = calcScale(typeLabel, textW, 4);
-  drawText(bmp, bytesPerRow, width, height, typeLabel || '', textX, y2, sc2);
-  
-  const snTxt = 'SN: ' + (serialNumber || 'N/A');
-  const y3 = y2 + sc2 * 8 + 20;
-  const sc3 = calcScale(snTxt, textW, 4);
-  drawText(bmp, bytesPerRow, width, height, snTxt, textX, y3, sc3);
-  
-  if (location) {
-    const y4 = y3 + sc3 * 8 + 15;
-    const sc4 = calcScale(location, textW, 3);
-    drawText(bmp, bytesPerRow, width, height, location, textX, y4, sc4);
-  }
-  
-  return bmp;
-}
-
-/**
  * Erstelle Brother QL Raster-Befehle
- * Basierend auf Brother QL Raster Command Reference
  */
 function createRasterCommands(bitmap, width, height, autoCut = true) {
-  const bytesPerRow = BYTES_PER_ROW; // 87 bytes für 696 Pixel
+  const bytesPerRow = BYTES_PER_ROW;
+  
+  // Bitmap horizontal spiegeln für Brother
+  const srcBytesPerRow = Math.ceil(width / 8);
+  const mirroredBmp = mirrorBitmapHorizontal(bitmap, srcBytesPerRow, height);
+  
   const commands = [];
   
-  // 1. Invalidate - 400 Null-Bytes zum Zurücksetzen des Druckers
+  // 1. Invalidate - 400 Null-Bytes
   for (let i = 0; i < 400; i++) commands.push(0x00);
   
   // 2. Initialize - ESC @
@@ -184,61 +215,51 @@ function createRasterCommands(bitmap, width, height, autoCut = true) {
   commands.push(0x1B, 0x69, 0x61, 0x01);
   
   // 4. Print Information Command - ESC i z
-  // Für 62mm Endlos-Etikett (DK-22205)
   commands.push(0x1B, 0x69, 0x7A);
-  commands.push(0x8E);        // n1: Valid flags (Media type + width + quality)
-  commands.push(0x0A);        // n2: Media type (0x0A = Continuous)
-  commands.push(0x3E);        // n3: Media width (62mm = 0x3E)
-  commands.push(0x00);        // n4: Media length (0 for continuous)
-  // n5-n8: Raster number (Anzahl der Zeilen) - Little Endian
+  commands.push(0x8E);        // n1: Valid flags
+  commands.push(0x0A);        // n2: Media type (Continuous)
+  commands.push(0x3E);        // n3: Media width (62mm)
+  commands.push(0x00);        // n4: Media length
   commands.push(height & 0xFF);
   commands.push((height >> 8) & 0xFF);
   commands.push((height >> 16) & 0xFF);
   commands.push((height >> 24) & 0xFF);
-  commands.push(0x00);        // n9: Starting page (0 = first page)
+  commands.push(0x00);        // n9: Starting page
   commands.push(0x00);        // n10: Reserved
   
-  // 5. Auto Cut - ESC i M
+  // 5. Auto Cut
   commands.push(0x1B, 0x69, 0x4D);
   commands.push(autoCut ? 0x40 : 0x00);
   
-  // 6. Cut Every - ESC i A (jedes Label schneiden)
+  // 6. Cut Every
   commands.push(0x1B, 0x69, 0x41, 0x01);
   
-  // 7. Expanded Mode - ESC i K (Cut at end + 300dpi)
-  commands.push(0x1B, 0x69, 0x4B);
-  commands.push(0x08);  // Cut at end = bit 3
+  // 7. Expanded Mode
+  commands.push(0x1B, 0x69, 0x4B, 0x08);
   
-  // 8. Margins - ESC i d (0 für minimale Ränder)
-  commands.push(0x1B, 0x69, 0x64);
-  commands.push(0x00, 0x00);
+  // 8. Margins
+  commands.push(0x1B, 0x69, 0x64, 0x00, 0x00);
   
   // 9. Raster Data
-  // Format: 'g' (0x67) + 0x00 + {n} + {data}
-  // n = 87 (0x57) für 62mm (696 Pixel)
-  const srcBytesPerRow = Math.ceil(width / 8);
-  
   for (let y = 0; y < height; y++) {
-    commands.push(0x67);      // 'g' = Raster graphics transfer
-    commands.push(0x00);      // Compression indicator (0 = uncompressed)
-    commands.push(bytesPerRow); // 87 bytes (0x57)
+    commands.push(0x67);      // 'g'
+    commands.push(0x00);      // Compression = 0
+    commands.push(bytesPerRow); // 87 bytes
     
-    // Bytes von LINKS nach RECHTS senden (normal, nicht gespiegelt)
     for (let byteIdx = 0; byteIdx < bytesPerRow; byteIdx++) {
-      // Hole Byte aus Bitmap (oder 0 wenn außerhalb)
       const srcIdx = y * srcBytesPerRow + byteIdx;
-      commands.push(srcIdx < bitmap.length ? bitmap[srcIdx] : 0);
+      commands.push(srcIdx < mirroredBmp.length ? mirroredBmp[srcIdx] : 0);
     }
   }
   
-  // 10. Print Command - 0x1A (End of transmission / Print)
+  // 10. Print
   commands.push(0x1A);
   
   return new Uint8Array(commands);
 }
 
 /**
- * Erstelle Asset-Label
+ * Erstelle Asset-Label (mit QR Code)
  */
 export async function createBrotherRasterLabel(opts = {}) {
   const {
@@ -251,8 +272,47 @@ export async function createBrotherRasterLabel(opts = {}) {
     autoCut = true,
   } = opts;
 
-  const bitmap = await createAssetBitmap(assetId, typeLabel, serialNumber, location, width, height);
-  return createRasterCommands(bitmap, width, height, autoCut);
+  const bytesPerRow = Math.ceil(width / 8);
+  const bmp = new Uint8Array(bytesPerRow * height).fill(0);
+  
+  // QR Code - links
+  const qrSize = 200;
+  const qrX = 20;
+  
+  const qr = await makeQRCode(assetId, qrSize);
+  if (qr.bmp.length > 0) {
+    const offsetY = Math.floor((height - qr.size) / 2);
+    for (let y = 0; y < qr.bmp.length; y++) {
+      for (let x = 0; x < qr.bmp[y].length; x++) {
+        if (qr.bmp[y][x]) setPixel(bmp, bytesPerRow, qrX + x, offsetY + y, height);
+      }
+    }
+  }
+  
+  // Text-Bereich rechts vom QR
+  const textX = qrSize + 50;
+  const textW = width - textX - 20;
+  
+  const id = assetId || 'N/A';
+  const sc1 = Math.min(calcScale(id, textW, 5), 5);
+  drawText(bmp, bytesPerRow, width, height, id, textX, 30, sc1);
+  
+  const y2 = 30 + sc1 * 8 + 25;
+  const sc2 = Math.min(calcScale(typeLabel, textW, 4), 4);
+  drawText(bmp, bytesPerRow, width, height, typeLabel || '', textX, y2, sc2);
+  
+  const snTxt = 'SN: ' + (serialNumber || 'N/A');
+  const y3 = y2 + sc2 * 8 + 25;
+  const sc3 = Math.min(calcScale(snTxt, textW, 4), 4);
+  drawText(bmp, bytesPerRow, width, height, snTxt, textX, y3, sc3);
+  
+  if (location) {
+    const y4 = y3 + sc3 * 8 + 20;
+    const sc4 = Math.min(calcScale(location, textW, 3), 3);
+    drawText(bmp, bytesPerRow, width, height, location, textX, y4, sc4);
+  }
+  
+  return createRasterCommands(bmp, width, height, autoCut);
 }
 
 /**
@@ -279,7 +339,7 @@ export async function createAssetLabel(asset) {
 }
 
 /**
- * Standort/Station-Label erstellen
+ * Standort/Station-Label erstellen - GROSS und LESBAR
  */
 export async function createLocationLabel(location) {
   const locationCode = location.location_code || 'N/A';
@@ -289,68 +349,37 @@ export async function createLocationLabel(location) {
   const phone = location.phone || '-';
   
   const width = LABEL_WIDTH;
-  const height = 150;
+  const height = 350; // Größere Höhe für bessere Lesbarkeit
   const bytesPerRow = Math.ceil(width / 8);
   const bmp = new Uint8Array(bytesPerRow * height).fill(0);
   
-  // Einfacher Barcode zeichnen
-  const drawBarcode = (text, startX, startY, barHeight, moduleWidth) => {
-    let x = startX;
-    const t = String(text || '').substring(0, 12);
-    
-    // Start-Muster
-    for (let i = 0; i < 3; i++) {
-      for (let bw = 0; bw < moduleWidth; bw++) {
-        for (let bh = 0; bh < barHeight; bh++) {
-          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-        }
-      }
-      x += moduleWidth * 2;
-    }
-    
-    // Daten-Bars (vereinfachte Codierung)
-    for (let i = 0; i < t.length; i++) {
-      const code = t.charCodeAt(i);
-      for (let bit = 6; bit >= 0; bit--) {
-        if ((code >> bit) & 1) {
-          for (let bw = 0; bw < moduleWidth; bw++) {
-            for (let bh = 0; bh < barHeight; bh++) {
-              setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-            }
-          }
-        }
-        x += moduleWidth;
-      }
-      x += moduleWidth; // Trennung zwischen Zeichen
-    }
-    
-    // End-Muster
-    for (let i = 0; i < 3; i++) {
-      for (let bw = 0; bw < moduleWidth; bw++) {
-        for (let bh = 0; bh < barHeight; bh++) {
-          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-        }
-      }
-      x += moduleWidth * 2;
-    }
-  };
+  // Layout mit GROSSEN Schriften
+  // Zeile 1: Location Code - SEHR GROSS (scale 5)
+  drawText(bmp, bytesPerRow, width, height, locationCode.substring(0, 12), 30, 20, 5);
   
-  // Layout
-  drawText(bmp, bytesPerRow, width, height, locationCode.substring(0, 10), 10, 5, 3);
-  drawText(bmp, bytesPerRow, width, height, stationName.substring(0, 25), 10, 35, 2);
-  drawText(bmp, bytesPerRow, width, height, street.substring(0, 35), 10, 55, 1);
-  drawText(bmp, bytesPerRow, width, height, cityLine.substring(0, 30), 10, 68, 1);
-  drawText(bmp, bytesPerRow, width, height, 'TEL: ' + phone.substring(0, 15), 10, 81, 1);
+  // Zeile 2: Stationsname - GROSS (scale 4)
+  drawText(bmp, bytesPerRow, width, height, stationName.substring(0, 18), 30, 70, 4);
   
-  // Barcode
-  drawBarcode(locationCode, 10, 95, 35, 2);
-  drawText(bmp, bytesPerRow, width, height, locationCode, 10, 133, 1);
+  // Zeile 3: Straße - Mittel (scale 3)
+  drawText(bmp, bytesPerRow, width, height, street.substring(0, 25), 30, 110, 3);
+  
+  // Zeile 4: PLZ Stadt - Mittel (scale 3)
+  drawText(bmp, bytesPerRow, width, height, cityLine.substring(0, 25), 30, 140, 3);
+  
+  // Zeile 5: Telefon - Mittel (scale 3)
+  drawText(bmp, bytesPerRow, width, height, 'TEL: ' + phone.substring(0, 20), 30, 175, 3);
+  
+  // Barcode - GROSS
+  drawBarcode(bmp, bytesPerRow, width, height, locationCode, 30, 220, 80, 3);
+  
+  // Barcode-Text darunter
+  drawText(bmp, bytesPerRow, width, height, locationCode, 30, 310, 3);
   
   return createRasterCommands(bmp, width, height, true);
 }
 
 /**
- * Geräte-Label erstellen
+ * Geräte-Label erstellen - GROSS und LESBAR
  */
 export async function createDeviceLabel(device) {
   const deviceId = device.device_id || 'N/A';
@@ -360,61 +389,29 @@ export async function createDeviceLabel(device) {
   const status = device.status || '-';
   
   const width = LABEL_WIDTH;
-  const height = 150;
+  const height = 350; // Größere Höhe für bessere Lesbarkeit
   const bytesPerRow = Math.ceil(width / 8);
   const bmp = new Uint8Array(bytesPerRow * height).fill(0);
   
-  // Einfacher Barcode zeichnen
-  const drawBarcode = (text, startX, startY, barHeight, moduleWidth) => {
-    let x = startX;
-    const t = String(text || '').substring(0, 15);
-    
-    // Start-Muster
-    for (let i = 0; i < 3; i++) {
-      for (let bw = 0; bw < moduleWidth; bw++) {
-        for (let bh = 0; bh < barHeight; bh++) {
-          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-        }
-      }
-      x += moduleWidth * 2;
-    }
-    
-    // Daten-Bars
-    for (let i = 0; i < t.length; i++) {
-      const code = t.charCodeAt(i);
-      for (let bit = 6; bit >= 0; bit--) {
-        if ((code >> bit) & 1) {
-          for (let bw = 0; bw < moduleWidth; bw++) {
-            for (let bh = 0; bh < barHeight; bh++) {
-              setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-            }
-          }
-        }
-        x += moduleWidth;
-      }
-      x += moduleWidth;
-    }
-    
-    // End-Muster
-    for (let i = 0; i < 3; i++) {
-      for (let bw = 0; bw < moduleWidth; bw++) {
-        for (let bh = 0; bh < barHeight; bh++) {
-          setPixel(bmp, bytesPerRow, x + bw, startY + bh, height);
-        }
-      }
-      x += moduleWidth * 2;
-    }
-  };
+  // Layout mit GROSSEN Schriften
+  // Zeile 1: Device ID - SEHR GROSS (scale 5)
+  drawText(bmp, bytesPerRow, width, height, deviceId.substring(0, 14), 30, 20, 5);
   
-  // Layout
-  drawText(bmp, bytesPerRow, width, height, deviceId.substring(0, 15), 10, 5, 2);
-  drawText(bmp, bytesPerRow, width, height, status.toUpperCase() + ' | ' + locationCode, 10, 28, 2);
-  drawText(bmp, bytesPerRow, width, height, cityLine.substring(0, 35), 10, 50, 1);
-  drawText(bmp, bytesPerRow, width, height, 'SN: ' + snPc.substring(0, 25), 10, 63, 1);
+  // Zeile 2: Status + Location Code - GROSS (scale 4)
+  const statusLine = status.toUpperCase() + ' | ' + locationCode;
+  drawText(bmp, bytesPerRow, width, height, statusLine.substring(0, 18), 30, 70, 4);
   
-  // Barcode
-  drawBarcode(deviceId, 10, 80, 35, 2);
-  drawText(bmp, bytesPerRow, width, height, deviceId, 10, 118, 1);
+  // Zeile 3: Stadt - Mittel (scale 3)
+  drawText(bmp, bytesPerRow, width, height, cityLine.substring(0, 25), 30, 115, 3);
+  
+  // Zeile 4: Seriennummer - Mittel (scale 3)
+  drawText(bmp, bytesPerRow, width, height, 'SN: ' + snPc.substring(0, 20), 30, 150, 3);
+  
+  // Barcode - GROSS
+  drawBarcode(bmp, bytesPerRow, width, height, deviceId, 30, 195, 80, 3);
+  
+  // Barcode-Text darunter
+  drawText(bmp, bytesPerRow, width, height, deviceId, 30, 285, 3);
   
   return createRasterCommands(bmp, width, height, true);
 }
