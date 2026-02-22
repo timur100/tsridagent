@@ -183,21 +183,21 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Custom Header with Burger Menu */}
+      {/* Compact Header with Online Status and Burger Menu */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <View style={styles.headerLeft}>
-            <Text style={styles.greeting}>Hallo, {user?.name?.split(' ')[0] || 'Benutzer'}</Text>
+          <Text style={styles.headerTitle}>Dashboard</Text>
+          <View style={styles.headerRight}>
             <View style={[styles.statusBadge, { backgroundColor: serverStatus === 'online' ? '#22c55e20' : '#f59e0b20' }]}>
               <View style={[styles.statusDot, { backgroundColor: serverStatus === 'online' ? '#22c55e' : '#f59e0b' }]} />
               <Text style={[styles.statusText, { color: serverStatus === 'online' ? '#22c55e' : '#f59e0b' }]}>
                 {serverStatus === 'online' ? 'Online' : 'Offline'}
               </Text>
             </View>
+            <TouchableOpacity style={styles.burgerButton} onPress={() => setMenuVisible(true)}>
+              <Text style={styles.burgerIcon}>☰</Text>
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity style={styles.burgerButton} onPress={() => setMenuVisible(true)}>
-            <Text style={styles.burgerIcon}>☰</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -239,17 +239,6 @@ const DashboardScreen = ({ navigation }) => {
           <StatCard icon="📍" value={stats.total_locations} label="Standorte" onPress={() => navigation.navigate('Locations')} />
           <StatCard icon="🏢" value={stats.total_customers} label="Kunden" />
           <StatCard icon="👥" value={stats.total_users} label="Benutzer" />
-        </View>
-
-        {/* Quick Actions */}
-        <Text style={styles.sectionTitle}>Schnellzugriff</Text>
-        <View style={styles.quickActionsGrid}>
-          <QuickAction icon="📷" label="Scannen" onPress={() => navigation.navigate('Scanner')} />
-          <QuickAction icon="📦" label="Assets" onPress={() => navigation.navigate('Assets')} />
-          <QuickAction icon="📍" label="Standorte" onPress={() => navigation.navigate('Locations')} />
-          <QuickAction icon="🏷️" label="Labels" onPress={() => navigation.navigate('Settings')} />
-          <QuickAction icon="📥" label="Wareneingang" onPress={() => navigation.navigate('GoodsReceipt')} />
-          <QuickAction icon="⚙️" label="Einstellungen" onPress={() => navigation.navigate('Settings')} />
         </View>
       </ScrollView>
 
