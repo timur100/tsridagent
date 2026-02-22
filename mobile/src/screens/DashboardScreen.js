@@ -10,7 +10,7 @@ import {
   Dimensions,
   RefreshControl,
 } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { dashboardAPI, healthAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import theme from '../utils/theme';
