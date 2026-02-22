@@ -227,7 +227,7 @@ const DashboardScreen = ({ navigation }) => {
         <View style={styles.mainStats}>
           <TouchableOpacity 
             style={styles.mainStatCard} 
-            onPress={() => navigation.navigate('Assets')}
+            onPress={() => navigation.navigate('Devices')}
             activeOpacity={0.8}
           >
             <Text style={styles.mainStatIcon}>📦</Text>
@@ -238,7 +238,7 @@ const DashboardScreen = ({ navigation }) => {
           <View style={styles.deviceStatusCol}>
             <TouchableOpacity 
               style={styles.deviceStatus} 
-              onPress={() => navigation.navigate('Assets', { filter: 'online' })}
+              onPress={() => navigation.navigate('Devices', { filter: 'online' })}
             >
               <View style={[styles.statusIndicator, { backgroundColor: '#22c55e' }]} />
               <Text style={styles.deviceStatusValue}>{stats.online_devices}</Text>
@@ -246,7 +246,7 @@ const DashboardScreen = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.deviceStatus}
-              onPress={() => navigation.navigate('Assets', { filter: 'offline' })}
+              onPress={() => navigation.navigate('Devices', { filter: 'offline' })}
             >
               <View style={[styles.statusIndicator, { backgroundColor: '#ef4444' }]} />
               <Text style={styles.deviceStatusValue}>{stats.offline_devices}</Text>
@@ -254,7 +254,7 @@ const DashboardScreen = ({ navigation }) => {
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.deviceStatus}
-              onPress={() => navigation.navigate('Assets', { filter: 'vorbereitung' })}
+              onPress={() => navigation.navigate('Devices', { filter: 'vorbereitung' })}
             >
               <View style={[styles.statusIndicator, { backgroundColor: '#f59e0b' }]} />
               <Text style={styles.deviceStatusValue}>{stats.in_preparation}</Text>
