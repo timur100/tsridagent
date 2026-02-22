@@ -266,27 +266,27 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.background,
   },
   
-  // Header
+  // Header - Compact
   header: {
     backgroundColor: theme.colors.primary,
-    paddingTop: 8,
-    paddingBottom: 12,
-    paddingHorizontal: 16,
+    paddingTop: 4,
+    paddingBottom: 8,
+    paddingHorizontal: 12,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end', // Align to bottom
-  },
-  headerLeft: {
-    flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
   },
-  greeting: {
-    fontSize: 18,
+  headerTitle: {
+    fontSize: 16,
     fontWeight: '600',
     color: '#fff',
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   statusBadge: {
     flexDirection: 'row',
@@ -306,10 +306,10 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   burgerButton: {
-    padding: 6,
+    padding: 4,
   },
   burgerIcon: {
-    fontSize: 26,
+    fontSize: 22,
     color: '#fff',
   },
   
@@ -404,37 +404,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: theme.colors.textMuted,
     marginTop: 2,
-  },
-  
-  // Section Title
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: theme.colors.textPrimary,
-    marginBottom: 10,
-  },
-  
-  // Quick Actions Grid
-  quickActionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-  },
-  quickAction: {
-    width: '31%',
-    backgroundColor: theme.colors.surface,
-    borderRadius: 12,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  qaIcon: {
-    fontSize: 24,
-    marginBottom: 4,
-  },
-  qaLabel: {
-    fontSize: 11,
-    color: theme.colors.textSecondary,
-    fontWeight: '500',
   },
   
   // Menu
