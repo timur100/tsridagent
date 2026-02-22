@@ -9,7 +9,7 @@ import QRCode from 'qrcode';
 // Brother QL-820NWB: 62mm Endlos-Etikett = 696 Pixel Breite bei 300dpi
 const LABEL_WIDTH = 696;
 const LABEL_HEIGHT = 271;
-const BYTES_PER_ROW = Math.ceil(LABEL_WIDTH / 8); // 87 bytes
+const BYTES_PER_ROW = 87; // 696 / 8 = 87 bytes
 
 /**
  * Generate QR Code als Bitmap
@@ -71,13 +71,15 @@ const FONT = {
 'abcdefghijklmnopqrstuvwxyz'.split('').forEach(c => FONT[c] = FONT[c.toUpperCase()]);
 
 /**
- * Setze ein Pixel in der Bitmap
+ * Setze ein Pixel in der Bitmap (schwarz = 1)
+ * Brother druckt: Bit=1 -> schwarz, Bit=0 -> weiß
  */
 function setPixel(bmp, bytesPerRow, x, y, height) {
   if (x < 0 || y < 0 || y >= height || x >= bytesPerRow * 8) return;
   const byteIndex = y * bytesPerRow + Math.floor(x / 8);
+  const bitPosition = 7 - (x % 8); // MSB first
   if (byteIndex >= 0 && byteIndex < bmp.length) {
-    bmp[byteIndex] |= (0x80 >> (x % 8));
+    bmp[byteIndex] |= (1 << bitPosition);
   }
 }
 
@@ -169,7 +171,7 @@ async function createAssetBitmap(assetId, typeLabel, serialNumber, location, wid
  * Basierend auf Brother QL Raster Command Reference
  */
 function createRasterCommands(bitmap, width, height, autoCut = true) {
-  const bytesPerRow = Math.ceil(width / 8);
+  const bytesPerRow = BYTES_PER_ROW; // 87 bytes für 696 Pixel
   const commands = [];
   
   // 1. Invalidate - 400 Null-Bytes zum Zurücksetzen des Druckers
@@ -183,7 +185,6 @@ function createRasterCommands(bitmap, width, height, autoCut = true) {
   
   // 4. Print Information Command - ESC i z
   // Für 62mm Endlos-Etikett (DK-22205)
-  // Format: ESC i z {n1} {n2} {n3} {n4} {n5} {n6} {n7} {n8} {n9} {n10}
   commands.push(0x1B, 0x69, 0x7A);
   commands.push(0x8E);        // n1: Valid flags (Media type + width + quality)
   commands.push(0x0A);        // n2: Media type (0x0A = Continuous)
@@ -213,21 +214,21 @@ function createRasterCommands(bitmap, width, height, autoCut = true) {
   commands.push(0x00, 0x00);
   
   // 9. Raster Data
-  // Jede Zeile: 'g' + Länge (1 Byte) + Daten
-  // Bild muss horizontal gespiegelt werden für Brother!
+  // Format: 'g' (0x67) + 0x00 + {n} + {data}
+  // n = 87 (0x57) für 62mm (696 Pixel)
+  const srcBytesPerRow = Math.ceil(width / 8);
+  
   for (let y = 0; y < height; y++) {
-    commands.push(0x67);  // 'g' = Raster graphics transfer
-    commands.push(bytesPerRow);  // Anzahl Bytes in dieser Zeile
+    commands.push(0x67);      // 'g' = Raster graphics transfer
+    commands.push(0x00);      // Compression indicator (0 = uncompressed)
+    commands.push(bytesPerRow); // 87 bytes (0x57)
     
-    // Zeile horizontal gespiegelt ausgeben (rechts nach links)
+    // Brother erwartet die Daten von rechts nach links (gespiegelt)
+    // und MSB = linkstes Pixel
     for (let byteIdx = bytesPerRow - 1; byteIdx >= 0; byteIdx--) {
-      let byte = bitmap[y * bytesPerRow + byteIdx] || 0;
-      // Bits innerhalb jedes Bytes spiegeln
-      let reversed = 0;
-      for (let bit = 0; bit < 8; bit++) {
-        if (byte & (1 << bit)) reversed |= (1 << (7 - bit));
-      }
-      commands.push(reversed);
+      // Hole Byte aus Bitmap (oder 0 wenn außerhalb)
+      const srcIdx = y * srcBytesPerRow + byteIdx;
+      commands.push(srcIdx < bitmap.length ? bitmap[srcIdx] : 0);
     }
   }
   
