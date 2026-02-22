@@ -83,40 +83,61 @@ const formatDate = (dateStr) => {
   }
 };
 
-// Location Card - Updated for tenant_locations format
+// Location Card - Updated for tenant_locations format with table-like display
 const LocationCard = ({ location, onPress }) => {
-  // Status bestimmen
-  const deviceCount = location.device_count || location.online_count || 0;
-  const onlineCount = location.online_count || 0;
+  // Determine online status based on device_count and online_device_count
+  const deviceCount = location.device_count || 0;
+  const onlineCount = location.online_device_count || 0;
   const isOnline = onlineCount > 0;
+  
+  // Determine main status
+  const status = location.status || 'active';
+  const isActive = status === 'active';
   
   return (
     <TouchableOpacity style={styles.locationCard} onPress={() => onPress(location)}>
-      {/* Status Badge */}
-      <View style={styles.cardStatusCol}>
-        <View style={[styles.statusBadge, { backgroundColor: isOnline ? '#22c55e20' : '#ef444420' }]}>
-          <Text style={[styles.statusText, { color: isOnline ? '#22c55e' : '#ef4444' }]}>
-            {isOnline ? 'Online' : 'Offline'}
+      {/* Row 1: Online Status & Status Badge */}
+      <View style={styles.cardRow}>
+        <View style={styles.cardCol1}>
+          <View style={[styles.onlineBadge, { backgroundColor: isOnline ? '#22c55e20' : '#ef444420' }]}>
+            <View style={[styles.onlineDot, { backgroundColor: isOnline ? '#22c55e' : '#ef4444' }]} />
+            <Text style={[styles.onlineText, { color: isOnline ? '#22c55e' : '#ef4444' }]}>
+              {isOnline ? 'Online' : 'Offline'}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.cardCol2}>
+          <View style={[styles.statusBadge, { backgroundColor: isActive ? '#3b82f620' : '#f59e0b20' }]}>
+            <Text style={[styles.statusText, { color: isActive ? '#3b82f6' : '#f59e0b' }]}>
+              {isActive ? 'Aktiv' : status}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.cardCol3}>
+          <Text style={styles.cardCode}>{location.location_code || '-'}</Text>
+        </View>
+        <View style={styles.cardCol4}>
+          <Text style={styles.cardStation} numberOfLines={1}>
+            {location.station_name || '-'}
           </Text>
         </View>
       </View>
       
-      {/* Code */}
-      <View style={styles.cardCodeCol}>
-        <Text style={styles.cardCode}>{location.location_code || location.code || '-'}</Text>
-      </View>
-      
-      {/* Name & Details */}
-      <View style={styles.cardDetailsCol}>
-        <Text style={styles.cardName} numberOfLines={1}>
-          {location.name || location.station_name || location.stationsname || '-'}
-        </Text>
-        <Text style={styles.cardAddress} numberOfLines={1}>
-          {location.street || location.strasse || '-'}
-        </Text>
-        <Text style={styles.cardCity} numberOfLines={1}>
-          {location.zip || location.plz || ''} {location.city || location.stadt || '-'}
-        </Text>
+      {/* Row 2: Address Details */}
+      <View style={styles.cardRowDetails}>
+        <View style={styles.detailsLeft}>
+          <Text style={styles.cardAddress} numberOfLines={1}>
+            {location.street || '-'}
+          </Text>
+          <Text style={styles.cardCity} numberOfLines={1}>
+            {location.postal_code || ''} {location.city || '-'}
+          </Text>
+        </View>
+        <View style={styles.detailsRight}>
+          <Text style={styles.deviceCount}>
+            {onlineCount}/{deviceCount} Geräte
+          </Text>
+        </View>
       </View>
       
       <Text style={styles.cardArrow}>›</Text>
