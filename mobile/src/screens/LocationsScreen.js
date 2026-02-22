@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Modal,
   ScrollView,
+  TextInput,
 } from 'react-native';
 import { locationsAPI } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
