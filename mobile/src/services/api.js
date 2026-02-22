@@ -291,35 +291,44 @@ export const locationsAPI = {
 export const devicesAPI = {
   getAll: async (tenantId = null) => {
     try {
-      let url = '/api/tenant-devices/';
       if (tenantId) {
-        url = `/api/tenant-devices/${tenantId}`;
+        const response = await api.get(`/api/tenant-devices/${tenantId}`);
+        // Response structure: { success, data: { summary, devices } }
+        const data = response.data?.data || response.data;
+        return { 
+          devices: data?.devices || [], 
+          summary: data?.summary || { total: 0, online: 0, offline: 0, in_vorbereitung: 0 }
+        };
       }
-      const response = await api.get(url);
-      return response.data;
+      return { devices: [], summary: { total: 0, online: 0, offline: 0, in_vorbereitung: 0 } };
     } catch (error) {
       console.log('Devices error:', error.message);
-      return { devices: [], total: 0 };
+      return { devices: [], summary: { total: 0, online: 0, offline: 0, in_vorbereitung: 0 } };
     }
   },
   
   getByTenant: async (tenantId) => {
     try {
       const response = await api.get(`/api/tenant-devices/${tenantId}`);
-      return response.data;
+      // Response structure: { success, data: { summary, devices } }
+      const data = response.data?.data || response.data;
+      return { 
+        devices: data?.devices || [], 
+        summary: data?.summary || { total: 0, online: 0, offline: 0, in_vorbereitung: 0 }
+      };
     } catch (error) {
       console.log('Tenant devices error:', error.message);
-      return { devices: [], total: 0 };
+      return { devices: [], summary: { total: 0, online: 0, offline: 0, in_vorbereitung: 0 } };
     }
   },
   
-  getStats: async (tenantId) => {
+  getDevice: async (deviceId) => {
     try {
-      const response = await api.get(`/api/tenant-devices/${tenantId}/stats`);
+      const response = await api.get(`/api/tenant-devices/device/${deviceId}`);
       return response.data;
     } catch (error) {
-      console.log('Device stats error:', error.message);
-      return { total: 0, online: 0, offline: 0, in_preparation: 0 };
+      console.log('Get device error:', error.message);
+      return { device: null };
     }
   },
 };
