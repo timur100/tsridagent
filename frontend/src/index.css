@@ -18,97 +18,101 @@ code {
 @layer base {
     :root {
         /* ========================================
-           HETZNER DARK THEME
-           Inspired by Hetzner Cloud Dark Mode
+           HETZNER DARK THEME - Authentic Colors
+           Based on Hetzner Cloud Console Dark Mode
            ======================================== */
         
-        /* Base backgrounds */
-        --background: 0 0% 8%;           /* #141414 - Deep black */
-        --foreground: 0 0% 93%;          /* #ededed - Light gray text */
+        /* Base backgrounds - Deep blue-gray tones */
+        --background: 220 33% 5%;            /* #0a0e17 - Main background */
+        --foreground: 210 40% 98%;           /* #f8fafc - Primary text */
         
-        /* Cards & Containers */
-        --card: 0 0% 15%;                /* #262626 - Dark gray */
-        --card-foreground: 0 0% 93%;     /* #ededed */
+        /* Cards & Surfaces */
+        --card: 220 24% 10%;                 /* #12171f - Secondary panels */
+        --card-foreground: 210 40% 98%;      /* #f8fafc */
         
         /* Popovers & Modals */
-        --popover: 0 0% 13%;             /* #212121 - Almost black */
-        --popover-foreground: 0 0% 93%; /* #ededed */
+        --popover: 217 24% 15%;              /* #1a2330 - Tertiary/Cards */
+        --popover-foreground: 210 40% 98%;   /* #f8fafc */
         
-        /* Primary - Hetzner Red */
-        --primary: 352 89% 44%;          /* #d50c2d - Hetzner Red */
-        --primary-foreground: 0 0% 93%; /* #ededed */
-        --primary-light: 352 93% 49%;   /* #ed0d32 - Hover Red */
-        --primary-glow: 352 95% 55%;    /* Glow effect */
+        /* Primary - Hetzner Blue */
+        --primary: 200 98% 39%;              /* #0284c7 - Primary blue */
+        --primary-foreground: 210 40% 98%;   /* #f8fafc */
+        --primary-light: 201 96% 32%;        /* #0369a1 - Hover blue */
+        --primary-glow: 200 100% 50%;        /* Glow effect */
         
-        /* Secondary - Toolbar/Header gray */
-        --secondary: 0 0% 22%;           /* #383838 - Medium gray */
-        --secondary-foreground: 0 0% 93%;/* #ededed */
+        /* Secondary - Accent backgrounds */
+        --secondary: 215 25% 21%;            /* #2a3442 - Hover/accents */
+        --secondary-foreground: 210 40% 98%; /* #f8fafc */
         
-        /* Muted - Subtle backgrounds */
-        --muted: 0 0% 18%;               /* #2e2e2e */
-        --muted-foreground: 0 0% 55%;   /* #8c8c8c - Dimmed text */
+        /* Muted - Subtle elements */
+        --muted: 217 24% 15%;                /* #1a2330 */
+        --muted-foreground: 215 16% 47%;     /* #64748b - Muted text */
         
         /* Accent - Same as Primary for consistency */
-        --accent: 352 89% 44%;           /* #d50c2d */
-        --accent-foreground: 0 0% 93%;  /* #ededed */
+        --accent: 200 98% 39%;               /* #0284c7 */
+        --accent-foreground: 210 40% 98%;    /* #f8fafc */
         
-        /* Destructive/Error - Lighter Red */
-        --destructive: 352 84% 55%;      /* #ef1f42 */
-        --destructive-foreground: 0 0% 98%;
+        /* Destructive/Error - Red */
+        --destructive: 0 84% 60%;            /* #dc2626 */
+        --destructive-foreground: 210 40% 98%;
         
-        /* Warning Yellow */
-        --warning: 45 93% 47%;
-        --warning-foreground: 0 0% 10%;
+        /* Warning Orange */
+        --warning: 33 95% 44%;               /* #d97706 */
+        --warning-foreground: 210 40% 98%;
         
         /* Success Green */
-        --success: 142 76% 36%;
-        --success-foreground: 0 0% 100%;
+        --success: 142 76% 36%;              /* #16a34a */
+        --success-foreground: 210 40% 98%;
         
         /* Borders & Inputs */
-        --border: 0 0% 35%;              /* #595959 - Dark gray borders */
-        --input: 0 0% 13%;               /* #212121 - Input background */
-        --ring: 352 89% 44%;             /* #d50c2d - Focus ring */
+        --border: 217 33% 27%;               /* #334155 - Borders */
+        --input: 220 24% 10%;                /* #12171f - Input background */
+        --ring: 200 98% 39%;                 /* #0284c7 - Focus ring */
         
         --radius: 0.5rem;
         
         /* Hetzner Specific Tokens */
-        --hetzner-black: 0 0% 8%;        /* #141414 */
-        --hetzner-dark: 0 0% 15%;        /* #262626 */
-        --hetzner-gray: 0 0% 22%;        /* #383838 */
-        --hetzner-border: 0 0% 35%;      /* #595959 */
-        --hetzner-red: 352 89% 44%;      /* #d50c2d */
-        --hetzner-red-hover: 352 93% 49%;/* #ed0d32 */
-        --hetzner-text: 0 0% 93%;        /* #ededed */
+        --hetzner-bg-primary: 220 33% 5%;    /* #0a0e17 */
+        --hetzner-bg-secondary: 220 24% 10%; /* #12171f */
+        --hetzner-bg-tertiary: 217 24% 15%;  /* #1a2330 */
+        --hetzner-bg-accent: 215 25% 21%;    /* #2a3442 */
+        --hetzner-text-primary: 210 40% 98%; /* #f8fafc */
+        --hetzner-text-secondary: 214 32% 91%;/* #cbd5e1 */
+        --hetzner-text-muted: 215 16% 47%;   /* #64748b */
+        --hetzner-border: 217 33% 27%;       /* #334155 */
+        --hetzner-border-hover: 215 23% 37%; /* #475569 */
+        --hetzner-primary: 200 98% 39%;      /* #0284c7 */
+        --hetzner-primary-hover: 201 96% 32%;/* #0369a1 */
         
         /* Status Colors */
-        --status-default-bg: 0 0% 25%;
-        --status-success-bg: 142 76% 36%;
-        --status-warning-bg: 45 93% 47%;
-        --status-error-bg: 352 89% 44%;
-        --status-text: 0 0% 100%;
+        --status-default-bg: 215 25% 21%;
+        --status-success-bg: 142 76% 36%;    /* #16a34a */
+        --status-warning-bg: 33 95% 44%;     /* #d97706 */
+        --status-error-bg: 0 84% 60%;        /* #dc2626 */
+        --status-text: 210 40% 98%;
         
         /* Verification Tokens */
         --verification-success: 142 76% 36%;
-        --verification-pending: 45 93% 47%;
-        --verification-error: 352 89% 44%;
-        --verification-info: 217 91% 60%;
+        --verification-pending: 33 95% 44%;
+        --verification-error: 0 84% 60%;
+        --verification-info: 200 98% 39%;
         
-        /* Shadow System - Darker shadows for dark theme */
-        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.6);
-        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.7);
-        --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.25);
+        /* Shadow System - Blue-tinted shadows */
+        --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.15);
+        --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.25);
+        --shadow-lg: 0 10px 15px -3px rgba(15, 23, 42, 0.35);
+        --shadow-glow: 0 0 20px hsl(var(--primary-glow) / 0.2);
         
         /* Transitions */
         --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         --transition-fast: all 0.15s ease-out;
         
         /* Chart colors for data visualization */
-        --chart-1: 352 89% 44%;
-        --chart-2: 142 76% 36%;
-        --chart-3: 45 93% 47%;
-        --chart-4: 217 91% 60%;
-        --chart-5: 280 65% 60%;
+        --chart-1: 200 98% 39%;              /* Blue */
+        --chart-2: 142 76% 36%;              /* Green */
+        --chart-3: 33 95% 44%;               /* Orange */
+        --chart-4: 0 84% 60%;                /* Red */
+        --chart-5: 280 65% 60%;              /* Purple */
     }
 }
 
