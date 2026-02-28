@@ -1520,8 +1520,8 @@ const VerificationInterface = () => {
               )}
             </Button>
             
-            {/* Security Help Button - Always available when document is present */}
-            {hasDocument && (
+            {/* Security Help Button - Only for ERROR status (red bar - suspicious document) */}
+            {hasDocument && currentStatus === 'error' && (
               <SecurityHelpButton
                 scanImageUrl={scannedImages.front}
                 ocrData={verificationData}
@@ -1532,6 +1532,17 @@ const VerificationInterface = () => {
                 locationName={adminSettings.locationName || 'Hauptstandort'}
                 deviceId={adminSettings.deviceId || 'device-1'}
               />
+            )}
+            
+            {/* Add to Database Button - Only for WARNING status (yellow bar - unknown document) */}
+            {hasDocument && currentStatus === 'warning' && (
+              <Button
+                onClick={() => toast.info('Funktion "Dokument zur Datenbank hinzufügen" wird implementiert')}
+                className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 text-base font-bold rounded-xl"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Bitte Dokument zur Datenbank hinzufügen
+              </Button>
             )}
             
             <ActionButtons 
