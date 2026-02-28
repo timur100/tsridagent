@@ -119,8 +119,8 @@ const PortalLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8 bg-[#2a2a2a] rounded-2xl border-none shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 bg-card rounded-2xl border border-border shadow-[0_8px_30px_rgb(0,0,0,0.5)]">
         {/* Logo/Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center mb-4">
@@ -153,7 +153,7 @@ const PortalLogin = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="ihre.email@firma.de"
               />
             </div>
@@ -173,7 +173,7 @@ const PortalLogin = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required={!isLoginMode}
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Max Mustermann"
                 />
               </div>
@@ -194,7 +194,7 @@ const PortalLogin = () => {
                   value={formData.company}
                   onChange={handleChange}
                   required={!isLoginMode}
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                   placeholder="Firma GmbH"
                 />
               </div>
@@ -214,7 +214,7 @@ const PortalLogin = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-12 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
+                className="w-full pl-10 pr-12 py-3 bg-input border border-border rounded-lg text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 placeholder="••••••••"
               />
               <button
@@ -253,9 +253,9 @@ const PortalLogin = () => {
 
         {/* Demo Credentials */}
         {isLoginMode && (
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-xs text-blue-800 font-semibold mb-2">Demo-Zugang:</p>
-            <p className="text-xs text-blue-700">
+          <div className="mt-6 p-4 bg-muted border border-border rounded-lg">
+            <p className="text-xs text-primary font-semibold mb-2">Demo-Zugang:</p>
+            <p className="text-xs text-muted-foreground">
               E-Mail: admin@tsrid.com<br />
               Passwort: admin123
             </p>
