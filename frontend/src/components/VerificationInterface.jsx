@@ -926,7 +926,7 @@ const VerificationInterface = () => {
       // Reset counters on success
       setUnknownAttempts(0);
       setErrorAttempts(0);
-    } else if (random > 0.4) {
+    } else if (random > 0.40) {
       randomStatus = 'warning';  // Unknown document
       setScanState('verified');
       
