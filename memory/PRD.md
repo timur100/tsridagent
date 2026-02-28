@@ -1,80 +1,82 @@
-# TSRID Mobile App - Produkt-Dokumentation
+# TSRID Mobile App & Web Portal - Produkt-Dokumentation
 
 ## Original Problem Statement
-Entwicklung einer mobilen App für Zebra TC78 Handhelds zur Verwaltung von Assets, Etikettendruck über Bluetooth (Brother QL-820NWB / Zebra), und Barcode-Scanning.
+Entwicklung einer mobilen App für Zebra TC78 Handhelds und eines Web-Portals zur Verwaltung von Assets, Etikettendruck über Bluetooth (Brother QL-820NWB), und Barcode-Scanning.
 
-## Aktuelle Version
-- **Version:** 2.2.1
-- **Status:** Build in Arbeit
-- **APK Build:** https://expo.dev/accounts/timur100/projects/tsrid-mobile/builds/764797fa-e3dc-495b-bb12-e2864e7a65e5
+## Aktuelle Versionen
 
-## Änderungen in V2.2.1 (22.02.2026)
+### Mobile App
+- **Version:** 2.2.4
+- **APK:** https://expo.dev/accounts/timur100/projects/tsrid-mobile/builds/118b85ff-114a-4a4b-9d9c-cfb776882d00
+- **Fixes:** 
+  - Horizontale Spiegelung korrigiert
+  - Größere Labels (350px Höhe)
+  - Scale 5/4/3 für bessere Lesbarkeit
 
-### KRITISCH: BrotherRasterGenerator.js komplett neu geschrieben
+### Web Portal
+- **Neu:** Reporting-Übersicht Feature implementiert
 
-**Problem:** Drucker zeigte "Empfängt/Receiving" aber druckte nicht.
+## Neue Features (22.02.2026)
 
-**Ursachen identifiziert und behoben:**
+### Reporting-Übersicht (Web Portal)
+Neuer Menüpunkt im Header mit folgenden Funktionen:
 
-1. **Invalidate-Befehl korrigiert**
-   - Vorher: 200 Null-Bytes
-   - Jetzt: 400 Null-Bytes (Brother QL Spezifikation)
+**Report-Vorlagen:**
+1. Geräte pro Standort - Alle Devices mit Location-Zuordnung
+2. Standort-Übersicht - Alle Locations mit Details
+3. Asset-Inventar - Alle Assets mit Status
+4. Asset-Kit Zusammensetzung - Kit-Komponenten
+5. TeamViewer-IDs Liste - Schnellübersicht
+6. Gesamtübersicht - Alle Daten kombiniert
 
-2. **Print Information Command (ESC i z) korrigiert**
-   - 10 Parameter-Bytes für 62mm Endlos-Etiketten
-   - Media type = 0x0A (Continuous)
-   - Media width = 0x3E (62mm)
-   - Raster-Zeilenanzahl als Little Endian
+**Filter-Optionen:**
+- Tenant-Auswahl (oder "Alle Tenants")
+- Status-Filter (aktiv, inaktiv, auf Lager, in Vorbereitung)
+- Suchfeld für alle Felder
 
-3. **Raster-Daten Format korrigiert**
-   - Format: `0x67` + Länge (1 Byte) + Daten
-   - Bild horizontal gespiegelt (Brother-Anforderung)
-   - Bits innerhalb jedes Bytes gespiegelt
+**Export-Funktionen:**
+- PDF / Drucken (öffnet Druck-Dialog)
+- Excel (.xls Export)
+- CSV (mit Semikolon-Trennung, UTF-8)
 
-4. **Print-Befehl vereinfacht**
-   - Nur `0x1A` am Ende (nicht `0x1B 0x1A 0x0C`)
-
-### Code-Referenz (Brother QL Raster Protocol)
-```
-Befehlssequenz:
-1. 400x 0x00          - Invalidate (Puffer leeren)
-2. 0x1B 0x40          - Initialize (ESC @)
-3. 0x1B 0x69 0x61 0x01 - Switch to Raster Mode
-4. 0x1B 0x69 0x7A ...  - Print Information (10 Bytes)
-5. 0x1B 0x69 0x4D ...  - Auto Cut
-6. 0x1B 0x69 0x41 0x01 - Cut Every
-7. 0x1B 0x69 0x4B 0x08 - Expanded Mode (Cut at end)
-8. 0x1B 0x69 0x64 0x00 0x00 - Margins
-9. 0x67 {len} {data}   - Raster Data (pro Zeile)
-10. 0x1A               - Print (EOF)
-```
+**Zugriff:**
+- Grünes Dokument-Icon (FileText) im Header
+- Zwischen Ideen-Button und Theme-Toggle
 
 ## Bekannte Probleme
 
-### P1 - Assets-Screen ist leer (Regression)
-- **Status:** Debugging-Logs in V2.2.0 hinzugefügt
-- Warten auf Test nach Label-Fix
+### Mobile App
+- **P1:** Assets-Screen möglicherweise leer (Debugging-Logs vorhanden)
+- **P2:** Echtzeit-Updates - WebSocket + 30s Polling implementiert
+- **P3:** Brother Drucker Verbindungsfehler
 
-### P2 - Echtzeit-Updates nicht automatisch
-- **Status:** WebSocket + Polling implementiert
-- Warten auf Test
+### Web Portal
+- Label-Template "TSRID Tablet Label" wurde auf ursprünglichen Zustand zurückgesetzt
 
-## Test-Workflow
-1. APK herunterladen (sobald Build fertig)
-2. Auf TC78 installieren
-3. **Label-Druck testen:**
-   - Geräte → Detail-Modal → "Label drucken"
-   - Standorte → Detail-Modal → "Label drucken"
-   - Assets → "Label drucken"
+## Code-Architektur
 
-## Backend API Endpunkte
-| Endpunkt | Status |
-|----------|--------|
-| `/api/asset-mgmt/assets` | ✅ Funktioniert |
-| `/api/tenant-locations/{id}` | ✅ Funktioniert |
-| `/api/tenant-devices/{id}` | ✅ Funktioniert |
+### Neue Dateien
+```
+/app/frontend/src/components/ReportingOverview.jsx  # NEU - Reporting Feature
+```
 
-## Geänderte Dateien
-- `/app/mobile/src/services/BrotherRasterGenerator.js` - Komplett neu
-- `/app/mobile/src/screens/AssetsScreen.js` - Debug-Logs
-- `/app/mobile/app.json` - Version 2.2.1, versionCode 19
+### Geänderte Dateien
+```
+/app/frontend/src/pages/AdminPortal.jsx             # Reporting-Button + State
+/app/mobile/src/services/BrotherRasterGenerator.js  # Label-Druck Fix
+```
+
+## Backend API Endpunkte für Reporting
+| Endpunkt | Beschreibung |
+|----------|--------------|
+| `/api/tenants` | Alle Tenants |
+| `/api/devices` | Geräte (mit ?tenant_id Filter) |
+| `/api/standorte` | Standorte (mit ?tenant_id Filter) |
+| `/api/asset-mgmt/assets` | Alle Assets |
+| `/api/kit-templates` | Kit-Vorlagen |
+
+## Nächste Schritte
+1. Mobile APK testen (Label-Druck)
+2. Reporting-Feature im Web-Portal testen
+3. Assets-Screen in Mobile App prüfen
+4. Echtzeit-Updates verifizieren
