@@ -131,7 +131,7 @@ code {
 }
 
 @layer utilities {
-    /* Hetzner Dark Theme Utilities - Authentic Colors */
+    /* Hetzner Dark Theme Utilities - With Hetzner Red */
     .bg-hetzner-primary {
         background-color: #0a0e17;
     }
@@ -148,12 +148,12 @@ code {
         background-color: #2a3442;
     }
     
-    .bg-hetzner-blue {
-        background-color: #0284c7;
+    .bg-hetzner-red {
+        background-color: #d50c2d;
     }
     
-    .hover\:bg-hetzner-blue-hover:hover {
-        background-color: #0369a1;
+    .hover\:bg-hetzner-red-hover:hover {
+        background-color: #ed0d32;
     }
     
     .text-hetzner-primary {
@@ -168,12 +168,20 @@ code {
         color: #64748b;
     }
     
+    .text-hetzner-red {
+        color: #d50c2d;
+    }
+    
     .border-hetzner {
         border-color: #334155;
     }
     
     .border-hetzner-hover {
         border-color: #475569;
+    }
+    
+    .border-hetzner-red {
+        border-color: #d50c2d;
     }
     
     .shadow-glow {
