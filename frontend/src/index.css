@@ -129,21 +129,21 @@ code {
 }
 
 @layer utilities {
-    /* Hetzner Dark Theme Utilities - With Hetzner Red */
-    .bg-hetzner-primary {
-        background-color: #0a0e17;
+    /* Hetzner Dark Theme Utilities - Pure Neutral Grays + Red */
+    .bg-hetzner-main {
+        background-color: #141414;
     }
     
-    .bg-hetzner-secondary {
-        background-color: #12171f;
+    .bg-hetzner-card {
+        background-color: #262626;
     }
     
-    .bg-hetzner-tertiary {
-        background-color: #1a2330;
+    .bg-hetzner-elevated {
+        background-color: #383838;
     }
     
-    .bg-hetzner-accent {
-        background-color: #2a3442;
+    .bg-hetzner-input {
+        background-color: #212121;
     }
     
     .bg-hetzner-red {
@@ -154,16 +154,12 @@ code {
         background-color: #ed0d32;
     }
     
-    .text-hetzner-primary {
-        color: #f8fafc;
-    }
-    
-    .text-hetzner-secondary {
-        color: #cbd5e1;
+    .text-hetzner {
+        color: #ededed;
     }
     
     .text-hetzner-muted {
-        color: #64748b;
+        color: #8c8c8c;
     }
     
     .text-hetzner-red {
@@ -171,11 +167,7 @@ code {
     }
     
     .border-hetzner {
-        border-color: #334155;
-    }
-    
-    .border-hetzner-hover {
-        border-color: #475569;
+        border-color: #595959;
     }
     
     .border-hetzner-red {
@@ -187,7 +179,7 @@ code {
     }
     
     .text-shadow-sm {
-        text-shadow: 0 1px 2px rgba(15, 23, 42, 0.5);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
     
     /* Status colors */
