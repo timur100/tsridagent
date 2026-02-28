@@ -5,6 +5,8 @@ import PortalApp from './PortalApp';
 import StockPortalBarcode from './pages/StockPortalBarcode';
 import TechnicianPortal from './pages/TechnicianPortal';
 import EuropcarMenuPage from './pages/EuropcarMenuPage';
+import SecurityHelpdesk from './pages/SecurityHelpdesk';
+import TechnicalHelpdesk from './pages/TechnicalHelpdesk';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
