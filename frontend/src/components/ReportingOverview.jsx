@@ -393,7 +393,7 @@ const ReportingOverview = ({ onClose }) => {
           {devicesWithTV.map(device => (
             <TableRow key={device.device_id}>
               <TableCell className="font-medium">{device.device_id}</TableCell>
-              <TableCell className="font-mono text-lg font-bold text-[#0284c7]">{device.teamviewer_id}</TableCell>
+              <TableCell className="font-mono text-lg font-bold text-[#d50c2d]">{device.teamviewer_id}</TableCell>
               <TableCell>{device.locationcode || '-'}</TableCell>
               <TableCell>{device.city || '-'}</TableCell>
               <TableCell>
@@ -515,7 +515,7 @@ const ReportingOverview = ({ onClose }) => {
             >
               <div className="flex items-center gap-3">
                 {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5 text-[#cbd5e1]" /> : <ChevronRight className="h-5 w-5 text-[#cbd5e1]" />}
-                <Boxes className="h-5 w-5 text-[#0284c7]" />
+                <Boxes className="h-5 w-5 text-[#d50c2d]" />
                 <div>
                   <p className="font-bold text-[#f8fafc]">{kit.asset_id}</p>
                   <p className="text-sm text-[#64748b]">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
@@ -525,7 +525,7 @@ const ReportingOverview = ({ onClose }) => {
             </div>
             
             {expandedKits[kit.asset_id] && (
-              <div className="mt-4 pl-10 border-l-2 border-[#0284c7]/30 space-y-2">
+              <div className="mt-4 pl-10 border-l-2 border-[#d50c2d]/30 space-y-2">
                 <p className="text-sm font-medium mb-2 text-[#cbd5e1]">Komponenten:</p>
                 {kit.components?.length > 0 ? (
                   kit.components.map((comp, cidx) => (
@@ -552,7 +552,7 @@ const ReportingOverview = ({ onClose }) => {
     if (loading) {
       return (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-[#0284c7]" />
+          <RefreshCw className="h-8 w-8 animate-spin text-[#d50c2d]" />
         </div>
       );
     }
@@ -573,19 +573,19 @@ const ReportingOverview = ({ onClose }) => {
           <div className="space-y-8">
             <div>
               <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
-                <Monitor className="h-5 w-5 text-[#0284c7]" /> Geräte ({filteredDevices.length})
+                <Monitor className="h-5 w-5 text-[#d50c2d]" /> Geräte ({filteredDevices.length})
               </h3>
               {renderDevicesTable()}
             </div>
             <div>
               <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
-                <MapPin className="h-5 w-5 text-[#0284c7]" /> Standorte ({filteredLocations.length})
+                <MapPin className="h-5 w-5 text-[#d50c2d]" /> Standorte ({filteredLocations.length})
               </h3>
               {renderLocationsTable()}
             </div>
             <div>
               <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
-                <Package className="h-5 w-5 text-[#0284c7]" /> Assets ({filteredAssets.length})
+                <Package className="h-5 w-5 text-[#d50c2d]" /> Assets ({filteredAssets.length})
               </h3>
               {renderAssetsTable()}
             </div>
@@ -608,7 +608,7 @@ const ReportingOverview = ({ onClose }) => {
       {/* Header - Hetzner Blue Style */}
       <div className="h-16 px-6 flex items-center justify-between bg-[#12171f] border-b border-[#334155]">
         <div className="flex items-center gap-4">
-          <FileText className="h-6 w-6 text-[#0284c7]" />
+          <FileText className="h-6 w-6 text-[#d50c2d]" />
           <h1 className="text-xl font-bold text-[#f8fafc]">
             Reporting & Auswertungen
           </h1>
@@ -658,7 +658,7 @@ const ReportingOverview = ({ onClose }) => {
                   onClick={() => setSelectedTemplate(template)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                     selectedTemplate?.id === template.id
-                      ? 'bg-[#0284c7] text-white shadow-lg'
+                      ? 'bg-[#d50c2d] text-white shadow-lg'
                       : 'hover:bg-[#2a3442] text-[#cbd5e1]'
                   }`}
                 >
@@ -732,7 +732,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToPDF(getCurrentData(), selectedTemplate?.name || 'Report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
-                className="border-[#0284c7] text-[#0284c7] hover:bg-[#0284c7] hover:text-white"
+                className="border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d] hover:text-white"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 PDF / Drucken
@@ -772,11 +772,11 @@ const ReportingOverview = ({ onClose }) => {
               <Card className="p-6 bg-[#12171f] border-[#334155]">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-bold flex items-center gap-2 text-[#f8fafc]">
-                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#0284c7]" />}
+                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#d50c2d]" />}
                     {selectedTemplate.name}
                   </h2>
                   {dataLoaded && (
-                    <Badge variant="outline" className="text-[#0284c7] border-[#0284c7]">
+                    <Badge variant="outline" className="text-[#d50c2d] border-[#d50c2d]">
                       {getCurrentData().length} Einträge
                     </Badge>
                   )}
