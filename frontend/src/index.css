@@ -18,7 +18,7 @@ code {
 @layer base {
     :root {
         /* ========================================
-           HETZNER DARK THEME - Authentic Colors
+           HETZNER DARK THEME - With Hetzner Red
            Based on Hetzner Cloud Console Dark Mode
            ======================================== */
         
@@ -34,11 +34,11 @@ code {
         --popover: 217 24% 15%;              /* #1a2330 - Tertiary/Cards */
         --popover-foreground: 210 40% 98%;   /* #f8fafc */
         
-        /* Primary - Hetzner Blue */
-        --primary: 200 98% 39%;              /* #0284c7 - Primary blue */
+        /* Primary - Hetzner Red */
+        --primary: 352 89% 44%;              /* #d50c2d - Hetzner Red */
         --primary-foreground: 210 40% 98%;   /* #f8fafc */
-        --primary-light: 201 96% 32%;        /* #0369a1 - Hover blue */
-        --primary-glow: 200 100% 50%;        /* Glow effect */
+        --primary-light: 352 93% 49%;        /* #ed0d32 - Hover Red */
+        --primary-glow: 352 95% 55%;         /* Glow effect */
         
         /* Secondary - Accent backgrounds */
         --secondary: 215 25% 21%;            /* #2a3442 - Hover/accents */
@@ -48,11 +48,11 @@ code {
         --muted: 217 24% 15%;                /* #1a2330 */
         --muted-foreground: 215 16% 47%;     /* #64748b - Muted text */
         
-        /* Accent - Same as Primary for consistency */
-        --accent: 200 98% 39%;               /* #0284c7 */
+        /* Accent - Same as Primary (Hetzner Red) */
+        --accent: 352 89% 44%;               /* #d50c2d */
         --accent-foreground: 210 40% 98%;    /* #f8fafc */
         
-        /* Destructive/Error - Red */
+        /* Destructive/Error - Lighter Red */
         --destructive: 0 84% 60%;            /* #dc2626 */
         --destructive-foreground: 210 40% 98%;
         
@@ -67,7 +67,7 @@ code {
         /* Borders & Inputs */
         --border: 217 33% 27%;               /* #334155 - Borders */
         --input: 220 24% 10%;                /* #12171f - Input background */
-        --ring: 200 98% 39%;                 /* #0284c7 - Focus ring */
+        --ring: 352 89% 44%;                 /* #d50c2d - Focus ring (Hetzner Red) */
         
         --radius: 0.5rem;
         
@@ -81,20 +81,20 @@ code {
         --hetzner-text-muted: 215 16% 47%;   /* #64748b */
         --hetzner-border: 217 33% 27%;       /* #334155 */
         --hetzner-border-hover: 215 23% 37%; /* #475569 */
-        --hetzner-primary: 200 98% 39%;      /* #0284c7 */
-        --hetzner-primary-hover: 201 96% 32%;/* #0369a1 */
+        --hetzner-red: 352 89% 44%;          /* #d50c2d - Hetzner Red */
+        --hetzner-red-hover: 352 93% 49%;    /* #ed0d32 - Hover Red */
         
         /* Status Colors */
         --status-default-bg: 215 25% 21%;
         --status-success-bg: 142 76% 36%;    /* #16a34a */
         --status-warning-bg: 33 95% 44%;     /* #d97706 */
-        --status-error-bg: 0 84% 60%;        /* #dc2626 */
+        --status-error-bg: 352 89% 44%;      /* #d50c2d - Hetzner Red */
         --status-text: 210 40% 98%;
         
         /* Verification Tokens */
         --verification-success: 142 76% 36%;
         --verification-pending: 33 95% 44%;
-        --verification-error: 0 84% 60%;
+        --verification-error: 352 89% 44%;   /* #d50c2d */
         --verification-info: 200 98% 39%;
         
         /* Shadow System - Blue-tinted shadows */
@@ -108,10 +108,10 @@ code {
         --transition-fast: all 0.15s ease-out;
         
         /* Chart colors for data visualization */
-        --chart-1: 200 98% 39%;              /* Blue */
+        --chart-1: 352 89% 44%;              /* Red */
         --chart-2: 142 76% 36%;              /* Green */
         --chart-3: 33 95% 44%;               /* Orange */
-        --chart-4: 0 84% 60%;                /* Red */
+        --chart-4: 200 98% 39%;              /* Blue */
         --chart-5: 280 65% 60%;              /* Purple */
     }
 }
