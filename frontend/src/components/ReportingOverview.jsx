@@ -91,12 +91,14 @@ const ReportingOverview = ({ onClose }) => {
           
           if (selectedTenant && selectedTenant !== 'all') {
             // Get devices for specific tenant
-            const devicesResult = await apiCall(`/api/tenant-devices/${selectedTenant}`);
-            devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+            const response = await apiCall(`/api/tenant-devices/${selectedTenant}`);
+            const apiData = response?.data;
+            devicesList = apiData?.data?.devices || apiData?.devices || [];
           } else {
             // Get all devices from all tenants
-            const devicesResult = await apiCall('/api/tenant-devices/all/devices');
-            devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+            const response = await apiCall('/api/tenant-devices/all/devices');
+            const apiData = response?.data;
+            devicesList = apiData?.data?.devices || apiData?.devices || [];
           }
           
           console.log('[Reporting] Loaded devices:', devicesList.length);
@@ -114,12 +116,14 @@ const ReportingOverview = ({ onClose }) => {
           
           if (selectedTenant && selectedTenant !== 'all') {
             // Get locations for specific tenant
-            const result = await apiCall(`/api/tenant-locations/${selectedTenant}`);
-            locationsList = result?.data?.locations || result?.locations || result?.data || [];
+            const response = await apiCall(`/api/tenant-locations/${selectedTenant}`);
+            const apiData = response?.data;
+            locationsList = apiData?.data?.locations || apiData?.locations || apiData?.data || [];
           } else {
             // Get all locations
-            const result = await apiCall('/api/portal/locations/list');
-            locationsList = result?.data?.locations || result?.locations || result?.data || [];
+            const response = await apiCall('/api/portal/locations/list');
+            const apiData = response?.data;
+            locationsList = apiData?.data?.locations || apiData?.locations || apiData?.data || [];
           }
           
           console.log('[Reporting] Loaded locations:', locationsList.length);
@@ -133,8 +137,9 @@ const ReportingOverview = ({ onClose }) => {
       // Load assets
       if (['assets', 'kits', 'all'].includes(selectedTemplate.type)) {
         try {
-          const assetsResult = await apiCall('/api/asset-mgmt/assets');
-          const assetsList = assetsResult?.assets || assetsResult?.data?.assets || [];
+          const response = await apiCall('/api/asset-mgmt/assets');
+          const apiData = response?.data;
+          const assetsList = apiData?.assets || apiData?.data?.assets || [];
           console.log('[Reporting] Loaded assets:', assetsList.length);
           setAssets(assetsList);
         } catch (e) {
