@@ -49,6 +49,51 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 
 ## Neue Features
 
+### Helpdesk-System (28.02.2026) ✅ NEU IMPLEMENTIERT
+
+#### Security Helpdesk (`/helpdesk/security`)
+- **Funktion:** Dokument-Verifizierung bei Unklarheiten
+- **Zugriff:** Separate URL für Helpdesk-Mitarbeiter
+- **Features:**
+  - Live-Anfragen von allen Tenants/Standorten/Geräten
+  - Vorgefertigte Anfrage-Gründe (ohne Tastatur):
+    - Dokument beschädigt/unleserlich
+    - Hologramm nicht erkennbar
+    - Foto stimmt nicht überein
+    - Verdacht auf Fälschung
+    - u.v.m.
+  - Wallboard-Ansicht für Großbildschirme
+  - Sound-Benachrichtigung bei neuen Anfragen
+  - APPROVED (grün) / NOT APPROVED (rot) Entscheidungen
+  - Echtzeit-Status-Updates zum Scanner-Mitarbeiter
+
+#### Technical Helpdesk (`/helpdesk`)
+- **Funktion:** Technischer Support & Ticketing
+- **Features:**
+  - Ticket-Kategorien (Hardware, Software, Netzwerk, Sonstiges)
+  - Prioritätsstufen (Niedrig, Mittel, Hoch, Kritisch)
+  - Ticket-Erstellung mit Tenant/Standort-Zuweisung
+  - Status-Workflow: Offen → In Bearbeitung → Gelöst → Geschlossen
+  - Filter nach Status, Priorität, Suche
+
+#### "2. Meinung anfordern" Button
+- **Position:** Scan-Anwendung, nach jedem Dokument-Scan
+- **Funktion:** Mitarbeiter kann direkt Helpdesk kontaktieren
+- **Status-Anzeige:**
+  - Gelb pulsierend: "Warte auf Helpdesk..."
+  - Blau: "Anfrage in Bearbeitung"
+  - Grün/Rot Vollbild: APPROVED / NOT APPROVED
+
+#### Backend-APIs (`/api/helpdesk/*`)
+- Security Requests: CRUD + Wallboard
+- Technical Tickets: CRUD + Filter
+- Helpdesk Users: Verwaltung
+- Ticket Categories: Backend-Konfiguration
+- Predefined Questions: Vorgefertigte Anfrage-Gründe
+
+#### Default-Zugangsdaten
+- **Helpdesk-Agent:** helpdesk / helpdesk123
+
 ### Reporting-Übersicht (28.02.2026) ✅ FUNKTIONIERT
 - **Zugriff:** FileText-Icon im Admin-Portal Header
 - **Report-Vorlagen:** Geräte pro Standort, Standort-Übersicht, Asset-Inventar, Asset-Kit Zusammensetzung, TeamViewer-IDs Liste, Gesamtübersicht
