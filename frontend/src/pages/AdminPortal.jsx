@@ -3904,6 +3904,11 @@ const AdminPortalContent = () => {
           )}
         </DialogContent>
       </Dialog>
+      
+      {/* Reporting Overview Modal */}
+      {showReporting && (
+        <ReportingOverview onClose={() => setShowReporting(false)} />
+      )}
     </div>
   );
 };
