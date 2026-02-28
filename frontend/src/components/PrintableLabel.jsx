@@ -481,7 +481,7 @@ export const printMultipleLabelsWithTemplate = async (assets, template, onProgre
   return true;
 };
 
-// Label Vorschau
+// Label Vorschau - Entspricht dem gedruckten Layout
 export const LabelPreview = ({ asset, template, isDark = true }) => {
   if (!asset) return null;
   
@@ -541,18 +541,25 @@ export const LabelPreview = ({ asset, template, isDark = true }) => {
     );
   }
   
+  // Standard-Layout - Wie das gedruckte Label aussieht
+  // QR links, Text rechts (nicht übereinander!)
   return (
-    <div className={`p-4 rounded-lg border ${isDark ? 'bg-white' : 'bg-gray-50'}`} style={{ width: '100%', maxWidth: '280px' }}>
-      <div className="flex gap-3">
-        <div className="flex-shrink-0"><QRCodeSVG value={qrContent} size={80} level="H" includeMargin={false} /></div>
-        <div className="flex-1 min-w-0 flex flex-col gap-1">
-          <div className="font-bold text-black text-sm leading-tight break-all">{labelId}</div>
-          <div className="text-xs text-gray-600 uppercase tracking-wide">{typeLabel}</div>
-          {(manufacturer || model) && <div className="text-xs text-gray-500">{manufacturer}{manufacturer && model ? ' - ' : ''}{model}</div>}
+    <div className="bg-white rounded-lg border border-gray-300 p-3" style={{ width: '100%', maxWidth: '320px' }}>
+      <div className="flex flex-row items-start gap-4">
+        {/* QR Code - Links */}
+        <div className="flex-shrink-0">
+          <QRCodeSVG value={qrContent} size={90} level="H" includeMargin={false} />
+        </div>
+        {/* Text - Rechts vom QR Code */}
+        <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
+          <div className="font-bold text-black text-base leading-tight break-all mb-1">{labelId}</div>
+          <div className="text-sm text-gray-700 uppercase tracking-wide mb-1">{typeLabel}</div>
+          {(manufacturer || model) && (
+            <div className="text-xs text-gray-500">{manufacturer}{manufacturer && model ? ' - ' : ''}{model}</div>
+          )}
           {serialNumber && (
             <div className="mt-2 pt-2 border-t border-gray-200">
-              <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">Seriennummer</div>
-              <div className="w-full overflow-hidden"><Barcode value={serialNumber} format="CODE128" width={1.2} height={30} displayValue={true} fontSize={9} margin={0} textMargin={2} background="transparent" /></div>
+              <div className="text-xs text-gray-400 uppercase tracking-wider mb-1">SN: {serialNumber}</div>
             </div>
           )}
         </div>
