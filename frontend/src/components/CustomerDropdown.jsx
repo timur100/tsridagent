@@ -69,7 +69,7 @@ const CustomerDropdown = () => {
               </span>
             </div>
             {selectedCustomer === 'all' && (
-              <Check className="h-5 w-5 text-[#c00000]" />
+              <Check className="h-5 w-5 text-[#d50c2d]" />
             )}
           </button>
 
@@ -102,7 +102,7 @@ const CustomerDropdown = () => {
                   </div>
                 </div>
                 {selectedCustomer === customer.email && (
-                  <Check className="h-5 w-5 text-[#c00000]" />
+                  <Check className="h-5 w-5 text-[#d50c2d]" />
                 )}
               </button>
             ))}

@@ -2682,7 +2682,7 @@ const AssetManagementV2 = ({ theme }) => {
         {activeTab !== 'goods-receipt' && activeTab !== 'devices' && activeTab !== 'kit-assembly' && (
           <Button 
             onClick={() => activeTab === 'bundles' ? setActiveTab('kit-assembly') : openCreateModal(activeTab.slice(0, -1))} 
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             {activeTab === 'bundles' ? 'Neues KIT' : `Neu ${activeTab === 'locations' ? 'Location' : activeTab === 'slots' ? 'Slot' : 'Asset'}`}
@@ -2793,7 +2793,7 @@ const AssetManagementV2 = ({ theme }) => {
           <CreateModalContent />
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowCreateModal(false)}>Abbrechen</Button>
-            <Button onClick={handleCreate} className="bg-[#c00000] hover:bg-[#a00000] text-white">Erstellen</Button>
+            <Button onClick={handleCreate} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">Erstellen</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

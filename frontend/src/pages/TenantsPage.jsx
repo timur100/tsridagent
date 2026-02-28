@@ -243,7 +243,7 @@ const TenantsPage = ({ onSelectTenant }) => {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
           >
             <Plus className="w-5 h-5" />
             Neuer Tenant
@@ -269,7 +269,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     {hierarchyStats ? hierarchyStats.total_tenants : stats.total_tenants}
                   </p>
                 </div>
-                <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                <Building className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               </div>
             </Card>
 
@@ -285,7 +285,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     {hierarchyStats ? hierarchyStats.total_devices : stats.total_devices}
                   </p>
                 </div>
-                <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               </div>
             </Card>
 
@@ -303,7 +303,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     {hierarchyStats ? hierarchyStats.total_locations : stats.total_locations}
                   </p>
                 </div>
-                <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               </div>
             </Card>
 
@@ -319,7 +319,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     {hierarchyStats ? hierarchyStats.total_users : stats.total_users}
                   </p>
                 </div>
-                <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               </div>
             </Card>
           </div>
@@ -375,7 +375,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                     <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Scans Insgesamt</p>
                     <p className={`text-3xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{stats.total_scans}</p>
                   </div>
-                  <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <BarChart className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -443,7 +443,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Suche nach Name, Domain oder Email..."
-                className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
                   theme === 'dark'
                     ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                     : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -457,7 +457,7 @@ const TenantsPage = ({ onSelectTenant }) => {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
@@ -473,7 +473,7 @@ const TenantsPage = ({ onSelectTenant }) => {
             <select
               value={filterPlan}
               onChange={(e) => setFilterPlan(e.target.value)}
-              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+              className={`px-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
@@ -499,7 +499,7 @@ const TenantsPage = ({ onSelectTenant }) => {
             ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)]' 
             : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
         }`}>
-          <Building className={`w-16 h-16 mx-auto mb-4 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+          <Building className={`w-16 h-16 mx-auto mb-4 ${theme === 'dark' ? 'text-[#d50c2d]/50' : 'text-gray-300'}`} />
           <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Keine Tenants gefunden
           </h3>
@@ -509,7 +509,7 @@ const TenantsPage = ({ onSelectTenant }) => {
           {!searchQuery && (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
             >
               <Plus className="w-5 h-5" />
               Neuer Tenant
@@ -551,8 +551,8 @@ const TenantsPage = ({ onSelectTenant }) => {
                 // Highlight selected tenant
                 selectedTenantId === tenant.tenant_id
                   ? theme === 'dark'
-                    ? 'bg-[#c00000]/20 border-2 border-[#c00000] shadow-[0_8px_24px_rgba(192,0,0,0.5)]'
-                    : 'bg-red-50 border-2 border-[#c00000] shadow-[0_8px_24px_rgba(192,0,0,0.3)]'
+                    ? 'bg-[#d50c2d]/20 border-2 border-[#d50c2d] shadow-[0_8px_24px_rgba(192,0,0,0.5)]'
+                    : 'bg-red-50 border-2 border-[#d50c2d] shadow-[0_8px_24px_rgba(192,0,0,0.3)]'
                   : theme === 'dark' 
                     ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                     : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
@@ -564,7 +564,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                   {tenant.logo_url ? (
                     <img src={tenant.logo_url} alt={tenant.name} className="w-12 h-12 rounded-lg object-cover" />
                   ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#c00000] to-[#900000] rounded-lg flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-[#d50c2d] to-[#900000] rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-lg">
                         {(tenant.display_name || tenant.name || '?').charAt(0).toUpperCase()}
                       </span>
@@ -582,7 +582,7 @@ const TenantsPage = ({ onSelectTenant }) => {
                 {tenant.name || tenant.tenant_id}
               </p>
               {tenant.domain && (
-                <p className={`text-xs mb-3 truncate ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} title={tenant.domain}>
+                <p className={`text-xs mb-3 truncate ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`} title={tenant.domain}>
                   {tenant.domain}
                 </p>
               )}
@@ -764,14 +764,14 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Name (ID) <span className="text-[#c00000]">*</span>
+                  Name (ID) <span className="text-[#d50c2d]">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -782,14 +782,14 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
 
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Anzeigename <span className="text-[#c00000]">*</span>
+                  Anzeigename <span className="text-[#d50c2d]">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={formData.display_name}
                   onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -806,7 +806,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.domain}
                   onChange={(e) => setFormData({ ...formData, domain: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -822,7 +822,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                 <select
                   value={formData.subscription_plan}
                   onChange={(e) => setFormData({ ...formData, subscription_plan: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
@@ -841,7 +841,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${
                     theme === 'dark'
                       ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -861,28 +861,28 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Admin Email <span className="text-[#c00000]">*</span>
+                  Admin Email <span className="text-[#d50c2d]">*</span>
                 </label>
                 <input
                   type="email"
                   required
                   value={formData.admin_email}
                   onChange={(e) => setFormData({ ...formData, admin_email: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="admin@example.com"
                 />
               </div>
 
               <div>
                 <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                  Admin Passwort <span className="text-[#c00000]">*</span>
+                  Admin Passwort <span className="text-[#d50c2d]">*</span>
                 </label>
                 <input
                   type="password"
                   required
                   value={formData.admin_password}
                   onChange={(e) => setFormData({ ...formData, admin_password: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Sicheres Passwort"
                 />
               </div>
@@ -893,7 +893,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="+49 123 456789"
                 />
               </div>
@@ -904,7 +904,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Berlin"
                 />
               </div>
@@ -915,7 +915,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.country}
                   onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Deutschland"
                 />
               </div>
@@ -926,7 +926,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.postal_code}
                   onChange={(e) => setFormData({ ...formData, postal_code: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="10115"
                 />
               </div>
@@ -937,7 +937,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                   placeholder="Straße und Hausnummer"
                 />
               </div>
@@ -955,7 +955,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_users}
                   onChange={(e) => setFormData({ ...formData, max_users: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -966,7 +966,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_devices}
                   onChange={(e) => setFormData({ ...formData, max_devices: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -977,7 +977,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_storage_gb}
                   onChange={(e) => setFormData({ ...formData, max_storage_gb: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -988,7 +988,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_api_calls_per_day}
                   onChange={(e) => setFormData({ ...formData, max_api_calls_per_day: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
 
@@ -999,7 +999,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
                   min="1"
                   value={formData.max_locations}
                   onChange={(e) => setFormData({ ...formData, max_locations: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
+                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500' : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'}`}
                 />
               </div>
             </div>
@@ -1021,7 +1021,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+              className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
               disabled={loading}
             >
               {loading ? 'Wird erstellt...' : 'Tenant erstellen'}
@@ -1110,7 +1110,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
             <button
               onClick={onClose}
               className={`transition-colors hover:scale-110 ${
-                theme === 'dark' ? 'text-gray-400 hover:text-[#c00000]' : 'text-gray-400 hover:text-gray-600'
+                theme === 'dark' ? 'text-gray-400 hover:text-[#d50c2d]' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
               <XCircle className="w-6 h-6" />
@@ -1125,7 +1125,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-all ${
                   activeTab === tab.id
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#333]'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -1160,7 +1160,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
                       theme === 'dark'
                         ? 'bg-[#1a1a1a] border-gray-700 text-white'
                         : 'bg-white border-gray-300 text-gray-900'
@@ -1181,7 +1181,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                   <select
                     value={formData.subscription_plan}
                     onChange={(e) => setFormData({ ...formData, subscription_plan: e.target.value })}
-                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+                    className={`px-3 py-1 border rounded-lg focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
                       theme === 'dark'
                         ? 'bg-[#1a1a1a] border-gray-700 text-white'
                         : 'bg-white border-gray-300 text-gray-900'
@@ -1233,7 +1233,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[#c00000] h-2 rounded-full"
+                    className="bg-[#d50c2d] h-2 rounded-full"
                     style={{ width: `${(tenant.user_count / tenant.limits.max_users) * 100}%` }}
                   />
                 </div>
@@ -1246,7 +1246,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[#c00000] h-2 rounded-full"
+                    className="bg-[#d50c2d] h-2 rounded-full"
                     style={{ width: `${(tenant.device_count / tenant.limits.max_devices) * 100}%` }}
                   />
                 </div>
@@ -1259,7 +1259,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[#c00000] h-2 rounded-full"
+                    className="bg-[#d50c2d] h-2 rounded-full"
                     style={{ width: `${(tenant.storage_used_gb / tenant.limits.max_storage_gb) * 100}%` }}
                   />
                 </div>
@@ -1272,7 +1272,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[#c00000] h-2 rounded-full"
+                    className="bg-[#d50c2d] h-2 rounded-full"
                     style={{ width: `${(tenant.api_calls_today / tenant.limits.max_api_calls_per_day) * 100}%` }}
                   />
                 </div>
@@ -1312,7 +1312,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                 </button>
                 <button
                   onClick={handleStatusUpdate}
-                  className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all hover:scale-105"
+                  className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all hover:scale-105"
                   disabled={loading}
                 >
                   {loading ? 'Wird gespeichert...' : 'Speichern'}
@@ -1322,7 +1322,7 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
               <>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#900000] transition-all hover:scale-105"
+                  className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#900000] transition-all hover:scale-105"
                   disabled={loading}
                 >
                   Löschen
@@ -1331,8 +1331,8 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                   onClick={() => setIsEditing(true)}
                   className={`flex-1 px-4 py-2 border rounded-lg transition-all hover:scale-105 ${
                     theme === 'dark'
-                      ? 'border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-                      : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                      ? 'border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
+                      : 'border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
                   }`}
                 >
                   Bearbeiten

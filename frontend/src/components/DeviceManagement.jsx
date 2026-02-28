@@ -481,8 +481,8 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
           className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             filters.status === 'all'
               ? theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-white border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                ? 'bg-[#2a2a2a] border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
               : theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
@@ -492,7 +492,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
               <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt</p>
               <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{summary.total}</p>
             </div>
-            <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+            <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
           </div>
         </Card>
 
@@ -723,7 +723,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                     type="checkbox"
                     checked={selectedIds.size === filteredDevices.length && filteredDevices.length > 0}
                     onChange={toggleSelectAll}
-                    className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d] cursor-pointer"
                   />
                   {/* Settings gear icon */}
                   <div className="relative" data-column-settings>
@@ -734,7 +734,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                       }}
                       className={`p-1 rounded transition-colors ${
                         showColumnSettings
-                          ? 'bg-[#c00000] text-white'
+                          ? 'bg-[#d50c2d] text-white'
                           : theme === 'dark' ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-gray-200 text-gray-400'
                       }`}
                       title="Spalten konfigurieren"
@@ -756,7 +756,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                             </span>
                             <button
                               onClick={resetColumns}
-                              className="text-xs text-[#c00000] hover:underline"
+                              className="text-xs text-[#d50c2d] hover:underline"
                             >
                               Zurücksetzen
                             </button>
@@ -775,7 +775,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                               onDragEnd={handleDragEnd}
                               className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-move transition-colors ${
                                 draggedColumn === column.id
-                                  ? 'bg-[#c00000]/20'
+                                  ? 'bg-[#d50c2d]/20'
                                   : theme === 'dark' ? 'hover:bg-[#333]' : 'hover:bg-gray-50'
                               }`}
                             >
@@ -825,7 +825,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                 }}
                 className={`border-t cursor-pointer transition-colors ${
                   selectedIds.has(device.device_id || device._id) 
-                    ? theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+                    ? theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'
                     : ''
                 } ${theme === 'dark' 
                     ? 'border-gray-700 hover:bg-[#1a1a1a]' 
@@ -838,7 +838,7 @@ const DeviceManagement = ({ searchTerm: externalSearchTerm, onSearchChange, init
                     type="checkbox"
                     checked={selectedIds.has(device.device_id || device._id)}
                     onChange={() => toggleSelectDevice(device.device_id || device._id)}
-                    className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                    className="w-4 h-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d] cursor-pointer"
                   />
                 </td>
                 {/* Dynamic columns */}

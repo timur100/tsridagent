@@ -186,7 +186,7 @@ const MobilityVehicles = ({ tenantId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -205,7 +205,7 @@ const MobilityVehicles = ({ tenantId }) => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           Fahrzeug hinzufügen
@@ -254,8 +254,8 @@ const MobilityVehicles = ({ tenantId }) => {
             <Card key={vehicle.id} className="p-4 hover:shadow-lg transition-shadow bg-white dark:bg-gray-900">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-[#c00000]/10 rounded-lg">
-                    <VehicleIcon className="w-6 h-6 text-[#c00000]" />
+                  <div className="p-2 bg-[#d50c2d]/10 rounded-lg">
+                    <VehicleIcon className="w-6 h-6 text-[#d50c2d]" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 dark:text-white">{vehicle.name}</h3>
@@ -331,7 +331,7 @@ const MobilityVehicles = ({ tenantId }) => {
           <p className="text-gray-500 dark:text-gray-400">Keine Fahrzeuge gefunden</p>
           <button
             onClick={handleCreate}
-            className="mt-4 text-[#c00000] hover:underline font-medium"
+            className="mt-4 text-[#d50c2d] hover:underline font-medium"
           >
             Erstes Fahrzeug erstellen
           </button>
@@ -518,7 +518,7 @@ const MobilityVehicles = ({ tenantId }) => {
                 <button
                   onClick={handleSave}
                   disabled={!formData.name || !formData.location_id}
-                  className="flex-1 px-4 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {editingVehicle ? 'Speichern' : 'Erstellen'}
                 </button>

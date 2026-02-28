@@ -187,7 +187,7 @@ const LocationDetailPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -233,7 +233,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex flex-col items-center text-center">
-              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Geräte
               </p>
@@ -406,7 +406,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Öffnungszeiten
               </h3>
@@ -461,7 +461,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <MapIcon className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <MapIcon className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Standort auf Karte
               </h3>
@@ -500,7 +500,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Adressinformationen
               </h3>
@@ -541,7 +541,7 @@ const LocationDetailPage = () => {
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Kontaktinformationen
               </h3>
@@ -577,7 +577,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Technische Details
               </h3>
@@ -610,7 +610,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Hardware Details
               </h3>
@@ -640,7 +640,7 @@ const LocationDetailPage = () => {
             : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
         }`}>
           <div className="flex items-center gap-2 mb-4">
-            <Edit2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Edit2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Kommentare & Bemerkungen
             </h3>
@@ -669,12 +669,12 @@ const LocationDetailPage = () => {
             : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
         }`}>
           <div className="flex items-center gap-2 mb-6">
-            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Zugewiesene Geräte
             </h3>
             <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${
-              theme === 'dark' ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-700'
+              theme === 'dark' ? 'bg-[#d50c2d] text-white' : 'bg-gray-200 text-gray-700'
             }`}>
               {devices.length}
             </span>

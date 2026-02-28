@@ -20,7 +20,7 @@ const AuditDashboard = ({ theme = 'dark' }) => {
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const headerBg = isDark ? 'bg-[#1a1a1a]' : 'bg-gray-50';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300';
-  const accentColor = '#c00000';
+  const accentColor = '#d50c2d';
   
   // State
   const [loading, setLoading] = useState(false);

@@ -105,8 +105,8 @@ const TableColumnSettings = ({
         className={`p-2 rounded-lg transition-colors ${
           showSettings
             ? theme === 'dark'
-              ? 'bg-[#c00000] text-white'
-              : 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
+              : 'bg-[#d50c2d] text-white'
             : theme === 'dark'
             ? 'hover:bg-[#3d3d3d] text-gray-400'
             : 'hover:bg-gray-100 text-gray-600'

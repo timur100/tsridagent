@@ -137,7 +137,7 @@ const ResourcesManagement = () => {
         {/* Upload Section */}
         <div className={`p-6 rounded-lg mb-6 ${theme === 'dark' ? 'bg-[#1a1a1a] border border-gray-800' : 'bg-white border border-gray-200'}`}>
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <Upload className="h-5 w-5 text-[#c00000]" />
+            <Upload className="h-5 w-5 text-[#d50c2d]" />
             Datei hochladen
           </h2>
           
@@ -184,7 +184,7 @@ const ResourcesManagement = () => {
               <Button
                 onClick={handleUpload}
                 disabled={!selectedFile || uploading}
-                className="w-full bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="w-full bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 {uploading ? (
                   <>
@@ -214,7 +214,7 @@ const ResourcesManagement = () => {
         <div className="space-y-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+              <RefreshCw className="h-8 w-8 animate-spin text-[#d50c2d]" />
             </div>
           ) : (
             categories.map((category) => (
@@ -224,7 +224,7 @@ const ResourcesManagement = () => {
               >
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold flex items-center gap-2">
-                    <FolderOpen className="h-5 w-5 text-[#c00000]" />
+                    <FolderOpen className="h-5 w-5 text-[#d50c2d]" />
                     {category.display_name}
                   </h2>
                   <span className={`px-3 py-1 rounded-full text-sm ${

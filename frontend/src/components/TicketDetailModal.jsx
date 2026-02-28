@@ -322,7 +322,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               <Button
                 onClick={() => setShowAssignModal(true)}
                 size="sm"
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <User className="h-4 w-4 mr-2" />
                 Zuweisen
@@ -349,14 +349,14 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               {/* Original Ticket - Highlighted */}
               <div className={`p-5 rounded-lg border ${
                 theme === 'dark' 
-                  ? 'bg-[#c00000]/5 border-[#c00000]/30' 
+                  ? 'bg-[#d50c2d]/5 border-[#d50c2d]/30' 
                   : 'bg-red-50 border-red-200'
               }`}>
                 <div className="flex items-start gap-4">
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    theme === 'dark' ? 'bg-[#c00000]/20' : 'bg-red-100'
+                    theme === 'dark' ? 'bg-[#d50c2d]/20' : 'bg-red-100'
                   }`}>
-                    <AlertCircle className="h-5 w-5 text-[#c00000]" />
+                    <AlertCircle className="h-5 w-5 text-[#d50c2d]" />
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
@@ -443,9 +443,9 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                         <div className="flex items-center gap-2">
                           {isSupport && (
                             <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                              theme === 'dark' ? 'bg-[#c00000]/20' : 'bg-red-100'
+                              theme === 'dark' ? 'bg-[#d50c2d]/20' : 'bg-red-100'
                             }`}>
-                              <User className="h-3 w-3 text-[#c00000]" />
+                              <User className="h-3 w-3 text-[#d50c2d]" />
                             </div>
                           )}
                           <span className={`text-xs font-medium ${
@@ -476,7 +476,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                               ? 'bg-[#2a2a2a] border border-gray-700'
                               : 'bg-white border border-gray-200'
                             : theme === 'dark'
-                            ? 'bg-[#c00000]/20 border border-[#c00000]/30'
+                            ? 'bg-[#d50c2d]/20 border border-[#d50c2d]/30'
                             : 'bg-red-50 border border-red-200'
                         }`}>
                           <div 
@@ -516,7 +516,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                           onClick={handleReply}
                           disabled={replyLoading || !replyText.trim()}
                           size="sm"
-                          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                         >
                           <MessageSquare className="h-4 w-4 mr-2" />
                           {replyLoading ? 'Wird gesendet...' : 'Antwort senden'}
@@ -551,7 +551,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               {/* Time Info */}
               <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <Clock className="h-4 w-4 text-[#c00000]" />
+                  <Clock className="h-4 w-4 text-[#d50c2d]" />
                   <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     Zeitverlauf
                   </span>
@@ -560,7 +560,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                   <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                     <span className="font-medium">Erstellt:</span><br />
                     {new Date(ticket.created_at).toLocaleString('de-DE')}
-                    <span className="ml-1 text-[#c00000]">({getTimeSince(ticket.created_at)})</span>
+                    <span className="ml-1 text-[#d50c2d]">({getTimeSince(ticket.created_at)})</span>
                   </div>
                   {ticket.accepted_at && (
                     <div className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
@@ -586,7 +586,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               {/* Customer Info */}
               <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <User className="h-4 w-4 text-[#c00000]" />
+                  <User className="h-4 w-4 text-[#d50c2d]" />
                   <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     Kundeninformationen
                   </span>
@@ -612,7 +612,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                 <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Monitor className="h-4 w-4 text-[#c00000]" />
+                      <Monitor className="h-4 w-4 text-[#d50c2d]" />
                       <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         Betroffenes Gerät
                       </span>
@@ -647,7 +647,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               {locationDetails ? (
                 <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-white'}`}>
                   <div className="flex items-center gap-2 mb-2">
-                    <MapPin className="h-4 w-4 text-[#c00000]" />
+                    <MapPin className="h-4 w-4 text-[#d50c2d]" />
                     <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       Standortdetails
                     </span>
@@ -681,7 +681,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                     {locationDetails.opening_hours && typeof locationDetails.opening_hours === 'object' && (
                       <div className={`mt-2 p-2 rounded ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
                         <div className="flex items-center gap-1 mb-2">
-                          <Clock className="h-3 w-3 text-[#c00000]" />
+                          <Clock className="h-3 w-3 text-[#d50c2d]" />
                           <span className="font-medium">Öffnungszeiten:</span>
                         </div>
                         <div className="space-y-0.5 text-xs">
@@ -714,7 +714,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                 </div>
               ) : loadingLocation ? (
                 <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin h-5 w-5 border-2 border-[#c00000] border-t-transparent rounded-full"></div>
+                  <div className="animate-spin h-5 w-5 border-2 border-[#d50c2d] border-t-transparent rounded-full"></div>
                 </div>
               ) : null}
 
@@ -728,7 +728,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <FolderOpen className="h-4 w-4 text-[#c00000]" />
+                      <FolderOpen className="h-4 w-4 text-[#d50c2d]" />
                       <span className={`text-xs font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         Ressourcen & Hilfsmittel
                       </span>
@@ -744,7 +744,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
                     <div className="p-3 pt-0 space-y-3">
                       {loadingResources ? (
                         <div className="flex items-center justify-center py-4">
-                          <div className="animate-spin h-4 w-4 border-2 border-[#c00000] border-t-transparent rounded-full"></div>
+                          <div className="animate-spin h-4 w-4 border-2 border-[#d50c2d] border-t-transparent rounded-full"></div>
                         </div>
                       ) : (
                         <>
@@ -1063,7 +1063,7 @@ const TicketDetailModal = ({ ticket, onClose, onUpdate, devices = [], isAdmin = 
               </Button>
               <Button
                 onClick={handleAssignTicket}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 Zuweisen
               </Button>

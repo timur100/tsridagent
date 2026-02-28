@@ -338,7 +338,7 @@ const USBDeviceManager = () => {
       {/* Serial Ports / Printers */}
       <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Printer className="h-6 w-6 text-[#c00000]" />
+          <Printer className="h-6 w-6 text-[#d50c2d]" />
           <h4 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             USB Serial Ports ({serialPorts.length})
           </h4>
@@ -387,7 +387,7 @@ const USBDeviceManager = () => {
               </Button>
               <Button
                 onClick={printTestLabel}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
               >
                 <Zap className="h-4 w-4" />
                 Test-Label drucken (ZPL)

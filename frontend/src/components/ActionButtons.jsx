@@ -60,9 +60,9 @@ const ActionButtons = ({ onAction, isUnlocked, securityUser, onSecurityAction, h
               className={`flex-1 h-14 text-base font-semibold text-white ${
                 isDisabled ? 'opacity-50 cursor-not-allowed' : ''
               }`}
-              style={{ backgroundColor: isDisabled ? '#666' : '#c00000' }}
-              onMouseEnter={(e) => !isDisabled && (e.currentTarget.style.backgroundColor = '#a00000')}
-              onMouseLeave={(e) => !isDisabled && (e.currentTarget.style.backgroundColor = '#c00000')}
+              style={{ backgroundColor: isDisabled ? '#666' : '#d50c2d' }}
+              onMouseEnter={(e) => !isDisabled && (e.currentTarget.style.backgroundColor = '#b80a28')}
+              onMouseLeave={(e) => !isDisabled && (e.currentTarget.style.backgroundColor = '#d50c2d')}
             >
               <Icon className="mr-2 h-5 w-5" />
               {action.label}

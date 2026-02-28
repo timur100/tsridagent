@@ -182,7 +182,7 @@ const CategoryManagement = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[#d50c2d]" />
       </div>
     );
   }
@@ -201,7 +201,7 @@ const CategoryManagement = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-5 w-5" />
           Neue Kategorie
@@ -236,7 +236,7 @@ const CategoryManagement = () => {
           </p>
           <button
             onClick={initializeDefaultCategories}
-            className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+            className="px-6 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
           >
             Standard-Kategorien laden
           </button>
@@ -528,7 +528,7 @@ const CategoryManagement = () => {
                   id="active"
                   checked={formData.active}
                   onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                  className="w-5 h-5 text-[#c00000] rounded"
+                  className="w-5 h-5 text-[#d50c2d] rounded"
                 />
                 <label htmlFor="active" className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Kategorie aktiv
@@ -546,7 +546,7 @@ const CategoryManagement = () => {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28]"
                 >
                   <Save className="h-5 w-5" />
                   Speichern

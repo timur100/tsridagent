@@ -152,7 +152,7 @@ const BrandingSettings = () => {
     const isDark = logoType === 'dark';
     const icon = isDark ? <Moon className="inline h-5 w-5 mr-2" /> : <Sun className="inline h-5 w-5 mr-2" />;
     const title = isDark ? 'Logo für Dark Mode (roter Hintergrund)' : 'Logo für Light Mode (weißer Hintergrund)';
-    const bgDemo = isDark ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-2';
+    const bgDemo = isDark ? 'bg-gradient-to-r from-[#d50c2d] to-[#b80a28]' : 'bg-white border-2';
 
     return (
       <div>
@@ -229,7 +229,7 @@ const BrandingSettings = () => {
                 <div className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
                   uploading 
                     ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-[#c00000] hover:bg-[#a00000] cursor-pointer'
+                    : 'bg-[#d50c2d] hover:bg-[#b80a28] cursor-pointer'
                 } text-white`}>
                   <Upload className="h-4 w-4 mr-2" />
                   {uploading ? 'Wird hochgeladen...' : 'Logo hochladen'}
@@ -274,7 +274,7 @@ const BrandingSettings = () => {
               />
               <Button
                 onClick={handleSaveCompanyName}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 Speichern
               </Button>

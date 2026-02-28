@@ -676,7 +676,7 @@ const AssetManagement = () => {
           </Button>
           <Button
             onClick={() => openModal()}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
             Neues Asset
@@ -772,7 +772,7 @@ const AssetManagement = () => {
                   </p>
                   <Button
                     onClick={() => openModal()}
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Neues Asset erstellen
@@ -789,7 +789,7 @@ const AssetManagement = () => {
                           <div className={`p-3 rounded-lg ${
                             theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'
                           }`}>
-                            <Package className="h-6 w-6 text-[#c00000]" />
+                            <Package className="h-6 w-6 text-[#d50c2d]" />
                           </div>
                           
                           <div className="flex-1">
@@ -917,7 +917,7 @@ const AssetManagement = () => {
                       <Button
                         onClick={generateAssetId}
                         disabled={!assetForm.category_id || generatingId}
-                        className="bg-[#c00000] hover:bg-[#a00000] text-white whitespace-nowrap"
+                        className="bg-[#d50c2d] hover:bg-[#b80a28] text-white whitespace-nowrap"
                       >
                         {generatingId ? (
                           <>
@@ -1074,7 +1074,7 @@ const AssetManagement = () => {
               <div className="flex gap-3 mt-6">
                 <Button
                   onClick={saveAsset}
-                  className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   disabled={!assetForm.name || !assetForm.category_id || !assetForm.asset_id}
                 >
                   {editingAsset ? 'Änderungen speichern' : 'Asset erstellen'}
@@ -1104,7 +1104,7 @@ const AssetManagement = () => {
                   <div className={`p-3 rounded-lg ${
                     theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-100'
                   }`}>
-                    <Package className="h-8 w-8 text-[#c00000]" />
+                    <Package className="h-8 w-8 text-[#d50c2d]" />
                   </div>
                   <div>
                     <h3 className={`text-2xl font-bold font-mono ${
@@ -1231,7 +1231,7 @@ const AssetManagement = () => {
                 </Button>
                 <Button
                   onClick={() => setShowDetailModal(false)}
-                  className="ml-auto bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="ml-auto bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   Schließen
                 </Button>

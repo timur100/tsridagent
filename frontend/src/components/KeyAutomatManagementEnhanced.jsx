@@ -197,7 +197,7 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
           onClick={() => setActiveTab('keys')}
           className={`flex items-center gap-2 px-4 py-2 font-semibold transition-colors border-b-2 ${
             activeTab === 'keys'
-              ? 'border-[#c00000] text-[#c00000]'
+              ? 'border-[#d50c2d] text-[#d50c2d]'
               : 'border-transparent text-gray-400 hover:text-gray-300'
           }`}
         >
@@ -208,7 +208,7 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
           onClick={() => setActiveTab('locations')}
           className={`flex items-center gap-2 px-4 py-2 font-semibold transition-colors border-b-2 ${
             activeTab === 'locations'
-              ? 'border-[#c00000] text-[#c00000]'
+              ? 'border-[#d50c2d] text-[#d50c2d]'
               : 'border-transparent text-gray-400 hover:text-gray-300'
           }`}
         >
@@ -219,7 +219,7 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
           onClick={() => setActiveTab('automats')}
           className={`flex items-center gap-2 px-4 py-2 font-semibold transition-colors border-b-2 ${
             activeTab === 'automats'
-              ? 'border-[#c00000] text-[#c00000]'
+              ? 'border-[#d50c2d] text-[#d50c2d]'
               : 'border-transparent text-gray-400 hover:text-gray-300'
           }`}
         >
@@ -230,14 +230,14 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
           onClick={() => setActiveTab('rentals')}
           className={`flex items-center gap-2 px-4 py-2 font-semibold transition-colors border-b-2 ${
             activeTab === 'rentals'
-              ? 'border-[#c00000] text-[#c00000]'
+              ? 'border-[#d50c2d] text-[#d50c2d]'
               : 'border-transparent text-gray-400 hover:text-gray-300'
           }`}
         >
           <User className="h-4 w-4" />
           Aktive Ausleihen
           {rentals.length > 0 && (
-            <span className="px-2 py-0.5 text-xs bg-[#c00000] text-white rounded-full">
+            <span className="px-2 py-0.5 text-xs bg-[#d50c2d] text-white rounded-full">
               {rentals.length}
             </span>
           )}
@@ -246,7 +246,7 @@ const KeyAutomatManagementEnhanced = ({ theme, tenantId, locationId, automatId, 
           onClick={() => setActiveTab('history')}
           className={`flex items-center gap-2 px-4 py-2 font-semibold transition-colors border-b-2 ${
             activeTab === 'history'
-              ? 'border-[#c00000] text-[#c00000]'
+              ? 'border-[#d50c2d] text-[#d50c2d]'
               : 'border-transparent text-gray-400 hover:text-gray-300'
           }`}
         >

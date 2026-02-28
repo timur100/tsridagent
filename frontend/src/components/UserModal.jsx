@@ -109,7 +109,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
           theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
         }`}>
           <div className="flex items-center gap-3">
-            <UserPlus className="w-6 h-6 text-[#c00000]" />
+            <UserPlus className="w-6 h-6 text-[#d50c2d]" />
             <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {user ? 'Benutzer bearbeiten' : 'Neuer Benutzer'}
             </h2>
@@ -151,7 +151,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -169,7 +169,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -186,7 +186,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -203,7 +203,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div className="md:col-span-2">
@@ -222,7 +222,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                     {user && (
                       <p className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -253,7 +253,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -270,7 +270,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -287,7 +287,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -303,7 +303,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     >
                       <option value="active">Aktiv</option>
                       <option value="inactive">Inaktiv</option>
@@ -324,8 +324,8 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all ${
                         formData.tenant_ids.includes(tenant.tenant_id)
                           ? theme === 'dark'
-                            ? 'bg-[#c00000]/20 border-[#c00000]'
-                            : 'bg-red-50 border-[#c00000]'
+                            ? 'bg-[#d50c2d]/20 border-[#d50c2d]'
+                            : 'bg-red-50 border-[#d50c2d]'
                           : theme === 'dark'
                           ? 'bg-[#2a2a2a] border-gray-700 hover:bg-[#3a3a3a]'
                           : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -335,7 +335,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         type="checkbox"
                         checked={formData.tenant_ids.includes(tenant.tenant_id)}
                         onChange={() => handleTenantToggle(tenant.tenant_id)}
-                        className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                        className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                       />
                       <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         {tenant.display_name}
@@ -357,8 +357,8 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                       className={`flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-all ${
                         formData.roles.includes(role.name)
                           ? theme === 'dark'
-                            ? 'bg-[#c00000]/20 border-[#c00000]'
-                            : 'bg-red-50 border-[#c00000]'
+                            ? 'bg-[#d50c2d]/20 border-[#d50c2d]'
+                            : 'bg-red-50 border-[#d50c2d]'
                           : theme === 'dark'
                           ? 'bg-[#2a2a2a] border-gray-700 hover:bg-[#3a3a3a]'
                           : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
@@ -368,7 +368,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
                         type="checkbox"
                         checked={formData.roles.includes(role.name)}
                         onChange={() => handleRoleToggle(role.name)}
-                        className="w-4 h-4 mt-1 text-[#c00000] rounded focus:ring-[#c00000]"
+                        className="w-4 h-4 mt-1 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                       />
                       <div>
                         <span className={`font-medium block ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -408,7 +408,7 @@ const UserModal = ({ show, onClose, user, roles, tenants, onSave }) => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 loading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#c00000] hover:bg-[#a00000]'
+                  : 'bg-[#d50c2d] hover:bg-[#b80a28]'
               } text-white`}
             >
               <Save className="w-4 h-4" />

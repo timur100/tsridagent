@@ -94,7 +94,7 @@ const CustomerSwitcher = () => {
             : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
         }`}
       >
-        <Building2 className="h-4 w-4 text-[#c00000]" />
+        <Building2 className="h-4 w-4 text-[#d50c2d]" />
         <span className="text-sm font-medium">
           {selectedTenantName}
         </span>
@@ -127,8 +127,8 @@ const CustomerSwitcher = () => {
                     className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
                       selectedTenantId === 'all'
                         ? theme === 'dark'
-                          ? 'bg-[#c00000]/20 text-[#c00000]'
-                          : 'bg-red-50 text-[#c00000]'
+                          ? 'bg-[#d50c2d]/20 text-[#d50c2d]'
+                          : 'bg-red-50 text-[#d50c2d]'
                         : theme === 'dark'
                         ? 'hover:bg-[#3a3a3a] text-white'
                         : 'hover:bg-gray-100 text-gray-900'
@@ -150,8 +150,8 @@ const CustomerSwitcher = () => {
                   className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors ${
                     selectedTenantId === customer.id
                       ? theme === 'dark'
-                        ? 'bg-[#c00000]/20 text-[#c00000]'
-                        : 'bg-red-50 text-[#c00000]'
+                        ? 'bg-[#d50c2d]/20 text-[#d50c2d]'
+                        : 'bg-red-50 text-[#d50c2d]'
                       : theme === 'dark'
                       ? 'hover:bg-[#3a3a3a] text-white'
                       : 'hover:bg-gray-100 text-gray-900'

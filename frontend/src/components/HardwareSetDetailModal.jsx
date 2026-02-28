@@ -189,7 +189,7 @@ const HardwareSetDetailModal = ({ show, onClose, set, onRefresh }) => {
           <div className="flex gap-3">
             <Button
               onClick={() => setShowAddDevice(!showAddDevice)}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <Plus className="h-4 w-4" />
               Gerät hinzufügen
@@ -261,7 +261,7 @@ const HardwareSetDetailModal = ({ show, onClose, set, onRefresh }) => {
 
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
               </div>
             ) : devices.length === 0 ? (
               <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50'}`}>

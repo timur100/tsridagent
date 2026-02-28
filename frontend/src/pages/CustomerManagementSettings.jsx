@@ -87,7 +87,7 @@ const CustomerManagementSettings = () => {
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Neuer Kunde
@@ -144,7 +144,7 @@ const CustomerManagementSettings = () => {
                   <tr key={customer.id} className={theme === 'dark' ? 'hover:bg-[#3a3a3a]' : 'hover:bg-gray-50'}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Building2 className="h-5 w-5 text-[#c00000] mr-3" />
+                        <Building2 className="h-5 w-5 text-[#d50c2d] mr-3" />
                         <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                           {customer.name}
                         </span>
@@ -249,7 +249,7 @@ const CustomerManagementSettings = () => {
               <div className="flex gap-3 mt-6">
                 <Button
                   onClick={handleCreateCustomer}
-                  className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   <Check className="h-4 w-4 mr-2" />
                   Erstellen

@@ -515,8 +515,8 @@ const StandorteManagement = ({ searchTerm: externalSearchTerm, onSearchChange, a
           className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             filters.online === 'all'
               ? theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-white border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                ? 'bg-[#2a2a2a] border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
               : theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
@@ -526,7 +526,7 @@ const StandorteManagement = ({ searchTerm: externalSearchTerm, onSearchChange, a
               <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Standorte Gesamt</p>
               <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{summary.total}</p>
             </div>
-            <Database className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+            <Database className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
           </div>
         </Card>
 

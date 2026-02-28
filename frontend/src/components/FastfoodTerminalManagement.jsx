@@ -158,7 +158,7 @@ const FastfoodTerminalManagement = ({ tenantId = 'default-tenant' }) => {
             resetForm();
             setShowModal(true);
           }}
-          className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4" />
           Terminal hinzufügen
@@ -418,7 +418,7 @@ const FastfoodTerminalManagement = ({ tenantId = 'default-tenant' }) => {
             <div className="flex gap-3 pt-6">
               <Button
                 onClick={handleSave}
-                className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 Speichern

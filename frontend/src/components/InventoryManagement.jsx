@@ -650,7 +650,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-[#c00000]" />
+                    <Package className="h-5 w-5 text-[#d50c2d]" />
                     <div>
                       <div className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         {categoryObj.name}
@@ -888,7 +888,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
             
             <Button
               onClick={() => handleOpenModal()}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Neuer Artikel
@@ -900,7 +900,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
         {selectedIds.size > 0 && (
           <div className={`mt-4 flex items-center gap-3 px-4 py-2 rounded-lg ${
             theme === 'dark'
-              ? 'bg-[#c00000]/20 border border-[#c00000]/30'
+              ? 'bg-[#d50c2d]/20 border border-[#d50c2d]/30'
               : 'bg-red-50 border border-red-200'
           }`}>
             <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -925,7 +925,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                     type="checkbox"
                     checked={selectedIds.size === paginatedItems.length && paginatedItems.length > 0}
                     onChange={toggleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                    className="h-4 w-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                   />
                 </th>
               )}
@@ -952,7 +952,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                   onClick={() => handleOpenModal(item)}
                   className={`border-t cursor-pointer transition-colors ${
                     selectedIds.has(item.id)
-                      ? theme === 'dark' ? 'bg-[#c00000]/10 border-gray-700' : 'bg-red-50 border-gray-200'
+                      ? theme === 'dark' ? 'bg-[#d50c2d]/10 border-gray-700' : 'bg-red-50 border-gray-200'
                       : theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
                   }`}
                 >
@@ -963,7 +963,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                         type="checkbox"
                         checked={selectedIds.has(item.id)}
                         onChange={() => toggleSelectItem(item.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                        className="h-4 w-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                       />
                     </td>
                   )}
@@ -1211,7 +1211,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     {editingCategory ? 'Aktualisieren' : 'Erstellen'}
                   </Button>
@@ -1450,7 +1450,7 @@ const InventoryManagement = ({ selectedItemId = null, onItemOpened = null }) => 
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     {editingItem ? 'Aktualisieren' : 'Erstellen'}
                   </Button>

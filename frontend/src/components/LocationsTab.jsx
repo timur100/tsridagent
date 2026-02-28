@@ -7,7 +7,7 @@ const LocationsTab = ({ theme, locations, onEdit, onDelete, onCreate }) => {
       <div className="flex justify-end">
         <button
           onClick={onCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Neuer Standort
@@ -34,7 +34,7 @@ const LocationsTab = ({ theme, locations, onEdit, onDelete, onCreate }) => {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-6 w-6 text-[#c00000]" />
+                  <MapPin className="h-6 w-6 text-[#d50c2d]" />
                   <div>
                     <h3 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {location.name}

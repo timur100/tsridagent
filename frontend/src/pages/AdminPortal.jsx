@@ -842,7 +842,7 @@ const AdminPortalContent = () => {
       {/* Sticky Header + Navigation Container */}
       <div className="sticky top-0 z-40">
         {/* Header */}
-        <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+        <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#d50c2d] to-[#b80a28]' : 'bg-white border-b border-gray-200'}`}>
           <div className="px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div 
@@ -857,15 +857,15 @@ const AdminPortalContent = () => {
                     alt={companyName} 
                     className="h-12 w-auto max-w-[200px] object-contain"
                   />
-                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>
                     Admin Portal
                   </h1>
                 </>
               ) : (
                 // Show default: Shield icon + company name + "Admin Portal"
                 <>
-                  <Shield className={`h-10 w-10 ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`} />
-                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                  <Shield className={`h-10 w-10 ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`} />
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>
                     {companyName} Admin Portal
                   </h1>
                 </>
@@ -969,7 +969,7 @@ const AdminPortalContent = () => {
                   newOrdersCount > 0
                     ? theme === 'dark'
                       ? 'text-white'
-                      : 'text-[#c00000]'
+                      : 'text-[#d50c2d]'
                     : theme === 'dark'
                     ? 'text-white/70'
                     : 'text-gray-500'
@@ -982,7 +982,7 @@ const AdminPortalContent = () => {
               </button>
               
               <div className="text-right">
-                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>{user?.name}</p>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>{user?.name}</p>
                 <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>Administrator</p>
               </div>
               <CustomerSwitcher />
@@ -1015,8 +1015,8 @@ const AdminPortalContent = () => {
                 onClick={() => window.location.href = '/'}
                 className={`flex items-center space-x-2 ${
                   theme === 'dark'
-                    ? 'bg-white text-[#c00000] hover:bg-gray-100'
-                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                    ? 'bg-white text-[#d50c2d] hover:bg-gray-100'
+                    : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                 }`}
                 title="Zur Scan App / Agent wechseln"
               >
@@ -1057,8 +1057,8 @@ const AdminPortalContent = () => {
                 onClick={handleLogout}
                 className={`flex items-center space-x-2 ${
                   theme === 'dark'
-                    ? 'bg-transparent border-white text-white hover:bg-white hover:text-[#c00000]'
-                    : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white'
+                    ? 'bg-transparent border-white text-white hover:bg-white hover:text-[#d50c2d]'
+                    : 'border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d] hover:text-white'
                 }`}
               >
                 <LogOut className="h-4 w-4" />
@@ -1099,7 +1099,7 @@ const AdminPortalContent = () => {
                   }}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-[#c00000] text-[#c00000]'
+                      ? 'border-[#d50c2d] text-[#d50c2d]'
                       : theme === 'dark'
                       ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -1148,7 +1148,7 @@ const AdminPortalContent = () => {
                   }}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-[#c00000] text-[#c00000]'
+                      ? 'border-[#d50c2d] text-[#d50c2d]'
                       : theme === 'dark'
                       ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -1201,7 +1201,7 @@ const AdminPortalContent = () => {
             <div className="flex gap-2">
               <button
                 className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
-                  'bg-[#c00000] text-white'
+                  'bg-[#d50c2d] text-white'
                 }`}
               >
                 <FileText className="h-5 w-5" />
@@ -1279,7 +1279,7 @@ const AdminPortalContent = () => {
                         <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Kunden</p>
                         <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{dashboardStats.total_tenants}</p>
                       </div>
-                      <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                      <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                     </div>
                   </Card>
                 )}
@@ -1299,7 +1299,7 @@ const AdminPortalContent = () => {
                         {dashboardStats.total_devices}
                       </p>
                     </div>
-                    <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                    <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
 
@@ -1318,7 +1318,7 @@ const AdminPortalContent = () => {
                         {dashboardStats.total_locations}
                       </p>
                     </div>
-                    <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                    <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
 
@@ -1337,7 +1337,7 @@ const AdminPortalContent = () => {
                         {dashboardStats.total_users}
                       </p>
                     </div>
-                    <UserCheck className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                    <UserCheck className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
 
@@ -1427,7 +1427,7 @@ const AdminPortalContent = () => {
                       <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Lizenzen</p>
                       <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>0</p>
                     </div>
-                    <Key className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                    <Key className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   </div>
                 </Card>
                 
@@ -1662,7 +1662,7 @@ const AdminPortalContent = () => {
                           {device.last_seen ? new Date(device.last_seen).toLocaleString('de-DE') : 'Nie'}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-mono font-semibold">
-                          <button className="text-[#c00000] hover:text-[#a00000] transition-colors">Bearbeiten</button>
+                          <button className="text-[#d50c2d] hover:text-[#b80a28] transition-colors">Bearbeiten</button>
                         </td>
                       </tr>
                     ))}
@@ -1731,7 +1731,7 @@ const AdminPortalContent = () => {
               <div className="flex-shrink-0">
                 <Button
                   onClick={() => setShowAddDeviceModal(true)}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center space-x-2 whitespace-nowrap"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center space-x-2 whitespace-nowrap"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Gerät hinzufügen</span>
@@ -1809,7 +1809,7 @@ const AdminPortalContent = () => {
               <div className="flex-shrink-0">
                 <Button
                   onClick={() => toast.info('Mitarbeiter hinzufügen - Coming Soon')}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center space-x-2 whitespace-nowrap"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center space-x-2 whitespace-nowrap"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Mitarbeiter hinzufügen</span>
@@ -1823,7 +1823,7 @@ const AdminPortalContent = () => {
                 ? 'bg-[#2a2a2a] border-none' 
                 : 'bg-white border border-gray-100'
             }`}>
-              <Users className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-[#c00000]/50' : 'text-gray-300'}`} />
+              <Users className={`h-20 w-20 mx-auto mb-6 ${theme === 'dark' ? 'text-[#d50c2d]/50' : 'text-gray-300'}`} />
               <p className={`text-lg ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Mitarbeiterverwaltung wird implementiert...</p>
             </Card>
           </div>
@@ -1840,7 +1840,7 @@ const AdminPortalContent = () => {
                   onClick={() => setInventoryTab('items')}
                   className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'items'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1853,7 +1853,7 @@ const AdminPortalContent = () => {
                   onClick={() => setInventoryTab('goods-receipt')}
                   className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'goods-receipt'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1866,7 +1866,7 @@ const AdminPortalContent = () => {
                   onClick={() => setInventoryTab('device-storage')}
                   className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'device-storage'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1879,7 +1879,7 @@ const AdminPortalContent = () => {
                   onClick={() => setInventoryTab('kit-templates')}
                   className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'kit-templates'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1892,7 +1892,7 @@ const AdminPortalContent = () => {
                   onClick={() => setInventoryTab('audit')}
                   className={`flex-1 min-w-[120px] px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     inventoryTab === 'audit'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1977,7 +1977,7 @@ const AdminPortalContent = () => {
                   onClick={() => setAssetsSubTab('rollout')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     assetsSubTab === 'rollout'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -1990,7 +1990,7 @@ const AdminPortalContent = () => {
                   onClick={() => setAssetsSubTab('hardware')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     assetsSubTab === 'hardware'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -2003,7 +2003,7 @@ const AdminPortalContent = () => {
                   onClick={() => setAssetsSubTab('software')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     assetsSubTab === 'software'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -2043,7 +2043,7 @@ const AdminPortalContent = () => {
                   onClick={() => setLicenseSubTab('hardware')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     licenseSubTab === 'hardware'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -2056,7 +2056,7 @@ const AdminPortalContent = () => {
                   onClick={() => setLicenseSubTab('software')}
                   className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                     licenseSubTab === 'software'
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'text-gray-400 hover:bg-[#3a3a3a]'
                       : 'text-gray-700 hover:bg-gray-100'
@@ -2614,7 +2614,7 @@ const AdminPortalContent = () => {
                               onClick={() => setParkingSubTab('overview')}
                               className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 parkingSubTab === 'overview'
-                                  ? 'bg-[#c00000] text-white'
+                                  ? 'bg-[#d50c2d] text-white'
                                   : theme === 'dark'
                                   ? 'text-gray-400 hover:bg-[#3a3a3a]'
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -2627,7 +2627,7 @@ const AdminPortalContent = () => {
                               onClick={() => setParkingSubTab('history')}
                               className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 parkingSubTab === 'history'
-                                  ? 'bg-[#c00000] text-white'
+                                  ? 'bg-[#d50c2d] text-white'
                                   : theme === 'dark'
                                   ? 'text-gray-400 hover:bg-[#3a3a3a]'
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -2640,7 +2640,7 @@ const AdminPortalContent = () => {
                               onClick={() => setParkingSubTab('violations')}
                               className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 parkingSubTab === 'violations'
-                                  ? 'bg-[#c00000] text-white'
+                                  ? 'bg-[#d50c2d] text-white'
                                   : theme === 'dark'
                                   ? 'text-gray-400 hover:bg-[#3a3a3a]'
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -2653,7 +2653,7 @@ const AdminPortalContent = () => {
                               onClick={() => setParkingSubTab('config')}
                               className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 parkingSubTab === 'config'
-                                  ? 'bg-[#c00000] text-white'
+                                  ? 'bg-[#d50c2d] text-white'
                                   : theme === 'dark'
                                   ? 'text-gray-400 hover:bg-[#3a3a3a]'
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -2666,7 +2666,7 @@ const AdminPortalContent = () => {
                               onClick={() => setParkingSubTab('whitelist')}
                               className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
                                 parkingSubTab === 'whitelist'
-                                  ? 'bg-[#c00000] text-white'
+                                  ? 'bg-[#d50c2d] text-white'
                                   : theme === 'dark'
                                   ? 'text-gray-400 hover:bg-[#3a3a3a]'
                                   : 'text-gray-700 hover:bg-gray-100'
@@ -3893,7 +3893,7 @@ const AdminPortalContent = () => {
                         setSelectedTsridAsset(null);
                         toast.success('Navigiere zu Asset-Verwaltung...');
                       }}
-                      className="bg-[#c00000] hover:bg-[#a00000] text-white h-8"
+                      className="bg-[#d50c2d] hover:bg-[#b80a28] text-white h-8"
                     >
                       In Lagerverwaltung öffnen
                     </Button>

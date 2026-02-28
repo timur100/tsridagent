@@ -403,7 +403,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             ...(data.limits || {})
           },
           branding: {
-            primary_color: data.branding?.primary_color || '#c00000',
+            primary_color: data.branding?.primary_color || '#d50c2d',
             logo_url: data.branding?.logo_url || null,
             ...(data.branding || {})
           },
@@ -880,7 +880,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 theme === 'dark'
                   ? 'bg-[#1f1f1f] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
             >
               <option value="active">Active</option>
               <option value="trial">Trial</option>
@@ -896,7 +896,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 theme === 'dark'
                   ? 'bg-[#1f1f1f] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
             />
           ) : (
             <input
@@ -907,7 +907,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 theme === 'dark'
                   ? 'bg-[#1f1f1f] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
             />
           )
         ) : (
@@ -922,7 +922,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -1014,10 +1014,10 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             onClick={isEditing ? handleSave : handleEditClick}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all hover:scale-105 ${
               isEditing
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
-                ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-                : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                ? 'border border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
+                : 'border border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
             }`}
             disabled={saving}
           >
@@ -1049,7 +1049,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-300 hover:bg-[#2a2a2a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -1083,7 +1083,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       von {tenant.limits.max_users}
                     </p>
                   </div>
-                  <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Users className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -1104,7 +1104,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       von {tenant.limits.max_devices}
                     </p>
                   </div>
-                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -1126,7 +1126,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       von {tenant.limits.max_locations || 10}
                     </p>
                   </div>
-                  <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -1219,7 +1219,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       diesen Monat
                     </p>
                   </div>
-                  <ScanLine className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <ScanLine className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -1364,7 +1364,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       </div>
                     </div>
                   </div>
-                  <Calendar className={`h-12 w-12 ml-4 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Calendar className={`h-12 w-12 ml-4 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
             </div>
@@ -1389,7 +1389,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-[#c00000] h-2 rounded-full"
+                        className="bg-[#d50c2d] h-2 rounded-full"
                         style={{ width: `${((dashboardStats.total_users || tenant.user_count || 0) / tenant.limits.max_users) * 100}%` }}
                       />
                     </div>
@@ -1404,7 +1404,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-[#c00000] h-2 rounded-full"
+                        className="bg-[#d50c2d] h-2 rounded-full"
                         style={{ width: `${((dashboardStats.total_devices || tenant.device_count || 0) / tenant.limits.max_devices) * 100}%` }}
                       />
                     </div>
@@ -1419,7 +1419,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-[#c00000] h-2 rounded-full"
+                        className="bg-[#d50c2d] h-2 rounded-full"
                         style={{ width: `${(tenant.storage_used_gb / tenant.limits.max_storage_gb) * 100}%` }}
                       />
                     </div>
@@ -1484,11 +1484,11 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 }`}>
                   <div className={`w-32 h-32 rounded-lg flex items-center justify-center mb-4 ${
                     theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'
-                  } border-2 ${theme === 'dark' ? 'border-[#c00000]' : 'border-gray-200'}`}>
+                  } border-2 ${theme === 'dark' ? 'border-[#d50c2d]' : 'border-gray-200'}`}>
                     {tenant.logo ? (
                       <img src={tenant.logo} alt={tenant.display_name} className="w-full h-full object-contain rounded-lg" />
                     ) : (
-                      <Building2 className={`w-16 h-16 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                      <Building2 className={`w-16 h-16 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                     )}
                   </div>
                   <p className={`text-lg font-bold text-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -1584,7 +1584,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               <div className="space-y-6">
                 {/* Hauptansprechpartner */}
                 <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
-                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-700'}`}>
                     Hauptansprechpartner
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1597,7 +1597,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
 
                 {/* Technischer Ansprechpartner */}
                 <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
-                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-700'}`}>
                     Technischer Ansprechpartner
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1610,7 +1610,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
 
                 {/* Buchhaltung */}
                 <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-50'}`}>
-                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-semibold mb-3 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-700'}`}>
                     Buchhaltung
                   </p>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1806,8 +1806,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => document.getElementById('file-input').click()}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                       theme === 'dark'
-                        ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
-                        : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                        ? 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
+                        : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                     }`}
                   >
                     Datei auswählen
@@ -1820,7 +1820,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       }`}>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
-                            <FileText className="w-5 h-5 text-[#c00000]" />
+                            <FileText className="w-5 h-5 text-[#d50c2d]" />
                             <div>
                               <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                                 {selectedFile.name}
@@ -1890,7 +1890,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                             className={`w-full px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                               uploading
                                 ? 'bg-gray-400 cursor-not-allowed'
-                                : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                                : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
                             }`}
                           >
                             {uploading ? 'Wird hochgeladen...' : 'Hochladen'}
@@ -1905,7 +1905,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
               {/* Documents List */}
               {loadingDocuments ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                 </div>
               ) : documents.length === 0 ? (
                 <div className="text-center py-8">
@@ -1927,7 +1927,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3 flex-1">
-                          <FileText className="w-5 h-5 text-[#c00000]" />
+                          <FileText className="w-5 h-5 text-[#d50c2d]" />
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
                               <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -2054,7 +2054,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       {dashboardStats.total_locations || locations.length || 0}
                     </p>
                   </div>
-                  <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <MapPin className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -2076,7 +2076,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       {dashboardStats.total_devices || tenant.device_count || 0}
                     </p>
                   </div>
-                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Server className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                 </div>
               </Card>
 
@@ -2173,7 +2173,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 onClick={() => setAssetsSubTab('dashboard')}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                   assetsSubTab === 'dashboard'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'text-gray-400 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -2186,7 +2186,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 onClick={() => setAssetsSubTab('hardware')}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                   assetsSubTab === 'hardware'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'text-gray-400 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -2199,7 +2199,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 onClick={() => setAssetsSubTab('software')}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                   assetsSubTab === 'software'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'text-gray-400 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -2212,7 +2212,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                 onClick={() => setAssetsSubTab('licenses')}
                 className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
                   assetsSubTab === 'licenses'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'text-gray-400 hover:bg-gray-700'
                     : 'text-gray-700 hover:bg-gray-100'
@@ -2339,7 +2339,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => setKioskSubTab('overview')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'overview'
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -2351,7 +2351,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => setKioskSubTab('locations')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'locations'
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -2363,7 +2363,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => setKioskSubTab('kiosks')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'kiosks'
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -2375,7 +2375,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => setKioskSubTab('dispensers')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'dispensers'
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -2387,7 +2387,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                     onClick={() => setKioskSubTab('keys')}
                     className={`px-4 py-2 rounded-t-lg text-sm font-medium transition-all ${
                       kioskSubTab === 'keys'
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'text-gray-400 hover:text-gray-200 hover:bg-[#1f1f1f]'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
@@ -2646,7 +2646,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                           setEditingLocation(null);
                           setShowLocationModal(true);
                         }}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                        className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                       >
                         <Plus className="h-4 w-4" />
                         Neuer Standort
@@ -2708,7 +2708,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                                         setEditingLocation(location);
                                         setShowLocationModal(true);
                                       }}
-                                      className="text-[#c00000] hover:text-[#a00000] text-sm font-medium"
+                                      className="text-[#d50c2d] hover:text-[#b80a28] text-sm font-medium"
                                     >
                                       Bearbeiten
                                     </button>
@@ -2743,7 +2743,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                             setEditingLocation(null);
                             setShowLocationModal(true);
                           }}
-                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="px-6 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           Standort erstellen
                         </button>
@@ -2760,7 +2760,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       <div className={`flex items-center gap-2 px-4 py-2 rounded-lg w-fit ${
                         theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-100'
                       }`}>
-                        <MapPin className="h-4 w-4 text-[#c00000]" />
+                        <MapPin className="h-4 w-4 text-[#d50c2d]" />
                         <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                           Standort: {selectedLocation}
                         </span>
@@ -2774,7 +2774,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       {selectedLocation && (
                         <button 
                           onClick={() => setShowKioskModal(true)}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           <Plus className="h-4 w-4" />
                           Neues Kiosksystem
@@ -2795,7 +2795,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         </p>
                         <button 
                           onClick={() => setShowKioskModal(true)}
-                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="px-6 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           Kiosksystem erstellen
                         </button>
@@ -2824,7 +2824,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       <div className={`flex items-center gap-2 px-4 py-2 rounded-lg w-fit ${
                         theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-100'
                       }`}>
-                        <MapPin className="h-4 w-4 text-[#c00000]" />
+                        <MapPin className="h-4 w-4 text-[#d50c2d]" />
                         <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                           Standort: {selectedLocation}
                         </span>
@@ -2838,7 +2838,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       {selectedLocation && (
                         <button 
                           onClick={() => setShowDispenserModal(true)}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           <Plus className="h-4 w-4" />
                           Neuer Key-Dispenser
@@ -2859,7 +2859,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         </p>
                         <button 
                           onClick={() => setShowDispenserModal(true)}
-                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="px-6 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           Key-Dispenser registrieren
                         </button>
@@ -2888,7 +2888,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       <div className={`flex items-center gap-2 px-4 py-2 rounded-lg w-fit ${
                         theme === 'dark' ? 'bg-[#1f1f1f]' : 'bg-gray-100'
                       }`}>
-                        <MapPin className="h-4 w-4 text-[#c00000]" />
+                        <MapPin className="h-4 w-4 text-[#d50c2d]" />
                         <span className={`text-sm font-medium ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                           Standort: {selectedLocation}
                         </span>
@@ -2902,7 +2902,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                       {selectedLocation && (
                         <button 
                           onClick={() => setShowKeyModal(true)}
-                          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           <Plus className="h-4 w-4" />
                           Neuer Schlüssel
@@ -2923,7 +2923,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                         </p>
                         <button 
                           onClick={() => setShowKeyModal(true)}
-                          className="px-6 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                          className="px-6 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                         >
                           Schlüssel hinzufügen
                         </button>
@@ -3163,7 +3163,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                    className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28]"
                   >
                     Kiosksystem erstellen
                   </button>
@@ -3263,7 +3263,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                    className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28]"
                   >
                     Key-Dispenser registrieren
                   </button>
@@ -3484,7 +3484,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                    className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28]"
                   >
                     {editingLocation ? 'Aktualisieren' : 'Erstellen'}
                   </button>
@@ -3586,7 +3586,7 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000]"
+                    className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28]"
                   >
                     Schlüssel hinzufügen
                   </button>

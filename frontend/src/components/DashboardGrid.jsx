@@ -176,8 +176,8 @@ const DashboardGrid = ({ children }) => {
             isEditMode
               ? 'bg-red-600 hover:bg-red-700 text-white'
               : theme === 'dark'
-              ? 'bg-[#c00000] hover:bg-[#a00000] text-white'
-              : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+              ? 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
+              : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
           }`}
         >
           {isEditMode ? (
@@ -284,7 +284,7 @@ const DashboardGrid = ({ children }) => {
           transition-duration: 100ms;
           z-index: 2;
           border-radius: 12px;
-          border: 2px dashed ${theme === 'dark' ? '#c00000' : '#c00000'};
+          border: 2px dashed ${theme === 'dark' ? '#d50c2d' : '#d50c2d'};
         }
       `}</style>
     </div>

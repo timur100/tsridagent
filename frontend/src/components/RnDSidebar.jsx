@@ -175,7 +175,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
       }`}>
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <FlaskConical className="h-5 w-5 text-[#c00000]" />
+            <FlaskConical className="h-5 w-5 text-[#d50c2d]" />
             <h3 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               R&D
             </h3>
@@ -235,8 +235,8 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
                     className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-colors ${
                       activeSection === item.id
                         ? theme === 'dark'
-                          ? 'bg-[#c00000]/20 text-[#c00000] font-medium'
-                          : 'bg-red-50 text-[#c00000] font-medium'
+                          ? 'bg-[#d50c2d]/20 text-[#d50c2d] font-medium'
+                          : 'bg-red-50 text-[#d50c2d] font-medium'
                         : theme === 'dark'
                         ? 'hover:bg-gray-800 text-gray-400'
                         : 'hover:bg-gray-200 text-gray-600'
@@ -262,7 +262,7 @@ const RnDSidebar = ({ activeSection, onSectionChange, collapsed, onToggleCollaps
                 onClick={() => onSectionChange(item.id)}
                 className={`w-full flex items-center justify-center p-2 rounded-lg transition-colors ${
                   activeSection === item.id
-                    ? 'bg-[#c00000]/20'
+                    ? 'bg-[#d50c2d]/20'
                     : theme === 'dark'
                     ? 'hover:bg-gray-800'
                     : 'hover:bg-gray-200'

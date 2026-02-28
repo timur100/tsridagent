@@ -252,7 +252,7 @@ const APIKeysManagement = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <Loader className="h-8 w-8 animate-spin text-[#c00000]" />
+        <Loader className="h-8 w-8 animate-spin text-[#d50c2d]" />
       </div>
     );
   }
@@ -271,7 +271,7 @@ const APIKeysManagement = () => {
         </div>
         <Button
           onClick={() => setShowNewKeyForm(!showNewKeyForm)}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Neuer API-Key
@@ -354,7 +354,7 @@ const APIKeysManagement = () => {
             <div className="flex gap-3">
               <Button
                 onClick={handleAddKey}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 Hinzufügen
               </Button>
@@ -407,7 +407,7 @@ const APIKeysManagement = () => {
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-3">
                     <div className={`p-2 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'}`}>
-                      <Key className="h-5 w-5 text-[#c00000]" />
+                      <Key className="h-5 w-5 text-[#d50c2d]" />
                     </div>
                     <div>
                       <h4 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -481,7 +481,7 @@ const APIKeysManagement = () => {
                         <Button
                           onClick={() => handleUpdateKey(key.api_name, editValue, editDesc)}
                           size="sm"
-                          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                         >
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Speichern

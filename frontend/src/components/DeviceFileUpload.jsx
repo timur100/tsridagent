@@ -279,7 +279,7 @@ const DeviceFileUpload = () => {
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-lg p-12 text-center transition-all ${
             isDragging
-              ? 'border-[#c00000] bg-red-50/10'
+              ? 'border-[#d50c2d] bg-red-50/10'
               : theme === 'dark'
               ? 'border-gray-700 hover:border-gray-600'
               : 'border-gray-300 hover:border-gray-400'
@@ -287,7 +287,7 @@ const DeviceFileUpload = () => {
         >
           <Upload className={`h-12 w-12 mx-auto mb-4 ${
             isDragging
-              ? 'text-[#c00000]'
+              ? 'text-[#d50c2d]'
               : theme === 'dark'
               ? 'text-gray-500'
               : 'text-gray-400'
@@ -320,7 +320,7 @@ const DeviceFileUpload = () => {
             className={`inline-flex items-center px-6 py-3 rounded-lg font-medium cursor-pointer transition-colors ${
               uploading
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
             }`}
           >
             {uploading ? (
@@ -385,7 +385,7 @@ const DeviceFileUpload = () => {
               className={`mt-4 w-full py-3 px-4 rounded-lg font-medium transition-colors ${
                 uploading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                  : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
               }`}
             >
               {uploading ? (

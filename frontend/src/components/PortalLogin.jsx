@@ -153,7 +153,7 @@ const PortalLogin = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
                 placeholder="ihre.email@firma.de"
               />
             </div>
@@ -173,7 +173,7 @@ const PortalLogin = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required={!isLoginMode}
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
                   placeholder="Max Mustermann"
                 />
               </div>
@@ -194,7 +194,7 @@ const PortalLogin = () => {
                   value={formData.company}
                   onChange={handleChange}
                   required={!isLoginMode}
-                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all"
+                  className="w-full pl-10 pr-4 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
                   placeholder="Firma GmbH"
                 />
               </div>
@@ -214,7 +214,7 @@ const PortalLogin = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full pl-10 pr-12 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#c00000] focus:border-transparent transition-all"
+                className="w-full pl-10 pr-12 py-3 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent transition-all"
                 placeholder="••••••••"
               />
               <button
@@ -231,7 +231,7 @@ const PortalLogin = () => {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-lg bg-[#c00000] hover:bg-[#a00000] text-white font-semibold rounded-lg shadow-lg transition-all"
+            className="w-full py-3 text-lg bg-[#d50c2d] hover:bg-[#b80a28] text-white font-semibold rounded-lg shadow-lg transition-all"
           >
             {loading ? 'Bitte warten...' : (isLoginMode ? 'Anmelden' : 'Registrieren')}
           </Button>
@@ -242,7 +242,7 @@ const PortalLogin = () => {
           <button
             type="button"
             onClick={() => setIsLoginMode(!isLoginMode)}
-            className="text-[#c00000] hover:text-[#a00000] text-sm font-medium transition-colors"
+            className="text-[#d50c2d] hover:text-[#b80a28] text-sm font-medium transition-colors"
           >
             {isLoginMode
               ? 'Noch kein Konto? Jetzt registrieren'

@@ -89,7 +89,7 @@ const PhoneNumberInput = ({ value, onChange, disabled = false }) => {
               theme === 'dark'
                 ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000] text-sm`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] text-sm`}
           />
         </div>
         
@@ -106,7 +106,7 @@ const PhoneNumberInput = ({ value, onChange, disabled = false }) => {
               theme === 'dark'
                 ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000] text-sm`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] text-sm`}
           />
         </div>
       </div>

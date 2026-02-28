@@ -254,7 +254,7 @@ const CustomerInPreparationPage = () => {
           onClick={() => setActiveView('all')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             activeView === 'all'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333]'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -266,7 +266,7 @@ const CustomerInPreparationPage = () => {
           onClick={() => setActiveView('devices')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             activeView === 'devices'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333]'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -278,7 +278,7 @@ const CustomerInPreparationPage = () => {
           onClick={() => setActiveView('locations')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
             activeView === 'locations'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333]'
               : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -303,14 +303,14 @@ const CustomerInPreparationPage = () => {
               theme === 'dark'
                 ? 'bg-[#2a2a2a] border-gray-700 text-white placeholder-gray-400'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           />
         </div>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
         </div>
       ) : totalItems === 0 ? (
         <Card className={`p-12 text-center ${

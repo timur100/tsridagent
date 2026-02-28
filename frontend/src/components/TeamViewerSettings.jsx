@@ -172,7 +172,7 @@ const TeamViewerSettings = () => {
               className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
                 syncing
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                  : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
               }`}
             >
               {syncing ? (

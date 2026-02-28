@@ -59,9 +59,9 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }) => {
         }`}>
           <div className="flex items-start gap-4">
             <div className={`p-3 rounded-xl ${
-              theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+              theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'
             }`}>
-              <Package className="h-8 w-8 text-[#c00000]" />
+              <Package className="h-8 w-8 text-[#d50c2d]" />
             </div>
             <div>
               <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -115,7 +115,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }) => {
                           onClick={() => setSelectedImageIndex(idx)}
                           className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
                             selectedImageIndex === idx
-                              ? 'border-[#c00000] scale-105'
+                              ? 'border-[#d50c2d] scale-105'
                               : theme === 'dark'
                                 ? 'border-gray-700 hover:border-gray-500'
                                 : 'border-gray-300 hover:border-gray-400'
@@ -320,7 +320,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }) => {
               ) : (
                 loading && (
                   <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]" />
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]" />
                   </div>
                 )
               )}
@@ -365,7 +365,7 @@ const ProductDetailModal = ({ product, onClose, onAddToCart }) => {
                 className={`w-full py-6 text-lg ${
                   product.quantity_in_stock === 0
                     ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-[#c00000] hover:bg-[#a00000]'
+                    : 'bg-[#d50c2d] hover:bg-[#b80a28]'
                 } text-white`}
               >
                 <ShoppingCart className="h-5 w-5 mr-2" />

@@ -1501,9 +1501,9 @@ const VerificationInterface = () => {
               onClick={simulateNewVerification}
               disabled={isProcessing}
               className="w-full text-primary-foreground font-semibold"
-              style={{ backgroundColor: '#c00000' }}
-              onMouseEnter={(e) => !isProcessing && (e.currentTarget.style.backgroundColor = '#a00000')}
-              onMouseLeave={(e) => !isProcessing && (e.currentTarget.style.backgroundColor = '#c00000')}
+              style={{ backgroundColor: '#d50c2d' }}
+              onMouseEnter={(e) => !isProcessing && (e.currentTarget.style.backgroundColor = '#b80a28')}
+              onMouseLeave={(e) => !isProcessing && (e.currentTarget.style.backgroundColor = '#d50c2d')}
               size="lg"
             >
               {isProcessing ? (

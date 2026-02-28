@@ -611,7 +611,7 @@ const ShopView = () => {
               onClick={() => setCategoryFilter('all')}
               className={`w-full text-left px-4 py-2 rounded-lg transition-colors ${
                 categoryFilter === 'all'
-                  ? 'bg-[#c00000] text-white'
+                  ? 'bg-[#d50c2d] text-white'
                   : theme === 'dark'
                   ? 'text-gray-300 hover:bg-[#1a1a1a]'
                   : 'text-gray-700 hover:bg-gray-100'
@@ -649,7 +649,7 @@ const ShopView = () => {
                         !hasSubcategories ? 'ml-5' : ''
                       } ${
                         categoryFilter === categoryObj.name
-                          ? 'bg-[#c00000] text-white'
+                          ? 'bg-[#d50c2d] text-white'
                           : theme === 'dark'
                           ? 'text-gray-300 hover:bg-[#1a1a1a]'
                           : 'text-gray-700 hover:bg-gray-100'
@@ -677,7 +677,7 @@ const ShopView = () => {
                           onClick={() => setCategoryFilter(subcat.name)}
                           className={`w-full text-left px-4 py-2 rounded-lg transition-colors text-sm ${
                             categoryFilter === subcat.name
-                              ? 'bg-[#c00000] text-white'
+                              ? 'bg-[#d50c2d] text-white'
                               : theme === 'dark'
                               ? 'text-gray-400 hover:bg-[#1a1a1a]'
                               : 'text-gray-600 hover:bg-gray-100'
@@ -729,7 +729,7 @@ const ShopView = () => {
           <div className="relative">
             <Button
               onClick={handleCheckout}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <ShoppingCart className="h-4 w-4 mr-2" />
               Warenkorb ({getTotalItems()})
@@ -854,7 +854,7 @@ const ShopView = () => {
                       className={`w-full ${
                         item.quantity_in_stock === 0
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-[#c00000] hover:bg-[#a00000]'
+                          : 'bg-[#d50c2d] hover:bg-[#b80a28]'
                       } text-white`}
                     >
                       <Plus className="h-4 w-4 mr-1" />
@@ -1063,7 +1063,7 @@ const ShopView = () => {
                                 {item.article_name || item.name}
                                 {isComponentSet && (
                                   <span className={`ml-2 text-xs px-2 py-1 rounded ${
-                                    theme === 'dark' ? 'bg-[#c00000]/20 text-[#c00000]' : 'bg-red-100 text-red-700'
+                                    theme === 'dark' ? 'bg-[#d50c2d]/20 text-[#d50c2d]' : 'bg-red-100 text-red-700'
                                   }`}>
                                     Set
                                   </span>
@@ -1097,7 +1097,7 @@ const ShopView = () => {
                                 </>
                               ) : (
                                 <span className={`px-3 py-1 rounded ${
-                                  theme === 'dark' ? 'bg-[#c00000]/20 text-[#c00000]' : 'bg-red-100 text-red-700'
+                                  theme === 'dark' ? 'bg-[#d50c2d]/20 text-[#d50c2d]' : 'bg-red-100 text-red-700'
                                 }`}>
                                   1 Set
                                 </span>
@@ -1207,7 +1207,7 @@ const ShopView = () => {
                           setLocationSearchTerm('');
                         }
                       }}
-                      className="w-4 h-4 text-[#c00000] bg-gray-100 border-gray-300 rounded focus:ring-[#c00000]"
+                      className="w-4 h-4 text-[#d50c2d] bg-gray-100 border-gray-300 rounded focus:ring-[#d50c2d]"
                     />
                     <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       Bestellung für einen neuen Standort?
@@ -1219,8 +1219,8 @@ const ShopView = () => {
                       onClick={() => setShowAddLocationModal(true)}
                       className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed transition-colors ${
                         theme === 'dark'
-                          ? 'border-[#c00000] bg-[#c00000]/10 text-[#c00000] hover:bg-[#c00000]/20'
-                          : 'border-[#c00000] bg-red-50 text-[#c00000] hover:bg-[#c00000]/20'
+                          ? 'border-[#d50c2d] bg-[#d50c2d]/10 text-[#d50c2d] hover:bg-[#d50c2d]/20'
+                          : 'border-[#d50c2d] bg-red-50 text-[#d50c2d] hover:bg-[#d50c2d]/20'
                       }`}
                     >
                       <MapPin className="h-5 w-5" />
@@ -1349,7 +1349,7 @@ const ShopView = () => {
                   </Button>
                   <Button
                     type="submit"
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Bestellung aufgeben

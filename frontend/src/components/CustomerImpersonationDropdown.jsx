@@ -85,7 +85,7 @@ const CustomerImpersonationDropdown = () => {
                   placeholder="Kunde suchen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#c00000] focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-[#1a1a1a] border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent"
                 />
               </div>
             </div>
@@ -103,7 +103,7 @@ const CustomerImpersonationDropdown = () => {
                     onClick={() => handleSelectCustomer(customer)}
                     className="w-full flex items-start gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
                   >
-                    <div className="p-2 rounded-lg bg-[#c00000]">
+                    <div className="p-2 rounded-lg bg-[#d50c2d]">
                       <UserCircle className="h-5 w-5 text-white" />
                     </div>
                     

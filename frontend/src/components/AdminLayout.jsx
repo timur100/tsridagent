@@ -29,7 +29,7 @@ const AdminLayout = ({ children }) => {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
       {/* Header */}
-      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#d50c2d] to-[#b80a28]' : 'bg-white border-b border-gray-200'}`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div 
@@ -43,14 +43,14 @@ const AdminLayout = ({ children }) => {
                     alt={companyName} 
                     className="h-12 w-auto max-w-[200px] object-contain"
                   />
-                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>
                     Admin Portal
                   </h1>
                 </>
               ) : (
                 <>
-                  <Shield className={`h-10 w-10 ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`} />
-                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+                  <Shield className={`h-10 w-10 ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`} />
+                  <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>
                     {companyName} Admin Portal
                   </h1>
                 </>
@@ -63,8 +63,8 @@ const AdminLayout = ({ children }) => {
                 onClick={handleScanApp}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
                   theme === 'dark'
-                    ? 'bg-white text-[#c00000] hover:bg-gray-100'
-                    : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                    ? 'bg-white text-[#d50c2d] hover:bg-gray-100'
+                    : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                 }`}
                 title="Zur Scan App / Agent wechseln"
               >

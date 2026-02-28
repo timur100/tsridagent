@@ -315,7 +315,7 @@ const ServicesConfiguration = () => {
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start min-h-[2rem]">
                 <div className="flex items-center gap-2">
-                  <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                  <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
                   <CardTitle className={`text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {service.service_name}
                   </CardTitle>
@@ -410,7 +410,7 @@ const ServicesConfiguration = () => {
                 <Button 
                   variant="default"
                   size="sm" 
-                  className="flex-1 min-w-[80px] gap-1 bg-[#c00000] hover:bg-[#a00000]"
+                  className="flex-1 min-w-[80px] gap-1 bg-[#d50c2d] hover:bg-[#b80a28]"
                   onClick={() => handleOpenService(service)}
                   data-testid={`open-service-${service.service_type}`}
                 >

@@ -240,7 +240,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
               onClick={() => setActiveTab('orders')}
               className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
                 activeTab === 'orders'
-                  ? 'text-[#c00000] border-[#c00000]'
+                  ? 'text-[#d50c2d] border-[#d50c2d]'
                   : theme === 'dark'
                     ? 'text-gray-400 border-transparent hover:text-gray-300'
                     : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -253,7 +253,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
               onClick={() => setActiveTab('commissioning')}
               className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
                 activeTab === 'commissioning'
-                  ? 'text-[#c00000] border-[#c00000]'
+                  ? 'text-[#d50c2d] border-[#d50c2d]'
                   : theme === 'dark'
                     ? 'text-gray-400 border-transparent hover:text-gray-300'
                     : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -266,7 +266,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
               onClick={() => setActiveTab('euroboxes')}
               className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
                 activeTab === 'euroboxes'
-                  ? 'text-[#c00000] border-[#c00000]'
+                  ? 'text-[#d50c2d] border-[#d50c2d]'
                   : theme === 'dark'
                     ? 'text-gray-400 border-transparent hover:text-gray-300'
                     : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -279,7 +279,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           
           {/* QR Code - horizontal layout */}
           {activeTab === 'commissioning' && (
-            <div className="flex items-center gap-4 px-5 py-2 bg-white rounded-lg border-2 border-[#c00000]">
+            <div className="flex items-center gap-4 px-5 py-2 bg-white rounded-lg border-2 border-[#d50c2d]">
               <div className="flex flex-col justify-center">
                 <p className="text-sm font-bold text-gray-800 whitespace-nowrap">
                   Bestellübersicht
@@ -314,7 +314,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           onClick={() => setStatusFilter('all')}
           className={`p-4 rounded-xl transition-all text-left ${
             statusFilter === 'all'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
                 ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -337,7 +337,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           onClick={() => setStatusFilter('pending')}
           className={`p-4 rounded-xl transition-all text-left ${
             statusFilter === 'pending'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
                 ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -360,7 +360,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           onClick={() => setStatusFilter('processing')}
           className={`p-4 rounded-xl transition-all text-left ${
             statusFilter === 'processing'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
                 ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -383,7 +383,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           onClick={() => setStatusFilter('shipped')}
           className={`p-4 rounded-xl transition-all text-left ${
             statusFilter === 'shipped'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
                 ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -406,7 +406,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
           onClick={() => setStatusFilter('delivered')}
           className={`p-4 rounded-xl transition-all text-left ${
             statusFilter === 'delivered'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
                 ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                 : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -436,7 +436,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                 onClick={() => setStatusFilter('all')}
                 className={`px-3 py-1 rounded-full text-sm font-medium ${
                   statusFilter === 'all'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3d3d3d]'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -450,7 +450,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                   onClick={() => setStatusFilter(status.value)}
                   className={`px-3 py-1 rounded-full text-sm font-medium ${
                     statusFilter === status.value
-                      ? 'bg-[#c00000] text-white'
+                      ? 'bg-[#d50c2d] text-white'
                       : theme === 'dark'
                       ? 'bg-[#1a1a1a] text-gray-300 hover:bg-[#3d3d3d]'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -485,7 +485,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
         {selectedIds.size > 0 && (
           <div className={`mt-4 flex items-center gap-3 px-4 py-2 rounded-lg ${
             theme === 'dark'
-              ? 'bg-[#c00000]/20 border border-[#c00000]/30'
+              ? 'bg-[#d50c2d]/20 border border-[#d50c2d]/30'
               : 'bg-red-50 border border-red-200'
           }`}>
             <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -507,7 +507,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                     type="checkbox"
                     checked={selectedIds.size === filteredOrders.length && filteredOrders.length > 0}
                     onChange={toggleSelectAll}
-                    className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                    className="h-4 w-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                   />
                 </th>
               )}
@@ -534,7 +534,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                   onClick={() => handleViewOrder(order)}
                   className={`border-t cursor-pointer transition-colors ${
                     selectedIds.has(order.id)
-                      ? theme === 'dark' ? 'bg-[#c00000]/10 border-gray-700' : 'bg-red-50 border-gray-200'
+                      ? theme === 'dark' ? 'bg-[#d50c2d]/10 border-gray-700' : 'bg-red-50 border-gray-200'
                       : theme === 'dark' ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
                   }`}
                 >
@@ -545,7 +545,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                         type="checkbox"
                         checked={selectedIds.has(order.id)}
                         onChange={() => toggleSelectOrder(order.id)}
-                        className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                        className="h-4 w-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                       />
                     </td>
                   )}
@@ -849,7 +849,7 @@ const OrdersManagement = ({ selectedOrderId = null, onOrderOpened = null }) => {
                       className={`${
                         selectedOrder.status === status.value
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-[#c00000] hover:bg-[#a00000]'
+                          : 'bg-[#d50c2d] hover:bg-[#b80a28]'
                       } text-white text-sm`}
                     >
                       {status.label}

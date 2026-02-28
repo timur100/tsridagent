@@ -146,7 +146,7 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
           onClick={() => setActiveTab('flagged')}
           className={`px-6 py-3 font-semibold transition-colors ${
             activeTab === 'flagged'
-              ? 'text-[#c00000] border-b-2 border-[#c00000]'
+              ? 'text-[#d50c2d] border-b-2 border-[#d50c2d]'
               : 'text-gray-500 hover:text-foreground'
           }`}
         >
@@ -156,7 +156,7 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
           onClick={() => setActiveTab('banned')}
           className={`px-6 py-3 font-semibold transition-colors ${
             activeTab === 'banned'
-              ? 'text-[#c00000] border-b-2 border-[#c00000]'
+              ? 'text-[#d50c2d] border-b-2 border-[#d50c2d]'
               : 'text-gray-500 hover:text-foreground'
           }`}
         >
@@ -261,13 +261,13 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
                   bannedDocuments.map((doc) => (
                     <Card
                       key={doc.id}
-                      className={`p-4 cursor-pointer transition-all hover:border-[#c00000] ${
-                        selectedBannedDoc?.id === doc.id ? 'border-[#c00000] bg-[#c00000]/5' : ''
+                      className={`p-4 cursor-pointer transition-all hover:border-[#d50c2d] ${
+                        selectedBannedDoc?.id === doc.id ? 'border-[#d50c2d] bg-[#d50c2d]/5' : ''
                       }`}
                       onClick={() => handleBannedDocClick(doc)}
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <Badge variant="outline" className="bg-[#c00000]/10 text-[#c00000] border-[#c00000]/30">
+                        <Badge variant="outline" className="bg-[#d50c2d]/10 text-[#d50c2d] border-[#d50c2d]/30">
                           GESPERRT
                         </Badge>
                         <span className="text-xs text-muted-foreground">{doc.attempt_count}x Versuche</span>
@@ -404,10 +404,10 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
           {activeTab === 'banned' && selectedBannedDoc && (
             <div className="space-y-6">
               {/* Header */}
-              <Card className="p-6 border-[#c00000]">
+              <Card className="p-6 border-[#d50c2d]">
                 <div className="flex items-start justify-between mb-4">
                   <div>
-                    <Badge variant="outline" className="bg-[#c00000]/10 text-[#c00000] border-[#c00000]/30 mb-2">
+                    <Badge variant="outline" className="bg-[#d50c2d]/10 text-[#d50c2d] border-[#d50c2d]/30 mb-2">
                       GESPERRT
                     </Badge>
                     <h2 className="text-2xl font-mono font-bold text-foreground">
@@ -418,7 +418,7 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
                     </p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-bold text-[#c00000]">{selectedBannedDoc.attempt_count}</div>
+                    <div className="text-3xl font-bold text-[#d50c2d]">{selectedBannedDoc.attempt_count}</div>
                     <div className="text-xs text-muted-foreground">Versuche</div>
                   </div>
                 </div>
@@ -435,9 +435,9 @@ const SecurityDashboard = ({ isOpen, onClose, securityUser }) => {
                   </div>
                 </div>
                 
-                <div className="mt-4 p-3 bg-[#c00000]/10 rounded-lg">
+                <div className="mt-4 p-3 bg-[#d50c2d]/10 rounded-lg">
                   <div className="text-xs text-muted-foreground mb-1">Grund</div>
-                  <div className="text-sm font-semibold text-[#c00000]">{selectedBannedDoc.ban_reason}</div>
+                  <div className="text-sm font-semibold text-[#d50c2d]">{selectedBannedDoc.ban_reason}</div>
                   {selectedBannedDoc.additional_notes && (
                     <div className="text-xs text-muted-foreground mt-2">{selectedBannedDoc.additional_notes}</div>
                   )}

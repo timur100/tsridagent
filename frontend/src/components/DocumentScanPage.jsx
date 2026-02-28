@@ -166,7 +166,7 @@ const DocumentScanPage = () => {
                   className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-medium transition-all ${
                     !selectedFile || loading
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                      : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
                   }`}
                 >
                   {loading ? (

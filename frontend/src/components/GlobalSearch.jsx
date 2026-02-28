@@ -235,7 +235,7 @@ const GlobalSearch = ({ onResultSelect }) => {
   const getIcon = (type) => {
     switch (type) {
       case 'asset':
-        return <Package className="h-5 w-5 text-[#c00000]" />;
+        return <Package className="h-5 w-5 text-[#d50c2d]" />;
       case 'artikel':
         return <Package className="h-5 w-5 text-blue-500" />;
       case 'tsrid_asset':
@@ -249,7 +249,7 @@ const GlobalSearch = ({ onResultSelect }) => {
       case 'ticket':
         return <Ticket className="h-5 w-5 text-red-500" />;
       case 'eurobox':
-        return <Box className="h-5 w-5 text-[#c00000]" />;
+        return <Box className="h-5 w-5 text-[#d50c2d]" />;
       case 'id-check':
         return <Fingerprint className="h-5 w-5 text-indigo-500" />;
       case 'vehicle':
@@ -276,7 +276,7 @@ const GlobalSearch = ({ onResultSelect }) => {
             theme === 'dark'
               ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
               : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         />
         {searchQuery && !searching && (
           <button

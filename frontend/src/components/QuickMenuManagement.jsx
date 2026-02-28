@@ -31,7 +31,7 @@ const QuickMenuManagement = ({ theme }) => {
 
   // Available colors for tiles
   const availableColors = [
-    { name: 'Rot', value: '#c00000' },
+    { name: 'Rot', value: '#d50c2d' },
     { name: 'Blau', value: '#0066cc' },
     { name: 'Grün', value: '#00aa00' },
     { name: 'Orange', value: '#ff8800' },
@@ -120,7 +120,7 @@ const QuickMenuManagement = ({ theme }) => {
       title: '',
       description: '',
       icon: 'Box',
-      color: '#c00000',
+      color: '#d50c2d',
       target_url: '',
       target_type: 'internal',
       order: tiles.length
@@ -208,7 +208,7 @@ const QuickMenuManagement = ({ theme }) => {
   if (loading && !selectedTenant) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-4 border-[#d50c2d] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -259,7 +259,7 @@ const QuickMenuManagement = ({ theme }) => {
             <p className="text-sm mb-2">Keine Tenants gefunden</p>
             <button
               onClick={loadTenants}
-              className="text-sm text-[#c00000] hover:text-[#a00000] font-semibold"
+              className="text-sm text-[#d50c2d] hover:text-[#b80a28] font-semibold"
             >
               Erneut versuchen
             </button>
@@ -292,7 +292,7 @@ const QuickMenuManagement = ({ theme }) => {
           onClick={() => setActiveTab('tiles')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             activeTab === 'tiles'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333333]'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -305,7 +305,7 @@ const QuickMenuManagement = ({ theme }) => {
           onClick={() => setActiveTab('config')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             activeTab === 'config'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333333]'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -318,7 +318,7 @@ const QuickMenuManagement = ({ theme }) => {
           onClick={() => setActiveTab('preview')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-colors ${
             activeTab === 'preview'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'bg-[#2a2a2a] text-gray-400 hover:bg-[#333333]'
               : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -338,7 +338,7 @@ const QuickMenuManagement = ({ theme }) => {
             </h3>
             <button
               onClick={handleCreateTile}
-              className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
             >
               <Plus className="h-4 w-4" />
               Neue Kachel
@@ -625,7 +625,7 @@ const TileEditorModal = ({ theme, tile, availableIcons, availableColors, onSave,
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-semibold"
+              className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-semibold"
             >
               Speichern
             </button>
@@ -767,7 +767,7 @@ const ConfigEditor = ({ theme, config, tenantId, onSave }) => {
 
         <button
           type="submit"
-          className="w-full px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-semibold"
+          className="w-full px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-semibold"
         >
           Konfiguration speichern
         </button>

@@ -458,7 +458,7 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
                         <span className="text-2xl font-bold text-green-600">
                           €{product.price.toFixed(2)}
                         </span>
-                        <Button size="sm" className="bg-[#c00000] hover:bg-[#a00000]">
+                        <Button size="sm" className="bg-[#d50c2d] hover:bg-[#b80a28]">
                           <Plus className="h-5 w-5" />
                         </Button>
                       </div>
@@ -559,7 +559,7 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
 
                         <Button
                           onClick={handleCheckout}
-                          className="w-full h-14 text-lg bg-[#c00000] hover:bg-[#a00000] text-white"
+                          className="w-full h-14 text-lg bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                         >
                           {t.orderNow}
                         </Button>
@@ -806,7 +806,7 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
                 <p className={`text-lg mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                   {t.yourOrderNumber}
                 </p>
-                <div className="text-6xl font-bold text-[#c00000] my-4">
+                <div className="text-6xl font-bold text-[#d50c2d] my-4">
                   {orderNumber}
                 </div>
                 <p className={`text-sm ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
@@ -821,7 +821,7 @@ ${language === 'de' ? 'Ihre Bestellung wird zubereitet' : 'Your order is being p
 
               <Button
                 onClick={startNewOrder}
-                className="w-full h-16 text-xl bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="w-full h-16 text-xl bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Home className="h-6 w-6 mr-2" />
                 {t.newOrder}

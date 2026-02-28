@@ -94,7 +94,7 @@ const VehicleDetail = ({ vehicleId, onBack }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader className="h-8 w-8 animate-spin text-[#c00000]" />
+        <Loader className="h-8 w-8 animate-spin text-[#d50c2d]" />
       </div>
     );
   }
@@ -181,7 +181,7 @@ const VehicleDetail = ({ vehicleId, onBack }) => {
             theme === 'dark' ? 'bg-[#1e1e1e] border-gray-800' : 'bg-white border-gray-200'
           }`}>
             <div className="flex items-center space-x-3 mb-6">
-              <Car className="h-6 w-6 text-[#c00000]" />
+              <Car className="h-6 w-6 text-[#d50c2d]" />
               <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Fahrzeuginformationen
               </h3>

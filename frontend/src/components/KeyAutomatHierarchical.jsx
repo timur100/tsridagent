@@ -190,7 +190,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
     if (selectedTenant) {
       items.push(
         <div key="tenant" className="flex items-center gap-2">
-          <Building2 className="h-4 w-4 text-[#c00000]" />
+          <Building2 className="h-4 w-4 text-[#d50c2d]" />
           <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {selectedTenant.name}
           </span>
@@ -202,7 +202,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
       items.push(
         <ChevronRight key="arrow1" className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />,
         <div key="location" className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-[#c00000]" />
+          <MapPin className="h-4 w-4 text-[#d50c2d]" />
           <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {selectedLocation.name}
           </span>
@@ -215,9 +215,9 @@ const KeyAutomatHierarchical = ({ theme }) => {
         <ChevronRight key="arrow2" className={`h-4 w-4 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />,
         <div key="system" className="flex items-center gap-2">
           {selectedSystem.type === 'automat' ? (
-            <Lock className="h-4 w-4 text-[#c00000]" />
+            <Lock className="h-4 w-4 text-[#d50c2d]" />
           ) : (
-            <Monitor className="h-4 w-4 text-[#c00000]" />
+            <Monitor className="h-4 w-4 text-[#d50c2d]" />
           )}
           <span className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             {selectedSystem.name}
@@ -236,7 +236,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
   if (loading && navigationLevel !== 'management') {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-4 border-[#d50c2d] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -276,7 +276,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
       {navigationLevel === 'tenant' && (
         <div className="space-y-4">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="h-5 w-5 text-[#c00000]" />
+            <Users className="h-5 w-5 text-[#d50c2d]" />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Tenant auswählen
             </h3>
@@ -288,12 +288,12 @@ const KeyAutomatHierarchical = ({ theme }) => {
                 onClick={() => handleTenantSelect(tenant)}
                 className={`p-6 rounded-xl border text-left transition-all ${
                   theme === 'dark'
-                    ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#c00000] hover:bg-[#333333]'
-                    : 'bg-white border-gray-200 hover:border-[#c00000] hover:shadow-lg'
+                    ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#d50c2d] hover:bg-[#333333]'
+                    : 'bg-white border-gray-200 hover:border-[#d50c2d] hover:shadow-lg'
                 }`}
               >
                 <div className="flex items-center gap-3 mb-3">
-                  <Building2 className="h-8 w-8 text-[#c00000]" />
+                  <Building2 className="h-8 w-8 text-[#d50c2d]" />
                   <div>
                     <h4 className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {tenant.name || tenant.company}
@@ -307,7 +307,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                   <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                     Standorte verwalten
                   </span>
-                  <ChevronRight className="h-4 w-4 text-[#c00000]" />
+                  <ChevronRight className="h-4 w-4 text-[#d50c2d]" />
                 </div>
               </button>
             ))}
@@ -320,7 +320,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-[#c00000]" />
+              <MapPin className="h-5 w-5 text-[#d50c2d]" />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Standorte - {selectedTenant?.name}
               </h3>
@@ -336,7 +336,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                 });
                 setShowLocationModal(true);
               }}
-              className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors text-sm"
+              className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors text-sm"
             >
               + Neuer Standort
             </button>
@@ -360,12 +360,12 @@ const KeyAutomatHierarchical = ({ theme }) => {
                   onClick={() => handleLocationSelect(location)}
                   className={`p-6 rounded-xl border text-left transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#c00000] hover:bg-[#333333]'
-                      : 'bg-white border-gray-200 hover:border-[#c00000] hover:shadow-lg'
+                      ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#d50c2d] hover:bg-[#333333]'
+                      : 'bg-white border-gray-200 hover:border-[#d50c2d] hover:shadow-lg'
                   }`}
                 >
                   <div className="flex items-center gap-3 mb-3">
-                    <MapPin className="h-8 w-8 text-[#c00000]" />
+                    <MapPin className="h-8 w-8 text-[#d50c2d]" />
                     <div>
                       <h4 className={`font-bold text-lg ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                         {location.name}
@@ -382,7 +382,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                     <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                       Systeme anzeigen
                     </span>
-                    <ChevronRight className="h-4 w-4 text-[#c00000]" />
+                    <ChevronRight className="h-4 w-4 text-[#d50c2d]" />
                   </div>
                 </button>
               ))}
@@ -398,7 +398,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Lock className="h-5 w-5 text-[#c00000]" />
+                <Lock className="h-5 w-5 text-[#d50c2d]" />
                 <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Schlüsselautomaten
                 </h3>
@@ -407,7 +407,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                 onClick={() => {
                   toast.info('Schlüsselautomat erstellen - wird implementiert');
                 }}
-                className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors text-sm"
+                className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors text-sm"
               >
                 + Neuer Automat
               </button>
@@ -428,8 +428,8 @@ const KeyAutomatHierarchical = ({ theme }) => {
                     onClick={() => handleSystemSelect(automat, 'automat')}
                     className={`p-6 rounded-xl border text-left transition-all ${
                       theme === 'dark'
-                        ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#c00000] hover:bg-[#333333]'
-                        : 'bg-white border-gray-200 hover:border-[#c00000] hover:shadow-lg'
+                        ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#d50c2d] hover:bg-[#333333]'
+                        : 'bg-white border-gray-200 hover:border-[#d50c2d] hover:shadow-lg'
                     }`}
                   >
                     <div className="flex items-start justify-between mb-3">
@@ -446,11 +446,11 @@ const KeyAutomatHierarchical = ({ theme }) => {
                           </p>
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-[#c00000]" />
+                      <ChevronRight className="h-5 w-5 text-[#d50c2d]" />
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2">
                       <div
-                        className="h-2 rounded-full bg-[#c00000]"
+                        className="h-2 rounded-full bg-[#d50c2d]"
                         style={{ width: `${((automat.occupied_slots || 0) / automat.total_slots) * 100}%` }}
                       ></div>
                     </div>
@@ -464,7 +464,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-[#c00000]" />
+                <Monitor className="h-5 w-5 text-[#d50c2d]" />
                 <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Kiosksysteme
                 </h3>
@@ -473,7 +473,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                 onClick={() => {
                   toast.info('Kiosk erstellen - wird implementiert');
                 }}
-                className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors text-sm"
+                className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors text-sm"
               >
                 + Neuer Kiosk
               </button>
@@ -494,13 +494,13 @@ const KeyAutomatHierarchical = ({ theme }) => {
                     onClick={() => handleSystemSelect(kiosk, 'kiosk')}
                     className={`p-6 rounded-xl border text-left transition-all ${
                       theme === 'dark'
-                        ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#c00000] hover:bg-[#333333]'
-                        : 'bg-white border-gray-200 hover:border-[#c00000] hover:shadow-lg'
+                        ? 'bg-[#2a2a2a] border-gray-700 hover:border-[#d50c2d] hover:bg-[#333333]'
+                        : 'bg-white border-gray-200 hover:border-[#d50c2d] hover:shadow-lg'
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
-                        <Monitor className="h-8 w-8 text-[#c00000]" />
+                        <Monitor className="h-8 w-8 text-[#d50c2d]" />
                         <div>
                           <h4 className={`font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                             {kiosk.name}
@@ -510,7 +510,7 @@ const KeyAutomatHierarchical = ({ theme }) => {
                           </p>
                         </div>
                       </div>
-                      <ChevronRight className="h-5 w-5 text-[#c00000]" />
+                      <ChevronRight className="h-5 w-5 text-[#d50c2d]" />
                     </div>
                   </button>
                 ))}

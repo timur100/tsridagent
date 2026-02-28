@@ -183,7 +183,7 @@ const CommissioningView = () => {
             onClick={() => setActiveStage(stage.key)}
             className={`p-4 rounded-xl transition-all ${
               activeStage === stage.key
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                   ? 'bg-[#2d2d2d] hover:bg-[#3d3d3d] text-gray-300'
                   : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'
@@ -227,7 +227,7 @@ const CommissioningView = () => {
           </h3>
           <button
             onClick={() => setActiveStage('all')}
-            className={`text-sm ${activeStage === 'all' ? 'text-[#c00000]' : theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
+            className={`text-sm ${activeStage === 'all' ? 'text-[#d50c2d]' : theme === 'dark' ? 'text-gray-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
           >
             Alle anzeigen
           </button>
@@ -292,7 +292,7 @@ const CommissioningView = () => {
                         Kunde: {order.customer_company || order.customer_email}
                       </p>
                       {order.eurobox_number && (
-                        <p className="text-sm text-[#c00000] font-medium">
+                        <p className="text-sm text-[#d50c2d] font-medium">
                           <Box className="h-4 w-4 inline mr-1" />
                           Eurobox: {order.eurobox_number}
                         </p>
@@ -307,7 +307,7 @@ const CommissioningView = () => {
                           href={`/portal/stock?order=${order.order_number}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="px-6 py-4 bg-[#c00000] text-white rounded-lg text-base font-bold hover:bg-[#a00000] transition-colors text-center flex items-center justify-center gap-2"
+                          className="px-6 py-4 bg-[#d50c2d] text-white rounded-lg text-base font-bold hover:bg-[#b80a28] transition-colors text-center flex items-center justify-center gap-2"
                         >
                           <Package className="h-5 w-5" />
                           Zum Lager Portal
@@ -323,7 +323,7 @@ const CommissioningView = () => {
                     {order.fulfillment_status === 'picked' && (
                       <button
                         onClick={() => updateOrderStatus(order.id, 'configuration')}
-                        className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors"
+                        className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors"
                       >
                         → Konfiguration
                       </button>
@@ -331,7 +331,7 @@ const CommissioningView = () => {
                     {order.fulfillment_status === 'configured' && (
                       <button
                         onClick={() => updateOrderStatus(order.id, 'packing')}
-                        className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors"
+                        className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors"
                       >
                         → Verpackung
                       </button>
@@ -339,7 +339,7 @@ const CommissioningView = () => {
                     {order.fulfillment_status === 'packed' && (
                       <button
                         onClick={() => updateOrderStatus(order.id, 'shipped')}
-                        className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors"
+                        className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors"
                       >
                         → Versandt
                       </button>
@@ -363,7 +363,7 @@ const CommissioningView = () => {
                         >
                           {comp.name}
                           {comp.storage_location && (
-                            <span className="ml-2 text-xs text-[#c00000] font-mono">
+                            <span className="ml-2 text-xs text-[#d50c2d] font-mono">
                               ({comp.storage_location})
                             </span>
                           )}

@@ -259,7 +259,7 @@ const HardwareDeviceModal = ({ show, onClose, onSubmit, editing, tenantId }) => 
             <Button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               {saving ? (
                 <>

@@ -410,7 +410,7 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Suche nach Device-ID, Location, Stadt, SN..."
-            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#c00000] focus:border-transparent ${
+            className={`w-full pl-10 pr-4 py-2 rounded-lg border focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent ${
               theme === 'dark'
                 ? 'bg-[#2a2a2a] border-gray-700 text-white placeholder-gray-500'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
@@ -423,8 +423,8 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
           onClick={() => setShowAddModal(true)}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
             theme === 'dark'
-              ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
-              : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+              ? 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
+              : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
           }`}
         >
           <Plus className="w-5 h-5" />
@@ -439,8 +439,8 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
           className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
             filters.status === 'all'
               ? theme === 'dark' 
-                ? 'bg-[#2a2a2a] border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                : 'bg-white border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                ? 'bg-[#2a2a2a] border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                : 'bg-white border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
               : theme === 'dark' 
                 ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
@@ -450,7 +450,7 @@ const TenantDevicesTab = ({ tenantId, initialStatusFilter, onFilterApplied }) =>
               <p className={`text-sm font-semibold mb-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Gesamt</p>
               <p className={`text-3xl font-bold mt-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>{summary.total}</p>
             </div>
-            <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+            <Monitor className={`h-12 w-12 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
           </div>
         </Card>
 

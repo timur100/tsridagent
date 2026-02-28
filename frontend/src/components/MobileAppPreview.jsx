@@ -15,8 +15,8 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 // Mobile App Theme (matching the React Native theme)
 const mobileTheme = {
   colors: {
-    primary: '#c00000',
-    primaryDark: '#a00000',
+    primary: '#d50c2d',
+    primaryDark: '#b80a28',
     background: '#1a1a1a',
     surface: '#2a2a2a',
     surfaceLight: '#3a3a3a',

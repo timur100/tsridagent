@@ -484,7 +484,7 @@ const AssetSettings = () => {
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('asset-ids'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'asset-ids'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -498,7 +498,7 @@ const AssetSettings = () => {
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('categories'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'categories'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -512,7 +512,7 @@ const AssetSettings = () => {
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('templates'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'templates'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -526,7 +526,7 @@ const AssetSettings = () => {
             onClick={(e) => { e.stopPropagation(); e.preventDefault(); setActiveTab('rules'); }}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'rules'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -542,7 +542,7 @@ const AssetSettings = () => {
       {/* Tenant Selection */}
       <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex items-center gap-4">
-          <Building2 className="h-5 w-5 text-[#c00000]" />
+          <Building2 className="h-5 w-5 text-[#d50c2d]" />
           <label className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Tenant auswählen:
           </label>
@@ -721,7 +721,7 @@ const AssetSettings = () => {
                 <div className="flex justify-end">
                   <Button
                     onClick={saveAssetIdConfig}
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     <Save className="h-4 w-4 mr-2" />
                     Konfiguration speichern
@@ -745,7 +745,7 @@ const AssetSettings = () => {
                 </div>
                 <Button
                   onClick={() => openCategoryModal()}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Neue Kategorie
@@ -882,7 +882,7 @@ const AssetSettings = () => {
                     <div className="flex gap-2 mt-6">
                       <Button
                         onClick={saveCate}
-                        className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                        className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                       >
                         <Save className="h-4 w-4 mr-2" />
                         Speichern
@@ -914,7 +914,7 @@ const AssetSettings = () => {
                 </div>
                 <Button
                   onClick={() => openTemplateModal()}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Neue Vorlage
@@ -929,7 +929,7 @@ const AssetSettings = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <Cpu className="h-5 w-5 text-[#c00000]" />
+                            <Cpu className="h-5 w-5 text-[#d50c2d]" />
                             <h5 className={`font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                               {template.name}
                             </h5>
@@ -986,7 +986,7 @@ const AssetSettings = () => {
                 </div>
                 <Button
                   onClick={() => openRuleModal()}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Neue Regel

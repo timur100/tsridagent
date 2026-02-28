@@ -230,7 +230,7 @@ const DeviceDetailPage = () => {
     return (
       <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
         <div className="flex flex-col items-center justify-center h-screen gap-4">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
           <div className={`text-xl ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>Laden...</div>
         </div>
       </div>
@@ -302,8 +302,8 @@ const DeviceDetailPage = () => {
                   onClick={handleEditClick}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium ${
                     theme === 'dark'
-                      ? 'bg-[#c00000] hover:bg-[#a00000] text-white'
-                      : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                      ? 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
+                      : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
                   }`}
                 >
                   <Edit2 className="w-4 h-4" />

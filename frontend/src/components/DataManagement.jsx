@@ -176,8 +176,8 @@ const DataManagement = () => {
       className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
         selected
           ? theme === 'dark'
-            ? 'bg-[#c00000]/10 border-[#c00000]'
-            : 'bg-red-50 border-[#c00000]'
+            ? 'bg-[#d50c2d]/10 border-[#d50c2d]'
+            : 'bg-red-50 border-[#d50c2d]'
           : theme === 'dark'
             ? 'bg-[#2d2d2d] border-gray-700 hover:border-gray-600'
             : 'bg-white border-gray-200 hover:border-gray-300'
@@ -189,7 +189,7 @@ const DataManagement = () => {
           checked={selected}
           onChange={() => !disabled && onToggle(collection.id)}
           disabled={disabled}
-          className="w-5 h-5 text-[#c00000] rounded focus:ring-[#c00000]"
+          className="w-5 h-5 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
         />
         <div>
           <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -211,7 +211,7 @@ const DataManagement = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+        <RefreshCw className="h-8 w-8 animate-spin text-[#d50c2d]" />
       </div>
     );
   }
@@ -235,7 +235,7 @@ const DataManagement = () => {
             onClick={() => setActiveTab('backup')}
             className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'backup'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : theme === 'dark'
                   ? 'text-gray-400 border-transparent hover:text-gray-300'
                   : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -248,7 +248,7 @@ const DataManagement = () => {
             onClick={() => setActiveTab('restore')}
             className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'restore'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : theme === 'dark'
                   ? 'text-gray-400 border-transparent hover:text-gray-300'
                   : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -261,7 +261,7 @@ const DataManagement = () => {
             onClick={() => setActiveTab('delete')}
             className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'delete'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : theme === 'dark'
                   ? 'text-gray-400 border-transparent hover:text-gray-300'
                   : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -327,7 +327,7 @@ const DataManagement = () => {
             <button
               onClick={createSelectiveBackup}
               disabled={selectedForBackup.length === 0}
-              className="flex items-center gap-2 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="h-5 w-5" />
               Backup Erstellen ({selectedForBackup.length} ausgewählt)
@@ -363,8 +363,8 @@ const DataManagement = () => {
                   className={`flex items-center justify-between p-4 rounded-lg border-2 cursor-pointer transition-all ${
                     selectedBackupForRestore === backup.backup_id
                       ? theme === 'dark'
-                        ? 'bg-[#c00000]/10 border-[#c00000]'
-                        : 'bg-red-50 border-[#c00000]'
+                        ? 'bg-[#d50c2d]/10 border-[#d50c2d]'
+                        : 'bg-red-50 border-[#d50c2d]'
                       : theme === 'dark'
                         ? 'bg-[#2d2d2d] border-gray-700 hover:border-gray-600'
                         : 'bg-white border-gray-200 hover:border-gray-300'
@@ -376,7 +376,7 @@ const DataManagement = () => {
                       name="backup-restore"
                       checked={selectedBackupForRestore === backup.backup_id}
                       onChange={() => setSelectedBackupForRestore(backup.backup_id)}
-                      className="w-5 h-5 text-[#c00000]"
+                      className="w-5 h-5 text-[#d50c2d]"
                     />
                     <div>
                       <p className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -409,7 +409,7 @@ const DataManagement = () => {
             <button
               onClick={restoreBackup}
               disabled={!selectedBackupForRestore}
-              className="flex items-center gap-2 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Upload className="h-5 w-5" />
               Backup Wiederherstellen
@@ -440,7 +440,7 @@ const DataManagement = () => {
             </h3>
             <button
               onClick={selectAllTestData}
-              className="text-sm text-[#c00000] hover:underline"
+              className="text-sm text-[#d50c2d] hover:underline"
             >
               Alle Testdaten auswählen
             </button>

@@ -459,7 +459,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -472,7 +472,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
           onClick={() => setActiveView('dashboard')}
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
             activeView === 'dashboard'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-400 hover:bg-gray-700'
               : 'text-gray-700 hover:bg-gray-100'
@@ -485,7 +485,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
           onClick={() => setActiveView('sets')}
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
             activeView === 'sets'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-400 hover:bg-gray-700'
               : 'text-gray-700 hover:bg-gray-100'
@@ -498,7 +498,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
           onClick={() => setActiveView('devices')}
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
             activeView === 'devices'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-400 hover:bg-gray-700'
               : 'text-gray-700 hover:bg-gray-100'
@@ -511,7 +511,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
           onClick={() => setActiveView('warehouse')}
           className={`flex-1 px-4 py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
             activeView === 'warehouse'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-400 hover:bg-gray-700'
               : 'text-gray-700 hover:bg-gray-100'
@@ -535,7 +535,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
               theme === 'dark'
                 ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000] focus:border-transparent`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent`}
           />
           {globalSearchQuery && (
             <button
@@ -550,7 +550,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
           )}
           {isSearching && (
             <div className="absolute right-10 top-1/2 transform -translate-y-1/2">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#c00000]"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#d50c2d]"></div>
             </div>
           )}
         </div>
@@ -567,7 +567,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
               {globalSearchResults.sets && globalSearchResults.sets.length > 0 && (
                 <div>
                   <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <Cpu className="h-4 w-4 text-[#c00000]" />
+                    <Cpu className="h-4 w-4 text-[#d50c2d]" />
                     Hardware-Sets ({globalSearchResults.sets.length})
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -609,7 +609,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
               {globalSearchResults.devices && globalSearchResults.devices.length > 0 && (
                 <div>
                   <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <Package className="h-4 w-4 text-[#c00000]" />
+                    <Package className="h-4 w-4 text-[#d50c2d]" />
                     Geräte ({globalSearchResults.devices.length})
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -650,7 +650,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
               {globalSearchResults.locations && globalSearchResults.locations.length > 0 && (
                 <div>
                   <h4 className={`text-sm font-bold mb-2 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <MapPin className="h-4 w-4 text-[#c00000]" />
+                    <MapPin className="h-4 w-4 text-[#d50c2d]" />
                     Standorte ({globalSearchResults.locations.length})
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -705,11 +705,11 @@ const HardwareSetsManagement = ({ tenantId }) => {
                   <p className={`text-sm font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                     Aktive Sets
                   </p>
-                  <p className="text-3xl font-bold text-[#c00000]">
+                  <p className="text-3xl font-bold text-[#d50c2d]">
                     {sets.filter(s => s.status === 'aktiv').length}
                   </p>
                 </div>
-                <Cpu className="h-12 w-12 text-[#c00000] opacity-20" />
+                <Cpu className="h-12 w-12 text-[#d50c2d] opacity-20" />
               </div>
             </Card>
 
@@ -792,7 +792,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                   setEditingSet(null);
                   setShowSetModal(true);
                 }}
-                className="flex items-center justify-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="flex items-center justify-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Plus className="h-4 w-4" />
                 Neues Set
@@ -856,7 +856,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 setEditingSet(null);
                 setShowSetModal(true);
               }}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <Plus className="h-4 w-4" />
               Neues Set
@@ -1083,7 +1083,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 setEditingDevice(null);
                 setShowDeviceModal(true);
               }}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <Plus className="h-4 w-4" />
               Neues Gerät
@@ -1098,7 +1098,7 @@ const HardwareSetsManagement = ({ tenantId }) => {
                 onClick={() => setStatusFilter(status)}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   statusFilter === status
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#2a2a2a] text-gray-400 hover:bg-gray-700'
                     : 'bg-white text-gray-700 hover:bg-gray-100'

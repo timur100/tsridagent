@@ -427,7 +427,7 @@ const DataCheckPage = () => {
                   {importedFile || 'CSV oder TXT Datei hochladen'}
                 </p>
                 <label className="cursor-pointer">
-                  <span className="text-[#c00000] hover:text-[#a00000] text-sm font-medium">
+                  <span className="text-[#d50c2d] hover:text-[#b80a28] text-sm font-medium">
                     Datei auswählen
                   </span>
                   <input
@@ -452,7 +452,7 @@ const DataCheckPage = () => {
             <Button
               onClick={handleRunTest}
               disabled={isLoading || !serialNumbers.trim()}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               {isLoading ? (
                 <>
@@ -500,7 +500,7 @@ const DataCheckPage = () => {
                   onClick={() => setActiveFilter(category)}
                   className={`p-4 cursor-pointer transition-all ${
                     activeFilter === category
-                      ? 'ring-2 ring-[#c00000]'
+                      ? 'ring-2 ring-[#d50c2d]'
                       : ''
                   } ${theme === 'dark' ? 'bg-[#2a2a2a] hover:bg-[#333]' : 'bg-white hover:bg-gray-50'}`}
                 >
@@ -1131,7 +1131,7 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
               onClick={() => setActiveSetType(st.id)}
               className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                 activeSetType === st.id
-                  ? 'bg-[#c00000] text-white'
+                  ? 'bg-[#d50c2d] text-white'
                   : theme === 'dark'
                   ? 'bg-[#1a1a1a] text-gray-400 hover:bg-[#3a3a3a]'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -1298,7 +1298,7 @@ const SetIDConfigurationTab = ({ theme, apiCall }) => {
           <Button
             onClick={handleSaveConfiguration}
             disabled={isSaving}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             {isSaving ? 'Speichern...' : 'Konfiguration speichern'}
           </Button>
@@ -1397,8 +1397,8 @@ const AIAnalysisTab = ({ theme, apiCall }) => {
             className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
               activeSubTab === tab.id
                 ? theme === 'dark'
-                  ? 'text-white border-b-2 border-[#c00000]'
-                  : 'text-gray-900 border-b-2 border-[#c00000]'
+                  ? 'text-white border-b-2 border-[#d50c2d]'
+                  : 'text-gray-900 border-b-2 border-[#d50c2d]'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:text-gray-300'
                 : 'text-gray-600 hover:text-gray-900'

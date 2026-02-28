@@ -382,7 +382,7 @@ const LocationModal = ({
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all text-sm font-medium"
+              className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all text-sm font-medium"
             >
               {editing ? 'Speichern' : 'Erstellen'}
             </button>

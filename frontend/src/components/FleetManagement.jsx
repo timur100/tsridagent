@@ -318,7 +318,7 @@ const FleetManagement = ({ selectedTenantId }) => {
       
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
         </div>
       ) : (
         <>
@@ -426,7 +426,7 @@ const FleetManagement = ({ selectedTenantId }) => {
                     onClick={() => setVehicleStatusFilter(filter.value)}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                       vehicleStatusFilter === filter.value
-                        ? 'bg-[#c00000] text-white'
+                        ? 'bg-[#d50c2d] text-white'
                         : theme === 'dark'
                         ? 'bg-[#2a2a2a] border border-gray-700 text-gray-400 hover:bg-gray-800'
                         : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'

@@ -298,8 +298,8 @@ const DashboardGridSimple = ({ children }) => {
             isEditMode
               ? 'bg-red-600 hover:bg-red-700 text-white'
               : theme === 'dark'
-              ? 'bg-[#c00000] hover:bg-[#a00000] text-white'
-              : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+              ? 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
+              : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
           }`}
         >
           {isEditMode ? (

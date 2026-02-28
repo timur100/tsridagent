@@ -91,7 +91,7 @@ const VirtualizedTable = ({
                 ref={rowVirtualizer.measureElement}
                 className={`flex border-t cursor-pointer transition-colors ${
                   isSelected
-                    ? isDark ? 'bg-[#c00000]/10 border-gray-700' : 'bg-red-50 border-gray-200'
+                    ? isDark ? 'bg-[#d50c2d]/10 border-gray-700' : 'bg-red-50 border-gray-200'
                     : isDark ? 'border-gray-700 hover:bg-[#1a1a1a]' : 'border-gray-200 hover:bg-gray-50'
                 }`}
                 style={{
@@ -126,7 +126,7 @@ const VirtualizedTable = ({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => onSelectRow?.(rowId)}
-                          className="h-4 w-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                          className="h-4 w-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                         />
                       ) : (
                         <span className="truncate">{row[col.id] ?? '-'}</span>

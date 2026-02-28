@@ -203,7 +203,7 @@ const StockPortalBarcode = () => {
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center p-4">
         <div className="bg-[#2d2d2d] rounded-2xl shadow-xl p-8 w-full max-w-md">
           <div className="flex items-center justify-center mb-6">
-            <Package className="h-12 w-12 text-[#c00000]" />
+            <Package className="h-12 w-12 text-[#d50c2d]" />
           </div>
           <h1 className="text-3xl font-bold text-white text-center mb-2">
             Lager Portal
@@ -221,7 +221,7 @@ const StockPortalBarcode = () => {
                 type="email"
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -234,7 +234,7 @@ const StockPortalBarcode = () => {
                 type="password"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -242,7 +242,7 @@ const StockPortalBarcode = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#c00000] text-white py-3 rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50"
+              className="w-full bg-[#d50c2d] text-white py-3 rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50"
             >
               {loading ? 'Anmelden...' : 'Anmelden'}
             </button>
@@ -259,7 +259,7 @@ const StockPortalBarcode = () => {
       <div className="bg-[#2d2d2d] border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Scan className="h-8 w-8 text-[#c00000]" />
+            <Scan className="h-8 w-8 text-[#d50c2d]" />
             <div>
               <h1 className="text-2xl font-bold text-white">Lager Portal - Kommissionierung</h1>
               <p className="text-sm text-gray-400">{user.name}</p>
@@ -330,7 +330,7 @@ const StockPortalBarcode = () => {
                             {order.components_detail?.length || 0} Komponenten
                           </td>
                           <td className="px-4 py-3 text-center">
-                            <button className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors">
+                            <button className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors">
                               Auswählen
                             </button>
                           </td>
@@ -371,7 +371,7 @@ const StockPortalBarcode = () => {
                 <div className="w-full bg-gray-700 rounded-full h-6">
                   <div
                     className={`h-6 rounded-full transition-all duration-500 ${
-                      getProgress() === 100 ? 'bg-green-500' : 'bg-[#c00000]'
+                      getProgress() === 100 ? 'bg-green-500' : 'bg-[#d50c2d]'
                     }`}
                     style={{ width: `${getProgress()}%` }}
                   />
@@ -380,7 +380,7 @@ const StockPortalBarcode = () => {
 
               {/* Eurobox Info */}
               {euroboxNumber && (
-                <div className="mt-4 flex items-center gap-2 text-[#c00000] font-bold text-xl">
+                <div className="mt-4 flex items-center gap-2 text-[#d50c2d] font-bold text-xl">
                   <Box className="h-6 w-6" />
                   Eurobox: {euroboxNumber}
                 </div>
@@ -391,7 +391,7 @@ const StockPortalBarcode = () => {
             {scanMode === 'eurobox' ? (
               <div className="bg-[#2d2d2d] rounded-xl p-10">
                 <div className="text-center mb-8">
-                  <Box className="h-20 w-20 text-[#c00000] mx-auto mb-6" />
+                  <Box className="h-20 w-20 text-[#d50c2d] mx-auto mb-6" />
                   <h3 className="text-3xl font-bold text-white mb-3">Schritt 1: Eurobox scannen</h3>
                   <p className="text-gray-400 text-lg">Scannen Sie den Barcode der Eurobox</p>
                 </div>
@@ -402,7 +402,7 @@ const StockPortalBarcode = () => {
                     value={scanInput}
                     onChange={(e) => setScanInput(e.target.value)}
                     placeholder="Eurobox-Nummer scannen..."
-                    className="w-full px-8 py-6 bg-[#1a1a1a] border-4 border-[#c00000] rounded-xl text-white text-2xl text-center focus:outline-none focus:ring-4 focus:ring-[#c00000]"
+                    className="w-full px-8 py-6 bg-[#1a1a1a] border-4 border-[#d50c2d] rounded-xl text-white text-2xl text-center focus:outline-none focus:ring-4 focus:ring-[#d50c2d]"
                     autoFocus
                   />
                 </form>
@@ -410,7 +410,7 @@ const StockPortalBarcode = () => {
             ) : (
               <div className="bg-[#2d2d2d] rounded-xl p-10">
                 <div className="text-center mb-8">
-                  <Scan className="h-20 w-20 text-[#c00000] mx-auto mb-6" />
+                  <Scan className="h-20 w-20 text-[#d50c2d] mx-auto mb-6" />
                   <h3 className="text-3xl font-bold text-white mb-3">Schritt 2: Komponenten scannen</h3>
                   <p className="text-gray-400 text-lg">Scannen Sie jede Komponente und legen Sie sie in die Eurobox</p>
                 </div>
@@ -421,7 +421,7 @@ const StockPortalBarcode = () => {
                     value={scanInput}
                     onChange={(e) => setScanInput(e.target.value)}
                     placeholder="Komponenten-Barcode scannen..."
-                    className="w-full px-8 py-6 bg-[#1a1a1a] border-4 border-[#c00000] rounded-xl text-white text-2xl text-center focus:outline-none focus:ring-4 focus:ring-[#c00000]"
+                    className="w-full px-8 py-6 bg-[#1a1a1a] border-4 border-[#d50c2d] rounded-xl text-white text-2xl text-center focus:outline-none focus:ring-4 focus:ring-[#d50c2d]"
                     autoFocus
                   />
                 </form>
@@ -459,9 +459,9 @@ const StockPortalBarcode = () => {
                           
                           <div className="space-y-3 text-lg">
                             <div className="flex items-center gap-2">
-                              <MapPin className="h-5 w-5 text-[#c00000]" />
+                              <MapPin className="h-5 w-5 text-[#d50c2d]" />
                               <span className="text-gray-400">Lagerplatz:</span>
-                              <span className="text-[#c00000] font-bold font-mono text-xl">
+                              <span className="text-[#d50c2d] font-bold font-mono text-xl">
                                 {comp.storage_location || 'Nicht zugewiesen'}
                               </span>
                             </div>

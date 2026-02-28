@@ -22,7 +22,7 @@ const BulkEditModal = ({
   const isDark = theme === 'dark';
   const cardBg = isDark ? 'bg-[#2d2d2d] border-gray-700' : 'bg-white border-gray-200';
   const inputBg = isDark ? 'bg-[#1a1a1a] border-gray-700 text-white' : 'bg-white border-gray-300';
-  const accentColor = '#c00000';
+  const accentColor = '#d50c2d';
 
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({

@@ -50,7 +50,7 @@ const RentalsTab = ({ theme, rentals, onReturn, getStatusLabel }) => {
                 >
                   <td className={`px-4 py-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     <div className="flex items-center gap-2">
-                      <Key className="h-4 w-4 text-[#c00000]" />
+                      <Key className="h-4 w-4 text-[#d50c2d]" />
                       {rental.key_number}
                     </div>
                   </td>

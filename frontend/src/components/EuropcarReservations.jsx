@@ -179,7 +179,7 @@ const EuropcarReservations = () => {
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
             />
           </div>
           <select
@@ -189,7 +189,7 @@ const EuropcarReservations = () => {
               theme === 'dark'
                 ? 'bg-[#1a1a1a] border-gray-700 text-white'
                 : 'bg-white border-gray-300 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           >
             <option value="all">Alle Status</option>
             <option value="pending">Ausstehend</option>
@@ -199,7 +199,7 @@ const EuropcarReservations = () => {
             <option value="cancelled">Storniert</option>
           </select>
           <Button 
-            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
             onClick={() => toast.info('CRUD-Funktionalität wird implementiert')}
           >
             <Plus className="h-4 w-4" />
@@ -211,7 +211,7 @@ const EuropcarReservations = () => {
       {/* Reservations List */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full mx-auto"></div>
+          <div className="animate-spin h-8 w-8 border-4 border-[#d50c2d] border-t-transparent rounded-full mx-auto"></div>
         </div>
       ) : filteredReservations.length === 0 ? (
         <Card className={`p-12 text-center ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>

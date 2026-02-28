@@ -256,7 +256,7 @@ const EuroboxManagement = () => {
   const getStatusBadge = (status) => {
     const badges = {
       available: 'bg-green-500/20 text-green-500',
-      in_use: 'bg-[#c00000]/20 text-[#c00000]',
+      in_use: 'bg-[#d50c2d]/20 text-[#d50c2d]',
       maintenance: 'bg-yellow-500/20 text-yellow-500'
     };
     
@@ -287,7 +287,7 @@ const EuroboxManagement = () => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-5 w-5" />
           Neue Eurobox
@@ -301,7 +301,7 @@ const EuroboxManagement = () => {
             onClick={() => setActiveTab('euroboxes')}
             className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'euroboxes'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : theme === 'dark'
                   ? 'text-gray-400 border-transparent hover:text-gray-300'
                   : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -314,7 +314,7 @@ const EuroboxManagement = () => {
             onClick={() => setActiveTab('assignments')}
             className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
               activeTab === 'assignments'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : theme === 'dark'
                   ? 'text-gray-400 border-transparent hover:text-gray-300'
                   : 'text-gray-600 border-transparent hover:text-gray-900'
@@ -336,14 +336,14 @@ const EuroboxManagement = () => {
               onClick={() => handleCardClick(eurobox)}
               className={`rounded-xl p-6 border-2 transition-all duration-300 cursor-pointer flex flex-col ${
                 theme === 'dark' 
-                  ? 'bg-[#2d2d2d] border-gray-700 hover:border-[#c00000] hover:shadow-[0_0_20px_rgba(192,0,0,0.3)] hover:-translate-y-1' 
-                  : 'bg-white border-gray-200 hover:border-[#c00000] hover:shadow-[0_8px_24px_rgba(192,0,0,0.2)] hover:-translate-y-1'
+                  ? 'bg-[#2d2d2d] border-gray-700 hover:border-[#d50c2d] hover:shadow-[0_0_20px_rgba(192,0,0,0.3)] hover:-translate-y-1' 
+                  : 'bg-white border-gray-200 hover:border-[#d50c2d] hover:shadow-[0_8px_24px_rgba(192,0,0,0.2)] hover:-translate-y-1'
               }`}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Box className="h-6 w-6 text-[#c00000]" />
+                  <Box className="h-6 w-6 text-[#d50c2d]" />
                   <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {eurobox.eurobox_number}
                   </h3>
@@ -378,9 +378,9 @@ const EuroboxManagement = () => {
               {/* Current Order - fixed height area */}
               <div className="h-16 mb-4">
                 {eurobox.current_order_number && (
-                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'}`}>
+                  <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'}`}>
                     <p className="text-xs text-gray-500 mb-1">Aktuelle Bestellung:</p>
-                    <p className="text-sm font-mono font-bold text-[#c00000]">
+                    <p className="text-sm font-mono font-bold text-[#d50c2d]">
                       {eurobox.current_order_number}
                     </p>
                   </div>
@@ -461,7 +461,7 @@ const EuroboxManagement = () => {
                   <tr key={idx} className="border-t border-gray-700 hover:bg-[#1a1a1a] transition-colors">
                     <td className="px-4 py-3 text-sm">
                       <div className="flex items-center gap-2">
-                        <Box className="h-4 w-4 text-[#c00000]" />
+                        <Box className="h-4 w-4 text-[#d50c2d]" />
                         <span className="text-white font-mono font-bold">{assignment.eurobox_number}</span>
                       </div>
                     </td>
@@ -497,7 +497,7 @@ const EuroboxManagement = () => {
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <Box className="h-8 w-8 text-[#c00000]" />
+                <Box className="h-8 w-8 text-[#d50c2d]" />
                 <div>
                   <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {selectedEurobox.eurobox_number}
@@ -564,8 +564,8 @@ const EuroboxManagement = () => {
                   </div>
 
                   {/* Customer Info */}
-                  <div className={`p-4 rounded-lg border-2 ${theme === 'dark' ? 'bg-[#c00000]/10 border-[#c00000]' : 'bg-red-50 border-red-200'}`}>
-                    <p className={`text-xs uppercase font-semibold mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-red-800'}`}>
+                  <div className={`p-4 rounded-lg border-2 ${theme === 'dark' ? 'bg-[#d50c2d]/10 border-[#d50c2d]' : 'bg-red-50 border-red-200'}`}>
+                    <p className={`text-xs uppercase font-semibold mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-red-800'}`}>
                       Kunde
                     </p>
                     <div className="grid grid-cols-2 gap-3">
@@ -712,7 +712,7 @@ const EuroboxManagement = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Speichern...' : 'Speichern'}
                 </button>

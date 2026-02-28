@@ -149,7 +149,7 @@ const DemandCalculator = () => {
           <Button
             onClick={handleCalculate}
             disabled={calculating || !selectedTemplateId || templates.length === 0}
-            className="w-full bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="w-full bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Calculator className="h-4 w-4 mr-2" />
             {calculating ? 'Berechnet...' : 'Bedarf berechnen'}

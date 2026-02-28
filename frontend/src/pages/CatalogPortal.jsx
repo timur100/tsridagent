@@ -200,15 +200,15 @@ const CatalogPortal = () => {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#1a1a1a]' : 'bg-gray-50'}`}>
       {/* Header */}
-      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' : 'bg-white border-b border-gray-200'}`}>
+      <header className={`shadow-lg ${theme === 'dark' ? 'bg-gradient-to-r from-[#d50c2d] to-[#b80a28]' : 'bg-white border-b border-gray-200'}`}>
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>
+            <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>
               Dokumenten-Katalog
             </h1>
             <div className="flex items-center space-x-4">
               <div className="text-right">
-                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>{user?.name}</p>
+                <p className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>{user?.name}</p>
                 <p className={`text-xs ${theme === 'dark' ? 'text-red-100' : 'text-gray-500'}`}>{user?.role}</p>
               </div>
               <Button
@@ -217,8 +217,8 @@ const CatalogPortal = () => {
                 onClick={handleLogout}
                 className={`flex items-center space-x-2 ${
                   theme === 'dark'
-                    ? 'bg-transparent border-white text-white hover:bg-white hover:text-[#c00000]'
-                    : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white'
+                    ? 'bg-transparent border-white text-white hover:bg-white hover:text-[#d50c2d]'
+                    : 'border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d] hover:text-white'
                 }`}
               >
                 <LogOut className="h-4 w-4" />
@@ -243,8 +243,8 @@ const CatalogPortal = () => {
               className={`w-8 h-8 flex items-center justify-center text-sm font-bold rounded transition-colors mb-1 ${
                 selectedLetter === letter
                   ? theme === 'dark'
-                    ? 'bg-[#c00000] text-white'
-                    : 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
+                    : 'bg-[#d50c2d] text-white'
                   : theme === 'dark'
                   ? 'text-gray-400 hover:bg-gray-700 hover:text-white'
                   : 'text-gray-600 hover:bg-gray-100'
@@ -492,7 +492,7 @@ const CatalogPortal = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="flex items-center space-x-2 bg-[#c00000] text-white hover:bg-[#a00000]"
+                  className="flex items-center space-x-2 bg-[#d50c2d] text-white hover:bg-[#b80a28]"
                 >
                   <Save className="h-4 w-4" />
                   <span>{loading ? 'Speichert...' : 'Katalogisieren'}</span>

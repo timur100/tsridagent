@@ -249,7 +249,7 @@ const DeviceDetailsModal = ({ device, onClose, onUpdate, onDelete }) => {
               {!isEditing ? (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
                 >
                   <Edit2 className="h-4 w-4" />
                   Bearbeiten
@@ -281,7 +281,7 @@ const DeviceDetailsModal = ({ device, onClose, onUpdate, onDelete }) => {
                   <Button
                     onClick={handleSave}
                     disabled={loading}
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
                   >
                     <Save className="h-4 w-4" />
                     {loading ? 'Speichern...' : 'Speichern'}

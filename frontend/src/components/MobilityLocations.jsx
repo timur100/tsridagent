@@ -150,7 +150,7 @@ const MobilityLocations = ({ tenantId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -169,7 +169,7 @@ const MobilityLocations = ({ tenantId }) => {
         </div>
         <button
           onClick={handleCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           Standort hinzufügen
@@ -182,8 +182,8 @@ const MobilityLocations = ({ tenantId }) => {
           <Card key={location.id} className="p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-900">
             <div className="flex items-start justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-[#c00000]/10 rounded-lg">
-                  <MapPin className="w-6 h-6 text-[#c00000]" />
+                <div className="p-3 bg-[#d50c2d]/10 rounded-lg">
+                  <MapPin className="w-6 h-6 text-[#d50c2d]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-lg">{location.name}</h3>
@@ -261,7 +261,7 @@ const MobilityLocations = ({ tenantId }) => {
           <p className="text-gray-500">Keine Standorte gefunden</p>
           <button
             onClick={handleCreate}
-            className="mt-4 text-[#c00000] hover:underline"
+            className="mt-4 text-[#d50c2d] hover:underline"
           >
             Ersten Standort erstellen
           </button>
@@ -410,8 +410,8 @@ const MobilityLocations = ({ tenantId }) => {
                           onClick={() => toggleVehicleType(type.id)}
                           className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors ${
                             isSelected
-                              ? 'bg-[#c00000] text-white border-[#c00000]'
-                              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:border-[#c00000]'
+                              ? 'bg-[#d50c2d] text-white border-[#d50c2d]'
+                              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:border-[#d50c2d]'
                           }`}
                         >
                           <type.icon className="w-4 h-4" />
@@ -433,7 +433,7 @@ const MobilityLocations = ({ tenantId }) => {
                 <button
                   onClick={handleSave}
                   disabled={!formData.name || !formData.address || !formData.city || !formData.postal_code}
-                  className="flex-1 px-4 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {editingLocation ? 'Speichern' : 'Erstellen'}
                 </button>

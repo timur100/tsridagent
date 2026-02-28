@@ -12,7 +12,7 @@ const AutomatsTab = ({ theme, automats, locations, onEdit, onDelete, onCreate, g
       <div className="flex justify-end">
         <button
           onClick={onCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Neuer Automat
@@ -75,7 +75,7 @@ const AutomatsTab = ({ theme, automats, locations, onEdit, onDelete, onCreate, g
                   </div>
                   <div className="w-full bg-gray-700 rounded-full h-2">
                     <div
-                      className="h-2 rounded-full bg-[#c00000]"
+                      className="h-2 rounded-full bg-[#d50c2d]"
                       style={{ width: `${(automat.occupied_slots / automat.total_slots) * 100}%` }}
                     ></div>
                   </div>

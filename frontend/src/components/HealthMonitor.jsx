@@ -441,7 +441,7 @@ const HealthMonitor = () => {
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
             <div className="w-12 h-12 rounded-full border-4 border-gray-200 dark:border-gray-700" />
-            <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-transparent border-t-[#c00000] animate-spin" />
+            <div className="absolute top-0 left-0 w-12 h-12 rounded-full border-4 border-transparent border-t-[#d50c2d] animate-spin" />
           </div>
           <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}>
             Lade System-Status...
@@ -491,7 +491,7 @@ const HealthMonitor = () => {
           <button
             onClick={() => fetchHealthData(true)}
             disabled={refreshing}
-            className="px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] font-medium flex items-center gap-2 disabled:opacity-50 transition-colors"
+            className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] font-medium flex items-center gap-2 disabled:opacity-50 transition-colors"
           >
             <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             Aktualisieren

@@ -322,8 +322,8 @@ const TenantHierarchySidebarV2 = ({
           className={`flex items-center gap-2 px-2 py-1.5 rounded-md cursor-pointer transition-all text-sm ${
             isSelected
               ? theme === 'dark'
-                ? 'bg-[#c00000] bg-opacity-20 border-l-2 border-[#c00000]'
-                : 'bg-red-50 border-l-2 border-[#c00000]'
+                ? 'bg-[#d50c2d] bg-opacity-20 border-l-2 border-[#d50c2d]'
+                : 'bg-red-50 border-l-2 border-[#d50c2d]'
               : theme === 'dark'
               ? 'hover:bg-gray-700'
               : 'hover:bg-gray-100'
@@ -501,7 +501,7 @@ const TenantHierarchySidebarV2 = ({
               theme === 'dark'
                 ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
                 : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-1 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-1 focus:ring-[#d50c2d]`}
           />
           {searchQuery && (
             <button
@@ -535,8 +535,8 @@ const TenantHierarchySidebarV2 = ({
               className={`w-full mb-2 px-2 py-1.5 text-xs text-left rounded-md transition-colors ${
                 !selectedTenantId
                   ? theme === 'dark'
-                    ? 'bg-[#c00000] bg-opacity-20 border-l-2 border-[#c00000] text-white'
-                    : 'bg-red-50 border-l-2 border-[#c00000] text-gray-900'
+                    ? 'bg-[#d50c2d] bg-opacity-20 border-l-2 border-[#d50c2d] text-white'
+                    : 'bg-red-50 border-l-2 border-[#d50c2d] text-gray-900'
                   : theme === 'dark'
                   ? 'hover:bg-gray-700 text-gray-300'
                   : 'hover:bg-gray-100 text-gray-700'

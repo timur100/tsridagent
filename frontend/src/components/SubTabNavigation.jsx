@@ -13,7 +13,7 @@ const SubTabNavigation = ({ tabs, activeTab, onTabChange }) => {
             onClick={() => onTabChange(tab.id)}
             className={`px-4 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'

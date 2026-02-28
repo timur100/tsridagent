@@ -266,10 +266,10 @@ const ReportingOverview = ({ onClose }) => {
         <title>${title}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
-          h1 { color: #c00000; }
+          h1 { color: #d50c2d; }
           table { border-collapse: collapse; width: 100%; margin-top: 20px; }
           th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 11px; }
-          th { background-color: #c00000; color: white; }
+          th { background-color: #d50c2d; color: white; }
           tr:nth-child(even) { background-color: #f9f9f9; }
           .meta { color: #666; margin-bottom: 10px; }
         </style>

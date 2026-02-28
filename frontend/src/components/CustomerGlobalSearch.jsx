@@ -147,8 +147,8 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
             placeholder="Geräte, Standorte, Bestellungen, Artikel, Tickets suchen..."
             className={`w-full pl-10 pr-10 py-2 rounded-lg outline-none transition-colors ${
               theme === 'dark'
-                ? 'bg-transparent text-white placeholder-gray-500 focus:border-[#c00000]'
-                : 'bg-transparent text-gray-900 placeholder-gray-500 focus:border-[#c00000]'
+                ? 'bg-transparent text-white placeholder-gray-500 focus:border-[#d50c2d]'
+                : 'bg-transparent text-gray-900 placeholder-gray-500 focus:border-[#d50c2d]'
             }`}
           />
           {query && (
@@ -214,7 +214,7 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
                           : 'hover:bg-gray-50 border-gray-100'
                       } ${index < results.artikel.slice(0, 5).length - 1 ? 'border-b' : ''}`}
                     >
-                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {getCategoryIcon(item.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -256,7 +256,7 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
                           : 'hover:bg-gray-50 border-gray-100'
                       } ${index < results.geraete.slice(0, 5).length - 1 ? 'border-b' : ''}`}
                     >
-                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {getCategoryIcon(item.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -298,7 +298,7 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
                           : 'hover:bg-gray-50 border-gray-100'
                       } ${index < results.standorte.slice(0, 5).length - 1 ? 'border-b' : ''}`}
                     >
-                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {getCategoryIcon(item.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -340,7 +340,7 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
                           : 'hover:bg-gray-50 border-gray-100'
                       } ${index < results.bestellungen.slice(0, 5).length - 1 ? 'border-b' : ''}`}
                     >
-                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {getCategoryIcon(item.type)}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -382,7 +382,7 @@ const CustomerGlobalSearch = ({ onNavigate }) => {
                           : 'hover:bg-gray-50 border-gray-100'
                       } ${index < results.tickets.slice(0, 5).length - 1 ? 'border-b' : ''}`}
                     >
-                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <div className={`mt-0.5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {getCategoryIcon(item.type)}
                       </div>
                       <div className="flex-1 min-w-0">

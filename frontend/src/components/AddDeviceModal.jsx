@@ -366,7 +366,7 @@ const AddDeviceModal = ({ onClose, onDeviceAdded, onAdd, customers, selectedCust
             <Button
               type="submit"
               disabled={loading}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
             >
               <Save className="h-4 w-4" />
               {loading ? 'Speichern...' : 'Gerät hinzufügen'}

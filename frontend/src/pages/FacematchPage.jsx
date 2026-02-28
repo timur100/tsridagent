@@ -638,7 +638,7 @@ const FacematchPage = () => {
               Dokumentenscan
             </button>
             <button
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#c00000] text-white`}
+              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#d50c2d] text-white`}
             >
               <Users className="h-5 w-5" />
               Facematch
@@ -682,21 +682,21 @@ const FacematchPage = () => {
         <div className="flex items-center justify-center mb-6">
           <div className="flex items-center gap-4">
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-              step === 1 ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-600'
+              step === 1 ? 'bg-[#d50c2d] text-white' : 'bg-gray-200 text-gray-600'
             }`}>
               <Camera className="h-5 w-5" />
               <span className="font-semibold">1. Live-Bild aufnehmen</span>
             </div>
             <div className="w-8 h-0.5 bg-gray-300"></div>
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-              step === 2 ? 'bg-[#c00000] text-white' : step > 2 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
+              step === 2 ? 'bg-[#d50c2d] text-white' : step > 2 ? 'bg-green-600 text-white' : 'bg-gray-200 text-gray-600'
             }`}>
               <FileText className="h-5 w-5" />
               <span className="font-semibold">2. Dokument auswählen</span>
             </div>
             <div className="w-8 h-0.5 bg-gray-300"></div>
             <div className={`flex items-center gap-2 px-4 py-2 rounded-lg ${
-              step === 3 ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-600'
+              step === 3 ? 'bg-[#d50c2d] text-white' : 'bg-gray-200 text-gray-600'
             }`}>
               <Search className="h-5 w-5" />
               <span className="font-semibold">3. Vergleichen</span>
@@ -775,7 +775,7 @@ const FacematchPage = () => {
               onChange={(e) => setThreshold(parseInt(e.target.value))}
               className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
               style={{
-                background: `linear-gradient(to right, #c00000 0%, #c00000 ${(threshold - 50) / 45 * 100}%, #e5e7eb ${(threshold - 50) / 45 * 100}%, #e5e7eb 100%)`
+                background: `linear-gradient(to right, #d50c2d 0%, #d50c2d ${(threshold - 50) / 45 * 100}%, #e5e7eb ${(threshold - 50) / 45 * 100}%, #e5e7eb 100%)`
               }}
             />
             <div className="flex justify-between mt-2 text-sm">
@@ -1079,7 +1079,7 @@ const FacematchPage = () => {
                     <button
                       onClick={compareWithDatabase}
                       disabled={comparing}
-                      className="flex-1 px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex-1 px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {comparing ? (
                         <>
@@ -1220,7 +1220,7 @@ const FacematchPage = () => {
             <div className="mt-4 flex gap-3">
               <button
                 onClick={() => navigate(`/portal/admin/id-checks/${matchResult.scan_info.scan_id}`)}
-                className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors flex items-center gap-2"
               >
                 <Eye className="h-5 w-5" />
                 Scan-Details anzeigen

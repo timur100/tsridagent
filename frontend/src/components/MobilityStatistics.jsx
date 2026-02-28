@@ -35,7 +35,7 @@ const MobilityStatistics = ({ tenantId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -176,15 +176,15 @@ const MobilityStatistics = ({ tenantId }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-[#c00000]/10 rounded-lg">
-              <DollarSign className="w-6 h-6 text-[#c00000]" />
+            <div className="p-3 bg-[#d50c2d]/10 rounded-lg">
+              <DollarSign className="w-6 h-6 text-[#d50c2d]" />
             </div>
             <div>
               <h3 className="font-semibold text-lg">Gesamtumsatz</h3>
               <p className="text-sm text-gray-500">Aus abgeschlossenen Buchungen</p>
             </div>
           </div>
-          <p className="text-4xl font-bold text-[#c00000]">
+          <p className="text-4xl font-bold text-[#d50c2d]">
             {statistics.total_revenue.toFixed(2)} €
           </p>
         </Card>

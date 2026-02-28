@@ -404,7 +404,7 @@ const DHLShipping = () => {
               disabled={loading}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                 theme === 'dark' 
-                  ? 'bg-[#c00000] hover:bg-[#a00000] text-white' 
+                  ? 'bg-[#d50c2d] hover:bg-[#b80a28] text-white' 
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
               } transition-colors disabled:opacity-50`}
             >
@@ -431,7 +431,7 @@ const DHLShipping = () => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] text-gray-300 placeholder-gray-500'
                       : 'bg-white text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -447,7 +447,7 @@ const DHLShipping = () => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] text-gray-300'
                       : 'bg-white text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="all">Alle Status</option>
                   <option value="delivered">Zugestellt</option>
@@ -470,7 +470,7 @@ const DHLShipping = () => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] text-gray-300'
                       : 'bg-white text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="all">Alle Städte</option>
                   {uniqueCities.map(city => (
@@ -487,7 +487,7 @@ const DHLShipping = () => {
                   Aktive Filter:
                 </span>
                 {searchTerm && (
-                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                  <span className="px-3 py-1 bg-[#d50c2d] text-white text-sm rounded-full flex items-center gap-2">
                     Suche: "{searchTerm}"
                     <button onClick={() => setSearchTerm('')} className="hover:text-gray-200">
                       ×
@@ -495,7 +495,7 @@ const DHLShipping = () => {
                   </span>
                 )}
                 {statusFilter !== 'all' && (
-                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                  <span className="px-3 py-1 bg-[#d50c2d] text-white text-sm rounded-full flex items-center gap-2">
                     Status: {statusFilter}
                     <button onClick={() => setStatusFilter('all')} className="hover:text-gray-200">
                       ×
@@ -503,7 +503,7 @@ const DHLShipping = () => {
                   </span>
                 )}
                 {cityFilter !== 'all' && (
-                  <span className="px-3 py-1 bg-[#c00000] text-white text-sm rounded-full flex items-center gap-2">
+                  <span className="px-3 py-1 bg-[#d50c2d] text-white text-sm rounded-full flex items-center gap-2">
                     Stadt: {cityFilter}
                     <button onClick={() => setCityFilter('all')} className="hover:text-gray-200">
                       ×
@@ -560,7 +560,7 @@ const DHLShipping = () => {
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <div className={`p-4 rounded-lg ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-50'}`}>
           <div className="flex items-center justify-between mb-2">
-            <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Package className={`h-5 w-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {statistics.total}
             </span>
@@ -743,7 +743,7 @@ const DHLShipping = () => {
               <div className="bg-[#2a2a2a] px-6 py-4 border-b border-gray-700">
                 <div className="flex items-center justify-between">
                   <h3 className="text-2xl font-bold text-white font-mono flex items-center gap-3">
-                    <Package className="h-6 w-6 text-[#c00000]" />
+                    <Package className="h-6 w-6 text-[#d50c2d]" />
                     Sendungsdetails
                   </h3>
                   <button
@@ -778,7 +778,7 @@ const DHLShipping = () => {
                       href={selectedShipment.tracking_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-[#c00000] hover:text-[#a00000] transition-colors"
+                      className="inline-flex items-center gap-2 text-[#d50c2d] hover:text-[#b80a28] transition-colors"
                     >
                       <MapPin className="h-4 w-4" />
                       <span className="text-sm">Sendung verfolgen</span>
@@ -791,7 +791,7 @@ const DHLShipping = () => {
                   {/* Absender */}
                   <div className="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
                     <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <User className="h-5 w-5 text-[#c00000]" />
+                      <User className="h-5 w-5 text-[#d50c2d]" />
                       Absender
                     </h4>
                     <div className="space-y-3 font-mono text-sm">
@@ -816,7 +816,7 @@ const DHLShipping = () => {
                   {/* Empfänger */}
                   <div className="bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
                     <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-[#c00000]" />
+                      <MapPin className="h-5 w-5 text-[#d50c2d]" />
                       Empfänger
                     </h4>
                     <div className="space-y-3 font-mono text-sm">
@@ -843,7 +843,7 @@ const DHLShipping = () => {
                 {/* Paket Details */}
                 <div className="mt-6 bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
                   <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <Package className="h-5 w-5 text-[#c00000]" />
+                    <Package className="h-5 w-5 text-[#d50c2d]" />
                     Paketinformationen
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-sm">
@@ -885,7 +885,7 @@ const DHLShipping = () => {
                 {/* Zeitangaben */}
                 <div className="mt-6 bg-[#2a2a2a] p-4 rounded-lg border border-gray-700">
                   <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-[#c00000]" />
+                    <Calendar className="h-5 w-5 text-[#d50c2d]" />
                     Zeitangaben
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-sm">
@@ -936,7 +936,7 @@ const DHLShipping = () => {
                     href={selectedShipment.tracking_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-6 py-2 bg-[#c00000] hover:bg-[#a00000] text-white rounded transition-colors inline-flex items-center gap-2"
+                    className="px-6 py-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white rounded transition-colors inline-flex items-center gap-2"
                   >
                     <MapPin className="h-4 w-4" />
                     Tracking öffnen
@@ -978,12 +978,12 @@ const DHLShipping = () => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000] disabled:opacity-50`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] disabled:opacity-50`}
                 />
                 <button 
                   onClick={trackShipment}
                   disabled={trackingLoading || !trackingNumber.trim()}
-                  className="flex items-center gap-2 px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-2 px-6 py-3 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {trackingLoading ? (
                     <RefreshCw className="h-4 w-4 animate-spin" />
@@ -1038,7 +1038,7 @@ const DHLShipping = () => {
                     href={trackingData.tracking_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-[#c00000] hover:text-[#a00000] transition-colors text-sm"
+                    className="inline-flex items-center gap-2 text-[#d50c2d] hover:text-[#b80a28] transition-colors text-sm"
                   >
                     <MapPin className="h-4 w-4" />
                     DHL Tracking öffnen
@@ -1052,7 +1052,7 @@ const DHLShipping = () => {
                 {trackingData.sender_name && (
                   <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
                     <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      <User className="h-4 w-4 text-[#c00000]" />
+                      <User className="h-4 w-4 text-[#d50c2d]" />
                       Absender
                     </h4>
                     <div className={`space-y-1 text-sm font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -1071,7 +1071,7 @@ const DHLShipping = () => {
                 {trackingData.receiver_name && (
                   <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
                     <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                      <MapPin className="h-4 w-4 text-[#c00000]" />
+                      <MapPin className="h-4 w-4 text-[#d50c2d]" />
                       Empfänger
                     </h4>
                     <div className={`space-y-1 text-sm font-mono ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -1091,7 +1091,7 @@ const DHLShipping = () => {
               {trackingData.package_weight_grams && (
                 <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
                   <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <Package className="h-4 w-4 text-[#c00000]" />
+                    <Package className="h-4 w-4 text-[#d50c2d]" />
                     Paketinformationen
                   </h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm font-mono">
@@ -1132,7 +1132,7 @@ const DHLShipping = () => {
               {/* Dates */}
               <div className={`p-4 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
                 <h4 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                  <Calendar className="h-4 w-4 text-[#c00000]" />
+                  <Calendar className="h-4 w-4 text-[#d50c2d]" />
                   Zeitangaben
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm font-mono">
@@ -1249,7 +1249,7 @@ const DHLShipping = () => {
             {/* Sender Information */}
             <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
               <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <User className="h-5 w-5 text-[#c00000]" />
+                <User className="h-5 w-5 text-[#d50c2d]" />
                 Absender
               </h3>
               
@@ -1268,7 +1268,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white'
                         : 'bg-white border-gray-300 text-gray-900'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1287,7 +1287,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1306,7 +1306,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1325,7 +1325,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1344,7 +1344,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1363,7 +1363,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1382,7 +1382,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
               </div>
@@ -1391,7 +1391,7 @@ const DHLShipping = () => {
             {/* Receiver Information */}
             <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
               <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <MapPin className="h-5 w-5 text-[#c00000]" />
+                <MapPin className="h-5 w-5 text-[#d50c2d]" />
                 Empfänger
               </h3>
               
@@ -1411,7 +1411,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1430,7 +1430,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1449,7 +1449,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1468,7 +1468,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1487,7 +1487,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1506,7 +1506,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
               </div>
@@ -1515,7 +1515,7 @@ const DHLShipping = () => {
             {/* Package Information */}
             <div className={`p-6 rounded-lg border ${theme === 'dark' ? 'bg-[#1f1f1f] border-gray-700' : 'bg-white border-gray-200'}`}>
               <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Package className="h-5 w-5 text-[#c00000]" />
+                <Package className="h-5 w-5 text-[#d50c2d]" />
                 Paketinformationen
               </h3>
               
@@ -1537,7 +1537,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1557,7 +1557,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1577,7 +1577,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1597,7 +1597,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
                 
@@ -1615,7 +1615,7 @@ const DHLShipping = () => {
                       theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-600 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                   />
                 </div>
               </div>
@@ -1637,7 +1637,7 @@ const DHLShipping = () => {
               <button
                 type="submit"
                 disabled={createLoading}
-                className="px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {createLoading ? (
                   <>

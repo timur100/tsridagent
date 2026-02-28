@@ -155,7 +155,7 @@ const StockPortal = () => {
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center p-4">
         <div className="bg-[#2d2d2d] rounded-2xl shadow-xl p-8 w-full max-w-md">
           <div className="flex items-center justify-center mb-6">
-            <Package className="h-12 w-12 text-[#c00000]" />
+            <Package className="h-12 w-12 text-[#d50c2d]" />
           </div>
           <h1 className="text-3xl font-bold text-white text-center mb-2">
             Lager Portal
@@ -173,7 +173,7 @@ const StockPortal = () => {
                 type="email"
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -186,7 +186,7 @@ const StockPortal = () => {
                 type="password"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -194,7 +194,7 @@ const StockPortal = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#c00000] text-white py-3 rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50"
+              className="w-full bg-[#d50c2d] text-white py-3 rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50"
             >
               {loading ? 'Anmelden...' : 'Anmelden'}
             </button>
@@ -211,7 +211,7 @@ const StockPortal = () => {
       <div className="bg-[#2d2d2d] border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Package className="h-8 w-8 text-[#c00000]" />
+            <Package className="h-8 w-8 text-[#d50c2d]" />
             <div>
               <h1 className="text-2xl font-bold text-white">Lager Portal</h1>
               <p className="text-sm text-gray-400">Angemeldet als: {user.name}</p>
@@ -234,7 +234,7 @@ const StockPortal = () => {
             onClick={() => setActiveTab('pending')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'pending'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -245,7 +245,7 @@ const StockPortal = () => {
             onClick={() => setActiveTab('picking')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'picking'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -256,7 +256,7 @@ const StockPortal = () => {
             onClick={() => setActiveTab('picked')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'picked'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -301,7 +301,7 @@ const StockPortal = () => {
                       {comp.manufacturer} - {comp.model}
                     </p>
                     <p className="text-sm text-gray-400 mt-1">
-                      Lagerplatz: <span className="text-[#c00000] font-mono">{comp.storage_location || 'Nicht zugewiesen'}</span>
+                      Lagerplatz: <span className="text-[#d50c2d] font-mono">{comp.storage_location || 'Nicht zugewiesen'}</span>
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
                       ID: {comp.identification_value}
@@ -324,12 +324,12 @@ const StockPortal = () => {
                   value={euroboxNumber}
                   onChange={(e) => setEuroboxNumber(e.target.value)}
                   placeholder="z.B. EB-2024-001"
-                  className="flex-1 px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                  className="flex-1 px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 />
                 <button
                   onClick={completePicking}
                   disabled={loading || !euroboxNumber}
-                  className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50"
+                  className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Speichern...' : 'Kommissionierung abschließen'}
                 </button>
@@ -401,7 +401,7 @@ const StockPortal = () => {
                       </td>
                       <td className="px-4 py-3 text-sm">
                         {order.eurobox_number ? (
-                          <span className="text-[#c00000] font-mono flex items-center gap-1">
+                          <span className="text-[#d50c2d] font-mono flex items-center gap-1">
                             <Box className="h-3 w-3" />
                             {order.eurobox_number}
                           </span>
@@ -412,7 +412,7 @@ const StockPortal = () => {
                       <td className="px-4 py-3 text-center">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           order.fulfillment_status === 'reserved' ? 'bg-yellow-500/20 text-yellow-500' : 
-                          order.fulfillment_status === 'picking' ? 'bg-[#c00000]/20 text-[#c00000]' : 
+                          order.fulfillment_status === 'picking' ? 'bg-[#d50c2d]/20 text-[#d50c2d]' : 
                           'bg-green-500/20 text-green-500'
                         }`}>
                           {order.fulfillment_status === 'reserved' ? 'Neu' : 
@@ -425,7 +425,7 @@ const StockPortal = () => {
                           <button
                             onClick={() => startPicking(order.id)}
                             disabled={loading}
-                            className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors disabled:opacity-50"
+                            className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors disabled:opacity-50"
                           >
                             Starten
                           </button>

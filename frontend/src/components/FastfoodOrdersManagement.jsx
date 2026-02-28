@@ -156,7 +156,7 @@ const FastfoodOrdersManagement = ({ tenantId = 'default-tenant' }) => {
             {/* Order Header */}
             <div className="flex items-start justify-between mb-4">
               <div>
-                <div className="text-2xl font-bold text-[#c00000] mb-1">
+                <div className="text-2xl font-bold text-[#d50c2d] mb-1">
                   {order.order_number}
                 </div>
                 <div className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>

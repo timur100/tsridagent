@@ -142,7 +142,7 @@ const TenantHierarchyTree = ({ rootTenantId, onSelectTenant }) => {
     return (
       <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000] mx-auto"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d] mx-auto"></div>
           <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Lade Hierarchie...
           </p>

@@ -487,8 +487,8 @@ const ComponentModal = ({ isOpen, onClose, component, onSuccess }) => {
               <div className="mb-3">
                 <label className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed cursor-pointer transition-colors ${
                   theme === 'dark'
-                    ? 'border-gray-700 hover:border-[#c00000] bg-[#1a1a1a] text-white'
-                    : 'border-gray-300 hover:border-[#c00000] bg-white text-gray-900'
+                    ? 'border-gray-700 hover:border-[#d50c2d] bg-[#1a1a1a] text-white'
+                    : 'border-gray-300 hover:border-[#d50c2d] bg-white text-gray-900'
                 }`}>
                   <Upload className="h-5 w-5" />
                   <span className="text-sm">Bilder hochladen</span>
@@ -568,7 +568,7 @@ const ComponentModal = ({ isOpen, onClose, component, onSuccess }) => {
           <Button
             onClick={handleSubmit}
             disabled={saving}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Save className="h-4 w-4 mr-2" />
             {saving ? 'Speichert...' : component?.id ? 'Aktualisieren' : 'Erstellen'}

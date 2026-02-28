@@ -89,7 +89,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
           theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'
         }`}>
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#c00000] rounded-lg">
+            <div className="p-2 bg-[#d50c2d] rounded-lg">
               <MapPin className="h-5 w-5 text-white" />
             </div>
             <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -131,7 +131,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -150,7 +150,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -166,7 +166,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="Mietstation">Mietstation</option>
                   <option value="Flughafen">Flughafen</option>
@@ -189,7 +189,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
             </div>
@@ -215,7 +215,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -233,7 +233,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -251,7 +251,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -267,7 +267,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="">-- Bundesland wählen --</option>
                   {getBundeslandOptions().map(option => (
@@ -300,7 +300,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -318,7 +318,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -336,7 +336,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -354,7 +354,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
             </div>
@@ -380,7 +380,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -398,7 +398,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -416,7 +416,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
             </div>
@@ -442,7 +442,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
 
@@ -460,7 +460,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
                     theme === 'dark'
                       ? 'bg-[#2a2a2a] border-gray-700 text-white'
                       : 'bg-white border-gray-300 text-gray-900'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
             </div>
@@ -485,7 +485,7 @@ const AddStandortModal = ({ onClose, onAdd }) => {
               className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
                 loading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                  : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
               }`}
             >
               {loading ? (

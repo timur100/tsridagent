@@ -189,7 +189,7 @@ const IDChecksPage = () => {
         <div className={`p-1 rounded-lg ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'} border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} shadow`}>
           <div className="flex gap-2">
             <button
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#c00000] text-white`}
+              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#d50c2d] text-white`}
             >
               <FileText className="h-5 w-5" />
               Dokumentenscan

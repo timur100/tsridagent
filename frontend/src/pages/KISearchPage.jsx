@@ -51,7 +51,7 @@ const KISearchPage = () => {
               Fingerprint
             </button>
             <button
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#c00000] text-white`}
+              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#d50c2d] text-white`}
             >
               <Search className="h-5 w-5" />
               KI-Suche
@@ -96,7 +96,7 @@ const KISearchPage = () => {
             />
           </div>
           <button
-            className="mt-4 w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors flex items-center justify-center gap-2"
+            className="mt-4 w-full px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors flex items-center justify-center gap-2"
           >
             <Zap className="h-5 w-5" />
             KI-Suche starten

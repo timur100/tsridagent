@@ -117,7 +117,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
           theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
         }`}>
           <div className="flex items-center gap-2">
-            <Building2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Building2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <h2 className={`text-lg font-semibold ${
               theme === 'dark' ? 'text-white' : 'text-gray-900'
             }`}>
@@ -168,7 +168,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                      } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                     />
                   </div>
 
@@ -187,7 +187,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-500'
                           : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                      } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                      } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                     />
                   </div>
 
@@ -204,7 +204,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                         theme === 'dark'
                           ? 'bg-gray-700 border-gray-600 text-white'
                           : 'bg-white border-gray-300 text-gray-900'
-                      } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                      } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                     >
                       {industries.map(ind => (
                         <option key={ind.value} value={ind.value}>{ind.label}</option>
@@ -218,7 +218,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                       id="generate_hierarchy"
                       checked={formData.generate_hierarchy}
                       onChange={(e) => setFormData({...formData, generate_hierarchy: e.target.checked})}
-                      className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                      className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                     />
                     <label htmlFor="generate_hierarchy" className={`text-sm ${
                       theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -252,7 +252,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                           className={`flex items-center gap-2 p-2 rounded cursor-pointer ${
                             formData.countries.includes(country) || formData.countries.length === 0
                               ? theme === 'dark' 
-                                ? 'bg-[#c00000] bg-opacity-20' 
+                                ? 'bg-[#d50c2d] bg-opacity-20' 
                                 : 'bg-red-50'
                               : theme === 'dark'
                               ? 'hover:bg-gray-700'
@@ -263,7 +263,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                             type="checkbox"
                             checked={formData.countries.length === 0 || formData.countries.includes(country)}
                             onChange={() => toggleCountry(country)}
-                            className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                            className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                           />
                           <span className={`text-sm ${
                             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
@@ -318,7 +318,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                       className={`px-4 py-2 text-sm rounded-md transition-colors ${
                         !formData.name.trim() || loading
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-[#c00000] hover:bg-[#a00000]'
+                          : 'bg-[#d50c2d] hover:bg-[#b80a28]'
                       } text-white`}
                     >
                       {formData.generate_hierarchy ? 'Weiter' : 'Erstellen'}
@@ -330,7 +330,7 @@ const AddOrganizationModal = ({ isOpen, onClose, onSuccess }) => {
                       className={`px-4 py-2 text-sm rounded-md transition-colors flex items-center gap-2 ${
                         loading
                           ? 'bg-gray-400 cursor-not-allowed'
-                          : 'bg-[#c00000] hover:bg-[#a00000]'
+                          : 'bg-[#d50c2d] hover:bg-[#b80a28]'
                       } text-white`}
                     >
                       {loading && <Loader2 className="w-4 h-4 animate-spin" />}

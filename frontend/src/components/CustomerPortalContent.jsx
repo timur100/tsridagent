@@ -734,7 +734,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                 loadData();
                 loadDashboardStats();
               }}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
             >
               <RefreshCw className="h-4 w-4" />
               Aktualisieren
@@ -757,7 +757,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     {devices.length}
                   </p>
                 </div>
-                <div className="p-3 bg-[#c00000] rounded-xl">
+                <div className="p-3 bg-[#d50c2d] rounded-xl">
                   <Monitor className="h-8 w-8 text-white" />
                 </div>
               </div>
@@ -1108,8 +1108,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                   onClick={() => setShowAddDeviceModal(true)}
                   className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
                     theme === 'dark'
-                      ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
-                      : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                      ? 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
+                      : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                   }`}
                 >
                   <Plus className="h-4 w-4" />
@@ -1127,8 +1127,8 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
               className={`p-6 rounded-xl transition-all duration-300 cursor-pointer ${
                 statusFilter === 'all'
                   ? theme === 'dark' 
-                    ? 'bg-[#2a2a2a] border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
-                    : 'bg-white border-2 border-[#c00000] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
+                    ? 'bg-[#2a2a2a] border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
+                    : 'bg-white border-2 border-[#d50c2d] shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
                   : theme === 'dark' 
                     ? 'bg-[#2a2a2a] border-none shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.5)] hover:-translate-y-1' 
                     : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:-translate-y-1'
@@ -1142,7 +1142,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     {devices.length}
                   </p>
                 </div>
-                <div className="p-3 bg-[#c00000] rounded-xl">
+                <div className="p-3 bg-[#d50c2d] rounded-xl">
                   <Monitor className="h-6 w-6 text-white" />
                 </div>
               </div>
@@ -1637,7 +1637,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     {dashboardStats.total_locations || stations.length}
                   </p>
                 </div>
-                <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: '#d50c2d' }}>
                   <MapPin className="w-6 h-6 text-white" />
                 </div>
               </div>
@@ -1662,7 +1662,7 @@ const CustomerPortalContent = ({ isImpersonation = false, activeTab, setActiveTa
                     {dashboardStats.total_devices || dashboardStats.online_devices + dashboardStats.offline_devices || 0}
                   </p>
                 </div>
-                <div className="p-3 rounded-lg" style={{ backgroundColor: '#c00000' }}>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: '#d50c2d' }}>
                   <Monitor className="w-6 h-6 text-white" />
                 </div>
               </div>

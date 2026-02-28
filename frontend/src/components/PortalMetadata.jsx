@@ -17,21 +17,21 @@ const PortalMetadata = () => {
       metaDescription: 'ID Verifizierungs-System',
       faviconUrl: '',
       logoUrl: '',
-      primaryColor: '#c00000'
+      primaryColor: '#d50c2d'
     },
     admin: {
       browserTitle: 'TSRID | Admin Portal',
       metaDescription: 'Administrator Dashboard',
       faviconUrl: '',
       logoUrl: '',
-      primaryColor: '#c00000'
+      primaryColor: '#d50c2d'
     },
     customer: {
       browserTitle: 'TSRID | Kundenportal',
       metaDescription: 'Kunden Self-Service Portal',
       faviconUrl: '',
       logoUrl: '',
-      primaryColor: '#c00000'
+      primaryColor: '#d50c2d'
     }
   });
 
@@ -153,7 +153,7 @@ const PortalMetadata = () => {
         <Button
           onClick={handleSaveAll}
           disabled={loading}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Save className="h-4 w-4 mr-2" />
           Alle speichern
@@ -171,7 +171,7 @@ const PortalMetadata = () => {
               onClick={() => setActivePortal(portal.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 isActive
-                  ? 'bg-[#c00000] text-white'
+                  ? 'bg-[#d50c2d] text-white'
                   : theme === 'dark'
                     ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#3a3a3a]'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -189,8 +189,8 @@ const PortalMetadata = () => {
         {/* Portal Header */}
         <div className="flex items-start justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#c00000]/20' : 'bg-[#c00000]/10'}`}>
-              <PortalIcon className="h-6 w-6 text-[#c00000]" />
+            <div className={`p-3 rounded-lg ${theme === 'dark' ? 'bg-[#d50c2d]/20' : 'bg-[#d50c2d]/10'}`}>
+              <PortalIcon className="h-6 w-6 text-[#d50c2d]" />
             </div>
             <div>
               <h4 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>

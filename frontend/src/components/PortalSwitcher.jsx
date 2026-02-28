@@ -70,18 +70,18 @@ const PortalSwitcher = () => {
                   key={portal.id}
                   onClick={() => handleSwitch(portal.path)}
                   className={`w-full flex items-start gap-3 px-4 py-3 hover:bg-white/5 transition-colors ${
-                    isActive ? 'bg-[#c00000]/10 border-l-4 border-[#c00000]' : ''
+                    isActive ? 'bg-[#d50c2d]/10 border-l-4 border-[#d50c2d]' : ''
                   }`}
                   disabled={isActive}
                 >
                   <div className={`p-2 rounded-lg ${
-                    isActive ? 'bg-[#c00000]' : 'bg-white/10'
+                    isActive ? 'bg-[#d50c2d]' : 'bg-white/10'
                   }`}>
                     <Icon className="h-5 w-5 text-white" />
                   </div>
                   
                   <div className="flex-1 text-left">
-                    <div className={`font-semibold ${isActive ? 'text-[#c00000]' : 'text-white'}`}>
+                    <div className={`font-semibold ${isActive ? 'text-[#d50c2d]' : 'text-white'}`}>
                       {portal.name}
                       {isActive && <span className="ml-2 text-xs">(Aktiv)</span>}
                     </div>

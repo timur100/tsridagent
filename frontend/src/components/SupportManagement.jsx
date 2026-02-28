@@ -302,7 +302,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('tickets')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'tickets'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -315,7 +315,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('sla')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'sla'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -328,7 +328,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('staff')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'staff'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -341,7 +341,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('changes')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'changes'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -354,7 +354,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('kb')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'kb'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -367,7 +367,7 @@ const SupportManagement = () => {
             onClick={() => setActiveTab('settings')}
             className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 ${
               activeTab === 'settings'
-                ? 'bg-[#c00000] text-white'
+                ? 'bg-[#d50c2d] text-white'
                 : theme === 'dark'
                 ? 'text-gray-400 hover:bg-[#3a3a3a]'
                 : 'text-gray-700 hover:bg-gray-100'
@@ -556,7 +556,7 @@ const SupportManagement = () => {
           {/* Create Button */}
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Neues Ticket
@@ -602,7 +602,7 @@ const SupportManagement = () => {
             </span>
             {statusTileFilter && (
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                theme === 'dark' ? 'bg-[#c00000]/20 text-[#c00000]' : 'bg-red-100 text-[#c00000]'
+                theme === 'dark' ? 'bg-[#d50c2d]/20 text-[#d50c2d]' : 'bg-red-100 text-[#d50c2d]'
               }`}>
                 {statusTileFilter === 'open' ? 'Offen' : statusTileFilter === 'in_progress' ? 'In Bearbeitung' : 'Kritisch'}
               </span>

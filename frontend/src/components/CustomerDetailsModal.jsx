@@ -210,9 +210,9 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
         }`}>
           <div className="flex items-center space-x-4">
             <div className={`p-3 rounded-xl ${
-              theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+              theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'
             }`}>
-              <Building2 className="h-8 w-8 text-[#c00000]" />
+              <Building2 className="h-8 w-8 text-[#d50c2d]" />
             </div>
             <div>
               <h2 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -364,7 +364,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
                 <Card className={`p-4 rounded-xl text-center ${
                   theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-white border border-gray-100'
                 }`}>
-                  <Monitor className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Monitor className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {customerStats.devices}
                   </p>
@@ -375,7 +375,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
                 <Card className={`p-4 rounded-xl text-center ${
                   theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-white border border-gray-100'
                 }`}>
-                  <MapPin className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <MapPin className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {customerStats.locations}
                   </p>
@@ -386,7 +386,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
                 <Card className={`p-4 rounded-xl text-center ${
                   theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-white border border-gray-100'
                 }`}>
-                  <Package className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Package className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {customerStats.licenses}
                   </p>
@@ -397,7 +397,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
                 <Card className={`p-4 rounded-xl text-center ${
                   theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-white border border-gray-100'
                 }`}>
-                  <Users className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Users className={`h-8 w-8 mx-auto mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   <p className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                     {customerStats.employees}
                   </p>
@@ -485,7 +485,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
                 <Button
                   onClick={handleSave}
                   disabled={loading}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white px-6 py-3 rounded-lg flex items-center space-x-2"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white px-6 py-3 rounded-lg flex items-center space-x-2"
                 >
                   <Save className="h-4 w-4" />
                   <span>{loading ? 'Speichern...' : 'Speichern'}</span>
@@ -494,7 +494,7 @@ const CustomerDetailsModal = ({ customer, onClose, stats, onUpdate, onDelete }) 
             ) : (
               <Button
                 onClick={onClose}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white px-6 py-3 rounded-lg"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white px-6 py-3 rounded-lg"
               >
                 Schließen
               </Button>

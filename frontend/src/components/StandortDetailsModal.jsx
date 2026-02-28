@@ -248,9 +248,9 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
           <div className="flex justify-between items-start">
             <div className="flex items-center space-x-4">
               <div className={`p-3 rounded-xl ${
-                theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+                theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'
               }`}>
-                <MapPin className="h-8 w-8 text-[#c00000]" />
+                <MapPin className="h-8 w-8 text-[#d50c2d]" />
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-1">
@@ -278,7 +278,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               {!isEditing ? (
                 <Button
                   onClick={() => setIsEditing(true)}
-                  className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+                  className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
                 >
                   <Edit2 className="h-4 w-4" />
                   Bearbeiten
@@ -409,7 +409,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                       theme === 'dark'
                         ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500'
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-400'
-                    } focus:outline-none focus:ring-2 focus:ring-[#c00000] focus:border-transparent`}
+                    } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] focus:border-transparent`}
                   />
                 </div>
                 <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
@@ -427,7 +427,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Building2 className="h-5 w-5 mr-2 text-[#c00000]" />
+                <Building2 className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Adressinformationen
               </h3>
               <div className="space-y-3">
@@ -468,7 +468,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <MapPin className="h-5 w-5 mr-2 text-[#c00000]" />
+                <MapPin className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Standortkarte
               </h3>
               <div className="w-full h-64 rounded-lg overflow-hidden border border-gray-300">
@@ -494,7 +494,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Phone className="h-5 w-5 mr-2 text-[#c00000]" />
+                <Phone className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Kontaktinformationen
               </h3>
               <div className="space-y-3">
@@ -510,7 +510,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <svg className="h-5 w-5 mr-2 text-[#c00000]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="h-5 w-5 mr-2 text-[#d50c2d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Öffnungszeiten
@@ -559,7 +559,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Building2 className="h-5 w-5 mr-2 text-[#c00000]" />
+                <Building2 className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Weitere interessante Firmen
               </h3>
               <p className={`text-xs mb-3 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-500'}`}>
@@ -607,7 +607,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Network className="h-5 w-5 mr-2 text-[#c00000]" />
+                <Network className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Technische Details
               </h3>
               <div className="space-y-3">
@@ -624,7 +624,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
               theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
             }`}>
               <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                <Monitor className="h-5 w-5 mr-2 text-[#c00000]" />
+                <Monitor className="h-5 w-5 mr-2 text-[#d50c2d]" />
                 Hardware Details
               </h3>
               <div className="space-y-3">
@@ -642,7 +642,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
             theme === 'dark' ? 'bg-[#1a1a1a] border-none' : 'bg-gray-50 border border-gray-100'
           }`}>
             <h3 className={`text-lg font-bold mb-4 flex items-center ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              <MessageSquare className="h-5 w-5 mr-2 text-[#c00000]" />
+              <MessageSquare className="h-5 w-5 mr-2 text-[#d50c2d]" />
               Kommentare & Bemerkungen
             </h3>
             <div className="space-y-4">
@@ -736,7 +736,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
                 <Button
                   onClick={handleSave}
                   disabled={loading}
-                  className="px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] flex items-center space-x-2"
+                  className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] flex items-center space-x-2"
                 >
                   <Save className="h-5 w-5" />
                   <span>{loading ? 'Speichert...' : 'Speichern'}</span>
@@ -745,7 +745,7 @@ const StandortDetailsModal = ({ standort, onClose, onUpdate }) => {
             ) : (
               <Button
                 onClick={() => setIsEditing(true)}
-                className="px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] flex items-center space-x-2"
+                className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] flex items-center space-x-2"
               >
                 <Edit2 className="h-5 w-5" />
                 <span>Bearbeiten</span>

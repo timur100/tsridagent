@@ -136,7 +136,7 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
                 onClick={() => setFormData({...formData, tenant_type: type})}
                 className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
                   formData.tenant_type === type
-                    ? 'border-[#c00000] bg-[#c00000] bg-opacity-10'
+                    ? 'border-[#d50c2d] bg-[#d50c2d] bg-opacity-10'
                     : theme === 'dark'
                     ? 'border-gray-700 hover:border-gray-600'
                     : 'border-gray-200 hover:border-gray-300'
@@ -145,7 +145,7 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
                 {getTenantTypeIcon(type)}
                 <span className={`text-sm font-medium ${
                   formData.tenant_type === type
-                    ? 'text-[#c00000]'
+                    ? 'text-[#d50c2d]'
                     : theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                 }`}>
                   {type === 'organization' ? 'Organisation' : 
@@ -223,7 +223,7 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
               type="checkbox"
               checked={formData.allow_cross_location_search}
               onChange={(e) => setFormData({...formData, allow_cross_location_search: e.target.checked})}
-              className="w-5 h-5 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+              className="w-5 h-5 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
             />
             <div>
               <span className={`font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
@@ -262,7 +262,7 @@ const TenantHierarchySettings = ({ tenantId, currentData, onSave, onCancel }) =>
           <Button
             type="submit"
             disabled={saving}
-            className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? 'Speichern...' : 'Änderungen speichern'}

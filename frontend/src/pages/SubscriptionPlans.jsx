@@ -66,7 +66,7 @@ const SubscriptionPlans = () => {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 activeSubTab === tab.id
-                  ? 'bg-[#c00000] text-white'
+                  ? 'bg-[#d50c2d] text-white'
                   : theme === 'dark'
                   ? 'bg-[#2a2a2a] text-gray-300 hover:bg-[#1a1a1a]'
                   : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
@@ -102,7 +102,7 @@ const SubscriptionPlans = () => {
                     <span className={`text-4xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                       {plan.price}
                     </span>
-                    <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                    <span className={`text-2xl font-bold ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                       {plan.currency}
                     </span>
                     <span className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
@@ -115,7 +115,7 @@ const SubscriptionPlans = () => {
                 <div className={`space-y-2 py-4 border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
                   {plan.features.map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#c00000]" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#d50c2d]" />
                       <span className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                         {feature}
                       </span>

@@ -93,7 +93,7 @@ const VehicleDetailPage = () => {
     return (
       <div className={`min-h-screen ${theme === 'dark' ? 'bg-[#121212]' : 'bg-gray-50'}`}>
         <div className="flex items-center justify-center h-screen">
-          <Loader className="h-8 w-8 animate-spin text-[#c00000]" />
+          <Loader className="h-8 w-8 animate-spin text-[#d50c2d]" />
         </div>
       </div>
     );
@@ -183,7 +183,7 @@ const VehicleDetailPage = () => {
               theme === 'dark' ? 'bg-[#1e1e1e] border-gray-800' : 'bg-white border-gray-200'
             }`}>
               <div className="flex items-center space-x-3 mb-6">
-                <Car className="h-6 w-6 text-[#c00000]" />
+                <Car className="h-6 w-6 text-[#d50c2d]" />
                 <h2 className={`text-xl font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Fahrzeuginformationen
                 </h2>

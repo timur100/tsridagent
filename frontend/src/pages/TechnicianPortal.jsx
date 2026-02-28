@@ -160,7 +160,7 @@ const TechnicianPortal = () => {
       <div className="min-h-screen bg-[#1a1a1a] flex items-center justify-center p-4">
         <div className="bg-[#2d2d2d] rounded-2xl shadow-xl p-8 w-full max-w-md">
           <div className="flex items-center justify-center mb-6">
-            <Wrench className="h-12 w-12 text-[#c00000]" />
+            <Wrench className="h-12 w-12 text-[#d50c2d]" />
           </div>
           <h1 className="text-3xl font-bold text-white text-center mb-2">
             Techniker Portal
@@ -178,7 +178,7 @@ const TechnicianPortal = () => {
                 type="email"
                 value={loginForm.email}
                 onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -191,7 +191,7 @@ const TechnicianPortal = () => {
                 type="password"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
                 required
               />
             </div>
@@ -199,7 +199,7 @@ const TechnicianPortal = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#c00000] text-white py-3 rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50"
+              className="w-full bg-[#d50c2d] text-white py-3 rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50"
             >
               {loading ? 'Anmelden...' : 'Anmelden'}
             </button>
@@ -216,7 +216,7 @@ const TechnicianPortal = () => {
       <div className="bg-[#2d2d2d] border-b border-gray-700 px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Wrench className="h-8 w-8 text-[#c00000]" />
+            <Wrench className="h-8 w-8 text-[#d50c2d]" />
             <div>
               <h1 className="text-2xl font-bold text-white">Techniker Portal</h1>
               <p className="text-sm text-gray-400">Angemeldet als: {user.name}</p>
@@ -239,7 +239,7 @@ const TechnicianPortal = () => {
             onClick={() => setActiveTab('ready')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'ready'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -250,7 +250,7 @@ const TechnicianPortal = () => {
             onClick={() => setActiveTab('inProgress')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'inProgress'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -261,7 +261,7 @@ const TechnicianPortal = () => {
             onClick={() => setActiveTab('completed')}
             className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors border-b-2 ${
               activeTab === 'completed'
-                ? 'text-[#c00000] border-[#c00000]'
+                ? 'text-[#d50c2d] border-[#d50c2d]'
                 : 'text-gray-400 border-transparent hover:text-gray-300'
             }`}
           >
@@ -335,7 +335,7 @@ const TechnicianPortal = () => {
                             i.id === item.id ? { ...i, checked: e.target.checked } : i
                           ));
                         }}
-                        className="w-5 h-5 rounded border-gray-600 text-[#c00000] focus:ring-[#c00000]"
+                        className="w-5 h-5 rounded border-gray-600 text-[#d50c2d] focus:ring-[#d50c2d]"
                       />
                       <span className={`text-sm ${item.checked ? 'text-gray-400 line-through' : 'text-white'}`}>
                         {item.text}
@@ -356,7 +356,7 @@ const TechnicianPortal = () => {
                 onChange={(e) => setConfigNotes(e.target.value)}
                 placeholder="Notizen zur Konfiguration..."
                 rows={4}
-                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#c00000]"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-[#d50c2d]"
               />
             </div>
 
@@ -364,7 +364,7 @@ const TechnicianPortal = () => {
               <button
                 onClick={completeConfiguration}
                 disabled={loading}
-                className="w-full px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors disabled:opacity-50"
+                className="w-full px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors disabled:opacity-50"
               >
                 {loading ? 'Speichern...' : 'Konfiguration abschließen'}
               </button>
@@ -412,7 +412,7 @@ const TechnicianPortal = () => {
                         {order.order_number}
                       </td>
                       <td className="px-4 py-3 text-sm">
-                        <span className="text-[#c00000] font-mono flex items-center gap-1">
+                        <span className="text-[#d50c2d] font-mono flex items-center gap-1">
                           <Box className="h-3 w-3" />
                           {order.eurobox_number || 'N/A'}
                         </span>
@@ -441,7 +441,7 @@ const TechnicianPortal = () => {
                       <td className="px-4 py-3 text-center">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           order.fulfillment_status === 'picked' ? 'bg-yellow-500/20 text-yellow-500' : 
-                          order.fulfillment_status === 'configuration' ? 'bg-[#c00000]/20 text-[#c00000]' : 
+                          order.fulfillment_status === 'configuration' ? 'bg-[#d50c2d]/20 text-[#d50c2d]' : 
                           'bg-green-500/20 text-green-500'
                         }`}>
                           {order.fulfillment_status === 'picked' ? 'Bereit' : 
@@ -454,7 +454,7 @@ const TechnicianPortal = () => {
                           <button
                             onClick={() => startConfiguration(order.id)}
                             disabled={loading}
-                            className="px-4 py-2 bg-[#c00000] text-white rounded-lg text-sm font-medium hover:bg-[#a00000] transition-colors disabled:opacity-50"
+                            className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg text-sm font-medium hover:bg-[#b80a28] transition-colors disabled:opacity-50"
                           >
                             Starten
                           </button>

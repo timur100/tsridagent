@@ -281,7 +281,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
         <div className="flex-shrink-0">
           <Button
             onClick={() => setShowModal(true)}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center space-x-2 whitespace-nowrap"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center space-x-2 whitespace-nowrap"
           >
             <Plus className="h-4 w-4" />
             <span>Kunde hinzufügen</span>
@@ -401,8 +401,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   onClick={() => handleShowDetails(customer)}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center space-x-2 ${
                     theme === 'dark'
-                      ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
-                      : 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                      ? 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
+                      : 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                   }`}
                 >
                   <Eye className="h-4 w-4" />
@@ -417,7 +417,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   disabled={loading}
                   className={`px-4 py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center space-x-2 ${
                     customer.active
-                      ? 'bg-[#c00000]/10 text-[#c00000] hover:bg-[#c00000]/20 border border-[#c00000]/20'
+                      ? 'bg-[#d50c2d]/10 text-[#d50c2d] hover:bg-[#d50c2d]/20 border border-[#d50c2d]/20'
                       : theme === 'dark'
                       ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20'
                       : 'bg-green-50 text-green-600 hover:bg-green-100 border border-green-200'
@@ -490,7 +490,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
               </p>
               <Button
                 onClick={() => setShowModal(true)}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white px-6 py-3 rounded-lg shadow-lg"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white px-6 py-3 rounded-lg shadow-lg"
               >
                 <Plus className="h-5 w-5 mr-2" />
                 Kunde hinzufügen
@@ -555,8 +555,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   required
                   className={`w-full px-4 py-3 rounded-lg border transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
-                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
+                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
                   } focus:outline-none`}
                   placeholder="Max Mustermann"
                 />
@@ -574,8 +574,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   required
                   className={`w-full px-4 py-3 rounded-lg border transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
-                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
+                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
                   } focus:outline-none`}
                   placeholder="Mustermann GmbH"
                 />
@@ -593,8 +593,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   required
                   className={`w-full px-4 py-3 rounded-lg border transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
-                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
+                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
                   } focus:outline-none`}
                   placeholder="kunde@firma.de"
                 />
@@ -613,8 +613,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   minLength={6}
                   className={`w-full px-4 py-3 rounded-lg border transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
-                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
+                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
                   } focus:outline-none`}
                   placeholder="Mindestens 6 Zeichen"
                 />
@@ -630,8 +630,8 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 rounded-lg border transition-all ${
                     theme === 'dark'
-                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
-                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#c00000] focus:ring-2 focus:ring-[#c00000]/20'
+                      ? 'bg-[#1a1a1a] border-gray-700 text-white focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
+                      : 'bg-white border-gray-200 text-gray-900 focus:border-[#d50c2d] focus:ring-2 focus:ring-[#d50c2d]/20'
                   } focus:outline-none`}
                 >
                   <option value="customer">Kunde</option>
@@ -647,7 +647,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                     name="shop_enabled"
                     checked={formData.shop_enabled}
                     onChange={(e) => setFormData(prev => ({...prev, shop_enabled: e.target.checked}))}
-                    className="w-5 h-5 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000]"
+                    className="w-5 h-5 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d]"
                   />
                   <span className={`text-sm font-semibold ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     Shop-Zugang aktivieren
@@ -675,7 +675,7 @@ const CustomerManagement = ({ customers, onRefresh }) => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-3 rounded-lg font-semibold bg-[#c00000] hover:bg-[#a00000] text-white shadow-lg transition-all"
+                  className="flex-1 px-4 py-3 rounded-lg font-semibold bg-[#d50c2d] hover:bg-[#b80a28] text-white shadow-lg transition-all"
                 >
                   {loading ? 'Wird erstellt...' : 'Kunde erstellen'}
                 </Button>

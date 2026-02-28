@@ -177,7 +177,7 @@ const ServerManagement = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader className="h-8 w-8 animate-spin text-[#c00000]" />
+        <Loader className="h-8 w-8 animate-spin text-[#d50c2d]" />
       </div>
     );
   }
@@ -196,7 +196,7 @@ const ServerManagement = () => {
         </div>
         <Button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Server hinzufügen
@@ -304,7 +304,7 @@ const ServerManagement = () => {
             </Button>
             <Button
               onClick={handleAddServer}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               Speichern
             </Button>
@@ -341,7 +341,7 @@ const ServerManagement = () => {
                     : theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-gray-100'
                 }`}>
                   <Server className={`h-5 w-5 ${
-                    serverStatus[server.id]?.status === 'online' ? 'text-green-500' : 'text-[#c00000]'
+                    serverStatus[server.id]?.status === 'online' ? 'text-green-500' : 'text-[#d50c2d]'
                   }`} />
                 </div>
                 <div>

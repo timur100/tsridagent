@@ -513,7 +513,7 @@ const TimeTrackingPage = () => {
                 Übersicht aller erfassten Zeiten
               </p>
             </div>
-            <button className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all">
+            <button className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all">
               <Plus className="h-4 w-4" />
               Manueller Eintrag
             </button>
@@ -714,7 +714,7 @@ const TimeTrackingPage = () => {
                   setSelectedDate(new Date().toISOString().split('T')[0]);
                   setShowShiftModal(true);
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
               >
                 <Plus className="h-4 w-4" />
                 Schicht hinzufügen
@@ -954,7 +954,7 @@ const TimeTrackingPage = () => {
                       setSelectedEmployee(null);
                       setSelectedDate(null);
                     }}
-                    className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                    className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                   >
                     Speichern
                   </button>
@@ -1042,7 +1042,7 @@ const TimeTrackingPage = () => {
             </div>
             <button
               onClick={() => setShowEmployeeModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+              className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
             >
               <Plus className="h-4 w-4" />
               Mitarbeiter hinzufügen
@@ -1271,7 +1271,7 @@ const TimeTrackingPage = () => {
                   </button>
                   <button
                     onClick={() => setShowEmployeeModal(false)}
-                    className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+                    className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
                   >
                     Speichern
                   </button>

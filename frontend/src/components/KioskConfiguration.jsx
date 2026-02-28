@@ -57,7 +57,7 @@ const KioskConfiguration = ({ theme }) => {
       {activeTab === 'display' && (
       <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Monitor className="h-5 w-5 text-[#c00000]" />
+          <Monitor className="h-5 w-5 text-[#d50c2d]" />
           <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Anzeigeeinstellungen
           </h3>
@@ -147,7 +147,7 @@ const KioskConfiguration = ({ theme }) => {
       {activeTab === 'interface' && (
       <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Palette className="h-5 w-5 text-[#c00000]" />
+          <Palette className="h-5 w-5 text-[#d50c2d]" />
           <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Oberfläche
           </h3>
@@ -206,7 +206,7 @@ const KioskConfiguration = ({ theme }) => {
       {activeTab === 'functionality' && (
       <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Layout className="h-5 w-5 text-[#c00000]" />
+          <Layout className="h-5 w-5 text-[#d50c2d]" />
           <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Funktionen
           </h3>
@@ -296,7 +296,7 @@ const KioskConfiguration = ({ theme }) => {
       {activeTab === 'maintenance' && (
       <div className={`p-6 rounded-xl border ${theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700' : 'bg-white border-gray-200'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Settings className="h-5 w-5 text-[#c00000]" />
+          <Settings className="h-5 w-5 text-[#d50c2d]" />
           <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Wartung
           </h3>
@@ -372,7 +372,7 @@ const KioskConfiguration = ({ theme }) => {
             console.log('Saving config:', config);
             // TODO: API call to save configuration
           }}
-          className="px-6 py-3 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-semibold"
+          className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-semibold"
         >
           Konfiguration speichern
         </button>

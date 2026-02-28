@@ -90,7 +90,7 @@ const EuropcarMenuPage = () => {
     return (
       <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-[#0a0a0a]' : 'bg-gray-50'}`}>
         <div className="text-center">
-          <Loader className="h-12 w-12 animate-spin mx-auto mb-4 text-[#c00000]" />
+          <Loader className="h-12 w-12 animate-spin mx-auto mb-4 text-[#d50c2d]" />
           <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
             Lade Schnellmenü...
           </p>
@@ -207,14 +207,14 @@ const EuropcarMenuPage = () => {
             <div className="flex items-center gap-2">
               {/* Red fingerprint symbol */}
               <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                theme === 'dark' ? 'bg-[#c00000]/20' : 'bg-[#c00000]/10'
+                theme === 'dark' ? 'bg-[#d50c2d]/20' : 'bg-[#d50c2d]/10'
               }`}>
                 <svg 
                   width="24" 
                   height="24" 
                   viewBox="0 0 24 24" 
                   fill="none" 
-                  stroke="#c00000" 
+                  stroke="#d50c2d" 
                   strokeWidth="2"
                   strokeLinecap="round" 
                   strokeLinejoin="round"

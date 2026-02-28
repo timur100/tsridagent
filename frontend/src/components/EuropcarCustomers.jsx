@@ -177,7 +177,7 @@ const EuropcarCustomers = () => {
                 theme === 'dark'
                   ? 'bg-[#1a1a1a] border-gray-700 text-white'
                   : 'bg-white border-gray-300 text-gray-900'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
             />
           </div>
           <select
@@ -187,14 +187,14 @@ const EuropcarCustomers = () => {
               theme === 'dark'
                 ? 'bg-[#1a1a1a] border-gray-700 text-white'
                 : 'bg-white border-gray-300 text-gray-900'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           >
             <option value="all">Alle Typen</option>
             <option value="private">Privatkunden</option>
             <option value="business">Geschäftskunden</option>
           </select>
           <Button 
-            className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
             onClick={() => toast.info('CRUD-Funktionalität wird implementiert')}
           >
             <Plus className="h-4 w-4" />
@@ -206,7 +206,7 @@ const EuropcarCustomers = () => {
       {/* Customers Table - EXACT COPY OF DEVICES TABLE DESIGN */}
       {loading ? (
         <div className="text-center py-12">
-          <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full mx-auto"></div>
+          <div className="animate-spin h-8 w-8 border-4 border-[#d50c2d] border-t-transparent rounded-full mx-auto"></div>
         </div>
       ) : (
         <div>
@@ -281,7 +281,7 @@ const EuropcarCustomers = () => {
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-sm font-mono font-semibold ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                         <button 
-                          className="text-[#c00000] hover:text-[#a00000] transition-colors"
+                          className="text-[#d50c2d] hover:text-[#b80a28] transition-colors"
                           onClick={() => toast.info('Details für ' + customer.vorname + ' ' + customer.nachname)}
                         >
                           Details

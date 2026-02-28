@@ -80,7 +80,7 @@ const PortalFeatureSettings = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-[#c00000] rounded-lg">
+            <div className="p-2 bg-[#d50c2d] rounded-lg">
               <Users className="h-5 w-5 text-white" />
             </div>
             <div>
@@ -114,7 +114,7 @@ const PortalFeatureSettings = () => {
             <button
               onClick={() => handleToggle('allow_customer_add_device')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
-                settings.allow_customer_add_device ? 'bg-[#c00000]' : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
+                settings.allow_customer_add_device ? 'bg-[#d50c2d]' : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
               }`}
             >
               <span
@@ -143,7 +143,7 @@ const PortalFeatureSettings = () => {
             <button
               onClick={() => handleToggle('allow_customer_add_location')}
               className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 ${
-                settings.allow_customer_add_location ? 'bg-[#c00000]' : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
+                settings.allow_customer_add_location ? 'bg-[#d50c2d]' : theme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'
               }`}
             >
               <span
@@ -163,7 +163,7 @@ const PortalFeatureSettings = () => {
             className={`flex items-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors ${
               saving
                 ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
             }`}
           >
             {saving ? (

@@ -391,7 +391,7 @@ const SupplierManagement = ({ theme }) => {
         <div className="flex gap-2">
           <Button
             onClick={() => { resetSupplierForm(); setShowSupplierModal(true); }}
-            className="bg-[#c00000] hover:bg-[#a00000]"
+            className="bg-[#d50c2d] hover:bg-[#b80a28]"
             data-testid="add-supplier-btn"
           >
             <Plus className="h-4 w-4 mr-2" />
@@ -465,13 +465,13 @@ const SupplierManagement = ({ theme }) => {
               onClick={() => setSelectedSupplier(null)}
               className={`p-3 cursor-pointer border-b transition-colors ${
                 !selectedSupplier 
-                  ? 'bg-[#c00000]/10 border-[#c00000]' 
+                  ? 'bg-[#d50c2d]/10 border-[#d50c2d]' 
                   : isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Building2 className={`h-4 w-4 ${!selectedSupplier ? 'text-[#c00000]' : 'text-gray-400'}`} />
+                  <Building2 className={`h-4 w-4 ${!selectedSupplier ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
                   <span className={`font-medium ${isDark ? 'text-white' : ''}`}>Alle Lieferanten</span>
                 </div>
                 <Badge variant="outline">{suppliersTotal}</Badge>
@@ -484,7 +484,7 @@ const SupplierManagement = ({ theme }) => {
                 onClick={() => setSelectedSupplier(supplier)}
                 className={`p-3 cursor-pointer border-b transition-colors ${
                   selectedSupplier?.supplier_id === supplier.supplier_id
-                    ? 'bg-[#c00000]/10 border-[#c00000]'
+                    ? 'bg-[#d50c2d]/10 border-[#d50c2d]'
                     : isDark ? 'border-gray-700 hover:bg-gray-700/50' : 'border-gray-200 hover:bg-gray-50'
                 }`}
                 data-testid={`supplier-item-${supplier.supplier_id}`}
@@ -994,7 +994,7 @@ const SupplierManagement = ({ theme }) => {
             <Button variant="outline" onClick={() => setShowSupplierModal(false)}>
               Abbrechen
             </Button>
-            <Button onClick={saveSupplier} disabled={loading} className="bg-[#c00000] hover:bg-[#a00000]">
+            <Button onClick={saveSupplier} disabled={loading} className="bg-[#d50c2d] hover:bg-[#b80a28]">
               {loading && <RefreshCw className="h-4 w-4 mr-2 animate-spin" />}
               {editingSupplier ? 'Speichern' : 'Anlegen'}
             </Button>

@@ -291,7 +291,7 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
                 window.open(portalUrl, '_blank');
               }} 
               variant="default" 
-              className="gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <ExternalLink className="h-4 w-4" />
               Admin-Portal

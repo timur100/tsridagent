@@ -41,7 +41,7 @@ const FingerprintPage = () => {
               Facematch
             </button>
             <button
-              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#c00000] text-white`}
+              className={`flex-1 px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 bg-[#d50c2d] text-white`}
             >
               <Fingerprint className="h-5 w-5" />
               Fingerprint
@@ -84,7 +84,7 @@ const FingerprintPage = () => {
             Verbinden Sie einen Fingerabdruck-Scanner, um zu beginnen
           </p>
           <button
-            className="px-6 py-3 bg-[#c00000] text-white rounded-lg font-semibold hover:bg-[#a00000] transition-colors"
+            className="px-6 py-3 bg-[#d50c2d] text-white rounded-lg font-semibold hover:bg-[#b80a28] transition-colors"
           >
             Scanner verbinden
           </button>

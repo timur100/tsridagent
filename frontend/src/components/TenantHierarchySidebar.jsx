@@ -190,8 +190,8 @@ const TenantHierarchySidebar = ({
           className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-all ${
             isSelected
               ? theme === 'dark'
-                ? 'bg-[#c00000] bg-opacity-20 border-l-4 border-[#c00000]'
-                : 'bg-red-50 border-l-4 border-[#c00000]'
+                ? 'bg-[#d50c2d] bg-opacity-20 border-l-4 border-[#d50c2d]'
+                : 'bg-red-50 border-l-4 border-[#d50c2d]'
               : theme === 'dark'
               ? 'hover:bg-gray-700'
               : 'hover:bg-gray-100'
@@ -271,7 +271,7 @@ const TenantHierarchySidebar = ({
     return (
       <Card className={`p-4 ${theme === 'dark' ? 'bg-[#2a2a2a]' : 'bg-white'}`}>
         <div className="text-center">
-          <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#c00000]" />
+          <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-[#d50c2d]" />
           <p className={`text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
             Lade Hierarchie...
           </p>
@@ -304,8 +304,8 @@ const TenantHierarchySidebar = ({
           className={`w-full px-3 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-colors ${
             !selectedTenantId
               ? theme === 'dark'
-                ? 'bg-[#c00000] bg-opacity-20 text-white border-l-4 border-[#c00000]'
-                : 'bg-red-50 text-gray-900 border-l-4 border-[#c00000]'
+                ? 'bg-[#d50c2d] bg-opacity-20 text-white border-l-4 border-[#d50c2d]'
+                : 'bg-red-50 text-gray-900 border-l-4 border-[#d50c2d]'
               : theme === 'dark'
               ? 'hover:bg-gray-700 text-gray-400'
               : 'hover:bg-gray-100 text-gray-600'

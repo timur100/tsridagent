@@ -190,7 +190,7 @@ const GoodsReceiptManagement = () => {
       {/* Barcode Scanner Section */}
       <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
         <div className="flex items-center gap-3 mb-4">
-          <Scan className={`h-6 w-6 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} />
+          <Scan className={`h-6 w-6 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`} />
           <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
             Artikel scannen
           </h3>
@@ -218,7 +218,7 @@ const GoodsReceiptManagement = () => {
               <Button
                 onClick={() => handleBarcodeSearch(scannedBarcode)}
                 disabled={loading || !scannedBarcode}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Scan className="h-4 w-4 mr-2" />
                 Suchen
@@ -264,7 +264,7 @@ const GoodsReceiptManagement = () => {
       {selectedItem && (
         <Card className={`p-6 ${theme === 'dark' ? 'bg-[#2d2d2d]' : 'bg-white'}`}>
           <div className="flex items-center gap-3 mb-4">
-            <Package className={`h-6 w-6 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} />
+            <Package className={`h-6 w-6 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`} />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Wareneingang buchen
             </h3>
@@ -359,7 +359,7 @@ const GoodsReceiptManagement = () => {
               <Button
                 onClick={handleGenerateLabels}
                 disabled={generatingLabels}
-                className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 {generatingLabels ? 'Generiere...' : 'Etiketten drucken'}

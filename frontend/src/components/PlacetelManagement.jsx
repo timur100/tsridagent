@@ -361,7 +361,7 @@ const PlacetelManagement = () => {
                 onClick={() => setNumberStatusFilter('all')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   numberStatusFilter === 'all'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -373,7 +373,7 @@ const PlacetelManagement = () => {
                 onClick={() => setNumberStatusFilter('active')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   numberStatusFilter === 'active'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -385,7 +385,7 @@ const PlacetelManagement = () => {
                 onClick={() => setNumberStatusFilter('inactive')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   numberStatusFilter === 'inactive'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -421,7 +421,7 @@ const PlacetelManagement = () => {
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                       </div>
                     </td>
                   </tr>
@@ -539,7 +539,7 @@ const PlacetelManagement = () => {
                 onClick={() => setCallTypeFilter('all')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   callTypeFilter === 'all'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -551,7 +551,7 @@ const PlacetelManagement = () => {
                 onClick={() => setCallTypeFilter('missed')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   callTypeFilter === 'missed'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -563,7 +563,7 @@ const PlacetelManagement = () => {
                 onClick={() => setCallTypeFilter('inbound')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   callTypeFilter === 'inbound'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -575,7 +575,7 @@ const PlacetelManagement = () => {
                 onClick={() => setCallTypeFilter('outbound')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   callTypeFilter === 'outbound'
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : theme === 'dark'
                     ? 'bg-[#1f1f1f] text-gray-400 hover:bg-gray-700'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -619,8 +619,8 @@ const PlacetelManagement = () => {
                 disabled={loading}
                 className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
                   theme === 'dark'
-                    ? 'bg-[#c00000] hover:bg-[#a00000] text-white'
-                    : 'bg-[#c00000] hover:bg-[#a00000] text-white'
+                    ? 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
+                    : 'bg-[#d50c2d] hover:bg-[#b80a28] text-white'
                 } disabled:opacity-50`}
               >
                 Jetzt aktualisieren
@@ -653,7 +653,7 @@ const PlacetelManagement = () => {
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                       </div>
                     </td>
                   </tr>
@@ -733,7 +733,7 @@ const PlacetelManagement = () => {
                 setEditingContact(null);
                 setShowContactModal(true);
               }}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white flex items-center gap-2"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white flex items-center gap-2"
             >
               <Plus className="h-4 w-4" />
               Kontakt hinzufügen
@@ -766,7 +766,7 @@ const PlacetelManagement = () => {
                     <tr>
                       <td colSpan="5" className="px-6 py-12 text-center">
                         <div className="flex items-center justify-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                         </div>
                       </td>
                     </tr>
@@ -893,7 +893,7 @@ const PlacetelManagement = () => {
                       <tr>
                         <td colSpan="3" className="px-6 py-12 text-center">
                           <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                           </div>
                         </td>
                       </tr>
@@ -973,7 +973,7 @@ const PlacetelManagement = () => {
                       <tr>
                         <td colSpan="3" className="px-6 py-12 text-center">
                           <div className="flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                           </div>
                         </td>
                       </tr>
@@ -1041,7 +1041,7 @@ const PlacetelManagement = () => {
                   <tr>
                     <td colSpan="3" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                       </div>
                     </td>
                   </tr>
@@ -1123,7 +1123,7 @@ const PlacetelManagement = () => {
                   <tr>
                     <td colSpan="4" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                       </div>
                     </td>
                   </tr>
@@ -1203,7 +1203,7 @@ const PlacetelManagement = () => {
                   <tr>
                     <td colSpan="5" className="px-6 py-12 text-center">
                       <div className="flex items-center justify-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
                       </div>
                     </td>
                   </tr>
@@ -1738,7 +1738,7 @@ const PlacetelManagement = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-lg font-medium bg-[#c00000] hover:bg-[#a00000] text-white transition-colors disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg font-medium bg-[#d50c2d] hover:bg-[#b80a28] text-white transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Speichert...' : editingContact ? 'Aktualisieren' : 'Erstellen'}
                 </button>

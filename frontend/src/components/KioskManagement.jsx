@@ -125,7 +125,7 @@ const KioskManagement = ({ theme }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin h-8 w-8 border-4 border-[#c00000] border-t-transparent rounded-full"></div>
+        <div className="animate-spin h-8 w-8 border-4 border-[#d50c2d] border-t-transparent rounded-full"></div>
       </div>
     );
   }
@@ -154,7 +154,7 @@ const KioskManagement = ({ theme }) => {
         </div>
         <button
           onClick={handleCreateKiosk}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Neuer Kiosk
@@ -433,7 +433,7 @@ const KioskEditorModal = ({ theme, kiosk, onSave, onClose }) => {
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-semibold"
+              className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-semibold"
             >
               Speichern
             </button>

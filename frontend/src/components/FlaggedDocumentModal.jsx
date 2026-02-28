@@ -67,7 +67,7 @@ const FlaggedDocumentModal = ({ isOpen, type, message, onConfirm, onCancel, requ
               onClick={onConfirm}
               variant="destructive"
               className={`${requireConfirmation ? 'w-full' : 'flex-1'} h-14 text-base font-semibold`}
-              style={{ backgroundColor: '#c00000' }}
+              style={{ backgroundColor: '#d50c2d' }}
             >
               {requireConfirmation ? 'OK - Verstanden' : 'OK'}
             </Button>

@@ -270,7 +270,7 @@ const KeyEditorModal = ({ theme, keyData, locations, automats, keyTypes, onSave,
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-semibold"
+              className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-semibold"
             >
               Speichern
             </button>

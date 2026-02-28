@@ -293,7 +293,7 @@ const SetsManagement = () => {
         </div>
         <Button
           onClick={() => handleOpenModal()}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Neues Set
@@ -341,7 +341,7 @@ const SetsManagement = () => {
           </p>
           <Button
             onClick={() => handleOpenModal()}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Erstes Set erstellen
@@ -497,7 +497,7 @@ const SetsManagement = () => {
                         type="button"
                         onClick={handleAddComponent}
                         size="sm"
-                        className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                        className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                       >
                         <Plus className="h-3 w-3 mr-1" />
                         Hinzufügen
@@ -656,7 +656,7 @@ const SetsManagement = () => {
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {editingSet ? 'Aktualisieren' : 'Set erstellen'}

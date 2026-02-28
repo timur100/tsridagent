@@ -314,7 +314,7 @@ const LocationDetailPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -402,7 +402,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex flex-col items-center text-center">
-              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-400'}`} />
+              <Server className={`h-8 w-8 mb-2 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-400'}`} />
               <p className={`text-xs font-semibold mb-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
                 Geräte
               </p>
@@ -576,7 +576,7 @@ const LocationDetailPage = () => {
           }`}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+                <Clock className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
                 <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                   Öffnungszeiten
                 </h3>
@@ -602,10 +602,10 @@ const LocationDetailPage = () => {
                   onClick={isEditingHours ? handleSaveOpeningHours : () => setIsEditingHours(true)}
                   className={`flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg transition-all ${
                     isEditingHours
-                      ? 'bg-[#c00000] text-white hover:bg-[#a00000]'
+                      ? 'bg-[#d50c2d] text-white hover:bg-[#b80a28]'
                       : theme === 'dark'
-                      ? 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
-                      : 'border border-[#c00000] text-[#c00000] hover:bg-[#c00000]/10'
+                      ? 'border border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
+                      : 'border border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d]/10'
                   }`}
                   disabled={saving}
                 >
@@ -665,7 +665,7 @@ const LocationDetailPage = () => {
                             type="checkbox"
                             checked={dayData.is_open}
                             onChange={(e) => handleDayChange(day.key, 'is_open', e.target.checked)}
-                            className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                            className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                           />
                           <span className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Geöffnet
@@ -678,7 +678,7 @@ const LocationDetailPage = () => {
                             checked={dayData.is_24h}
                             onChange={(e) => handleDayChange(day.key, 'is_24h', e.target.checked)}
                             disabled={!dayData.is_open}
-                            className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                            className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                           />
                           <span className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             24h
@@ -695,7 +695,7 @@ const LocationDetailPage = () => {
                                 theme === 'dark'
                                   ? 'bg-[#2a2a2a] border-gray-700 text-white'
                                   : 'bg-white border-gray-300 text-gray-900'
-                              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                             />
                             <span className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>bis</span>
                             <input
@@ -706,7 +706,7 @@ const LocationDetailPage = () => {
                                 theme === 'dark'
                                   ? 'bg-[#2a2a2a] border-gray-700 text-white'
                                   : 'bg-white border-gray-300 text-gray-900'
-                              } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                             />
                           </>
                         )}
@@ -739,7 +739,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <MapIcon className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <MapIcon className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Standort auf Karte
               </h3>
@@ -778,7 +778,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <MapPin className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Adressinformationen
               </h3>
@@ -929,7 +929,7 @@ const LocationDetailPage = () => {
                 : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Phone className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Kontaktinformationen
               </h3>
@@ -1017,7 +1017,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Technische Details
               </h3>
@@ -1102,7 +1102,7 @@ const LocationDetailPage = () => {
               : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
           }`}>
             <div className="flex items-center gap-2 mb-4">
-              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+              <Monitor className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
               <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
                 Hardware Details
               </h3>
@@ -1171,7 +1171,7 @@ const LocationDetailPage = () => {
             : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
         }`}>
           <div className="flex items-center gap-2 mb-4">
-            <Edit2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Edit2 className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Kommentare & Bemerkungen
             </h3>
@@ -1200,12 +1200,12 @@ const LocationDetailPage = () => {
             : 'bg-white border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.08)]'
         }`}>
           <div className="flex items-center gap-2 mb-6">
-            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#c00000]' : 'text-gray-600'}`} />
+            <Server className={`w-5 h-5 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-gray-600'}`} />
             <h3 className={`text-lg font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               Zugewiesene Geräte
             </h3>
             <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${
-              theme === 'dark' ? 'bg-[#c00000] text-white' : 'bg-gray-200 text-gray-700'
+              theme === 'dark' ? 'bg-[#d50c2d] text-white' : 'bg-gray-200 text-gray-700'
             }`}>
               {devices.length}
             </span>

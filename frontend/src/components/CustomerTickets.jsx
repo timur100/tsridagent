@@ -520,7 +520,7 @@ const CustomerTickets = () => {
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Neues Ticket erstellen
@@ -721,9 +721,9 @@ const CustomerTickets = () => {
               placeholder="Suche nach Ticket-Nr., Stationscode, Titel, Beschreibung, Kommentaren..."
               className={`w-full pl-10 pr-10 py-2 rounded-lg border transition-colors ${
                 theme === 'dark'
-                  ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500 focus:border-[#c00000]'
-                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#c00000]'
-              } focus:outline-none focus:ring-2 focus:ring-[#c00000]/20`}
+                  ? 'bg-[#1a1a1a] border-gray-700 text-white placeholder-gray-500 focus:border-[#d50c2d]'
+                  : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-[#d50c2d]'
+              } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]/20`}
             />
             {searchQuery && (
               <button
@@ -764,8 +764,8 @@ const CustomerTickets = () => {
             {statusFilter && (
               <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                 theme === 'dark'
-                  ? 'bg-[#c00000]/20 text-[#c00000]'
-                  : 'bg-red-100 text-[#c00000]'
+                  ? 'bg-[#d50c2d]/20 text-[#d50c2d]'
+                  : 'bg-red-100 text-[#d50c2d]'
               }`}>
                 Status: {
                   statusFilter === 'open' ? 'Offen' :
@@ -807,7 +807,7 @@ const CustomerTickets = () => {
                 <p className="text-sm mt-2">Erstellen Sie ein Ticket, wenn Sie Unterstützung benötigen</p>
                 <Button
                   onClick={() => setShowCreateModal(true)}
-                  className="mt-4 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="mt-4 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Erstes Ticket erstellen
@@ -822,7 +822,7 @@ const CustomerTickets = () => {
                     setStatusFilter(null);
                     setSearchQuery('');
                   }}
-                  className="mt-4 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="mt-4 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   Filter zurücksetzen
                 </Button>
@@ -837,15 +837,15 @@ const CustomerTickets = () => {
                 onClick={() => openTicketDetails(ticket)}
                 className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
                   theme === 'dark'
-                    ? 'bg-[#1a1a1a] border-gray-700 hover:border-[#c00000]'
-                    : 'bg-white border-gray-200 hover:border-[#c00000]'
+                    ? 'bg-[#1a1a1a] border-gray-700 hover:border-[#d50c2d]'
+                    : 'bg-white border-gray-200 hover:border-[#d50c2d]'
                 }`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     {/* Ticket Header */}
                     <div className="flex items-center gap-3 mb-2">
-                      <span className={`font-mono text-sm font-semibold ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`}>
+                      <span className={`font-mono text-sm font-semibold ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
                         {ticket.ticket_number}
                       </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${getStatusColor(ticket.status)}`}>
@@ -1103,7 +1103,7 @@ const CustomerTickets = () => {
                               theme === 'dark'
                                 ? 'hover:bg-[#3a3a3a] text-white border-gray-700'
                                 : 'hover:bg-gray-100 text-gray-900 border-gray-200'
-                            } ${selectedLocationId === location.main_code ? 'bg-[#c00000] text-white' : ''}`}
+                            } ${selectedLocationId === location.main_code ? 'bg-[#d50c2d] text-white' : ''}`}
                           >
                             <div className="flex items-start justify-between">
                               <div className="flex-1">
@@ -1225,7 +1225,7 @@ const CustomerTickets = () => {
                               theme === 'dark'
                                 ? 'hover:bg-[#3a3a3a] text-white border-gray-700'
                                 : 'hover:bg-gray-100 text-gray-900 border-gray-200'
-                            } ${selectedDeviceId === device.device_id ? 'bg-[#c00000] text-white' : ''}`}
+                            } ${selectedDeviceId === device.device_id ? 'bg-[#d50c2d] text-white' : ''}`}
                           >
                             <p className="font-bold text-sm">{device.device_id}</p>
                             <p className="text-xs opacity-75">{device.station_name || device.location_code}</p>
@@ -1315,7 +1315,7 @@ const CustomerTickets = () => {
                 </Button>
                 <Button
                   onClick={handleCreateTicket}
-                  className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+                  className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                 >
                   Ticket erstellen
                 </Button>
@@ -1449,7 +1449,7 @@ const CustomerTickets = () => {
                     <Button
                       onClick={handleAddComment}
                       disabled={addingComment || !newComment.trim()}
-                      className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                      className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                     >
                       <Send className="h-4 w-4 mr-2" />
                       {addingComment ? 'Wird gesendet...' : 'Antworten'}

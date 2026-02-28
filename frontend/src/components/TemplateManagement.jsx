@@ -216,7 +216,7 @@ const TemplateManagement = () => {
         </div>
         <Button
           onClick={() => handleOpenModal()}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Neue Vorlage
@@ -239,7 +239,7 @@ const TemplateManagement = () => {
           </p>
           <Button
             onClick={() => handleOpenModal()}
-            className="bg-[#c00000] hover:bg-[#a00000] text-white"
+            className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Erste Vorlage erstellen
@@ -554,7 +554,7 @@ const TemplateManagement = () => {
                     type="button"
                     onClick={handleAddComponent}
                     size="sm"
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
                   >
                     <Plus className="h-3 w-3 mr-1" />
                     Hinzufügen
@@ -626,7 +626,7 @@ const TemplateManagement = () => {
               </Button>
               <Button
                 onClick={handleSubmit}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {editingTemplate ? 'Aktualisieren' : 'Erstellen'}

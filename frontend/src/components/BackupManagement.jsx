@@ -247,7 +247,7 @@ const BackupManagement = () => {
               </Button>
               <Button
                 onClick={saveConfig}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 Speichern
               </Button>

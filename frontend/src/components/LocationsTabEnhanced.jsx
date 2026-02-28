@@ -309,14 +309,14 @@ const LocationsTabEnhanced = ({
               theme === 'dark'
                 ? 'bg-[#2a2a2a] border-gray-700 text-white placeholder-gray-500'
                 : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           />
         </div>
         
         {!isCustomerPortal && (
           <button
             onClick={onAddLocation}
-            className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all flex-shrink-0"
+            className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all flex-shrink-0"
           >
             <Plus className="w-4 h-4" />
             Standort hinzufügen
@@ -335,7 +335,7 @@ const LocationsTabEnhanced = ({
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Kontinente</option>
           {filterOptions.continents.map(continent => (
@@ -351,7 +351,7 @@ const LocationsTabEnhanced = ({
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           disabled={!filters.continent && filterOptions.countries.length === 0}
         >
           <option value="">Alle Länder</option>
@@ -368,7 +368,7 @@ const LocationsTabEnhanced = ({
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Bundesländer</option>
           {filterOptions.states.map(state => (
@@ -384,7 +384,7 @@ const LocationsTabEnhanced = ({
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Städte</option>
           {filterOptions.cities.map(city => (
@@ -400,7 +400,7 @@ const LocationsTabEnhanced = ({
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Besondere Orte</option>
           {filterOptions.mainTypes.map(type => (
@@ -423,8 +423,8 @@ const LocationsTabEnhanced = ({
             }}
             className={`px-4 py-2 rounded-lg border transition-all ${
               theme === 'dark'
-                ? 'bg-[#2a2a2a] border-gray-700 text-gray-300 hover:bg-[#333] hover:border-[#c00000]'
-                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-[#c00000]'
+                ? 'bg-[#2a2a2a] border-gray-700 text-gray-300 hover:bg-[#333] hover:border-[#d50c2d]'
+                : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-[#d50c2d]'
             }`}
           >
             Filter löschen
@@ -438,7 +438,7 @@ const LocationsTabEnhanced = ({
       }`}>
         {loadingLocations ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
           </div>
         ) : sortedLocations.length === 0 ? (
           <div className="p-12 text-center">
@@ -649,19 +649,19 @@ const LocationsTabEnhanced = ({
                           // Check for Airport
                           if (stationName.includes('AIRPORT') || stationName.includes('FLUGHAFEN') || 
                               locationCode.includes('AIR') || mainType === 'A') {
-                            types.push(<Plane key="airport" className="w-5 h-5" style={{color: '#c00000'}} title="Airport" />);
+                            types.push(<Plane key="airport" className="w-5 h-5" style={{color: '#d50c2d'}} title="Airport" />);
                           }
                           
                           // Check for Mainstation
                           if (stationName.includes('HBF') || stationName.includes('HAUPTBAHNHOF') || 
                               stationName.includes('CENTRAL STATION') || stationName.includes('MAIN STATION')) {
-                            types.push(<Train key="mainstation" className="w-5 h-5" style={{color: '#c00000'}} title="Mainstation" />);
+                            types.push(<Train key="mainstation" className="w-5 h-5" style={{color: '#d50c2d'}} title="Mainstation" />);
                           }
                           
                           // Check for 24h
                           if (stationName.includes('24') || stationName.includes('24H') || 
                               stationName.includes('24 H') || stationName.includes('24-H')) {
-                            types.push(<Clock key="24h" className="w-5 h-5" style={{color: '#c00000'}} title="24h" />);
+                            types.push(<Clock key="24h" className="w-5 h-5" style={{color: '#d50c2d'}} title="24h" />);
                           }
                           
                           return types.length > 0 ? types : <span className="text-gray-400">-</span>;
@@ -717,7 +717,7 @@ const LocationsTabEnhanced = ({
                             e.stopPropagation();
                             handleClickToCall(location.phone);
                           }}
-                          className={`hover:text-[#c00000] transition-colors flex items-center gap-1 ${
+                          className={`hover:text-[#d50c2d] transition-colors flex items-center gap-1 ${
                             theme === 'dark' ? 'hover:text-[#ff0000]' : ''
                           }`}
                           title="Anrufen"

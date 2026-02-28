@@ -551,7 +551,7 @@ const LocationLifecycleManager = ({ theme, selectedTenantId }) => {
             <Button
               onClick={handleStatusChange}
               disabled={updating || !newStatus || newStatus === selectedLocation?.status}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               data-testid="confirm-status-change"
             >
               {updating ? (

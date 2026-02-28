@@ -121,7 +121,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
           theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
         }`}>
           <div className="flex items-center gap-3">
-            <Shield className="w-6 h-6 text-[#c00000]" />
+            <Shield className="w-6 h-6 text-[#d50c2d]" />
             <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {role ? 'Rolle bearbeiten' : 'Neue Rolle'}
             </h2>
@@ -164,7 +164,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000] ${
+                      } border focus:outline-none focus:border-[#d50c2d] ${
                         role?.is_system_role ? 'opacity-50 cursor-not-allowed' : ''
                       }`}
                     />
@@ -188,7 +188,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     />
                   </div>
                   <div>
@@ -204,7 +204,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
                         theme === 'dark'
                           ? 'bg-[#2a2a2a] text-white border-gray-700'
                           : 'bg-white text-gray-900 border-gray-200'
-                      } border focus:outline-none focus:border-[#c00000]`}
+                      } border focus:outline-none focus:border-[#d50c2d]`}
                     >
                       <option value="">Global (Alle Tenants)</option>
                       {Array.isArray(tenants) && tenants.map(tenant => (
@@ -265,7 +265,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
                             className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-all ${
                               formData.permissions.includes(permission)
                                 ? theme === 'dark'
-                                  ? 'bg-[#c00000]/20'
+                                  ? 'bg-[#d50c2d]/20'
                                   : 'bg-red-50'
                                 : theme === 'dark'
                                 ? 'hover:bg-[#3a3a3a]'
@@ -276,7 +276,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
                               type="checkbox"
                               checked={formData.permissions.includes(permission)}
                               onChange={() => handlePermissionToggle(permission)}
-                              className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                              className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                             />
                             <span className={`text-xs ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                               {permission.split('.')[1] || permission}
@@ -312,7 +312,7 @@ const RoleModal = ({ show, onClose, role, tenants, onSave }) => {
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 loading
                   ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-[#c00000] hover:bg-[#a00000]'
+                  : 'bg-[#d50c2d] hover:bg-[#b80a28]'
               } text-white`}
             >
               <Save className="w-4 h-4" />

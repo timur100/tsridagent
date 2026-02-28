@@ -125,7 +125,7 @@ const TablePagination = ({
                 onClick={() => onPageChange(page)}
                 className={`min-w-[32px] h-8 rounded-lg text-sm font-medium transition-colors ${
                   currentPage === page
-                    ? 'bg-[#c00000] text-white'
+                    ? 'bg-[#d50c2d] text-white'
                     : isDark
                     ? 'text-gray-400 hover:bg-[#3d3d3d] hover:text-white'
                     : 'text-gray-600 hover:bg-gray-200'

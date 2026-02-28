@@ -6,18 +6,18 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm animate-in fade-in duration-300">
-      <div className="absolute inset-0 border-8 border-[#c00000] animate-pulse" />
+      <div className="absolute inset-0 border-8 border-[#d50c2d] animate-pulse" />
       
-      <div className="relative w-[90vw] max-w-5xl bg-[#121212] rounded-3xl shadow-2xl border-4 border-[#c00000] overflow-hidden">
+      <div className="relative w-[90vw] max-w-5xl bg-[#121212] rounded-3xl shadow-2xl border-4 border-[#d50c2d] overflow-hidden">
         <div className="p-12">
         
         <div className="flex items-center justify-center gap-8 mb-12">
-          <div className="bg-[#c00000] p-6 rounded-full animate-pulse">
+          <div className="bg-[#d50c2d] p-6 rounded-full animate-pulse">
             <Ban className="h-16 w-16 text-white" strokeWidth={3} />
           </div>
           
           <div className="text-center">
-            <h1 className="text-5xl font-black text-[#c00000] uppercase tracking-wider mb-2 animate-pulse">
+            <h1 className="text-5xl font-black text-[#d50c2d] uppercase tracking-wider mb-2 animate-pulse">
               DOKUMENT GESPERRT
             </h1>
             <p className="text-2xl text-white font-bold">
@@ -25,7 +25,7 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
             </p>
           </div>
           
-          <div className="bg-[#c00000] p-6 rounded-full animate-pulse">
+          <div className="bg-[#d50c2d] p-6 rounded-full animate-pulse">
             <Ban className="h-16 w-16 text-white" strokeWidth={3} />
           </div>
         </div>
@@ -57,7 +57,7 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
 
         <div className="text-center mb-8">
           <p className="text-xl text-gray-400">
-            Dieses Dokument wurde zentral gesperrt und darf an <span className="text-[#c00000] font-bold">KEINER</span> Station verwendet werden.
+            Dieses Dokument wurde zentral gesperrt und darf an <span className="text-[#d50c2d] font-bold">KEINER</span> Station verwendet werden.
           </p>
         </div>
 
@@ -67,11 +67,11 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
           </h3>
           <div className="grid grid-cols-2 gap-6 text-lg">
             <div className="flex items-center gap-4">
-              <div className="bg-[#c00000] text-white font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">1</div>
+              <div className="bg-[#d50c2d] text-white font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">1</div>
               <span className="text-white font-semibold">Vermietung ablehnen</span>
             </div>
             <div className="flex items-center gap-4">
-              <div className="bg-[#c00000] text-white font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">2</div>
+              <div className="bg-[#d50c2d] text-white font-bold text-xl w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">2</div>
               <span className="text-white font-semibold">Security-Team informieren</span>
             </div>
             <div className="flex items-center gap-4">
@@ -95,7 +95,7 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
             </div>
           </div>
           <div className="text-right">
-            <div className="text-[#c00000] font-semibold">
+            <div className="text-[#d50c2d] font-semibold">
               Gesperrt durch: {banInfo.ban_info.banned_by_user}
             </div>
           </div>
@@ -103,7 +103,7 @@ const BannedDocumentAlert = ({ banInfo, onClose, stationInfo }) => {
 
         <button
           onClick={onClose}
-          className="w-full py-5 bg-[#c00000] hover:bg-[#a00000] text-white font-bold text-2xl rounded-2xl transition-colors flex items-center justify-center gap-3 shadow-lg"
+          className="w-full py-5 bg-[#d50c2d] hover:bg-[#b80a28] text-white font-bold text-2xl rounded-2xl transition-colors flex items-center justify-center gap-3 shadow-lg"
         >
           <X className="h-7 w-7" />
           Verstanden - Vermietung ablehnen

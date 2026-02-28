@@ -92,7 +92,7 @@ const KeysTab = ({
         </div>
         <button
           onClick={onCreate}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Neuer Schlüssel
@@ -144,7 +144,7 @@ const KeysTab = ({
                   className={`${theme === 'dark' ? 'hover:bg-[#2a2a2a]' : 'hover:bg-gray-50'} transition-colors`}
                 >
                   <td className={`px-4 py-3 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                    <div className="flex items-center gap-2 text-[#c00000]">
+                    <div className="flex items-center gap-2 text-[#d50c2d]">
                       {getKeyTypeIcon(key.key_type)}
                       <span className="text-xs">{getKeyTypeLabel(key.key_type)}</span>
                     </div>

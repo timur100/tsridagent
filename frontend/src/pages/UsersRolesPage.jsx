@@ -438,7 +438,7 @@ const UsersRolesPage = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -480,7 +480,7 @@ const UsersRolesPage = () => {
                 setShowRoleModal(true);
               }
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-all"
+            className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all"
           >
             <Plus className="w-4 h-4" />
             {activeSubTab === 'users' ? 'Neuer Benutzer' : 'Neue Rolle'}
@@ -494,7 +494,7 @@ const UsersRolesPage = () => {
           onClick={() => setActiveSubTab('users')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === 'users'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-300 hover:bg-[#2a2a2a]'
               : 'text-gray-700 hover:bg-gray-100'
@@ -507,7 +507,7 @@ const UsersRolesPage = () => {
           onClick={() => setActiveSubTab('roles')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === 'roles'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-300 hover:bg-[#2a2a2a]'
               : 'text-gray-700 hover:bg-gray-100'
@@ -520,7 +520,7 @@ const UsersRolesPage = () => {
           onClick={() => setActiveSubTab('registrations')}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             activeSubTab === 'registrations'
-              ? 'bg-[#c00000] text-white'
+              ? 'bg-[#d50c2d] text-white'
               : theme === 'dark'
               ? 'text-gray-300 hover:bg-[#2a2a2a]'
               : 'text-gray-700 hover:bg-gray-100'
@@ -553,7 +553,7 @@ const UsersRolesPage = () => {
                   theme === 'dark'
                     ? 'bg-[#1f1f1f] text-white border-gray-700'
                     : 'bg-white text-gray-900 border-gray-200'
-                } border focus:outline-none focus:border-[#c00000]`}
+                } border focus:outline-none focus:border-[#d50c2d]`}
               />
             </div>
           </div>
@@ -567,7 +567,7 @@ const UsersRolesPage = () => {
                 theme === 'dark'
                   ? 'bg-[#1f1f1f] text-white border-gray-700'
                   : 'bg-white text-gray-900 border-gray-200'
-              } border focus:outline-none focus:border-[#c00000]`}
+              } border focus:outline-none focus:border-[#d50c2d]`}
             >
               <option value="all">Alle Tenants</option>
               {Array.isArray(tenants) && tenants.map(tenant => (
@@ -588,7 +588,7 @@ const UsersRolesPage = () => {
                   theme === 'dark'
                     ? 'bg-[#1f1f1f] text-white border-gray-700'
                     : 'bg-white text-gray-900 border-gray-200'
-                } border focus:outline-none focus:border-[#c00000]`}
+                } border focus:outline-none focus:border-[#d50c2d]`}
               >
                 <option value="all">Alle Status</option>
                 <option value="active">Aktiv</option>

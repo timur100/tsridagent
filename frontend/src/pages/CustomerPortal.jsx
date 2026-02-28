@@ -170,13 +170,13 @@ const CustomerPortal = () => {
                       alt={companyName} 
                       className="h-10 w-auto max-w-[180px] object-contain"
                     />
-                    <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>Kunden Portal</h1>
+                    <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>Kunden Portal</h1>
                   </>
                 ) : (
                   // Show default: Shield icon + "TSRID Kunden Portal" (no company name - shown on right side)
                   <>
-                    <Shield className={`h-8 w-8 ${theme === 'dark' ? 'text-[#c00000]' : 'text-[#c00000]'}`} />
-                    <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#c00000]'}`}>{companyName} Kunden Portal</h1>
+                    <Shield className={`h-8 w-8 ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`} />
+                    <h1 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-[#d50c2d]'}`}>{companyName} Kunden Portal</h1>
                   </>
                 )}
               </div>
@@ -200,8 +200,8 @@ const CustomerPortal = () => {
                   onClick={handleLogout}
                   className={`flex items-center space-x-2 ${
                     theme === 'dark' 
-                      ? 'border-[#c00000] text-white hover:bg-[#c00000]' 
-                      : 'border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white'
+                      ? 'border-[#d50c2d] text-white hover:bg-[#d50c2d]' 
+                      : 'border-[#d50c2d] text-[#d50c2d] hover:bg-[#d50c2d] hover:text-white'
                   }`}
                 >
                   <LogOut className="h-4 w-4" />
@@ -230,7 +230,7 @@ const CustomerPortal = () => {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                     activeTab === tab.id
-                      ? 'border-[#c00000] text-[#c00000]'
+                      ? 'border-[#d50c2d] text-[#d50c2d]'
                       : theme === 'dark'
                       ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'

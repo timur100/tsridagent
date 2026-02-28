@@ -171,7 +171,7 @@ const StaffManagement = () => {
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-[#c00000] hover:bg-[#a00000] text-white"
+          className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
         >
           <Plus className="h-4 w-4 mr-2" />
           Mitarbeiter hinzufügen
@@ -452,7 +452,7 @@ const StaffManagement = () => {
               </Button>
               <Button
                 onClick={editingStaff ? handleUpdate : handleCreate}
-                className="bg-[#c00000] hover:bg-[#a00000] text-white"
+                className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
               >
                 <Save className="h-4 w-4 mr-2" />
                 {editingStaff ? 'Speichern' : 'Erstellen'}

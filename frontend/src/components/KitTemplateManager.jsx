@@ -386,7 +386,7 @@ const KitTemplateManager = ({ theme, tenants = [] }) => {
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Aktualisieren
           </Button>
-          <Button onClick={openCreateModal} className="bg-[#c00000] hover:bg-[#a00000] text-white">
+          <Button onClick={openCreateModal} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">
             <Plus className="h-4 w-4 mr-2" />
             Neue Vorlage
           </Button>
@@ -786,7 +786,7 @@ const KitTemplateManager = ({ theme, tenants = [] }) => {
             <Button variant="outline" onClick={() => setShowCreateModal(false)}>
               Abbrechen
             </Button>
-            <Button onClick={handleSaveTemplate} className="bg-[#c00000] hover:bg-[#a00000] text-white">
+            <Button onClick={handleSaveTemplate} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">
               {editMode ? 'Speichern' : 'Erstellen'}
             </Button>
           </DialogFooter>

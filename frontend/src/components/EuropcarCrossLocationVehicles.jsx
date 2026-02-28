@@ -165,7 +165,7 @@ const EuropcarCrossLocationVehicles = () => {
         <p className={`text-sm mb-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
           Diese Funktion muss in den Tenant-Einstellungen aktiviert werden.
         </p>
-        <Button className="bg-[#c00000] hover:bg-[#a00000] text-white">
+        <Button className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">
           Zu den Einstellungen
         </Button>
       </Card>
@@ -189,7 +189,7 @@ const EuropcarCrossLocationVehicles = () => {
             <Button
               onClick={() => setActiveView('vehicles')}
               variant={activeView === 'vehicles' ? 'default' : 'outline'}
-              className={activeView === 'vehicles' ? 'bg-[#c00000] hover:bg-[#a00000]' : ''}
+              className={activeView === 'vehicles' ? 'bg-[#d50c2d] hover:bg-[#b80a28]' : ''}
             >
               <Car className="w-4 h-4 mr-2" />
               Fahrzeuge ({vehicles.length})
@@ -197,7 +197,7 @@ const EuropcarCrossLocationVehicles = () => {
             <Button
               onClick={() => setActiveView('requests')}
               variant={activeView === 'requests' ? 'default' : 'outline'}
-              className={activeView === 'requests' ? 'bg-[#c00000] hover:bg-[#a00000]' : ''}
+              className={activeView === 'requests' ? 'bg-[#d50c2d] hover:bg-[#b80a28]' : ''}
             >
               <Send className="w-4 h-4 mr-2" />
               Anfragen ({requests.length})
@@ -224,7 +224,7 @@ const EuropcarCrossLocationVehicles = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {loading ? (
             <div className="col-span-full text-center py-12">
-              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#c00000]" />
+              <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-2 text-[#d50c2d]" />
               <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                 Lade Fahrzeuge...
               </p>
@@ -267,7 +267,7 @@ const EuropcarCrossLocationVehicles = () => {
                   </div>
                   <Button
                     onClick={() => handleRequestVehicle(vehicle)}
-                    className="bg-[#c00000] hover:bg-[#a00000] text-white text-sm"
+                    className="bg-[#d50c2d] hover:bg-[#b80a28] text-white text-sm"
                   >
                     Anfragen
                   </Button>
@@ -477,7 +477,7 @@ const RequestModal = ({ vehicle, theme, onSubmit, onClose }) => {
           <div className="flex gap-3 pt-4">
             <Button
               type="submit"
-              className="flex-1 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex-1 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               Anfrage senden
             </Button>

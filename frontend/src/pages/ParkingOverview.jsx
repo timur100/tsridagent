@@ -146,7 +146,7 @@ const ParkingOverview = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c00000]"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#d50c2d]"></div>
       </div>
     );
   }
@@ -392,7 +392,7 @@ const ParkingOverview = () => {
                   {webcamError && (
                     <button
                       onClick={startWebcam}
-                      className="mt-4 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] text-sm"
+                      className="mt-4 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] text-sm"
                     >
                       Erneut versuchen
                     </button>
@@ -489,7 +489,7 @@ const ParkingOverview = () => {
               
               {/* Large License Plate Display */}
               <div className={`inline-block px-8 py-6 rounded-xl ${
-                theme === 'dark' ? 'bg-[#1a1a1a] border-2 border-[#c00000]' : 'bg-white border-2 border-[#c00000]'
+                theme === 'dark' ? 'bg-[#1a1a1a] border-2 border-[#d50c2d]' : 'bg-white border-2 border-[#d50c2d]'
               } shadow-lg`}>
                 <div className="flex items-center gap-4">
                   {/* EU Flag */}

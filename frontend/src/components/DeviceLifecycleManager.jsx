@@ -166,7 +166,7 @@ const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
           <Button onClick={() => { fetchDevices(); fetchStats(); }} variant="outline" disabled={loading}>
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />Aktualisieren
           </Button>
-          <Button onClick={openCreateModal} className="bg-[#c00000] hover:bg-[#a00000] text-white">
+          <Button onClick={openCreateModal} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">
             <Plus className="w-4 h-4 mr-2" />Neues Gerät
           </Button>
         </div>
@@ -344,7 +344,7 @@ const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
             <div><label className={`text-sm ${isDark?'text-gray-300':''}`}>Standort</label><input value={formData.assigned_location_code||''} onChange={e => setFormData({...formData, assigned_location_code: e.target.value})} className={`w-full mt-1 px-3 py-2 rounded border ${inputBg}`} placeholder="z.B. BERE01" /></div>
             <div className="col-span-2"><label className={`text-sm ${isDark?'text-gray-300':''}`}>Notizen</label><textarea value={formData.notes||''} onChange={e => setFormData({...formData, notes: e.target.value})} rows={2} className={`w-full mt-1 px-3 py-2 rounded border ${inputBg}`} /></div>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setShowEditModal(false)}>Abbrechen</Button><Button onClick={handleSaveDevice} className="bg-[#c00000] hover:bg-[#a00000] text-white">{editMode ? 'Speichern' : 'Erstellen'}</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setShowEditModal(false)}>Abbrechen</Button><Button onClick={handleSaveDevice} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">{editMode ? 'Speichern' : 'Erstellen'}</Button></DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -365,7 +365,7 @@ const DeviceLifecycleManager = ({ theme, tenants = [], selectedTenantId }) => {
               </Select></div>
             <div><label className={`text-sm ${isDark?'text-gray-300':''}`}>Beschreibung</label><textarea value={eventData.description} onChange={e => setEventData({...eventData, description: e.target.value})} rows={3} className={`w-full mt-1 px-3 py-2 rounded border ${inputBg}`} /></div>
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setShowEventModal(false)}>Abbrechen</Button><Button onClick={handleAddEvent} className="bg-[#c00000] hover:bg-[#a00000] text-white">Hinzufügen</Button></DialogFooter>
+          <DialogFooter><Button variant="outline" onClick={() => setShowEventModal(false)}>Abbrechen</Button><Button onClick={handleAddEvent} className="bg-[#d50c2d] hover:bg-[#b80a28] text-white">Hinzufügen</Button></DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -565,14 +565,14 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         {/* Left: Selection actions (when items selected) */}
         {selectedIds.size > 0 ? (
           <div className={`flex items-center gap-3 px-4 py-2 rounded-lg ${
-            theme === 'dark' ? 'bg-[#c00000]/20 border border-[#c00000]/40' : 'bg-red-50 border border-red-200'
+            theme === 'dark' ? 'bg-[#d50c2d]/20 border border-[#d50c2d]/40' : 'bg-red-50 border border-red-200'
           }`}>
             <span className={`text-sm font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
               {selectedIds.size} ausgewählt
             </span>
             <button
               onClick={() => setShowAssignModal(true)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-[#c00000] text-white text-sm rounded-lg hover:bg-[#a00000] transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-[#d50c2d] text-white text-sm rounded-lg hover:bg-[#b80a28] transition-colors"
             >
               <Users className="w-4 h-4" />
               Tenant zuweisen
@@ -595,7 +595,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
         {/* Right: Add Location Button */}
         <button
           onClick={() => setShowAddLocationModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-[#c00000] text-white rounded-lg hover:bg-[#a00000] transition-colors font-medium"
+          className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-colors font-medium"
         >
           <Plus className="w-5 h-5" />
           Standort hinzufügen
@@ -618,7 +618,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
               theme === 'dark'
                 ? 'bg-[#2a2a2a] border-gray-700 text-white placeholder-gray-500'
                 : 'bg-white border-gray-200 text-gray-900 placeholder-gray-400'
-            } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+            } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
           />
         </div>
 
@@ -630,7 +630,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="all">Alle Status</option>
           <option value="online">Online</option>
@@ -645,7 +645,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Kontinente</option>
           {Array.isArray(filterOptions?.continents) && filterOptions.continents.map(continent => (
@@ -661,7 +661,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Länder</option>
           {Array.isArray(filterOptions?.countries) && filterOptions.countries.map(country => (
@@ -677,7 +677,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Bundesländer</option>
           {Array.isArray(filterOptions?.states) && filterOptions.states.map(state => (
@@ -693,7 +693,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Städte</option>
           {Array.isArray(filterOptions?.cities) && filterOptions.cities.map(city => (
@@ -709,7 +709,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Besondere Orte</option>
           {Array.isArray(filterOptions?.mainTypes) && filterOptions.mainTypes.map(type => (
@@ -725,7 +725,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             theme === 'dark'
               ? 'bg-[#2a2a2a] border-gray-700 text-white'
               : 'bg-white border-gray-200 text-gray-900'
-          } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+          } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
         >
           <option value="">Alle Kunden</option>
           {Array.isArray(filterOptions?.tenants) && filterOptions.tenants.map(tenant => (
@@ -745,7 +745,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
       }`}>
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000]"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d]"></div>
           </div>
         ) : sortedLocations.length === 0 ? (
           <div className="p-12 text-center">
@@ -771,7 +771,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                           if (el) el.indeterminate = isSomeSelected;
                         }}
                         onChange={(e) => handleSelectAll(e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d] cursor-pointer"
                       />
                       {/* Settings gear icon */}
                       <div className="relative" data-column-settings>
@@ -782,7 +782,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                           }}
                           className={`p-1 rounded transition-colors ${
                             showColumnSettings
-                              ? 'bg-[#c00000] text-white'
+                              ? 'bg-[#d50c2d] text-white'
                               : theme === 'dark' ? 'hover:bg-gray-700 text-gray-500' : 'hover:bg-gray-200 text-gray-400'
                           }`}
                           title="Spalten konfigurieren"
@@ -804,7 +804,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                                 </span>
                                 <button
                                   onClick={resetColumns}
-                                  className="text-xs text-[#c00000] hover:underline"
+                                  className="text-xs text-[#d50c2d] hover:underline"
                                 >
                                   Zurücksetzen
                                 </button>
@@ -823,7 +823,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                                   onDragEnd={handleDragEnd}
                                   className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-move transition-colors ${
                                     draggedColumn === index
-                                      ? 'bg-[#c00000]/20'
+                                      ? 'bg-[#d50c2d]/20'
                                       : theme === 'dark' ? 'hover:bg-[#333]' : 'hover:bg-gray-50'
                                   }`}
                                 >
@@ -872,7 +872,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                     onClick={(e) => handleRowClick(location, e)}
                     className={`border-t cursor-pointer transition-colors ${
                       selectedIds.has(location.location_id)
-                        ? theme === 'dark' ? 'bg-[#c00000]/10' : 'bg-red-50'
+                        ? theme === 'dark' ? 'bg-[#d50c2d]/10' : 'bg-red-50'
                         : theme === 'dark' ? 'hover:bg-[#1a1a1a]' : 'hover:bg-gray-50'
                     } ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}
                   >
@@ -882,7 +882,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                         type="checkbox"
                         checked={selectedIds.has(location.location_id)}
                         onChange={(e) => handleSelectOne(location.location_id, e.target.checked)}
-                        className="w-4 h-4 rounded border-gray-300 text-[#c00000] focus:ring-[#c00000] cursor-pointer"
+                        className="w-4 h-4 rounded border-gray-300 text-[#d50c2d] focus:ring-[#d50c2d] cursor-pointer"
                       />
                     </td>
                     {visibleColumns.filter(col => col.id !== 'select').map(column => (
@@ -927,7 +927,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   disabled={assigningTenant !== null}
                   className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors ${
                     assigningTenant === tenant.tenant_id
-                      ? 'bg-[#c00000] text-white border-[#c00000]'
+                      ? 'bg-[#d50c2d] text-white border-[#d50c2d]'
                       : theme === 'dark'
                         ? 'bg-[#2a2a2a] border-gray-700 text-white hover:bg-[#333]'
                         : 'bg-white border-gray-200 text-gray-900 hover:bg-gray-50'
@@ -965,7 +965,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className={`text-xl font-bold mb-4 flex items-center gap-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-              <MapPin className="w-6 h-6 text-[#c00000]" />
+              <MapPin className="w-6 h-6 text-[#d50c2d]" />
               Neuen Standort hinzufügen
             </h2>
             
@@ -980,7 +980,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   onChange={(e) => setNewLocation({...newLocation, tenant_id: e.target.value})}
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="">-- Tenant wählen --</option>
                   {availableTenants.map(t => (
@@ -1003,7 +1003,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="z.B. MUCC01"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000] font-mono`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d] font-mono`}
                 />
               </div>
               
@@ -1019,7 +1019,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="z.B. MUNICH CITY CENTER"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1035,7 +1035,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="Musterstraße 123"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1051,7 +1051,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="80331"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1067,7 +1067,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="MÜNCHEN"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1081,7 +1081,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   onChange={(e) => setNewLocation({...newLocation, state: e.target.value})}
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="">-- Wählen --</option>
                   {Object.entries(STATE_NAMES).map(([code, name]) => (
@@ -1101,7 +1101,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   onChange={(e) => setNewLocation({...newLocation, country: e.target.value})}
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1117,7 +1117,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="Max Mustermann"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1133,7 +1133,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="+49 89 12345678"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1149,7 +1149,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   placeholder="standort@firma.de"
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 />
               </div>
               
@@ -1163,7 +1163,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
                   onChange={(e) => setNewLocation({...newLocation, main_type: e.target.value})}
                   className={`w-full px-3 py-2 rounded-lg border ${
                     theme === 'dark' ? 'bg-[#2a2a2a] border-gray-700 text-white' : 'bg-white border-gray-200'
-                  } focus:outline-none focus:ring-2 focus:ring-[#c00000]`}
+                  } focus:outline-none focus:ring-2 focus:ring-[#d50c2d]`}
                 >
                   <option value="C">C - Standard</option>
                   <option value="CSS">CSS - Service Station</option>
@@ -1187,7 +1187,7 @@ const AllLocationsTab = ({ theme, selectedTenantId }) => {
               <button
                 onClick={handleAddLocation}
                 disabled={addingLocation || !newLocation.tenant_id || !newLocation.location_code || !newLocation.station_name}
-                className={`px-6 py-2 rounded-lg bg-[#c00000] text-white font-medium transition-colors hover:bg-[#a00000] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+                className={`px-6 py-2 rounded-lg bg-[#d50c2d] text-white font-medium transition-colors hover:bg-[#b80a28] disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
               >
                 {addingLocation ? (
                   <>

@@ -269,7 +269,7 @@ const ComponentsManagement = () => {
               onClick={() => setActiveSubTab(tab.id)}
               className={`flex items-center space-x-2 py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
                 activeSubTab === tab.id
-                  ? 'border-[#c00000] text-[#c00000]'
+                  ? 'border-[#d50c2d] text-[#d50c2d]'
                   : theme === 'dark'
                   ? 'border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -316,7 +316,7 @@ const ComponentsManagement = () => {
                 setEditingComponentData(null);
                 setShowComponentModal(true);
               }}
-              className="bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Neue Komponente

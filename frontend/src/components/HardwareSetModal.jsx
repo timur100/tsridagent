@@ -377,7 +377,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
               
               {loadingAvailableDevices ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000] mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d] mx-auto"></div>
                   <p className="text-sm text-gray-500 mt-2">Lade verfügbare Geräte...</p>
                 </div>
               ) : availableDevices.length === 0 ? (
@@ -396,8 +396,8 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                         className={`p-3 rounded-lg border transition-all ${
                           selectedDevices.includes(device.id)
                             ? theme === 'dark' 
-                              ? 'bg-[#c00000]/20 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer' 
-                              : 'bg-red-50 border-[#c00000] ring-2 ring-[#c00000]/50 cursor-pointer'
+                              ? 'bg-[#d50c2d]/20 border-[#d50c2d] ring-2 ring-[#d50c2d]/50 cursor-pointer' 
+                              : 'bg-red-50 border-[#d50c2d] ring-2 ring-[#d50c2d]/50 cursor-pointer'
                             : theme === 'dark' 
                               ? 'bg-[#2a2a2a] border-gray-600 hover:border-gray-500 cursor-pointer' 
                               : 'bg-white border-gray-200 hover:border-gray-300 cursor-pointer'
@@ -410,7 +410,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
                                 type="checkbox"
                                 checked={selectedDevices.includes(device.id)}
                                 onChange={() => toggleDeviceSelection(device.id)}
-                                className="w-4 h-4 text-[#c00000] rounded focus:ring-[#c00000]"
+                                className="w-4 h-4 text-[#d50c2d] rounded focus:ring-[#d50c2d]"
                               />
                               <div>
                                 <div className="flex items-center gap-3">
@@ -477,7 +477,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
               
               {loadingDevices ? (
                 <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#c00000] mx-auto"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#d50c2d] mx-auto"></div>
                   <p className="text-sm text-gray-500 mt-2">Lade Komponenten...</p>
                 </div>
               ) : devices.length === 0 ? (
@@ -550,7 +550,7 @@ const HardwareSetModal = ({ show, onClose, onSubmit, editing, locations, tenantI
             <Button
               type="submit"
               disabled={saving}
-              className="flex items-center gap-2 bg-[#c00000] hover:bg-[#a00000] text-white"
+              className="flex items-center gap-2 bg-[#d50c2d] hover:bg-[#b80a28] text-white"
             >
               {saving ? (
                 <>
