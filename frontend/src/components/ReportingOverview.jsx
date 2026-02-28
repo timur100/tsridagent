@@ -498,7 +498,7 @@ const ReportingOverview = ({ onClose }) => {
     
     if (kitAssets.length === 0) {
       return (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-[#64748b]">
           <Boxes className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Asset-Kits gefunden</p>
         </div>
@@ -508,35 +508,35 @@ const ReportingOverview = ({ onClose }) => {
     return (
       <div className="space-y-3">
         {kitAssets.map((kit, idx) => (
-          <Card key={kit.asset_id || idx} className={`p-4 ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50'}`}>
+          <Card key={kit.asset_id || idx} className="p-4 bg-[#1a2330] border-[#334155]">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => setExpandedKits(prev => ({ ...prev, [kit.asset_id]: !prev[kit.asset_id] }))}
             >
               <div className="flex items-center gap-3">
-                {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-                <Boxes className="h-5 w-5 text-[#c00000]" />
+                {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5 text-[#cbd5e1]" /> : <ChevronRight className="h-5 w-5 text-[#cbd5e1]" />}
+                <Boxes className="h-5 w-5 text-[#0284c7]" />
                 <div>
-                  <p className="font-bold">{kit.asset_id}</p>
-                  <p className="text-sm text-gray-500">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
+                  <p className="font-bold text-[#f8fafc]">{kit.asset_id}</p>
+                  <p className="text-sm text-[#64748b]">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
                 </div>
               </div>
-              <Badge className={kit.status === 'active' ? 'bg-green-600' : ''}>{kit.status}</Badge>
+              <Badge className={kit.status === 'active' ? 'bg-[#16a34a]' : 'bg-[#2a3442]'}>{kit.status}</Badge>
             </div>
             
             {expandedKits[kit.asset_id] && (
-              <div className="mt-4 pl-10 border-l-2 border-[#c00000]/30 space-y-2">
-                <p className="text-sm font-medium mb-2">Komponenten:</p>
+              <div className="mt-4 pl-10 border-l-2 border-[#0284c7]/30 space-y-2">
+                <p className="text-sm font-medium mb-2 text-[#cbd5e1]">Komponenten:</p>
                 {kit.components?.length > 0 ? (
                   kit.components.map((comp, cidx) => (
-                    <div key={cidx} className="flex items-center gap-2 text-sm">
-                      <Package className="h-4 w-4 text-gray-400" />
+                    <div key={cidx} className="flex items-center gap-2 text-sm text-[#cbd5e1]">
+                      <Package className="h-4 w-4 text-[#64748b]" />
                       <span>{comp.type_label || comp.type}: </span>
                       <span className="font-mono">{comp.asset_id || comp.serial_number}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-gray-500">Keine Komponenten-Details verfügbar</p>
+                  <p className="text-sm text-[#64748b]">Keine Komponenten-Details verfügbar</p>
                 )}
               </div>
             )}
