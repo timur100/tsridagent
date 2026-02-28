@@ -115,32 +115,35 @@ const ReportingOverview = ({ onClose }) => {
         try {
           let locationsList = [];
           
-          // Get tenant IDs first (if "all" selected, we need to fetch from all tenants)
           if (selectedTenant && selectedTenant !== 'all') {
             // Get locations for specific tenant
             const response = await apiCall(`/api/tenant-locations/${selectedTenant}`);
             const apiData = response?.data;
             locationsList = apiData?.locations || apiData?.data?.locations || [];
           } else {
-            // For "all" tenants, get tenants first, then load locations from the first available tenant
-            // Or try to get all tenant locations
-            try {
-              // Try to get tenant IDs from loaded tenants
-              if (tenants.length > 0) {
-                // Load locations from first tenant as fallback
-                const firstTenant = tenants[0];
-                const response = await apiCall(`/api/tenant-locations/${firstTenant.tenant_id}`);
-                const apiData = response?.data;
-                locationsList = apiData?.locations || apiData?.data?.locations || [];
-              } else {
-                // Fallback to portal locations
-                const response = await apiCall('/api/portal/locations/list');
-                const apiData = response?.data;
-                locationsList = apiData?.locations || apiData?.data?.locations || [];
-              }
-            } catch (fallbackError) {
-              console.error('[Reporting] Fallback location load failed:', fallbackError);
+            // For "all" tenants, load locations from all available tenants
+            const allLocations = [];
+            
+            // Load tenants first if not already loaded
+            let tenantsToFetch = tenants;
+            if (tenantsToFetch.length === 0) {
+              const tenantsResponse = await apiCall('/api/tenants');
+              tenantsToFetch = tenantsResponse?.data?.tenants || [];
             }
+            
+            // Load locations from each tenant
+            for (const tenant of tenantsToFetch) {
+              try {
+                const response = await apiCall(`/api/tenant-locations/${tenant.tenant_id}`);
+                const apiData = response?.data;
+                const tenantLocations = apiData?.locations || apiData?.data?.locations || [];
+                allLocations.push(...tenantLocations);
+              } catch (tenantError) {
+                console.error(`[Reporting] Error loading locations for tenant ${tenant.tenant_id}:`, tenantError);
+              }
+            }
+            
+            locationsList = allLocations;
           }
           
           console.log('[Reporting] Loaded locations:', locationsList.length);
