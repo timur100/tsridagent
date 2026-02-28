@@ -1,26 +1,41 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+/**
+ * Theme Context - Hetzner Dark Theme (Only)
+ * Das Theme ist immer 'dark' - Hetzner Dark Mode
+ */
+
+import React, { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState('dark'); // Default: dark (wie Scan-Interface)
+  // Hetzner Dark Theme - immer dark
+  const theme = 'dark';
 
   useEffect(() => {
-    // Load theme from localStorage
-    const savedTheme = localStorage.getItem('portal_theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
+    // Stelle sicher, dass das HTML-Element immer die 'dark' Klasse hat
+    document.documentElement.classList.add('dark');
+    document.documentElement.style.colorScheme = 'dark';
+    
+    // Setze Meta-Theme-Color für Browser
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute('content', '#141414');
+    } else {
+      const meta = document.createElement('meta');
+      meta.name = 'theme-color';
+      meta.content = '#141414';
+      document.head.appendChild(meta);
     }
   }, []);
 
+  // toggleTheme ist jetzt ein No-Op, da wir nur Dark Mode haben
   const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('portal_theme', newTheme);
+    // Hetzner Dark Theme - kein Toggle mehr
+    console.log('[Theme] Hetzner Dark Theme ist fest eingestellt');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isDark: true }}>
       {children}
     </ThemeContext.Provider>
   );
