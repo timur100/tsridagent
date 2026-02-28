@@ -45,7 +45,6 @@ const REPORT_TEMPLATES = [
 
 const ReportingOverview = ({ onClose }) => {
   const { apiCall } = useAuth();
-  const { theme } = useTheme();
   const { selectedTenantId } = useTenant();
   
   // State
@@ -60,8 +59,6 @@ const ReportingOverview = ({ onClose }) => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [expandedKits, setExpandedKits] = useState({});
   const [dataLoaded, setDataLoaded] = useState(false);
-  
-  const isDark = theme === 'dark';
   
   // Load tenants on mount
   useEffect(() => {
