@@ -82,15 +82,23 @@ const ReportingOverview = ({ onClose }) => {
     setDataLoaded(false);
     
     try {
-      const tenantParam = selectedTenant && selectedTenant !== 'all' ? `?tenant_id=${selectedTenant}` : '';
-      
       console.log('[Reporting] Loading data for template:', selectedTemplate.type, 'tenant:', selectedTenant);
       
       // Load devices for device-related reports
       if (['devices', 'teamviewer', 'all'].includes(selectedTemplate.type)) {
         try {
-          const devicesResult = await apiCall(`/api/devices${tenantParam}`);
-          const devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+          let devicesList = [];
+          
+          if (selectedTenant && selectedTenant !== 'all') {
+            // Get devices for specific tenant
+            const devicesResult = await apiCall(`/api/tenant-devices/${selectedTenant}`);
+            devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+          } else {
+            // Get all devices from all tenants
+            const devicesResult = await apiCall('/api/tenant-devices/all/devices');
+            devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+          }
+          
           console.log('[Reporting] Loaded devices:', devicesList.length);
           setDevices(devicesList);
         } catch (e) {
@@ -102,15 +110,16 @@ const ReportingOverview = ({ onClose }) => {
       // Load locations
       if (['locations', 'all'].includes(selectedTemplate.type)) {
         try {
-          // Try different API endpoints
           let locationsList = [];
           
           if (selectedTenant && selectedTenant !== 'all') {
+            // Get locations for specific tenant
             const result = await apiCall(`/api/tenant-locations/${selectedTenant}`);
             locationsList = result?.data?.locations || result?.locations || result?.data || [];
           } else {
-            const result = await apiCall('/api/standorte');
-            locationsList = result?.data?.standorte || result?.standorte || result?.data || [];
+            // Get all locations
+            const result = await apiCall('/api/portal/locations/list');
+            locationsList = result?.data?.locations || result?.locations || result?.data || [];
           }
           
           console.log('[Reporting] Loaded locations:', locationsList.length);
