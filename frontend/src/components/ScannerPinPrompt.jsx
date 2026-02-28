@@ -89,13 +89,13 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 p-4 gap-8">
-      <div className="bg-black border-4 border-red-600 rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10">
+    <div className="fixed inset-0 bg-[#141414] flex flex-col items-center justify-center z-50 p-4 gap-8">
+      <div className="bg-[#141414] border-4 border-[#d50c2d] rounded-2xl shadow-2xl p-8 max-w-md w-full relative z-10">
         {/* Close Button */}
         {onCancel && (
           <button
             onClick={onCancel}
-            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors"
+            className="absolute top-4 right-4 text-[#8c8c8c] hover:text-[#d50c2d] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -103,7 +103,7 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <h2 className="text-2xl font-bold text-white mb-2">
+          <h2 className="text-2xl font-bold text-[#ededed] mb-2">
             PIN Eingabe
           </h2>
         </div>
@@ -127,15 +127,15 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
                 transition-all duration-200
                 focus:outline-none focus:ring-2
                 ${error 
-                  ? 'border-red-500 bg-red-900/20 focus:border-red-500 focus:ring-red-500' 
-                  : 'border-gray-700 bg-gray-900 focus:border-red-600 focus:ring-red-600'
+                  ? 'border-[#d50c2d] bg-[#d50c2d]/10 focus:border-[#d50c2d] focus:ring-[#d50c2d]' 
+                  : 'border-[#595959] bg-[#262626] focus:border-[#d50c2d] focus:ring-[#d50c2d]'
                 }
                 ${checking ? 'opacity-50 cursor-not-allowed' : ''}
-                text-white
-                placeholder-gray-600
+                text-[#ededed]
+                placeholder-[#8c8c8c]
               `}
               style={{
-                boxShadow: error ? '0 0 0 1px rgba(239, 68, 68, 0.5)' : 'none'
+                boxShadow: error ? '0 0 0 1px rgba(213, 12, 45, 0.5)' : 'none'
               }}
             />
           ))}
@@ -143,8 +143,8 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-900/30 border border-red-600 rounded-lg p-3 mb-6">
-            <p className="text-sm text-red-400 text-center font-medium">
+          <div className="bg-[#d50c2d]/20 border border-[#d50c2d] rounded-lg p-3 mb-6">
+            <p className="text-sm text-[#d50c2d] text-center font-medium">
               {error}
             </p>
           </div>
@@ -153,21 +153,21 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
         {/* Status */}
         {checking && (
           <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 text-sm text-gray-400">
-              <div className="animate-spin rounded-full h-4 w-4 border-2 border-gray-600 border-t-red-600"></div>
+            <div className="inline-flex items-center gap-2 text-sm text-[#8c8c8c]">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-[#595959] border-t-[#d50c2d]"></div>
               Überprüfe PIN...
             </div>
           </div>
         )}
 
-        {/* Keyboard */}
+        {/* Keyboard - Hetzner Dark Theme */}
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 'c', 0, '⌫'].map((num, idx) => {
             if (num === 'c') {
               return (
                 <button
                   key={idx}
-                  className="h-16 text-xl font-bold bg-gray-800 hover:bg-gray-700 text-white rounded-lg border-2 border-gray-700 transition-all duration-200 active:scale-95"
+                  className="h-16 text-xl font-bold bg-[#262626] hover:bg-[#383838] text-[#ededed] rounded-lg border-2 border-[#595959] transition-all duration-200 active:scale-95"
                   onClick={() => {
                     setPin(['', '', '', '']);
                     setError('');
@@ -185,7 +185,7 @@ const ScannerPinPrompt = ({ onSuccess, onCancel }) => {
             return (
               <button
                 key={idx}
-                className="h-16 text-xl font-bold bg-gray-800 hover:bg-gray-700 text-white rounded-lg border-2 border-gray-700 transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="h-16 text-xl font-bold bg-[#262626] hover:bg-[#383838] text-[#ededed] rounded-lg border-2 border-[#595959] transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
                   if (isBackspace) {
                     // Find last filled input
