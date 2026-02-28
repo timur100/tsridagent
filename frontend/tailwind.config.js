@@ -46,7 +46,7 @@ module.exports = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        // Hetzner Dark Theme Colors - Authentic
+        // Hetzner Dark Theme Colors - With Hetzner Red
         hetzner: {
           'bg-primary': '#0a0e17',
           'bg-secondary': '#12171f',
@@ -57,8 +57,8 @@ module.exports = {
           'text-muted': '#64748b',
           border: '#334155',
           'border-hover': '#475569',
-          blue: '#0284c7',
-          'blue-hover': '#0369a1',
+          red: '#d50c2d',
+          'red-hover': '#ed0d32',
         },
         chart: {
           '1': 'hsl(var(--chart-1))',
