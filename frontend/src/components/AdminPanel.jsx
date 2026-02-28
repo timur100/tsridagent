@@ -103,14 +103,21 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     }
   }, [selectedContinent]);
 
-  const fetchCountries = async (continent) => {
+  const fetchCountries = async (continent, retryCount = 0) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified-locations/countries?continent=${encodeURIComponent(continent)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       setCountries(data.countries || []);
     } catch (error) {
       console.error('Error fetching countries:', error);
-      toast.error('Fehler beim Laden der Länder');
+      if (retryCount < 2) {
+        setTimeout(() => fetchCountries(continent, retryCount + 1), 1000);
+      } else {
+        toast.error('Fehler beim Laden der Länder');
+      }
     }
   };
 
