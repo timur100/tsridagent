@@ -30,6 +30,10 @@ function App() {
             {/* Europcar Quick Menu */}
             <Route path="/menue" element={<EuropcarMenuPage />} />
             
+            {/* Helpdesk Routes */}
+            <Route path="/helpdesk/security" element={<SecurityHelpdesk />} />
+            <Route path="/helpdesk" element={<TechnicalHelpdesk />} />
+            
             {/* Main Verification Interface (default) */}
             <Route path="*" element={
           <div className="App min-h-screen bg-background">
