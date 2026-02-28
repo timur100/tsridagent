@@ -200,6 +200,7 @@ const AdminPortalContent = () => {
   const [tsridAssetEditForm, setTsridAssetEditForm] = useState({}); // Edit form data
   const [isSavingTsridAsset, setIsSavingTsridAsset] = useState(false); // Save loading state
   const [companyLogoDark, setCompanyLogoDark] = useState(null);
+  const [showReporting, setShowReporting] = useState(false); // Reporting Overview Modal
   
   // Reset selectedVehicleId when changing tabs
   useEffect(() => {
