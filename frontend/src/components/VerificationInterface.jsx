@@ -938,9 +938,9 @@ const VerificationInterface = () => {
         setUnknownAttempts(0); // Reset after reporting
       }
     } else {
-      randomStatus = 'error';  // Error document
-      setScanState('waiting');
-      setHasDocument(false);
+      randomStatus = 'error';  // Error document - suspicious/fraud
+      setScanState('verified'); // Keep as verified so document is shown
+      // Don't reset hasDocument - keep showing the document for 2nd opinion request
       
       // Increment error counter
       const newCount = errorAttempts + 1;
