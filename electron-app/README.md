@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://asset-label-print.preview.emergentagent.com
+│   └── Lädt: https://tsrid-web-refresh.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

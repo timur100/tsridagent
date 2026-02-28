@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://asset-label-print.preview.emergentagent.com/api/dhl"
+API_URL="https://tsrid-web-refresh.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""

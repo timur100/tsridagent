@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://asset-label-print.preview.emergentagent.com`
+`https://tsrid-web-refresh.preview.emergentagent.com`
 
 ---
 

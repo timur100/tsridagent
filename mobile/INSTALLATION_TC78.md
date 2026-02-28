@@ -118,7 +118,7 @@ Die App versucht automatisch ein DataWedge-Profil zu erstellen. Falls dies nicht
 ### Keine Verbindung zum Server
 - Prüfen Sie die WLAN-Verbindung
 - Prüfen Sie, ob die URL erreichbar ist:
-  `https://asset-label-print.preview.emergentagent.com/api/health`
+  `https://tsrid-web-refresh.preview.emergentagent.com/api/health`
 
 ### App stürzt ab
 - Cache leeren: Einstellungen → Apps → TSRID Mobile → Speicher → Cache leeren
