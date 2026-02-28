@@ -905,7 +905,9 @@ const VerificationInterface = () => {
     const random = Math.random();
     let randomStatus;
     
-    if (random < 0.15) {
+    // TEST: Adjusted probabilities to show all status types
+    // blurry: 10%, success: 30%, warning: 30%, error: 30%
+    if (random < 0.10) {
       randomStatus = 'blurry';
       setScanState('waiting');
       setHasDocument(false);
