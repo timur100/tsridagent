@@ -1037,6 +1037,19 @@ const AdminPortalContent = () => {
                 <Lightbulb className="h-5 w-5" />
               </button>
               
+              {/* Reporting Button */}
+              <button
+                onClick={() => setShowReporting(true)}
+                className={`p-2 rounded-lg transition-colors ${
+                  theme === 'dark'
+                    ? 'hover:bg-white/10 text-green-400'
+                    : 'hover:bg-gray-100 text-green-600'
+                }`}
+                title="Reporting & Auswertungen"
+              >
+                <FileText className="h-5 w-5" />
+              </button>
+              
               <ThemeToggle />
               <Button
                 variant="outline"
