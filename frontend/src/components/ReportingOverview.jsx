@@ -115,16 +115,32 @@ const ReportingOverview = ({ onClose }) => {
         try {
           let locationsList = [];
           
+          // Get tenant IDs first (if "all" selected, we need to fetch from all tenants)
           if (selectedTenant && selectedTenant !== 'all') {
             // Get locations for specific tenant
             const response = await apiCall(`/api/tenant-locations/${selectedTenant}`);
             const apiData = response?.data;
-            locationsList = apiData?.data?.locations || apiData?.locations || apiData?.data || [];
+            locationsList = apiData?.locations || apiData?.data?.locations || [];
           } else {
-            // Get all locations
-            const response = await apiCall('/api/portal/locations/list');
-            const apiData = response?.data;
-            locationsList = apiData?.data?.locations || apiData?.locations || apiData?.data || [];
+            // For "all" tenants, get tenants first, then load locations from the first available tenant
+            // Or try to get all tenant locations
+            try {
+              // Try to get tenant IDs from loaded tenants
+              if (tenants.length > 0) {
+                // Load locations from first tenant as fallback
+                const firstTenant = tenants[0];
+                const response = await apiCall(`/api/tenant-locations/${firstTenant.tenant_id}`);
+                const apiData = response?.data;
+                locationsList = apiData?.locations || apiData?.data?.locations || [];
+              } else {
+                // Fallback to portal locations
+                const response = await apiCall('/api/portal/locations/list');
+                const apiData = response?.data;
+                locationsList = apiData?.locations || apiData?.data?.locations || [];
+              }
+            } catch (fallbackError) {
+              console.error('[Reporting] Fallback location load failed:', fallbackError);
+            }
           }
           
           console.log('[Reporting] Loaded locations:', locationsList.length);
