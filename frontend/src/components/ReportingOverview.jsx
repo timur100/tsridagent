@@ -413,7 +413,7 @@ const ReportingOverview = ({ onClose }) => {
   const renderLocationsTable = () => {
     if (filteredLocations.length === 0) {
       return (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-[#64748b]">
           <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Standorte gefunden</p>
         </div>
