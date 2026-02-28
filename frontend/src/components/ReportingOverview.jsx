@@ -8,9 +8,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTenant } from '../contexts/TenantContext';
 import { 
-  FileText, Download, Printer, Filter, Search, ChevronDown, ChevronRight,
-  Monitor, MapPin, Package, Boxes, Building2, X, FileSpreadsheet, File,
-  RefreshCw, Eye, Layers
+  FileText, Printer, Search, ChevronDown, ChevronRight,
+  Monitor, MapPin, Package, Boxes, X, FileSpreadsheet, File,
+  RefreshCw, Layers, Building2
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
@@ -31,7 +31,6 @@ import {
   TableRow,
 } from './ui/table';
 import { Badge } from './ui/badge';
-import { Checkbox } from './ui/checkbox';
 import toast from 'react-hot-toast';
 
 // Report Templates
@@ -47,7 +46,7 @@ const REPORT_TEMPLATES = [
 const ReportingOverview = ({ onClose }) => {
   const { apiCall } = useAuth();
   const { theme } = useTheme();
-  const { selectedTenantId, selectedTenantName } = useTenant();
+  const { selectedTenantId } = useTenant();
   
   // State
   const [selectedTemplate, setSelectedTemplate] = useState(null);
@@ -56,24 +55,24 @@ const ReportingOverview = ({ onClose }) => {
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
   const [assets, setAssets] = useState([]);
-  const [kits, setKits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [expandedKits, setExpandedKits] = useState({});
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
   
   const isDark = theme === 'dark';
   
-  // Load tenants
+  // Load tenants on mount
   useEffect(() => {
     const loadTenants = async () => {
       try {
         const result = await apiCall('/api/tenants');
         const tenantsArray = result?.data?.tenants || result?.tenants || [];
+        console.log('[Reporting] Loaded tenants:', tenantsArray.length);
         setTenants(tenantsArray);
       } catch (error) {
-        console.error('Error loading tenants:', error);
+        console.error('[Reporting] Error loading tenants:', error);
       }
     };
     loadTenants();
@@ -84,51 +83,89 @@ const ReportingOverview = ({ onClose }) => {
     if (!selectedTemplate) return;
     
     setLoading(true);
+    setDataLoaded(false);
+    
     try {
-      const tenantParam = selectedTenant !== 'all' ? `?tenant_id=${selectedTenant}` : '';
+      const tenantParam = selectedTenant && selectedTenant !== 'all' ? `?tenant_id=${selectedTenant}` : '';
       
-      if (selectedTemplate.type === 'devices' || selectedTemplate.type === 'teamviewer' || selectedTemplate.type === 'all') {
-        const devicesResult = await apiCall(`/api/devices${tenantParam}`);
-        setDevices(devicesResult?.data?.devices || devicesResult?.devices || []);
+      console.log('[Reporting] Loading data for template:', selectedTemplate.type, 'tenant:', selectedTenant);
+      
+      // Load devices for device-related reports
+      if (['devices', 'teamviewer', 'all'].includes(selectedTemplate.type)) {
+        try {
+          const devicesResult = await apiCall(`/api/devices${tenantParam}`);
+          const devicesList = devicesResult?.data?.devices || devicesResult?.devices || [];
+          console.log('[Reporting] Loaded devices:', devicesList.length);
+          setDevices(devicesList);
+        } catch (e) {
+          console.error('[Reporting] Error loading devices:', e);
+          setDevices([]);
+        }
       }
       
-      if (selectedTemplate.type === 'locations' || selectedTemplate.type === 'all') {
-        const locationsResult = await apiCall(`/api/standorte${tenantParam}`);
-        setLocations(locationsResult?.data?.standorte || locationsResult?.standorte || locationsResult?.data || []);
+      // Load locations
+      if (['locations', 'all'].includes(selectedTemplate.type)) {
+        try {
+          // Try different API endpoints
+          let locationsList = [];
+          
+          if (selectedTenant && selectedTenant !== 'all') {
+            const result = await apiCall(`/api/tenant-locations/${selectedTenant}`);
+            locationsList = result?.data?.locations || result?.locations || result?.data || [];
+          } else {
+            const result = await apiCall('/api/standorte');
+            locationsList = result?.data?.standorte || result?.standorte || result?.data || [];
+          }
+          
+          console.log('[Reporting] Loaded locations:', locationsList.length);
+          setLocations(Array.isArray(locationsList) ? locationsList : []);
+        } catch (e) {
+          console.error('[Reporting] Error loading locations:', e);
+          setLocations([]);
+        }
       }
       
-      if (selectedTemplate.type === 'assets' || selectedTemplate.type === 'kits' || selectedTemplate.type === 'all') {
-        const assetsResult = await apiCall('/api/asset-mgmt/assets');
-        setAssets(assetsResult?.assets || []);
-        
-        // Load kit compositions
-        const kitsResult = await apiCall('/api/kit-templates');
-        setKits(kitsResult?.data?.templates || kitsResult?.templates || []);
+      // Load assets
+      if (['assets', 'kits', 'all'].includes(selectedTemplate.type)) {
+        try {
+          const assetsResult = await apiCall('/api/asset-mgmt/assets');
+          const assetsList = assetsResult?.assets || assetsResult?.data?.assets || [];
+          console.log('[Reporting] Loaded assets:', assetsList.length);
+          setAssets(assetsList);
+        } catch (e) {
+          console.error('[Reporting] Error loading assets:', e);
+          setAssets([]);
+        }
       }
       
+      setDataLoaded(true);
       toast.success('Daten geladen');
     } catch (error) {
-      console.error('Error loading report data:', error);
+      console.error('[Reporting] Error loading report data:', error);
       toast.error('Fehler beim Laden der Daten');
     } finally {
       setLoading(false);
     }
   }, [apiCall, selectedTemplate, selectedTenant]);
   
+  // Load data when template or tenant changes
   useEffect(() => {
     if (selectedTemplate) {
       loadReportData();
     }
   }, [selectedTemplate, selectedTenant, loadReportData]);
   
-  // Filter data based on search and status
+  // Filter devices
   const filteredDevices = useMemo(() => {
+    if (!devices || !Array.isArray(devices)) return [];
+    
     return devices.filter(device => {
       const matchesSearch = !searchTerm || 
         device.device_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         device.teamviewer_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         device.locationcode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        device.sn_pc?.toLowerCase().includes(searchTerm.toLowerCase());
+        device.sn_pc?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        device.city?.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesStatus = statusFilter === 'all' || device.status === statusFilter;
       
@@ -136,7 +173,10 @@ const ReportingOverview = ({ onClose }) => {
     });
   }, [devices, searchTerm, statusFilter]);
   
+  // Filter locations
   const filteredLocations = useMemo(() => {
+    if (!locations || !Array.isArray(locations)) return [];
+    
     return locations.filter(location => {
       const matchesSearch = !searchTerm || 
         location.location_code?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -148,7 +188,10 @@ const ReportingOverview = ({ onClose }) => {
     });
   }, [locations, searchTerm]);
   
+  // Filter assets
   const filteredAssets = useMemo(() => {
+    if (!assets || !Array.isArray(assets)) return [];
+    
     return assets.filter(asset => {
       const matchesSearch = !searchTerm || 
         asset.asset_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -188,14 +231,12 @@ const ReportingOverview = ({ onClose }) => {
     toast.success('CSV exportiert');
   };
   
-  const exportToExcel = async (data, filename) => {
+  const exportToExcel = (data, filename) => {
     if (!data || data.length === 0) {
       toast.error('Keine Daten zum Exportieren');
       return;
     }
     
-    // Simple Excel export using CSV with .xlsx extension
-    // For proper Excel, we would need xlsx library
     const headers = Object.keys(data[0]);
     const csvContent = [
       headers.join('\t'),
@@ -221,7 +262,6 @@ const ReportingOverview = ({ onClose }) => {
       return;
     }
     
-    // Create printable HTML
     const headers = Object.keys(data[0]);
     const tableHTML = `
       <!DOCTYPE html>
@@ -285,9 +325,241 @@ const ReportingOverview = ({ onClose }) => {
     }
   };
   
+  // Render devices table
+  const renderDevicesTable = () => {
+    if (filteredDevices.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          <Monitor className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Keine Geräte gefunden</p>
+        </div>
+      );
+    }
+    
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Device ID</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Standort</TableHead>
+            <TableHead>Stadt</TableHead>
+            <TableHead>TeamViewer ID</TableHead>
+            <TableHead>SN PC</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredDevices.map(device => (
+            <TableRow key={device.device_id || device.id}>
+              <TableCell className="font-medium">{device.device_id || '-'}</TableCell>
+              <TableCell>
+                <Badge variant={device.status === 'active' ? 'default' : 'secondary'} 
+                       className={device.status === 'active' ? 'bg-green-600' : ''}>
+                  {device.status || 'N/A'}
+                </Badge>
+              </TableCell>
+              <TableCell>{device.locationcode || '-'}</TableCell>
+              <TableCell>{device.city || '-'}</TableCell>
+              <TableCell className="font-mono text-sm">{device.teamviewer_id || '-'}</TableCell>
+              <TableCell className="font-mono text-sm">{device.sn_pc || '-'}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+  
+  // Render TeamViewer table
+  const renderTeamViewerTable = () => {
+    const devicesWithTV = filteredDevices.filter(d => d.teamviewer_id);
+    
+    if (devicesWithTV.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          <Monitor className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Keine TeamViewer-IDs gefunden</p>
+        </div>
+      );
+    }
+    
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Device ID</TableHead>
+            <TableHead>TeamViewer ID</TableHead>
+            <TableHead>Standort</TableHead>
+            <TableHead>Stadt</TableHead>
+            <TableHead>Status</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {devicesWithTV.map(device => (
+            <TableRow key={device.device_id}>
+              <TableCell className="font-medium">{device.device_id}</TableCell>
+              <TableCell className="font-mono text-lg font-bold text-blue-500">{device.teamviewer_id}</TableCell>
+              <TableCell>{device.locationcode || '-'}</TableCell>
+              <TableCell>{device.city || '-'}</TableCell>
+              <TableCell>
+                <Badge variant={device.status === 'active' ? 'default' : 'secondary'}
+                       className={device.status === 'active' ? 'bg-green-600' : ''}>
+                  {device.status || 'N/A'}
+                </Badge>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+  
+  // Render locations table
+  const renderLocationsTable = () => {
+    if (filteredLocations.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Keine Standorte gefunden</p>
+        </div>
+      );
+    }
+    
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Standort-Code</TableHead>
+            <TableHead>Stationsname</TableHead>
+            <TableHead>Straße</TableHead>
+            <TableHead>PLZ</TableHead>
+            <TableHead>Stadt</TableHead>
+            <TableHead>Telefon</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredLocations.map((location, idx) => (
+            <TableRow key={location.location_code || location.id || idx}>
+              <TableCell className="font-medium">{location.location_code || '-'}</TableCell>
+              <TableCell>{location.station_name || '-'}</TableCell>
+              <TableCell>{location.street || '-'}</TableCell>
+              <TableCell>{location.postal_code || location.zip || '-'}</TableCell>
+              <TableCell>{location.city || '-'}</TableCell>
+              <TableCell>{location.phone || '-'}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+  
+  // Render assets table
+  const renderAssetsTable = () => {
+    if (filteredAssets.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Keine Assets gefunden</p>
+        </div>
+      );
+    }
+    
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Asset ID</TableHead>
+            <TableHead>Warehouse ID</TableHead>
+            <TableHead>Typ</TableHead>
+            <TableHead>Seriennummer</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Standort</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredAssets.map((asset, idx) => (
+            <TableRow key={asset.asset_id || asset.warehouse_asset_id || idx}>
+              <TableCell className="font-medium">{asset.asset_id || '-'}</TableCell>
+              <TableCell className="font-mono text-sm">{asset.warehouse_asset_id || '-'}</TableCell>
+              <TableCell>{asset.type_label || asset.type || '-'}</TableCell>
+              <TableCell className="font-mono text-sm">{asset.manufacturer_sn || '-'}</TableCell>
+              <TableCell>
+                <Badge variant={asset.status === 'active' ? 'default' : asset.status === 'in_stock' ? 'outline' : 'secondary'}
+                       className={asset.status === 'active' ? 'bg-green-600' : ''}>
+                  {asset.status || 'N/A'}
+                </Badge>
+              </TableCell>
+              <TableCell>{asset.location_name || asset.location_code || '-'}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
+  };
+  
+  // Render kits table
+  const renderKitsTable = () => {
+    const kitAssets = filteredAssets.filter(a => a.type === 'kit_tsr' || a.type_label?.toLowerCase().includes('kit'));
+    
+    if (kitAssets.length === 0) {
+      return (
+        <div className="text-center py-8 text-gray-500">
+          <Boxes className="h-12 w-12 mx-auto mb-3 opacity-50" />
+          <p>Keine Asset-Kits gefunden</p>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-3">
+        {kitAssets.map((kit, idx) => (
+          <Card key={kit.asset_id || idx} className={`p-4 ${isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-gray-50'}`}>
+            <div 
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setExpandedKits(prev => ({ ...prev, [kit.asset_id]: !prev[kit.asset_id] }))}
+            >
+              <div className="flex items-center gap-3">
+                {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                <Boxes className="h-5 w-5 text-[#c00000]" />
+                <div>
+                  <p className="font-bold">{kit.asset_id}</p>
+                  <p className="text-sm text-gray-500">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
+                </div>
+              </div>
+              <Badge className={kit.status === 'active' ? 'bg-green-600' : ''}>{kit.status}</Badge>
+            </div>
+            
+            {expandedKits[kit.asset_id] && (
+              <div className="mt-4 pl-10 border-l-2 border-[#c00000]/30 space-y-2">
+                <p className="text-sm font-medium mb-2">Komponenten:</p>
+                {kit.components?.length > 0 ? (
+                  kit.components.map((comp, cidx) => (
+                    <div key={cidx} className="flex items-center gap-2 text-sm">
+                      <Package className="h-4 w-4 text-gray-400" />
+                      <span>{comp.type_label || comp.type}: </span>
+                      <span className="font-mono">{comp.asset_id || comp.serial_number}</span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">Keine Komponenten-Details verfügbar</p>
+                )}
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    );
+  };
+  
   // Render table based on template type
   const renderTable = () => {
     if (!selectedTemplate) return null;
+    if (loading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+        </div>
+      );
+    }
     
     switch (selectedTemplate.type) {
       case 'devices':
@@ -301,263 +573,65 @@ const ReportingOverview = ({ onClose }) => {
       case 'kits':
         return renderKitsTable();
       case 'all':
-        return renderAllDataTable();
+        return (
+          <div className="space-y-8">
+            <div>
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                <Monitor className="h-5 w-5 text-[#c00000]" /> Geräte ({filteredDevices.length})
+              </h3>
+              {renderDevicesTable()}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-[#c00000]" /> Standorte ({filteredLocations.length})
+              </h3>
+              {renderLocationsTable()}
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
+                <Package className="h-5 w-5 text-[#c00000]" /> Assets ({filteredAssets.length})
+              </h3>
+              {renderAssetsTable()}
+            </div>
+          </div>
+        );
       default:
         return null;
     }
   };
   
-  const renderDevicesTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-12">
-            <Checkbox 
-              checked={selectedRows.length === filteredDevices.length && filteredDevices.length > 0}
-              onCheckedChange={(checked) => {
-                setSelectedRows(checked ? filteredDevices.map(d => d.device_id) : []);
-              }}
-            />
-          </TableHead>
-          <TableHead>Device ID</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Standort</TableHead>
-          <TableHead>Stadt</TableHead>
-          <TableHead>TeamViewer ID</TableHead>
-          <TableHead>SN PC</TableHead>
-          <TableHead>Tenant</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredDevices.map(device => (
-          <TableRow key={device.device_id}>
-            <TableCell>
-              <Checkbox 
-                checked={selectedRows.includes(device.device_id)}
-                onCheckedChange={(checked) => {
-                  setSelectedRows(prev => 
-                    checked 
-                      ? [...prev, device.device_id]
-                      : prev.filter(id => id !== device.device_id)
-                  );
-                }}
-              />
-            </TableCell>
-            <TableCell className="font-medium">{device.device_id}</TableCell>
-            <TableCell>
-              <Badge variant={device.status === 'active' ? 'success' : 'secondary'}>
-                {device.status || 'N/A'}
-              </Badge>
-            </TableCell>
-            <TableCell>{device.locationcode || '-'}</TableCell>
-            <TableCell>{device.city || '-'}</TableCell>
-            <TableCell className="font-mono text-sm">{device.teamviewer_id || '-'}</TableCell>
-            <TableCell className="font-mono text-sm">{device.sn_pc || '-'}</TableCell>
-            <TableCell>{device.tenant_name || device.tenant_id || '-'}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-  
-  const renderTeamViewerTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Device ID</TableHead>
-          <TableHead>TeamViewer ID</TableHead>
-          <TableHead>Standort</TableHead>
-          <TableHead>Stadt</TableHead>
-          <TableHead>Status</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredDevices.filter(d => d.teamviewer_id).map(device => (
-          <TableRow key={device.device_id}>
-            <TableCell className="font-medium">{device.device_id}</TableCell>
-            <TableCell className="font-mono text-lg font-bold text-blue-600">{device.teamviewer_id}</TableCell>
-            <TableCell>{device.locationcode || '-'}</TableCell>
-            <TableCell>{device.city || '-'}</TableCell>
-            <TableCell>
-              <Badge variant={device.status === 'active' ? 'success' : 'secondary'}>
-                {device.status || 'N/A'}
-              </Badge>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-  
-  const renderLocationsTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Standort-Code</TableHead>
-          <TableHead>Stationsname</TableHead>
-          <TableHead>Straße</TableHead>
-          <TableHead>PLZ</TableHead>
-          <TableHead>Stadt</TableHead>
-          <TableHead>Telefon</TableHead>
-          <TableHead>Geräte</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredLocations.map(location => (
-          <TableRow key={location.location_code || location.id}>
-            <TableCell className="font-medium">{location.location_code || '-'}</TableCell>
-            <TableCell>{location.station_name || '-'}</TableCell>
-            <TableCell>{location.street || '-'}</TableCell>
-            <TableCell>{location.postal_code || '-'}</TableCell>
-            <TableCell>{location.city || '-'}</TableCell>
-            <TableCell>{location.phone || '-'}</TableCell>
-            <TableCell>
-              <Badge variant="outline">{location.device_count || 0}</Badge>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-  
-  const renderAssetsTable = () => (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Asset ID</TableHead>
-          <TableHead>Warehouse ID</TableHead>
-          <TableHead>Typ</TableHead>
-          <TableHead>Seriennummer</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Standort</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {filteredAssets.map(asset => (
-          <TableRow key={asset.asset_id || asset.warehouse_asset_id}>
-            <TableCell className="font-medium">{asset.asset_id || '-'}</TableCell>
-            <TableCell className="font-mono text-sm">{asset.warehouse_asset_id || '-'}</TableCell>
-            <TableCell>{asset.type_label || asset.type || '-'}</TableCell>
-            <TableCell className="font-mono text-sm">{asset.manufacturer_sn || '-'}</TableCell>
-            <TableCell>
-              <Badge variant={asset.status === 'active' ? 'success' : asset.status === 'in_stock' ? 'default' : 'secondary'}>
-                {asset.status || 'N/A'}
-              </Badge>
-            </TableCell>
-            <TableCell>{asset.location_name || asset.location_code || '-'}</TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
-  
-  const renderKitsTable = () => (
-    <div className="space-y-4">
-      {filteredAssets.filter(a => a.type === 'kit_tsr' || a.type_label?.includes('Kit')).map(kit => (
-        <Card key={kit.asset_id} className={`p-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
-          <div 
-            className="flex items-center justify-between cursor-pointer"
-            onClick={() => setExpandedKits(prev => ({ ...prev, [kit.asset_id]: !prev[kit.asset_id] }))}
-          >
-            <div className="flex items-center gap-3">
-              {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
-              <Boxes className="h-5 w-5 text-blue-500" />
-              <div>
-                <p className="font-bold">{kit.asset_id}</p>
-                <p className="text-sm text-gray-500">{kit.type_label}</p>
-              </div>
-            </div>
-            <Badge>{kit.status}</Badge>
-          </div>
-          
-          {expandedKits[kit.asset_id] && (
-            <div className="mt-4 pl-10 border-l-2 border-gray-200 space-y-2">
-              <p className="text-sm font-medium mb-2">Komponenten:</p>
-              {kit.components?.length > 0 ? (
-                kit.components.map((comp, idx) => (
-                  <div key={idx} className="flex items-center gap-2 text-sm">
-                    <Package className="h-4 w-4 text-gray-400" />
-                    <span>{comp.type_label || comp.type}: </span>
-                    <span className="font-mono">{comp.asset_id || comp.serial_number}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-gray-500">Keine Komponenten-Details verfügbar</p>
-              )}
-            </div>
-          )}
-        </Card>
-      ))}
-    </div>
-  );
-  
-  const renderAllDataTable = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-          <Monitor className="h-5 w-5" /> Geräte ({filteredDevices.length})
-        </h3>
-        {renderDevicesTable()}
-      </div>
-      <div>
-        <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-          <MapPin className="h-5 w-5" /> Standorte ({filteredLocations.length})
-        </h3>
-        {renderLocationsTable()}
-      </div>
-      <div>
-        <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-          <Package className="h-5 w-5" /> Assets ({filteredAssets.length})
-        </h3>
-        {renderAssetsTable()}
-      </div>
-    </div>
-  );
+  // Get selected tenant name
+  const getSelectedTenantName = () => {
+    if (selectedTenant === 'all') return 'Alle Tenants';
+    const tenant = tenants.find(t => t.tenant_id === selectedTenant);
+    return tenant?.name || selectedTenant;
+  };
   
   return (
     <div className={`fixed inset-0 z-50 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      {/* Header */}
-      <div className={`h-16 px-6 flex items-center justify-between border-b ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-        <div className="flex items-center gap-3">
-          <FileText className="h-6 w-6 text-[#c00000]" />
-          <h1 className="text-xl font-bold">Reporting & Auswertungen</h1>
+      {/* Header - Angepasst an Website-Design */}
+      <div className={`h-16 px-6 flex items-center justify-between shadow-lg ${
+        isDark 
+          ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' 
+          : 'bg-white border-b border-gray-200'
+      }`}>
+        <div className="flex items-center gap-4">
+          <FileText className={`h-6 w-6 ${isDark ? 'text-white' : 'text-[#c00000]'}`} />
+          <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-[#c00000]'}`}>
+            Reporting & Auswertungen
+          </h1>
         </div>
-        <Button variant="ghost" size="sm" onClick={onClose}>
-          <X className="h-5 w-5" />
-        </Button>
-      </div>
-      
-      <div className="flex h-[calc(100vh-4rem)]">
-        {/* Sidebar - Report Templates */}
-        <div className={`w-72 border-r p-4 overflow-y-auto ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-          <h2 className="font-semibold mb-4">Report-Vorlagen</h2>
-          <div className="space-y-2">
-            {REPORT_TEMPLATES.map(template => {
-              const Icon = template.icon;
-              return (
-                <button
-                  key={template.id}
-                  onClick={() => setSelectedTemplate(template)}
-                  className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors ${
-                    selectedTemplate?.id === template.id
-                      ? 'bg-[#c00000] text-white'
-                      : isDark 
-                        ? 'hover:bg-gray-700' 
-                        : 'hover:bg-gray-100'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span className="text-sm font-medium">{template.name}</span>
-                </button>
-              );
-            })}
-          </div>
-          
-          {/* Tenant Filter */}
-          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-            <h3 className="font-semibold mb-3">Tenant Filter</h3>
+        
+        {/* Tenant Selector im Header */}
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Building2 className={`h-5 w-5 ${isDark ? 'text-white/70' : 'text-gray-500'}`} />
             <Select value={selectedTenant} onValueChange={setSelectedTenant}>
-              <SelectTrigger>
+              <SelectTrigger className={`w-56 ${
+                isDark 
+                  ? 'bg-white/10 border-white/20 text-white' 
+                  : 'bg-white border-gray-300'
+              }`}>
                 <SelectValue placeholder="Tenant wählen" />
               </SelectTrigger>
               <SelectContent>
@@ -570,12 +644,67 @@ const ReportingOverview = ({ onClose }) => {
               </SelectContent>
             </Select>
           </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onClose}
+            className={isDark 
+              ? 'border-white/50 text-white hover:bg-white hover:text-[#c00000]' 
+              : 'border-gray-300'
+            }
+          >
+            <X className="h-4 w-4 mr-2" />
+            Schließen
+          </Button>
+        </div>
+      </div>
+      
+      <div className="flex h-[calc(100vh-4rem)]">
+        {/* Sidebar - Report Templates */}
+        <div className={`w-72 border-r p-4 overflow-y-auto ${
+          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
+        }`}>
+          <h2 className="font-semibold mb-4 text-sm uppercase tracking-wide text-gray-500">Report-Vorlagen</h2>
+          <div className="space-y-2">
+            {REPORT_TEMPLATES.map(template => {
+              const Icon = template.icon;
+              return (
+                <button
+                  key={template.id}
+                  onClick={() => setSelectedTemplate(template)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
+                    selectedTemplate?.id === template.id
+                      ? 'bg-[#c00000] text-white shadow-lg'
+                      : isDark 
+                        ? 'hover:bg-gray-700 text-gray-300' 
+                        : 'hover:bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-sm font-medium">{template.name}</span>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Current Selection Info */}
+          {selectedTenant && (
+            <div className={`mt-6 pt-6 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">Aktueller Filter</p>
+              <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`}>
+                <p className="text-sm font-medium">{getSelectedTenantName()}</p>
+              </div>
+            </div>
+          )}
         </div>
         
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Toolbar */}
-          <div className={`px-6 py-3 border-b flex items-center justify-between ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className={`px-6 py-3 border-b flex items-center justify-between ${
+            isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
+          }`}>
             <div className="flex items-center gap-4">
               {/* Search */}
               <div className="relative w-64">
@@ -589,7 +718,7 @@ const ReportingOverview = ({ onClose }) => {
               </div>
               
               {/* Status Filter */}
-              {(selectedTemplate?.type === 'devices' || selectedTemplate?.type === 'assets') && (
+              {selectedTemplate && ['devices', 'assets', 'all'].includes(selectedTemplate.type) && (
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="Status" />
@@ -605,7 +734,7 @@ const ReportingOverview = ({ onClose }) => {
               )}
               
               {/* Refresh */}
-              <Button variant="outline" size="sm" onClick={loadReportData} disabled={loading}>
+              <Button variant="outline" size="sm" onClick={loadReportData} disabled={loading || !selectedTemplate}>
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Aktualisieren
               </Button>
@@ -617,7 +746,8 @@ const ReportingOverview = ({ onClose }) => {
                 variant="outline" 
                 size="sm"
                 onClick={() => exportToPDF(getCurrentData(), selectedTemplate?.name || 'Report')}
-                disabled={!selectedTemplate}
+                disabled={!selectedTemplate || getCurrentData().length === 0}
+                className="border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 PDF / Drucken
@@ -626,7 +756,7 @@ const ReportingOverview = ({ onClose }) => {
                 variant="outline" 
                 size="sm"
                 onClick={() => exportToExcel(getCurrentData(), selectedTemplate?.id || 'report')}
-                disabled={!selectedTemplate}
+                disabled={!selectedTemplate || getCurrentData().length === 0}
               >
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Excel
@@ -635,7 +765,7 @@ const ReportingOverview = ({ onClose }) => {
                 variant="outline" 
                 size="sm"
                 onClick={() => exportToCSV(getCurrentData(), selectedTemplate?.id || 'report')}
-                disabled={!selectedTemplate}
+                disabled={!selectedTemplate || getCurrentData().length === 0}
               >
                 <File className="h-4 w-4 mr-2" />
                 CSV
@@ -644,26 +774,25 @@ const ReportingOverview = ({ onClose }) => {
           </div>
           
           {/* Data Table */}
-          <div className="flex-1 overflow-auto p-6">
+          <div className={`flex-1 overflow-auto p-6 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
             {!selectedTemplate ? (
               <div className="h-full flex flex-col items-center justify-center text-gray-500">
-                <FileText className="h-16 w-16 mb-4 opacity-50" />
-                <p className="text-lg">Wählen Sie eine Report-Vorlage aus der linken Seitenleiste</p>
-              </div>
-            ) : loading ? (
-              <div className="h-full flex items-center justify-center">
-                <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+                <FileText className="h-16 w-16 mb-4 opacity-30" />
+                <p className="text-lg font-medium">Wählen Sie eine Report-Vorlage</p>
+                <p className="text-sm mt-2">Klicken Sie links auf einen Report-Typ</p>
               </div>
             ) : (
-              <Card className={`p-4 ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
+              <Card className={`p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-lg font-bold flex items-center gap-2">
-                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5" />}
+                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#c00000]" />}
                     {selectedTemplate.name}
                   </h2>
-                  <Badge variant="outline">
-                    {getCurrentData().length} Einträge
-                  </Badge>
+                  {dataLoaded && (
+                    <Badge variant="outline" className="text-[#c00000] border-[#c00000]">
+                      {getCurrentData().length} Einträge
+                    </Badge>
+                  )}
                 </div>
                 {renderTable()}
               </Card>
