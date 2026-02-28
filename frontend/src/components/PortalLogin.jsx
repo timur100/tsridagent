@@ -130,10 +130,10 @@ const PortalLogin = () => {
               className="h-16 w-auto"
             />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
+          <h1 className="text-3xl font-bold text-foreground mb-2">
             Portal
           </h1>
-          <p className="text-gray-400">
+          <p className="text-muted-foreground">
             {isLoginMode ? 'Willkommen zurück' : 'Erstellen Sie ein Konto'}
           </p>
         </div>
@@ -142,11 +142,11 @@ const PortalLogin = () => {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">
+            <label className="block text-sm font-semibold text-foreground mb-2">
               E-Mail
             </label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type="email"
                 name="email"
@@ -162,11 +162,11 @@ const PortalLogin = () => {
           {/* Name (Register only) */}
           {!isLoginMode && (
             <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-foreground mb-2">
                 Name
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   name="name"
@@ -183,11 +183,11 @@ const PortalLogin = () => {
           {/* Company (Register only) */}
           {!isLoginMode && (
             <div>
-              <label className="block text-sm font-semibold text-gray-300 mb-2">
+              <label className="block text-sm font-semibold text-foreground mb-2">
                 Firma
               </label>
               <div className="relative">
-                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+                <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <input
                   type="text"
                   name="company"
@@ -203,11 +203,11 @@ const PortalLogin = () => {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-semibold text-gray-300 mb-2">
+            <label className="block text-sm font-semibold text-foreground mb-2">
               Passwort
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
@@ -220,7 +220,7 @@ const PortalLogin = () => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
@@ -231,7 +231,7 @@ const PortalLogin = () => {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full py-3 text-lg bg-[#d50c2d] hover:bg-[#b80a28] text-white font-semibold rounded-lg shadow-lg transition-all"
+            className="w-full py-3 text-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg shadow-lg transition-all"
           >
             {loading ? 'Bitte warten...' : (isLoginMode ? 'Anmelden' : 'Registrieren')}
           </Button>
@@ -242,7 +242,7 @@ const PortalLogin = () => {
           <button
             type="button"
             onClick={() => setIsLoginMode(!isLoginMode)}
-            className="text-[#d50c2d] hover:text-[#b80a28] text-sm font-medium transition-colors"
+            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors"
           >
             {isLoginMode
               ? 'Noch kein Konto? Jetzt registrieren'
