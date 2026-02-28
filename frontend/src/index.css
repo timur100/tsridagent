@@ -297,23 +297,30 @@ code {
     animation: shake 0.5s ease-in-out;
 }
 
-/* Custom scrollbar for dark theme */
+/* Custom scrollbar for Hetzner Dark theme */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-    background: hsl(var(--background));
+    background: #141414;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: hsl(var(--muted));
-    border-radius: 4px;
+    background: #383838;
+    border-radius: 5px;
+    border: 2px solid #141414;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--muted-foreground) / 0.5);
+    background: #4a4a4a;
+}
+
+/* Firefox scrollbar */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #383838 #141414;
 }
 
 @layer base {
