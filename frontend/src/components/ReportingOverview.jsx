@@ -552,7 +552,7 @@ const ReportingOverview = ({ onClose }) => {
     if (loading) {
       return (
         <div className="flex items-center justify-center py-12">
-          <RefreshCw className="h-8 w-8 animate-spin text-[#c00000]" />
+          <RefreshCw className="h-8 w-8 animate-spin text-[#0284c7]" />
         </div>
       );
     }
@@ -572,20 +572,20 @@ const ReportingOverview = ({ onClose }) => {
         return (
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-                <Monitor className="h-5 w-5 text-[#c00000]" /> Geräte ({filteredDevices.length})
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+                <Monitor className="h-5 w-5 text-[#0284c7]" /> Geräte ({filteredDevices.length})
               </h3>
               {renderDevicesTable()}
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-[#c00000]" /> Standorte ({filteredLocations.length})
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+                <MapPin className="h-5 w-5 text-[#0284c7]" /> Standorte ({filteredLocations.length})
               </h3>
               {renderLocationsTable()}
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2">
-                <Package className="h-5 w-5 text-[#c00000]" /> Assets ({filteredAssets.length})
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+                <Package className="h-5 w-5 text-[#0284c7]" /> Assets ({filteredAssets.length})
               </h3>
               {renderAssetsTable()}
             </div>
