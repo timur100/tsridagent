@@ -920,7 +920,7 @@ const VerificationInterface = () => {
         uvBack: null,
         photo: null
       });
-    } else if (random > 0.7) {
+    } else if (random > 0.70) {
       randomStatus = 'success';
       setScanState('verified');
       // Reset counters on success
