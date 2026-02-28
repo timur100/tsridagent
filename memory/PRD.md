@@ -119,8 +119,10 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 1. ⏳ Mobile APK V2.2.4 testen (Druckfunktion)
 2. ✅ Reporting-Feature verifiziert
 3. ✅ PIN-Pad Hetzner Theme implementiert
-4. 🔜 Label-Vorschau im Web korrigieren
-5. 🔜 Mobile Assets-Screen debuggen
+4. ✅ Helpdesk-System implementiert (Security + Technical)
+5. 🔜 Label-Vorschau im Web korrigieren
+6. 🔜 Mobile Assets-Screen debuggen
+7. 🔜 Helpdesk-Login-Seite mit separater Authentifizierung
 
 ## Backlog
 - Nachbestellungs-Funktion (Web)
