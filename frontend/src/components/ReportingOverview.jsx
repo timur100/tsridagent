@@ -608,16 +608,12 @@ const ReportingOverview = ({ onClose }) => {
   };
   
   return (
-    <div className={`fixed inset-0 z-50 ${isDark ? 'bg-gray-900' : 'bg-gray-100'}`}>
-      {/* Header - Angepasst an Website-Design */}
-      <div className={`h-16 px-6 flex items-center justify-between shadow-lg ${
-        isDark 
-          ? 'bg-gradient-to-r from-[#c00000] to-[#a00000]' 
-          : 'bg-white border-b border-gray-200'
-      }`}>
+    <div className="fixed inset-0 z-50 bg-[#0a0e17]">
+      {/* Header - Hetzner Blue Style */}
+      <div className="h-16 px-6 flex items-center justify-between bg-[#12171f] border-b border-[#334155]">
         <div className="flex items-center gap-4">
-          <FileText className={`h-6 w-6 ${isDark ? 'text-white' : 'text-[#c00000]'}`} />
-          <h1 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-[#c00000]'}`}>
+          <FileText className="h-6 w-6 text-[#0284c7]" />
+          <h1 className="text-xl font-bold text-[#f8fafc]">
             Reporting & Auswertungen
           </h1>
         </div>
@@ -625,16 +621,12 @@ const ReportingOverview = ({ onClose }) => {
         {/* Tenant Selector im Header */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Building2 className={`h-5 w-5 ${isDark ? 'text-white/70' : 'text-gray-500'}`} />
+            <Building2 className="h-5 w-5 text-[#64748b]" />
             <Select value={selectedTenant} onValueChange={setSelectedTenant}>
-              <SelectTrigger className={`w-56 ${
-                isDark 
-                  ? 'bg-white/10 border-white/20 text-white' 
-                  : 'bg-white border-gray-300'
-              }`}>
+              <SelectTrigger className="w-56 bg-[#1a2330] border-[#334155] text-[#f8fafc]">
                 <SelectValue placeholder="Tenant wählen" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-[#1a2330] border-[#334155]">
                 <SelectItem value="all">Alle Tenants</SelectItem>
                 {tenants.map(tenant => (
                   <SelectItem key={tenant.tenant_id} value={tenant.tenant_id}>
@@ -649,10 +641,7 @@ const ReportingOverview = ({ onClose }) => {
             variant="outline" 
             size="sm" 
             onClick={onClose}
-            className={isDark 
-              ? 'border-white/50 text-white hover:bg-white hover:text-[#c00000]' 
-              : 'border-gray-300'
-            }
+            className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
           >
             <X className="h-4 w-4 mr-2" />
             Schließen
@@ -662,10 +651,8 @@ const ReportingOverview = ({ onClose }) => {
       
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Sidebar - Report Templates */}
-        <div className={`w-72 border-r p-4 overflow-y-auto ${
-          isDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-        }`}>
-          <h2 className="font-semibold mb-4 text-sm uppercase tracking-wide text-gray-500">Report-Vorlagen</h2>
+        <div className="w-72 border-r p-4 overflow-y-auto bg-[#12171f] border-[#334155]">
+          <h2 className="font-semibold mb-4 text-sm uppercase tracking-wide text-[#64748b]">Report-Vorlagen</h2>
           <div className="space-y-2">
             {REPORT_TEMPLATES.map(template => {
               const Icon = template.icon;
@@ -675,10 +662,8 @@ const ReportingOverview = ({ onClose }) => {
                   onClick={() => setSelectedTemplate(template)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                     selectedTemplate?.id === template.id
-                      ? 'bg-[#c00000] text-white shadow-lg'
-                      : isDark 
-                        ? 'hover:bg-gray-700 text-gray-300' 
-                        : 'hover:bg-gray-100 text-gray-700'
+                      ? 'bg-[#0284c7] text-white shadow-lg'
+                      : 'hover:bg-[#2a3442] text-[#cbd5e1]'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -690,10 +675,10 @@ const ReportingOverview = ({ onClose }) => {
           
           {/* Current Selection Info */}
           {selectedTenant && (
-            <div className={`mt-6 pt-6 border-t ${isDark ? 'border-gray-700' : 'border-gray-200'}`}>
-              <p className="text-xs uppercase tracking-wide text-gray-500 mb-2">Aktueller Filter</p>
-              <div className={`p-3 rounded-lg ${isDark ? 'bg-gray-700/50' : 'bg-gray-100'}`}>
-                <p className="text-sm font-medium">{getSelectedTenantName()}</p>
+            <div className="mt-6 pt-6 border-t border-[#334155]">
+              <p className="text-xs uppercase tracking-wide text-[#64748b] mb-2">Aktueller Filter</p>
+              <div className="p-3 rounded-lg bg-[#1a2330]">
+                <p className="text-sm font-medium text-[#f8fafc]">{getSelectedTenantName()}</p>
               </div>
             </div>
           )}
@@ -702,28 +687,26 @@ const ReportingOverview = ({ onClose }) => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Toolbar */}
-          <div className={`px-6 py-3 border-b flex items-center justify-between ${
-            isDark ? 'bg-gray-800/50 border-gray-700' : 'bg-white border-gray-200'
-          }`}>
+          <div className="px-6 py-3 border-b flex items-center justify-between bg-[#12171f] border-[#334155]">
             <div className="flex items-center gap-4">
               {/* Search */}
               <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748b]" />
                 <Input
                   placeholder="Suchen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
+                  className="pl-9 bg-[#1a2330] border-[#334155] text-[#f8fafc] placeholder:text-[#64748b]"
                 />
               </div>
               
               {/* Status Filter */}
               {selectedTemplate && ['devices', 'assets', 'all'].includes(selectedTemplate.type) && (
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40">
+                  <SelectTrigger className="w-40 bg-[#1a2330] border-[#334155] text-[#f8fafc]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-[#1a2330] border-[#334155]">
                     <SelectItem value="all">Alle Status</SelectItem>
                     <SelectItem value="active">Aktiv</SelectItem>
                     <SelectItem value="inactive">Inaktiv</SelectItem>
@@ -734,7 +717,13 @@ const ReportingOverview = ({ onClose }) => {
               )}
               
               {/* Refresh */}
-              <Button variant="outline" size="sm" onClick={loadReportData} disabled={loading || !selectedTemplate}>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={loadReportData} 
+                disabled={loading || !selectedTemplate}
+                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
+              >
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Aktualisieren
               </Button>
@@ -747,7 +736,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToPDF(getCurrentData(), selectedTemplate?.name || 'Report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
-                className="border-[#c00000] text-[#c00000] hover:bg-[#c00000] hover:text-white"
+                className="border-[#0284c7] text-[#0284c7] hover:bg-[#0284c7] hover:text-white"
               >
                 <Printer className="h-4 w-4 mr-2" />
                 PDF / Drucken
@@ -757,6 +746,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToExcel(getCurrentData(), selectedTemplate?.id || 'report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
+                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
               >
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Excel
@@ -766,6 +756,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToCSV(getCurrentData(), selectedTemplate?.id || 'report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
+                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
               >
                 <File className="h-4 w-4 mr-2" />
                 CSV
@@ -774,22 +765,22 @@ const ReportingOverview = ({ onClose }) => {
           </div>
           
           {/* Data Table */}
-          <div className={`flex-1 overflow-auto p-6 ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
+          <div className="flex-1 overflow-auto p-6 bg-[#0a0e17]">
             {!selectedTemplate ? (
-              <div className="h-full flex flex-col items-center justify-center text-gray-500">
+              <div className="h-full flex flex-col items-center justify-center text-[#64748b]">
                 <FileText className="h-16 w-16 mb-4 opacity-30" />
                 <p className="text-lg font-medium">Wählen Sie eine Report-Vorlage</p>
                 <p className="text-sm mt-2">Klicken Sie links auf einen Report-Typ</p>
               </div>
             ) : (
-              <Card className={`p-6 ${isDark ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+              <Card className="p-6 bg-[#12171f] border-[#334155]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-bold flex items-center gap-2">
-                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#c00000]" />}
+                  <h2 className="text-lg font-bold flex items-center gap-2 text-[#f8fafc]">
+                    {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#0284c7]" />}
                     {selectedTemplate.name}
                   </h2>
                   {dataLoaded && (
-                    <Badge variant="outline" className="text-[#c00000] border-[#c00000]">
+                    <Badge variant="outline" className="text-[#0284c7] border-[#0284c7]">
                       {getCurrentData().length} Einträge
                     </Badge>
                   )}
