@@ -131,14 +131,21 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     }
   }, [selectedCountry]);
 
-  const fetchCities = async (country) => {
+  const fetchCities = async (country, retryCount = 0) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified-locations/cities?country=${encodeURIComponent(country)}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
       setCities(data.cities || []);
     } catch (error) {
       console.error('Error fetching cities:', error);
-      toast.error('Fehler beim Laden der Städte');
+      if (retryCount < 2) {
+        setTimeout(() => fetchCities(country, retryCount + 1), 1000);
+      } else {
+        toast.error('Fehler beim Laden der Städte');
+      }
     }
   };
 
