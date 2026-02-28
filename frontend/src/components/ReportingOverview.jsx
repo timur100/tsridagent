@@ -325,7 +325,7 @@ const ReportingOverview = ({ onClose }) => {
   const renderDevicesTable = () => {
     if (filteredDevices.length === 0) {
       return (
-        <div className="text-center py-8 text-[#64748b]">
+        <div className="text-center py-8 text-[#8c8c8c]">
           <Monitor className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Geräte gefunden</p>
         </div>
@@ -371,7 +371,7 @@ const ReportingOverview = ({ onClose }) => {
     
     if (devicesWithTV.length === 0) {
       return (
-        <div className="text-center py-8 text-[#64748b]">
+        <div className="text-center py-8 text-[#8c8c8c]">
           <Monitor className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine TeamViewer-IDs gefunden</p>
         </div>
@@ -413,7 +413,7 @@ const ReportingOverview = ({ onClose }) => {
   const renderLocationsTable = () => {
     if (filteredLocations.length === 0) {
       return (
-        <div className="text-center py-8 text-[#64748b]">
+        <div className="text-center py-8 text-[#8c8c8c]">
           <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Standorte gefunden</p>
         </div>
@@ -452,7 +452,7 @@ const ReportingOverview = ({ onClose }) => {
   const renderAssetsTable = () => {
     if (filteredAssets.length === 0) {
       return (
-        <div className="text-center py-8 text-[#64748b]">
+        <div className="text-center py-8 text-[#8c8c8c]">
           <Package className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Assets gefunden</p>
         </div>
@@ -498,7 +498,7 @@ const ReportingOverview = ({ onClose }) => {
     
     if (kitAssets.length === 0) {
       return (
-        <div className="text-center py-8 text-[#64748b]">
+        <div className="text-center py-8 text-[#8c8c8c]">
           <Boxes className="h-12 w-12 mx-auto mb-3 opacity-50" />
           <p>Keine Asset-Kits gefunden</p>
         </div>
@@ -508,35 +508,35 @@ const ReportingOverview = ({ onClose }) => {
     return (
       <div className="space-y-3">
         {kitAssets.map((kit, idx) => (
-          <Card key={kit.asset_id || idx} className="p-4 bg-[#1a2330] border-[#334155]">
+          <Card key={kit.asset_id || idx} className="p-4 bg-[#2e2e2e] border-[#595959]">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => setExpandedKits(prev => ({ ...prev, [kit.asset_id]: !prev[kit.asset_id] }))}
             >
               <div className="flex items-center gap-3">
-                {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5 text-[#cbd5e1]" /> : <ChevronRight className="h-5 w-5 text-[#cbd5e1]" />}
+                {expandedKits[kit.asset_id] ? <ChevronDown className="h-5 w-5 text-[#d4d4d4]" /> : <ChevronRight className="h-5 w-5 text-[#d4d4d4]" />}
                 <Boxes className="h-5 w-5 text-[#d50c2d]" />
                 <div>
-                  <p className="font-bold text-[#f8fafc]">{kit.asset_id}</p>
-                  <p className="text-sm text-[#64748b]">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
+                  <p className="font-bold text-[#ededed]">{kit.asset_id}</p>
+                  <p className="text-sm text-[#8c8c8c]">{kit.type_label} | SN: {kit.manufacturer_sn || 'N/A'}</p>
                 </div>
               </div>
-              <Badge className={kit.status === 'active' ? 'bg-[#16a34a]' : 'bg-[#2a3442]'}>{kit.status}</Badge>
+              <Badge className={kit.status === 'active' ? 'bg-[#16a34a]' : 'bg-[#383838]'}>{kit.status}</Badge>
             </div>
             
             {expandedKits[kit.asset_id] && (
               <div className="mt-4 pl-10 border-l-2 border-[#d50c2d]/30 space-y-2">
-                <p className="text-sm font-medium mb-2 text-[#cbd5e1]">Komponenten:</p>
+                <p className="text-sm font-medium mb-2 text-[#d4d4d4]">Komponenten:</p>
                 {kit.components?.length > 0 ? (
                   kit.components.map((comp, cidx) => (
-                    <div key={cidx} className="flex items-center gap-2 text-sm text-[#cbd5e1]">
-                      <Package className="h-4 w-4 text-[#64748b]" />
+                    <div key={cidx} className="flex items-center gap-2 text-sm text-[#d4d4d4]">
+                      <Package className="h-4 w-4 text-[#8c8c8c]" />
                       <span>{comp.type_label || comp.type}: </span>
                       <span className="font-mono">{comp.asset_id || comp.serial_number}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#64748b]">Keine Komponenten-Details verfügbar</p>
+                  <p className="text-sm text-[#8c8c8c]">Keine Komponenten-Details verfügbar</p>
                 )}
               </div>
             )}
@@ -572,19 +572,19 @@ const ReportingOverview = ({ onClose }) => {
         return (
           <div className="space-y-8">
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#ededed]">
                 <Monitor className="h-5 w-5 text-[#d50c2d]" /> Geräte ({filteredDevices.length})
               </h3>
               {renderDevicesTable()}
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#ededed]">
                 <MapPin className="h-5 w-5 text-[#d50c2d]" /> Standorte ({filteredLocations.length})
               </h3>
               {renderLocationsTable()}
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#f8fafc]">
+              <h3 className="text-lg font-bold mb-3 flex items-center gap-2 text-[#ededed]">
                 <Package className="h-5 w-5 text-[#d50c2d]" /> Assets ({filteredAssets.length})
               </h3>
               {renderAssetsTable()}
@@ -604,12 +604,12 @@ const ReportingOverview = ({ onClose }) => {
   };
   
   return (
-    <div className="fixed inset-0 z-50 bg-[#0a0e17]">
+    <div className="fixed inset-0 z-50 bg-[#141414]">
       {/* Header - Hetzner Blue Style */}
-      <div className="h-16 px-6 flex items-center justify-between bg-[#12171f] border-b border-[#334155]">
+      <div className="h-16 px-6 flex items-center justify-between bg-[#262626] border-b border-[#595959]">
         <div className="flex items-center gap-4">
           <FileText className="h-6 w-6 text-[#d50c2d]" />
-          <h1 className="text-xl font-bold text-[#f8fafc]">
+          <h1 className="text-xl font-bold text-[#ededed]">
             Reporting & Auswertungen
           </h1>
         </div>
@@ -617,12 +617,12 @@ const ReportingOverview = ({ onClose }) => {
         {/* Tenant Selector im Header */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-[#64748b]" />
+            <Building2 className="h-5 w-5 text-[#8c8c8c]" />
             <Select value={selectedTenant} onValueChange={setSelectedTenant}>
-              <SelectTrigger className="w-56 bg-[#1a2330] border-[#334155] text-[#f8fafc]">
+              <SelectTrigger className="w-56 bg-[#2e2e2e] border-[#595959] text-[#ededed]">
                 <SelectValue placeholder="Tenant wählen" />
               </SelectTrigger>
-              <SelectContent className="bg-[#1a2330] border-[#334155]">
+              <SelectContent className="bg-[#2e2e2e] border-[#595959]">
                 <SelectItem value="all">Alle Tenants</SelectItem>
                 {tenants.map(tenant => (
                   <SelectItem key={tenant.tenant_id} value={tenant.tenant_id}>
@@ -637,7 +637,7 @@ const ReportingOverview = ({ onClose }) => {
             variant="outline" 
             size="sm" 
             onClick={onClose}
-            className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
+            className="border-[#595959] text-[#ededed] hover:bg-[#383838]"
           >
             <X className="h-4 w-4 mr-2" />
             Schließen
@@ -647,8 +647,8 @@ const ReportingOverview = ({ onClose }) => {
       
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Sidebar - Report Templates */}
-        <div className="w-72 border-r p-4 overflow-y-auto bg-[#12171f] border-[#334155]">
-          <h2 className="font-semibold mb-4 text-sm uppercase tracking-wide text-[#64748b]">Report-Vorlagen</h2>
+        <div className="w-72 border-r p-4 overflow-y-auto bg-[#262626] border-[#595959]">
+          <h2 className="font-semibold mb-4 text-sm uppercase tracking-wide text-[#8c8c8c]">Report-Vorlagen</h2>
           <div className="space-y-2">
             {REPORT_TEMPLATES.map(template => {
               const Icon = template.icon;
@@ -659,7 +659,7 @@ const ReportingOverview = ({ onClose }) => {
                   className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all ${
                     selectedTemplate?.id === template.id
                       ? 'bg-[#d50c2d] text-white shadow-lg'
-                      : 'hover:bg-[#2a3442] text-[#cbd5e1]'
+                      : 'hover:bg-[#383838] text-[#d4d4d4]'
                   }`}
                 >
                   <Icon className="h-5 w-5" />
@@ -671,10 +671,10 @@ const ReportingOverview = ({ onClose }) => {
           
           {/* Current Selection Info */}
           {selectedTenant && (
-            <div className="mt-6 pt-6 border-t border-[#334155]">
-              <p className="text-xs uppercase tracking-wide text-[#64748b] mb-2">Aktueller Filter</p>
-              <div className="p-3 rounded-lg bg-[#1a2330]">
-                <p className="text-sm font-medium text-[#f8fafc]">{getSelectedTenantName()}</p>
+            <div className="mt-6 pt-6 border-t border-[#595959]">
+              <p className="text-xs uppercase tracking-wide text-[#8c8c8c] mb-2">Aktueller Filter</p>
+              <div className="p-3 rounded-lg bg-[#2e2e2e]">
+                <p className="text-sm font-medium text-[#ededed]">{getSelectedTenantName()}</p>
               </div>
             </div>
           )}
@@ -683,26 +683,26 @@ const ReportingOverview = ({ onClose }) => {
         {/* Main Content */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Toolbar */}
-          <div className="px-6 py-3 border-b flex items-center justify-between bg-[#12171f] border-[#334155]">
+          <div className="px-6 py-3 border-b flex items-center justify-between bg-[#262626] border-[#595959]">
             <div className="flex items-center gap-4">
               {/* Search */}
               <div className="relative w-64">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#64748b]" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#8c8c8c]" />
                 <Input
                   placeholder="Suchen..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-[#1a2330] border-[#334155] text-[#f8fafc] placeholder:text-[#64748b]"
+                  className="pl-9 bg-[#2e2e2e] border-[#595959] text-[#ededed] placeholder:text-[#8c8c8c]"
                 />
               </div>
               
               {/* Status Filter */}
               {selectedTemplate && ['devices', 'assets', 'all'].includes(selectedTemplate.type) && (
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-40 bg-[#1a2330] border-[#334155] text-[#f8fafc]">
+                  <SelectTrigger className="w-40 bg-[#2e2e2e] border-[#595959] text-[#ededed]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#1a2330] border-[#334155]">
+                  <SelectContent className="bg-[#2e2e2e] border-[#595959]">
                     <SelectItem value="all">Alle Status</SelectItem>
                     <SelectItem value="active">Aktiv</SelectItem>
                     <SelectItem value="inactive">Inaktiv</SelectItem>
@@ -718,7 +718,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm" 
                 onClick={loadReportData} 
                 disabled={loading || !selectedTemplate}
-                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
+                className="border-[#595959] text-[#ededed] hover:bg-[#383838]"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
                 Aktualisieren
@@ -742,7 +742,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToExcel(getCurrentData(), selectedTemplate?.id || 'report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
-                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
+                className="border-[#595959] text-[#ededed] hover:bg-[#383838]"
               >
                 <FileSpreadsheet className="h-4 w-4 mr-2" />
                 Excel
@@ -752,7 +752,7 @@ const ReportingOverview = ({ onClose }) => {
                 size="sm"
                 onClick={() => exportToCSV(getCurrentData(), selectedTemplate?.id || 'report')}
                 disabled={!selectedTemplate || getCurrentData().length === 0}
-                className="border-[#334155] text-[#f8fafc] hover:bg-[#2a3442]"
+                className="border-[#595959] text-[#ededed] hover:bg-[#383838]"
               >
                 <File className="h-4 w-4 mr-2" />
                 CSV
@@ -761,17 +761,17 @@ const ReportingOverview = ({ onClose }) => {
           </div>
           
           {/* Data Table */}
-          <div className="flex-1 overflow-auto p-6 bg-[#0a0e17]">
+          <div className="flex-1 overflow-auto p-6 bg-[#141414]">
             {!selectedTemplate ? (
-              <div className="h-full flex flex-col items-center justify-center text-[#64748b]">
+              <div className="h-full flex flex-col items-center justify-center text-[#8c8c8c]">
                 <FileText className="h-16 w-16 mb-4 opacity-30" />
                 <p className="text-lg font-medium">Wählen Sie eine Report-Vorlage</p>
                 <p className="text-sm mt-2">Klicken Sie links auf einen Report-Typ</p>
               </div>
             ) : (
-              <Card className="p-6 bg-[#12171f] border-[#334155]">
+              <Card className="p-6 bg-[#262626] border-[#595959]">
                 <div className="mb-4 flex items-center justify-between">
-                  <h2 className="text-lg font-bold flex items-center gap-2 text-[#f8fafc]">
+                  <h2 className="text-lg font-bold flex items-center gap-2 text-[#ededed]">
                     {selectedTemplate.icon && <selectedTemplate.icon className="h-5 w-5 text-[#d50c2d]" />}
                     {selectedTemplate.name}
                   </h2>
