@@ -1520,8 +1520,8 @@ const VerificationInterface = () => {
               )}
             </Button>
             
-            {/* Security Help Button - Shown when document status is unclear */}
-            {(currentStatus === 'warning' || currentStatus === 'error') && hasDocument && (
+            {/* Security Help Button - Always available when document is present */}
+            {hasDocument && (
               <SecurityHelpButton
                 scanImageUrl={scannedImages.front}
                 ocrData={verificationData}
