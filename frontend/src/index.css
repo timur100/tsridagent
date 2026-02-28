@@ -127,12 +127,49 @@ code {
 }
 
 @layer utilities {
+    /* Hetzner Dark Theme Utilities */
+    .bg-hetzner-black {
+        background-color: #141414;
+    }
+    
+    .bg-hetzner-dark {
+        background-color: #262626;
+    }
+    
+    .bg-hetzner-gray {
+        background-color: #383838;
+    }
+    
+    .bg-hetzner-input {
+        background-color: #212121;
+    }
+    
+    .bg-hetzner-red {
+        background-color: #d50c2d;
+    }
+    
+    .hover\:bg-hetzner-red-hover:hover {
+        background-color: #ed0d32;
+    }
+    
+    .text-hetzner {
+        color: #ededed;
+    }
+    
+    .text-hetzner-muted {
+        color: #8c8c8c;
+    }
+    
+    .border-hetzner {
+        border-color: #595959;
+    }
+    
     .shadow-glow {
         box-shadow: var(--shadow-glow);
     }
     
     .text-shadow-sm {
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
     }
     
     /* Status colors */
