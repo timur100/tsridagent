@@ -393,7 +393,7 @@ const ReportingOverview = ({ onClose }) => {
           {devicesWithTV.map(device => (
             <TableRow key={device.device_id}>
               <TableCell className="font-medium">{device.device_id}</TableCell>
-              <TableCell className="font-mono text-lg font-bold text-blue-500">{device.teamviewer_id}</TableCell>
+              <TableCell className="font-mono text-lg font-bold text-[#0284c7]">{device.teamviewer_id}</TableCell>
               <TableCell>{device.locationcode || '-'}</TableCell>
               <TableCell>{device.city || '-'}</TableCell>
               <TableCell>
