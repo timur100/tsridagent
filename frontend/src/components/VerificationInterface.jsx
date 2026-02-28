@@ -1520,6 +1520,20 @@ const VerificationInterface = () => {
               )}
             </Button>
             
+            {/* Security Help Button - Shown when document status is unclear */}
+            {(currentStatus === 'warning' || currentStatus === 'error') && hasDocument && (
+              <SecurityHelpButton
+                scanImageUrl={scannedImages.front}
+                ocrData={verificationData}
+                documentType={verificationData.documentClass}
+                tenantId={adminSettings.tenantId || 'default'}
+                tenantName={adminSettings.tenantName || 'TSRID'}
+                locationCode={adminSettings.locationCode || 'HQ'}
+                locationName={adminSettings.locationName || 'Hauptstandort'}
+                deviceId={adminSettings.deviceId || 'device-1'}
+              />
+            )}
+            
             <ActionButtons 
               onAction={handleAction} 
               isUnlocked={isUnlocked}
