@@ -68,15 +68,26 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     fetchContinents();
   }, []);
 
-  // Fetch continents
-  const fetchContinents = async () => {
+  // Fetch continents with retry
+  const fetchContinents = async (retryCount = 0) => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/unified-locations/continents`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
-      setContinents(data.continents || []);
+      setContinents(data.continents || ['Europa']);
     } catch (error) {
       console.error('Error fetching continents:', error);
-      toast.error('Fehler beim Laden der Kontinente');
+      if (retryCount < 2) {
+        // Retry nach 1 Sekunde
+        setTimeout(() => fetchContinents(retryCount + 1), 1000);
+      } else {
+        // Fallback auf Europa
+        setContinents(['Europa']);
+        // Nur Toast zeigen wenn nach 3 Versuchen fehlgeschlagen
+        toast.error('Fehler beim Laden der Kontinente - Fallback aktiv');
+      }
     }
   };
 
