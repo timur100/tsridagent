@@ -5,7 +5,6 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme } from '../contexts/ThemeContext';
 import { useTenant } from '../contexts/TenantContext';
 import { 
   FileText, Printer, Search, ChevronDown, ChevronRight,
