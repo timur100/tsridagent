@@ -308,6 +308,9 @@ app.include_router(services_config_router)
 # Scanner PIN Settings
 app.include_router(scanner_pin_router)
 
+# Helpdesk (Security & Technical Support)
+app.include_router(helpdesk_router)
+
 # Service Proxy (for accessing microservices externally)
 app.include_router(service_proxy_router)
 app.include_router(ticketing_proxy_router)
