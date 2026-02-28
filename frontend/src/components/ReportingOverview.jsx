@@ -63,8 +63,9 @@ const ReportingOverview = ({ onClose }) => {
   useEffect(() => {
     const loadTenants = async () => {
       try {
-        const result = await apiCall('/api/tenants');
-        const tenantsArray = result?.data?.tenants || result?.tenants || [];
+        const response = await apiCall('/api/tenants');
+        const apiData = response?.data;
+        const tenantsArray = apiData?.tenants || [];
         console.log('[Reporting] Loaded tenants:', tenantsArray.length);
         setTenants(tenantsArray);
       } catch (error) {
