@@ -350,7 +350,7 @@ const ReportingOverview = ({ onClose }) => {
               <TableCell className="font-medium">{device.device_id || '-'}</TableCell>
               <TableCell>
                 <Badge variant={device.status === 'active' ? 'default' : 'secondary'} 
-                       className={device.status === 'active' ? 'bg-green-600' : ''}>
+                       className={device.status === 'active' ? 'bg-[#16a34a]' : ''}>
                   {device.status || 'N/A'}
                 </Badge>
               </TableCell>
@@ -398,7 +398,7 @@ const ReportingOverview = ({ onClose }) => {
               <TableCell>{device.city || '-'}</TableCell>
               <TableCell>
                 <Badge variant={device.status === 'active' ? 'default' : 'secondary'}
-                       className={device.status === 'active' ? 'bg-green-600' : ''}>
+                       className={device.status === 'active' ? 'bg-[#16a34a]' : ''}>
                   {device.status || 'N/A'}
                 </Badge>
               </TableCell>
@@ -480,7 +480,7 @@ const ReportingOverview = ({ onClose }) => {
               <TableCell className="font-mono text-sm">{asset.manufacturer_sn || '-'}</TableCell>
               <TableCell>
                 <Badge variant={asset.status === 'active' ? 'default' : asset.status === 'in_stock' ? 'outline' : 'secondary'}
-                       className={asset.status === 'active' ? 'bg-green-600' : ''}>
+                       className={asset.status === 'active' ? 'bg-[#16a34a]' : ''}>
                   {asset.status || 'N/A'}
                 </Badge>
               </TableCell>
