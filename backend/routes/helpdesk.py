@@ -68,8 +68,10 @@ class HelpdeskUserCreate(BaseModel):
     password: str
     name: str
     email: Optional[str] = None
-    role: str = "agent"  # agent, supervisor, admin
+    role: str = "agent"  # agent, supervisor, admin, tenant_security
     departments: List[str] = ["security", "technical"]
+    tenant_id: Optional[str] = None  # For tenant_security role - restricts to own tenant
+    tenant_name: Optional[str] = None
 
 class HelpdeskUserUpdate(BaseModel):
     name: Optional[str] = None
@@ -77,6 +79,13 @@ class HelpdeskUserUpdate(BaseModel):
     role: Optional[str] = None
     departments: Optional[List[str]] = None
     is_active: Optional[bool] = None
+    tenant_id: Optional[str] = None
+    tenant_name: Optional[str] = None
+
+class EscalationCreate(BaseModel):
+    escalated_by_id: str
+    escalated_by_name: str
+    reason: Optional[str] = None
 
 class TicketCategoryCreate(BaseModel):
     name: str
