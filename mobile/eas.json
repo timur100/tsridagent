@@ -41,7 +41,7 @@
       "node": "20.18.0",
       "env": {
         "DEVICE_TYPE": "zebra-tc78",
-        "API_URL": "https://tsrid-web-refresh.preview.emergentagent.com"
+        "API_URL": "https://tenant-security-4.preview.emergentagent.com"
       }
     }
   },

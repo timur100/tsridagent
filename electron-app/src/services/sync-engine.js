@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://tsrid-web-refresh.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://tenant-security-4.preview.emergentagent.com');
 }
 
 /**

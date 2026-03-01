@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://tsrid-web-refresh.preview.emergentagent.com
+- **URL:** https://tenant-security-4.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4

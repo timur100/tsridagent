@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://tsrid-web-refresh.preview.emergentagent.com/portal/admin
+https://tenant-security-4.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://tsrid-web-refresh.preview.emergentagent.com/portal/admin
+**URL:** https://tenant-security-4.preview.emergentagent.com/portal/admin

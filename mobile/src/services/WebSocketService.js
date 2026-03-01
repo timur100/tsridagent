@@ -6,7 +6,7 @@ import Constants from 'expo-constants';
 import { authAPI } from './api';
 
 // Get WebSocket URL from API URL (replace http with ws)
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://tsrid-web-refresh.preview.emergentagent.com';
+const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://tenant-security-4.preview.emergentagent.com';
 const WS_BASE_URL = API_URL.replace('https://', 'wss://').replace('http://', 'ws://');
 
 class WebSocketService {

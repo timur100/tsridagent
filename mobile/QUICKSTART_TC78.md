@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tsrid-web-refresh.preview.emergentagent.com`
+`https://tenant-security-4.preview.emergentagent.com`
 
 ---
 

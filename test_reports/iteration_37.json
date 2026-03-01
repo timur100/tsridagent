@@ -54,7 +54,7 @@
     }
   },
   "navigation_path": {
-    "step1": "Open https://tsrid-web-refresh.preview.emergentagent.com",
+    "step1": "Open https://tenant-security-4.preview.emergentagent.com",
     "step2": "Enter PIN: 9988",
     "step3": "Click 'Admin-Portal' button (opens new page)",
     "step4": "Login with admin@tsrid.com / admin123",
