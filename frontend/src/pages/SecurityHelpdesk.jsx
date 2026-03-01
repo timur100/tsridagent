@@ -171,7 +171,10 @@ const SecurityHelpdesk = () => {
   };
 
   // Status badge
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status, isEscalated = false) => {
+    if (isEscalated && status !== 'approved' && status !== 'rejected') {
+      return <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/50 animate-pulse">ESKALIERT</Badge>;
+    }
     switch (status) {
       case 'pending':
         return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 animate-pulse">Wartend</Badge>;
@@ -184,6 +187,13 @@ const SecurityHelpdesk = () => {
       default:
         return <Badge>{status}</Badge>;
     }
+  };
+
+  // Format datetime
+  const formatDateTime = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('de-DE') + ' ' + date.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
   };
 
   // Wallboard View
