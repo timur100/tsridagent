@@ -262,6 +262,58 @@ const TenantSecurityPortal = () => {
     }
   };
 
+  // Database addition request status badge
+  const getDbStatusBadge = (status) => {
+    switch (status) {
+      case 'pending_tenant_approval':
+        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50 animate-pulse">Genehmigung ausstehend</Badge>;
+      case 'tenant_approved':
+        return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/50">An TSRID gesendet</Badge>;
+      case 'completed':
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Abgeschlossen</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/50">Abgelehnt</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
+  // Approve database addition request
+  const approveDbRequest = async (requestId) => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/helpdesk/database-additions/${requestId}/tenant-approve?approved_by_id=${currentUser.user_id}&approved_by_name=${encodeURIComponent(currentUser.name)}`,
+        { method: 'PUT' }
+      );
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Anfrage genehmigt und an TSRID weitergeleitet');
+        setSelectedDbRequest(data.request);
+        fetchDatabaseAdditionRequests();
+      }
+    } catch (error) {
+      toast.error('Fehler beim Genehmigen der Anfrage');
+    }
+  };
+
+  // Reject database addition request
+  const rejectDbRequest = async (requestId, reason = '') => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/helpdesk/database-additions/${requestId}/tenant-reject?rejected_by_id=${currentUser.user_id}&rejected_by_name=${encodeURIComponent(currentUser.name)}${reason ? `&reason=${encodeURIComponent(reason)}` : ''}`,
+        { method: 'PUT' }
+      );
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Anfrage abgelehnt');
+        setSelectedDbRequest(data.request);
+        fetchDatabaseAdditionRequests();
+      }
+    } catch (error) {
+      toast.error('Fehler beim Ablehnen der Anfrage');
+    }
+  };
+
   // Login Screen
   if (!isLoggedIn) {
     return (
