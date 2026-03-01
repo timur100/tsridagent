@@ -482,7 +482,12 @@ const TenantSecurityPortal = () => {
             <div className="flex items-center gap-2 bg-yellow-500/20 px-3 py-1.5 rounded-lg">
               <AlertTriangle className="w-4 h-4 text-yellow-400" />
               <span className="text-yellow-400 font-bold">{requests.filter(r => r.status === 'pending').length}</span>
-              <span className="text-yellow-400/70 text-sm">Wartend</span>
+              <span className="text-yellow-400/70 text-sm">Security</span>
+            </div>
+            <div className="flex items-center gap-2 bg-amber-500/20 px-3 py-1.5 rounded-lg">
+              <Database className="w-4 h-4 text-amber-400" />
+              <span className="text-amber-400 font-bold">{databaseAdditionRequests.filter(r => r.status === 'pending_tenant_approval').length}</span>
+              <span className="text-amber-400/70 text-sm">Datenbank</span>
             </div>
             
             <Button variant="outline" size="icon" onClick={() => setSoundEnabled(!soundEnabled)} className="border-[#444]">
