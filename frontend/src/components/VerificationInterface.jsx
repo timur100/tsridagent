@@ -162,6 +162,7 @@ const VerificationInterface = () => {
   const [isSecurityDashboardOpen, setIsSecurityDashboardOpen] = useState(false);
   const [verificationHistory, setVerificationHistory] = useState([]);
   const [infoMessages, setInfoMessages] = useState([]);
+  const [unknownScanCount, setUnknownScanCount] = useState(0); // Track consecutive unknown scans
   const [securityUsers, setSecurityUsers] = useState([
     { id: 0, employeeNumber: '00', name: 'Administrator', pin: '1234', role: 'Admin' },
     { id: 1, employeeNumber: '01', name: 'Max Müller', pin: '1111', role: 'Security' },
