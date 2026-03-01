@@ -87,6 +87,17 @@ class EscalationCreate(BaseModel):
     escalated_by_name: str
     reason: Optional[str] = None
 
+class DatabaseAdditionRequest(BaseModel):
+    tenant_id: str
+    tenant_name: str
+    location_code: str
+    location_name: str
+    device_id: str
+    scan_image_url: str
+    ocr_data: dict = {}
+    document_type: str = "unknown"
+    scan_attempts: int = 2  # Number of times scanned before requesting addition
+
 class TicketCategoryCreate(BaseModel):
     name: str
     description: Optional[str] = None
