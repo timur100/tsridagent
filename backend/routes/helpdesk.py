@@ -133,12 +133,19 @@ async def create_security_request(request: SecurityRequestCreate):
         "status": "pending",
         "handler_id": None,
         "handler_name": None,
+        "handler_tenant_id": None,  # Track which tenant is handling
         "notes": None,
         "result": None,  # approved, rejected
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc),
         "accepted_at": None,
-        "resolved_at": None
+        "resolved_at": None,
+        # Escalation fields
+        "is_escalated": False,
+        "escalated_at": None,
+        "escalated_by_id": None,
+        "escalated_by_name": None,
+        "escalation_reason": None
     }
     
     security_requests_collection.insert_one(doc)
