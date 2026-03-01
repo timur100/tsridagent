@@ -238,6 +238,138 @@ async def update_security_request(request_id: str, update: SecurityRequestUpdate
     
     return {"success": True, "request": updated_request}
 
+# ============ TENANT-SPECIFIC SECURITY ============
+
+@router.get("/security/tenant/{tenant_id}/requests")
+async def get_tenant_security_requests(
+    tenant_id: str,
+    status: Optional[str] = None,
+    limit: int = Query(default=50, le=200)
+):
+    """Get security requests for a specific tenant only"""
+    query = {"tenant_id": tenant_id}
+    if status:
+        query["status"] = status
+    
+    requests = list(security_requests_collection.find(
+        query, 
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit))
+    
+    # Count by status for this tenant
+    base_query = {"tenant_id": tenant_id}
+    pending_count = security_requests_collection.count_documents({**base_query, "status": "pending"})
+    in_progress_count = security_requests_collection.count_documents({**base_query, "status": "in_progress"})
+    escalated_count = security_requests_collection.count_documents({**base_query, "is_escalated": True, "status": {"$nin": ["approved", "rejected"]}})
+    
+    return {
+        "success": True,
+        "requests": requests,
+        "total": len(requests),
+        "pending_count": pending_count,
+        "in_progress_count": in_progress_count,
+        "escalated_count": escalated_count,
+        "tenant_id": tenant_id
+    }
+
+@router.get("/security/tenant/{tenant_id}/wallboard")
+async def get_tenant_wallboard_data(tenant_id: str):
+    """Get wallboard data for a specific tenant"""
+    base_query = {"tenant_id": tenant_id}
+    
+    # Get pending requests for this tenant
+    pending = list(security_requests_collection.find(
+        {**base_query, "status": "pending"},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(20))
+    
+    # Get in-progress requests for this tenant
+    in_progress = list(security_requests_collection.find(
+        {**base_query, "status": "in_progress"},
+        {"_id": 0}
+    ).sort("accepted_at", -1).limit(10))
+    
+    # Statistics for this tenant
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    today_stats = {
+        "total": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}}),
+        "approved": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}, "result": "approved"}),
+        "rejected": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}, "result": "rejected"}),
+        "pending": security_requests_collection.count_documents({**base_query, "status": "pending"}),
+        "in_progress": security_requests_collection.count_documents({**base_query, "status": "in_progress"}),
+        "escalated": security_requests_collection.count_documents({**base_query, "is_escalated": True, "status": {"$nin": ["approved", "rejected"]}})
+    }
+    
+    return {
+        "success": True,
+        "pending": pending,
+        "in_progress": in_progress,
+        "stats": today_stats,
+        "tenant_id": tenant_id,
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+# ============ ESCALATION ============
+
+@router.post("/security/requests/{request_id}/escalate")
+async def escalate_security_request(request_id: str, escalation: EscalationCreate):
+    """Escalate a security request to TSRID (service provider)"""
+    request = security_requests_collection.find_one({"request_id": request_id})
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if request.get("is_escalated"):
+        raise HTTPException(status_code=400, detail="Request already escalated")
+    
+    update_doc = {
+        "is_escalated": True,
+        "escalated_at": datetime.now(timezone.utc),
+        "escalated_by_id": escalation.escalated_by_id,
+        "escalated_by_name": escalation.escalated_by_name,
+        "escalation_reason": escalation.reason,
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    security_requests_collection.update_one(
+        {"request_id": request_id},
+        {"$set": update_doc}
+    )
+    
+    updated_request = security_requests_collection.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+    
+    return {"success": True, "request": updated_request, "message": "Request escalated to TSRID"}
+
+@router.get("/security/escalated")
+async def get_escalated_requests(
+    status: Optional[str] = None,
+    limit: int = Query(default=50, le=200)
+):
+    """Get all escalated security requests (for TSRID service provider view)"""
+    query = {"is_escalated": True}
+    if status:
+        query["status"] = status
+    
+    requests = list(security_requests_collection.find(
+        query, 
+        {"_id": 0}
+    ).sort("escalated_at", -1).limit(limit))
+    
+    # Count escalated by status
+    pending_escalated = security_requests_collection.count_documents({"is_escalated": True, "status": "pending"})
+    in_progress_escalated = security_requests_collection.count_documents({"is_escalated": True, "status": "in_progress"})
+    
+    return {
+        "success": True,
+        "requests": requests,
+        "total": len(requests),
+        "pending_escalated": pending_escalated,
+        "in_progress_escalated": in_progress_escalated
+    }
+
 @router.get("/security/wallboard")
 async def get_wallboard_data():
     """Get data for wallboard display"""
