@@ -680,7 +680,9 @@ async def helpdesk_login(username: str, password: str):
             "username": user["username"],
             "name": user["name"],
             "role": user["role"],
-            "departments": user["departments"]
+            "departments": user["departments"],
+            "tenant_id": user.get("tenant_id"),
+            "tenant_name": user.get("tenant_name")
         }
     }
 
