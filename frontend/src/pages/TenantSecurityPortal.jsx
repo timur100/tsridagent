@@ -107,13 +107,36 @@ const TenantSecurityPortal = () => {
     }
   }, [currentUser]);
 
+  // Fetch database addition requests for tenant
+  const fetchDatabaseAdditionRequests = useCallback(async () => {
+    if (!currentUser?.tenant_id) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/helpdesk/database-additions?tenant_id=${currentUser.tenant_id}`);
+      const data = await response.json();
+      if (data.success) {
+        const newPendingCount = data.pending_tenant_approval || 0;
+        if (newPendingCount > previousDbPendingCount.current && previousDbPendingCount.current > 0) {
+          if (soundEnabled && notificationSound) {
+            notificationSound.play().catch(() => {});
+          }
+          toast('Neue Datenbank-Anfrage eingegangen!', { icon: '📚' });
+        }
+        previousDbPendingCount.current = newPendingCount;
+        setDatabaseAdditionRequests(data.requests || []);
+      }
+    } catch (error) {
+      console.error('Error fetching database addition requests:', error);
+    }
+  }, [currentUser, soundEnabled]);
+
   // Load data when logged in
   useEffect(() => {
     if (!isLoggedIn || !currentUser) return;
 
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchRequests(), fetchWallboardData()]);
+      await Promise.all([fetchRequests(), fetchWallboardData(), fetchDatabaseAdditionRequests()]);
       setLoading(false);
     };
     loadData();
@@ -121,10 +144,11 @@ const TenantSecurityPortal = () => {
     const interval = setInterval(() => {
       fetchRequests();
       fetchWallboardData();
+      fetchDatabaseAdditionRequests();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isLoggedIn, currentUser, fetchRequests, fetchWallboardData]);
+  }, [isLoggedIn, currentUser, fetchRequests, fetchWallboardData, fetchDatabaseAdditionRequests]);
 
   // Accept request
   const acceptRequest = async (requestId) => {
