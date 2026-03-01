@@ -388,6 +388,11 @@ const SecurityHelpdesk = () => {
               <span className="text-blue-400 font-bold">{requests.filter(r => r.status === 'in_progress').length}</span>
               <span className="text-blue-400/70 text-sm">In Bearbeitung</span>
             </div>
+            <div className="flex items-center gap-2 bg-amber-500/20 px-3 py-1.5 rounded-lg">
+              <Database className="w-4 h-4 text-amber-400" />
+              <span className="text-amber-400 font-bold">{databaseRequests.length}</span>
+              <span className="text-amber-400/70 text-sm">DB-Anfragen</span>
+            </div>
             
             {/* Controls */}
             <Button 
@@ -409,7 +414,7 @@ const SecurityHelpdesk = () => {
             <Button 
               variant="outline" 
               size="icon"
-              onClick={() => { fetchRequests(); fetchWallboardData(); }}
+              onClick={() => { fetchRequests(); fetchWallboardData(); fetchDatabaseRequests(); }}
               className="border-[#444]"
             >
               <RefreshCw className="w-4 h-4" />
