@@ -427,53 +427,147 @@ const SecurityHelpdesk = () => {
         {/* Request List */}
         <div className="w-1/3 border-r border-[#333] overflow-y-auto">
           <div className="p-4">
-            <h2 className="text-lg font-bold mb-4">Anfragen</h2>
+            {/* Tab Navigation */}
+            <div className="flex gap-2 mb-4">
+              <button
+                onClick={() => { setViewMode('all'); setSelectedRequest(null); setSelectedDbRequest(null); }}
+                className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2
+                  ${viewMode === 'all' 
+                    ? 'bg-[#d50c2d] text-white' 
+                    : 'bg-[#262626] text-gray-400 hover:bg-[#333]'
+                  }`}
+              >
+                <Shield className="w-4 h-4" />
+                Security
+                {requests.filter(r => r.status === 'pending').length > 0 && (
+                  <span className="bg-yellow-500 text-black text-xs px-1.5 py-0.5 rounded-full">
+                    {requests.filter(r => r.status === 'pending').length}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => { setViewMode('database'); setSelectedRequest(null); setSelectedDbRequest(null); }}
+                className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2
+                  ${viewMode === 'database' 
+                    ? 'bg-amber-600 text-white' 
+                    : 'bg-[#262626] text-gray-400 hover:bg-[#333]'
+                  }`}
+              >
+                <Database className="w-4 h-4" />
+                Datenbank
+                {databaseRequests.length > 0 && (
+                  <span className="bg-amber-500 text-black text-xs px-1.5 py-0.5 rounded-full">
+                    {databaseRequests.length}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Security Requests List */}
+            {viewMode === 'all' && (
+              <>
+                <h2 className="text-lg font-bold mb-4">Security Anfragen</h2>
             
-            {loading ? (
-              <div className="text-center text-gray-500 py-8">Laden...</div>
-            ) : (
-              <div className="space-y-3">
-                {requests.map((req) => (
-                  <Card 
-                    key={req.request_id}
-                    className={`
-                      bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all
-                      hover:border-[#d50c2d]/50
-                      ${selectedRequest?.request_id === req.request_id ? 'border-[#d50c2d] ring-1 ring-[#d50c2d]' : ''}
-                      ${req.status === 'pending' ? 'animate-pulse' : ''}
-                    `}
-                    onClick={() => setSelectedRequest(req)}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <Building className="w-4 h-4 text-gray-400" />
-                        <span className="font-bold">{req.tenant_name}</span>
-                      </div>
-                      {getStatusBadge(req.status)}
-                    </div>
-                    <div className="text-sm text-gray-400 mb-2">
-                      <MapPin className="w-3 h-3 inline mr-1" />
-                      {req.location_name}
-                    </div>
-                    {req.predefined_question_text && (
-                      <div className="text-sm text-yellow-400/80 bg-yellow-500/10 px-2 py-1 rounded">
-                        {req.predefined_question_text}
+                {loading ? (
+                  <div className="text-center text-gray-500 py-8">Laden...</div>
+                ) : (
+                  <div className="space-y-3">
+                    {requests.map((req) => (
+                      <Card 
+                        key={req.request_id}
+                        className={`
+                          bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all
+                          hover:border-[#d50c2d]/50
+                          ${selectedRequest?.request_id === req.request_id ? 'border-[#d50c2d] ring-1 ring-[#d50c2d]' : ''}
+                          ${req.status === 'pending' ? 'animate-pulse' : ''}
+                        `}
+                        onClick={() => setSelectedRequest(req)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <Building className="w-4 h-4 text-gray-400" />
+                            <span className="font-bold">{req.tenant_name}</span>
+                          </div>
+                          {getStatusBadge(req.status)}
+                        </div>
+                        <div className="text-sm text-gray-400 mb-2">
+                          <MapPin className="w-3 h-3 inline mr-1" />
+                          {req.location_name}
+                        </div>
+                        {req.predefined_question_text && (
+                          <div className="text-sm text-yellow-400/80 bg-yellow-500/10 px-2 py-1 rounded">
+                            {req.predefined_question_text}
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
+                          <span>{formatTime(req.created_at)}</span>
+                          <span className="text-yellow-400">{formatWaitingTime(req.created_at)}</span>
+                        </div>
+                      </Card>
+                    ))}
+                    
+                    {requests.length === 0 && (
+                      <div className="text-center text-gray-500 py-8">
+                        <Shield className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        Keine Security-Anfragen vorhanden
                       </div>
                     )}
-                    <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-                      <span>{formatTime(req.created_at)}</span>
-                      <span className="text-yellow-400">{formatWaitingTime(req.created_at)}</span>
-                    </div>
-                  </Card>
-                ))}
-                
-                {requests.length === 0 && (
-                  <div className="text-center text-gray-500 py-8">
-                    <Shield className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    Keine Anfragen vorhanden
                   </div>
                 )}
-              </div>
+              </>
+            )}
+
+            {/* Database Addition Requests List */}
+            {viewMode === 'database' && (
+              <>
+                <h2 className="text-lg font-bold mb-4">Datenbank-Anfragen</h2>
+                <p className="text-sm text-gray-400 mb-4">Von Tenants genehmigte Dokumente zur Aufnahme in die Datenbank</p>
+            
+                {loading ? (
+                  <div className="text-center text-gray-500 py-8">Laden...</div>
+                ) : (
+                  <div className="space-y-3">
+                    {databaseRequests.map((req) => (
+                      <Card 
+                        key={req.request_id}
+                        className={`
+                          bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all
+                          hover:border-amber-500/50
+                          ${selectedDbRequest?.request_id === req.request_id ? 'border-amber-500 ring-1 ring-amber-500' : ''}
+                          ${req.status === 'tenant_approved' ? 'border-l-4 border-l-amber-500' : ''}
+                        `}
+                        onClick={() => setSelectedDbRequest(req)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex items-center gap-2">
+                            <Building className="w-4 h-4 text-gray-400" />
+                            <span className="font-bold">{req.tenant_name}</span>
+                          </div>
+                          {getDbStatusBadge(req.status)}
+                        </div>
+                        <div className="text-sm text-gray-400 mb-2">
+                          <MapPin className="w-3 h-3 inline mr-1" />
+                          {req.location_name}
+                        </div>
+                        <div className="text-sm text-amber-400/80 bg-amber-500/10 px-2 py-1 rounded mb-2">
+                          Dokumenttyp: {req.document_type || 'Unbekannt'}
+                        </div>
+                        <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
+                          <span>Scan-Versuche: {req.scan_attempts}</span>
+                          <span className="text-amber-400">{formatWaitingTime(req.tenant_approved_at || req.created_at)}</span>
+                        </div>
+                      </Card>
+                    ))}
+                    
+                    {databaseRequests.length === 0 && (
+                      <div className="text-center text-gray-500 py-8">
+                        <Database className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                        Keine Datenbank-Anfragen vorhanden
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
