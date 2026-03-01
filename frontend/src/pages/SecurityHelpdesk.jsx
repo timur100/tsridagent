@@ -87,7 +87,7 @@ const SecurityHelpdesk = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchRequests(), fetchWallboardData()]);
+      await Promise.all([fetchRequests(), fetchWallboardData(), fetchEscalatedRequests()]);
       setLoading(false);
     };
     loadData();
@@ -96,10 +96,11 @@ const SecurityHelpdesk = () => {
     const interval = setInterval(() => {
       fetchRequests();
       fetchWallboardData();
+      fetchEscalatedRequests();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [fetchRequests, fetchWallboardData]);
+  }, [fetchRequests, fetchWallboardData, fetchEscalatedRequests]);
 
   // Accept request
   const acceptRequest = async (requestId) => {
