@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Shield, Phone, Clock, CheckCircle, XCircle, AlertTriangle, 
   User, MapPin, Monitor, RefreshCw, Volume2, VolumeX, 
-  Maximize2, ChevronRight, Eye, FileText, Building, ArrowUpRight
+  Maximize2, ChevronRight, Eye, FileText, Building, ArrowUpRight, Database
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
