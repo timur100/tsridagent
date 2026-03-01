@@ -76,13 +76,35 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
   - Status-Workflow: Offen → In Bearbeitung → Gelöst → Geschlossen
   - Filter nach Status, Priorität, Suche
 
-#### "2. Meinung anfordern" Button
-- **Position:** Scan-Anwendung, nach jedem Dokument-Scan
+#### "2. Meinung anfordern" Button (bei ERROR/Rot Status)
+- **Position:** Scan-Anwendung, nach jedem Dokument-Scan mit Fehler
 - **Funktion:** Mitarbeiter kann direkt Helpdesk kontaktieren
 - **Status-Anzeige:**
   - Gelb pulsierend: "Warte auf Helpdesk..."
   - Blau: "Anfrage in Bearbeitung"
   - Grün/Rot Vollbild: APPROVED / NOT APPROVED
+
+#### "Dokument zur Datenbank hinzufügen" Workflow (bei WARNING/Gelb Status) ✅ NEU (01.03.2026)
+- **Trigger:** Unbekanntes Dokument (Warning-Status)
+- **Workflow:**
+  1. **1. Warning:** "Bitte erneut scannen" Prompt wird angezeigt
+  2. **2. Warning:** "Zur Datenbank hinzufügen" Button erscheint
+  3. **Klick:** Anfrage wird an Tenant Security Portal gesendet
+  4. **Tenant genehmigt:** Anfrage wird an TSRID weitergeleitet
+  5. **TSRID verarbeitet:** Dokument wird zur Datenbank hinzugefügt
+- **Komponente:** `DatabaseAdditionButton.jsx`
+- **API:** `/api/helpdesk/database-additions`
+
+#### Tenant Security Portal (`/helpdesk/security/tenant`) ✅ NEU (01.03.2026)
+- **Funktion:** Portal für Tenant-eigene Security-Mitarbeiter
+- **Features:**
+  - Tab-Navigation: "Security" und "Datenbank"
+  - Verwaltung von Security-Anfragen für den eigenen Tenant
+  - Verwaltung von Datenbank-Additions-Anfragen
+  - Genehmigung/Ablehnung mit Weiterleitung an TSRID
+  - Wallboard-Ansicht
+  - Sound-Benachrichtigungen
+- **Rollen:** `tenant_security` (nur eigene Tenant-Daten sichtbar)
 
 #### Backend-APIs (`/api/helpdesk/*`)
 - Security Requests: CRUD + Wallboard
