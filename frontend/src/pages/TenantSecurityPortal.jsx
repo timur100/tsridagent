@@ -534,6 +534,54 @@ const TenantSecurityPortal = () => {
               )}
             </div>
           )}
+            </>
+          )}
+
+          {/* Database Addition Requests List */}
+          {activeTab === 'database' && (
+            <>
+              <h2 className="text-lg font-bold mb-4">Datenbank-Anfragen</h2>
+              
+              {loading ? (
+                <div className="text-center text-gray-500 py-8">Laden...</div>
+              ) : (
+                <div className="space-y-3">
+                  {databaseAdditionRequests.map((req) => (
+                    <Card 
+                      key={req.request_id}
+                      className={`bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all hover:border-amber-500/50
+                        ${selectedDbRequest?.request_id === req.request_id ? 'border-amber-500 ring-1 ring-amber-500' : ''}
+                        ${req.status === 'pending_tenant_approval' ? 'animate-pulse border-l-4 border-l-amber-500' : ''}
+                      `}
+                      onClick={() => setSelectedDbRequest(req)}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div className="flex items-center gap-2">
+                          <Database className="w-4 h-4 text-amber-400" />
+                          <span className="font-bold">{req.location_name}</span>
+                        </div>
+                        {getDbStatusBadge(req.status)}
+                      </div>
+                      <div className="text-sm text-gray-400 mb-2">
+                        Dokumenttyp: {req.document_type || 'Unbekannt'}
+                      </div>
+                      <div className="text-xs text-gray-500 flex justify-between">
+                        <span>Scan-Versuche: {req.scan_attempts}</span>
+                        <span className="text-amber-400">{formatWaitingTime(req.created_at)}</span>
+                      </div>
+                    </Card>
+                  ))}
+                  
+                  {databaseAdditionRequests.length === 0 && (
+                    <div className="text-center text-gray-500 py-8">
+                      <Database className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      Keine Datenbank-Anfragen vorhanden
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         {/* Request Detail */}
