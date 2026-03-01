@@ -22,6 +22,7 @@ security_requests_collection = db['security_requests']
 technical_tickets_collection = db['technical_tickets']
 helpdesk_users_collection = db['helpdesk_users']
 ticket_categories_collection = db['ticket_categories']
+database_addition_requests_collection = db['database_addition_requests']
 
 # ============ MODELS ============
 
