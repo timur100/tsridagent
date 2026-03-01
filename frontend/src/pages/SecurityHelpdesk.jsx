@@ -174,6 +174,24 @@ const SecurityHelpdesk = () => {
     }
   };
 
+  // Complete database addition request (TSRID processes it)
+  const completeDbRequest = async (requestId) => {
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/helpdesk/database-additions/${requestId}/tsrid-complete?processed_by_id=${agentId}&processed_by_name=${encodeURIComponent(agentName)}`,
+        { method: 'PUT' }
+      );
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Dokument zur Datenbank hinzugefügt!');
+        setSelectedDbRequest(null);
+        fetchDatabaseRequests();
+      }
+    } catch (error) {
+      toast.error('Fehler beim Verarbeiten der Anfrage');
+    }
+  };
+
   // Format time
   const formatTime = (dateString) => {
     if (!dateString) return '-';
