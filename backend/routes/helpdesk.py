@@ -574,8 +574,10 @@ async def create_helpdesk_user(user: HelpdeskUserCreate):
         "password_hash": hash_password(user.password),
         "name": user.name,
         "email": user.email,
-        "role": user.role,
+        "role": user.role,  # agent, supervisor, admin, tenant_security
         "departments": user.departments,
+        "tenant_id": user.tenant_id,  # For tenant_security role
+        "tenant_name": user.tenant_name,
         "is_active": True,
         "created_at": datetime.now(timezone.utc),
         "last_login": None
