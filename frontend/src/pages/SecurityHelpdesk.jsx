@@ -86,11 +86,32 @@ const SecurityHelpdesk = () => {
     }
   }, []);
 
+  // Fetch database addition requests (approved by tenants, waiting for TSRID)
+  const fetchDatabaseRequests = useCallback(async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/helpdesk/database-additions/tsrid/pending`);
+      const data = await response.json();
+      if (data.success) {
+        const newCount = data.total || 0;
+        if (newCount > previousDbPendingCount.current && previousDbPendingCount.current > 0) {
+          if (soundEnabled && notificationSound) {
+            notificationSound.play().catch(() => {});
+          }
+          toast('Neue Datenbank-Anfrage von Tenant!', { icon: '📚' });
+        }
+        previousDbPendingCount.current = newCount;
+        setDatabaseRequests(data.requests || []);
+      }
+    } catch (error) {
+      console.error('Error fetching database requests:', error);
+    }
+  }, [soundEnabled]);
+
   // Initial load and polling
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchRequests(), fetchWallboardData(), fetchEscalatedRequests()]);
+      await Promise.all([fetchRequests(), fetchWallboardData(), fetchEscalatedRequests(), fetchDatabaseRequests()]);
       setLoading(false);
     };
     loadData();
@@ -100,10 +121,11 @@ const SecurityHelpdesk = () => {
       fetchRequests();
       fetchWallboardData();
       fetchEscalatedRequests();
+      fetchDatabaseRequests();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [fetchRequests, fetchWallboardData, fetchEscalatedRequests]);
+  }, [fetchRequests, fetchWallboardData, fetchEscalatedRequests, fetchDatabaseRequests]);
 
   // Accept request
   const acceptRequest = async (requestId) => {
