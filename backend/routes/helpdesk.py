@@ -442,6 +442,219 @@ async def get_wallboard_data(tenant_id: Optional[str] = None):
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
+# ============ DATABASE ADDITION REQUESTS ============
+
+@router.post("/database-additions")
+async def create_database_addition_request(request: DatabaseAdditionRequest):
+    """Create a request to add an unknown document to the database"""
+    request_id = str(uuid.uuid4())
+    
+    doc = {
+        "request_id": request_id,
+        "request_type": "database_addition",
+        "tenant_id": request.tenant_id,
+        "tenant_name": request.tenant_name,
+        "location_code": request.location_code,
+        "location_name": request.location_name,
+        "device_id": request.device_id,
+        "scan_image_url": request.scan_image_url,
+        "ocr_data": request.ocr_data,
+        "document_type": request.document_type,
+        "scan_attempts": request.scan_attempts,
+        # Workflow status
+        "status": "pending_tenant_approval",  # pending_tenant_approval, tenant_approved, tsrid_processing, completed, rejected
+        # Tenant approval
+        "tenant_approved": False,
+        "tenant_approved_at": None,
+        "tenant_approved_by_id": None,
+        "tenant_approved_by_name": None,
+        # TSRID processing
+        "tsrid_received": False,
+        "tsrid_received_at": None,
+        "tsrid_processed": False,
+        "tsrid_processed_at": None,
+        "tsrid_processed_by_id": None,
+        "tsrid_processed_by_name": None,
+        # Timestamps
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    database_addition_requests_collection.insert_one(doc)
+    doc.pop('_id', None)
+    
+    return {"success": True, "request_id": request_id, "request": doc}
+
+@router.get("/database-additions")
+async def get_database_addition_requests(
+    tenant_id: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = Query(default=50, le=200)
+):
+    """Get database addition requests"""
+    query = {}
+    if tenant_id:
+        query["tenant_id"] = tenant_id
+    if status:
+        query["status"] = status
+    
+    requests = list(database_addition_requests_collection.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit))
+    
+    # Count by status
+    pending_tenant = database_addition_requests_collection.count_documents(
+        {**({} if not tenant_id else {"tenant_id": tenant_id}), "status": "pending_tenant_approval"}
+    )
+    pending_tsrid = database_addition_requests_collection.count_documents(
+        {"status": "tenant_approved", "tsrid_received": True}
+    )
+    
+    return {
+        "success": True,
+        "requests": requests,
+        "total": len(requests),
+        "pending_tenant_approval": pending_tenant,
+        "pending_tsrid_processing": pending_tsrid
+    }
+
+@router.get("/database-additions/{request_id}")
+async def get_database_addition_request(request_id: str):
+    """Get a specific database addition request"""
+    request = database_addition_requests_collection.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    return {"success": True, "request": request}
+
+@router.put("/database-additions/{request_id}/tenant-approve")
+async def tenant_approve_database_addition(
+    request_id: str,
+    approved_by_id: str,
+    approved_by_name: str
+):
+    """Tenant approves the database addition request - forwards to TSRID"""
+    request = database_addition_requests_collection.find_one({"request_id": request_id})
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if request.get("status") != "pending_tenant_approval":
+        raise HTTPException(status_code=400, detail="Request is not pending tenant approval")
+    
+    update_doc = {
+        "status": "tenant_approved",
+        "tenant_approved": True,
+        "tenant_approved_at": datetime.now(timezone.utc),
+        "tenant_approved_by_id": approved_by_id,
+        "tenant_approved_by_name": approved_by_name,
+        "tsrid_received": True,
+        "tsrid_received_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    database_addition_requests_collection.update_one(
+        {"request_id": request_id},
+        {"$set": update_doc}
+    )
+    
+    updated_request = database_addition_requests_collection.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+    
+    return {"success": True, "request": updated_request, "message": "Request forwarded to TSRID"}
+
+@router.put("/database-additions/{request_id}/tenant-reject")
+async def tenant_reject_database_addition(
+    request_id: str,
+    rejected_by_id: str,
+    rejected_by_name: str,
+    reason: Optional[str] = None
+):
+    """Tenant rejects the database addition request"""
+    request = database_addition_requests_collection.find_one({"request_id": request_id})
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    update_doc = {
+        "status": "rejected",
+        "tenant_approved": False,
+        "tenant_rejected_at": datetime.now(timezone.utc),
+        "tenant_rejected_by_id": rejected_by_id,
+        "tenant_rejected_by_name": rejected_by_name,
+        "rejection_reason": reason,
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    database_addition_requests_collection.update_one(
+        {"request_id": request_id},
+        {"$set": update_doc}
+    )
+    
+    updated_request = database_addition_requests_collection.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+    
+    return {"success": True, "request": updated_request}
+
+@router.put("/database-additions/{request_id}/tsrid-complete")
+async def tsrid_complete_database_addition(
+    request_id: str,
+    processed_by_id: str,
+    processed_by_name: str
+):
+    """TSRID marks the database addition as completed"""
+    request = database_addition_requests_collection.find_one({"request_id": request_id})
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    if request.get("status") != "tenant_approved":
+        raise HTTPException(status_code=400, detail="Request is not approved by tenant")
+    
+    update_doc = {
+        "status": "completed",
+        "tsrid_processed": True,
+        "tsrid_processed_at": datetime.now(timezone.utc),
+        "tsrid_processed_by_id": processed_by_id,
+        "tsrid_processed_by_name": processed_by_name,
+        "updated_at": datetime.now(timezone.utc)
+    }
+    
+    database_addition_requests_collection.update_one(
+        {"request_id": request_id},
+        {"$set": update_doc}
+    )
+    
+    updated_request = database_addition_requests_collection.find_one(
+        {"request_id": request_id},
+        {"_id": 0}
+    )
+    
+    return {"success": True, "request": updated_request, "message": "Document added to database"}
+
+@router.get("/database-additions/tsrid/pending")
+async def get_tsrid_pending_database_additions():
+    """Get all database addition requests pending TSRID processing"""
+    requests = list(database_addition_requests_collection.find(
+        {"status": "tenant_approved"},
+        {"_id": 0}
+    ).sort("tsrid_received_at", -1))
+    
+    return {
+        "success": True,
+        "requests": requests,
+        "total": len(requests)
+    }
+
 # ============ TECHNICAL TICKETS ============
 
 @router.post("/tickets")
