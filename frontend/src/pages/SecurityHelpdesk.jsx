@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Shield, Phone, Clock, CheckCircle, XCircle, AlertTriangle, 
   User, MapPin, Monitor, RefreshCw, Volume2, VolumeX, 
-  Maximize2, ChevronRight, Eye, FileText, Building
+  Maximize2, ChevronRight, Eye, FileText, Building, ArrowUpRight
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -16,25 +16,26 @@ const notificationSound = typeof Audio !== 'undefined' ? new Audio('data:audio/w
 
 const SecurityHelpdesk = () => {
   const [requests, setRequests] = useState([]);
+  const [escalatedRequests, setEscalatedRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [wallboardData, setWallboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isWallboard, setIsWallboard] = useState(false);
-  const [agentName, setAgentName] = useState('Helpdesk Agent');
-  const [agentId, setAgentId] = useState('agent-1');
+  const [viewMode, setViewMode] = useState('all'); // 'all', 'escalated'
+  const [agentName, setAgentName] = useState('TSRID Support');
+  const [agentId, setAgentId] = useState('tsrid-admin');
   const previousPendingCount = useRef(0);
+  const previousEscalatedCount = useRef(0);
 
-  // Fetch requests
+  // Fetch all requests
   const fetchRequests = useCallback(async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/helpdesk/security/requests?limit=100`);
       const data = await response.json();
       if (data.success) {
-        // Check for new requests
         const newPendingCount = data.pending_count || 0;
         if (newPendingCount > previousPendingCount.current && previousPendingCount.current > 0) {
-          // New request arrived
           if (soundEnabled && notificationSound) {
             notificationSound.play().catch(() => {});
           }
@@ -45,6 +46,27 @@ const SecurityHelpdesk = () => {
       }
     } catch (error) {
       console.error('Error fetching requests:', error);
+    }
+  }, [soundEnabled]);
+
+  // Fetch escalated requests
+  const fetchEscalatedRequests = useCallback(async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/helpdesk/security/escalated?limit=50`);
+      const data = await response.json();
+      if (data.success) {
+        const newEscalatedCount = data.pending_escalated || 0;
+        if (newEscalatedCount > previousEscalatedCount.current && previousEscalatedCount.current > 0) {
+          if (soundEnabled && notificationSound) {
+            notificationSound.play().catch(() => {});
+          }
+          toast('Neue Eskalation eingegangen!', { icon: '🚨' });
+        }
+        previousEscalatedCount.current = newEscalatedCount;
+        setEscalatedRequests(data.requests || []);
+      }
+    } catch (error) {
+      console.error('Error fetching escalated requests:', error);
     }
   }, [soundEnabled]);
 
