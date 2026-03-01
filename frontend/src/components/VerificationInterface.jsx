@@ -24,6 +24,7 @@ import ReaderDemoManager from './ReaderDemoManager';
 import PDFFullscreenViewer from './PDFFullscreenViewer';
 import ScannerPinPrompt from './ScannerPinPrompt';
 import SecurityHelpButton from './SecurityHelpButton';
+import DatabaseAdditionButton from './DatabaseAdditionButton';
 import usePortalMetadata from '../hooks/usePortalMetadata';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
