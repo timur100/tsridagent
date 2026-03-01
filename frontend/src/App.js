@@ -33,6 +33,7 @@ function App() {
             
             {/* Helpdesk Routes */}
             <Route path="/helpdesk/security" element={<SecurityHelpdesk />} />
+            <Route path="/helpdesk/security/tenant" element={<TenantSecurityPortal />} />
             <Route path="/helpdesk" element={<TechnicalHelpdesk />} />
             
             {/* Main Verification Interface (default) */}
