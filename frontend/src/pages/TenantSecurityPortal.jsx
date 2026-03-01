@@ -452,13 +452,52 @@ const TenantSecurityPortal = () => {
       <div className="flex h-[calc(100vh-80px)]">
         {/* Request List */}
         <div className="w-1/3 border-r border-[#333] overflow-y-auto p-4">
-          <h2 className="text-lg font-bold mb-4">Anfragen</h2>
+          {/* Tab Navigation */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => { setActiveTab('security'); setSelectedRequest(null); setSelectedDbRequest(null); }}
+              className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2
+                ${activeTab === 'security' 
+                  ? 'bg-[#d50c2d] text-white' 
+                  : 'bg-[#262626] text-gray-400 hover:bg-[#333]'
+                }`}
+            >
+              <Shield className="w-4 h-4" />
+              Security
+              {requests.filter(r => r.status === 'pending').length > 0 && (
+                <span className="bg-yellow-500 text-black text-xs px-1.5 py-0.5 rounded-full">
+                  {requests.filter(r => r.status === 'pending').length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => { setActiveTab('database'); setSelectedRequest(null); setSelectedDbRequest(null); }}
+              className={`flex-1 px-3 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2
+                ${activeTab === 'database' 
+                  ? 'bg-amber-600 text-white' 
+                  : 'bg-[#262626] text-gray-400 hover:bg-[#333]'
+                }`}
+            >
+              <Database className="w-4 h-4" />
+              Datenbank
+              {databaseAdditionRequests.filter(r => r.status === 'pending_tenant_approval').length > 0 && (
+                <span className="bg-amber-500 text-black text-xs px-1.5 py-0.5 rounded-full">
+                  {databaseAdditionRequests.filter(r => r.status === 'pending_tenant_approval').length}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Security Requests List */}
+          {activeTab === 'security' && (
+            <>
+              <h2 className="text-lg font-bold mb-4">Security Anfragen</h2>
           
-          {loading ? (
-            <div className="text-center text-gray-500 py-8">Laden...</div>
-          ) : (
-            <div className="space-y-3">
-              {requests.map((req) => (
+              {loading ? (
+                <div className="text-center text-gray-500 py-8">Laden...</div>
+              ) : (
+                <div className="space-y-3">
+                  {requests.map((req) => (
                 <Card 
                   key={req.request_id}
                   className={`bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all hover:border-[#d50c2d]/50
