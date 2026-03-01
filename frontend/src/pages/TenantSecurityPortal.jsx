@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { 
   Shield, Phone, Clock, CheckCircle, XCircle, AlertTriangle, 
   User, MapPin, Monitor, RefreshCw, Volume2, VolumeX, 
-  Maximize2, Eye, FileText, Building, ArrowUpRight, LogIn
+  Maximize2, Eye, FileText, Building, ArrowUpRight, LogIn, Database
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -25,12 +25,16 @@ const TenantSecurityPortal = () => {
 
   // Data state
   const [requests, setRequests] = useState([]);
+  const [databaseAdditionRequests, setDatabaseAdditionRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedDbRequest, setSelectedDbRequest] = useState(null);
+  const [activeTab, setActiveTab] = useState('security'); // 'security' or 'database'
   const [wallboardData, setWallboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isWallboard, setIsWallboard] = useState(false);
   const previousPendingCount = useRef(0);
+  const previousDbPendingCount = useRef(0);
 
   // Login handler
   const handleLogin = async (e) => {
