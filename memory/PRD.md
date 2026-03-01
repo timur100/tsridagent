@@ -142,9 +142,9 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 2. ✅ Reporting-Feature verifiziert
 3. ✅ PIN-Pad Hetzner Theme implementiert
 4. ✅ Helpdesk-System implementiert (Security + Technical)
-5. 🔜 Label-Vorschau im Web korrigieren
-6. 🔜 Mobile Assets-Screen debuggen
-7. 🔜 Helpdesk-Login-Seite mit separater Authentifizierung
+5. ✅ "Dokument zur DB hinzufügen" Workflow implementiert (01.03.2026)
+6. 🔜 Label-Vorschau im Web korrigieren
+7. 🔜 Mobile Assets-Screen debuggen
 
 ## Backlog
 - Nachbestellungs-Funktion (Web)
