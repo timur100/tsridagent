@@ -371,24 +371,38 @@ async def get_escalated_requests(
     }
 
 @router.get("/security/wallboard")
-async def get_wallboard_data():
-    """Get data for wallboard display"""
+async def get_wallboard_data(tenant_id: Optional[str] = None):
+    """Get data for wallboard display - TSRID sees all, tenant sees own"""
+    base_query = {}
+    if tenant_id:
+        base_query["tenant_id"] = tenant_id
+    
     # Get pending requests (newest first)
     pending = list(security_requests_collection.find(
-        {"status": "pending"},
+        {**base_query, "status": "pending"},
         {"_id": 0}
     ).sort("created_at", -1).limit(20))
     
     # Get in-progress requests
     in_progress = list(security_requests_collection.find(
-        {"status": "in_progress"},
+        {**base_query, "status": "in_progress"},
         {"_id": 0}
     ).sort("accepted_at", -1).limit(10))
     
+    # Get escalated requests (only for TSRID view - no tenant_id filter)
+    escalated = []
+    if not tenant_id:
+        escalated = list(security_requests_collection.find(
+            {"is_escalated": True, "status": {"$nin": ["approved", "rejected"]}},
+            {"_id": 0}
+        ).sort("escalated_at", -1).limit(10))
+    
     # Get recent resolved (last hour)
-    one_hour_ago = datetime.now(timezone.utc).replace(hour=datetime.now(timezone.utc).hour - 1)
+    from datetime import timedelta
+    one_hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)
     recent_resolved = list(security_requests_collection.find(
         {
+            **base_query,
             "status": {"$in": ["approved", "rejected"]},
             "resolved_at": {"$gte": one_hour_ago}
         },
@@ -398,17 +412,19 @@ async def get_wallboard_data():
     # Statistics
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     today_stats = {
-        "total": security_requests_collection.count_documents({"created_at": {"$gte": today_start}}),
-        "approved": security_requests_collection.count_documents({"created_at": {"$gte": today_start}, "result": "approved"}),
-        "rejected": security_requests_collection.count_documents({"created_at": {"$gte": today_start}, "result": "rejected"}),
-        "pending": security_requests_collection.count_documents({"status": "pending"}),
-        "in_progress": security_requests_collection.count_documents({"status": "in_progress"})
+        "total": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}}),
+        "approved": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}, "result": "approved"}),
+        "rejected": security_requests_collection.count_documents({**base_query, "created_at": {"$gte": today_start}, "result": "rejected"}),
+        "pending": security_requests_collection.count_documents({**base_query, "status": "pending"}),
+        "in_progress": security_requests_collection.count_documents({**base_query, "status": "in_progress"}),
+        "escalated": security_requests_collection.count_documents({"is_escalated": True, "status": {"$nin": ["approved", "rejected"]}}) if not tenant_id else 0
     }
     
     return {
         "success": True,
         "pending": pending,
         "in_progress": in_progress,
+        "escalated": escalated,
         "recent_resolved": recent_resolved,
         "stats": today_stats,
         "timestamp": datetime.now(timezone.utc).isoformat()
