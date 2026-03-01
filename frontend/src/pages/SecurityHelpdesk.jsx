@@ -232,6 +232,20 @@ const SecurityHelpdesk = () => {
     }
   };
 
+  // Database request status badge
+  const getDbStatusBadge = (status) => {
+    switch (status) {
+      case 'tenant_approved':
+        return <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/50 animate-pulse">Von Tenant genehmigt</Badge>;
+      case 'completed':
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/50">Abgeschlossen</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-500/20 text-red-400 border-red-500/50">Abgelehnt</Badge>;
+      default:
+        return <Badge>{status}</Badge>;
+    }
+  };
+
   // Format datetime
   const formatDateTime = (dateString) => {
     if (!dateString) return '-';
