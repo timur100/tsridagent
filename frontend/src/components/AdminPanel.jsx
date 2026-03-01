@@ -63,10 +63,12 @@ const AdminPanel = ({ isOpen, onClose, settings, onSettingsChange, securityUsers
     { id: 3, name: 'Operator2', role: 'Operator', lastLogin: '27.10.2025 18:30' }
   ];
 
-  // Load continents on mount
+  // Load continents only when panel is opened
   useEffect(() => {
-    fetchContinents();
-  }, []);
+    if (isOpen && continents.length === 0) {
+      fetchContinents();
+    }
+  }, [isOpen]);
 
   // Fetch continents with retry
   const fetchContinents = async (retryCount = 0) => {
