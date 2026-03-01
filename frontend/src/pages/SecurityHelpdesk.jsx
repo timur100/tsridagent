@@ -17,16 +17,19 @@ const notificationSound = typeof Audio !== 'undefined' ? new Audio('data:audio/w
 const SecurityHelpdesk = () => {
   const [requests, setRequests] = useState([]);
   const [escalatedRequests, setEscalatedRequests] = useState([]);
+  const [databaseRequests, setDatabaseRequests] = useState([]);
   const [selectedRequest, setSelectedRequest] = useState(null);
+  const [selectedDbRequest, setSelectedDbRequest] = useState(null);
   const [wallboardData, setWallboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isWallboard, setIsWallboard] = useState(false);
-  const [viewMode, setViewMode] = useState('all'); // 'all', 'escalated'
+  const [viewMode, setViewMode] = useState('all'); // 'all', 'escalated', 'database'
   const [agentName, setAgentName] = useState('TSRID Support');
   const [agentId, setAgentId] = useState('tsrid-admin');
   const previousPendingCount = useRef(0);
   const previousEscalatedCount = useRef(0);
+  const previousDbPendingCount = useRef(0);
 
   // Fetch all requests
   const fetchRequests = useCallback(async () => {
