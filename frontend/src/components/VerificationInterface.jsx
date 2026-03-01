@@ -932,7 +932,10 @@ const VerificationInterface = () => {
       randomStatus = 'warning';  // Unknown document
       setScanState('verified');
       
-      // Increment unknown counter
+      // Increment unknown counter for database addition workflow
+      setUnknownScanCount(prev => prev + 1);
+      
+      // Increment unknown counter for admin thresholds
       const newCount = unknownAttempts + 1;
       setUnknownAttempts(newCount);
       
