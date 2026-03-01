@@ -706,11 +706,152 @@ const SecurityHelpdesk = () => {
                 </div>
               )}
             </div>
+          ) : selectedDbRequest ? (
+            /* Database Addition Request Detail */
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
+                    <Database className="w-7 h-7 text-amber-400" />
+                    Datenbank-Anfrage
+                  </h2>
+                  <div className="flex items-center gap-4 text-gray-400">
+                    <span className="flex items-center gap-1">
+                      <Building className="w-4 h-4" />
+                      {selectedDbRequest.tenant_name}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {selectedDbRequest.location_name} ({selectedDbRequest.location_code})
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Monitor className="w-4 h-4" />
+                      {selectedDbRequest.device_id}
+                    </span>
+                  </div>
+                </div>
+                {getDbStatusBadge(selectedDbRequest.status)}
+              </div>
+
+              {/* Tenant Approval Info */}
+              <Card className="bg-green-500/10 border-green-500/30 p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-green-400 mb-1">Von Tenant genehmigt</div>
+                    <div className="text-sm text-gray-300">
+                      Genehmigt von: {selectedDbRequest.tenant_approved_by_name}<br />
+                      Am: {formatDateTime(selectedDbRequest.tenant_approved_at)}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Request Info */}
+              <Card className="bg-amber-500/10 border-amber-500/30 p-4 mb-6">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <div className="font-bold text-amber-400 mb-1">Unbekanntes Dokument zur Datenbank hinzufügen</div>
+                    <div className="text-gray-300 text-sm space-y-1">
+                      <p><span className="text-gray-500">Dokumenttyp:</span> {selectedDbRequest.document_type || 'Unbekannt'}</p>
+                      <p><span className="text-gray-500">Scan-Versuche:</span> {selectedDbRequest.scan_attempts}</p>
+                      <p><span className="text-gray-500">Erstellt am:</span> {formatDateTime(selectedDbRequest.created_at)}</p>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* Document Image */}
+              <Card className="bg-[#1a1a1a] border-[#333] p-4 mb-6">
+                <h3 className="font-bold mb-4 flex items-center gap-2">
+                  <FileText className="w-5 h-5" />
+                  Gescanntes Dokument
+                </h3>
+                {selectedDbRequest.scan_image_url ? (
+                  <div className="bg-[#0a0a0a] rounded-lg p-4 flex justify-center">
+                    <img src={selectedDbRequest.scan_image_url} alt="Scan" className="max-h-[400px] object-contain rounded" />
+                  </div>
+                ) : (
+                  <div className="bg-[#0a0a0a] rounded-lg p-8 text-center text-gray-500">Kein Bild verfügbar</div>
+                )}
+              </Card>
+
+              {/* OCR Data */}
+              {selectedDbRequest.ocr_data && Object.keys(selectedDbRequest.ocr_data).length > 0 && (
+                <Card className="bg-[#1a1a1a] border-[#333] p-4 mb-6">
+                  <h3 className="font-bold mb-4 flex items-center gap-2">
+                    <Eye className="w-5 h-5" />
+                    Erkannte Daten (OCR)
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    {selectedDbRequest.ocr_data.firstName && (
+                      <div><span className="text-gray-500">Vorname:</span> <span className="text-white">{selectedDbRequest.ocr_data.firstName}</span></div>
+                    )}
+                    {selectedDbRequest.ocr_data.lastName && (
+                      <div><span className="text-gray-500">Nachname:</span> <span className="text-white">{selectedDbRequest.ocr_data.lastName}</span></div>
+                    )}
+                    {selectedDbRequest.ocr_data.documentNumber && (
+                      <div><span className="text-gray-500">Dokumentnummer:</span> <span className="text-white font-mono">{selectedDbRequest.ocr_data.documentNumber}</span></div>
+                    )}
+                    {selectedDbRequest.ocr_data.birthDate && (
+                      <div><span className="text-gray-500">Geburtsdatum:</span> <span className="text-white">{selectedDbRequest.ocr_data.birthDate}</span></div>
+                    )}
+                    {selectedDbRequest.ocr_data.validUntil && (
+                      <div><span className="text-gray-500">Gültig bis:</span> <span className="text-white">{selectedDbRequest.ocr_data.validUntil}</span></div>
+                    )}
+                    {selectedDbRequest.ocr_data.country && (
+                      <div><span className="text-gray-500">Land:</span> <span className="text-white">{selectedDbRequest.ocr_data.country}</span></div>
+                    )}
+                  </div>
+                </Card>
+              )}
+
+              {/* Actions */}
+              {selectedDbRequest.status === 'tenant_approved' && (
+                <div className="space-y-4">
+                  <p className="text-gray-400 text-sm text-center mb-4">
+                    Dieses Dokument wurde vom Tenant genehmigt. Bitte prüfen Sie die Daten und fügen Sie das Dokument zur Datenbank hinzu.
+                  </p>
+                  <Button 
+                    className="w-full bg-amber-600 hover:bg-amber-700 text-white py-6 text-lg" 
+                    onClick={() => completeDbRequest(selectedDbRequest.request_id)}
+                  >
+                    <Database className="w-5 h-5 mr-2" />
+                    Zur Datenbank hinzufügen
+                  </Button>
+                </div>
+              )}
+
+              {/* Status Display */}
+              {selectedDbRequest.status === 'completed' && (
+                <div className="bg-green-500/20 border-2 border-green-500 rounded-xl p-8 text-center">
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <div className="text-3xl font-bold text-green-500 mb-2">HINZUGEFÜGT</div>
+                  <p className="text-green-300">Dokument wurde zur Datenbank hinzugefügt</p>
+                  {selectedDbRequest.tsrid_processed_by_name && (
+                    <p className="text-green-200 text-sm mt-2">
+                      Verarbeitet von: {selectedDbRequest.tsrid_processed_by_name}<br />
+                      Am: {formatDateTime(selectedDbRequest.tsrid_processed_at)}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500">
               <div className="text-center">
-                <Shield className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>Wählen Sie eine Anfrage aus der Liste</p>
+                {viewMode === 'all' ? (
+                  <>
+                    <Shield className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Wählen Sie eine Security-Anfrage aus der Liste</p>
+                  </>
+                ) : (
+                  <>
+                    <Database className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p>Wählen Sie eine Datenbank-Anfrage aus der Liste</p>
+                  </>
+                )}
               </div>
             </div>
           )}
