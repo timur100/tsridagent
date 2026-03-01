@@ -143,8 +143,10 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 3. ✅ PIN-Pad Hetzner Theme implementiert
 4. ✅ Helpdesk-System implementiert (Security + Technical)
 5. ✅ "Dokument zur DB hinzufügen" Workflow implementiert (01.03.2026)
-6. 🔜 Label-Vorschau im Web korrigieren
-7. 🔜 Mobile Assets-Screen debuggen
+6. ✅ TSRID-Admin Dashboard für Datenbank-Anfragen (01.03.2026)
+7. ✅ "Fehler beim Laden der Kontinente" behoben (01.03.2026)
+8. 🔜 Label-Vorschau im Web korrigieren
+9. 🔜 Mobile Assets-Screen debuggen
 
 ## Backlog
 - Nachbestellungs-Funktion (Web)
