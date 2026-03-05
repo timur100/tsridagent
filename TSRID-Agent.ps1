@@ -21,7 +21,22 @@ param(
 )
 
 $API_BASE = "$ServerUrl/api/device-agent"
-$VERSION = "1.0.1"
+$VERSION = "1.0.2"
+
+# TLS 1.2 aktivieren fuer HTTPS-Verbindungen
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+# SSL-Zertifikat-Validierung (fuer Self-Signed Certs)
+if (-not ([System.Management.Automation.PSTypeName]'TrustAllCertsPolicy').Type) {
+    Add-Type @"
+    using System.Net;
+    using System.Security.Cryptography.X509Certificates;
+    public class TrustAllCertsPolicy : ICertificatePolicy {
+        public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) { return true; }
+    }
+"@
+}
+[System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
 
 function Write-ColorOutput {
     param([string]$Message, [string]$Color = "White", [switch]$NoNewline)
