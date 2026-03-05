@@ -1,144 +1,159 @@
 <analysis>**original_problem_statement:**
-The user's objective is to develop a comprehensive React Native application for a Zebra TC78 handheld device. This mobile app is intended to serve as a mobile client for an existing web portal, providing functionalities for asset management, barcode scanning, and label printing. The development process is iterative, involving successive APK builds that the user tests on the physical device, followed by detailed feedback and requests for bug fixes and new features. The current work is driven by a list of user feedback items, now that a critical build failure has been resolved.
+The user's initial goal was to fix mobile app printing issues. The focus then shifted to a major web portal overhaul, including a Hetzner Dark Theme, a reporting feature, and a multi-layered helpdesk system.
+
+Most recently, the user requested a system to automate the configuration and real-time monitoring of Windows tablets. This involves:
+1.  A PowerShell agent script that runs on each tablet to collect extensive hardware/software information (Computer Name, UUID, Serials, TeamViewer ID, CPU, RAM, etc.).
+2.  The script must send this data to a central admin portal via registration and periodic heartbeat API calls.
+3.  The script needs to run automatically and reliably as a background service or scheduled task upon system startup.
+4.  A new Agent dashboard within the existing TSRID Admin Portal to display all devices in real-time.
+5.  The dashboard must show the online/offline status of each device, display all collected information, and allow an administrator to assign a device to a specific station/location.
+6.  The dashboard needs to be performant and scalable to handle over 1000 devices, utilizing server-side pagination, search, and filtering.
+7.  Finally, the user needs a single, automated installer script that can be executed on any tablet to set up the agent service without manual file copying.
 
 **User's preferred language**: German
 
 **what currently exists?**
-A React Native application located in , built with Expo SDK 51. The development workflow (EAS Build) is now functional after a major blockage was resolved. The application includes:
--   **Authentication** against a backend system.
--   **Dashboard:** Displays system statistics and navigation tiles.
--   **Screens:** Assets, Scanner, Settings, Print Queue, a new , and a .
--   **Navigation:** Tab-based navigation with a custom header to display global status (in progress). A burger menu provides access to logout.
--   **Native Bluetooth Printing:** Integrates  and  to communicate with printers.
--   **Label Generation:** A custom  uses the  library to generate scannable labels with dynamically sized text.
+-   A full-stack application (React/FastAPI) with a complete Hetzner Dark Theme.
+-   A fully functional multi-layered helpdesk system and a reporting feature.
+-   **Device Agent Backend**: A new FastAPI router () provides endpoints for device registration (), status heartbeats (), and fetching device lists (). The  endpoint supports server-side pagination, searching, and filtering. The backend correctly marks devices as offline if a heartbeat is not received within a set interval (2 minutes).
+-   **Device Agent Frontend**: The Device Agent Management page is fully integrated as a new Agent tab in the TSRID Admin Portal. The UI is scalable, using server-side pagination to load devices in batches of 50. It displays a real-time list of devices, their online/offline status, and a detailed view with all hardware/software information upon selection. It also includes a modal for assigning devices to stations.
+-   **PowerShell Agent Scripts**:
+    -   : A script that collects device data and sends heartbeats. It includes logging to .
+    -   : An installer script that creates a Scheduled Task to run the agent at system startup. Its reliability is currently in question.
 
 **Last working item**:
--   **Last item agent was working:** The agent was iteratively adjusting the thermal printer label layout based on user feedback. This involved changing text sizes, QR code dimensions, and spacing to ensure text was not cut off and the QR code was scannable.
--   **Status:** USER VERIFICATION PENDING (The user last said ok, das passt jetzt which means ok, that fits now, confirming the latest label layout is correct.)
+-   **Last item agent was working:** The user reported that after a successful installation of the scheduled task, the device appears as offline again after a system reboot. The agent was in the process of debugging this persistence issue and fulfilling the user's follow-up request to create a single, automated installer script that doesn't require manual file placement.
+-   **Status:** IN PROGRESS
 -   **Agent Testing Done:** N
--   **Which testing method agent to use?** NA
--   **User Testing Done:** Y
+-   **Which testing method agent to use?** This is a scripting and deployment issue. The agent cannot test it directly. The agent must provide a revised, more robust PowerShell installer script for the user to execute and verify on their Windows tablet.
+-   **User Testing Done:** Y (User confirmed the agent does not stay online after a reboot).
 
 **All Pending/In progress Issue list**:
--   **Issue 1: (P0) Implement User-Selected Tasks (Locations, Online Status, Devices Screen)**
--   **Issue 2: (P1) Brother Printer Connection Failure**
+-   **Issue 1: (P0) PowerShell agent is offline after reboot.**
+-   **Issue 2: (P1) Create a single, automated installer script.**
+-   **Issue 3: (P2) Mobile App: Label Printing Fails (Verification Pending).**
+-   **Issue 4: (P3) Web App: Label preview layout is incorrect.**
+-   **Issue 5: (P4) Mobile App: Assets Screen is Empty.**
+-   **Issue 6: (P5) Mobile App: Real-time updates not working automatically.**
 
 Issues Detail:
--   **Issue 1: Implement User-Selected Tasks (Locations, Online Status, Devices Screen)**
-    -   The user explicitly requested work on items 2, 3, and 4 from a list presented by the agent.
-        1.  **Correct Tenant Locations:** The  shows incorrect test data. It must fetch from the  collection for the active tenant and display the data in a table-like format matching the user's screenshot (with columns: , , , , etc.).
-        2.  **Online Status on All Pages:** The Online and active tenant indicator should be visible in the header of every screen, not just the dashboard.
-        3.  **Correct Geräte (Devices) Screen:** The Geräte 216 tile on the dashboard should navigate to a new  that lists specific device data as shown in a user-provided screenshot, instead of the generic assets list.
-    -   **Attempted fixes:** The previous agent started work by creating , adding a , updating  and  with new endpoints. However, this implementation is incomplete and has not been tested or verified by the user.
+-   **Issue 1: PowerShell agent is offline after reboot.**
+    -   **Attempted fixes:** The agent provided a script to create a Scheduled Task that runs at startup. While the task was created and ran successfully when started manually, it fails to keep the device online after a system restart.
     -   **Next debug checklist:**
-        1.  **Devices Screen:** Review  to ensure the Geräte tile navigates to the . Implement the data fetching and rendering logic in  using the .
-        2.  **Locations Screen:** Review and correct the data fetching in  to use the correct API endpoint for tenant-specific locations. Update the UI to render the data in the multi-column format requested by the user.
-        3.  **Global Status:** Verify that the  in  correctly receives and displays the online status and active tenant on all relevant screens.
-    -   **Why fix this issue and what will be achieved with the fix?** This will implement the next batch of high-priority features requested by the user, making the app's data display accurate and consistent.
-    -   **Status:** IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?** both
-
--   **Issue 2: Brother Printer Connection Failure**
-    -   The user reported a  error when trying to connect to and print from the Brother printer.
-    -   **Attempted fixes:** The agent improved the  function in  with retries and alternative connection methods. The  dependency was also correctly added to . These fixes are unverified.
-    -   **Next debug checklist:**
-        1.  Build a new APK with the attempted fixes.
-        2.  Ask the user to test the Brother printer connection again.
-        3.  If it still fails, investigate further into  documentation, specifically regarding device pairing requirements on Android before attempting an in-app connection.
-    -   **Why fix this issue and what will be achieved with the fix?** Label printing is a core functionality of the application.
+        1.  Review the  parameters. The triggers () might execute before the network is fully available.
+        2.  Modify the task settings to include a startup delay () or a retry mechanism ().
+        3.  Enhance the logging in  to capture the absolute first actions and any errors upon startup.
+        4.  Combine the fix with the creation of a single installer script (Issue 2) to provide a complete, robust solution.
+    -   **Why fix this issue and what will be achieved with the fix?** The core function of the device agent is to provide reliable, real-time status. If it doesn't run automatically, the entire feature is non-functional.
     -   **Status:** IN PROGRESS
     -   **Is recurring issue?** Y
-    -   **Should Test frontend/backend/both after fix?** frontend
+    -   **Should Test frontend/backend/both after fix?** Neither. The fix is a PowerShell script that must be tested by the user on their Windows device.
+    -   **Blocked on other issue:** No.
+
+-   **Issue 2: Create a single, automated installer script.**
+    -   **Attempted fixes:** None. This is a new request.
+    -   **Next debug checklist:**
+        1.  Create one PowerShell script ().
+        2.  Embed the  script's content inside  as a here-string.
+        3.  The script must be self-contained and perform all actions: check for admin rights, create , write the service script to disk, and register the (more robust) scheduled task.
+    -   **Why fix this issue and what will be achieved with the fix?** It will provide a streamlined, one-click deployment method for installing the agent on hundreds of tablets, as per the user's request.
+    -   **Status:** NOT STARTED
+    -   **Is recurring issue?** N
+    -   **Should Test frontend/backend/both after fix?** Neither.
+    -   **Blocked on other issue:** No.
 
 **In progress Task List**:
-The pending issues above are the current in-progress tasks.
+-   **Task 1: Resolve agent offline status and create a unified installer.**
+    -   **Where to resume:** Create a new, single PowerShell script that both fixes the scheduled task's reliability issues (e.g., by adding a startup delay) and automates the entire installation process (creates directory, writes the agent file, creates the task).
+    -   **What will be achieved with this?** A reliable, easily deployable monitoring agent that fulfills all user requirements.
+    -   **Status:** IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?** Neither.
+    -   **Blocked on something:** User execution and verification on the target Windows tablet.
 
 **Upcoming and Future Tasks**
 -   **Future Tasks:**
-    -   Implement Nachbestellungs-Funktion (Reordering Function) in the web app.
-    -   Webcam integration for asset photos in the web app.
-    -   Synchronize the interactive preview in the web portal with the mobile app's features.
+    -   (P1) Implement Nachbestellungs-Funktion (Reordering Function) in the web app.
+    -   (P2) Add Webcam integration for asset photos in the web app.
 
 **Completed work in this session**
--   **Resolved Critical Build Failure:** Diagnosed and fixed a JavaScript syntax error () in  that was blocking all APK builds.
--   **Restored Development Workflow:** Successfully ran , removed conflicting lock files, and completed multiple successful EAS builds, delivering new APKs to the user for testing.
--   **Completed Label Layout Redesign:**
-    -   Iteratively redesigned the thermal printer label in  based on extensive user feedback.
-    -   Replaced a faulty QR code implementation with the  library to generate a valid, scannable code.
-    -   Implemented dynamic text scaling to prevent truncation of long asset IDs.
-    -   Adjusted component sizes (QR code, text) and spacing to fully utilize the label space and improve readability, which the user confirmed as ok, das passt jetzt.
--   **Addressed Partial UI/UX Feedback:** Implemented a new , added a global header for online/tenant status, and added a logout button to the burger menu. These changes are not yet fully verified by the user.
+-   **Device Agent Feature (Complete):**
+    -   **Backend:** Built and tested scalable API endpoints (, , , ) with server-side pagination and search for managing thousands of devices.
+    -   **Frontend:** Implemented a Device Agent Management UI within the Admin Portal. The UI includes real-time status, detailed hardware/software views, and station assignment functionality, all optimized for performance.
+    -   **Integration:** Seamlessly integrated the new agent dashboard as a new Agent tab into the existing .
+-   **PowerShell Agent & Installer:**
+    -   Created a comprehensive PowerShell script () to collect a wide range of device data and send heartbeats.
+    -   Created an initial installer script () to deploy the agent as a Scheduled Task.
+-   **Bug Fixes:**
+    -   Resolved a  validation error by ensuring the PowerShell script sends the TeamViewer ID as a string.
+    -   Fixed a Remoteserver kann nicht hergestellt werden connection error by forcing TLS 1.2 in the PowerShell script.
+    -   Fixed the Fehler beim Laden der Kontinente bug in the Admin Panel.
+-   **Helpdesk Workflow (Complete):** Finished the Add Unknown Document to DB workflow, including the UI for tenant-level approvals () and the final processing view for TSRID admins ().
+
+**Earlier issues found/mentioned but not fixed**
+-   **Issue 1: Mobile App: Assets Screen is Empty**
+-   **Issue 2: Web App: Label Preview Layout is incorrect**
+-   **Issue 3: Mobile App: Real-time updates not working**
 
 **Known issue recurrence from previous fork**
--   **Issue recurrence in previous fork:** Persistent EAS Gradle Build Failure.
--   **Recurrence count:** 1
--   **Status:** RESOLVED (The underlying cause was a JS syntax error, not a fundamental Gradle misconfiguration. The build pipeline is now stable.)
+-   **Issue recurrence in previous fork:** Mobile App Label Printing Failures.
+-   **Recurrence count:** 5+
+-   **Status:** USER VERIFICATION PENDING (Awaiting user test of APK v2.2.4).
 
 **Code Architecture**
 
 
-**Key Technical Concepts**
--   **Expo Application Services (EAS) Build:** Cloud service for building standalone APKs. The build process is now working.
--   **Expo SDK 51:** The underlying React Native framework.
--   **Metro Bundler:** The JavaScript bundler that failed due to a syntax error.
--   **Native Module Integration:** Using  and  for printing.
--   **ESC/P Raster Mode:** Generating binary bitmap data for the Brother thermal printer, using the  library for QR code generation.
-
 **key DB schema**
--   **assets:** Stores device/asset information.
--   **tenant_locations:** The correct collection for tenant-specific location data, which the app must now use.
--   **portal/devices:** An existing endpoint that the new  should use.
+-   **devices:** {  (PK, string), ,  (bool),  (object),  (string),  (datetime),  (string),  (string),  (string),  (string), ...plus other hardware/OS fields }
 
 **All files of reference**
--   : Fixed duplicate declarations and updated with new endpoints for devices and locations.
--   : Completely overhauled to fix label printing issues. This file is considered complete for now.
--   : Connection logic was improved to address a socket timeout error; requires user verification.
--   : Added the  dependency.
--   : Modified to use a new custom header for displaying global status.
--   : Navigation logic for the Geräte tile was updated.
--   : New screen created to display a specific device list.
--   : UI has been modified to prepare for the correct data structure.
+-   **/app/backend/routes/agent_api.py** (The backend API for the device agent)
+-   **/app/frontend/src/pages/admin/DeviceAgentManagement.jsx** (The main UI for the device agent feature)
+-   **/app/frontend/src/pages/admin/AdminPortal.jsx** (The container where the agent UI was integrated)
+-   The content of the PowerShell scripts (, ) which were provided in the chat history are critical references.
 
 **Critical Info for New Agent**
 -   **Sie müssen auf Deutsch kommunizieren.** (You MUST communicate in German).
--   The critical EAS build failure is **RESOLVED**. The development loop is unblocked.
--   **DO NOT** modify the label generation code in . The user has confirmed the current layout is correct.
--   The immediate priority is to implement the three user-selected tasks:
-    1.  Fix the  to show correct tenant-specific data.
-    2.  Ensure the Online/Tenant status appears on all screens via the custom header.
-    3.  Ensure the Geräte tile on the dashboard links to the new  and displays the correct data.
--   The Brother printer connection issue () is the next priority after the above three tasks are done and verified. A fix has been attempted but is not tested.
-
-**documents and test reports created in this job**
--   
+-   The highest priority is to create a **single, robust, automated PowerShell installer script**. This script must resolve the offline after reboot issue.
+-   The current Scheduled Task fails likely due to the network not being ready at startup. The new script should configure the task with a **startup delay** to mitigate this.
+-   Provide the user with one final, complete PowerShell script that they can run as an administrator to perform the entire installation. This script must be self-contained and not rely on other files.
+-   The mobile app issues are long-standing but currently have a lower priority. You should periodically remind the user to test the APK for the printing issue.
 
 **Last 10 User Messages and any pending HUMAN messages**
--   **10. (LATEST) User (message #365):** 2-4 - In response to the agent's list of open points, the user selected the next batch of tasks to work on. **Status: Pending Implementation.**
--   **9. User (message #363):** ok, das passt jetzt - Confirmed that the latest label layout is correct and meets the requirements. **Status: Completed.**
--   **8. User (message #355):** TSRID-SCA-TSR-0001 SN: 7E91145BA4244 beides größer ohne abzuschneiden.. sind noch zu klein - Feedback that text on the label is still too small. **Status: Resolved.**
--   **7. User (message #345):** logo funktioniert nicht. Entferne das logo und nutze für den rest die volle breite... - Instructed the agent to remove the logo from the label and use the full width for text. **Status: Resolved.**
--   **6. User (message #335):** Provided an image showing a new failed label layout, with text cut off and a noisy QR code. **Status: Resolved.**
--   **5. User (message #325):** Provided feedback on the label: QR code and logo too small, asset ID truncated. **Status: Resolved.**
--   **4. User (message #315):** Provided an image showing a failed label print: noisy QR code, wrong logo, small text. **Status: Resolved.**
--   **3. User (message #305):** Provided the correct logo asset to be used on the label. **Status: Resolved (logo was later removed at user's request).**
--   **2. User (message #292):** Provided an image of the label, reporting that the QR code is not scannable and text is cut off. **Status: Resolved.**
--   **1. User (message #275):** bei drucker suchen wird der brother drucker angezeigt, jedoch koppelt sich nicht und kann nicht gedruckt werden. Fehlermeldung: java.io.IOException... - Reported the Brother printer connection error. **Status: In Progress.**
+1.  **User (LATEST):** Confirms the installation worked after a restart, but then states the device is offline again. Requests a single, fully automated installer script. **Status: IN PROGRESS.** This is the primary task.
+2.  **User:** Confirms the manual test registration with a minimal payload worked. **Status: Resolved.**
+3.  **User:** Reports the PowerShell script fails with a connection to remote server cannot be established error. **Status: Resolved.**
+4.  **User:** Reports the PowerShell script fails with a Pydantic validation error ( sent as number). **Status: Resolved.**
+5.  **User:** Approves the integration of the agent dashboard into the admin portal. **Status: Completed.**
+6.  **User:** Asks for all collected hardware IDs (UUIDs, etc.) to be displayed in the UI. **Status: Completed.**
+7.  **User:** Asks how to test the agent and view the dashboard. **Status: Completed.**
+8.  **User:** Asks how the dashboard will perform with 1000+ devices. **Status: Completed.**
+9.  **User:** Asks to convert a provided PowerShell script to communicate with the TSRID portal in real-time. **Status: Completed.**
+10. **User:** Asks how to automatically update device/station data on the tablets. **Status: Completed.**
 
 **Project Health Check:**
--   **Working:** The core development and build pipeline is functional. The project is no longer blocked. There are known bugs and a clear list of features to implement.
+-   **Broken:**
+    -   PowerShell agent's persistence and reliability after a system reboot.
+    -   Mobile App Assets Screen (unverified, likely still broken).
+    -   Mobile App real-time updates (unverified, likely still broken).
+-   **Mocked:**
+    -   None.
+-   **Pending User Verification:**
+    -   The final, automated PowerShell installer script (once created).
+    -   Mobile App Label Printing (APK v2.2.4).
 
 **3rd Party Integrations**
--   **Expo Application Services (EAS):** For cloud builds.
--   **:** For BLE communication (Zebra printers).
--   **:** For Bluetooth Classic (Brother printers). Was missing from dependencies and is now added. It is a potential source of the connection error.
--   **:** Used to generate raster data for the QR code on the printed label.
+-   Expo Application Services (EAS)
+-   
+-   
+-   
+-   
 
 **Testing status**
 -   **Testing agent used after significant changes:** NO
 -   **Troubleshoot agent used after agent stuck in loop:** NO
--   **Test files created:** None.
--   **Known regressions:** None currently. The previously blocking build regression has been fixed.
+-   **Test files created:** None
+-   **Known regressions:** None from this session.
 
-**Credentials to test flow:**
--   **Web Portal Login:**  / 
--   **Expo Account:** Authenticated via an environment token. The next agent will need to ask the user for a new  to run builds.</analysis>
+**What agent forgot to execute**
+-   The agent has not yet created the single, automated installer script requested by the user.
+-   The agent did not add a startup delay or other robustness measures to the scheduled task, which is the likely cause of the offline after reboot issue.</analysis>

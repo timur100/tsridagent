@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://tenant-security-4.preview.emergentagent.com/portal/admin
+https://windows-heartbeat.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

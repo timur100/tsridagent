@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://tenant-security-4.preview.emergentagent.com
+│   └── Lädt: https://windows-heartbeat.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

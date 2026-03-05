@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://tenant-security-4.preview.emergentagent.com
+- **URL:** https://windows-heartbeat.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4
@@ -148,7 +148,35 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 8. 🔜 Label-Vorschau im Web korrigieren
 9. 🔜 Mobile Assets-Screen debuggen
 
+## Device Agent System (01.03.2026) ✅ NEU IMPLEMENTIERT
+
+### Backend API (`/api/agent/*`)
+- `/register` - Geräteregistrierung mit Hardware-Infos
+- `/heartbeat` - Statusmeldungen mit Befehls-Rückgabe
+- `/devices` - Geräteliste mit Online/Offline-Status
+- `/devices/{id}` - Gerätedetails
+- `/scans` - Scan-Synchronisation
+- `/stats` - Statistiken
+
+### PowerShell Agent
+- **Deployment-Script:** `/app/scripts/Deploy-TSRID-Agent.ps1`
+- **Features:**
+  - Vollautomatische Installation (Admin-Rechte-Prüfung, Verzeichnis, Task)
+  - 1 Minute Startverzögerung nach Systemstart
+  - Netzwerk-Wartefunktion (bis 5 Min.)
+  - TLS 1.2 erzwungen
+  - Retry-Mechanismus (5 Versuche, 30 Sek. Pause)
+  - Hardware-Info-Sammlung (UUID, BIOS Serial, TeamViewer ID, etc.)
+  - Läuft als SYSTEM-Account
+
+### Frontend Dashboard
+- Integriert im Admin-Portal als "Agent" Tab
+- Echtzeit-Status (Online/Offline)
+- Detailansicht mit Hardware-Infos
+- Stations-Zuweisung
+
 ## Backlog
 - Nachbestellungs-Funktion (Web)
 - Webcam-Integration für Asset-Fotos (Web)
 - Mobile Echtzeit-Updates
+- Zentrale Geräte-Konfiguration vom Portal

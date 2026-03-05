@@ -7,7 +7,7 @@
 
 // API-URL aus Environment oder Fallback
 export const API_BASE_URL = __DEV__ 
-  ? 'https://tenant-security-4.preview.emergentagent.com'  // Development
+  ? 'https://windows-heartbeat.preview.emergentagent.com'  // Development
   : 'https://your-production-url.com';                   // Production
 
 // API Endpoints (identisch mit Admin Portal)

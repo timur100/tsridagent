@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tenant-security-4.preview.emergentagent.com`
+`https://windows-heartbeat.preview.emergentagent.com`
 
 ---
 

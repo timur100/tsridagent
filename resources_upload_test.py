@@ -12,7 +12,7 @@ import os
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://tenant-security-4.preview.emergentagent.com"
+BACKEND_URL = "https://windows-heartbeat.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class ResourcesUploadTester:
