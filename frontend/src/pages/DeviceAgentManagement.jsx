@@ -392,6 +392,13 @@ const DeviceAgentManagement = () => {
                     </div>
                   )}
                   
+                  {/* TeamViewer ID prominent display */}
+                  {device.teamviewer_id && device.teamviewer_id !== 'not found' && (
+                    <div className="text-sm text-yellow-400 mb-2 font-mono">
+                      TV-ID: {device.teamviewer_id}
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between items-center text-xs text-gray-500">
                     <span>
                       <Globe className="w-3 h-3 inline mr-1" />
@@ -487,6 +494,39 @@ const DeviceAgentManagement = () => {
                 )}
               </Card>
 
+              {/* Hardware IDs - Important for identification */}
+              <Card className="bg-[#262626] border-[#444] p-4 mb-6">
+                <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
+                  <Server className="w-3 h-3" /> Hardware-Identifikation
+                </h4>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-gray-500 text-xs uppercase">UUID</span>
+                      <div className="font-mono text-sm text-cyan-400 break-all">{selectedDevice.hardware_ids?.uuid || '-'}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 text-xs uppercase">TeamViewer ID</span>
+                      <div className="font-mono text-lg text-yellow-400 font-bold">{selectedDevice.teamviewer_id || '-'}</div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-gray-500 text-xs uppercase">BIOS Serial</span>
+                      <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.bios_serial || '-'}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 text-xs uppercase">Mainboard Serial</span>
+                      <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.mainboard_serial || '-'}</div>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Device ID (Unique)</span>
+                    <div className="font-mono text-xs text-gray-400 break-all bg-[#1a1a1a] p-2 rounded mt-1">{selectedDevice.device_id || '-'}</div>
+                  </div>
+                </div>
+              </Card>
+
               {/* Hardware Info */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <Card className="bg-[#262626] border-[#444] p-4">
@@ -495,12 +535,6 @@ const DeviceAgentManagement = () => {
                   </h4>
                   <div className="font-bold">{selectedDevice.hardware?.manufacturer || '-'}</div>
                   <div className="text-sm text-gray-400">{selectedDevice.hardware?.model || '-'}</div>
-                </Card>
-                <Card className="bg-[#262626] border-[#444] p-4">
-                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
-                    <Eye className="w-3 h-3" /> TeamViewer ID
-                  </h4>
-                  <div className="font-bold text-yellow-400">{selectedDevice.teamviewer_id || '-'}</div>
                 </Card>
                 <Card className="bg-[#262626] border-[#444] p-4">
                   <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
@@ -516,6 +550,12 @@ const DeviceAgentManagement = () => {
                     <MemoryStick className="w-3 h-3" /> RAM
                   </h4>
                   <div className="font-bold">{selectedDevice.hardware?.ram_gb || '-'} GB</div>
+                </Card>
+                <Card className="bg-[#262626] border-[#444] p-4">
+                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                    <HardDrive className="w-3 h-3" /> Speicher
+                  </h4>
+                  <div className="text-sm">{selectedDevice.hardware?.disks || '-'}</div>
                 </Card>
               </div>
 
@@ -545,12 +585,31 @@ const DeviceAgentManagement = () => {
                 <div className="text-sm text-gray-400">Build {selectedDevice.os?.windows_build || '-'}</div>
               </Card>
 
-              {/* Disk Info */}
-              <Card className="bg-[#262626] border-[#444] p-4">
-                <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
-                  <HardDrive className="w-3 h-3" /> Speicher
+              {/* Timestamps */}
+              <Card className="bg-[#1a1a1a] border-[#333] p-4">
+                <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> Zeitstempel
                 </h4>
-                <div className="text-sm">{selectedDevice.hardware?.disks || '-'}</div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-500">Registriert:</span>
+                    <div className="text-gray-300">{selectedDevice.registered_at ? new Date(selectedDevice.registered_at).toLocaleString('de-DE') : '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Zuletzt gesehen:</span>
+                    <div className="text-gray-300">{selectedDevice.last_seen ? new Date(selectedDevice.last_seen).toLocaleString('de-DE') : '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Aktualisiert:</span>
+                    <div className="text-gray-300">{selectedDevice.updated_at ? new Date(selectedDevice.updated_at).toLocaleString('de-DE') : '-'}</div>
+                  </div>
+                  {selectedDevice.assigned_at && (
+                    <div>
+                      <span className="text-gray-500">Zugewiesen:</span>
+                      <div className="text-gray-300">{new Date(selectedDevice.assigned_at).toLocaleString('de-DE')}</div>
+                    </div>
+                  )}
+                </div>
               </Card>
             </Card>
           ) : (
