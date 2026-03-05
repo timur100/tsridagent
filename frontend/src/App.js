@@ -8,6 +8,7 @@ import EuropcarMenuPage from './pages/EuropcarMenuPage';
 import SecurityHelpdesk from './pages/SecurityHelpdesk';
 import TechnicalHelpdesk from './pages/TechnicalHelpdesk';
 import TenantSecurityPortal from './pages/TenantSecurityPortal';
+import DeviceAgentManagement from './pages/DeviceAgentManagement';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
@@ -35,6 +36,9 @@ function App() {
             <Route path="/helpdesk/security" element={<SecurityHelpdesk />} />
             <Route path="/helpdesk/security/tenant" element={<TenantSecurityPortal />} />
             <Route path="/helpdesk" element={<TechnicalHelpdesk />} />
+            
+            {/* Device Agent Management */}
+            <Route path="/admin/devices" element={<DeviceAgentManagement />} />
             
             {/* Main Verification Interface (default) */}
             <Route path="*" element={
