@@ -6,7 +6,7 @@ import { useImpersonation } from '../contexts/ImpersonationContext';
 import { useTenant } from '../contexts/TenantContext';
 import { CustomerFilterProvider, useCustomerFilter } from '../contexts/CustomerFilterContext';
 import usePortalMetadata from '../hooks/usePortalMetadata';
-import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen, Fingerprint, Ticket, AlertTriangle, RefreshCw, Circle, MessageSquare, Lightbulb, FlaskConical, Car, ParkingCircle, Clock, CreditCard, Truck, TrendingUp, Eye, CheckCircle, DollarSign, Video, Radio, Activity, Grid3x3, UtensilsCrossed, Bike, Navigation, Calendar, Cpu, ChefHat, Database, Maximize2, Warehouse, Edit2, Save, Loader2 } from 'lucide-react';
+import { LogOut, MapPin, Monitor, Users, Settings, Zap, FileText, Shield, Package, PackageCheck, ChevronDown, UserCheck, Key, Search, Plus, Headphones, Boxes, Bell, ShoppingCart, FolderOpen, Fingerprint, Ticket, AlertTriangle, RefreshCw, Circle, MessageSquare, Lightbulb, FlaskConical, Car, ParkingCircle, Clock, CreditCard, Truck, TrendingUp, Eye, CheckCircle, DollarSign, Video, Radio, Activity, Grid3x3, UtensilsCrossed, Bike, Navigation, Calendar, Cpu, ChefHat, Database, Maximize2, Warehouse, Edit2, Save, Loader2, Server } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import ThemeToggle from '../components/ThemeToggle';
@@ -98,6 +98,7 @@ import DataCheckPage from '../components/DataCheckPage';
 import FastfoodMenuManagement from '../components/FastfoodMenuManagement';
 import OrderKiosk from '../components/OrderKiosk';
 import KioskTerminal from '../components/KioskTerminal';
+import DeviceAgentManagement from './DeviceAgentManagement';
 import FastfoodOrdersManagement from '../components/FastfoodOrdersManagement';
 import KitchenDisplay from '../components/KitchenDisplay';
 import CustomerDisplay from '../components/CustomerDisplay';
@@ -1122,6 +1123,7 @@ const AdminPortalContent = () => {
                 { id: 'id-checks', label: 'ID-Checks', icon: UserCheck },
                 { id: 'assets', label: 'Assets', icon: Boxes },
                 { id: 'devices', label: 'Devices', icon: Monitor },
+                { id: 'agent', label: 'Agent', icon: Server },
                 { id: 'activation', label: 'Activation Codes', icon: Key },
                 { id: 'locations', label: 'Locations', icon: MapPin },
                 { id: 'lifecycle', label: 'Standort-Lifecycle', icon: RefreshCw },
@@ -1750,6 +1752,10 @@ const AdminPortalContent = () => {
 
         {activeTab === 'activation' && (
           <ActivationCodeManager />
+        )}
+
+        {activeTab === 'agent' && (
+          <DeviceAgentManagement />
         )}
 
         {activeTab === 'locations' && (

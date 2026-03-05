@@ -225,14 +225,14 @@ const DeviceAgentManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white p-6" data-testid="device-agent-management">
+    <div className="text-white" data-testid="device-agent-management">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
           <Server className="w-8 h-8 text-[#d50c2d]" />
           <div>
             <h1 className="text-2xl font-bold">Device Agent Management</h1>
-            <p className="text-gray-400 text-sm">Echtzeit-Überwachung und Stationszuweisung</p>
+            <p className="text-gray-400 text-sm">Echtzeit-Überwachung und Stationszuweisung der Windows-Geräte</p>
           </div>
         </div>
         <Button 
