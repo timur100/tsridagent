@@ -1,6 +1,7 @@
 /**
  * Device Agent Management Page
  * Echtzeit-Überwachung und Verwaltung von TSRID-Geräten
+ * Mit Pagination für 1000+ Geräte
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -8,7 +9,8 @@ import {
   Monitor, Wifi, WifiOff, MapPin, Clock, RefreshCw, 
   CheckCircle, XCircle, AlertTriangle, Search, Filter,
   Cpu, HardDrive, MemoryStick, Globe, Settings, Link, Unlink,
-  Activity, Server, Building, ChevronRight, Eye
+  Activity, Server, Building, ChevronRight, Eye,
+  ChevronLeft, ChevronsLeft, ChevronsRight
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -40,17 +42,49 @@ const DeviceAgentManagement = () => {
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [assignForm, setAssignForm] = useState({ location_code: '', device_number: '' });
-  const [filter, setFilter] = useState({ status: 'all', assigned: 'all', search: '' });
+  const [filter, setFilter] = useState({ status: 'all', assigned: 'all' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [stats, setStats] = useState({ total: 0, online: 0, offline: 0, assigned: 0, unassigned: 0 });
+  const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, total_pages: 1 });
   const wsRef = useRef(null);
+  const searchTimeoutRef = useRef(null);
 
-  // Fetch devices
-  const fetchDevices = useCallback(async () => {
+  // Debounce search input
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setPagination(prev => ({ ...prev, page: 1 })); // Reset to page 1 on search
+    }, 300);
+    return () => clearTimeout(searchTimeoutRef.current);
+  }, [searchTerm]);
+
+  // Fetch devices with pagination and filters
+  const fetchDevices = useCallback(async (page = pagination.page) => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/device-agent/devices`);
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: pagination.limit.toString()
+      });
+      
+      if (filter.status !== 'all') params.append('status', filter.status);
+      if (filter.assigned !== 'all') params.append('assigned', filter.assigned === 'assigned' ? 'true' : 'false');
+      if (debouncedSearch) params.append('search', debouncedSearch);
+      
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/devices?${params}`);
       const data = await response.json();
       if (data.success) {
         setDevices(data.devices || []);
+        setPagination(prev => ({
+          ...prev,
+          page: data.pagination?.page || 1,
+          total: data.pagination?.total || 0,
+          total_pages: data.pagination?.total_pages || 1
+        }));
         setStats({
           total: data.total || 0,
           online: data.online || 0,
@@ -64,7 +98,12 @@ const DeviceAgentManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filter, debouncedSearch, pagination.limit]);
+
+  // Fetch when filters or search changes
+  useEffect(() => {
+    fetchDevices(1);
+  }, [filter, debouncedSearch]);
 
   // Fetch locations
   const fetchLocations = useCallback(async () => {
@@ -191,25 +230,6 @@ const DeviceAgentManagement = () => {
     }
   };
 
-  // Filter devices
-  const filteredDevices = devices.filter(device => {
-    if (filter.status !== 'all' && device.status !== filter.status) return false;
-    if (filter.assigned !== 'all') {
-      if (filter.assigned === 'assigned' && !device.assigned) return false;
-      if (filter.assigned === 'unassigned' && device.assigned) return false;
-    }
-    if (filter.search) {
-      const search = filter.search.toLowerCase();
-      return (
-        device.computername?.toLowerCase().includes(search) ||
-        device.location_code?.toLowerCase().includes(search) ||
-        device.teamviewer_id?.toString().includes(search) ||
-        device.network?.ip_address?.includes(search)
-      );
-    }
-    return true;
-  });
-
   // Format time ago
   const formatTimeAgo = (dateString) => {
     if (!dateString) return '-';
@@ -222,6 +242,12 @@ const DeviceAgentManagement = () => {
     const hours = Math.floor(diffMins / 60);
     if (hours < 24) return `vor ${hours}h`;
     return `vor ${Math.floor(hours / 24)}d`;
+  };
+
+  // Page change handler
+  const handlePageChange = (newPage) => {
+    setPagination(prev => ({ ...prev, page: newPage }));
+    fetchDevices(newPage);
   };
 
   return (
@@ -303,8 +329,8 @@ const DeviceAgentManagement = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
                 placeholder="Suche nach Name, Station, TeamViewer ID, IP..."
-                value={filter.search}
-                onChange={(e) => setFilter({ ...filter, search: e.target.value })}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10 bg-[#262626] border-[#444] text-white"
                 data-testid="device-search-input"
               />
@@ -342,13 +368,19 @@ const DeviceAgentManagement = () => {
       <div className="flex gap-6">
         {/* Device List */}
         <div className="w-1/2">
-          <h2 className="text-lg font-bold mb-4">Geräte ({filteredDevices.length})</h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-bold">
+              Geräte ({pagination.total})
+              {debouncedSearch && <span className="text-sm font-normal text-gray-400 ml-2">- Suche: "{debouncedSearch}"</span>}
+            </h2>
+          </div>
           
           {loading ? (
             <div className="text-center text-gray-500 py-8">Lade Geräte...</div>
           ) : (
-            <div className="space-y-3 max-h-[calc(100vh-380px)] overflow-y-auto pr-2">
-              {filteredDevices.map((device) => (
+            <>
+              <div className="space-y-3 max-h-[calc(100vh-480px)] overflow-y-auto pr-2">
+                {devices.map((device) => (
                 <Card 
                   key={device.device_id}
                   className={`
@@ -422,13 +454,64 @@ const DeviceAgentManagement = () => {
                 </Card>
               ))}
               
-              {filteredDevices.length === 0 && (
+              {devices.length === 0 && (
                 <div className="text-center text-gray-500 py-8">
                   <Monitor className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   Keine Geräte gefunden
                 </div>
               )}
             </div>
+            
+            {/* Pagination Controls */}
+            {pagination.total_pages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#333]">
+                <div className="text-sm text-gray-400">
+                  Seite {pagination.page} von {pagination.total_pages} ({pagination.total} Geräte)
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchDevices(1)}
+                    disabled={pagination.page === 1}
+                    className="border-[#444] disabled:opacity-50"
+                  >
+                    <ChevronsLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchDevices(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                    className="border-[#444] disabled:opacity-50"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <span className="px-3 py-1 bg-[#262626] rounded text-sm">
+                    {pagination.page}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchDevices(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.total_pages}
+                    className="border-[#444] disabled:opacity-50"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchDevices(pagination.total_pages)}
+                    disabled={pagination.page >= pagination.total_pages}
+                    className="border-[#444] disabled:opacity-50"
+                  >
+                    <ChevronsRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+            </>
           )}
         </div>
 

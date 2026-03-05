@@ -400,13 +400,23 @@ async def unassign_device(device_id: str):
 async def list_devices(
     status: Optional[str] = None,
     assigned: Optional[bool] = None,
-    location_code: Optional[str] = None
+    location_code: Optional[str] = None,
+    search: Optional[str] = None,
+    page: int = 1,
+    limit: int = 50
 ):
     """
-    Listet alle registrierten Geräte auf.
+    Listet registrierte Geräte mit Pagination auf.
+    - page: Seitennummer (ab 1)
+    - limit: Anzahl pro Seite (max 100)
     """
     # Using global db
     
+    # Limit begrenzen
+    limit = min(limit, 100)
+    skip = (page - 1) * limit
+    
+    # Query aufbauen
     query = {}
     if status:
         query["status"] = status
@@ -415,32 +425,73 @@ async def list_devices(
     if location_code:
         query["location_code"] = location_code
     
+    # Suche in mehreren Feldern
+    if search:
+        search_regex = {"$regex": search, "$options": "i"}
+        query["$or"] = [
+            {"computername": search_regex},
+            {"location_code": search_regex},
+            {"teamviewer_id": search_regex},
+            {"network.ip_address": search_regex},
+            {"hardware.manufacturer": search_regex},
+            {"hardware.model": search_regex}
+        ]
+    
+    # Gesamtanzahl für Pagination
+    total_count = await db.registered_devices.count_documents(query)
+    
+    # Geräte abrufen mit Pagination
     cursor = db.registered_devices.find(
         query,
         {"_id": 0}
-    ).sort("last_seen", -1)
-    devices = await cursor.to_list(length=500)
+    ).sort("last_seen", -1).skip(skip).limit(limit)
+    devices = await cursor.to_list(length=limit)
     
     # Markiere Geräte als offline wenn länger als 2 Minuten nicht gesehen
     now = datetime.now(timezone.utc)
+    online_count = 0
+    assigned_count = 0
+    
     for device in devices:
         if device.get("last_seen"):
-            last_seen = datetime.fromisoformat(device["last_seen"].replace("Z", "+00:00"))
-            if (now - last_seen).total_seconds() > 120:
+            try:
+                last_seen = datetime.fromisoformat(device["last_seen"].replace("Z", "+00:00"))
+                if (now - last_seen).total_seconds() > 120:
+                    device["status"] = "offline"
+                else:
+                    online_count += 1
+            except:
                 device["status"] = "offline"
+        if device.get("assigned"):
+            assigned_count += 1
     
-    # Statistiken
-    online_count = len([d for d in devices if d.get("status") == "online"])
-    assigned_count = len([d for d in devices if d.get("assigned")])
+    # Gesamtstatistiken (für alle Geräte)
+    total_stats = await db.registered_devices.aggregate([
+        {"$group": {
+            "_id": None,
+            "total": {"$sum": 1},
+            "assigned": {"$sum": {"$cond": ["$assigned", 1, 0]}}
+        }}
+    ]).to_list(length=1)
+    
+    stats = total_stats[0] if total_stats else {"total": 0, "assigned": 0}
     
     return {
         "success": True,
         "devices": devices,
-        "total": len(devices),
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total": total_count,
+            "total_pages": (total_count + limit - 1) // limit if total_count > 0 else 1,
+            "has_next": page * limit < total_count,
+            "has_prev": page > 1
+        },
+        "total": stats.get("total", 0),
         "online": online_count,
         "offline": len(devices) - online_count,
-        "assigned": assigned_count,
-        "unassigned": len(devices) - assigned_count
+        "assigned": stats.get("assigned", 0),
+        "unassigned": stats.get("total", 0) - stats.get("assigned", 0)
     }
 
 
