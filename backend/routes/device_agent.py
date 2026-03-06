@@ -447,7 +447,7 @@ async def list_devices(
     ).sort("last_seen", -1).skip(skip).limit(limit)
     devices = await cursor.to_list(length=limit)
     
-    # Markiere Geräte als offline wenn länger als 2 Minuten nicht gesehen
+    # Markiere Geräte als offline wenn länger als 90 Sekunden nicht gesehen (schnellere Erkennung)
     now = datetime.now(timezone.utc)
     online_count = 0
     assigned_count = 0
@@ -456,12 +456,17 @@ async def list_devices(
         if device.get("last_seen"):
             try:
                 last_seen = datetime.fromisoformat(device["last_seen"].replace("Z", "+00:00"))
-                if (now - last_seen).total_seconds() > 120:
+                seconds_ago = (now - last_seen).total_seconds()
+                if seconds_ago > 90:  # 90 Sekunden statt 120 für schnellere Offline-Erkennung
                     device["status"] = "offline"
                 else:
+                    device["status"] = "online"
                     online_count += 1
+                device["seconds_since_seen"] = int(seconds_ago)
             except:
                 device["status"] = "offline"
+        else:
+            device["status"] = "offline"
         if device.get("assigned"):
             assigned_count += 1
     

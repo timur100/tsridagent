@@ -123,6 +123,11 @@ const DeviceAgentManagement = () => {
     fetchDevices();
     fetchLocations();
 
+    // Auto-Refresh alle 30 Sekunden für Echtzeit-Status
+    const refreshInterval = setInterval(() => {
+      fetchDevices(pagination.page);
+    }, 30000);
+
     // Connect to WebSocket
     const wsUrl = BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://');
     const ws = new WebSocket(`${wsUrl}/api/device-agent/ws/admin`);
@@ -169,14 +174,11 @@ const DeviceAgentManagement = () => {
 
     wsRef.current = ws;
 
-    // Polling fallback
-    const interval = setInterval(fetchDevices, 30000);
-
     return () => {
       if (wsRef.current) {
         wsRef.current.close();
       }
-      clearInterval(interval);
+      clearInterval(refreshInterval);
     };
   }, [fetchDevices, fetchLocations]);
 
