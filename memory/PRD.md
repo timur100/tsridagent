@@ -148,35 +148,33 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 8. 🔜 Label-Vorschau im Web korrigieren
 9. 🔜 Mobile Assets-Screen debuggen
 
-## Device Agent System (01.03.2026) ✅ NEU IMPLEMENTIERT
+## Device Agent System (06.03.2026) ✅ KOMPLETT
 
-### Backend API (`/api/agent/*`)
+### Backend API (`/api/device-agent/*`)
 - `/register` - Geräteregistrierung mit Hardware-Infos
-- `/heartbeat` - Statusmeldungen mit Befehls-Rückgabe
-- `/devices` - Geräteliste mit Online/Offline-Status
+- `/heartbeat` - Statusmeldungen mit Prozess-Status (TV, TSRID)
+- `/devices` - Geräteliste mit Online/Offline-Status (90 Sek. Timeout)
 - `/devices/{id}` - Gerätedetails
-- `/scans` - Scan-Synchronisation
-- `/stats` - Statistiken
+- Auto-Refresh alle 30 Sekunden im Frontend
 
-### PowerShell Agent
-- **Deployment-Script:** `/app/scripts/Deploy-TSRID-Agent.ps1`
+### PowerShell Agent Installer
+- **Installer-Dateien:** 
+  - `Install-TSRID-Agent.bat` (Doppelklick-Start)
+  - `Install-TSRID-Agent.ps1` (Hauptscript)
 - **Features:**
-  - Vollautomatische Installation (Admin-Rechte-Prüfung, Verzeichnis, Task)
-  - 1 Minute Startverzögerung nach Systemstart
-  - Netzwerk-Wartefunktion (bis 5 Min.)
-  - TLS 1.2 erzwungen
-  - Retry-Mechanismus (5 Versuche, 30 Sek. Pause)
-  - Hardware-Info-Sammlung (UUID, BIOS Serial, TeamViewer ID, etc.)
-  - Läuft als SYSTEM-Account
+  - Admin-Rechte über Benutzer "ec" / "Berlin#2018"
+  - Scheduled Task mit 2 Min. Startverzögerung
+  - Prüft TeamViewer + tsrid.exe Prozess-Status
+  - Heartbeat alle 60 Sekunden
 
 ### Frontend Dashboard
-- Integriert im Admin-Portal als "Agent" Tab
-- Echtzeit-Status (Online/Offline)
-- Detailansicht mit Hardware-Infos
-- Stations-Zuweisung
+- Grid-Layout für Geräteliste (1-4 Spalten responsive)
+- Klick auf Gerät öffnet Modal mit Details
+- TV/TSRID Lampen nur grün wenn online UND Prozess läuft
 
 ## Backlog
 - Nachbestellungs-Funktion (Web)
 - Webcam-Integration für Asset-Fotos (Web)
 - Mobile Echtzeit-Updates
 - Zentrale Geräte-Konfiguration vom Portal
+- Mobile App Label-Druck verifizieren (APK v2.2.4)

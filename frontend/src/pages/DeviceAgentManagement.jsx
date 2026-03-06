@@ -368,8 +368,8 @@ const DeviceAgentManagement = () => {
       </Card>
 
       <div className="flex gap-6">
-        {/* Device List */}
-        <div className="w-1/2">
+        {/* Device List - Full Width */}
+        <div className="w-full">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-bold">
               Geräte ({pagination.total})
@@ -381,14 +381,13 @@ const DeviceAgentManagement = () => {
             <div className="text-center text-gray-500 py-8">Lade Geräte...</div>
           ) : (
             <>
-              <div className="space-y-3 max-h-[calc(100vh-480px)] overflow-y-auto pr-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[calc(100vh-400px)] overflow-y-auto pr-2">
                 {devices.map((device) => (
                 <Card 
                   key={device.device_id}
                   className={`
                     bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all
-                    hover:border-[#d50c2d]/50
-                    ${selectedDevice?.device_id === device.device_id ? 'border-[#d50c2d] ring-1 ring-[#d50c2d]' : ''}
+                    hover:border-[#d50c2d]/50 hover:scale-[1.02]
                     ${!device.assigned ? 'border-l-4 border-l-yellow-500' : ''}
                   `}
                   onClick={() => setSelectedDevice(device)}
@@ -516,166 +515,164 @@ const DeviceAgentManagement = () => {
             </>
           )}
         </div>
+      </div>
 
-        {/* Device Detail */}
-        <div className="w-1/2">
-          {selectedDevice ? (
-            <Card className="bg-[#1a1a1a] border-[#333] p-6">
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h2 className="text-xl font-bold flex items-center gap-2">
-                    <Monitor className="w-5 h-5" />
-                    {selectedDevice.computername}
-                  </h2>
-                  <p className="text-gray-400 text-sm">{selectedDevice.device_id?.substring(0, 50)}...</p>
-                </div>
-                {selectedDevice.status === 'online' ? (
-                  <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-lg px-3 py-1">
-                    <Activity className="w-4 h-4 mr-2 animate-pulse" />
-                    ONLINE
-                  </Badge>
-                ) : (
-                  <Badge className="bg-red-500/20 text-red-400 border-red-500/50 text-lg px-3 py-1">
-                    OFFLINE
-                  </Badge>
-                )}
+      {/* Device Detail Modal */}
+      <Dialog open={!!selectedDevice} onOpenChange={(open) => !open && setSelectedDevice(null)}>
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Monitor className="w-6 h-6" />
+                <span className="text-xl">{selectedDevice?.computername}</span>
               </div>
+              {selectedDevice?.status === 'online' ? (
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-lg px-3 py-1">
+                  <Activity className="w-4 h-4 mr-2 animate-pulse" />
+                  ONLINE
+                </Badge>
+              ) : (
+                <Badge className="bg-red-500/20 text-red-400 border-red-500/50 text-lg px-3 py-1">
+                  OFFLINE
+                </Badge>
+              )}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400 font-mono text-xs">
+              {selectedDevice?.device_id}
+            </DialogDescription>
+          </DialogHeader>
 
+          {selectedDevice && (
+            <div className="space-y-6 py-4">
               {/* Station Assignment */}
-              <Card className={`p-4 mb-6 ${selectedDevice.assigned ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
+              <Card className={`p-4 ${selectedDevice.assigned ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
                 <h3 className="font-bold mb-3 flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   Stationszuweisung
                 </h3>
                 {selectedDevice.assigned ? (
-                  <div className="space-y-2">
-                    <div className="text-2xl font-bold text-cyan-400">
-                      {selectedDevice.location_code}-{selectedDevice.device_number}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="text-2xl font-bold text-cyan-400">
+                        {selectedDevice.location_code}-{selectedDevice.device_number}
+                      </div>
+                      <div className="text-gray-300">{selectedDevice.location_name}</div>
                     </div>
-                    <div className="text-gray-300">{selectedDevice.location_name}</div>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => unassignDevice(selectedDevice.device_id)}
-                      className="mt-2 border-red-500/50 text-red-400 hover:bg-red-500/20"
+                      className="border-red-500/50 text-red-400 hover:bg-red-500/20"
                       data-testid="unassign-device-btn"
                     >
                       <Unlink className="w-4 h-4 mr-2" />
-                      Zuweisung entfernen
+                      Entfernen
                     </Button>
                   </div>
                 ) : (
-                  <div>
-                    <p className="text-yellow-400 mb-3">Dieses Gerät ist noch keiner Station zugewiesen.</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-yellow-400">Keine Stationszuweisung</p>
                     <Button 
                       onClick={() => setShowAssignDialog(true)}
                       className="bg-[#d50c2d] hover:bg-[#b80a28]"
                       data-testid="assign-device-btn"
                     >
                       <Link className="w-4 h-4 mr-2" />
-                      Station zuweisen
+                      Zuweisen
                     </Button>
                   </div>
                 )}
               </Card>
 
-              {/* Hardware IDs - Important for identification */}
-              <Card className="bg-[#262626] border-[#444] p-4 mb-6">
+              {/* Hardware IDs */}
+              <Card className="bg-[#262626] border-[#444] p-4">
                 <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
                   <Server className="w-3 h-3" /> Hardware-Identifikation
                 </h4>
-                <div className="space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-gray-500 text-xs uppercase">UUID</span>
-                      <div className="font-mono text-sm text-cyan-400 break-all">{selectedDevice.hardware_ids?.uuid || '-'}</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 text-xs uppercase">TeamViewer ID</span>
-                      <div className="font-mono text-lg text-yellow-400 font-bold">{selectedDevice.teamviewer_id || '-'}</div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-gray-500 text-xs uppercase">BIOS Serial</span>
-                      <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.bios_serial || '-'}</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-500 text-xs uppercase">Mainboard Serial</span>
-                      <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.mainboard_serial || '-'}</div>
-                    </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">TeamViewer ID</span>
+                    <div className="font-mono text-lg text-yellow-400 font-bold">{selectedDevice.teamviewer_id || '-'}</div>
                   </div>
                   <div>
-                    <span className="text-gray-500 text-xs uppercase">Device ID (Unique)</span>
-                    <div className="font-mono text-xs text-gray-400 break-all bg-[#1a1a1a] p-2 rounded mt-1">{selectedDevice.device_id || '-'}</div>
+                    <span className="text-gray-500 text-xs uppercase">UUID</span>
+                    <div className="font-mono text-xs text-cyan-400 break-all">{selectedDevice.hardware_ids?.uuid || '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">BIOS Serial</span>
+                    <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.bios_serial || '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Mainboard Serial</span>
+                    <div className="font-mono text-sm text-gray-300">{selectedDevice.hardware_ids?.mainboard_serial || '-'}</div>
                   </div>
                 </div>
               </Card>
 
-              {/* Hardware Info */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
+              {/* Hardware & Network Info */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card className="bg-[#262626] border-[#444] p-4">
-                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                  <h4 className="text-xs text-gray-400 mb-1 flex items-center gap-1">
                     <Building className="w-3 h-3" /> Hersteller
                   </h4>
-                  <div className="font-bold">{selectedDevice.hardware?.manufacturer || '-'}</div>
-                  <div className="text-sm text-gray-400">{selectedDevice.hardware?.model || '-'}</div>
+                  <div className="font-bold text-sm">{selectedDevice.hardware?.manufacturer || '-'}</div>
+                  <div className="text-xs text-gray-400">{selectedDevice.hardware?.model || '-'}</div>
                 </Card>
                 <Card className="bg-[#262626] border-[#444] p-4">
-                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                  <h4 className="text-xs text-gray-400 mb-1 flex items-center gap-1">
                     <Cpu className="w-3 h-3" /> CPU
                   </h4>
-                  <div className="font-bold text-sm">{selectedDevice.hardware?.cpu || '-'}</div>
-                  <div className="text-sm text-gray-400">
+                  <div className="font-bold text-xs">{selectedDevice.hardware?.cpu || '-'}</div>
+                  <div className="text-xs text-gray-400">
                     {selectedDevice.hardware?.cpu_cores} Kerne / {selectedDevice.hardware?.cpu_threads} Threads
                   </div>
                 </Card>
                 <Card className="bg-[#262626] border-[#444] p-4">
-                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                  <h4 className="text-xs text-gray-400 mb-1 flex items-center gap-1">
                     <MemoryStick className="w-3 h-3" /> RAM
                   </h4>
                   <div className="font-bold">{selectedDevice.hardware?.ram_gb || '-'} GB</div>
                 </Card>
                 <Card className="bg-[#262626] border-[#444] p-4">
-                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                  <h4 className="text-xs text-gray-400 mb-1 flex items-center gap-1">
                     <HardDrive className="w-3 h-3" /> Speicher
                   </h4>
                   <div className="text-sm">{selectedDevice.hardware?.disks || '-'}</div>
                 </Card>
               </div>
 
-              {/* Network Info */}
-              <Card className="bg-[#262626] border-[#444] p-4 mb-6">
-                <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
-                  <Globe className="w-3 h-3" /> Netzwerk
-                </h4>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-gray-400 text-sm">IP-Adresse:</span>
-                    <div className="font-mono">{selectedDevice.network?.ip_address || '-'}</div>
+              {/* Network & OS */}
+              <div className="grid grid-cols-2 gap-4">
+                <Card className="bg-[#262626] border-[#444] p-4">
+                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                    <Globe className="w-3 h-3" /> Netzwerk
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-gray-400 text-xs">IP-Adresse:</span>
+                      <div className="font-mono">{selectedDevice.network?.ip_address || '-'}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 text-xs">MAC-Adresse:</span>
+                      <div className="font-mono text-sm">{selectedDevice.network?.mac_address || '-'}</div>
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-gray-400 text-sm">MAC-Adresse:</span>
-                    <div className="font-mono text-sm">{selectedDevice.network?.mac_address || '-'}</div>
-                  </div>
-                </div>
-              </Card>
-
-              {/* OS Info */}
-              <Card className="bg-[#262626] border-[#444] p-4 mb-6">
-                <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
-                  <Settings className="w-3 h-3" /> Betriebssystem
-                </h4>
-                <div className="font-bold">{selectedDevice.os?.windows_version || '-'}</div>
-                <div className="text-sm text-gray-400">Build {selectedDevice.os?.windows_build || '-'}</div>
-              </Card>
+                </Card>
+                <Card className="bg-[#262626] border-[#444] p-4">
+                  <h4 className="text-sm text-gray-400 mb-2 flex items-center gap-1">
+                    <Settings className="w-3 h-3" /> Betriebssystem
+                  </h4>
+                  <div className="font-bold">{selectedDevice.os?.windows_version || '-'}</div>
+                  <div className="text-sm text-gray-400">Build {selectedDevice.os?.windows_build || '-'}</div>
+                </Card>
+              </div>
 
               {/* Timestamps */}
               <Card className="bg-[#1a1a1a] border-[#333] p-4">
                 <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
                   <Clock className="w-3 h-3" /> Zeitstempel
                 </h4>
-                <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500">Registriert:</span>
                     <div className="text-gray-300">{selectedDevice.registered_at ? new Date(selectedDevice.registered_at).toLocaleString('de-DE') : '-'}</div>
@@ -696,17 +693,10 @@ const DeviceAgentManagement = () => {
                   )}
                 </div>
               </Card>
-            </Card>
-          ) : (
-            <Card className="bg-[#1a1a1a] border-[#333] p-6 h-full flex items-center justify-center">
-              <div className="text-center text-gray-500">
-                <Monitor className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>Wählen Sie ein Gerät aus der Liste</p>
-              </div>
-            </Card>
+            </div>
           )}
-        </div>
-      </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Assign Dialog */}
       <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
