@@ -18,7 +18,7 @@
 $TSRID_DIR = "C:\TSRID"
 $SERVICE_SCRIPT_PATH = "$TSRID_DIR\TSRID-Agent-Service.ps1"
 $INSTALL_LOG = "$TSRID_DIR\install.log"
-$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/agent"
+$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60  # Sekunden
 $STARTUP_DELAY_MINUTES = 1  # Verzoegerung nach Systemstart
 $TASK_NAME = "TSRID-Agent-Service"
@@ -56,7 +56,7 @@ $AgentServiceScript = @'
 # ============================================================================
 
 # === KONFIGURATION ===
-$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/agent"
+$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60
 $LOG_FILE = "C:\TSRID\agent.log"
 $MAX_RETRIES = 5
@@ -246,11 +246,38 @@ function Register-Device {
     $deviceId = Get-DeviceId
     $hwInfo = Get-HardwareInfo
     
+    # Payload im Format fuer /api/device-agent/register (DeviceInfo Model)
     $payload = @{
         device_id = $deviceId
-        device_info = $hwInfo
-        app_version = "PS-Agent-1.0.0"
-        registered_at = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
+        computername = $env:COMPUTERNAME
+        
+        # Hardware IDs
+        uuid = $hwInfo.uuid
+        bios_serial = $hwInfo.bios_serial
+        mainboard_serial = $hwInfo.baseboard_serial
+        teamviewer_id = $hwInfo.teamviewer_id
+        
+        # Hardware Info
+        manufacturer = $hwInfo.vendor
+        model = $hwInfo.product_name
+        cpu = $hwInfo.cpu_name
+        cpu_cores = $hwInfo.cpu_cores
+        cpu_threads = $hwInfo.cpu_threads
+        ram_gb = $hwInfo.ram_total_gb
+        
+        # Network
+        ip_address = if ($hwInfo.ip_addresses -and $hwInfo.ip_addresses.Count -gt 0) { $hwInfo.ip_addresses[0] } else { $null }
+        mac_address = if ($hwInfo.mac_addresses -and $hwInfo.mac_addresses.Count -gt 0) { $hwInfo.mac_addresses[0] } else { $null }
+        
+        # OS
+        windows_version = $hwInfo.os_name
+        windows_build = $hwInfo.os_build
+        
+        # Storage
+        disks = "C: $($hwInfo.disk_total_gb)GB (Frei: $($hwInfo.disk_free_gb)GB)"
+        
+        # Timestamp
+        timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
     }
     
     Write-AgentLog "Registriere Geraet: $deviceId"
@@ -271,29 +298,36 @@ function Send-Heartbeat {
     
     $hwInfo = Get-HardwareInfo
     
+    # Payload im Format fuer /api/device-agent/heartbeat (DeviceInfo Model)
     $payload = @{
         device_id = $DeviceId
-        hostname = $env:COMPUTERNAME
-        platform = "Windows"
-        osVersion = $hwInfo.os_version
-        status = "online"
-        memory = @{
-            total_gb = $hwInfo.ram_total_gb
-        }
-        uptime = $hwInfo.uptime_hours
+        computername = $env:COMPUTERNAME
+        
+        # Hardware IDs (aktualisieren bei jedem Heartbeat)
+        uuid = $hwInfo.uuid
+        bios_serial = $hwInfo.bios_serial
+        teamviewer_id = $hwInfo.teamviewer_id
+        
+        # Network (kann sich aendern)
+        ip_address = if ($hwInfo.ip_addresses -and $hwInfo.ip_addresses.Count -gt 0) { $hwInfo.ip_addresses[0] } else { $null }
+        
+        # Prozess-Status
+        teamviewer_status = "unknown"
+        tsrid_status = "running"
+        
+        # Timestamp
         timestamp = (Get-Date).ToString("yyyy-MM-ddTHH:mm:ssZ")
     }
     
     Write-AgentLog "Sende Heartbeat fuer: $DeviceId"
     $result = Invoke-ApiWithRetry -Uri "$API_BASE_URL/heartbeat" -Body $payload -MaxRetries 3 -RetryDelay 10
     
-    if ($result -and $result.received) {
+    if ($result -and $result.success) {
         Write-AgentLog "Heartbeat erfolgreich gesendet" "SUCCESS"
         
-        # Pruefe auf Befehle
-        if ($result.commands -and $result.commands.Count -gt 0) {
-            Write-AgentLog "Empfangen: $($result.commands.Count) Befehle"
-            # Hier koennten Befehle verarbeitet werden
+        # Pruefe auf neue Konfiguration
+        if ($result.config -and $result.config.assigned) {
+            Write-AgentLog "Zugewiesen an: $($result.config.location_code) / $($result.config.location_name)"
         }
         return $true
     } else {
