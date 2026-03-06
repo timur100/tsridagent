@@ -444,13 +444,13 @@ const DeviceAgentManagement = () => {
                     </span>
                   </div>
                   
-                  {/* Process Status Indicators */}
+                  {/* Process Status Indicators - nur grün wenn Gerät online */}
                   <div className="flex gap-2 mt-2">
-                    <span className={`text-xs px-2 py-0.5 rounded ${device.process_status?.teamviewer === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                      TV {device.process_status?.teamviewer === 'running' ? '●' : '○'}
+                    <span className={`text-xs px-2 py-0.5 rounded ${device.status === 'online' && device.process_status?.teamviewer === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                      TV {device.status === 'online' && device.process_status?.teamviewer === 'running' ? '●' : '○'}
                     </span>
-                    <span className={`text-xs px-2 py-0.5 rounded ${device.process_status?.tsrid === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                      TSRID {device.process_status?.tsrid === 'running' ? '●' : '○'}
+                    <span className={`text-xs px-2 py-0.5 rounded ${device.status === 'online' && device.process_status?.tsrid === 'running' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                      TSRID {device.status === 'online' && device.process_status?.tsrid === 'running' ? '●' : '○'}
                     </span>
                   </div>
                 </Card>
