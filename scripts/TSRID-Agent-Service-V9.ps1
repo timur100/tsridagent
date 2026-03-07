@@ -3,7 +3,7 @@
 # Fuer Windows-Tablets zur Remote-Steuerung
 
 param(
-    [string]$ApiUrl = "https://tsrid-management.preview.emergentagent.com",
+    [string]$ApiUrl = "https://tsrid-control-panel.preview.emergentagent.com",
     [int]$HeartbeatInterval = 60,
     [int]$CommandPollInterval = 5
 )

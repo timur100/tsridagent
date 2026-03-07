@@ -18,7 +18,7 @@
 
 Die Electron-App lädt die Preview-URL:
 ```javascript
-const PREVIEW_URL = 'https://tsrid-management.preview.emergentagent.com/portal/admin';
+const PREVIEW_URL = 'https://tsrid-control-panel.preview.emergentagent.com/portal/admin';
 ```
 
 **Das bedeutet:**

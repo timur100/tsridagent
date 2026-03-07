@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://tsrid-management.preview.emergentagent.com/api/dhl"
+API_URL="https://tsrid-control-panel.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

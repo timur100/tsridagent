@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://tsrid-management.preview.emergentagent.com
+- **URL:** https://tsrid-control-panel.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4
@@ -163,12 +163,17 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 - **Nachrichten-Vorlagen:** CRUD-System für wiederverwendbare Nachrichten
   - API: `GET/POST /api/device-agent/templates`, `PUT/DELETE /api/device-agent/templates/{id}`
   - Frontend: Vorlagen erstellen, bearbeiten, löschen, mit einem Klick senden
-- **Befehlsverlauf:** Zeigt Nachrichteninhalt, Zielgeräte (Namen), Zeitstempel
+  - **WYSIWYG-Editor (07.03.2026):** TipTap-basierter Rich-Text-Editor
+    - Formatierung: Fett, Kursiv, Unterstrichen
+    - Textausrichtung: Links, Zentriert, Rechts
+    - HTML-Ausgabe für Windows HTA-Fenster kompatibel
+- **Befehlsverlauf:** Zeigt Nachrichteninhalt (HTML-Rendering), Zielgeräte (Namen), Zeitstempel
 - **PowerShell Agent V9:**
   - Always-on-top Nachrichtenfenster (HTA)
   - Datum & Uhrzeit der Meldung
   - Countdown-Timer wenn Dauer angegeben
   - Stylisches Vollbild-Fenster mit TSRID-Branding
+  - HTML-Formatierung wird korrekt angezeigt
 
 ### PowerShell Agent Installer
 - **Installer-Dateien:** 

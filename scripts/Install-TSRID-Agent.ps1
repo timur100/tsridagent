@@ -4,7 +4,7 @@
 
 param(
     [string]$InstallPath = "C:\TSRID-Agent",
-    [string]$ApiUrl = "https://tsrid-management.preview.emergentagent.com"
+    [string]$ApiUrl = "https://tsrid-control-panel.preview.emergentagent.com"
 )
 
 Write-Host "============================================" -ForegroundColor Cyan

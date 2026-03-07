@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://tsrid-management.preview.emergentagent.com/portal/admin
+https://tsrid-control-panel.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

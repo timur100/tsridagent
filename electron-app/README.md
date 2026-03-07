@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://tsrid-management.preview.emergentagent.com
+│   └── Lädt: https://tsrid-control-panel.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```
