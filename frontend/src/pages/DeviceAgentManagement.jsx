@@ -50,6 +50,9 @@ const DeviceAgentManagement = () => {
   const [stats, setStats] = useState({ total: 0, online: 0, offline: 0, assigned: 0, unassigned: 0 });
   const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, total_pages: 1 });
   const [commandHistory, setCommandHistory] = useState([]);
+  const [messageText, setMessageText] = useState('');
+  const [scriptText, setScriptText] = useState('');
+  const [configInterval, setConfigInterval] = useState('60');
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
@@ -912,8 +915,8 @@ const DeviceAgentManagement = () => {
 
             {/* Verfügbare Befehle */}
             <Card className="bg-[#262626] border-[#444] p-4">
-              <h4 className="font-bold mb-3">Verfügbare Befehle</h4>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <h4 className="font-bold mb-3">Schnellbefehle</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                 <Button 
                   onClick={() => sendRemoteCommand('restart_agent')}
                   className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
@@ -936,35 +939,89 @@ const DeviceAgentManagement = () => {
                   PC herunterfahren
                 </Button>
                 <Button 
-                  onClick={() => {
-                    const msg = prompt('Nachricht eingeben:');
-                    if (msg) sendRemoteCommand('message', { text: msg });
-                  }}
-                  className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
+                  onClick={() => sendRemoteCommand('screenshot')}
+                  className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2"
                 >
-                  <MessageSquare className="w-4 h-4" />
-                  Nachricht senden
+                  <Eye className="w-4 h-4" />
+                  Screenshot
                 </Button>
-                <Button 
-                  onClick={() => {
-                    const interval = prompt('Heartbeat-Intervall (Sekunden):', '60');
-                    if (interval) sendRemoteCommand('update_config', { heartbeat_interval: parseInt(interval) });
-                  }}
-                  className="bg-cyan-600 hover:bg-cyan-700 flex items-center gap-2"
-                >
-                  <Settings className="w-4 h-4" />
-                  Config ändern
-                </Button>
-                <Button 
-                  onClick={() => {
-                    const script = prompt('PowerShell-Befehl eingeben:');
-                    if (script) sendRemoteCommand('run_script', { script });
-                  }}
-                  className="bg-gray-600 hover:bg-gray-700 flex items-center gap-2"
-                >
-                  <Terminal className="w-4 h-4" />
-                  Script ausführen
-                </Button>
+              </div>
+
+              {/* Nachricht senden */}
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Nachricht eingeben..."
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    className="bg-[#1a1a1a] border-[#444] text-white flex-1"
+                  />
+                  <Button 
+                    onClick={() => {
+                      if (messageText.trim()) {
+                        sendRemoteCommand('message', { text: messageText });
+                        setMessageText('');
+                      } else {
+                        toast.error('Bitte Nachricht eingeben');
+                      }
+                    }}
+                    className="bg-purple-600 hover:bg-purple-700"
+                    disabled={!messageText.trim()}
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Senden
+                  </Button>
+                </div>
+
+                {/* Heartbeat Config */}
+                <div className="flex gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Heartbeat-Intervall (Sek.)"
+                    value={configInterval}
+                    onChange={(e) => setConfigInterval(e.target.value)}
+                    className="bg-[#1a1a1a] border-[#444] text-white w-48"
+                  />
+                  <Button 
+                    onClick={() => {
+                      const interval = parseInt(configInterval);
+                      if (interval >= 10 && interval <= 3600) {
+                        sendRemoteCommand('update_config', { heartbeat_interval: interval });
+                      } else {
+                        toast.error('Intervall muss zwischen 10 und 3600 Sekunden sein');
+                      }
+                    }}
+                    className="bg-cyan-600 hover:bg-cyan-700"
+                  >
+                    <Settings className="w-4 h-4 mr-2" />
+                    Config ändern
+                  </Button>
+                </div>
+
+                {/* PowerShell Script */}
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="PowerShell-Befehl eingeben..."
+                    value={scriptText}
+                    onChange={(e) => setScriptText(e.target.value)}
+                    className="bg-[#1a1a1a] border-[#444] text-white flex-1"
+                  />
+                  <Button 
+                    onClick={() => {
+                      if (scriptText.trim()) {
+                        sendRemoteCommand('run_script', { script: scriptText });
+                        setScriptText('');
+                      } else {
+                        toast.error('Bitte Script eingeben');
+                      }
+                    }}
+                    className="bg-gray-600 hover:bg-gray-700"
+                    disabled={!scriptText.trim()}
+                  >
+                    <Terminal className="w-4 h-4 mr-2" />
+                    Ausführen
+                  </Button>
+                </div>
               </div>
             </Card>
 
