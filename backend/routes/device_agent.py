@@ -810,18 +810,38 @@ async def send_remote_command(cmd: RemoteCommand):
 async def get_pending_commands(device_id: str):
     """
     Gibt ausstehende Befehle für ein Gerät zurück.
-    Wird vom Agent beim Heartbeat abgefragt.
+    Wird vom Agent alle 5 Sekunden abgefragt für Echtzeit-Befehle.
     """
-    commands = pending_commands.get(device_id, [])
+    # Hole pending Befehle aus der Datenbank
+    cursor = db.remote_commands.find({
+        "target_devices": device_id,
+        "status": "pending"
+    }, {"_id": 0})
+    pending_cmds = await cursor.to_list(length=50)
     
-    # Nur nicht-ausgeführte Befehle
-    pending = [c for c in commands if c.get("status") == "pending"]
+    commands = []
+    for cmd in pending_cmds:
+        commands.append({
+            "command_id": cmd.get("command_id"),
+            "command": cmd.get("command"),
+            "params": cmd.get("params", {}),
+            "created_at": cmd.get("created_at")
+        })
+        
+        # Markiere als dispatched
+        await db.remote_commands.update_one(
+            {"command_id": cmd.get("command_id")},
+            {"$set": {
+                "status": "dispatched",
+                "dispatched_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
     
     return {
         "success": True,
         "device_id": device_id,
-        "commands": pending,
-        "count": len(pending)
+        "commands": commands,
+        "count": len(commands)
     }
 
 
