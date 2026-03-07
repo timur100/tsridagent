@@ -1537,15 +1537,37 @@ function Show-BigMessage {
         $timer = ""; $timerDiv = ""
         if($DurationMinutes -gt 0) {
             $secs = $DurationMinutes * 60
-            $timerDiv = "<div id='timer' style='font-size:48px;color:#ff6600;margin-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></div>"
+            $timerDiv = "<div class='timer'>Verbleibend: <span id='cd'>--:--:--</span></div>"
             $timer = "var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='ZEIT ABGELAUFEN';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"
         }
         $safeMsg = $Message.Replace("'","&#39;").Replace('"','&quot;')
         $html = @"
-<html><head><HTA:APPLICATION BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes"/>
+<html><head><HTA:APPLICATION BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no"/>
 <script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script>
-<style>body{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;font-family:Segoe UI;margin:0;height:100vh;display:flex;justify-content:center;align-items:center;text-align:center}.box{padding:60px;background:rgba(255,255,255,0.05);border:3px solid #d50c2d;border-radius:20px;max-width:80%}.logo{width:180px;height:auto;margin-bottom:20px}.t{color:#888;font-size:24px;margin:15px 0}.m{font-size:48px;margin:30px 0;line-height:1.4}.btn{background:#d50c2d;color:#fff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;border-radius:10px;margin-top:30px}</style>
-</head><body><div class="box"><img src="C:\TSRID-Agent\logo.png" class="logo" alt="TSRID"/><div class="t">$ts</div><div class="m">$safeMsg</div>$timerDiv<button class="btn" onclick="close()">SCHLIESSEN (ESC)</button></div></body></html>
+<style>
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
+body{background-color:#1a1a2e;color:#ffffff;font-family:Segoe UI,Arial;text-align:center}
+table.main{width:100%;height:100%;border-collapse:collapse}
+td.center{vertical-align:middle;text-align:center}
+.box{display:inline-block;padding:60px;background-color:#252540;border:3px solid #d50c2d}
+.logo{width:180px;height:auto;margin-bottom:20px}
+.time{color:#888888;font-size:24px;margin:15px 0}
+.msg{color:#ffffff;font-size:48px;margin:30px 0;line-height:1.4}
+.timer{font-size:48px;color:#ff6600;margin-top:30px}
+.btn{background-color:#d50c2d;color:#ffffff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;margin-top:30px}
+.btn:hover{background-color:#ff1a3d}
+</style>
+</head><body>
+<table class="main"><tr><td class="center">
+<div class="box">
+<img src="C:\TSRID-Agent\logo.png" class="logo" alt="TSRID"/><br/>
+<div class="time">$ts</div>
+<div class="msg">$safeMsg</div>
+$timerDiv
+<br/><button class="btn" onclick="close()">SCHLIESSEN (ESC)</button>
+</div>
+</td></tr></table>
+</body></html>
 "@
         $htaPath = "C:\TSRID-Agent\message.hta"
         $html | Out-File $htaPath -Encoding UTF8 -Force
@@ -1681,4 +1703,110 @@ $trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
 $trigger2 = New-ScheduledTaskTrigger -AtLogOn
 $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
+Write-Host "[OK] Task erstellt und gestartet" -ForegroundColor Green
+Start-ScheduledTask -TaskName $taskName
+Write-Host "[OK] Agent V14 laeuft! Server: $apiUrl" -ForegroundColor Green
+`}
+              </pre>
+            </div>
+          </div>
+        </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+// Helper function to generate the agent script for copying
+function generateAgentScript(apiUrl) {
+  return `# TSRID Agent Installer V14 - In PowerShell (Admin) einfuegen
+# Server: ${apiUrl}
+
+$installPath = "C:\\TSRID-Agent"
+$scriptPath = "$installPath\\TSRID-Agent-Service.ps1"
+$apiUrl = "${apiUrl}"
+
+New-Item -ItemType Directory -Path $installPath -Force | Out-Null
+Write-Host "[OK] Ordner erstellt" -ForegroundColor Green
+
+$logoUrl = "https://customer-assets.emergentagent.com/job_06f80f02-2411-462d-ac08-59775fd1245f/artifacts/7kqzi6kx_Zeichenfl%C3%A4che%201.png"
+try { Invoke-WebRequest -Uri $logoUrl -OutFile "$installPath\\logo.png" -UseBasicParsing; Write-Host "[OK] Logo" -ForegroundColor Green } catch {}
+
+@'
+param([string]$ApiUrl)
+$ErrorActionPreference = "Continue"
+$global:ComputerName = $env:COMPUTERNAME
+$global:LogFile = "C:\\TSRID-Agent\\agent.log"
+$global:DeviceId = "$env:COMPUTERNAME-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)"
+$global:ErrorCount = 0
+
+function Write-Log { param([string]$M,[string]$L="INFO"); try { Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] [$L] $M" -EA SilentlyContinue } catch {} }
+
+function Get-HardwareInfo {
+    try {
+        $cs = Get-WmiObject Win32_ComputerSystem; $cpu = Get-WmiObject Win32_Processor
+        $os = Get-WmiObject Win32_OperatingSystem; $bios = Get-WmiObject Win32_BIOS
+        $net = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled }
+        $tvId = "not found"; @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer") | ForEach-Object { if (Test-Path $_) { $tvId = (Get-ItemProperty $_ -Name ClientID -EA SilentlyContinue).ClientID } }
+        if($tvId -is [int]) { $tvId = $tvId.ToString() }
+        return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=[string]$bios.SerialNumber; teamviewer_id=[string]$tvId; teamviewer_status=$(if(Get-Process TeamViewer -EA SilentlyContinue){"running"}else{"stopped"}); tsrid_status=$(if(Get-Process tsrid -EA SilentlyContinue){"running"}else{"stopped"}); manufacturer=[string]$cs.Manufacturer; model=[string]$cs.Model; cpu=[string]$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=[string](($net|Select -First 1).IPAddress[0]); windows_version=[string]$os.Caption; timestamp=(Get-Date).ToString("o") }
+    } catch { Write-Log "HW-Fehler: $_" "ERROR"; return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
+}
+
+function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
+    try { $p = @{Uri="$ApiUrl/api/device-agent/$Endpoint";Method=$Method;ContentType="application/json";TimeoutSec=30}; if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10 -Compress)}; $r=Invoke-RestMethod @p; $global:ErrorCount=0; return $r } catch { $global:ErrorCount++; Write-Log "API-Fehler: $_" "ERROR"; return $null }
+}
+
+function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
+    try {
+        $ts = Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
+        if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div class='timer'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='ZEIT ABGELAUFEN';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
+        $safeMsg = $Message.Replace("'","&#39;").Replace('"','&quot;')
+        $html = @"
+<html><head><HTA:APPLICATION BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no"/>
+<script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script>
+<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}body{background-color:#1a1a2e;color:#ffffff;font-family:Segoe UI,Arial;text-align:center}table.main{width:100%;height:100%;border-collapse:collapse}td.center{vertical-align:middle;text-align:center}.box{display:inline-block;padding:60px;background-color:#252540;border:3px solid #d50c2d}.logo{width:180px;height:auto;margin-bottom:20px}.time{color:#888888;font-size:24px;margin:15px 0}.msg{color:#ffffff;font-size:48px;margin:30px 0;line-height:1.4}.timer{font-size:48px;color:#ff6600;margin-top:30px}.btn{background-color:#d50c2d;color:#ffffff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;margin-top:30px}</style>
+</head><body><table class="main"><tr><td class="center"><div class="box"><img src="C:\\TSRID-Agent\\logo.png" class="logo" alt="TSRID"/><br/><div class="time">$ts</div><div class="msg">$safeMsg</div>$timerDiv<br/><button class="btn" onclick="close()">SCHLIESSEN (ESC)</button></div></td></tr></table></body></html>
+"@
+        $html | Out-File "C:\\TSRID-Agent\\message.hta" -Encoding UTF8 -Force
+        $taskXml = '<?xml version="1.0" encoding="UTF-16"?><Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1910-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers><Principals><Principal><GroupId>S-1-5-32-545</GroupId><RunLevel>LeastPrivilege</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><Priority>7</Priority></Settings><Actions><Exec><Command>mshta.exe</Command><Arguments>"C:\\TSRID-Agent\\message.hta"</Arguments></Exec></Actions></Task>'
+        $taskXml | Out-File "C:\\TSRID-Agent\\msgtask.xml" -Encoding Unicode -Force
+        schtasks /Create /TN "TSRID-ShowMessage" /XML "C:\\TSRID-Agent\\msgtask.xml" /F 2>$null
+        schtasks /Run /TN "TSRID-ShowMessage" 2>$null
+        Write-Log "Nachricht angezeigt"
+    } catch { Write-Log "MSG-Fehler: $_" "ERROR" }
+}
+
+function Process-Cmd { param($c)
+    try { $t=$c.command;$p=$c.params;$id=$c.command_id; Write-Log "CMD: $t"; $ok=$false;$out=""
+        switch($t){ "message"{Show-BigMessage -Message $p.text -DurationMinutes ([int]$p.duration_minutes);$out="OK";$ok=$true} "restart_pc"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 3;Restart-Computer -Force}|Out-Null} "shutdown_pc"{$out="Shutdown";$ok=$true;Start-Job{Start-Sleep 3;Stop-Computer -Force}|Out-Null} "restart_agent"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 2;Start-ScheduledTask -TaskName "TSRID-Agent-Service"}|Out-Null} "run_script"{try{$out=(Invoke-Expression $p.script|Out-String);$ok=$true}catch{$out="Fehler: $_";$ok=$false}} }
+        Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
+    } catch { Write-Log "CMD-Fehler: $_" "ERROR" }
+}
+
+Write-Log "=== TSRID Agent V14 ===" "INFO"; Write-Log "Server: $ApiUrl" "INFO"
+Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
+$lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
+while($true) { try { $now=Get-Date
+    if(($now-$lastHB).TotalSeconds -ge 60){ $r=Invoke-Api -Endpoint "heartbeat" -Method POST -Body (Get-HardwareInfo); if($r -and $r.commands){$r.commands|%{Process-Cmd $_}}; $lastHB=$now }
+    if(($now-$lastPoll).TotalSeconds -ge 5){ $r=Invoke-Api -Endpoint "remote/commands/$($global:DeviceId)" -Method GET; if($r -and $r.commands){$r.commands|%{Process-Cmd $_}}; $lastPoll=$now }
+    if($global:ErrorCount -gt 10){ Write-Log "Pause 60s" "ERROR"; Start-Sleep 60; $global:ErrorCount=0 }
+    Start-Sleep 1
+} catch { Write-Log "Loop-Fehler: $_" "ERROR"; Start-Sleep 5 } }
+'@ | Out-File $scriptPath -Encoding UTF8 -Force
+Write-Host "[OK] Agent-Script V14" -ForegroundColor Green
+
+$taskName = "TSRID-Agent-Service"
+Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -EA SilentlyContinue
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument ("-ExecutionPolicy Bypass -WindowStyle Hidden -File " + $scriptPath + " -ApiUrl " + $apiUrl)
+$trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
+$trigger2 = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
+Start-ScheduledTask -TaskName $taskName
+Write-Host "[OK] Agent V14 laeuft! Server: $apiUrl" -ForegroundColor Green`;
+}
+
+export default DeviceAgentManagement;
