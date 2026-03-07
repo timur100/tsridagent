@@ -4,7 +4,7 @@ Backend-Endpunkte für PowerShell/Windows Agent Kommunikation
 Ermöglicht Geräteregistrierung, Status-Updates und Konfigurationsabruf
 """
 
-from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect, Request
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone, timedelta
@@ -210,12 +210,48 @@ async def register_device(device: DeviceInfo):
     }
 
 
+@router.post("/heartbeat-debug")
+async def device_heartbeat_debug(request: Request):
+    """
+    DEBUG: Empfängt Heartbeat als raw JSON um das Format zu prüfen.
+    """
+    try:
+        body = await request.json()
+        logger.info(f"Heartbeat DEBUG received: {body}")
+        
+        device_id = body.get("device_id")
+        computername = body.get("computername")
+        
+        if not device_id or not computername:
+            return {"success": False, "error": "device_id and computername required", "received": body}
+        
+        update_data = {
+            "status": "online",
+            "last_seen": datetime.now(timezone.utc).isoformat(),
+            "process_status": {
+                "teamviewer": body.get("teamviewer_status"),
+                "tsrid": body.get("tsrid_status")
+            },
+            "network.ip_address": body.get("ip_address")
+        }
+        
+        await db.registered_devices.update_one(
+            {"device_id": device_id},
+            {"$set": update_data}
+        )
+        
+        return {"success": True, "device_id": device_id, "status": "online"}
+    except Exception as e:
+        logger.error(f"Heartbeat DEBUG error: {e}")
+        return {"success": False, "error": str(e)}
+
+
 @router.post("/heartbeat")
 async def device_heartbeat(device: DeviceInfo):
     """
     Empfängt regelmäßige Status-Updates vom Gerät (alle 30 Sekunden).
     """
-    # Using global db
+    logger.info(f"Heartbeat received from: {device.device_id}, computername: {device.computername}")
     
     update_data = {
         "status": "online",
