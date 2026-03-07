@@ -1447,12 +1447,11 @@ Write-Host "[OK] Ordner erstellt: $installPath" -ForegroundColor Green
 # Agent-Script erstellen
 @'
 param([string]$ApiUrl = "${BACKEND_URL}")
-$global:DeviceId = $null
 $global:ComputerName = $env:COMPUTERNAME
 $global:LogFile = "$env:TEMP\\TSRID-Agent.log"
+$global:DeviceId = "$env:COMPUTERNAME-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)"
 
-function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message" }
-function Get-DeviceId { return "$($global:ComputerName)-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)" }
+function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message"; Write-Host $Message }
 
 function Get-HardwareInfo {
     try {
@@ -1463,7 +1462,7 @@ function Get-HardwareInfo {
         $tvStatus = if (Get-Process TeamViewer -EA SilentlyContinue) { "running" } else { "stopped" }
         $tsridStatus = if (Get-Process tsrid -EA SilentlyContinue) { "running" } else { "stopped" }
         return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=$bios.SerialNumber; teamviewer_id=$tvId; teamviewer_status=$tvStatus; tsrid_status=$tsridStatus; manufacturer=$cs.Manufacturer; model=$cs.Model; cpu=$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=($net|Select -First 1).IPAddress[0]; windows_version=$os.Caption; timestamp=(Get-Date).ToString("o") }
-    } catch { return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
+    } catch { Write-Log "Fehler: $_"; return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
 }
 
 function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
@@ -1483,8 +1482,9 @@ function Process-Cmd { param($c)
     Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
 }
 
-Write-Log "=== TSRID Agent gestartet ===" 
-$global:DeviceId = Get-DeviceId; Write-Log "ID: $global:DeviceId"
+Write-Log "=== TSRID Agent gestartet ==="
+Write-Log "Server: $ApiUrl"
+Write-Log "Device: $global:DeviceId"
 Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
 $lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
 while($true){ $now=Get-Date
@@ -1553,12 +1553,11 @@ Write-Host "[OK] Ordner erstellt" -ForegroundColor Green
 
 @'
 param([string]$ApiUrl = "${apiUrl}")
-$global:DeviceId = $null
 $global:ComputerName = $env:COMPUTERNAME
 $global:LogFile = "$env:TEMP\\TSRID-Agent.log"
+$global:DeviceId = "$($env:COMPUTERNAME)-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)"
 
-function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message" }
-function Get-DeviceId { return "$($global:ComputerName)-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)" }
+function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message"; Write-Host $Message }
 
 function Get-HardwareInfo {
     try {
@@ -1569,11 +1568,22 @@ function Get-HardwareInfo {
         $tvStatus = if (Get-Process TeamViewer -EA SilentlyContinue) { "running" } else { "stopped" }
         $tsridStatus = if (Get-Process tsrid -EA SilentlyContinue) { "running" } else { "stopped" }
         return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=$bios.SerialNumber; teamviewer_id=$tvId; teamviewer_status=$tvStatus; tsrid_status=$tsridStatus; manufacturer=$cs.Manufacturer; model=$cs.Model; cpu=$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=($net|Select -First 1).IPAddress[0]; windows_version=$os.Caption; timestamp=(Get-Date).ToString("o") }
-    } catch { return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
+    } catch { Write-Log "HW-Info Fehler: $_"; return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
 }
 
 function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
-    try { $p=@{Uri="$ApiUrl/api/device-agent/$Endpoint";Method=$Method;ContentType="application/json";TimeoutSec=30}; if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10)}; return Invoke-RestMethod @p } catch { Write-Log "API-Fehler: $_"; return $null }
+    try { 
+        $uri = "$ApiUrl/api/device-agent/$Endpoint"
+        Write-Log "API: $Method $uri"
+        $p=@{Uri=$uri;Method=$Method;ContentType="application/json";TimeoutSec=30}
+        if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10)}
+        $r = Invoke-RestMethod @p
+        Write-Log "API OK"
+        return $r
+    } catch { 
+        Write-Log "API-Fehler: $($_.Exception.Message)"
+        return $null 
+    }
 }
 
 function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
@@ -1589,8 +1599,9 @@ function Process-Cmd { param($c)
     Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
 }
 
-Write-Log "=== TSRID Agent gestartet ===" 
-$global:DeviceId = Get-DeviceId; Write-Log "ID: $global:DeviceId"
+Write-Log "=== TSRID Agent gestartet ==="
+Write-Log "Server: $ApiUrl"
+Write-Log "Device: $global:DeviceId"
 Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
 $lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
 while($true){ $now=Get-Date
