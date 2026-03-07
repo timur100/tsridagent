@@ -84,8 +84,8 @@
     }
   },
   "navigation_path": {
-    "login_page": "https://windows-heartbeat.preview.emergentagent.com/portal/login",
-    "admin_portal": "https://windows-heartbeat.preview.emergentagent.com/portal/admin",
+    "login_page": "https://tsrid-management.preview.emergentagent.com/portal/login",
+    "admin_portal": "https://tsrid-management.preview.emergentagent.com/portal/admin",
     "reporting_access": "Click document icon (FileText) button in Admin Portal header"
   },
   "mocked_apis": {

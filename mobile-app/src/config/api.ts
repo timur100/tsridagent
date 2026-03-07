@@ -7,7 +7,7 @@
 
 // API-URL aus Environment oder Fallback
 export const API_BASE_URL = __DEV__ 
-  ? 'https://windows-heartbeat.preview.emergentagent.com'  // Development
+  ? 'https://tsrid-management.preview.emergentagent.com'  // Development
   : 'https://your-production-url.com';                   // Production
 
 // API Endpoints (identisch mit Admin Portal)

@@ -10,7 +10,8 @@ import {
   CheckCircle, XCircle, AlertTriangle, Search, Filter,
   Cpu, HardDrive, MemoryStick, Globe, Settings, Link, Unlink,
   Activity, Server, Building, ChevronRight, Eye,
-  ChevronLeft, ChevronsLeft, ChevronsRight, Power, MessageSquare, Terminal
+  ChevronLeft, ChevronsLeft, ChevronsRight, Power, MessageSquare, Terminal,
+  FileText, Plus, Edit, Trash2, Timer, Send, History
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -51,8 +52,13 @@ const DeviceAgentManagement = () => {
   const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, total_pages: 1 });
   const [commandHistory, setCommandHistory] = useState([]);
   const [messageText, setMessageText] = useState('');
+  const [messageDuration, setMessageDuration] = useState('');
   const [scriptText, setScriptText] = useState('');
   const [configInterval, setConfigInterval] = useState('60');
+  const [templates, setTemplates] = useState([]);
+  const [showTemplateDialog, setShowTemplateDialog] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [templateForm, setTemplateForm] = useState({ name: '', message_text: '', duration_minutes: '' });
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
@@ -123,6 +129,14 @@ const DeviceAgentManagement = () => {
       console.error('Error fetching locations:', error);
     }
   }, []);
+
+  // Load templates and history when Remote Dialog opens
+  useEffect(() => {
+    if (showRemoteDialog) {
+      fetchTemplates();
+      fetchCommandHistory();
+    }
+  }, [showRemoteDialog]);
 
   // WebSocket connection for real-time updates
   useEffect(() => {
@@ -288,6 +302,82 @@ const DeviceAgentManagement = () => {
     } catch (error) {
       console.error('Error fetching command history:', error);
     }
+  };
+
+  // Templates laden
+  const fetchTemplates = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/templates`);
+      const data = await response.json();
+      if (data.success) {
+        setTemplates(data.templates || []);
+      }
+    } catch (error) {
+      console.error('Error fetching templates:', error);
+    }
+  };
+
+  // Template speichern
+  const saveTemplate = async () => {
+    if (!templateForm.name.trim() || !templateForm.message_text.trim()) {
+      toast.error('Name und Nachricht erforderlich');
+      return;
+    }
+
+    try {
+      const url = editingTemplate 
+        ? `${BACKEND_URL}/api/device-agent/templates/${editingTemplate.template_id}`
+        : `${BACKEND_URL}/api/device-agent/templates`;
+      
+      const response = await fetch(url, {
+        method: editingTemplate ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: templateForm.name,
+          message_text: templateForm.message_text,
+          duration_minutes: templateForm.duration_minutes ? parseInt(templateForm.duration_minutes) : null
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(editingTemplate ? 'Vorlage aktualisiert' : 'Vorlage erstellt');
+        setShowTemplateDialog(false);
+        setEditingTemplate(null);
+        setTemplateForm({ name: '', message_text: '', duration_minutes: '' });
+        fetchTemplates();
+      } else {
+        toast.error(data.detail || 'Fehler beim Speichern');
+      }
+    } catch (error) {
+      toast.error('Netzwerkfehler');
+    }
+  };
+
+  // Template löschen
+  const deleteTemplate = async (templateId) => {
+    if (!window.confirm('Vorlage wirklich löschen?')) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/templates/${templateId}`, {
+        method: 'DELETE'
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success('Vorlage gelöscht');
+        fetchTemplates();
+      }
+    } catch (error) {
+      toast.error('Fehler beim Löschen');
+    }
+  };
+
+  // Template aus Vorlage senden
+  const sendTemplateMessage = (template) => {
+    sendRemoteCommand('message', { 
+      text: template.message_text, 
+      duration_minutes: template.duration_minutes 
+    });
   };
 
   // Toggle Geräteauswahl für Remote-Befehle
@@ -851,7 +941,7 @@ const DeviceAgentManagement = () => {
 
       {/* Remote Control Dialog */}
       <Dialog open={showRemoteDialog} onOpenChange={setShowRemoteDialog}>
-        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="w-6 h-6 text-orange-400" />
@@ -946,8 +1036,9 @@ const DeviceAgentManagement = () => {
                 </Button>
               </div>
 
-              {/* Nachricht senden */}
+              {/* Nachricht senden mit Timer */}
               <div className="space-y-3">
+                <h5 className="text-sm text-gray-400 font-medium">Nachricht mit optionalem Countdown</h5>
                 <div className="flex gap-2">
                   <Input
                     placeholder="Nachricht eingeben..."
@@ -955,11 +1046,26 @@ const DeviceAgentManagement = () => {
                     onChange={(e) => setMessageText(e.target.value)}
                     className="bg-[#1a1a1a] border-[#444] text-white flex-1"
                   />
+                  <div className="flex items-center gap-1">
+                    <Timer className="w-4 h-4 text-gray-400" />
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={messageDuration}
+                      onChange={(e) => setMessageDuration(e.target.value)}
+                      className="bg-[#1a1a1a] border-[#444] text-white w-20"
+                      title="Countdown-Timer in Minuten (optional)"
+                    />
+                  </div>
                   <Button 
                     onClick={() => {
                       if (messageText.trim()) {
-                        sendRemoteCommand('message', { text: messageText });
+                        sendRemoteCommand('message', { 
+                          text: messageText, 
+                          duration_minutes: messageDuration ? parseInt(messageDuration) : null 
+                        });
                         setMessageText('');
+                        setMessageDuration('');
                       } else {
                         toast.error('Bitte Nachricht eingeben');
                       }
@@ -971,6 +1077,7 @@ const DeviceAgentManagement = () => {
                     Senden
                   </Button>
                 </div>
+                <p className="text-xs text-gray-500">Timer optional: z.B. 120 für 2 Stunden Countdown</p>
 
                 {/* Heartbeat Config */}
                 <div className="flex gap-2">
@@ -1024,10 +1131,89 @@ const DeviceAgentManagement = () => {
               </div>
             </Card>
 
+            {/* Nachrichten-Vorlagen */}
+            <Card className="bg-[#262626] border-[#444] p-4">
+              <h4 className="font-bold mb-3 flex items-center justify-between">
+                <span className="flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Nachrichten-Vorlagen
+                </span>
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    setEditingTemplate(null);
+                    setTemplateForm({ name: '', message_text: '', duration_minutes: '' });
+                    setShowTemplateDialog(true);
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Neue Vorlage
+                </Button>
+              </h4>
+              {templates.length === 0 ? (
+                <p className="text-gray-500 text-sm">Keine Vorlagen vorhanden</p>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {templates.map((template) => (
+                    <div key={template.template_id} className="bg-[#1a1a1a] rounded-lg p-3 border border-[#333]">
+                      <div className="flex items-start justify-between mb-2">
+                        <span className="font-bold text-purple-400">{template.name}</span>
+                        <div className="flex gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setEditingTemplate(template);
+                              setTemplateForm({
+                                name: template.name,
+                                message_text: template.message_text,
+                                duration_minutes: template.duration_minutes?.toString() || ''
+                              });
+                              setShowTemplateDialog(true);
+                            }}
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-white"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteTemplate(template.template_id)}
+                            className="h-6 w-6 p-0 text-gray-400 hover:text-red-400"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-2 line-clamp-2">{template.message_text}</p>
+                      {template.duration_minutes && (
+                        <div className="text-xs text-yellow-400 mb-2">
+                          <Timer className="w-3 h-3 inline mr-1" />
+                          {template.duration_minutes} Min. Timer
+                        </div>
+                      )}
+                      <Button
+                        size="sm"
+                        onClick={() => sendTemplateMessage(template)}
+                        className="w-full bg-purple-600 hover:bg-purple-700"
+                      >
+                        <Send className="w-3 h-3 mr-1" />
+                        Senden
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+
             {/* Befehlsverlauf */}
             <Card className="bg-[#262626] border-[#444] p-4">
               <h4 className="font-bold mb-3 flex items-center justify-between">
-                <span>Befehlsverlauf</span>
+                <span className="flex items-center gap-2">
+                  <History className="w-4 h-4" />
+                  Befehlsverlauf
+                </span>
                 <Button size="sm" variant="ghost" onClick={fetchCommandHistory} className="text-gray-400">
                   <RefreshCw className="w-4 h-4" />
                 </Button>
@@ -1035,14 +1221,51 @@ const DeviceAgentManagement = () => {
               {commandHistory.length === 0 ? (
                 <p className="text-gray-500 text-sm">Noch keine Befehle gesendet</p>
               ) : (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
+                <div className="space-y-2 max-h-64 overflow-y-auto">
                   {commandHistory.map((cmd, idx) => (
-                    <div key={idx} className="bg-[#1a1a1a] rounded p-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="font-mono text-orange-400">{cmd.command}</span>
-                        <span className="text-gray-500">{cmd.target_count} Gerät(e)</span>
+                    <div key={idx} className="bg-[#1a1a1a] rounded-lg p-3 border border-[#333]">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className="font-mono text-orange-400 font-bold">{cmd.command}</span>
+                        <Badge className="bg-[#333] text-gray-300 text-xs">
+                          {cmd.target_count} Gerät(e)
+                        </Badge>
                       </div>
-                      <div className="text-gray-400 text-xs">
+                      
+                      {/* Nachrichteninhalt anzeigen wenn vorhanden */}
+                      {cmd.command === 'message' && cmd.params?.text && (
+                        <div className="bg-purple-500/10 border border-purple-500/30 rounded p-2 mb-2">
+                          <p className="text-sm text-purple-300">"{cmd.params.text}"</p>
+                          {cmd.params.duration_minutes && (
+                            <span className="text-xs text-yellow-400">
+                              <Timer className="w-3 h-3 inline mr-1" />
+                              {cmd.params.duration_minutes} Min. Timer
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Script-Inhalt anzeigen */}
+                      {cmd.command === 'run_script' && cmd.params?.script && (
+                        <div className="bg-gray-500/10 border border-gray-500/30 rounded p-2 mb-2">
+                          <code className="text-xs text-gray-300 break-all">{cmd.params.script}</code>
+                        </div>
+                      )}
+                      
+                      {/* Zielgeräte anzeigen */}
+                      {cmd.device_names && cmd.device_names.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {cmd.device_names.slice(0, 5).map((name, i) => (
+                            <span key={i} className="text-xs bg-[#333] px-2 py-0.5 rounded text-gray-300">
+                              {name}
+                            </span>
+                          ))}
+                          {cmd.device_names.length > 5 && (
+                            <span className="text-xs text-gray-500">+{cmd.device_names.length - 5} weitere</span>
+                          )}
+                        </div>
+                      )}
+                      
+                      <div className="text-gray-500 text-xs">
                         {new Date(cmd.created_at).toLocaleString('de-DE')}
                       </div>
                     </div>
@@ -1051,6 +1274,69 @@ const DeviceAgentManagement = () => {
               )}
             </Card>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Template Dialog */}
+      <Dialog open={showTemplateDialog} onOpenChange={setShowTemplateDialog}>
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white">
+          <DialogHeader>
+            <DialogTitle>
+              {editingTemplate ? 'Vorlage bearbeiten' : 'Neue Vorlage erstellen'}
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Erstellen Sie eine wiederverwendbare Nachrichtenvorlage
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Name der Vorlage</label>
+              <Input
+                value={templateForm.name}
+                onChange={(e) => setTemplateForm({ ...templateForm, name: e.target.value })}
+                placeholder="z.B. 2h Pause, Wartung, etc."
+                className="bg-[#262626] border-[#444]"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Nachrichtentext</label>
+              <textarea
+                value={templateForm.message_text}
+                onChange={(e) => setTemplateForm({ ...templateForm, message_text: e.target.value })}
+                placeholder="Geben Sie den Nachrichtentext ein..."
+                className="w-full h-24 bg-[#262626] border border-[#444] rounded-md p-3 text-white resize-none"
+              />
+            </div>
+            
+            <div>
+              <label className="text-sm text-gray-400 mb-2 block">Countdown-Timer (optional)</label>
+              <div className="flex items-center gap-2">
+                <Timer className="w-4 h-4 text-gray-400" />
+                <Input
+                  type="number"
+                  value={templateForm.duration_minutes}
+                  onChange={(e) => setTemplateForm({ ...templateForm, duration_minutes: e.target.value })}
+                  placeholder="Minuten (z.B. 120 für 2h)"
+                  className="bg-[#262626] border-[#444] w-48"
+                />
+                <span className="text-sm text-gray-500">Minuten</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Wenn angegeben, wird ein Countdown auf dem Gerät angezeigt
+              </p>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowTemplateDialog(false)} className="border-[#444]">
+              Abbrechen
+            </Button>
+            <Button onClick={saveTemplate} className="bg-[#d50c2d] hover:bg-[#b80a28]">
+              {editingTemplate ? 'Aktualisieren' : 'Erstellen'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://windows-heartbeat.preview.emergentagent.com';
+    this.serverUrl = 'https://tsrid-management.preview.emergentagent.com';
   }
 
   /**

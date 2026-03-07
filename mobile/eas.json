@@ -41,7 +41,7 @@
       "node": "20.18.0",
       "env": {
         "DEVICE_TYPE": "zebra-tc78",
-        "API_URL": "https://windows-heartbeat.preview.emergentagent.com"
+        "API_URL": "https://tsrid-management.preview.emergentagent.com"
       }
     }
   },

@@ -7,7 +7,7 @@ import requests
 import json
 
 # Backend URL from environment
-BACKEND_URL = "https://windows-heartbeat.preview.emergentagent.com"
+BACKEND_URL = "https://tsrid-management.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def test_typing_indicator():

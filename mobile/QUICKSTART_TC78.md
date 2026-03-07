@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://windows-heartbeat.preview.emergentagent.com`
+`https://tsrid-management.preview.emergentagent.com`
 
 ---
 

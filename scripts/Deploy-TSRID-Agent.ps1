@@ -18,7 +18,7 @@
 $TSRID_DIR = "C:\TSRID"
 $SERVICE_SCRIPT_PATH = "$TSRID_DIR\TSRID-Agent-Service.ps1"
 $INSTALL_LOG = "$TSRID_DIR\install.log"
-$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/device-agent"
+$API_BASE_URL = "https://tsrid-management.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60  # Sekunden
 $STARTUP_DELAY_MINUTES = 1  # Verzoegerung nach Systemstart
 $TASK_NAME = "TSRID-Agent-Service"
@@ -56,7 +56,7 @@ $AgentServiceScript = @'
 # ============================================================================
 
 # === KONFIGURATION ===
-$API_BASE_URL = "https://windows-heartbeat.preview.emergentagent.com/api/device-agent"
+$API_BASE_URL = "https://tsrid-management.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60
 $LOG_FILE = "C:\TSRID\agent.log"
 $MAX_RETRIES = 5

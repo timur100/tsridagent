@@ -893,7 +893,7 @@ async def report_command_result(result: Dict[str, Any]):
 @router.get("/remote/history")
 async def get_command_history(limit: int = 50):
     """
-    Gibt die letzten Remote-Befehle zurück.
+    Gibt die letzten Remote-Befehle zurück mit detaillierten Informationen.
     """
     cursor = db.remote_commands.find(
         {},
@@ -902,10 +902,123 @@ async def get_command_history(limit: int = 50):
     
     commands = await cursor.to_list(length=limit)
     
+    # Gerätenamen für jedes Kommando hinzufügen
+    for cmd in commands:
+        device_names = []
+        if cmd.get("target_devices"):
+            for device_id in cmd["target_devices"][:10]:  # Max 10 Namen laden
+                device = await db.registered_devices.find_one(
+                    {"device_id": device_id},
+                    {"computername": 1, "_id": 0}
+                )
+                if device:
+                    device_names.append(device.get("computername", device_id[:15]))
+                else:
+                    device_names.append(device_id[:15])
+        cmd["device_names"] = device_names
+    
     return {
         "success": True,
         "commands": commands,
         "count": len(commands)
+    }
+
+
+# ==========================================
+# Message Templates API
+# ==========================================
+
+class MessageTemplate(BaseModel):
+    """Vorlage für Remote-Nachrichten"""
+    name: str
+    message_text: str
+    duration_minutes: Optional[int] = None  # Optional: Timer in Minuten
+
+
+@router.get("/templates")
+async def get_message_templates():
+    """
+    Gibt alle Nachrichtenvorlagen zurück.
+    """
+    cursor = db.message_templates.find({}, {"_id": 0})
+    templates = await cursor.to_list(length=100)
+    
+    return {
+        "success": True,
+        "templates": templates,
+        "count": len(templates)
+    }
+
+
+@router.post("/templates")
+async def create_message_template(template: MessageTemplate):
+    """
+    Erstellt eine neue Nachrichtenvorlage.
+    """
+    template_id = str(uuid.uuid4())[:8]
+    now = datetime.now(timezone.utc).isoformat()
+    
+    template_doc = {
+        "template_id": template_id,
+        "name": template.name,
+        "message_text": template.message_text,
+        "duration_minutes": template.duration_minutes,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.message_templates.insert_one(template_doc)
+    
+    # _id entfernen für Response
+    template_doc.pop("_id", None)
+    
+    return {
+        "success": True,
+        "template": template_doc,
+        "message": "Vorlage erstellt"
+    }
+
+
+@router.put("/templates/{template_id}")
+async def update_message_template(template_id: str, template: MessageTemplate):
+    """
+    Aktualisiert eine bestehende Nachrichtenvorlage.
+    """
+    existing = await db.message_templates.find_one({"template_id": template_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Vorlage nicht gefunden")
+    
+    update_data = {
+        "name": template.name,
+        "message_text": template.message_text,
+        "duration_minutes": template.duration_minutes,
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.message_templates.update_one(
+        {"template_id": template_id},
+        {"$set": update_data}
+    )
+    
+    return {
+        "success": True,
+        "message": "Vorlage aktualisiert"
+    }
+
+
+@router.delete("/templates/{template_id}")
+async def delete_message_template(template_id: str):
+    """
+    Löscht eine Nachrichtenvorlage.
+    """
+    result = await db.message_templates.delete_one({"template_id": template_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Vorlage nicht gefunden")
+    
+    return {
+        "success": True,
+        "message": "Vorlage gelöscht"
     }
 
 

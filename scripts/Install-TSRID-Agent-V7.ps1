@@ -23,7 +23,7 @@ $AgentScript = @'
 # TSRID Agent Service V7 - MIT REMOTE CONTROL
 # ============================================================================
 
-$API = "https://windows-heartbeat.preview.emergentagent.com/api/device-agent"
+$API = "https://tsrid-management.preview.emergentagent.com/api/device-agent"
 $HEARTBEAT_INTERVAL = 60
 $LOG = "C:\TSRID\agent.log"
 $CONFIG_FILE = "C:\TSRID\config.json"

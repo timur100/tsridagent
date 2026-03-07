@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://windows-heartbeat.preview.emergentagent.com
+- **URL:** https://tsrid-management.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4
@@ -157,15 +157,30 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 - `/devices/{id}` - Gerätedetails
 - Auto-Refresh alle 30 Sekunden im Frontend
 
+### Remote Control System (07.03.2026) ✅ NEU IMPLEMENTIERT
+- **Schnellbefehle:** Agent neustarten, PC neustarten, PC herunterfahren, Screenshot
+- **Nachricht mit Timer:** Countdown-Timer in Minuten (z.B. 120 für 2h)
+- **Nachrichten-Vorlagen:** CRUD-System für wiederverwendbare Nachrichten
+  - API: `GET/POST /api/device-agent/templates`, `PUT/DELETE /api/device-agent/templates/{id}`
+  - Frontend: Vorlagen erstellen, bearbeiten, löschen, mit einem Klick senden
+- **Befehlsverlauf:** Zeigt Nachrichteninhalt, Zielgeräte (Namen), Zeitstempel
+- **PowerShell Agent V9:**
+  - Always-on-top Nachrichtenfenster (HTA)
+  - Datum & Uhrzeit der Meldung
+  - Countdown-Timer wenn Dauer angegeben
+  - Stylisches Vollbild-Fenster mit TSRID-Branding
+
 ### PowerShell Agent Installer
 - **Installer-Dateien:** 
   - `Install-TSRID-Agent.bat` (Doppelklick-Start)
   - `Install-TSRID-Agent.ps1` (Hauptscript)
+  - `TSRID-Agent-Service-V9.ps1` (Agent-Script)
 - **Features:**
   - Admin-Rechte über Benutzer "ec" / "Berlin#2018"
   - Scheduled Task mit 2 Min. Startverzögerung
   - Prüft TeamViewer + tsrid.exe Prozess-Status
   - Heartbeat alle 60 Sekunden
+  - Command-Polling alle 5 Sekunden
 
 ### Frontend Dashboard
 - Grid-Layout für Geräteliste (1-4 Spalten responsive)
