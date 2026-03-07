@@ -267,8 +267,7 @@ const DeviceAgentManagement = () => {
       const data = await response.json();
       if (data.success) {
         toast.success(`Befehl '${command}' an ${data.target_count} Gerät(e) gesendet`);
-        setShowRemoteDialog(false);
-        setSelectedDevices([]);
+        // Modal NICHT schließen
         fetchCommandHistory();
       } else {
         toast.error(data.error || 'Fehler beim Senden des Befehls');

@@ -13,6 +13,9 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import json
 import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/device-agent", tags=["Device Agent"])
 
@@ -244,15 +247,33 @@ async def device_heartbeat(device: DeviceInfo):
         {"_id": 0, "location_code": 1, "location_name": 1, "device_number": 1, "assigned": 1, "pending_config": 1}
     )
     
-    # Hole ausstehende Remote-Befehle
+    # Hole ausstehende Remote-Befehle aus der Datenbank
     commands = []
-    if device.device_id in pending_commands:
-        pending = [c for c in pending_commands[device.device_id] if c.get("status") == "pending"]
-        commands = pending
-        # Markiere Befehle als "dispatched" (gesendet an Gerät)
-        for cmd in pending:
-            cmd["status"] = "dispatched"
-            cmd["dispatched_at"] = datetime.now(timezone.utc).isoformat()
+    cursor = db.remote_commands.find({
+        "target_devices": device.device_id,
+        "status": "pending"
+    }, {"_id": 0})
+    pending_cmds = await cursor.to_list(length=50)
+    
+    for cmd in pending_cmds:
+        commands.append({
+            "command_id": cmd.get("command_id"),
+            "command": cmd.get("command"),
+            "params": cmd.get("params", {}),
+            "created_at": cmd.get("created_at")
+        })
+        
+        # Markiere als dispatched
+        await db.remote_commands.update_one(
+            {"command_id": cmd.get("command_id")},
+            {"$set": {
+                "status": "dispatched",
+                "dispatched_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+    
+    if commands:
+        logger.info(f"Sending {len(commands)} commands to device {device.device_id}")
     
     # Lösche pending_config nach dem Senden
     if device_doc and device_doc.get("pending_config"):
@@ -761,21 +782,7 @@ async def send_remote_command(cmd: RemoteCommand):
     if not target_ids:
         return {"success": False, "error": "Keine Zielgeräte gefunden"}
     
-    # Befehl für jedes Gerät speichern
-    for device_id in target_ids:
-        if device_id not in pending_commands:
-            pending_commands[device_id] = []
-        
-        pending_commands[device_id].append({
-            "command_id": command_id,
-            "command": cmd.command,
-            "params": cmd.params or {},
-            "created_at": now,
-            "scheduled_at": cmd.scheduled_at,
-            "status": "pending"
-        })
-    
-    # In DB protokollieren
+    # In DB speichern (nicht mehr In-Memory)
     await db.remote_commands.insert_one({
         "command_id": command_id,
         "command": cmd.command,
@@ -787,6 +794,8 @@ async def send_remote_command(cmd: RemoteCommand):
         "status": "pending",
         "results": {}
     })
+    
+    logger.info(f"Remote command '{cmd.command}' queued for {len(target_ids)} device(s)")
     
     return {
         "success": True,
