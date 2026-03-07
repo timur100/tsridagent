@@ -38,7 +38,7 @@ class DeviceInfo(BaseModel):
     uuid: Optional[str] = None
     bios_serial: Optional[str] = None
     mainboard_serial: Optional[str] = None
-    teamviewer_id: Optional[str] = None
+    teamviewer_id: Optional[Any] = None  # Can be string or int from registry
     
     # Process Status
     teamviewer_status: Optional[str] = None
