@@ -137,11 +137,15 @@ function Execute-RemoteCommand($cmd) {
             "message" {
                 $text = $params.text
                 Log "Zeige Nachricht: $text"
-                # Nachricht als Popup anzeigen
-                Add-Type -AssemblyName System.Windows.Forms
-                [System.Windows.Forms.MessageBox]::Show($text, "TSRID Remote Nachricht", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
-                $result.output = "Nachricht angezeigt"
-                $result.success = $true
+                try {
+                    # msg.exe sendet Nachricht an alle Benutzer-Sessions
+                    $msgResult = msg * /TIME:120 "$text" 2>&1
+                    $result.output = "Nachricht gesendet"
+                    $result.success = $true
+                } catch {
+                    $result.error = $_.Exception.Message
+                    $result.success = $false
+                }
             }
             
             "update_config" {
