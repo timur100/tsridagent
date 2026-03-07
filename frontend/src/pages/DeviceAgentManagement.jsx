@@ -10,7 +10,7 @@ import {
   CheckCircle, XCircle, AlertTriangle, Search, Filter,
   Cpu, HardDrive, MemoryStick, Globe, Settings, Link, Unlink,
   Activity, Server, Building, ChevronRight, Eye,
-  ChevronLeft, ChevronsLeft, ChevronsRight
+  ChevronLeft, ChevronsLeft, ChevronsRight, Power, MessageSquare, Terminal
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -41,12 +41,15 @@ const DeviceAgentManagement = () => {
   const [loading, setLoading] = useState(true);
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
+  const [showRemoteDialog, setShowRemoteDialog] = useState(false);
+  const [selectedDevices, setSelectedDevices] = useState([]);
   const [assignForm, setAssignForm] = useState({ location_code: '', device_number: '' });
   const [filter, setFilter] = useState({ status: 'all', assigned: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [stats, setStats] = useState({ total: 0, online: 0, offline: 0, assigned: 0, unassigned: 0 });
   const [pagination, setPagination] = useState({ page: 1, limit: 50, total: 0, total_pages: 1 });
+  const [commandHistory, setCommandHistory] = useState([]);
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
@@ -108,7 +111,7 @@ const DeviceAgentManagement = () => {
   // Fetch locations
   const fetchLocations = useCallback(async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/unified-locations`);
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/locations`);
       const data = await response.json();
       if (data.success) {
         setLocations(data.locations || []);
@@ -246,6 +249,60 @@ const DeviceAgentManagement = () => {
     return `vor ${Math.floor(hours / 24)}d`;
   };
 
+  // Remote Command senden
+  const sendRemoteCommand = async (command, params = {}, targets = []) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/remote/command`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          command,
+          params,
+          target_devices: targets.length > 0 ? targets : selectedDevices
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast.success(`Befehl '${command}' an ${data.target_count} Gerät(e) gesendet`);
+        setShowRemoteDialog(false);
+        setSelectedDevices([]);
+        fetchCommandHistory();
+      } else {
+        toast.error(data.error || 'Fehler beim Senden des Befehls');
+      }
+    } catch (error) {
+      toast.error('Fehler beim Senden des Befehls');
+    }
+  };
+
+  // Command History laden
+  const fetchCommandHistory = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/remote/history?limit=20`);
+      const data = await response.json();
+      if (data.success) {
+        setCommandHistory(data.commands || []);
+      }
+    } catch (error) {
+      console.error('Error fetching command history:', error);
+    }
+  };
+
+  // Toggle Geräteauswahl für Remote-Befehle
+  const toggleDeviceSelection = (deviceId) => {
+    setSelectedDevices(prev => 
+      prev.includes(deviceId) 
+        ? prev.filter(id => id !== deviceId)
+        : [...prev, deviceId]
+    );
+  };
+
+  // Alle Online-Geräte auswählen
+  const selectAllOnlineDevices = () => {
+    const onlineIds = devices.filter(d => d.status === 'online').map(d => d.device_id);
+    setSelectedDevices(onlineIds);
+  };
+
   // Page change handler
   const handlePageChange = (newPage) => {
     setPagination(prev => ({ ...prev, page: newPage }));
@@ -263,15 +320,36 @@ const DeviceAgentManagement = () => {
             <p className="text-gray-400 text-sm">Echtzeit-Überwachung und Stationszuweisung der Windows-Geräte</p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          onClick={fetchDevices}
-          className="border-[#444]"
-          data-testid="refresh-devices-btn"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Aktualisieren
-        </Button>
+        <div className="flex gap-2">
+          {selectedDevices.length > 0 && (
+            <Button 
+              onClick={() => setShowRemoteDialog(true)}
+              className="bg-orange-600 hover:bg-orange-700"
+              data-testid="remote-control-btn"
+            >
+              <Settings className="w-4 h-4 mr-2" />
+              Remote Control ({selectedDevices.length})
+            </Button>
+          )}
+          <Button 
+            variant="outline" 
+            onClick={() => setShowRemoteDialog(true)}
+            className="border-orange-500/50 text-orange-400 hover:bg-orange-500/20"
+            data-testid="open-remote-dialog-btn"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Remote
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={fetchDevices}
+            className="border-[#444]"
+            data-testid="refresh-devices-btn"
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            Aktualisieren
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -389,12 +467,23 @@ const DeviceAgentManagement = () => {
                     bg-[#1a1a1a] border-[#333] p-4 cursor-pointer transition-all
                     hover:border-[#d50c2d]/50 hover:scale-[1.02]
                     ${!device.assigned ? 'border-l-4 border-l-yellow-500' : ''}
+                    ${selectedDevices.includes(device.device_id) ? 'ring-2 ring-orange-500' : ''}
                   `}
                   onClick={() => setSelectedDevice(device)}
                   data-testid={`device-card-${device.device_id}`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedDevices.includes(device.device_id)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          toggleDeviceSelection(device.device_id);
+                        }}
+                        className="w-4 h-4 rounded border-gray-600 bg-[#262626] text-orange-500 focus:ring-orange-500"
+                        onClick={(e) => e.stopPropagation()}
+                      />
                       <Monitor className="w-4 h-4 text-gray-400" />
                       <span className="font-bold">{device.computername}</span>
                     </div>
@@ -755,6 +844,157 @@ const DeviceAgentManagement = () => {
               Zuweisen
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Remote Control Dialog */}
+      <Dialog open={showRemoteDialog} onOpenChange={setShowRemoteDialog}>
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Settings className="w-6 h-6 text-orange-400" />
+              Remote Control Center
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Senden Sie Befehle an ausgewählte oder alle Geräte
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-6 py-4">
+            {/* Geräteauswahl */}
+            <Card className="bg-[#262626] border-[#444] p-4">
+              <h4 className="font-bold mb-3">Zielgeräte auswählen</h4>
+              <div className="flex gap-2 mb-3">
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={selectAllOnlineDevices}
+                  className="border-green-500/50 text-green-400"
+                >
+                  Alle Online ({stats.online})
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => setSelectedDevices(devices.map(d => d.device_id))}
+                  className="border-[#444]"
+                >
+                  Alle ({stats.total})
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline" 
+                  onClick={() => setSelectedDevices([])}
+                  className="border-red-500/50 text-red-400"
+                >
+                  Auswahl löschen
+                </Button>
+              </div>
+              <div className="text-sm text-gray-400">
+                {selectedDevices.length > 0 
+                  ? `${selectedDevices.length} Gerät(e) ausgewählt`
+                  : 'Kein Gerät ausgewählt - Befehl wird an alle Online-Geräte gesendet'
+                }
+              </div>
+              {selectedDevices.length > 0 && selectedDevices.length <= 10 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {selectedDevices.map(id => {
+                    const device = devices.find(d => d.device_id === id);
+                    return (
+                      <Badge key={id} className="bg-[#333] text-gray-300">
+                        {device?.computername || id.substring(0, 15)}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              )}
+            </Card>
+
+            {/* Verfügbare Befehle */}
+            <Card className="bg-[#262626] border-[#444] p-4">
+              <h4 className="font-bold mb-3">Verfügbare Befehle</h4>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <Button 
+                  onClick={() => sendRemoteCommand('restart_agent')}
+                  className="bg-blue-600 hover:bg-blue-700 flex items-center gap-2"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Agent neustarten
+                </Button>
+                <Button 
+                  onClick={() => sendRemoteCommand('restart_pc')}
+                  className="bg-orange-600 hover:bg-orange-700 flex items-center gap-2"
+                >
+                  <Power className="w-4 h-4" />
+                  PC neustarten
+                </Button>
+                <Button 
+                  onClick={() => sendRemoteCommand('shutdown_pc')}
+                  className="bg-red-600 hover:bg-red-700 flex items-center gap-2"
+                >
+                  <Power className="w-4 h-4" />
+                  PC herunterfahren
+                </Button>
+                <Button 
+                  onClick={() => {
+                    const msg = prompt('Nachricht eingeben:');
+                    if (msg) sendRemoteCommand('message', { text: msg });
+                  }}
+                  className="bg-purple-600 hover:bg-purple-700 flex items-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  Nachricht senden
+                </Button>
+                <Button 
+                  onClick={() => {
+                    const interval = prompt('Heartbeat-Intervall (Sekunden):', '60');
+                    if (interval) sendRemoteCommand('update_config', { heartbeat_interval: parseInt(interval) });
+                  }}
+                  className="bg-cyan-600 hover:bg-cyan-700 flex items-center gap-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  Config ändern
+                </Button>
+                <Button 
+                  onClick={() => {
+                    const script = prompt('PowerShell-Befehl eingeben:');
+                    if (script) sendRemoteCommand('run_script', { script });
+                  }}
+                  className="bg-gray-600 hover:bg-gray-700 flex items-center gap-2"
+                >
+                  <Terminal className="w-4 h-4" />
+                  Script ausführen
+                </Button>
+              </div>
+            </Card>
+
+            {/* Befehlsverlauf */}
+            <Card className="bg-[#262626] border-[#444] p-4">
+              <h4 className="font-bold mb-3 flex items-center justify-between">
+                <span>Befehlsverlauf</span>
+                <Button size="sm" variant="ghost" onClick={fetchCommandHistory} className="text-gray-400">
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </h4>
+              {commandHistory.length === 0 ? (
+                <p className="text-gray-500 text-sm">Noch keine Befehle gesendet</p>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {commandHistory.map((cmd, idx) => (
+                    <div key={idx} className="bg-[#1a1a1a] rounded p-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="font-mono text-orange-400">{cmd.command}</span>
+                        <span className="text-gray-500">{cmd.target_count} Gerät(e)</span>
+                      </div>
+                      <div className="text-gray-400 text-xs">
+                        {new Date(cmd.created_at).toLocaleString('de-DE')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

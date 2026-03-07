@@ -7,10 +7,10 @@ Ermöglicht Geräteregistrierung, Status-Updates und Konfigurationsabruf
 from fastapi import APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import uuid
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
-import uuid
 import json
 import asyncio
 
@@ -241,12 +241,19 @@ async def device_heartbeat(device: DeviceInfo):
     # Hole aktuelle Konfiguration
     device_doc = await db.registered_devices.find_one(
         {"device_id": device.device_id},
-        {"_id": 0, "location_code": 1, "location_name": 1, "device_number": 1, "assigned": 1}
+        {"_id": 0, "location_code": 1, "location_name": 1, "device_number": 1, "assigned": 1, "pending_config": 1}
     )
+    
+    # Hole ausstehende Remote-Befehle
+    commands = []
+    if device.device_id in pending_commands:
+        commands = [c for c in pending_commands[device.device_id] if c.get("status") == "pending"]
     
     return {
         "success": True,
-        "config": device_doc if device_doc else None
+        "config": device_doc if device_doc else None,
+        "commands": commands,
+        "pending_config": device_doc.get("pending_config") if device_doc else None
     }
 
 
@@ -396,6 +403,50 @@ async def unassign_device(device_id: str):
     return {"success": True, "message": "Gerätezuweisung entfernt"}
 
 
+@router.get("/locations")
+async def get_locations():
+    """
+    Gibt alle verfügbaren Standorte für Gerätezuweisung zurück.
+    Kombiniert Daten aus key_locations und unified_locations.
+    """
+    locations = []
+    
+    # Aus key_locations
+    cursor = db.key_locations.find({}, {"_id": 0})
+    key_locs = await cursor.to_list(length=500)
+    for loc in key_locs:
+        code = loc.get("location_id") or loc.get("name", "").replace(" ", "-").upper()[:10]
+        locations.append({
+            "location_code": code,
+            "location_name": loc.get("name", "Unbekannt"),
+            "city": loc.get("city", ""),
+            "address": loc.get("address", "")
+        })
+    
+    # Aus unified_locations
+    cursor = db.unified_locations.find({}, {"_id": 0})
+    unified_locs = await cursor.to_list(length=500)
+    for loc in unified_locs:
+        code = loc.get("station_code") or loc.get("name", "").replace(" ", "-").upper()[:10]
+        # Nur hinzufügen wenn nicht bereits vorhanden
+        if not any(l["location_code"] == code for l in locations):
+            locations.append({
+                "location_code": code,
+                "location_name": loc.get("name", "Unbekannt"),
+                "city": loc.get("city", ""),
+                "address": loc.get("street", "")
+            })
+    
+    # Sortieren nach Name
+    locations.sort(key=lambda x: x.get("location_name", ""))
+    
+    return {
+        "success": True,
+        "locations": locations,
+        "count": len(locations)
+    }
+
+
 @router.get("/devices")
 async def list_devices(
     status: Optional[str] = None,
@@ -418,8 +469,21 @@ async def list_devices(
     
     # Query aufbauen
     query = {}
-    if status:
-        query["status"] = status
+    
+    # Status-Filter basierend auf last_seen Zeit
+    now = datetime.now(timezone.utc)
+    threshold = now - timedelta(seconds=90)
+    threshold_str = threshold.isoformat()
+    
+    if status == "online":
+        query["last_seen"] = {"$gte": threshold_str}
+    elif status == "offline":
+        query["$or"] = [
+            {"last_seen": {"$lt": threshold_str}},
+            {"last_seen": None},
+            {"last_seen": {"$exists": False}}
+        ]
+    
     if assigned is not None:
         query["assigned"] = assigned
     if location_code:
@@ -428,7 +492,7 @@ async def list_devices(
     # Suche in mehreren Feldern
     if search:
         search_regex = {"$regex": search, "$options": "i"}
-        query["$or"] = [
+        search_or = [
             {"computername": search_regex},
             {"location_code": search_regex},
             {"teamviewer_id": search_regex},
@@ -436,6 +500,11 @@ async def list_devices(
             {"hardware.manufacturer": search_regex},
             {"hardware.model": search_regex}
         ]
+        # Combine with existing $or if present
+        if "$or" in query:
+            query = {"$and": [query, {"$or": search_or}]}
+        else:
+            query["$or"] = search_or
     
     # Gesamtanzahl für Pagination
     total_count = await db.registered_devices.count_documents(query)
@@ -631,3 +700,197 @@ async def admin_websocket(websocket: WebSocket):
     finally:
         if websocket in admin_connections:
             admin_connections.remove(websocket)
+
+
+# ==========================================
+# Remote Management API
+# ==========================================
+
+# Speicher für ausstehende Befehle
+pending_commands = {}  # device_id -> list of commands
+
+class RemoteCommand(BaseModel):
+    """Remote-Befehl für Geräte"""
+    command: str  # restart_agent, restart_pc, update_config, run_script, screenshot
+    params: Optional[Dict[str, Any]] = None
+    target_devices: List[str] = []  # Leere Liste = alle Geräte
+    scheduled_at: Optional[str] = None  # ISO timestamp für geplante Ausführung
+
+
+@router.post("/remote/command")
+async def send_remote_command(cmd: RemoteCommand):
+    """
+    Sendet einen Remote-Befehl an ein oder mehrere Geräte.
+    
+    Verfügbare Befehle:
+    - restart_agent: Agent-Dienst neu starten
+    - restart_pc: Computer neu starten
+    - shutdown_pc: Computer herunterfahren
+    - update_config: Konfiguration aktualisieren (heartbeat_interval, api_url)
+    - run_script: PowerShell-Script ausführen
+    - message: Nachricht auf Gerät anzeigen
+    """
+    command_id = str(uuid.uuid4())[:8]
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Zielgeräte ermitteln
+    if cmd.target_devices:
+        target_ids = cmd.target_devices
+    else:
+        # Alle Online-Geräte
+        threshold = datetime.now(timezone.utc) - timedelta(seconds=90)
+        cursor = db.registered_devices.find(
+            {"last_seen": {"$gte": threshold.isoformat()}},
+            {"device_id": 1, "_id": 0}
+        )
+        docs = await cursor.to_list(length=1000)
+        target_ids = [d["device_id"] for d in docs]
+    
+    if not target_ids:
+        return {"success": False, "error": "Keine Zielgeräte gefunden"}
+    
+    # Befehl für jedes Gerät speichern
+    for device_id in target_ids:
+        if device_id not in pending_commands:
+            pending_commands[device_id] = []
+        
+        pending_commands[device_id].append({
+            "command_id": command_id,
+            "command": cmd.command,
+            "params": cmd.params or {},
+            "created_at": now,
+            "scheduled_at": cmd.scheduled_at,
+            "status": "pending"
+        })
+    
+    # In DB protokollieren
+    await db.remote_commands.insert_one({
+        "command_id": command_id,
+        "command": cmd.command,
+        "params": cmd.params,
+        "target_devices": target_ids,
+        "target_count": len(target_ids),
+        "created_at": now,
+        "scheduled_at": cmd.scheduled_at,
+        "status": "pending",
+        "results": {}
+    })
+    
+    return {
+        "success": True,
+        "command_id": command_id,
+        "target_count": len(target_ids),
+        "target_devices": target_ids,
+        "message": f"Befehl '{cmd.command}' an {len(target_ids)} Gerät(e) gesendet"
+    }
+
+
+@router.get("/remote/commands/{device_id}")
+async def get_pending_commands(device_id: str):
+    """
+    Gibt ausstehende Befehle für ein Gerät zurück.
+    Wird vom Agent beim Heartbeat abgefragt.
+    """
+    commands = pending_commands.get(device_id, [])
+    
+    # Nur nicht-ausgeführte Befehle
+    pending = [c for c in commands if c.get("status") == "pending"]
+    
+    return {
+        "success": True,
+        "device_id": device_id,
+        "commands": pending,
+        "count": len(pending)
+    }
+
+
+@router.post("/remote/result")
+async def report_command_result(result: Dict[str, Any]):
+    """
+    Meldet das Ergebnis eines ausgeführten Befehls.
+    """
+    device_id = result.get("device_id")
+    command_id = result.get("command_id")
+    success = result.get("success", False)
+    output = result.get("output", "")
+    error = result.get("error", "")
+    
+    # Befehl als ausgeführt markieren
+    if device_id in pending_commands:
+        for cmd in pending_commands[device_id]:
+            if cmd.get("command_id") == command_id:
+                cmd["status"] = "completed" if success else "failed"
+                cmd["result"] = {"success": success, "output": output, "error": error}
+                cmd["completed_at"] = datetime.now(timezone.utc).isoformat()
+                break
+    
+    # In DB aktualisieren
+    await db.remote_commands.update_one(
+        {"command_id": command_id},
+        {"$set": {
+            f"results.{device_id}": {
+                "success": success,
+                "output": output,
+                "error": error,
+                "completed_at": datetime.now(timezone.utc).isoformat()
+            }
+        }}
+    )
+    
+    # Admin benachrichtigen
+    await broadcast_to_admins({
+        "type": "command_result",
+        "command_id": command_id,
+        "device_id": device_id,
+        "success": success,
+        "output": output
+    })
+    
+    return {"success": True, "message": "Ergebnis gespeichert"}
+
+
+@router.get("/remote/history")
+async def get_command_history(limit: int = 50):
+    """
+    Gibt die letzten Remote-Befehle zurück.
+    """
+    cursor = db.remote_commands.find(
+        {},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit)
+    
+    commands = await cursor.to_list(length=limit)
+    
+    return {
+        "success": True,
+        "commands": commands,
+        "count": len(commands)
+    }
+
+
+@router.post("/remote/config/update")
+async def update_device_config(config: Dict[str, Any]):
+    """
+    Aktualisiert die Konfiguration für Geräte.
+    Die Geräte holen sich die neue Config beim nächsten Heartbeat.
+    """
+    target_devices = config.get("target_devices", [])
+    new_config = config.get("config", {})
+    
+    # Wenn keine spezifischen Geräte, alle aktualisieren
+    if target_devices:
+        query = {"device_id": {"$in": target_devices}}
+    else:
+        query = {}
+    
+    result = await db.registered_devices.update_many(
+        query,
+        {"$set": {"pending_config": new_config}}
+    )
+    
+    return {
+        "success": True,
+        "updated_count": result.modified_count,
+        "config": new_config
+    }
+
