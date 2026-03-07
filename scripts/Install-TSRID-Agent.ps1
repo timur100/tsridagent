@@ -1,5 +1,6 @@
-# TSRID Agent Installer Script
+# TSRID Agent Installer Script V2
 # Installiert den Agent als Scheduled Task mit SYSTEM-Rechten
+# GARANTIERT automatischen Start nach Neustart
 
 param(
     [string]$InstallPath = "C:\TSRID-Agent",
@@ -7,7 +8,8 @@ param(
 )
 
 Write-Host "============================================" -ForegroundColor Cyan
-Write-Host "   TSRID Agent Installer V9" -ForegroundColor Cyan
+Write-Host "   TSRID Agent Installer V2" -ForegroundColor Cyan
+Write-Host "   Permanente Installation" -ForegroundColor Cyan
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
 
@@ -36,59 +38,196 @@ if (Test-Path $scriptSource) {
     Write-Host "[INFO] Kopiere Agent-Script..."
     Copy-Item -Path $scriptSource -Destination $scriptDest -Force
 } else {
-    Write-Host "[FEHLER] Agent-Script nicht gefunden: $scriptSource" -ForegroundColor Red
+    # Fallback: Script aus gleichem Verzeichnis ohne V9
+    $scriptSource2 = Join-Path $PSScriptRoot "TSRID-Agent-Service.ps1"
+    if (Test-Path $scriptSource2) {
+        Copy-Item -Path $scriptSource2 -Destination $scriptDest -Force
+    } else {
+        Write-Host "[FEHLER] Agent-Script nicht gefunden!" -ForegroundColor Red
+        Write-Host "Erwartet: $scriptSource" -ForegroundColor Yellow
+        exit 1
+    }
+}
+
+Write-Host "[OK] Agent-Script kopiert nach: $scriptDest" -ForegroundColor Green
+
+# ==================== SCHEDULED TASK ENTFERNEN ====================
+$taskName = "TSRID-Agent-Service"
+Write-Host "[INFO] Pruefe bestehenden Task..."
+
+# Stoppe laufenden Task
+$existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+if ($existingTask) {
+    Write-Host "[INFO] Stoppe und entferne alten Task..."
+    Stop-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 2
+    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
+    Start-Sleep -Seconds 1
+}
+
+# ==================== NEUEN SCHEDULED TASK ERSTELLEN ====================
+Write-Host "[INFO] Erstelle neuen Scheduled Task..."
+
+# Action: PowerShell unsichtbar starten
+$action = New-ScheduledTaskAction `
+    -Execute "powershell.exe" `
+    -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -NoProfile -File `"$scriptDest`" -ApiUrl `"$ApiUrl`""
+
+# MEHRERE TRIGGER für maximale Zuverlässigkeit:
+$triggers = @()
+
+# Trigger 1: Bei Systemstart (mit 1 Minute Verzögerung für Netzwerk)
+$triggerStartup = New-ScheduledTaskTrigger -AtStartup
+$triggerStartup.Delay = "PT1M"
+$triggers += $triggerStartup
+
+# Trigger 2: Bei Anmeldung eines Benutzers
+$triggerLogon = New-ScheduledTaskTrigger -AtLogOn
+$triggers += $triggerLogon
+
+# Principal: Als SYSTEM mit höchster Priorität
+$principal = New-ScheduledTaskPrincipal `
+    -UserId "NT AUTHORITY\SYSTEM" `
+    -LogonType ServiceAccount `
+    -RunLevel Highest
+
+# Settings: Maximale Zuverlässigkeit
+$settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -StartWhenAvailable `
+    -RunOnlyIfNetworkAvailable:$false `
+    -ExecutionTimeLimit (New-TimeSpan -Days 9999) `
+    -RestartCount 999 `
+    -RestartInterval (New-TimeSpan -Minutes 1) `
+    -MultipleInstances IgnoreNew `
+    -Priority 4
+
+# Task registrieren
+try {
+    Register-ScheduledTask `
+        -TaskName $taskName `
+        -Action $action `
+        -Trigger $triggers `
+        -Principal $principal `
+        -Settings $settings `
+        -Description "TSRID Device Agent - Startet automatisch und laeuft permanent" `
+        -Force | Out-Null
+    
+    Write-Host "[OK] Scheduled Task erstellt" -ForegroundColor Green
+} catch {
+    Write-Host "[FEHLER] Task konnte nicht erstellt werden: $_" -ForegroundColor Red
     exit 1
 }
 
-# Alten Scheduled Task entfernen
-$taskName = "TSRID-Agent-Service"
-Write-Host "[INFO] Pruefe bestehenden Task..."
-$existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
-if ($existingTask) {
-    Write-Host "[INFO] Entferne alten Task..."
-    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
+# ==================== ZUSÄTZLICHE ABSICHERUNG: Windows-Dienst ====================
+Write-Host "[INFO] Erstelle zusaetzlichen Watchdog..."
+
+# Watchdog-Script erstellen (startet Agent falls er nicht läuft)
+$watchdogScript = @"
+# TSRID Agent Watchdog - Prueft alle 60 Sekunden ob Agent laeuft
+while (`$true) {
+    `$agentRunning = Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Where-Object {
+        `$_.CommandLine -like "*TSRID-Agent-Service*"
+    }
+    
+    if (-not `$agentRunning) {
+        # Agent nicht gefunden - Task starten
+        Start-ScheduledTask -TaskName "TSRID-Agent-Service" -ErrorAction SilentlyContinue
+    }
+    
+    Start-Sleep -Seconds 60
+}
+"@
+
+$watchdogPath = Join-Path $InstallPath "TSRID-Watchdog.ps1"
+$watchdogScript | Out-File -FilePath $watchdogPath -Encoding UTF8 -Force
+
+# Watchdog Task erstellen
+$watchdogTaskName = "TSRID-Agent-Watchdog"
+Unregister-ScheduledTask -TaskName $watchdogTaskName -Confirm:$false -ErrorAction SilentlyContinue
+
+$watchdogAction = New-ScheduledTaskAction `
+    -Execute "powershell.exe" `
+    -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -NoProfile -File `"$watchdogPath`""
+
+$watchdogTrigger = New-ScheduledTaskTrigger -AtStartup
+$watchdogTrigger.Delay = "PT2M"
+
+Register-ScheduledTask `
+    -TaskName $watchdogTaskName `
+    -Action $watchdogAction `
+    -Trigger $watchdogTrigger `
+    -Principal $principal `
+    -Settings $settings `
+    -Description "TSRID Watchdog - Stellt sicher dass Agent immer laeuft" `
+    -Force | Out-Null
+
+Write-Host "[OK] Watchdog Task erstellt" -ForegroundColor Green
+
+# ==================== AUTOSTART IN REGISTRY ====================
+Write-Host "[INFO] Setze Registry-Autostart als Backup..."
+
+$regPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+$regName = "TSRID-Agent"
+$regValue = "powershell.exe -ExecutionPolicy Bypass -WindowStyle Hidden -NoProfile -Command `"Start-ScheduledTask -TaskName 'TSRID-Agent-Service'`""
+
+try {
+    Set-ItemProperty -Path $regPath -Name $regName -Value $regValue -Force
+    Write-Host "[OK] Registry-Autostart gesetzt" -ForegroundColor Green
+} catch {
+    Write-Host "[WARNUNG] Registry-Eintrag fehlgeschlagen (nicht kritisch)" -ForegroundColor Yellow
 }
 
-# Neuen Scheduled Task erstellen
-Write-Host "[INFO] Erstelle Scheduled Task..."
+# ==================== TASKS SOFORT STARTEN ====================
+Write-Host "[INFO] Starte Agent und Watchdog..."
 
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$scriptDest`" -ApiUrl `"$ApiUrl`""
-
-# Trigger: Bei Systemstart mit 2 Minuten Verzoegerung
-$trigger = New-ScheduledTaskTrigger -AtStartup
-$trigger.Delay = "PT2M"  # 2 Minuten Verzoegerung
-
-# Als SYSTEM ausfuehren mit hoechster Prioritaet
-$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-
-# Task-Einstellungen
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
-
-# Task registrieren
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Description "TSRID Device Agent Service - Sendet Geraetestatus und empfaengt Remote-Befehle"
-
-Write-Host "[OK] Scheduled Task erstellt" -ForegroundColor Green
-
-# Task sofort starten
-Write-Host "[INFO] Starte Agent..."
 Start-ScheduledTask -TaskName $taskName
+Start-Sleep -Seconds 2
+Start-ScheduledTask -TaskName $watchdogTaskName
 
 Start-Sleep -Seconds 3
 
-# Status pruefen
-$task = Get-ScheduledTask -TaskName $taskName
-if ($task.State -eq "Running") {
-    Write-Host "[OK] Agent laeuft!" -ForegroundColor Green
+# ==================== STATUS PRÜFEN ====================
+Write-Host ""
+Write-Host "============================================" -ForegroundColor Cyan
+Write-Host "   STATUS" -ForegroundColor Cyan
+Write-Host "============================================" -ForegroundColor Cyan
+
+$task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
+$watchdog = Get-ScheduledTask -TaskName $watchdogTaskName -ErrorAction SilentlyContinue
+
+if ($task) {
+    $taskInfo = Get-ScheduledTaskInfo -TaskName $taskName
+    Write-Host "Agent Task:    $($task.State)" -ForegroundColor $(if($task.State -eq "Running"){"Green"}else{"Yellow"})
+    Write-Host "Letzter Start: $($taskInfo.LastRunTime)" -ForegroundColor Gray
+}
+
+if ($watchdog) {
+    Write-Host "Watchdog Task: $($watchdog.State)" -ForegroundColor $(if($watchdog.State -eq "Running"){"Green"}else{"Yellow"})
+}
+
+# Prüfe ob PowerShell-Prozess läuft
+$agentProcess = Get-Process -Name "powershell" -ErrorAction SilentlyContinue | Where-Object {
+    try { $_.CommandLine -like "*TSRID-Agent*" } catch { $false }
+}
+
+if ($agentProcess) {
+    Write-Host "Agent Prozess: AKTIV (PID: $($agentProcess.Id))" -ForegroundColor Green
 } else {
-    Write-Host "[INFO] Task-Status: $($task.State)" -ForegroundColor Yellow
+    Write-Host "Agent Prozess: Wird gestartet..." -ForegroundColor Yellow
 }
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Cyan
-Write-Host "   Installation abgeschlossen!" -ForegroundColor Cyan
+Write-Host "   INSTALLATION ABGESCHLOSSEN!" -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "Der Agent wird bei jedem Systemstart automatisch gestartet."
+Write-Host "Der Agent startet jetzt automatisch bei:"
+Write-Host "  - Systemstart (nach 1 Min.)"
+Write-Host "  - Benutzeranmeldung"
+Write-Host "  - Falls er abstuerzt (Watchdog)"
+Write-Host ""
 Write-Host "Log-Datei: $env:TEMP\TSRID-Agent.log"
 Write-Host ""
 Write-Host "Druecken Sie Enter zum Beenden..."
