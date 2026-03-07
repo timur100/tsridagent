@@ -11,7 +11,7 @@ import {
   Cpu, HardDrive, MemoryStick, Globe, Settings, Link, Unlink,
   Activity, Server, Building, ChevronRight, Eye,
   ChevronLeft, ChevronsLeft, ChevronsRight, Power, MessageSquare, Terminal,
-  FileText, Plus, Edit, Trash2, Timer, Send, History
+  FileText, Plus, Edit, Trash2, Timer, Send, History, Copy, ExternalLink, Wrench
 } from 'lucide-react';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -59,6 +59,8 @@ const DeviceAgentManagement = () => {
   const [showTemplateDialog, setShowTemplateDialog] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', message_text: '', duration_minutes: '' });
+  const [showServerSettings, setShowServerSettings] = useState(false);
+  const [customApiUrl, setCustomApiUrl] = useState(BACKEND_URL);
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
@@ -403,6 +405,40 @@ const DeviceAgentManagement = () => {
 
   return (
     <div className="text-white" data-testid="device-agent-management">
+      {/* Server URL Banner */}
+      <div className="bg-[#1a1a1a] border border-[#333] rounded-lg p-3 mb-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Globe className="w-5 h-5 text-cyan-400" />
+          <div>
+            <span className="text-gray-400 text-sm">API Server: </span>
+            <span className="text-cyan-400 font-mono text-sm">{BACKEND_URL}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              navigator.clipboard.writeText(BACKEND_URL);
+              toast.success('URL kopiert!');
+            }}
+            className="border-[#444] text-gray-400 hover:text-white"
+          >
+            <Copy className="w-3 h-3 mr-1" />
+            Kopieren
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowServerSettings(true)}
+            className="border-cyan-500/50 text-cyan-400 hover:bg-cyan-500/20"
+          >
+            <Wrench className="w-3 h-3 mr-1" />
+            Agent Script
+          </Button>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center gap-4">
@@ -1339,8 +1375,245 @@ const DeviceAgentManagement = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Agent Script Dialog */}
+      <Dialog open={showServerSettings} onOpenChange={setShowServerSettings}>
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Wrench className="w-6 h-6 text-cyan-400" />
+              Agent Installation Script
+            </DialogTitle>
+            <DialogDescription className="text-gray-400">
+              Kopieren Sie diesen Code und führen Sie ihn auf dem Windows-Tablet in PowerShell (als Admin) aus
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* Current URL */}
+            <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-4">
+              <h4 className="text-cyan-400 font-bold mb-2 flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                Aktuelle Server-URL
+              </h4>
+              <div className="flex items-center gap-2">
+                <code className="bg-[#262626] px-3 py-2 rounded text-cyan-300 font-mono flex-1">{BACKEND_URL}</code>
+                <Button 
+                  size="sm"
+                  onClick={() => {
+                    navigator.clipboard.writeText(BACKEND_URL);
+                    toast.success('URL kopiert!');
+                  }}
+                  className="bg-cyan-600 hover:bg-cyan-700"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                Diese URL wird automatisch im Agent-Script verwendet
+              </p>
+            </div>
+
+            {/* PowerShell Script */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-white font-bold">PowerShell Installations-Script</h4>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    const script = generateAgentScript(BACKEND_URL);
+                    navigator.clipboard.writeText(script);
+                    toast.success('Script in Zwischenablage kopiert!');
+                  }}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Script kopieren
+                </Button>
+              </div>
+              <div className="bg-[#0d0d0d] border border-[#333] rounded-lg p-4 max-h-96 overflow-y-auto">
+                <pre className="text-green-400 text-xs font-mono whitespace-pre-wrap">
+{`# TSRID Agent Installer - In PowerShell (Admin) einfügen
+# Server: ${BACKEND_URL}
+
+$installPath = "C:\\TSRID-Agent"
+$scriptPath = "$installPath\\TSRID-Agent-Service.ps1"
+$apiUrl = "${BACKEND_URL}"
+
+# Ordner erstellen
+New-Item -ItemType Directory -Path $installPath -Force | Out-Null
+Write-Host "[OK] Ordner erstellt: $installPath" -ForegroundColor Green
+
+# Agent-Script erstellen
+@'
+param([string]$ApiUrl = "${BACKEND_URL}")
+$global:DeviceId = $null
+$global:ComputerName = $env:COMPUTERNAME
+$global:LogFile = "$env:TEMP\\TSRID-Agent.log"
+
+function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message" }
+function Get-DeviceId { return "$($global:ComputerName)-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)" }
+
+function Get-HardwareInfo {
+    try {
+        $cs = Get-WmiObject Win32_ComputerSystem; $cpu = Get-WmiObject Win32_Processor
+        $os = Get-WmiObject Win32_OperatingSystem; $bios = Get-WmiObject Win32_BIOS
+        $net = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled }
+        $tvId = "not found"; @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer") | ForEach-Object { if (Test-Path $_) { $tvId = (Get-ItemProperty $_ -Name ClientID -EA SilentlyContinue).ClientID } }
+        $tvStatus = if (Get-Process TeamViewer -EA SilentlyContinue) { "running" } else { "stopped" }
+        $tsridStatus = if (Get-Process tsrid -EA SilentlyContinue) { "running" } else { "stopped" }
+        return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=$bios.SerialNumber; teamviewer_id=$tvId; teamviewer_status=$tvStatus; tsrid_status=$tsridStatus; manufacturer=$cs.Manufacturer; model=$cs.Model; cpu=$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=($net|Select -First 1).IPAddress[0]; windows_version=$os.Caption; timestamp=(Get-Date).ToString("o") }
+    } catch { return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
+}
+
+function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
+    try { $p=@{Uri="$ApiUrl/api/device-agent/$Endpoint";Method=$Method;ContentType="application/json";TimeoutSec=30}; if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10)}; return Invoke-RestMethod @p } catch { Write-Log "API-Fehler: $_"; return $null }
+}
+
+function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
+    $ts=Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
+    if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div id='timer' style='font-size:48px;color:#ff6600;margin-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='00:00:00';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
+    $html="<html><head><HTA:APPLICATION BORDER='none' CAPTION='no' SHOWINTASKBAR='yes' SINGLEINSTANCE='yes'/><script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script><style>body{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;font-family:Segoe UI;margin:0;height:100vh;display:flex;justify-content:center;align-items:center;text-align:center}.box{padding:60px;background:rgba(255,255,255,0.05);border:3px solid #d50c2d;border-radius:20px}.h{color:#d50c2d;font-size:32px;font-weight:bold}.t{color:#888;font-size:24px;margin:20px 0}.m{font-size:56px;margin:30px 0}.btn{background:#d50c2d;color:#fff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;border-radius:10px;margin-top:30px}</style></head><body><div class='box'><div class='h'>TSRID MITTEILUNG</div><div class='t'>$ts</div><div class='m'>$($Message.Replace(\"'\",\"&#39;\"))</div>$timerDiv<button class='btn' onclick='close()'>SCHLIESSEN (ESC)</button></div></body></html>"
+    $f="$env:TEMP\\msg_$(Get-Date -Format yyyyMMddHHmmss).hta"; $html|Out-File $f -Encoding UTF8; Start-Process mshta.exe $f
+}
+
+function Process-Cmd { param($c)
+    $t=$c.command;$p=$c.params;$id=$c.command_id; Write-Log "CMD: $t"; $ok=$false;$out=""
+    switch($t){ "message"{Show-BigMessage -Message $p.text -DurationMinutes ([int]$p.duration_minutes);$out="OK";$ok=$true} "restart_pc"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 2;Restart-Computer -Force}} "shutdown_pc"{$out="Shutdown";$ok=$true;Start-Job{Start-Sleep 2;Stop-Computer -Force}} "run_script"{$out=(Invoke-Expression $p.script|Out-String);$ok=$true} }
+    Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
+}
+
+Write-Log "=== TSRID Agent gestartet ===" 
+$global:DeviceId = Get-DeviceId; Write-Log "ID: $global:DeviceId"
+Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
+$lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
+while($true){ $now=Get-Date
+    if(($now-$lastHB).TotalSeconds -ge 60){ $r=Invoke-Api -Endpoint "heartbeat" -Method POST -Body (Get-HardwareInfo); if($r.commands){$r.commands|%{Process-Cmd $_}}; $lastHB=$now }
+    if(($now-$lastPoll).TotalSeconds -ge 5){ $r=Invoke-Api -Endpoint "remote/commands/$($global:DeviceId)" -Method GET; if($r.commands){$r.commands|%{Process-Cmd $_}}; $lastPoll=$now }
+    Start-Sleep 1
+}
+'@ | Out-File $scriptPath -Encoding UTF8 -Force
+Write-Host "[OK] Agent-Script erstellt" -ForegroundColor Green
+
+# Task erstellen
+$taskName = "TSRID-Agent-Service"
+Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -EA SilentlyContinue
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument ("-ExecutionPolicy Bypass -WindowStyle Hidden -File " + $scriptPath)
+$trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
+$trigger2 = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
+Write-Host "[OK] Scheduled Task erstellt" -ForegroundColor Green
+
+# Starten
+Start-ScheduledTask -TaskName $taskName
+Start-Sleep 3
+Write-Host "[OK] Agent gestartet!" -ForegroundColor Green
+Write-Host "Server: $apiUrl" -ForegroundColor Cyan`}
+                </pre>
+              </div>
+            </div>
+
+            {/* Instructions */}
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+              <h4 className="text-yellow-400 font-bold mb-2">Anleitung:</h4>
+              <ol className="text-sm text-gray-300 space-y-1 list-decimal list-inside">
+                <li>PowerShell als <strong>Administrator</strong> öffnen</li>
+                <li>Den gesamten Script-Code oben kopieren (Button "Script kopieren")</li>
+                <li>In PowerShell mit Rechtsklick einfügen</li>
+                <li>Enter drücken und warten bis "Agent gestartet!" erscheint</li>
+                <li>Das Gerät sollte nach wenigen Sekunden im Dashboard erscheinen</li>
+              </ol>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowServerSettings(false)} className="border-[#444]">
+              Schließen
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+// Helper function to generate the agent script
+function generateAgentScript(apiUrl) {
+  return `# TSRID Agent Installer - In PowerShell (Admin) einfügen
+# Server: ${apiUrl}
+
+$installPath = "C:\\TSRID-Agent"
+$scriptPath = "$installPath\\TSRID-Agent-Service.ps1"
+$apiUrl = "${apiUrl}"
+
+New-Item -ItemType Directory -Path $installPath -Force | Out-Null
+Write-Host "[OK] Ordner erstellt" -ForegroundColor Green
+
+@'
+param([string]$ApiUrl = "${apiUrl}")
+$global:DeviceId = $null
+$global:ComputerName = $env:COMPUTERNAME
+$global:LogFile = "$env:TEMP\\TSRID-Agent.log"
+
+function Write-Log { param([string]$Message); Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] $Message" }
+function Get-DeviceId { return "$($global:ComputerName)-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)" }
+
+function Get-HardwareInfo {
+    try {
+        $cs = Get-WmiObject Win32_ComputerSystem; $cpu = Get-WmiObject Win32_Processor
+        $os = Get-WmiObject Win32_OperatingSystem; $bios = Get-WmiObject Win32_BIOS
+        $net = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled }
+        $tvId = "not found"; @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer") | ForEach-Object { if (Test-Path $_) { $tvId = (Get-ItemProperty $_ -Name ClientID -EA SilentlyContinue).ClientID } }
+        $tvStatus = if (Get-Process TeamViewer -EA SilentlyContinue) { "running" } else { "stopped" }
+        $tsridStatus = if (Get-Process tsrid -EA SilentlyContinue) { "running" } else { "stopped" }
+        return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=$bios.SerialNumber; teamviewer_id=$tvId; teamviewer_status=$tvStatus; tsrid_status=$tsridStatus; manufacturer=$cs.Manufacturer; model=$cs.Model; cpu=$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=($net|Select -First 1).IPAddress[0]; windows_version=$os.Caption; timestamp=(Get-Date).ToString("o") }
+    } catch { return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
+}
+
+function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
+    try { $p=@{Uri="$ApiUrl/api/device-agent/$Endpoint";Method=$Method;ContentType="application/json";TimeoutSec=30}; if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10)}; return Invoke-RestMethod @p } catch { Write-Log "API-Fehler: $_"; return $null }
+}
+
+function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
+    $ts=Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
+    if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div id='timer' style='font-size:48px;color:#ff6600;margin-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='00:00:00';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
+    $html="<html><head><HTA:APPLICATION BORDER='none' CAPTION='no' SHOWINTASKBAR='yes' SINGLEINSTANCE='yes'/><script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script><style>body{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;font-family:Segoe UI;margin:0;height:100vh;display:flex;justify-content:center;align-items:center;text-align:center}.box{padding:60px;background:rgba(255,255,255,0.05);border:3px solid #d50c2d;border-radius:20px}.h{color:#d50c2d;font-size:32px;font-weight:bold}.t{color:#888;font-size:24px;margin:20px 0}.m{font-size:56px;margin:30px 0}.btn{background:#d50c2d;color:#fff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;border-radius:10px;margin-top:30px}</style></head><body><div class='box'><div class='h'>TSRID MITTEILUNG</div><div class='t'>$ts</div><div class='m'>$($Message.Replace("'","&#39;"))</div>$timerDiv<button class='btn' onclick='close()'>SCHLIESSEN (ESC)</button></div></body></html>"
+    $f="$env:TEMP\\msg_$(Get-Date -Format yyyyMMddHHmmss).hta"; $html|Out-File $f -Encoding UTF8; Start-Process mshta.exe $f
+}
+
+function Process-Cmd { param($c)
+    $t=$c.command;$p=$c.params;$id=$c.command_id; Write-Log "CMD: $t"; $ok=$false;$out=""
+    switch($t){ "message"{Show-BigMessage -Message $p.text -DurationMinutes ([int]$p.duration_minutes);$out="OK";$ok=$true} "restart_pc"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 2;Restart-Computer -Force}} "shutdown_pc"{$out="Shutdown";$ok=$true;Start-Job{Start-Sleep 2;Stop-Computer -Force}} "run_script"{$out=(Invoke-Expression $p.script|Out-String);$ok=$true} }
+    Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
+}
+
+Write-Log "=== TSRID Agent gestartet ===" 
+$global:DeviceId = Get-DeviceId; Write-Log "ID: $global:DeviceId"
+Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
+$lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
+while($true){ $now=Get-Date
+    if(($now-$lastHB).TotalSeconds -ge 60){ $r=Invoke-Api -Endpoint "heartbeat" -Method POST -Body (Get-HardwareInfo); if($r.commands){$r.commands|%{Process-Cmd $_}}; $lastHB=$now }
+    if(($now-$lastPoll).TotalSeconds -ge 5){ $r=Invoke-Api -Endpoint "remote/commands/$($global:DeviceId)" -Method GET; if($r.commands){$r.commands|%{Process-Cmd $_}}; $lastPoll=$now }
+    Start-Sleep 1
+}
+'@ | Out-File $scriptPath -Encoding UTF8 -Force
+Write-Host "[OK] Agent-Script erstellt" -ForegroundColor Green
+
+$taskName = "TSRID-Agent-Service"
+Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -EA SilentlyContinue
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File $scriptPath"
+$trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
+$trigger2 = New-ScheduledTaskTrigger -AtLogOn
+$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
+Write-Host "[OK] Task erstellt" -ForegroundColor Green
+
+Start-ScheduledTask -TaskName $taskName
+Start-Sleep 3
+Write-Host "[OK] Agent gestartet! Server: $apiUrl" -ForegroundColor Green`;
+}
 
 export default DeviceAgentManagement;
