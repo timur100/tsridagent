@@ -247,7 +247,19 @@ async def device_heartbeat(device: DeviceInfo):
     # Hole ausstehende Remote-Befehle
     commands = []
     if device.device_id in pending_commands:
-        commands = [c for c in pending_commands[device.device_id] if c.get("status") == "pending"]
+        pending = [c for c in pending_commands[device.device_id] if c.get("status") == "pending"]
+        commands = pending
+        # Markiere Befehle als "dispatched" (gesendet an Gerät)
+        for cmd in pending:
+            cmd["status"] = "dispatched"
+            cmd["dispatched_at"] = datetime.now(timezone.utc).isoformat()
+    
+    # Lösche pending_config nach dem Senden
+    if device_doc and device_doc.get("pending_config"):
+        await db.registered_devices.update_one(
+            {"device_id": device.device_id},
+            {"$unset": {"pending_config": ""}}
+        )
     
     return {
         "success": True,
