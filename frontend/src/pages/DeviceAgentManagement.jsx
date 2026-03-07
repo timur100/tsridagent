@@ -1473,7 +1473,21 @@ function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
     $ts=Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
     if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div id='timer' style='font-size:48px;color:#ff6600;margin-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='00:00:00';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
     $html="<html><head><HTA:APPLICATION BORDER='none' CAPTION='no' SHOWINTASKBAR='yes' SINGLEINSTANCE='yes'/><script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script><style>body{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;font-family:Segoe UI;margin:0;height:100vh;display:flex;justify-content:center;align-items:center;text-align:center}.box{padding:60px;background:rgba(255,255,255,0.05);border:3px solid #d50c2d;border-radius:20px}.h{color:#d50c2d;font-size:32px;font-weight:bold}.t{color:#888;font-size:24px;margin:20px 0}.m{font-size:56px;margin:30px 0}.btn{background:#d50c2d;color:#fff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;border-radius:10px;margin-top:30px}</style></head><body><div class='box'><div class='h'>TSRID MITTEILUNG</div><div class='t'>$ts</div><div class='m'>$($Message.Replace(\"'\",\"&#39;\"))</div>$timerDiv<button class='btn' onclick='close()'>SCHLIESSEN (ESC)</button></div></body></html>"
-    $f="$env:TEMP\\msg_$(Get-Date -Format yyyyMMddHHmmss).hta"; $html|Out-File $f -Encoding UTF8; Start-Process mshta.exe $f
+    $htaPath="C:\\TSRID-Agent\\message.hta"; $html|Out-File $htaPath -Encoding UTF8 -Force
+    # Run in active user session using schtasks
+    $taskXml = @"
+<?xml version="1.0" encoding="UTF-16"?>
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <Triggers><TimeTrigger><StartBoundary>1910-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers>
+  <Principals><Principal><GroupId>S-1-5-32-545</GroupId><RunLevel>LeastPrivilege</RunLevel></Principal></Principals>
+  <Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><Priority>7</Priority></Settings>
+  <Actions><Exec><Command>mshta.exe</Command><Arguments>"$htaPath"</Arguments></Exec></Actions>
+</Task>
+"@
+    $taskXml | Out-File "C:\\TSRID-Agent\\msgtask.xml" -Encoding Unicode -Force
+    schtasks /Create /TN "TSRID-ShowMessage" /XML "C:\\TSRID-Agent\\msgtask.xml" /F 2>$null
+    schtasks /Run /TN "TSRID-ShowMessage" 2>$null
+    Write-Log "Nachricht gesendet via Task"
 }
 
 function Process-Cmd { param($c)
@@ -1590,7 +1604,12 @@ function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
     $ts=Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
     if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div id='timer' style='font-size:48px;color:#ff6600;margin-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='00:00:00';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
     $html="<html><head><HTA:APPLICATION BORDER='none' CAPTION='no' SHOWINTASKBAR='yes' SINGLEINSTANCE='yes'/><script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script><style>body{background:linear-gradient(135deg,#1a1a2e,#0f3460);color:#fff;font-family:Segoe UI;margin:0;height:100vh;display:flex;justify-content:center;align-items:center;text-align:center}.box{padding:60px;background:rgba(255,255,255,0.05);border:3px solid #d50c2d;border-radius:20px}.h{color:#d50c2d;font-size:32px;font-weight:bold}.t{color:#888;font-size:24px;margin:20px 0}.m{font-size:56px;margin:30px 0}.btn{background:#d50c2d;color:#fff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;border-radius:10px;margin-top:30px}</style></head><body><div class='box'><div class='h'>TSRID MITTEILUNG</div><div class='t'>$ts</div><div class='m'>$($Message.Replace("'","&#39;"))</div>$timerDiv<button class='btn' onclick='close()'>SCHLIESSEN (ESC)</button></div></body></html>"
-    $f="$env:TEMP\\msg_$(Get-Date -Format yyyyMMddHHmmss).hta"; $html|Out-File $f -Encoding UTF8; Start-Process mshta.exe $f
+    $htaPath="C:\\TSRID-Agent\\message.hta"; $html|Out-File $htaPath -Encoding UTF8 -Force
+    $taskXml = '<?xml version="1.0" encoding="UTF-16"?><Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1910-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers><Principals><Principal><GroupId>S-1-5-32-545</GroupId><RunLevel>LeastPrivilege</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><Priority>7</Priority></Settings><Actions><Exec><Command>mshta.exe</Command><Arguments>"' + $htaPath + '"</Arguments></Exec></Actions></Task>'
+    $taskXml | Out-File "C:\\TSRID-Agent\\msgtask.xml" -Encoding Unicode -Force
+    schtasks /Create /TN "TSRID-ShowMessage" /XML "C:\\TSRID-Agent\\msgtask.xml" /F 2>$null
+    schtasks /Run /TN "TSRID-ShowMessage" 2>$null
+    Write-Log "Nachricht via Task gesendet"
 }
 
 function Process-Cmd { param($c)
