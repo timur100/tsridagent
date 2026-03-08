@@ -215,16 +215,29 @@ async def register_device(device: DeviceInfo):
         # Nur die letzten 10 Einträge behalten
         device_data["teamviewer_id_history"] = tv_history[-10:]
     
-    # Wenn Zuweisung existiert, füge Location hinzu
-    if existing and existing.get("location_code"):
-        device_data["location_code"] = existing["location_code"]
+    # Wenn Zuweisung existiert, behalte die zugewiesene Location (NICHT überschreiben!)
+    if existing and existing.get("assigned") == True:
+        # Gerät ist zugewiesen - behalte die Admin-Zuweisung
+        device_data["location_code"] = existing.get("location_code")
         device_data["location_name"] = existing.get("location_name")
         device_data["device_number"] = existing.get("device_number")
         device_data["assigned"] = True
+        device_data["tenant_id"] = existing.get("tenant_id")
+        device_data["pending_hostname"] = existing.get("pending_hostname")
+        device_data["pending_config"] = existing.get("pending_config")
+    elif existing and existing.get("location_code"):
+        # Gerät hat location aber nicht zugewiesen - behalte trotzdem
+        device_data["location_code"] = existing["location_code"]
+        device_data["location_name"] = existing.get("location_name")
+        device_data["device_number"] = existing.get("device_number")
+        device_data["assigned"] = existing.get("assigned", False)
     else:
+        # Neues Gerät oder ohne Zuweisung - nimm Werte vom Agent (falls vorhanden)
         device_data["assigned"] = False
-        device_data["location_code"] = device.location_code
-        device_data["device_number"] = device.device_number
+        if device.location_code:
+            device_data["location_code"] = device.location_code
+        if device.device_number:
+            device_data["device_number"] = device.device_number
     
     # Upsert in devices collection
     await db.registered_devices.update_one(
@@ -340,10 +353,13 @@ async def device_heartbeat(device: DeviceInfo):
     )
     
     # Hole ausstehende Remote-Befehle aus der Datenbank
+    # Suche nach device_id ODER target_devices (für Kompatibilität)
     commands = []
     cursor = db.remote_commands.find({
-        "target_devices": device.device_id,
-        "status": "pending"
+        "$or": [
+            {"device_id": device.device_id, "status": "pending"},
+            {"target_devices": device.device_id, "status": "pending"}
+        ]
     }, {"_id": 0})
     pending_cmds = await cursor.to_list(length=50)
     
