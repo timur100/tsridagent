@@ -437,14 +437,24 @@ async def create_tenant_location(
     credentials: HTTPAuthorizationCredentials = Depends(security)
 ):
     """Create a new location for a tenant"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"[LOCATION CREATE] Received request for tenant: {tenant_id}")
+    logger.info(f"[LOCATION CREATE] Location data: {location.dict()}")
+    
     try:
+        db = get_locations_db()
+        logger.info(f"[LOCATION CREATE] Using database: {db.name}")
+        
         # Check if location code already exists for this tenant
-        existing = get_locations_db().tenant_locations.find_one({
+        existing = db.tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_code": location.location_code
         })
         if existing:
-            raise HTTPException(status_code=400, detail="Location code already exists for this tenant")
+            logger.warning(f"[LOCATION CREATE] Location code {location.location_code} already exists!")
+            raise HTTPException(status_code=400, detail=f"Standort-Code '{location.location_code}' existiert bereits für diesen Tenant")
         
         # Create location
         location_id = str(uuid.uuid4())
@@ -457,7 +467,15 @@ async def create_tenant_location(
             "created_by": "admin@example.com"  # TODO: Get from token
         }
         
-        get_locations_db().tenant_locations.insert_one(location_doc)
+        result = db.tenant_locations.insert_one(location_doc)
+        logger.info(f"[LOCATION CREATE] Inserted with _id: {result.inserted_id}")
+        
+        # Verify insertion
+        verify = db.tenant_locations.find_one({"location_id": location_id})
+        if verify:
+            logger.info(f"[LOCATION CREATE] Verified: Location {location.location_code} exists in DB")
+        else:
+            logger.error(f"[LOCATION CREATE] FAILED: Location not found after insert!")
         
         # Remove MongoDB _id from response
         location_doc.pop('_id', None)
@@ -473,7 +491,7 @@ async def create_tenant_location(
     except Exception as e:
         import traceback
         error_detail = str(e) or traceback.format_exc()
-        print(f"[Location Create Error] {error_detail}")
+        logger.error(f"[LOCATION CREATE] Error: {error_detail}")
         raise HTTPException(status_code=500, detail=error_detail)
 
 @router.get("/{tenant_id}")

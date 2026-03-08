@@ -19,6 +19,8 @@ const LocationModal = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('[LocationModal] Form submitted');
+    console.log('[LocationModal] Form data:', formData);
     onSubmit();
   };
 

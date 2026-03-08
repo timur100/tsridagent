@@ -716,11 +716,19 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   };
 
   const handleLocationSubmit = async () => {
+    console.log('[TenantDetailPage] handleLocationSubmit called');
+    console.log('[TenantDetailPage] locationFormData:', locationFormData);
+    console.log('[TenantDetailPage] editingLocation:', editingLocation);
+    console.log('[TenantDetailPage] tenantId:', tenantId);
+    
     try {
       const token = localStorage.getItem('token');
       const url = editingLocation
         ? `${BACKEND_URL}/api/tenant-locations/${tenantId}/${editingLocation.location_id}`
         : `${BACKEND_URL}/api/tenant-locations/${tenantId}`;
+      
+      console.log('[TenantDetailPage] URL:', url);
+      console.log('[TenantDetailPage] Method:', editingLocation ? 'PUT' : 'POST');
       
       const method = editingLocation ? 'PUT' : 'POST';
       
@@ -728,6 +736,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
       const cleanData = Object.fromEntries(
         Object.entries(locationFormData).filter(([_, v]) => v !== '')
       );
+      
+      console.log('[TenantDetailPage] Clean data to send:', cleanData);
       
       // Convert numeric fields
       if (cleanData.id_checker) cleanData.id_checker = parseInt(cleanData.id_checker);
@@ -743,7 +753,11 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         body: JSON.stringify(cleanData)
       });
 
+      console.log('[TenantDetailPage] Response status:', response.status);
+
       if (response.ok) {
+        const responseData = await response.json();
+        console.log('[TenantDetailPage] Success response:', responseData);
         toast.success(editingLocation ? 'Standort aktualisiert' : 'Standort erstellt');
         setShowLocationModal(false);
         setEditingLocation(null);
@@ -751,10 +765,11 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
         fetchLocations();
       } else {
         const error = await response.json();
+        console.error('[TenantDetailPage] Error response:', error);
         toast.error(error.detail || 'Fehler beim Speichern');
       }
     } catch (error) {
-      console.error('Location save error:', error);
+      console.error('[TenantDetailPage] Exception:', error);
       toast.error('Fehler beim Speichern');
     }
   };
