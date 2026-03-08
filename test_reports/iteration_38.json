@@ -84,8 +84,8 @@
     }
   },
   "navigation_path": {
-    "login_page": "https://tablet-mgmt.preview.emergentagent.com/portal/login",
-    "admin_portal": "https://tablet-mgmt.preview.emergentagent.com/portal/admin",
+    "login_page": "https://station-config-hub.preview.emergentagent.com/portal/login",
+    "admin_portal": "https://station-config-hub.preview.emergentagent.com/portal/admin",
     "reporting_access": "Click document icon (FileText) button in Admin Portal header"
   },
   "mocked_apis": {

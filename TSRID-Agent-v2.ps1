@@ -12,7 +12,7 @@
     Das Intervall in Sekunden zwischen den Heartbeats (Standard: 30)
     
 .EXAMPLE
-    .\TSRID-Agent.ps1 -ServerUrl "https://tablet-mgmt.preview.emergentagent.com"
+    .\TSRID-Agent.ps1 -ServerUrl "https://station-config-hub.preview.emergentagent.com"
 #>
 
 param(

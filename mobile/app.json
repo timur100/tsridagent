@@ -62,7 +62,7 @@
       "favicon": "./assets/favicon.png"
     },
     "extra": {
-      "apiUrl": "https://tablet-mgmt.preview.emergentagent.com",
+      "apiUrl": "https://station-config-hub.preview.emergentagent.com",
       "eas": {
         "projectId": "04b6a1cf-1065-4a2f-8fc6-f6e9f172b65d"
       }
@@ -95,7 +95,7 @@
       "policy": "sdkVersion"
     },
     "updates": {
-      "url": "https://tablet-mgmt.preview.emergentagent.com/api/mobile/updates"
+      "url": "https://station-config-hub.preview.emergentagent.com/api/mobile/updates"
     }
   }
 }

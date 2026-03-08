@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tablet-mgmt.preview.emergentagent.com`
+`https://station-config-hub.preview.emergentagent.com`
 
 ---
 

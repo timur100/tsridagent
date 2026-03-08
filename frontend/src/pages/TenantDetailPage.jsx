@@ -3296,8 +3296,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
           </div>
         )}
 
-        {/* Location Creation/Edit Modal */}
-        {showLocationModal && (
+        {/* Location Creation/Edit Modal - REMOVED: Using LocationModal.jsx component instead */}
+        {false && showLocationModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowLocationModal(false)}>
             <div 
               onClick={(e) => e.stopPropagation()}

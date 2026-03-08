@@ -375,8 +375,16 @@ const LocationsTabEnhanced = ({
         
         {!isCustomerPortal && (
           <button
-            onClick={onAddLocation}
+            onClick={() => {
+              console.log('[LocationsTabEnhanced] Add Location button clicked');
+              if (typeof onAddLocation === 'function') {
+                onAddLocation();
+              } else {
+                console.error('[LocationsTabEnhanced] onAddLocation is not a function!');
+              }
+            }}
             className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all flex-shrink-0"
+            data-testid="add-location-btn"
           >
             <Plus className="w-4 h-4" />
             Standort hinzufügen

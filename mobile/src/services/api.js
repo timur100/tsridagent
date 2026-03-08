@@ -3,7 +3,7 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
 // Get API URL from app config or use default
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://tablet-mgmt.preview.emergentagent.com';
+const API_URL = Constants.expoConfig?.extra?.apiUrl || 'https://station-config-hub.preview.emergentagent.com';
 
 // Create axios instance
 const api = axios.create({

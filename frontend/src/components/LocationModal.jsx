@@ -18,10 +18,20 @@ const LocationModal = ({
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('[LocationModal] Form submitted');
+    if (e) e.preventDefault();
+    console.log('[LocationModal] handleSubmit called');
     console.log('[LocationModal] Form data:', formData);
+    console.log('[LocationModal] Calling onSubmit...');
+    
+    // Validate required fields
+    if (!formData.location_code || !formData.station_name) {
+      console.error('[LocationModal] Validation failed: missing required fields');
+      alert('Bitte füllen Sie die Pflichtfelder aus (Location Code und Stationsname)');
+      return;
+    }
+    
     onSubmit();
+    console.log('[LocationModal] onSubmit called successfully');
   };
 
   const inputClass = `w-full px-3 py-2 rounded-lg text-sm ${
@@ -379,12 +389,19 @@ const LocationModal = ({
                   ? 'bg-[#1f1f1f] hover:bg-[#333] text-gray-300'
                   : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
               }`}
+              data-testid="location-modal-cancel"
             >
               Abbrechen
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('[LocationModal] Submit button clicked');
+                handleSubmit(e);
+              }}
               className="flex-1 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b80a28] transition-all text-sm font-medium"
+              data-testid="location-modal-submit"
             >
               {editing ? 'Speichern' : 'Erstellen'}
             </button>
