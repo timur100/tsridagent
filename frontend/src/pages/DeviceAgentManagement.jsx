@@ -290,7 +290,7 @@ const DeviceAgentManagement = () => {
     };
   }, [fetchDevices, fetchLocations]);
 
-  // Assign device to location
+  // Assign device to location and optionally rename hostname
   const assignDevice = async () => {
     if (!selectedDevice || !assignForm.location_code || !assignForm.device_number) {
       toast.error('Bitte alle Felder ausfüllen');
@@ -300,6 +300,11 @@ const DeviceAgentManagement = () => {
     // Finde den Standortnamen
     const selectedLocation = assignLocations.find(l => l.location_code === assignForm.location_code);
     const locationName = selectedLocation?.location_name || assignForm.location_code;
+    
+    // Neuer Hostname basierend auf Zuweisung
+    const newHostname = `${assignForm.location_code}-${assignForm.device_number}`;
+    const currentHostname = selectedDevice.hostname || selectedDevice.computername;
+    const needsRename = currentHostname !== newHostname;
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/device-agent/assign`, {
@@ -311,13 +316,18 @@ const DeviceAgentManagement = () => {
           location_name: locationName,
           device_number: assignForm.device_number,
           tenant_id: assignForm.tenant_id,
-          assigned_by: 'admin'
+          assigned_by: 'admin',
+          rename_hostname: needsRename ? newHostname : null
         })
       });
       
       const data = await response.json();
       if (data.success) {
-        toast.success(`Gerät erfolgreich ${assignForm.location_code}-${assignForm.device_number} zugewiesen!`);
+        if (needsRename) {
+          toast.success(`Gerät zugewiesen als ${newHostname}. Hostname wird geändert und Gerät neu gestartet...`);
+        } else {
+          toast.success(`Gerät erfolgreich ${newHostname} zugewiesen!`);
+        }
         setShowAssignDialog(false);
         setAssignForm({ tenant_id: '', location_code: '', device_number: '' });
         setAssignLocations([]);
@@ -963,25 +973,51 @@ const DeviceAgentManagement = () => {
                       <div className="flex items-center gap-2 text-orange-300 bg-orange-500/20 p-2 rounded">
                         <XCircle className="w-4 h-4" />
                         <span className="font-medium">TeamViewer läuft nicht</span>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => sendRemoteCommand('run_script', { script: 'Start-Process "C:\\Program Files\\TeamViewer\\TeamViewer.exe" -ErrorAction SilentlyContinue; Start-Process "C:\\Program Files (x86)\\TeamViewer\\TeamViewer.exe" -ErrorAction SilentlyContinue; "TeamViewer gestartet"' })}
+                          className="ml-auto border-orange-500/50 text-orange-400 hover:bg-orange-500/20 text-xs"
+                        >
+                          <RefreshCw className="w-3 h-3 mr-1" />
+                          Starten
+                        </Button>
+                      </div>
+                    )}
+                    {!selectedDevice.teamviewer?.account_assigned && selectedDevice.teamviewer_id && (
+                      <div className="flex items-center gap-2 text-purple-300 bg-purple-500/20 p-2 rounded">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="font-medium">TeamViewer nicht mit Konto verknüpft</span>
                       </div>
                     )}
                     {!selectedDevice.assigned && (
-                      <div className="flex items-center gap-2 text-yellow-300 bg-yellow-500/20 p-2 rounded">
-                        <MapPin className="w-4 h-4" />
-                        <span className="font-medium">Keine Stationszuweisung</span>
+                      <div className="flex items-center justify-between gap-2 text-yellow-300 bg-yellow-500/20 p-2 rounded">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4" />
+                          <span className="font-medium">Keine Stationszuweisung</span>
+                        </div>
+                        <Button 
+                          size="sm"
+                          onClick={() => setShowAssignDialog(true)}
+                          className="bg-[#d50c2d] hover:bg-[#b80a28] text-xs"
+                          data-testid="assign-device-btn-problem"
+                        >
+                          <Link className="w-3 h-3 mr-1" />
+                          Zuweisen
+                        </Button>
                       </div>
                     )}
                   </div>
                 </Card>
               )}
 
-              {/* Station Assignment */}
-              <Card className={`p-4 ${selectedDevice.assigned ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
-                <h3 className="font-bold mb-3 flex items-center gap-2">
-                  <MapPin className="w-4 h-4" />
-                  Stationszuweisung
-                </h3>
-                {selectedDevice.assigned ? (
+              {/* Station Assignment - nur wenn zugewiesen (sonst im Problem-Feld) */}
+              {selectedDevice.assigned && (
+                <Card className="p-4 bg-cyan-500/10 border-cyan-500/30">
+                  <h3 className="font-bold mb-3 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    Stationszuweisung
+                  </h3>
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="text-2xl font-bold text-cyan-400">
@@ -1000,20 +1036,8 @@ const DeviceAgentManagement = () => {
                       Entfernen
                     </Button>
                   </div>
-                ) : (
-                  <div className="flex items-center justify-between">
-                    <p className="text-yellow-400">Keine Stationszuweisung</p>
-                    <Button 
-                      onClick={() => setShowAssignDialog(true)}
-                      className="bg-[#d50c2d] hover:bg-[#b80a28]"
-                      data-testid="assign-device-btn"
-                    >
-                      <Link className="w-4 h-4 mr-2" />
-                      Zuweisen
-                    </Button>
-                  </div>
-                )}
-              </Card>
+                </Card>
+              )}
 
               {/* TeamViewer Info */}
               <Card className="bg-[#262626] border-[#444] p-4">

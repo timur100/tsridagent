@@ -80,6 +80,7 @@ class DeviceAssignment(BaseModel):
     device_number: Optional[str] = None
     tenant_id: Optional[str] = None
     assigned_by: Optional[str] = None
+    rename_hostname: Optional[str] = None  # Neuer Hostname, falls umbenennen gewünscht
 
 
 class DeviceConfig(BaseModel):
@@ -172,6 +173,39 @@ async def register_device(device: DeviceInfo):
         "registered_at": datetime.now(timezone.utc).isoformat() if not existing else existing.get("registered_at"),
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
+    
+    # TeamViewer ID Historie verwalten
+    if device.teamviewer_id:
+        existing_device = await db.registered_devices.find_one(
+            {"device_id": device.device_id},
+            {"_id": 0, "teamviewer_id": 1, "teamviewer_id_history": 1}
+        )
+        
+        # Hole oder erstelle Historie
+        tv_history = existing_device.get("teamviewer_id_history", []) if existing_device else []
+        current_tv_id = str(device.teamviewer_id)
+        
+        # Prüfe ob ID sich geändert hat
+        if existing_device and str(existing_device.get("teamviewer_id")) != current_tv_id:
+            # Alte ID zur Historie hinzufügen
+            old_id = existing_device.get("teamviewer_id")
+            if old_id:
+                tv_history.append({
+                    "teamviewer_id": str(old_id),
+                    "recorded_at": datetime.now(timezone.utc).isoformat(),
+                    "reason": "id_changed"
+                })
+        
+        # Aktuelle ID zur Historie hinzufügen wenn neu
+        if not any(h.get("teamviewer_id") == current_tv_id for h in tv_history):
+            tv_history.append({
+                "teamviewer_id": current_tv_id,
+                "recorded_at": datetime.now(timezone.utc).isoformat(),
+                "reason": "current"
+            })
+        
+        # Nur die letzten 10 Einträge behalten
+        device_data["teamviewer_id_history"] = tv_history[-10:]
     
     # Wenn Zuweisung existiert, füge Location hinzu
     if existing and existing.get("location_code"):
@@ -432,13 +466,29 @@ async def assign_device(assignment: DeviceAssignment):
         upsert=True
     )
     
+    # Wenn Hostname geändert werden soll, sende rename_hostname Befehl
+    hostname_command_sent = False
+    if assignment.rename_hostname:
+        command_id = f"rename-{assignment.device_id}-{datetime.now(timezone.utc).timestamp()}"
+        await db.remote_commands.insert_one({
+            "command_id": command_id,
+            "device_id": assignment.device_id,
+            "command": "rename_hostname",
+            "params": {"new_hostname": assignment.rename_hostname},
+            "status": "pending",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": assignment.assigned_by or "admin"
+        })
+        hostname_command_sent = True
+    
     # Broadcast an Admins und Gerät
     await broadcast_to_admins({
         "type": "device_assigned",
         "device_id": assignment.device_id,
         "location_code": assignment.location_code,
         "location_name": location_name,
-        "device_number": assignment.device_number
+        "device_number": assignment.device_number,
+        "hostname_rename_pending": hostname_command_sent
     })
     
     # Sende Konfiguration an Gerät wenn verbunden
