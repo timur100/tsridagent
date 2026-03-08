@@ -1159,9 +1159,14 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
       });
       if (response.ok) {
         fetchLocations();
+        alert('Standort erfolgreich gelöscht');
+      } else {
+        const data = await response.json();
+        alert(`Fehler beim Löschen: ${data.detail || 'Unbekannter Fehler'}`);
       }
     } catch (error) {
       console.error('Error deleting location:', error);
+      alert(`Netzwerkfehler: ${error.message}`);
     }
   };
 
@@ -1662,9 +1667,13 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
                         </div>
                       </div>
                       <button
-                        onClick={() => handleDeleteLocation(loc.location_id)}
-                        className="text-red-500 hover:text-red-700 p-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteLocation(loc.location_id);
+                        }}
+                        className="text-red-500 hover:text-red-700 p-2 rounded hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                         title="Standort löschen"
+                        data-testid={`delete-location-${loc.location_code}`}
                       >
                         <XCircle className="w-5 h-5" />
                       </button>
