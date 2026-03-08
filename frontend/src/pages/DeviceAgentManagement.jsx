@@ -2009,9 +2009,15 @@ function Get-HardwareInfo {
         $tvMigrationNeeded = $false
         $tvLatestVersion = "15.51"
         if ($tvVersion) {
-            $tvMajor = [int]($tvVersion.Split(".")[0])
-            if ($tvMajor -lt 14) { $tvMigrationNeeded = $true; $tvUpdateNeeded = $true }
-            elseif ($tvMajor -lt 15 -or [version]$tvVersion -lt [version]$tvLatestVersion) { $tvUpdateNeeded = $true }
+            # Version bereinigen (entferne trailing Buchstaben wie "H")
+            $tvVersionClean = ($tvVersion -replace '[^0-9.].*$', '').Trim('.')
+            try {
+                $tvMajor = [int]($tvVersionClean.Split(".")[0])
+                if ($tvMajor -lt 14) { $tvMigrationNeeded = $true; $tvUpdateNeeded = $true }
+                elseif ($tvMajor -lt 15 -or [version]$tvVersionClean -lt [version]$tvLatestVersion) { $tvUpdateNeeded = $true }
+            } catch {
+                Write-Log "Version-Parse-Fehler: $tvVersion -> $tvVersionClean - $_" "WARN"
+            }
         }
         
         # Prozess-Status
@@ -2162,7 +2168,7 @@ $task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 if ($task -and $task.State -eq "Running") {
     Write-Host "" 
     Write-Host "============================================" -ForegroundColor Green
-    Write-Host "  TSRID Agent V16 erfolgreich installiert!" -ForegroundColor Green
+    Write-Host "  TSRID Agent V20 erfolgreich installiert!" -ForegroundColor Green
     Write-Host "============================================" -ForegroundColor Green
     Write-Host "  Server: $ApiUrl" -ForegroundColor Cyan
     Write-Host "  Device: $env:COMPUTERNAME" -ForegroundColor Cyan
