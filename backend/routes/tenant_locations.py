@@ -438,12 +438,6 @@ async def create_tenant_location(
 ):
     """Create a new location for a tenant"""
     try:
-        # Validate tenant exists by calling Auth service
-        async with httpx.AsyncClient() as client:
-            tenant_response = await client.get(f"http://localhost:8100/api/tenants/{tenant_id}")
-            if tenant_response.status_code == 404:
-                raise HTTPException(status_code=404, detail="Tenant not found")
-        
         # Check if location code already exists for this tenant
         existing = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
@@ -468,32 +462,19 @@ async def create_tenant_location(
         # Remove MongoDB _id from response
         location_doc.pop('_id', None)
         
-        # Broadcast new location in real-time
-        print(f"[Location Create] Broadcasting new location {location_id} to tenant {tenant_id}")
-        try:
-            from websocket_manager import manager
-            import asyncio
-            
-            message = {
-                "type": "location_created",
-                "location": location_doc
-            }
-            
-            asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
-            print(f"[Location Create] Broadcast sent to tenant {tenant_id}")
-        except Exception as e:
-            print(f"[Location Create] Broadcast error: {str(e)}")
-        
         return {
             "success": True,
-            "message": "Location created successfully",
+            "message": f"Standort '{location.location_code}' erfolgreich erstellt",
             "location": location_doc
         }
     
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_detail = str(e) or traceback.format_exc()
+        print(f"[Location Create Error] {error_detail}")
+        raise HTTPException(status_code=500, detail=error_detail)
 
 @router.get("/{tenant_id}")
 async def get_tenant_locations(

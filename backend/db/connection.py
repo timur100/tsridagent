@@ -1,6 +1,7 @@
 """
 MongoDB Connection Pool
 Zentrale MongoDB-Verbindung mit Connection Pooling für bessere Performance
+WICHTIG: Verwendet IMMER die MONGO_URL aus der Umgebung - KEIN localhost Fallback!
 """
 from pymongo import MongoClient
 import os
@@ -9,19 +10,31 @@ import os
 _client = None
 
 def get_mongo_client():
-    """Get MongoDB client with connection pooling"""
+    """Get MongoDB client with connection pooling - NO FALLBACK TO LOCALHOST"""
     global _client
     if _client is None:
-        mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
+        mongo_url = os.environ.get('MONGO_URL')
+        if not mongo_url:
+            raise RuntimeError(
+                "MONGO_URL environment variable is NOT SET! "
+                "All database connections MUST use the Atlas MongoDB. "
+                "Set MONGO_URL in /app/backend/.env"
+            )
+        if 'localhost' in mongo_url or '127.0.0.1' in mongo_url:
+            import warnings
+            warnings.warn(
+                "WARNING: Using localhost MongoDB! This should only happen in development. "
+                "Production MUST use Atlas MongoDB!"
+            )
         _client = MongoClient(
             mongo_url,
-            maxPoolSize=50,  # Maximum connections in pool
-            minPoolSize=10,  # Minimum connections to maintain
-            maxIdleTimeMS=30000,  # Close idle connections after 30 seconds
-            waitQueueTimeoutMS=10000,  # Wait max 10 seconds for connection
-            serverSelectionTimeoutMS=5000,  # 5 second timeout for server selection
-            connectTimeoutMS=10000,  # 10 second connection timeout
-            socketTimeoutMS=30000,  # 30 second socket timeout
+            maxPoolSize=50,
+            minPoolSize=10,
+            maxIdleTimeMS=30000,
+            waitQueueTimeoutMS=10000,
+            serverSelectionTimeoutMS=5000,
+            connectTimeoutMS=10000,
+            socketTimeoutMS=30000,
         )
     return _client
 
