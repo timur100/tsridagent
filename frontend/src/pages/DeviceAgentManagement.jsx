@@ -1484,114 +1484,203 @@ const DeviceAgentManagement = () => {
 
 // Helper function to generate the agent script for copying
 function generateAgentScript(apiUrl) {
-  return `# TSRID Agent Installer V15 - In PowerShell (Admin) einfuegen
-# Server: ${apiUrl}
+  return `# ============================================================
+# TSRID Agent Installer - Version 16
+# Fuer Massenausrollung via TeamViewer
+# ============================================================
+# ANLEITUNG: In PowerShell (Administrator) einfuegen und Enter druecken
+# ============================================================
 
-$installPath = "C:\\TSRID-Agent"
-$scriptPath = "$installPath\\TSRID-Agent-Service.ps1"
-$apiUrl = "${apiUrl}"
+$ApiUrl = "${apiUrl}"
+$InstallPath = "C:\\TSRID-Agent"
+$ScriptPath = "$InstallPath\\TSRID-Agent-Service.ps1"
+$LogPath = "$InstallPath\\agent.log"
+$TaskName = "TSRID-Agent"
 
-# Cleanup
-schtasks /Delete /TN "TSRID-Agent-Service" /F 2>$null
-schtasks /Delete /TN "TSRID-ShowMessage" /F 2>$null
+# Cleanup alte Installation
+Write-Host "=== TSRID Agent Installer V16 ===" -ForegroundColor Cyan
+Write-Host "[1/5] Bereinige alte Installation..." -ForegroundColor Yellow
+
+try { Unregister-ScheduledTask -TaskName "TSRID-Agent" -Confirm:$false -ErrorAction SilentlyContinue } catch {}
+try { Unregister-ScheduledTask -TaskName "TSRID-Agent-Service" -Confirm:$false -ErrorAction SilentlyContinue } catch {}
 Stop-Process -Name "mshta" -Force -ErrorAction SilentlyContinue
-Remove-Item "$installPath\\message.hta" -Force -ErrorAction SilentlyContinue
+if (Test-Path $InstallPath) { Remove-Item -Path $InstallPath -Recurse -Force -ErrorAction SilentlyContinue }
 
-New-Item -ItemType Directory -Path $installPath -Force | Out-Null
-Write-Host "[OK] Ordner erstellt" -ForegroundColor Green
+# Erstelle Verzeichnis
+Write-Host "[2/5] Erstelle Verzeichnis..." -ForegroundColor Yellow
+New-Item -ItemType Directory -Path $InstallPath -Force | Out-Null
 
-$logoUrl = "https://customer-assets.emergentagent.com/job_06f80f02-2411-462d-ac08-59775fd1245f/artifacts/7kqzi6kx_Zeichenfl%C3%A4che%201.png"
-try { Invoke-WebRequest -Uri $logoUrl -OutFile "$installPath\\logo.png" -UseBasicParsing; Write-Host "[OK] Logo" -ForegroundColor Green } catch {}
+# Erstelle Agent-Script
+Write-Host "[3/5] Erstelle Agent-Script..." -ForegroundColor Yellow
 
-@'
-param([string]$ApiUrl)
-$ErrorActionPreference = "Continue"
-$global:ComputerName = $env:COMPUTERNAME
-$global:LogFile = "C:\\TSRID-Agent\\agent.log"
-$global:DeviceId = "$env:COMPUTERNAME-$((Get-WmiObject Win32_ComputerSystemProduct).UUID)"
-$global:ErrorCount = 0
+$AgentScript = @'
+# TSRID Agent Service V16
+$ApiUrl = "yourApiUrlPlaceholder"
+$LogFile = "C:\\TSRID-Agent\\agent.log"
+$HeartbeatInterval = 30
 
-function Write-Log { param([string]$M,[string]$L="INFO"); try { Add-Content -Path $global:LogFile -Value "[$((Get-Date).ToString('yyyy-MM-dd HH:mm:ss'))] [$L] $M" -EA SilentlyContinue } catch {} }
+function Write-Log($Message, $Level = "INFO") {
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $logLine = "[$timestamp] [$Level] $Message"
+    Add-Content -Path $LogFile -Value $logLine -ErrorAction SilentlyContinue
+}
+
+function Get-DeviceId {
+    $uuid = (Get-WmiObject -Class Win32_ComputerSystemProduct).UUID
+    $name = $env:COMPUTERNAME
+    return "$name-$uuid"
+}
 
 function Get-HardwareInfo {
     try {
-        $cs = Get-WmiObject Win32_ComputerSystem; $cpu = Get-WmiObject Win32_Processor
-        $os = Get-WmiObject Win32_OperatingSystem; $bios = Get-WmiObject Win32_BIOS
-        $net = Get-WmiObject Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled }
-        $tvId = "not found"; @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer") | ForEach-Object { if (Test-Path $_) { $tvId = (Get-ItemProperty $_ -Name ClientID -EA SilentlyContinue).ClientID } }
-        if($tvId -is [int]) { $tvId = $tvId.ToString() }
-        return @{ device_id=$global:DeviceId; computername=$global:ComputerName; uuid=(Get-WmiObject Win32_ComputerSystemProduct).UUID; bios_serial=[string]$bios.SerialNumber; teamviewer_id=[string]$tvId; teamviewer_status=$(if(Get-Process TeamViewer -EA SilentlyContinue){"running"}else{"stopped"}); tsrid_status=$(if(Get-Process tsrid -EA SilentlyContinue){"running"}else{"stopped"}); manufacturer=[string]$cs.Manufacturer; model=[string]$cs.Model; cpu=[string]$cpu.Name; ram_gb=[math]::Round($cs.TotalPhysicalMemory/1GB,2); ip_address=[string](($net|Select -First 1).IPAddress[0]); windows_version=[string]$os.Caption; timestamp=(Get-Date).ToString("o") }
-    } catch { Write-Log "HW-Fehler: $_" "ERROR"; return @{ device_id=$global:DeviceId; computername=$global:ComputerName; timestamp=(Get-Date).ToString("o") } }
-}
-
-function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$Body=$null)
-    try { $p = @{Uri="$ApiUrl/api/device-agent/$Endpoint";Method=$Method;ContentType="application/json";TimeoutSec=30}; if($Body){$p.Body=($Body|ConvertTo-Json -Depth 10 -Compress)}; $r=Invoke-RestMethod @p; $global:ErrorCount=0; return $r } catch { $global:ErrorCount++; Write-Log "API-Fehler: $_" "ERROR"; return $null }
-}
-
-function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
-    try {
-        $ts = Get-Date -Format "dd.MM.yyyy HH:mm:ss"
-        $safeMsg = $Message -replace "'","" -replace '"',""
-        $timerHtml = ""
-        $timerVB = ""
-        if($DurationMinutes -gt 0) {
-            $timerHtml = "<br><br><font face='Segoe UI' color='#ff6600' size='5'>Verbleibend: <span id='cd'>--:--:--</span></font>"
-            $timerVB = "t=$DurationMinutes*60:window.setTimeout ""Tick"",1000"
+        $cs = Get-WmiObject -Class Win32_ComputerSystem
+        $cpu = Get-WmiObject -Class Win32_Processor | Select-Object -First 1
+        $os = Get-WmiObject -Class Win32_OperatingSystem
+        $disk = Get-WmiObject -Class Win32_LogicalDisk -Filter "DeviceID='C:'"
+        $net = Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | Select-Object -First 1
+        $bios = Get-WmiObject -Class Win32_BIOS
+        $csp = Get-WmiObject -Class Win32_ComputerSystemProduct
+        
+        # TeamViewer ID aus Registry
+        $tvId = $null
+        $tvPaths = @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer")
+        foreach ($p in $tvPaths) { if (Test-Path $p) { $tvId = (Get-ItemProperty -Path $p -ErrorAction SilentlyContinue).ClientID; if ($tvId) { break } } }
+        
+        # Prozess-Status
+        $tvStatus = if (Get-Process -Name "TeamViewer*" -ErrorAction SilentlyContinue) { "running" } else { "stopped" }
+        $tsridStatus = if (Get-Process -Name "TSRID*" -ErrorAction SilentlyContinue) { "running" } else { "stopped" }
+        
+        return @{
+            device_id = Get-DeviceId
+            computername = $env:COMPUTERNAME
+            uuid = $csp.UUID
+            bios_serial = $bios.SerialNumber
+            manufacturer = $cs.Manufacturer
+            model = $cs.Model
+            cpu = $cpu.Name
+            ram_gb = [math]::Round($cs.TotalPhysicalMemory / 1GB, 2)
+            mac_address = $net.MACAddress
+            ip_address = ($net.IPAddress | Where-Object { $_ -match '^\\d+\\.\\d+\\.\\d+\\.\\d+$' } | Select-Object -First 1)
+            windows_version = $os.Caption
+            windows_build = $os.BuildNumber
+            teamviewer_id = $tvId
+            teamviewer_status = $tvStatus
+            tsrid_status = $tsridStatus
+            disks = "C: $([math]::Round($disk.FreeSpace/1GB,1))GB frei / $([math]::Round($disk.Size/1GB,1))GB"
         }
-$html = @"
-<html>
-<head><title>TSRID</title>
-<HTA:APPLICATION ID="oHTA" BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no" WINDOWSTATE="maximize"/>
-</head>
-<script language="VBScript">
-Dim t
-Sub Window_OnLoad:window.resizeTo screen.width,screen.height:window.moveTo 0,0:$timerVB:End Sub
-Sub Tick:If t<=0 Then:document.getElementById("cd").innerText="ABGELAUFEN":Exit Sub:End If:Dim h,m,s:h=Int(t/3600):m=Int((t Mod 3600)/60):s=t Mod 60:document.getElementById("cd").innerText=Right("0"&h,2)&":"&Right("0"&m,2)&":"&Right("0"&s,2):t=t-1:window.setTimeout "Tick",1000:End Sub
-Sub CloseMe:window.close:End Sub
-Sub Document_OnKeyDown:If window.event.keyCode=27 Then window.close:End Sub
-</script>
-<body bgcolor="#171717">
-<center><br><br><br>
-<table bgcolor="#242424" cellpadding="50" style="border:4px solid #d50c2d;">
-<tr><td align="center"><img src="C:\\TSRID-Agent\\logo.png" width="180"><br><br><font face="Segoe UI" color="#888888" size="4">$ts</font></td></tr>
-<tr><td align="center"><font face="Segoe UI" color="#ffffff" size="7"><b>$safeMsg</b></font>$timerHtml</td></tr>
-<tr><td align="center"><br><input type="button" value="SCHLIESSEN (ESC)" onclick="CloseMe" style="background-color:#d50c2d;color:white;border:none;padding:15px 40px;font-size:20px;cursor:hand;"></td></tr>
-</table></center></body></html>
-"@
-        $html | Out-File "C:\\TSRID-Agent\\message.hta" -Encoding ASCII -Force
-        Start-Process "mshta.exe" -ArgumentList "C:\\TSRID-Agent\\message.hta"
-        Write-Log "Nachricht angezeigt"
-    } catch { Write-Log "MSG-Fehler: $_" "ERROR" }
+    } catch {
+        Write-Log "Fehler bei Hardware-Info: $_" "ERROR"
+        return @{ device_id = Get-DeviceId; computername = $env:COMPUTERNAME }
+    }
 }
 
-function Process-Cmd { param($c)
-    try { $t=$c.command;$p=$c.params;$id=$c.command_id; Write-Log "CMD: $t"; $ok=$false;$out=""
-        switch($t){ "message"{Show-BigMessage -Message $p.text -DurationMinutes ([int]$p.duration_minutes);$out="OK";$ok=$true} "restart_pc"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 3;Restart-Computer -Force}|Out-Null} "shutdown_pc"{$out="Shutdown";$ok=$true;Start-Job{Start-Sleep 3;Stop-Computer -Force}|Out-Null} "restart_agent"{$out="Neustart";$ok=$true;Start-Job{Start-Sleep 2;Start-ScheduledTask -TaskName "TSRID-Agent-Service"}|Out-Null} "run_script"{try{$out=(Invoke-Expression $p.script|Out-String);$ok=$true}catch{$out="Fehler: $_";$ok=$false}} }
-        Invoke-Api -Endpoint "remote/result" -Method POST -Body @{device_id=$global:DeviceId;command_id=$id;success=$ok;output=$out}
-    } catch { Write-Log "CMD-Fehler: $_" "ERROR" }
+function Invoke-Api($Endpoint, $Method = "POST", $Body = $null) {
+    $url = "$ApiUrl/api/device-agent/$Endpoint"
+    $headers = @{ "Content-Type" = "application/json" }
+    try {
+        if ($Body) {
+            $json = $Body | ConvertTo-Json -Depth 10 -Compress
+            $response = Invoke-RestMethod -Uri $url -Method $Method -Headers $headers -Body $json -TimeoutSec 30
+        } else {
+            $response = Invoke-RestMethod -Uri $url -Method $Method -Headers $headers -TimeoutSec 30
+        }
+        return $response
+    } catch {
+        $statusCode = $_.Exception.Response.StatusCode.value__
+        Write-Log "API-Fehler ($Endpoint): $statusCode - $_" "ERROR"
+        return $null
+    }
 }
 
-Write-Log "=== TSRID Agent V15 ===" "INFO"; Write-Log "Server: $ApiUrl" "INFO"
-Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
-$lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
-while($true) { try { $now=Get-Date
-    if(($now-$lastHB).TotalSeconds -ge 60){ $r=Invoke-Api -Endpoint "heartbeat" -Method POST -Body (Get-HardwareInfo); if($r -and $r.commands){$r.commands|%{Process-Cmd $_}}; $lastHB=$now }
-    if(($now-$lastPoll).TotalSeconds -ge 5){ $r=Invoke-Api -Endpoint "remote/commands/$($global:DeviceId)" -Method GET; if($r -and $r.commands){$r.commands|%{Process-Cmd $_}}; $lastPoll=$now }
-    if($global:ErrorCount -gt 10){ Write-Log "Pause 60s" "ERROR"; Start-Sleep 60; $global:ErrorCount=0 }
-    Start-Sleep 1
-} catch { Write-Log "Loop-Fehler: $_" "ERROR"; Start-Sleep 5 } }
-'@ | Out-File $scriptPath -Encoding UTF8 -Force
-Write-Host "[OK] Agent-Script V15" -ForegroundColor Green
+# === HAUPTPROGRAMM ===
+Write-Log "=== TSRID Agent V16 gestartet ===" "INFO"
+Write-Log "Server: $ApiUrl" "INFO"
+Write-Log "Device: $(Get-DeviceId)" "INFO"
 
-$taskName = "TSRID-Agent-Service"
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument ("-ExecutionPolicy Bypass -WindowStyle Hidden -File " + $scriptPath + " -ApiUrl " + $apiUrl)
-$trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
-$trigger2 = New-ScheduledTaskTrigger -AtLogOn
-$principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonType ServiceAccount -RunLevel Highest
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
-Start-ScheduledTask -TaskName $taskName
-Write-Host "[OK] Agent V15 laeuft! Server: $apiUrl" -ForegroundColor Green`;
+# Initiale Registrierung
+$hwInfo = Get-HardwareInfo
+$regResult = Invoke-Api -Endpoint "register" -Body $hwInfo
+if ($regResult.success) { Write-Log "Registrierung erfolgreich" "INFO" } else { Write-Log "Registrierung fehlgeschlagen" "ERROR" }
+
+# Heartbeat-Loop
+$errorCount = 0
+while ($true) {
+    try {
+        $heartbeatData = @{
+            device_id = Get-DeviceId
+            computername = $env:COMPUTERNAME
+            teamviewer_status = if (Get-Process -Name "TeamViewer*" -ErrorAction SilentlyContinue) { "running" } else { "stopped" }
+            tsrid_status = if (Get-Process -Name "TSRID*" -ErrorAction SilentlyContinue) { "running" } else { "stopped" }
+            ip_address = (Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled } | Select-Object -First 1).IPAddress | Where-Object { $_ -match '^\\d+\\.\\d+\\.\\d+\\.\\d+$' } | Select-Object -First 1
+        }
+        $response = Invoke-Api -Endpoint "heartbeat" -Body $heartbeatData
+        
+        if ($response.success) {
+            $errorCount = 0
+            if ($response.commands -and $response.commands.Count -gt 0) {
+                foreach ($cmd in $response.commands) {
+                    Write-Log "Befehl empfangen: $($cmd.command)" "INFO"
+                    switch ($cmd.command) {
+                        "restart_agent" { Write-Log "Agent Neustart..." "INFO"; Start-ScheduledTask -TaskName "TSRID-Agent"; exit }
+                        "restart_pc" { Write-Log "PC Neustart..." "INFO"; Restart-Computer -Force }
+                        "shutdown_pc" { Write-Log "PC Shutdown..." "INFO"; Stop-Computer -Force }
+                        "run_script" {
+                            if ($cmd.params.script) {
+                                try {
+                                    $output = Invoke-Expression $cmd.params.script 2>&1 | Out-String
+                                    Write-Log "Script OK: $output" "INFO"
+                                    Invoke-Api -Endpoint "remote/result" -Body @{ device_id = Get-DeviceId; command_id = $cmd.command_id; success = $true; output = $output }
+                                } catch {
+                                    Write-Log "Script Fehler: $_" "ERROR"
+                                    Invoke-Api -Endpoint "remote/result" -Body @{ device_id = Get-DeviceId; command_id = $cmd.command_id; success = $false; error = "$_" }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else { $errorCount++ }
+        if ($errorCount -ge 10) { Write-Log "Zu viele Fehler - Pause 60s" "ERROR"; Start-Sleep -Seconds 60; $errorCount = 0 }
+    } catch { $errorCount++; Write-Log "Loop-Fehler: $_" "ERROR" }
+    Start-Sleep -Seconds $HeartbeatInterval
+}
+'@
+
+# URL im Script ersetzen und speichern
+$AgentScript = $AgentScript -replace 'yourApiUrlPlaceholder', $ApiUrl
+$AgentScript | Out-File -FilePath $ScriptPath -Encoding UTF8 -Force
+
+# Scheduled Task erstellen
+Write-Host "[4/5] Erstelle Scheduled Task..." -ForegroundColor Yellow
+
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$ScriptPath`""
+$trigger = New-ScheduledTaskTrigger -AtStartup
+$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)
+
+Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Principal $principal -Settings $settings -Force | Out-Null
+
+# Task starten
+Write-Host "[5/5] Starte Agent..." -ForegroundColor Yellow
+Start-ScheduledTask -TaskName $TaskName
+
+# Verifizierung
+Start-Sleep -Seconds 3
+$task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+if ($task -and $task.State -eq "Running") {
+    Write-Host "" 
+    Write-Host "============================================" -ForegroundColor Green
+    Write-Host "  TSRID Agent V16 erfolgreich installiert!" -ForegroundColor Green
+    Write-Host "============================================" -ForegroundColor Green
+    Write-Host "  Server: $ApiUrl" -ForegroundColor Cyan
+    Write-Host "  Device: $env:COMPUTERNAME" -ForegroundColor Cyan
+    Write-Host "  Status: RUNNING" -ForegroundColor Green
+    Write-Host "============================================" -ForegroundColor Green
+} else {
+    Write-Host ""
+    Write-Host "WARNUNG: Task erstellt aber laeuft nicht" -ForegroundColor Yellow
+    Write-Host "Manuell starten: Start-ScheduledTask -TaskName 'TSRID-Agent'" -ForegroundColor Yellow
+}`;
 }
 
 export default DeviceAgentManagement;
