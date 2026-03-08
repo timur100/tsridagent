@@ -1434,8 +1434,34 @@ const DeviceAgentManagement = () => {
                   size="sm"
                   onClick={() => {
                     const script = generateAgentScript(BACKEND_URL);
-                    navigator.clipboard.writeText(script);
-                    toast.success('Script in Zwischenablage kopiert!');
+                    // Fallback für Clipboard
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                      navigator.clipboard.writeText(script).then(() => {
+                        toast.success('Script in Zwischenablage kopiert!');
+                      }).catch(() => {
+                        // Fallback: Textarea erstellen
+                        const textArea = document.createElement('textarea');
+                        textArea.value = script;
+                        textArea.style.position = 'fixed';
+                        textArea.style.left = '-9999px';
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        toast.success('Script in Zwischenablage kopiert!');
+                      });
+                    } else {
+                      // Fallback: Textarea erstellen
+                      const textArea = document.createElement('textarea');
+                      textArea.value = script;
+                      textArea.style.position = 'fixed';
+                      textArea.style.left = '-9999px';
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(textArea);
+                      toast.success('Script in Zwischenablage kopiert!');
+                    }
                   }}
                   className="bg-green-600 hover:bg-green-700"
                 >
