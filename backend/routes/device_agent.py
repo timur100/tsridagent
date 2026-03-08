@@ -72,6 +72,7 @@ class DeviceAssignment(BaseModel):
     location_code: str
     location_name: Optional[str] = None
     device_number: Optional[str] = None
+    tenant_id: Optional[str] = None
     assigned_by: Optional[str] = None
 
 
@@ -397,6 +398,7 @@ async def assign_device(assignment: DeviceAssignment):
         "location_code": assignment.location_code,
         "location_name": location_name,
         "device_number": assignment.device_number,
+        "tenant_id": assignment.tenant_id,
         "assigned": True,
         "assigned_at": datetime.now(timezone.utc).isoformat(),
         "assigned_by": assignment.assigned_by
@@ -535,6 +537,51 @@ async def get_locations():
         "success": True,
         "locations": locations,
         "count": len(locations)
+    }
+
+
+@router.get("/locations-by-tenant")
+async def get_locations_by_tenant(tenant_id: Optional[str] = None):
+    """
+    Gibt alle Standorte eines Tenants zurück mit vollständigen Details.
+    Liest aus der tenants Collection (tenant_level = location).
+    """
+    query = {"tenant_level": "location", "enabled": True}
+    
+    # Wenn tenant_id angegeben, filtere nach parent_tenant_id Präfix
+    if tenant_id:
+        # Standorte deren parent_tenant_id mit tenant_id beginnt
+        query["$or"] = [
+            {"parent_tenant_id": {"$regex": f"^{tenant_id}"}},
+            {"tenant_id": {"$regex": f"^{tenant_id}"}}
+        ]
+    
+    cursor = db.tenants.find(query, {"_id": 0}).sort("display_name", 1)
+    tenant_locations = await cursor.to_list(length=500)
+    
+    locations = []
+    for loc in tenant_locations:
+        location_code = loc.get("location_code", "")
+        if not location_code:
+            continue
+            
+        locations.append({
+            "location_code": location_code,
+            "location_name": loc.get("display_name") or loc.get("name", ""),
+            "tenant_id": loc.get("tenant_id"),
+            "location_id": loc.get("location_id"),
+            "country_code": loc.get("country_code", ""),
+            "street": "",  # Nicht in tenants collection vorhanden
+            "zip_code": "",
+            "city": loc.get("display_name", "").split()[-1] if loc.get("display_name") else "",
+            "country": "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", "")
+        })
+    
+    return {
+        "success": True,
+        "locations": locations,
+        "count": len(locations),
+        "tenant_id": tenant_id
     }
 
 

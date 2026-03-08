@@ -48,7 +48,8 @@ const DeviceAgentManagement = () => {
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [showRemoteDialog, setShowRemoteDialog] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState([]);
-  const [assignForm, setAssignForm] = useState({ location_code: '', device_number: '' });
+  const [assignForm, setAssignForm] = useState({ tenant_id: '', location_code: '', device_number: '' });
+  const [assignLocations, setAssignLocations] = useState([]);
   const [filter, setFilter] = useState({ status: 'all', assigned: 'all', deviceType: 'all', tenant: 'all', location: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -165,6 +166,34 @@ const DeviceAgentManagement = () => {
     }
   }, []);
 
+  // Fetch locations by tenant for assignment dialog
+  const fetchLocationsByTenant = useCallback(async (tenantId) => {
+    if (!tenantId) {
+      setAssignLocations([]);
+      return;
+    }
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/locations-by-tenant?tenant_id=${tenantId}`);
+      const data = await response.json();
+      if (data.success) {
+        setAssignLocations(data.locations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching locations by tenant:', error);
+      setAssignLocations([]);
+    }
+  }, []);
+
+  // Load locations when tenant changes in assign form
+  useEffect(() => {
+    if (assignForm.tenant_id) {
+      fetchLocationsByTenant(assignForm.tenant_id);
+      setAssignForm(prev => ({ ...prev, location_code: '' }));
+    } else {
+      setAssignLocations([]);
+    }
+  }, [assignForm.tenant_id, fetchLocationsByTenant]);
+
   // Load templates and history when Remote Dialog opens
   useEffect(() => {
     if (showRemoteDialog) {
@@ -246,6 +275,10 @@ const DeviceAgentManagement = () => {
       return;
     }
 
+    // Finde den Standortnamen
+    const selectedLocation = assignLocations.find(l => l.location_code === assignForm.location_code);
+    const locationName = selectedLocation?.location_name || assignForm.location_code;
+
     try {
       const response = await fetch(`${BACKEND_URL}/api/device-agent/assign`, {
         method: 'POST',
@@ -253,16 +286,19 @@ const DeviceAgentManagement = () => {
         body: JSON.stringify({
           device_id: selectedDevice.device_id,
           location_code: assignForm.location_code,
+          location_name: locationName,
           device_number: assignForm.device_number,
+          tenant_id: assignForm.tenant_id,
           assigned_by: 'admin'
         })
       });
       
       const data = await response.json();
       if (data.success) {
-        toast.success('Gerät erfolgreich zugewiesen!');
+        toast.success(`Gerät erfolgreich ${assignForm.location_code}-${assignForm.device_number} zugewiesen!`);
         setShowAssignDialog(false);
-        setAssignForm({ location_code: '', device_number: '' });
+        setAssignForm({ tenant_id: '', location_code: '', device_number: '' });
+        setAssignLocations([]);
         fetchDevices();
       } else {
         toast.error(data.detail || 'Fehler bei der Zuweisung');
@@ -1015,8 +1051,14 @@ const DeviceAgentManagement = () => {
       </Dialog>
 
       {/* Assign Dialog */}
-      <Dialog open={showAssignDialog} onOpenChange={setShowAssignDialog}>
-        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white">
+      <Dialog open={showAssignDialog} onOpenChange={(open) => {
+        setShowAssignDialog(open);
+        if (!open) {
+          setAssignForm({ tenant_id: '', location_code: '', device_number: '' });
+          setAssignLocations([]);
+        }
+      }}>
+        <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-2xl">
           <DialogHeader>
             <DialogTitle>Station zuweisen</DialogTitle>
             <DialogDescription className="text-gray-400">
@@ -1025,40 +1067,82 @@ const DeviceAgentManagement = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Tenant Selector */}
             <div>
-              <label className="text-sm text-gray-400 mb-2 block">Standort</label>
+              <label className="text-sm text-gray-400 mb-2 block">Tenant / Organisation</label>
               <Select 
-                value={assignForm.location_code} 
-                onValueChange={(value) => setAssignForm({ ...assignForm, location_code: value })}
+                value={assignForm.tenant_id} 
+                onValueChange={(value) => setAssignForm({ ...assignForm, tenant_id: value, location_code: '' })}
               >
-                <SelectTrigger className="bg-[#262626] border-[#444]">
-                  <SelectValue placeholder="Standort auswählen" />
+                <SelectTrigger className="bg-[#262626] border-[#444]" data-testid="assign-tenant-select">
+                  <SelectValue placeholder="Tenant auswählen" />
                 </SelectTrigger>
                 <SelectContent className="bg-[#262626] border-[#444] max-h-60">
-                  {locations.map((loc) => (
-                    <SelectItem key={loc.location_code} value={loc.location_code}>
-                      {loc.location_code} - {loc.location_name}
+                  {tenants.map((tenant) => (
+                    <SelectItem key={tenant.tenant_id} value={tenant.tenant_id}>
+                      {tenant.tenant_name} ({tenant.device_count} Geräte)
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
+
+            {/* Station Selector - nur sichtbar wenn Tenant gewählt */}
+            {assignForm.tenant_id && (
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">
+                  Standort ({assignLocations.length} verfügbar)
+                </label>
+                <Select 
+                  value={assignForm.location_code} 
+                  onValueChange={(value) => setAssignForm({ ...assignForm, location_code: value })}
+                >
+                  <SelectTrigger className="bg-[#262626] border-[#444]" data-testid="assign-location-select">
+                    <SelectValue placeholder="Standort auswählen" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#262626] border-[#444] max-h-80">
+                    {assignLocations.map((loc) => (
+                      <SelectItem key={loc.location_code} value={loc.location_code}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{loc.location_code} - {loc.location_name}</span>
+                          {(loc.street || loc.city || loc.country) && (
+                            <span className="text-xs text-gray-400">
+                              {[loc.street, loc.zip_code, loc.city, loc.country].filter(Boolean).join(', ')}
+                            </span>
+                          )}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             
-            <div>
-              <label className="text-sm text-gray-400 mb-2 block">Gerätenummer</label>
-              <Input
-                value={assignForm.device_number}
-                onChange={(e) => setAssignForm({ ...assignForm, device_number: e.target.value })}
-                placeholder="z.B. 01, 02, 03..."
-                className="bg-[#262626] border-[#444]"
-              />
-            </div>
+            {/* Gerätenummer */}
+            {assignForm.location_code && (
+              <div>
+                <label className="text-sm text-gray-400 mb-2 block">Gerätenummer</label>
+                <Input
+                  value={assignForm.device_number}
+                  onChange={(e) => setAssignForm({ ...assignForm, device_number: e.target.value })}
+                  placeholder="z.B. 01, 02, 03..."
+                  className="bg-[#262626] border-[#444]"
+                  data-testid="assign-device-number"
+                />
+              </div>
+            )}
             
+            {/* Vorschau */}
             {assignForm.location_code && assignForm.device_number && (
               <div className="bg-cyan-500/10 border border-cyan-500/30 rounded-lg p-3">
                 <div className="text-cyan-400 font-bold">
                   Vorschau: {assignForm.location_code}-{assignForm.device_number}
                 </div>
+                {assignLocations.find(l => l.location_code === assignForm.location_code) && (
+                  <div className="text-gray-400 text-sm mt-1">
+                    {assignLocations.find(l => l.location_code === assignForm.location_code)?.location_name}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -1067,7 +1151,11 @@ const DeviceAgentManagement = () => {
             <Button variant="outline" onClick={() => setShowAssignDialog(false)} className="border-[#444]">
               Abbrechen
             </Button>
-            <Button onClick={assignDevice} className="bg-[#d50c2d] hover:bg-[#b80a28]">
+            <Button 
+              onClick={assignDevice} 
+              className="bg-[#d50c2d] hover:bg-[#b80a28]"
+              disabled={!assignForm.location_code || !assignForm.device_number}
+            >
               Zuweisen
             </Button>
           </DialogFooter>
