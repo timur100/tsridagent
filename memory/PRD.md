@@ -157,6 +157,17 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 - `/devices/{id}` - Gerätedetails
 - Auto-Refresh alle 30 Sekunden im Frontend
 
+### TeamViewer Account Monitoring (08.03.2026) ✅ NEU
+- **Backend:** `device_agent.py` speichert TeamViewer Account-Daten korrekt:
+  - `teamviewer.account_assigned` - Boolean ob verknüpft
+  - `teamviewer.account_email` - Account-Name/E-Mail (OwningManagerAccountName)
+  - `teamviewer.account_company` - Firmenname (OwningManagerCompanyName)
+- **Frontend:** Device Details Modal zeigt:
+  - "Konto-Status" Feld: "Verknüpft" (grün) / "Nicht verknüpft" (rot)
+  - "Account Name" und "Firma" Felder wenn verfügbar
+  - "TeamViewer nicht mit Konto verknüpft" Warnung im Probleme-Bereich
+- **PowerShell Agent V20:** Sammelt Account-Infos aus Registry (WOW6432Node)
+
 ### Remote Control System (07.03.2026) ✅ NEU IMPLEMENTIERT
 - **Schnellbefehle:** Agent neustarten, PC neustarten, PC herunterfahren, Screenshot
 - **Nachricht mit Timer:** Countdown-Timer in Minuten (z.B. 120 für 2h)
