@@ -737,30 +737,34 @@ const LocationsTabEnhanced = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              console.log('[LocationsTabEnhanced] Edit clicked for:', location.location_code);
                               onEditLocation(location);
                             }}
                             className={`p-2 rounded-lg transition-all ${
                               theme === 'dark'
-                                ? 'hover:bg-[#1f1f1f] text-gray-400 hover:text-white'
-                                : 'hover:bg-gray-100 text-gray-600 hover:text-gray-900'
+                                ? 'hover:bg-[#1f1f1f] text-blue-400 hover:text-blue-300'
+                                : 'hover:bg-blue-100 text-blue-500 hover:text-blue-700'
                             }`}
-                            title="Bearbeiten"
+                            title="Standort bearbeiten"
+                            data-testid={`edit-location-${location.location_code}`}
                           >
-                            <Edit className="w-4 h-4" />
+                            <Edit className="w-5 h-5" />
                           </button>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
+                              console.log('[LocationsTabEnhanced] Delete clicked for:', location.location_id);
                               onDeleteLocation(location.location_id);
                             }}
                             className={`p-2 rounded-lg transition-all ${
                               theme === 'dark'
-                                ? 'hover:bg-red-900/20 text-gray-400 hover:text-red-400'
-                                : 'hover:bg-red-50 text-gray-600 hover:text-red-600'
+                                ? 'hover:bg-red-900/30 text-red-400 hover:text-red-300'
+                                : 'hover:bg-red-100 text-red-500 hover:text-red-700'
                             }`}
-                            title="Löschen"
+                            title="Standort löschen"
+                            data-testid={`delete-location-${location.location_code}`}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>
