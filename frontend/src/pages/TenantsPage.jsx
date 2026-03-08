@@ -709,6 +709,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
         logo_url: null
       };
 
+      // Create in Auth Service
       const response = await fetch(`${backendUrl}/api/services/tenants/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -716,6 +717,25 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
       });
 
       if (response.ok) {
+        const authData = await response.json();
+        
+        // Also create in MongoDB for the dashboard to see
+        const mongoPayload = {
+          tenant_id: authData.tenant_id,
+          name: formData.name,
+          display_name: formData.display_name,
+          enabled: true,
+          tenant_level: 'organization',
+          parent_tenant_id: null,
+          allow_cross_location_search: false
+        };
+        
+        await fetch(`${backendUrl}/api/tenants/create-local`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(mongoPayload)
+        });
+        
         onSuccess();
       } else {
         const data = await response.json();

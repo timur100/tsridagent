@@ -196,6 +196,40 @@ async def get_tenant_by_id(tenant_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/api/tenants/create-local")
+async def create_tenant_local(tenant_data: dict):
+    """
+    Create a tenant directly in MongoDB (for sync with Auth Service)
+    """
+    try:
+        db = get_db()
+        
+        # Check if tenant already exists
+        existing = db.tenants.find_one({"tenant_id": tenant_data.get("tenant_id")})
+        if existing:
+            return {"success": True, "message": "Tenant already exists", "tenant_id": tenant_data.get("tenant_id")}
+        
+        # Prepare tenant document
+        tenant_doc = {
+            "tenant_id": tenant_data.get("tenant_id"),
+            "name": tenant_data.get("name"),
+            "display_name": tenant_data.get("display_name"),
+            "enabled": tenant_data.get("enabled", True),
+            "tenant_level": tenant_data.get("tenant_level", "organization"),
+            "parent_tenant_id": tenant_data.get("parent_tenant_id"),
+            "allow_cross_location_search": tenant_data.get("allow_cross_location_search", False),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        db.tenants.insert_one(tenant_doc)
+        
+        return {"success": True, "message": "Tenant created", "tenant_id": tenant_data.get("tenant_id")}
+    except Exception as e:
+        logger.error(f"Error creating tenant locally: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============== LOCATIONS ==============
 
 @router.get("/api/portal/locations")
