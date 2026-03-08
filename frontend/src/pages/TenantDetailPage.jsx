@@ -788,28 +788,40 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   };
 
   const handleLocationDelete = async (locationId) => {
+    console.log('[TenantDetailPage] handleLocationDelete called with:', locationId);
+    
     if (!window.confirm('Möchten Sie diesen Standort wirklich löschen?')) {
+      console.log('[TenantDetailPage] User cancelled delete');
       return;
     }
 
+    console.log('[TenantDetailPage] User confirmed delete, sending request...');
+    
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${BACKEND_URL}/api/tenant-locations/${tenantId}/${locationId}`, {
+      const url = `${BACKEND_URL}/api/tenant-locations/${tenantId}/${locationId}`;
+      console.log('[TenantDetailPage] DELETE URL:', url);
+      
+      const response = await fetch(url, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
 
+      console.log('[TenantDetailPage] Response status:', response.status);
+      
       if (response.ok) {
-        toast.success('Standort gelöscht');
+        toast.success('Standort erfolgreich gelöscht');
         fetchLocations();
       } else {
-        toast.error('Löschen fehlgeschlagen');
+        const errorData = await response.json().catch(() => ({}));
+        console.error('[TenantDetailPage] Delete failed:', errorData);
+        toast.error(`Löschen fehlgeschlagen: ${errorData.detail || response.status}`);
       }
     } catch (error) {
-      console.error('Delete error:', error);
-      toast.error('Löschen fehlgeschlagen');
+      console.error('[TenantDetailPage] Delete error:', error);
+      toast.error(`Löschen fehlgeschlagen: ${error.message}`);
     }
   };
 
