@@ -1537,40 +1537,45 @@ function Show-BigMessage {
         $timer = ""; $timerDiv = ""
         if($DurationMinutes -gt 0) {
             $secs = $DurationMinutes * 60
-            $timerDiv = "<div class='timer'>Verbleibend: <span id='cd'>--:--:--</span></div>"
+            $timerDiv = "<tr><td style='font-size:48px;color:#ff6600;padding-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></td></tr>"
             $timer = "var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='ZEIT ABGELAUFEN';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"
         }
         $safeMsg = $Message.Replace("'","&#39;").Replace('"','&quot;')
         $html = @"
-<html><head><HTA:APPLICATION BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no"/>
-<script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script>
-<style>
-html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}
-body{background-color:#1a1a2e;color:#ffffff;font-family:Segoe UI,Arial;text-align:center}
-table.main{width:100%;height:100%;border-collapse:collapse}
-td.center{vertical-align:middle;text-align:center}
-.box{display:inline-block;padding:60px;background-color:#252540;border:3px solid #d50c2d}
-.logo{width:180px;height:auto;margin-bottom:20px}
-.time{color:#888888;font-size:24px;margin:15px 0}
-.msg{color:#ffffff;font-size:48px;margin:30px 0;line-height:1.4}
-.timer{font-size:48px;color:#ff6600;margin-top:30px}
-.btn{background-color:#d50c2d;color:#ffffff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;margin-top:30px}
-.btn:hover{background-color:#ff1a3d}
-</style>
-</head><body>
-<table class="main"><tr><td class="center">
-<div class="box">
-<img src="C:\TSRID-Agent\logo.png" class="logo" alt="TSRID"/><br/>
-<div class="time">$ts</div>
-<div class="msg">$safeMsg</div>
+<html>
+<head>
+<HTA:APPLICATION BORDER="no" BORDERSTYLE="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no" WINDOWSTATE="maximize"/>
+<script language="javascript">
+window.resizeTo(screen.width,screen.height);
+window.moveTo(0,0);
+setInterval(function(){window.focus();},200);
+window.onload=function(){$timer};
+document.onkeydown=function(e){if(e.keyCode==27)window.close()};
+</script>
+</head>
+<body style="margin:0;padding:0;background-color:#121212;font-family:Segoe UI,Arial,sans-serif;" bgcolor="#121212">
+<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td align="center" valign="middle">
+<table cellpadding="40" cellspacing="0" border="0" style="background-color:#1e1e1e;border:4px solid #d50c2d;" bgcolor="#1e1e1e">
+<tr><td align="center">
+<img src="C:\TSRID-Agent\logo.png" width="200" style="margin-bottom:20px"/><br/>
+<span style="color:#888888;font-size:22px;">$ts</span>
+</td></tr>
+<tr><td align="center" style="padding:30px 60px;">
+<span style="color:#ffffff;font-size:42px;font-weight:bold;line-height:1.5">$safeMsg</span>
+</td></tr>
 $timerDiv
-<br/><button class="btn" onclick="close()">SCHLIESSEN (ESC)</button>
-</div>
-</td></tr></table>
-</body></html>
+<tr><td align="center" style="padding-top:30px;">
+<button onclick="window.close()" style="background-color:#d50c2d;color:#ffffff;border:none;padding:18px 50px;font-size:24px;cursor:pointer;font-weight:bold;">SCHLIESSEN (ESC)</button>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>
 "@
         $htaPath = "C:\TSRID-Agent\message.hta"
-        $html | Out-File $htaPath -Encoding UTF8 -Force
+        [System.IO.File]::WriteAllText($htaPath, $html, [System.Text.Encoding]::UTF8)
         $taskXml = '<?xml version="1.0" encoding="UTF-16"?><Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1910-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers><Principals><Principal><GroupId>S-1-5-32-545</GroupId><RunLevel>LeastPrivilege</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><Priority>7</Priority></Settings><Actions><Exec><Command>mshta.exe</Command><Arguments>"' + $htaPath + '"</Arguments></Exec></Actions></Task>'
         $taskXml | Out-File "C:\TSRID-Agent\msgtask.xml" -Encoding Unicode -Force
         schtasks /Create /TN "TSRID-ShowMessage" /XML "C:\TSRID-Agent\msgtask.xml" /F 2>$null
@@ -1761,15 +1766,24 @@ function Invoke-Api { param([string]$Endpoint,[string]$Method="GET",[hashtable]$
 function Show-BigMessage { param([string]$Message,[int]$DurationMinutes=0)
     try {
         $ts = Get-Date -Format "dd.MM.yyyy HH:mm:ss"; $timer=""; $timerDiv=""
-        if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<div class='timer'>Verbleibend: <span id='cd'>--:--:--</span></div>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='ZEIT ABGELAUFEN';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
+        if($DurationMinutes -gt 0){$secs=$DurationMinutes*60;$timerDiv="<tr><td style='font-size:48px;color:#ff6600;padding-top:30px'>Verbleibend: <span id='cd'>--:--:--</span></td></tr>";$timer="var t=$secs;function u(){if(t<=0){document.getElementById('cd').innerHTML='ZEIT ABGELAUFEN';return}var h=Math.floor(t/3600),m=Math.floor((t%3600)/60),s=t%60;document.getElementById('cd').innerHTML=(h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(s<10?'0':'')+s;t--;setTimeout(u,1000)}u();"}
         $safeMsg = $Message.Replace("'","&#39;").Replace('"','&quot;')
         $html = @"
-<html><head><HTA:APPLICATION BORDER="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no"/>
-<script>resizeTo(screen.width,screen.height);moveTo(0,0);setInterval(function(){focus()},500);onload=function(){$timer};onkeydown=function(e){if(e.keyCode==27)close()}</script>
-<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden}body{background-color:#1a1a2e;color:#ffffff;font-family:Segoe UI,Arial;text-align:center}table.main{width:100%;height:100%;border-collapse:collapse}td.center{vertical-align:middle;text-align:center}.box{display:inline-block;padding:60px;background-color:#252540;border:3px solid #d50c2d}.logo{width:180px;height:auto;margin-bottom:20px}.time{color:#888888;font-size:24px;margin:15px 0}.msg{color:#ffffff;font-size:48px;margin:30px 0;line-height:1.4}.timer{font-size:48px;color:#ff6600;margin-top:30px}.btn{background-color:#d50c2d;color:#ffffff;border:none;padding:20px 60px;font-size:28px;cursor:pointer;margin-top:30px}</style>
-</head><body><table class="main"><tr><td class="center"><div class="box"><img src="C:\\TSRID-Agent\\logo.png" class="logo" alt="TSRID"/><br/><div class="time">$ts</div><div class="msg">$safeMsg</div>$timerDiv<br/><button class="btn" onclick="close()">SCHLIESSEN (ESC)</button></div></td></tr></table></body></html>
+<html><head>
+<HTA:APPLICATION BORDER="no" BORDERSTYLE="none" CAPTION="no" SHOWINTASKBAR="yes" SINGLEINSTANCE="yes" SCROLL="no" WINDOWSTATE="maximize"/>
+<script language="javascript">
+window.resizeTo(screen.width,screen.height);window.moveTo(0,0);setInterval(function(){window.focus();},200);window.onload=function(){$timer};document.onkeydown=function(e){if(e.keyCode==27)window.close()};
+</script></head>
+<body style="margin:0;padding:0;background-color:#121212;font-family:Segoe UI,Arial;" bgcolor="#121212">
+<table width="100%" height="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" valign="middle">
+<table cellpadding="40" cellspacing="0" border="0" style="background-color:#1e1e1e;border:4px solid #d50c2d;" bgcolor="#1e1e1e">
+<tr><td align="center"><img src="C:\\TSRID-Agent\\logo.png" width="200"/><br/><span style="color:#888888;font-size:22px;">$ts</span></td></tr>
+<tr><td align="center" style="padding:30px 60px;"><span style="color:#ffffff;font-size:42px;font-weight:bold;">$safeMsg</span></td></tr>
+$timerDiv
+<tr><td align="center" style="padding-top:30px;"><button onclick="window.close()" style="background-color:#d50c2d;color:#ffffff;border:none;padding:18px 50px;font-size:24px;cursor:pointer;font-weight:bold;">SCHLIESSEN (ESC)</button></td></tr>
+</table></td></tr></table></body></html>
 "@
-        $html | Out-File "C:\\TSRID-Agent\\message.hta" -Encoding UTF8 -Force
+        [System.IO.File]::WriteAllText("C:\\TSRID-Agent\\message.hta", $html, [System.Text.Encoding]::UTF8)
         $taskXml = '<?xml version="1.0" encoding="UTF-16"?><Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task"><Triggers><TimeTrigger><StartBoundary>1910-01-01T00:00:00</StartBoundary><Enabled>false</Enabled></TimeTrigger></Triggers><Principals><Principal><GroupId>S-1-5-32-545</GroupId><RunLevel>LeastPrivilege</RunLevel></Principal></Principals><Settings><MultipleInstancesPolicy>Parallel</MultipleInstancesPolicy><DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries><StopIfGoingOnBatteries>false</StopIfGoingOnBatteries><AllowHardTerminate>true</AllowHardTerminate><StartWhenAvailable>false</StartWhenAvailable><RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable><AllowStartOnDemand>true</AllowStartOnDemand><Enabled>true</Enabled><Hidden>false</Hidden><RunOnlyIfIdle>false</RunOnlyIfIdle><WakeToRun>false</WakeToRun><Priority>7</Priority></Settings><Actions><Exec><Command>mshta.exe</Command><Arguments>"C:\\TSRID-Agent\\message.hta"</Arguments></Exec></Actions></Task>'
         $taskXml | Out-File "C:\\TSRID-Agent\\msgtask.xml" -Encoding Unicode -Force
         schtasks /Create /TN "TSRID-ShowMessage" /XML "C:\\TSRID-Agent\\msgtask.xml" /F 2>$null
