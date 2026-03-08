@@ -7,7 +7,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Monitor, Wifi, WifiOff, MapPin, Clock, RefreshCw, 
-  AlertTriangle, Search,
+  AlertTriangle, Search, XCircle,
   Cpu, HardDrive, MemoryStick, Globe, Settings, Link, Unlink,
   Activity, Server, Building, Eye,
   ChevronLeft, ChevronsLeft, ChevronsRight, ChevronRight, Power, MessageSquare, Terminal,
@@ -898,7 +898,12 @@ const DeviceAgentManagement = () => {
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Monitor className="w-6 h-6" />
-                <span className="text-xl">{selectedDevice?.computername}</span>
+                <div>
+                  <span className="text-xl">{selectedDevice?.computername}</span>
+                  {selectedDevice?.hostname && selectedDevice?.hostname !== selectedDevice?.computername && (
+                    <span className="text-sm text-gray-400 ml-2">({selectedDevice.hostname})</span>
+                  )}
+                </div>
               </div>
               {selectedDevice?.status === 'online' ? (
                 <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-lg px-3 py-1">
@@ -918,6 +923,58 @@ const DeviceAgentManagement = () => {
 
           {selectedDevice && (
             <div className="space-y-6 py-4">
+              
+              {/* Problem-Infofeld - nur anzeigen wenn Probleme existieren */}
+              {(selectedDevice.status === 'offline' || 
+                selectedDevice.teamviewer?.migration_needed || 
+                selectedDevice.teamviewer?.update_needed ||
+                !selectedDevice.assigned ||
+                selectedDevice.teamviewer?.status === 'stopped') && (
+                <Card className="bg-red-500/10 border-red-500/50 p-4">
+                  <h3 className="font-bold mb-3 flex items-center gap-2 text-red-400">
+                    <AlertTriangle className="w-5 h-5" />
+                    Probleme erkannt
+                  </h3>
+                  <div className="space-y-2">
+                    {selectedDevice.status === 'offline' && (
+                      <div className="flex items-center gap-2 text-red-300 bg-red-500/20 p-2 rounded">
+                        <XCircle className="w-4 h-4" />
+                        <span className="font-medium">Gerät ist OFFLINE</span>
+                        <span className="text-xs text-gray-400 ml-auto">
+                          Zuletzt gesehen: {selectedDevice.last_seen ? new Date(selectedDevice.last_seen).toLocaleString('de-DE') : 'Unbekannt'}
+                        </span>
+                      </div>
+                    )}
+                    {selectedDevice.teamviewer?.migration_needed && (
+                      <div className="flex items-center gap-2 text-yellow-300 bg-yellow-500/20 p-2 rounded">
+                        <AlertTriangle className="w-4 h-4" />
+                        <span className="font-medium">TeamViewer MIGRATION erforderlich!</span>
+                        <span className="text-xs text-gray-400 ml-auto">Version &lt; 14.0</span>
+                      </div>
+                    )}
+                    {selectedDevice.teamviewer?.update_needed && !selectedDevice.teamviewer?.migration_needed && (
+                      <div className="flex items-center gap-2 text-orange-300 bg-orange-500/20 p-2 rounded">
+                        <RefreshCw className="w-4 h-4" />
+                        <span className="font-medium">TeamViewer Update empfohlen</span>
+                        <span className="text-xs text-gray-400 ml-auto">Aktuelle Version: {selectedDevice.teamviewer?.version || '-'}</span>
+                      </div>
+                    )}
+                    {selectedDevice.teamviewer?.status === 'stopped' && (
+                      <div className="flex items-center gap-2 text-orange-300 bg-orange-500/20 p-2 rounded">
+                        <XCircle className="w-4 h-4" />
+                        <span className="font-medium">TeamViewer läuft nicht</span>
+                      </div>
+                    )}
+                    {!selectedDevice.assigned && (
+                      <div className="flex items-center gap-2 text-yellow-300 bg-yellow-500/20 p-2 rounded">
+                        <MapPin className="w-4 h-4" />
+                        <span className="font-medium">Keine Stationszuweisung</span>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              )}
+
               {/* Station Assignment */}
               <Card className={`p-4 ${selectedDevice.assigned ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-yellow-500/10 border-yellow-500/30'}`}>
                 <h3 className="font-bold mb-3 flex items-center gap-2">
@@ -958,6 +1015,44 @@ const DeviceAgentManagement = () => {
                 )}
               </Card>
 
+              {/* TeamViewer Info */}
+              <Card className="bg-[#262626] border-[#444] p-4">
+                <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
+                  <Monitor className="w-3 h-3" /> TeamViewer
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">ID</span>
+                    <div className="font-mono text-lg text-yellow-400 font-bold">{selectedDevice.teamviewer_id || '-'}</div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Version</span>
+                    <div className={`font-mono text-lg font-bold ${
+                      selectedDevice.teamviewer?.migration_needed ? 'text-red-400' :
+                      selectedDevice.teamviewer?.update_needed ? 'text-orange-400' : 'text-green-400'
+                    }`}>
+                      {selectedDevice.teamviewer?.version || '-'}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Status</span>
+                    <div className={`font-bold ${selectedDevice.teamviewer?.status === 'running' ? 'text-green-400' : 'text-red-400'}`}>
+                      {selectedDevice.teamviewer?.status === 'running' ? 'Läuft' : 'Gestoppt'}
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-gray-500 text-xs uppercase">Update</span>
+                    <div className={`font-bold ${
+                      selectedDevice.teamviewer?.migration_needed ? 'text-red-400' :
+                      selectedDevice.teamviewer?.update_needed ? 'text-orange-400' : 'text-green-400'
+                    }`}>
+                      {selectedDevice.teamviewer?.migration_needed ? 'Migration nötig!' :
+                       selectedDevice.teamviewer?.update_needed ? 'Update verfügbar' : 'Aktuell'}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
               {/* Hardware IDs */}
               <Card className="bg-[#262626] border-[#444] p-4">
                 <h4 className="text-sm text-gray-400 mb-3 flex items-center gap-1">
@@ -965,12 +1060,12 @@ const DeviceAgentManagement = () => {
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
-                    <span className="text-gray-500 text-xs uppercase">TeamViewer ID</span>
-                    <div className="font-mono text-lg text-yellow-400 font-bold">{selectedDevice.teamviewer_id || '-'}</div>
+                    <span className="text-gray-500 text-xs uppercase">Hostname</span>
+                    <div className="font-mono text-sm text-cyan-400">{selectedDevice.hostname || selectedDevice.computername || '-'}</div>
                   </div>
                   <div>
                     <span className="text-gray-500 text-xs uppercase">UUID</span>
-                    <div className="font-mono text-xs text-cyan-400 break-all">{selectedDevice.hardware_ids?.uuid || '-'}</div>
+                    <div className="font-mono text-xs text-gray-300 break-all">{selectedDevice.hardware_ids?.uuid || '-'}</div>
                   </div>
                   <div>
                     <span className="text-gray-500 text-xs uppercase">BIOS Serial</span>
