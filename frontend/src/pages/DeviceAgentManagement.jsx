@@ -1825,10 +1825,41 @@ function Get-HardwareInfo {
         $csp = Get-WmiObject -Class Win32_ComputerSystemProduct
         $baseboard = Get-WmiObject -Class Win32_BaseBoard
         
-        # TeamViewer ID aus Registry
+        # TeamViewer ID und Version aus Registry
         $tvId = $null
+        $tvVersion = $null
         $tvPaths = @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer")
-        foreach ($p in $tvPaths) { if (Test-Path $p) { $tvId = (Get-ItemProperty -Path $p -ErrorAction SilentlyContinue).ClientID; if ($tvId) { break } } }
+        foreach ($p in $tvPaths) { 
+            if (Test-Path $p) { 
+                $tvReg = Get-ItemProperty -Path $p -ErrorAction SilentlyContinue
+                if ($tvReg.ClientID) { $tvId = $tvReg.ClientID }
+                if ($tvReg.Version) { $tvVersion = $tvReg.Version }
+                if ($tvId) { break } 
+            } 
+        }
+        # Fallback: Version aus Programm-Datei
+        if (-not $tvVersion) {
+            $tvExePaths = @(
+                "C:\\Program Files\\TeamViewer\\TeamViewer.exe",
+                "C:\\Program Files (x86)\\TeamViewer\\TeamViewer.exe"
+            )
+            foreach ($exe in $tvExePaths) {
+                if (Test-Path $exe) {
+                    $tvVersion = (Get-Item $exe).VersionInfo.ProductVersion
+                    break
+                }
+            }
+        }
+        
+        # TeamViewer Version prüfen
+        $tvUpdateNeeded = $false
+        $tvMigrationNeeded = $false
+        $tvLatestVersion = "15.51"
+        if ($tvVersion) {
+            $tvMajor = [int]($tvVersion.Split(".")[0])
+            if ($tvMajor -lt 14) { $tvMigrationNeeded = $true; $tvUpdateNeeded = $true }
+            elseif ($tvMajor -lt 15 -or [version]$tvVersion -lt [version]$tvLatestVersion) { $tvUpdateNeeded = $true }
+        }
         
         # Prozess-Status
         $tvStatus = if (Get-Process -Name "TeamViewer*" -ErrorAction SilentlyContinue) { "running" } else { "stopped" }
@@ -1837,6 +1868,7 @@ function Get-HardwareInfo {
         return @{
             device_id = Get-DeviceId
             computername = $env:COMPUTERNAME
+            hostname = [System.Net.Dns]::GetHostName()
             uuid = $csp.UUID
             bios_serial = $bios.SerialNumber
             mainboard_serial = $baseboard.SerialNumber
@@ -1849,6 +1881,9 @@ function Get-HardwareInfo {
             windows_version = $os.Caption
             windows_build = $os.BuildNumber
             teamviewer_id = $tvId
+            teamviewer_version = $tvVersion
+            teamviewer_update_needed = $tvUpdateNeeded
+            teamviewer_migration_needed = $tvMigrationNeeded
             teamviewer_status = $tvStatus
             tsrid_status = $tsridStatus
             disks = "C: $([math]::Round($disk.FreeSpace/1GB,1))GB frei / $([math]::Round($disk.Size/1GB,1))GB"
@@ -1909,6 +1944,22 @@ while ($true) {
                         "restart_agent" { Write-Log "Agent Neustart..." "INFO"; Start-ScheduledTask -TaskName "TSRID-Agent"; exit }
                         "restart_pc" { Write-Log "PC Neustart..." "INFO"; Restart-Computer -Force }
                         "shutdown_pc" { Write-Log "PC Shutdown..." "INFO"; Stop-Computer -Force }
+                        "rename_hostname" {
+                            if ($cmd.params.new_hostname) {
+                                try {
+                                    $newName = $cmd.params.new_hostname
+                                    Write-Log "Hostname aendern zu: $newName" "INFO"
+                                    Rename-Computer -NewName $newName -Force
+                                    Invoke-Api -Endpoint "remote/result" -Body @{ device_id = Get-DeviceId; command_id = $cmd.command_id; success = $true; output = "Hostname geaendert zu $newName - Neustart erforderlich" }
+                                    Write-Log "Neustart in 5 Sekunden..." "INFO"
+                                    Start-Sleep -Seconds 5
+                                    Restart-Computer -Force
+                                } catch {
+                                    Write-Log "Hostname-Fehler: $_" "ERROR"
+                                    Invoke-Api -Endpoint "remote/result" -Body @{ device_id = Get-DeviceId; command_id = $cmd.command_id; success = $false; error = "$_" }
+                                }
+                            }
+                        }
                         "run_script" {
                             if ($cmd.params.script) {
                                 try {

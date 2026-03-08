@@ -31,6 +31,7 @@ db = client[DB_NAME]
 class DeviceInfo(BaseModel):
     device_id: str
     computername: str
+    hostname: Optional[str] = None
     location_code: Optional[str] = None
     device_number: Optional[str] = None
     
@@ -40,8 +41,13 @@ class DeviceInfo(BaseModel):
     mainboard_serial: Optional[str] = None
     teamviewer_id: Optional[Any] = None  # Can be string or int from registry
     
-    # Process Status
+    # TeamViewer Info
+    teamviewer_version: Optional[str] = None
+    teamviewer_update_needed: Optional[bool] = None
+    teamviewer_migration_needed: Optional[bool] = None
     teamviewer_status: Optional[str] = None
+    
+    # Process Status
     tsrid_status: Optional[str] = None
     
     # Hardware Info
@@ -127,12 +133,19 @@ async def register_device(device: DeviceInfo):
     device_data = {
         "device_id": device.device_id,
         "computername": device.computername,
+        "hostname": device.hostname or device.computername,
         "hardware_ids": {
             "uuid": device.uuid,
             "bios_serial": device.bios_serial,
             "mainboard_serial": device.mainboard_serial
         },
         "teamviewer_id": device.teamviewer_id,
+        "teamviewer": {
+            "version": device.teamviewer_version,
+            "update_needed": device.teamviewer_update_needed,
+            "migration_needed": device.teamviewer_migration_needed,
+            "status": device.teamviewer_status
+        },
         "hardware": {
             "manufacturer": device.manufacturer,
             "model": device.model,
