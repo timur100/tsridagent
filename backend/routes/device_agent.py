@@ -472,6 +472,28 @@ async def unassign_device(device_id: str):
     return {"success": True, "message": "Gerätezuweisung entfernt"}
 
 
+@router.delete("/devices/{device_id}")
+async def delete_device(device_id: str):
+    """
+    Löscht ein Gerät vollständig aus der Datenbank.
+    """
+    # Delete from registered_devices
+    result = await db.registered_devices.delete_one({"device_id": device_id})
+    
+    # Also delete any related commands
+    await db.remote_commands.delete_many({"device_id": device_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Gerät nicht gefunden")
+    
+    await broadcast_to_admins({
+        "type": "device_deleted",
+        "device_id": device_id
+    })
+    
+    return {"success": True, "message": f"Gerät {device_id} wurde gelöscht"}
+
+
 @router.get("/locations")
 async def get_locations():
     """
