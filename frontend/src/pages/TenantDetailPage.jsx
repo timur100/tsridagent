@@ -805,12 +805,8 @@ const TenantDetailPage = ({ tenantId: propTenantId, onBack, initialTab }) => {
   const handleLocationDelete = async (locationId) => {
     console.log('[TenantDetailPage] handleLocationDelete called with:', locationId);
     
-    if (!window.confirm('Möchten Sie diesen Standort wirklich löschen?')) {
-      console.log('[TenantDetailPage] User cancelled delete');
-      return;
-    }
-
-    console.log('[TenantDetailPage] User confirmed delete, sending request...');
+    // Kein window.confirm hier - der Dialog wird in LocationsTabEnhanced gezeigt
+    console.log('[TenantDetailPage] Sending delete request...');
     
     try {
       const token = localStorage.getItem('token');

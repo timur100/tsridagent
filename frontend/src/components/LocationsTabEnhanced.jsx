@@ -847,9 +847,19 @@ const LocationsTabEnhanced = ({
         isOpen={deleteConfirm.isOpen}
         onClose={() => setDeleteConfirm({ isOpen: false, locationId: null, locationCode: '' })}
         onConfirm={async () => {
-          console.log('[LocationsTabEnhanced] Delete confirmed for:', deleteConfirm.locationCode);
+          console.log('[LocationsTabEnhanced] Delete confirmed for:', deleteConfirm.locationCode, deleteConfirm.locationId);
+          console.log('[LocationsTabEnhanced] onDeleteLocation type:', typeof onDeleteLocation);
+          
           if (typeof onDeleteLocation === 'function') {
-            await onDeleteLocation(deleteConfirm.locationId);
+            console.log('[LocationsTabEnhanced] Calling onDeleteLocation...');
+            try {
+              await onDeleteLocation(deleteConfirm.locationId);
+              console.log('[LocationsTabEnhanced] onDeleteLocation completed');
+            } catch (err) {
+              console.error('[LocationsTabEnhanced] onDeleteLocation error:', err);
+            }
+          } else {
+            console.error('[LocationsTabEnhanced] onDeleteLocation is NOT a function!');
           }
           setDeleteConfirm({ isOpen: false, locationId: null, locationCode: '' });
         }}
