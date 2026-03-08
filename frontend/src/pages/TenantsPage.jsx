@@ -709,7 +709,7 @@ const TenantModal = ({ onClose, onSuccess, backendUrl, tenant = null }) => {
         logo_url: null
       };
 
-      const response = await fetch(`${backendUrl}/api/tenants/`, {
+      const response = await fetch(`${backendUrl}/api/services/tenants/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
