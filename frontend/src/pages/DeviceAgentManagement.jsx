@@ -1809,8 +1809,9 @@ function Write-Log($Message, $Level = "INFO") {
 
 function Get-DeviceId {
     $uuid = (Get-WmiObject -Class Win32_ComputerSystemProduct).UUID
-    $name = $env:COMPUTERNAME
-    return "$name-$uuid"
+    $bios = (Get-WmiObject -Class Win32_BIOS).SerialNumber
+    # Kombination aus UUID und BIOS Serial für weltweite Eindeutigkeit
+    return "$uuid-$bios"
 }
 
 function Get-HardwareInfo {
