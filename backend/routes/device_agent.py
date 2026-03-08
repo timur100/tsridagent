@@ -724,12 +724,10 @@ async def get_device_types():
     cursor = db.registered_devices.aggregate(pipeline)
     results = await cursor.to_list(length=100)
     
-    # Vordefinierte Typen
+    # Vordefinierte Typen (ohne Surface Pro 7 und Go)
     device_types = [
         {"id": "surface_pro_4", "name": "Surface Pro 4", "count": 0},
         {"id": "surface_pro_6", "name": "Surface Pro 6", "count": 0},
-        {"id": "surface_pro_7", "name": "Surface Pro 7", "count": 0},
-        {"id": "surface_go", "name": "Surface Go", "count": 0},
         {"id": "netsoxx_i5", "name": "netsoxx i5", "count": 0},
         {"id": "netsoxx_i7", "name": "netsoxx i7", "count": 0},
         {"id": "tsrid_i5", "name": "TSRID i5", "count": 0},
@@ -747,10 +745,6 @@ async def get_device_types():
                 dt["count"] += count
             elif dt["id"] == "surface_pro_6" and "surface pro 6" in model_lower:
                 dt["count"] += count
-            elif dt["id"] == "surface_pro_7" and "surface pro 7" in model_lower:
-                dt["count"] += count
-            elif dt["id"] == "surface_go" and "surface go" in model_lower:
-                dt["count"] += count
     
     return {
         "success": True,
@@ -763,44 +757,55 @@ async def get_device_types():
 async def get_tenants():
     """
     Gibt alle Tenants mit Geräteanzahl zurück.
+    Liest aus der tenants collection.
     """
-    # Hole Tenants aus unified_locations
-    pipeline = [
-        {"$group": {
-            "_id": "$tenant_id",
-            "tenant_name": {"$first": "$tenant_name"},
-            "count": {"$sum": 1}
-        }},
-        {"$match": {"_id": {"$ne": None}}},
-        {"$sort": {"tenant_name": 1}}
-    ]
+    # Hole Tenants aus tenants collection - nur organization und country level
+    tenants_cursor = db.tenants.find(
+        {"tenant_level": {"$in": ["organization", "country", "state"]}},
+        {"_id": 0, "tenant_id": 1, "name": 1, "display_name": 1, "tenant_level": 1}
+    ).sort("name", 1)
     
-    cursor = db.unified_locations.aggregate(pipeline)
-    location_tenants = await cursor.to_list(length=100)
+    all_tenants = await tenants_cursor.to_list(length=200)
     
-    # Zähle Geräte pro Tenant
-    device_pipeline = [
-        {"$group": {
-            "_id": "$tenant_id",
-            "device_count": {"$sum": 1}
-        }},
-        {"$match": {"_id": {"$ne": None}}}
-    ]
+    # Zähle Geräte pro Tenant (basierend auf computername prefix oder tenant_id)
+    device_counts = {}
     
-    device_cursor = db.registered_devices.aggregate(device_pipeline)
-    device_counts = await device_cursor.to_list(length=100)
-    device_count_map = {d["_id"]: d["device_count"] for d in device_counts}
+    # Hole alle registrierten Geräte
+    devices = await db.registered_devices.find({}, {"_id": 0, "computername": 1, "tenant_id": 1}).to_list(length=1000)
+    
+    # Zähle alle Geräte für Europcar (Hauptorganisation)
+    total_devices = len(devices)
     
     tenants = []
-    for t in location_tenants:
-        tenant_id = t.get("_id")
-        if tenant_id:
+    
+    # Füge Hauptorganisation "Europcar" hinzu
+    europcar_org = next((t for t in all_tenants if t.get("tenant_level") == "organization"), None)
+    if europcar_org:
+        tenants.append({
+            "tenant_id": europcar_org.get("tenant_id"),
+            "tenant_name": europcar_org.get("display_name") or europcar_org.get("name"),
+            "tenant_level": "organization",
+            "device_count": total_devices
+        })
+    
+    # Füge Länder hinzu
+    for t in all_tenants:
+        if t.get("tenant_level") == "country":
             tenants.append({
-                "tenant_id": tenant_id,
-                "tenant_name": t.get("tenant_name") or tenant_id,
-                "location_count": t.get("count", 0),
-                "device_count": device_count_map.get(tenant_id, 0)
+                "tenant_id": t.get("tenant_id"),
+                "tenant_name": t.get("display_name") or t.get("name"),
+                "tenant_level": "country",
+                "device_count": 0  # TODO: Geräte pro Land zählen
             })
+    
+    # Falls keine Tenants gefunden, füge Standard "Europcar" hinzu
+    if not tenants:
+        tenants.append({
+            "tenant_id": "europcar",
+            "tenant_name": "Europcar",
+            "tenant_level": "organization",
+            "device_count": total_devices
+        })
     
     return {
         "success": True,

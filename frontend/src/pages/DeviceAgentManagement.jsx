@@ -616,8 +616,6 @@ const DeviceAgentManagement = () => {
               <SelectItem value="all">Alle Gerätetypen</SelectItem>
               <SelectItem value="surface_pro_4">Surface Pro 4</SelectItem>
               <SelectItem value="surface_pro_6">Surface Pro 6</SelectItem>
-              <SelectItem value="surface_pro_7">Surface Pro 7</SelectItem>
-              <SelectItem value="surface_go">Surface Go</SelectItem>
               <SelectItem value="netsoxx_i5">netsoxx i5</SelectItem>
               <SelectItem value="netsoxx_i7">netsoxx i7</SelectItem>
               <SelectItem value="tsrid_i5">TSRID i5</SelectItem>
