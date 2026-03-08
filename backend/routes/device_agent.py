@@ -46,6 +46,9 @@ class DeviceInfo(BaseModel):
     teamviewer_update_needed: Optional[bool] = None
     teamviewer_migration_needed: Optional[bool] = None
     teamviewer_status: Optional[str] = None
+    teamviewer_account_assigned: Optional[bool] = None
+    teamviewer_account_email: Optional[str] = None
+    teamviewer_account_company: Optional[str] = None
     
     # Process Status
     tsrid_status: Optional[str] = None
@@ -145,7 +148,10 @@ async def register_device(device: DeviceInfo):
             "version": device.teamviewer_version,
             "update_needed": device.teamviewer_update_needed,
             "migration_needed": device.teamviewer_migration_needed,
-            "status": device.teamviewer_status
+            "status": device.teamviewer_status,
+            "account_assigned": device.teamviewer_account_assigned,
+            "account_email": device.teamviewer_account_email,
+            "account_company": device.teamviewer_account_company
         },
         "hardware": {
             "manufacturer": device.manufacturer,

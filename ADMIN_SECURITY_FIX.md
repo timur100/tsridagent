@@ -147,7 +147,7 @@ Passwort: Berlin#2018
 ### Test 2: Manueller URL-Zugriff
 ```
 Als Customer eingeloggt:
-https://tablet-fleet-hub.preview.emergentagent.com/portal/admin
+https://tablet-mgmt.preview.emergentagent.com/portal/admin
 ```
 
 **Erwartetes Verhalten:**

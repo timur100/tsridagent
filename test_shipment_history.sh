@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://tablet-fleet-hub.preview.emergentagent.com/api/dhl"
+API_URL="https://tablet-mgmt.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungshistorie testen ==="
 echo ""

@@ -11,7 +11,7 @@ import re
 from typing import Dict, Any, List
 
 # Backend URL from environment
-BACKEND_URL = "https://tablet-fleet-hub.preview.emergentagent.com"
+BACKEND_URL = "https://tablet-mgmt.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class TicketingMicroserviceTester:

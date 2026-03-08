@@ -118,7 +118,7 @@ Die App versucht automatisch ein DataWedge-Profil zu erstellen. Falls dies nicht
 ### Keine Verbindung zum Server
 - Prüfen Sie die WLAN-Verbindung
 - Prüfen Sie, ob die URL erreichbar ist:
-  `https://tablet-fleet-hub.preview.emergentagent.com/api/health`
+  `https://tablet-mgmt.preview.emergentagent.com/api/health`
 
 ### App stürzt ab
 - Cache leeren: Einstellungen → Apps → TSRID Mobile → Speicher → Cache leeren

@@ -1075,6 +1075,29 @@ const DeviceAgentManagement = () => {
                     </div>
                   </div>
                 </div>
+                {/* TeamViewer Account Info */}
+                <div className="mt-4 pt-4 border-t border-[#444]">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div>
+                      <span className="text-gray-500 text-xs uppercase">Konto-Status</span>
+                      <div className={`font-bold ${selectedDevice.teamviewer?.account_assigned ? 'text-green-400' : 'text-red-400'}`}>
+                        {selectedDevice.teamviewer?.account_assigned ? 'Verknüpft' : 'Nicht verknüpft'}
+                      </div>
+                    </div>
+                    {selectedDevice.teamviewer?.account_email && (
+                      <div>
+                        <span className="text-gray-500 text-xs uppercase">Account Name</span>
+                        <div className="font-mono text-sm text-green-400">{selectedDevice.teamviewer?.account_email}</div>
+                      </div>
+                    )}
+                    {selectedDevice.teamviewer?.account_company && (
+                      <div>
+                        <span className="text-gray-500 text-xs uppercase">Firma</span>
+                        <div className="font-mono text-sm text-green-400">{selectedDevice.teamviewer?.account_company}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </Card>
 
               {/* Hardware IDs */}
@@ -1884,7 +1907,7 @@ const DeviceAgentManagement = () => {
 // Helper function to generate the agent script for copying
 function generateAgentScript(apiUrl) {
   return `# ============================================================
-# TSRID Agent Installer - Version 16
+# TSRID Agent Installer - Version 20
 # Fuer Massenausrollung via TeamViewer
 # ============================================================
 # ANLEITUNG: In PowerShell (Administrator) einfuegen und Enter druecken
@@ -1897,7 +1920,7 @@ $LogPath = "$InstallPath\\agent.log"
 $TaskName = "TSRID-Agent"
 
 # Cleanup alte Installation
-Write-Host "=== TSRID Agent Installer V16 ===" -ForegroundColor Cyan
+Write-Host "=== TSRID Agent Installer V20 ===" -ForegroundColor Cyan
 Write-Host "[1/5] Bereinige alte Installation..." -ForegroundColor Yellow
 
 try { Unregister-ScheduledTask -TaskName "TSRID-Agent" -Confirm:$false -ErrorAction SilentlyContinue } catch {}
@@ -1913,7 +1936,7 @@ New-Item -ItemType Directory -Path $InstallPath -Force | Out-Null
 Write-Host "[3/5] Erstelle Agent-Script..." -ForegroundColor Yellow
 
 $AgentScript = @'
-# TSRID Agent Service V16
+# TSRID Agent Service V20
 $ApiUrl = "yourApiUrlPlaceholder"
 $LogFile = "C:\\TSRID-Agent\\agent.log"
 $HeartbeatInterval = 30
@@ -1947,12 +1970,23 @@ function Get-HardwareInfo {
         # TeamViewer ID und Version aus Registry
         $tvId = $null
         $tvVersion = $null
+        $tvAccountAssigned = $false
+        $tvAccountEmail = $null
+        $tvAccountCompany = $null
         $tvPaths = @("HKLM:\\SOFTWARE\\TeamViewer","HKLM:\\SOFTWARE\\WOW6432Node\\TeamViewer")
         foreach ($p in $tvPaths) { 
             if (Test-Path $p) { 
                 $tvReg = Get-ItemProperty -Path $p -ErrorAction SilentlyContinue
                 if ($tvReg.ClientID) { $tvId = $tvReg.ClientID }
                 if ($tvReg.Version) { $tvVersion = $tvReg.Version }
+                # TeamViewer Account Info
+                if ($tvReg.OwningManagerAccountName) { 
+                    $tvAccountEmail = $tvReg.OwningManagerAccountName
+                    $tvAccountAssigned = $true
+                }
+                if ($tvReg.OwningManagerCompanyName) { 
+                    $tvAccountCompany = $tvReg.OwningManagerCompanyName 
+                }
                 if ($tvId) { break } 
             } 
         }
@@ -2004,6 +2038,9 @@ function Get-HardwareInfo {
             teamviewer_update_needed = $tvUpdateNeeded
             teamviewer_migration_needed = $tvMigrationNeeded
             teamviewer_status = $tvStatus
+            teamviewer_account_assigned = $tvAccountAssigned
+            teamviewer_account_email = $tvAccountEmail
+            teamviewer_account_company = $tvAccountCompany
             tsrid_status = $tsridStatus
             disks = "C: $([math]::Round($disk.FreeSpace/1GB,1))GB frei / $([math]::Round($disk.Size/1GB,1))GB"
         }
@@ -2032,7 +2069,7 @@ function Invoke-Api($Endpoint, $Method = "POST", $Body = $null) {
 }
 
 # === HAUPTPROGRAMM ===
-Write-Log "=== TSRID Agent V16 gestartet ===" "INFO"
+Write-Log "=== TSRID Agent V20 gestartet ===" "INFO"
 Write-Log "Server: $ApiUrl" "INFO"
 Write-Log "Device: $(Get-DeviceId)" "INFO"
 

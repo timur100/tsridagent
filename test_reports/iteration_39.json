@@ -1,0 +1,93 @@
+{
+  "summary": "Bug fix verification complete: TeamViewer Account Data storage and display is working correctly. Backend fix in device_agent.py (lines 147-155) stores account_assigned, account_email, account_company fields. Frontend correctly displays 'Konto-Status' with 'Verknüpft'/'Nicht verknüpft' status.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_teamviewer_account.py",
+    "/app/test_reports/pytest/teamviewer_account_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_teamviewer_account.py"
+  ],
+  "success_rate": {
+    "backend": "100% (5/5 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {
+    "Admin Portal Login": "admin@tsrid.com / admin123",
+    "Scan App PIN": "9988"
+  },
+  "seed_data_creation": "Created test devices with TeamViewer account data (cleaned up after tests)",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "TeamViewer Account data fix is verified. Navigation: Admin Portal -> Agent tab -> Click device card -> TeamViewer section shows 'Konto-Status' field with account status.",
+  "features_verified": {
+    "Backend_Register_Device_With_Account_Assigned_True": {
+      "status": "PASS",
+      "description": "POST /api/device-agent/register correctly stores teamviewer.account_assigned=true, account_email, account_company",
+      "test_file": "test_teamviewer_account.py::TestTeamViewerAccountData::test_register_device_with_teamviewer_account_assigned_true"
+    },
+    "Backend_Register_Device_With_Account_Assigned_False": {
+      "status": "PASS",
+      "description": "POST /api/device-agent/register correctly stores teamviewer.account_assigned=false",
+      "test_file": "test_teamviewer_account.py::TestTeamViewerAccountData::test_register_device_with_teamviewer_account_assigned_false"
+    },
+    "Backend_Update_Device_Account_Data": {
+      "status": "PASS",
+      "description": "Re-registering device updates TeamViewer account data correctly",
+      "test_file": "test_teamviewer_account.py::TestTeamViewerAccountData::test_register_device_update_teamviewer_account_data"
+    },
+    "Backend_Devices_List_Includes_Account_Data": {
+      "status": "PASS",
+      "description": "GET /api/device-agent/devices returns TeamViewer account data in device list",
+      "test_file": "test_teamviewer_account.py::TestTeamViewerAccountData::test_devices_list_includes_teamviewer_account_data"
+    },
+    "Backend_Backward_Compatibility": {
+      "status": "PASS",
+      "description": "Device registration without TeamViewer account fields still works",
+      "test_file": "test_teamviewer_account.py::TestTeamViewerAccountEdgeCases::test_register_device_without_teamviewer_account_fields"
+    },
+    "Frontend_Konto_Status_Display": {
+      "status": "PASS",
+      "description": "Device Details Modal shows 'Konto-Status' label in TeamViewer section",
+      "evidence": "Screenshot shows 'KONTO-STATUS' label with 'Nicht verknüpft' value in red"
+    },
+    "Frontend_Problem_Detection": {
+      "status": "PASS",
+      "description": "When account_assigned=false, 'Probleme erkannt' section shows 'TeamViewer nicht mit Konto verknüpft'",
+      "evidence": "Screenshot shows warning in Problems section"
+    },
+    "Frontend_Account_Name_And_Firma_Fields": {
+      "status": "PASS",
+      "description": "Code correctly shows Account Name and Firma fields when account_email and account_company have values",
+      "code_reference": "DeviceAgentManagement.jsx lines 1087-1098"
+    }
+  },
+  "navigation_path": {
+    "step1": "Open https://tablet-mgmt.preview.emergentagent.com/portal/admin",
+    "step2": "Login with admin@tsrid.com / admin123",
+    "step3": "Click 'Agent' tab in top navigation",
+    "step4": "Click on any device card (e.g., CGNE01-01)",
+    "step5": "View TeamViewer section - 'Konto-Status' field is displayed",
+    "result": "Shows 'Verknüpft' (green) or 'Nicht verknüpft' (red) based on account_assigned value"
+  },
+  "mocked_apis": {
+    "has_mocked_apis": false,
+    "mocked_apis_list": []
+  },
+  "bug_fix_details": {
+    "original_issue": "Dashboard shows 'TeamViewer nicht mit Konto verknüpft' even when PowerShell script collects account data correctly",
+    "root_cause": "Backend was not storing TeamViewer account fields in the database",
+    "fix_applied": "device_agent.py lines 147-155 now correctly maps teamviewer_account_assigned, teamviewer_account_email, teamviewer_account_company to teamviewer.account_assigned, teamviewer.account_email, teamviewer.account_company",
+    "verification": "All 5 backend tests pass, frontend displays correct status"
+  }
+}
