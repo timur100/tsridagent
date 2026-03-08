@@ -1802,13 +1802,9 @@ $HeartbeatInterval = 30
 function Write-Log($Message, $Level = "INFO") {
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $logLine = "[$timestamp] [$Level] $Message"
-    $mutex = New-Object System.Threading.Mutex($false, "TSRIDAgentLogMutex")
     try {
-        $mutex.WaitOne() | Out-Null
-        [System.IO.File]::AppendAllText($LogFile, "$logLine`r`n")
-    } finally {
-        $mutex.ReleaseMutex()
-    }
+        $logLine | Out-File -FilePath $LogFile -Append -Encoding UTF8
+    } catch {}
 }
 
 function Get-DeviceId {
