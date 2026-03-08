@@ -137,6 +137,10 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 ### Web Portal
 - **P3:** Label-Vorschau Layout-Problem (QR-Code/Asset-ID überlappen)
 
+### PowerShell Agent
+- **P4:** Agent sperrt agent.log Datei (Live-Debugging nicht möglich)
+- **P5:** Agent geht zeitweise offline (blockiert durch P4)
+
 ## Nächste Schritte
 1. ⏳ Mobile APK V2.2.4 testen (Druckfunktion)
 2. ✅ Reporting-Feature verifiziert
@@ -145,8 +149,10 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
 5. ✅ "Dokument zur DB hinzufügen" Workflow implementiert (01.03.2026)
 6. ✅ TSRID-Admin Dashboard für Datenbank-Anfragen (01.03.2026)
 7. ✅ "Fehler beim Laden der Kontinente" behoben (01.03.2026)
-8. 🔜 Label-Vorschau im Web korrigieren
-9. 🔜 Mobile Assets-Screen debuggen
+8. ✅ Standort-Erstellung repariert (08.03.2026)
+9. 🔜 PowerShell Agent Log-Datei Sperrung beheben
+10. 🔜 Label-Vorschau im Web korrigieren
+11. 🔜 Mobile Assets-Screen debuggen
 
 ## Device Agent System (06.03.2026) ✅ KOMPLETT
 
@@ -197,6 +203,20 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
   - Prüft TeamViewer + tsrid.exe Prozess-Status
   - Heartbeat alle 60 Sekunden
   - Command-Polling alle 5 Sekunden
+
+## Standortverwaltung (08.03.2026) ✅ BUGFIX
+
+### Standort-Erstellung repariert
+- **Problem:** Beim Erstellen eines neuen Standorts wurde der Standort nicht in der Liste angezeigt
+- **Ursache:** Zwei Modals wurden gleichzeitig gerendert:
+  1. `LocationModal.jsx` (Zeile 2175-2187)
+  2. Inline Modal in TenantDetailPage.jsx (Zeile 3299-3518)
+- **Lösung:** Inline Modal mit `false &&` deaktiviert, sodass nur `LocationModal.jsx` verwendet wird
+- **Geänderte Dateien:**
+  - `/app/frontend/src/pages/TenantDetailPage.jsx` - Inline Modal deaktiviert
+  - `/app/frontend/src/components/LocationModal.jsx` - Submit-Button auf onClick umgestellt, Logging hinzugefügt
+  - `/app/frontend/src/components/LocationsTabEnhanced.jsx` - data-testid für Add-Button
+- **Test-Status:** ✅ Verifiziert (100% Erfolgsrate)
 
 ### Frontend Dashboard
 - Grid-Layout für Geräteliste (1-4 Spalten responsive)
