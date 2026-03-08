@@ -19,7 +19,7 @@ class BackgroundAgent {
     this.systemInfo = null;
     this.lastHeartbeat = null;
     this.status = 'initializing';
-    this.serverUrl = 'https://tsrid-control-panel.preview.emergentagent.com';
+    this.serverUrl = 'https://tablet-fleet-hub.preview.emergentagent.com';
   }
 
   /**

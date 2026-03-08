@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tsrid-control-panel.preview.emergentagent.com/portal/admin/id-checks
+   https://tablet-fleet-hub.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

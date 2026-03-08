@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tsrid-control-panel.preview.emergentagent.com`
+`https://tablet-fleet-hub.preview.emergentagent.com`
 
 ---
 

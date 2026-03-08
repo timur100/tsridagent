@@ -9,7 +9,7 @@ import json
 import jwt
 
 # Backend URL from environment
-BACKEND_URL = "https://tsrid-control-panel.preview.emergentagent.com"
+BACKEND_URL = "https://tablet-fleet-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 def authenticate_admin():
