@@ -50,6 +50,8 @@ const DeviceAgentManagement = () => {
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [assignForm, setAssignForm] = useState({ tenant_id: '', location_code: '', device_number: '' });
   const [assignLocations, setAssignLocations] = useState([]);
+  const [locationFilters, setLocationFilters] = useState({ cities: [], countries: [] });
+  const [locationFilter, setLocationFilter] = useState({ city: 'all', country: 'all' });
   const [locationSearch, setLocationSearch] = useState('');
   const [filter, setFilter] = useState({ status: 'all', assigned: 'all', deviceType: 'all', tenant: 'all', location: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,15 +72,19 @@ const DeviceAgentManagement = () => {
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
-  // Gefilterte Standorte basierend auf Suche
+  // Gefilterte Standorte basierend auf Dropdown-Filtern und Suche
   const filteredAssignLocations = assignLocations.filter(loc => {
+    // Dropdown-Filter
+    if (locationFilter.city !== 'all' && loc.city !== locationFilter.city) return false;
+    if (locationFilter.country !== 'all' && loc.country !== locationFilter.country) return false;
+    
+    // Textsuche
     if (!locationSearch) return true;
     const search = locationSearch.toLowerCase();
     return (
       loc.location_code?.toLowerCase().includes(search) ||
       loc.location_name?.toLowerCase().includes(search) ||
-      loc.city?.toLowerCase().includes(search) ||
-      loc.country?.toLowerCase().includes(search)
+      loc.city?.toLowerCase().includes(search)
     );
   });
 
@@ -183,6 +189,7 @@ const DeviceAgentManagement = () => {
   const fetchLocationsByTenant = useCallback(async (tenantId) => {
     if (!tenantId) {
       setAssignLocations([]);
+      setLocationFilters({ cities: [], countries: [] });
       return;
     }
     try {
@@ -190,10 +197,12 @@ const DeviceAgentManagement = () => {
       const data = await response.json();
       if (data.success) {
         setAssignLocations(data.locations || []);
+        setLocationFilters(data.filters || { cities: [], countries: [] });
       }
     } catch (error) {
       console.error('Error fetching locations by tenant:', error);
       setAssignLocations([]);
+      setLocationFilters({ cities: [], countries: [] });
     }
   }, []);
 
@@ -1070,6 +1079,8 @@ const DeviceAgentManagement = () => {
           setAssignForm({ tenant_id: '', location_code: '', device_number: '' });
           setAssignLocations([]);
           setLocationSearch('');
+          setLocationFilter({ city: 'all', country: 'all' });
+          setLocationFilters({ cities: [], countries: [] });
         }
       }}>
         <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-2xl">
@@ -1103,10 +1114,60 @@ const DeviceAgentManagement = () => {
 
             {/* Station Selector - nur sichtbar wenn Tenant gewählt */}
             {assignForm.tenant_id && (
-              <div className="space-y-3">
-                <label className="text-sm text-gray-400 block">
-                  Standort suchen ({assignLocations.length} verfügbar, {filteredAssignLocations.length} angezeigt)
+              <div className="space-y-4">
+                <label className="text-sm text-gray-400 block font-medium">
+                  Standort filtern ({assignLocations.length} gesamt, {filteredAssignLocations.length} angezeigt)
                 </label>
+                
+                {/* Filter-Dropdowns */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Stadt-Filter */}
+                  <Select 
+                    value={locationFilter.city} 
+                    onValueChange={(value) => setLocationFilter({ ...locationFilter, city: value })}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-[#444]" data-testid="filter-city">
+                      <SelectValue placeholder="Stadt" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-[#444] max-h-60">
+                      <SelectItem value="all">Alle Städte</SelectItem>
+                      {locationFilters.cities.map((city) => (
+                        <SelectItem key={city} value={city}>{city}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Land-Filter */}
+                  <Select 
+                    value={locationFilter.country} 
+                    onValueChange={(value) => setLocationFilter({ ...locationFilter, country: value })}
+                  >
+                    <SelectTrigger className="bg-[#262626] border-[#444]" data-testid="filter-country">
+                      <SelectValue placeholder="Land" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#262626] border-[#444]">
+                      <SelectItem value="all">Alle Länder</SelectItem>
+                      {locationFilters.countries.map((country) => (
+                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {/* Filter zurücksetzen */}
+                  {(locationFilter.city !== 'all' || locationFilter.state !== 'all' || locationFilter.country !== 'all' || locationSearch) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setLocationFilter({ city: 'all', country: 'all' });
+                        setLocationSearch('');
+                      }}
+                      className="bg-red-900/30 border-red-700 text-red-400 hover:bg-red-900/50"
+                    >
+                      Filter zurücksetzen
+                    </Button>
+                  )}
+                </div>
                 
                 {/* Suchfeld für Stationscode oder Name */}
                 <div className="relative">
@@ -1114,7 +1175,7 @@ const DeviceAgentManagement = () => {
                   <Input
                     value={locationSearch}
                     onChange={(e) => setLocationSearch(e.target.value)}
-                    placeholder="Stationscode oder Name eingeben (z.B. BERT01, Berlin, München...)"
+                    placeholder="Stationscode oder Name suchen (z.B. BERT01, Berlin, München...)"
                     className="pl-10 bg-[#262626] border-[#444] text-white"
                     data-testid="location-search-input"
                   />
@@ -1131,7 +1192,7 @@ const DeviceAgentManagement = () => {
                   <SelectContent className="bg-[#262626] border-[#444] max-h-80">
                     {filteredAssignLocations.length === 0 ? (
                       <div className="p-3 text-gray-400 text-center">
-                        Keine Standorte gefunden für "{locationSearch}"
+                        Keine Standorte gefunden
                       </div>
                     ) : (
                       filteredAssignLocations.map((loc) => (
@@ -1141,7 +1202,7 @@ const DeviceAgentManagement = () => {
                               <span className="text-cyan-400">{loc.location_code}</span> - {loc.location_name}
                             </span>
                             <span className="text-xs text-gray-400">
-                              {loc.country}
+                              {[loc.city, loc.country].filter(Boolean).join(', ')}
                             </span>
                           </div>
                         </SelectItem>

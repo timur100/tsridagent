@@ -546,12 +546,12 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
     Gibt alle Standorte eines Tenants zurück mit vollständigen Details.
     Liest aus der tenants Collection (tenant_level = location).
     Sortiert alphabetisch nach Standortname.
+    Extrahiert Stadt aus dem Standortnamen.
     """
     query = {"tenant_level": "location", "enabled": True}
     
     # Wenn tenant_id angegeben, filtere nach parent_tenant_id Präfix
     if tenant_id:
-        # Standorte deren parent_tenant_id mit tenant_id beginnt
         query["$or"] = [
             {"parent_tenant_id": {"$regex": f"^{tenant_id}"}},
             {"tenant_id": {"$regex": f"^{tenant_id}"}}
@@ -561,20 +561,48 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
     tenant_locations = await cursor.to_list(length=500)
     
     locations = []
+    cities = set()
+    
     for loc in tenant_locations:
         location_code = loc.get("location_code", "")
         if not location_code:
             continue
+        
+        display_name = loc.get("display_name", "")
+        
+        # Extrahiere Stadt aus display_name
+        # Format: "BERLIN   BRANDENBURG AIRPORT -IKC-" -> "BERLIN"
+        # Format: "MÜNCHEN FLUGHAFEN" -> "MÜNCHEN"
+        city = ""
+        if display_name:
+            # Entferne Zusätze wie -IKC-, NO TRUCK, etc.
+            clean_name = display_name.split("-")[0].strip()
+            clean_name = clean_name.split("NO TRUCK")[0].strip()
+            clean_name = clean_name.split("24H")[0].strip()
+            clean_name = clean_name.split("VAN TRUCK")[0].strip()
+            
+            # Nimm den ersten Teil (Stadt)
+            parts = clean_name.split()
+            if parts:
+                # Typischerweise ist die Stadt das erste Wort
+                city = parts[0].strip()
+                # Spezialfälle wie "BAD HOMBURG"
+                if city.upper() == "BAD" and len(parts) > 1:
+                    city = f"{parts[0]} {parts[1]}"
+                # Spezialfälle wie "FRANKFURT AM MAIN"
+                if city.upper() == "FRANKFURT" and len(parts) > 2 and parts[1].upper() == "AM":
+                    city = "FRANKFURT"
+        
+        if city:
+            cities.add(city.title())
             
         locations.append({
             "location_code": location_code,
-            "location_name": loc.get("display_name") or loc.get("name", ""),
+            "location_name": display_name or loc.get("name", ""),
             "tenant_id": loc.get("tenant_id"),
             "location_id": loc.get("location_id"),
             "country_code": loc.get("country_code", ""),
-            "street": "",  # Nicht in tenants collection vorhanden
-            "zip_code": "",
-            "city": loc.get("display_name", "").split()[-1] if loc.get("display_name") else "",
+            "city": city.title() if city else "",
             "country": "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", "")
         })
     
@@ -585,7 +613,11 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
         "success": True,
         "locations": locations,
         "count": len(locations),
-        "tenant_id": tenant_id
+        "tenant_id": tenant_id,
+        "filters": {
+            "cities": sorted(list(cities)),
+            "countries": ["Deutschland"] if any(l.get("country") == "Deutschland" for l in locations) else []
+        }
     }
 
 
