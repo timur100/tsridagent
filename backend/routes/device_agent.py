@@ -951,9 +951,9 @@ async def get_device_types():
 async def get_tenants():
     """
     Gibt alle Tenants mit Geräteanzahl zurück.
-    Liest aus der tenants collection.
+    Liest aus der tenants collection und portal_db für zusätzliche Tenants.
     """
-    # Hole nur organization-level Tenants (keine Länder, Städte etc.)
+    # Hole nur organization-level Tenants aus tsrid_db
     tenants_cursor = db.tenants.find(
         {"tenant_level": "organization"},
         {"_id": 0, "tenant_id": 1, "name": 1, "display_name": 1, "tenant_level": 1}
@@ -961,20 +961,58 @@ async def get_tenants():
     
     all_tenants = await tenants_cursor.to_list(length=50)
     
-    # Hole alle registrierten Geräte
-    devices = await db.registered_devices.find({}, {"_id": 0, "tenant_id": 1}).to_list(length=1000)
-    total_devices = len(devices)
+    # Hole auch Tenants aus portal_db.tenants (Auth Service Tenants)
+    portal_tenants_cursor = portal_db.tenants.find(
+        {},
+        {"_id": 0, "tenant_id": 1, "name": 1}
+    )
+    portal_tenants = await portal_tenants_cursor.to_list(length=50)
     
-    tenants = []
+    # Sammle alle Tenant-IDs
+    tenant_ids = set()
+    tenant_map = {}  # tenant_id -> tenant_data
     
-    # Füge Organisationen hinzu
     for t in all_tenants:
-        tenants.append({
-            "tenant_id": t.get("tenant_id"),
-            "tenant_name": t.get("display_name") or t.get("name"),
-            "tenant_level": "organization",
-            "device_count": total_devices  # Alle Geräte gehören zu dieser Organisation
-        })
+        tid = t.get("tenant_id")
+        if tid:
+            tenant_ids.add(tid)
+            tenant_map[tid] = {
+                "tenant_id": tid,
+                "tenant_name": t.get("display_name") or t.get("name"),
+                "tenant_level": "organization"
+            }
+    
+    for t in portal_tenants:
+        tid = t.get("tenant_id")
+        if tid and tid not in tenant_ids:
+            tenant_ids.add(tid)
+            tenant_map[tid] = {
+                "tenant_id": tid,
+                "tenant_name": t.get("name"),
+                "tenant_level": "organization"
+            }
+    
+    # Hole alle registrierten Geräte und zähle pro Tenant
+    devices = await db.registered_devices.find({}, {"_id": 0, "tenant_id": 1}).to_list(length=1000)
+    
+    # Zähle Geräte pro Tenant
+    device_counts = {}
+    unassigned_count = 0
+    for d in devices:
+        d_tenant = d.get("tenant_id")
+        if d_tenant:
+            device_counts[d_tenant] = device_counts.get(d_tenant, 0) + 1
+        else:
+            unassigned_count += 1
+    
+    # Erstelle finale Tenant-Liste mit korrekten Geräte-Zahlen
+    tenants = []
+    for tid, tdata in tenant_map.items():
+        tdata["device_count"] = device_counts.get(tid, 0)
+        tenants.append(tdata)
+    
+    # Sortiere nach Name
+    tenants.sort(key=lambda x: x.get("tenant_name", "").lower())
     
     # Falls keine Tenants gefunden, füge Standard "Europcar" hinzu
     if not tenants:
@@ -982,13 +1020,15 @@ async def get_tenants():
             "tenant_id": "europcar",
             "tenant_name": "Europcar",
             "tenant_level": "organization",
-            "device_count": total_devices
+            "device_count": len(devices)
         })
     
     return {
         "success": True,
         "tenants": tenants,
-        "count": len(tenants)
+        "count": len(tenants),
+        "total_devices": len(devices),
+        "unassigned_devices": unassigned_count
     }
 
 
