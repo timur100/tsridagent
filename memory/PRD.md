@@ -232,6 +232,13 @@ Das Modal passt sich jetzt an die Tenant-Kategorie an:
 - `/app/frontend/src/components/LocationModal.jsx` - Komplett überarbeitet
 - `/app/backend/routes/tenant_locations.py` - Pydantic-Modelle erweitert (tenant_category, custom_fields, kategorie-spezifische Felder)
 
+### Stationszuweisung Fix (08.03.2026)
+- **Problem:** TSR Tenant-Daten wurden nicht in der Stationszuweisung angezeigt
+- **Ursache:** Die API `/api/device-agent/locations-by-tenant` las nur aus der alten `tsrid_db.tenants` Collection, aber neue Standorte werden in `portal_db.tenant_locations` gespeichert
+- **Lösung:** API erweitert, um aus beiden Datenquellen zu lesen und Ergebnisse zu kombinieren
+- **Geänderte Dateien:**
+  - `/app/backend/routes/device_agent.py` - `get_locations_by_tenant()` liest jetzt aus beiden Collections
+
 ### Frontend Dashboard
 - Grid-Layout für Geräteliste (1-4 Spalten responsive)
 - Klick auf Gerät öffnet Modal mit Details

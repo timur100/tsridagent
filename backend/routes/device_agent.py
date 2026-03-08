@@ -24,6 +24,8 @@ MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 DB_NAME = os.environ.get('DB_NAME', 'tsrid_db')
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
+# Access portal_db for tenant_locations (new structure)
+portal_db = client['portal_db']
 
 
 # ==================== MODELS ====================
@@ -613,10 +615,17 @@ async def get_locations():
 async def get_locations_by_tenant(tenant_id: Optional[str] = None):
     """
     Gibt alle Standorte eines Tenants zurück mit vollständigen Details.
-    Liest aus der tenants Collection (tenant_level = location).
+    Liest aus zwei Quellen:
+    1. tsrid_db.tenants Collection (tenant_level = location) - alte Struktur
+    2. portal_db.tenant_locations Collection - neue Struktur
     Sortiert alphabetisch nach Standortname.
     Extrahiert Stadt aus dem Standortnamen.
     """
+    locations = []
+    cities = set()
+    countries = set()
+    
+    # === SOURCE 1: tsrid_db.tenants (alte Struktur) ===
     query = {"tenant_level": "location", "enabled": True}
     
     # Wenn tenant_id angegeben, filtere nach parent_tenant_id Präfix
@@ -629,9 +638,6 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
     cursor = db.tenants.find(query, {"_id": 0})
     tenant_locations = await cursor.to_list(length=500)
     
-    locations = []
-    cities = set()
-    
     for loc in tenant_locations:
         location_code = loc.get("location_code", "")
         if not location_code:
@@ -640,30 +646,27 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
         display_name = loc.get("display_name", "")
         
         # Extrahiere Stadt aus display_name
-        # Format: "BERLIN   BRANDENBURG AIRPORT -IKC-" -> "BERLIN"
-        # Format: "MÜNCHEN FLUGHAFEN" -> "MÜNCHEN"
         city = ""
         if display_name:
-            # Entferne Zusätze wie -IKC-, NO TRUCK, etc.
             clean_name = display_name.split("-")[0].strip()
             clean_name = clean_name.split("NO TRUCK")[0].strip()
             clean_name = clean_name.split("24H")[0].strip()
             clean_name = clean_name.split("VAN TRUCK")[0].strip()
             
-            # Nimm den ersten Teil (Stadt)
             parts = clean_name.split()
             if parts:
-                # Typischerweise ist die Stadt das erste Wort
                 city = parts[0].strip()
-                # Spezialfälle wie "BAD HOMBURG"
                 if city.upper() == "BAD" and len(parts) > 1:
                     city = f"{parts[0]} {parts[1]}"
-                # Spezialfälle wie "FRANKFURT AM MAIN"
                 if city.upper() == "FRANKFURT" and len(parts) > 2 and parts[1].upper() == "AM":
                     city = "FRANKFURT"
         
         if city:
             cities.add(city.title())
+        
+        country = "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", "")
+        if country:
+            countries.add(country)
             
         locations.append({
             "location_code": location_code,
@@ -672,11 +675,50 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
             "location_id": loc.get("location_id"),
             "country_code": loc.get("country_code", ""),
             "city": city.title() if city else "",
-            "country": "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", "")
+            "country": country
         })
     
+    # === SOURCE 2: portal_db.tenant_locations (neue Struktur) ===
+    portal_query = {}
+    if tenant_id:
+        portal_query["tenant_id"] = tenant_id
+    
+    portal_cursor = portal_db.tenant_locations.find(portal_query, {"_id": 0})
+    portal_locations = await portal_cursor.to_list(length=1000)
+    
+    # Track existing location codes to avoid duplicates
+    existing_codes = {loc["location_code"] for loc in locations}
+    
+    for loc in portal_locations:
+        location_code = loc.get("location_code", "")
+        if not location_code or location_code in existing_codes:
+            continue
+        
+        city = loc.get("city", "")
+        country = loc.get("country", "Deutschland")
+        
+        if city:
+            cities.add(city.title())
+        if country:
+            countries.add(country)
+            
+        locations.append({
+            "location_code": location_code,
+            "location_name": loc.get("station_name", ""),
+            "tenant_id": loc.get("tenant_id"),
+            "location_id": loc.get("location_id"),
+            "country_code": loc.get("country", "DE") if loc.get("country") == "Deutschland" else loc.get("country", ""),
+            "city": city.title() if city else "",
+            "country": country,
+            # Additional fields from new structure
+            "street": loc.get("street", ""),
+            "postal_code": loc.get("postal_code", ""),
+            "state": loc.get("state", "")
+        })
+        existing_codes.add(location_code)
+    
     # Alphabetisch sortieren nach location_name
-    locations.sort(key=lambda x: x.get("location_name", "").lower())
+    locations.sort(key=lambda x: (x.get("location_name", "") or x.get("location_code", "")).lower())
     
     return {
         "success": True,
@@ -685,7 +727,7 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
         "tenant_id": tenant_id,
         "filters": {
             "cities": sorted(list(cities)),
-            "countries": ["Deutschland"] if any(l.get("country") == "Deutschland" for l in locations) else []
+            "countries": sorted(list(countries)) if countries else ["Deutschland"]
         }
     }
 
