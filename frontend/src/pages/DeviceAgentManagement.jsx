@@ -50,6 +50,7 @@ const DeviceAgentManagement = () => {
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [assignForm, setAssignForm] = useState({ tenant_id: '', location_code: '', device_number: '' });
   const [assignLocations, setAssignLocations] = useState([]);
+  const [locationSearch, setLocationSearch] = useState('');
   const [filter, setFilter] = useState({ status: 'all', assigned: 'all', deviceType: 'all', tenant: 'all', location: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -68,6 +69,18 @@ const DeviceAgentManagement = () => {
   const [customApiUrl, setCustomApiUrl] = useState(BACKEND_URL);
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
+
+  // Gefilterte Standorte basierend auf Suche
+  const filteredAssignLocations = assignLocations.filter(loc => {
+    if (!locationSearch) return true;
+    const search = locationSearch.toLowerCase();
+    return (
+      loc.location_code?.toLowerCase().includes(search) ||
+      loc.location_name?.toLowerCase().includes(search) ||
+      loc.city?.toLowerCase().includes(search) ||
+      loc.country?.toLowerCase().includes(search)
+    );
+  });
 
   // Debounce search input
   useEffect(() => {
@@ -1056,6 +1069,7 @@ const DeviceAgentManagement = () => {
         if (!open) {
           setAssignForm({ tenant_id: '', location_code: '', device_number: '' });
           setAssignLocations([]);
+          setLocationSearch('');
         }
       }}>
         <DialogContent className="bg-[#1a1a1a] border-[#333] text-white max-w-2xl">
@@ -1089,10 +1103,24 @@ const DeviceAgentManagement = () => {
 
             {/* Station Selector - nur sichtbar wenn Tenant gewählt */}
             {assignForm.tenant_id && (
-              <div>
-                <label className="text-sm text-gray-400 mb-2 block">
-                  Standort ({assignLocations.length} verfügbar)
+              <div className="space-y-3">
+                <label className="text-sm text-gray-400 block">
+                  Standort suchen ({assignLocations.length} verfügbar, {filteredAssignLocations.length} angezeigt)
                 </label>
+                
+                {/* Suchfeld für Stationscode oder Name */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    placeholder="Stationscode oder Name eingeben (z.B. BERT01, Berlin, München...)"
+                    className="pl-10 bg-[#262626] border-[#444] text-white"
+                    data-testid="location-search-input"
+                  />
+                </div>
+
+                {/* Dropdown mit gefilterten Ergebnissen */}
                 <Select 
                   value={assignForm.location_code} 
                   onValueChange={(value) => setAssignForm({ ...assignForm, location_code: value })}
@@ -1101,18 +1129,24 @@ const DeviceAgentManagement = () => {
                     <SelectValue placeholder="Standort auswählen" />
                   </SelectTrigger>
                   <SelectContent className="bg-[#262626] border-[#444] max-h-80">
-                    {assignLocations.map((loc) => (
-                      <SelectItem key={loc.location_code} value={loc.location_code}>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{loc.location_code} - {loc.location_name}</span>
-                          {(loc.street || loc.city || loc.country) && (
-                            <span className="text-xs text-gray-400">
-                              {[loc.street, loc.zip_code, loc.city, loc.country].filter(Boolean).join(', ')}
+                    {filteredAssignLocations.length === 0 ? (
+                      <div className="p-3 text-gray-400 text-center">
+                        Keine Standorte gefunden für "{locationSearch}"
+                      </div>
+                    ) : (
+                      filteredAssignLocations.map((loc) => (
+                        <SelectItem key={loc.location_code} value={loc.location_code}>
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              <span className="text-cyan-400">{loc.location_code}</span> - {loc.location_name}
                             </span>
-                          )}
-                        </div>
-                      </SelectItem>
-                    ))}
+                            <span className="text-xs text-gray-400">
+                              {loc.country}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectContent>
                 </Select>
               </div>
