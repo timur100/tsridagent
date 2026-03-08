@@ -1065,10 +1065,110 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
     subscription_plan: tenant.subscription_plan
   });
 
+  // Location state
+  const [locations, setLocations] = useState([]);
+  const [locationsLoading, setLocationsLoading] = useState(false);
+  const [showAddLocation, setShowAddLocation] = useState(false);
+  const [newLocation, setNewLocation] = useState({
+    location_code: '',
+    station_name: '',
+    street: '',
+    postal_code: '',
+    city: '',
+    state: '',
+    country: 'Deutschland',
+    phone: '',
+    email: ''
+  });
+
+  // Fetch locations when tab changes
+  useEffect(() => {
+    if (activeTab === 'locations') {
+      fetchLocations();
+    }
+  }, [activeTab]);
+
+  const fetchLocations = async () => {
+    setLocationsLoading(true);
+    try {
+      const response = await fetch(`${backendUrl}/api/tenant-locations/${tenant.tenant_id}`, {
+        headers: { 'Authorization': 'Bearer admin' }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setLocations(data.locations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching locations:', error);
+    } finally {
+      setLocationsLoading(false);
+    }
+  };
+
+  const handleAddLocation = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const payload = {
+        ...newLocation,
+        tenant_id: tenant.tenant_id,
+        tenant_name: tenant.name
+      };
+      
+      const response = await fetch(`${backendUrl}/api/tenant-locations/${tenant.tenant_id}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer admin'
+        },
+        body: JSON.stringify(payload)
+      });
+      
+      if (response.ok) {
+        setShowAddLocation(false);
+        setNewLocation({
+          location_code: '',
+          station_name: '',
+          street: '',
+          postal_code: '',
+          city: '',
+          state: '',
+          country: 'Deutschland',
+          phone: '',
+          email: ''
+        });
+        fetchLocations();
+      } else {
+        const data = await response.json();
+        alert(data.detail || 'Fehler beim Erstellen des Standorts');
+      }
+    } catch (error) {
+      alert('Netzwerkfehler beim Erstellen des Standorts');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteLocation = async (locationId) => {
+    if (!window.confirm('Standort wirklich löschen?')) return;
+    
+    try {
+      const response = await fetch(`${backendUrl}/api/tenant-locations/${tenant.tenant_id}/${locationId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer admin' }
+      });
+      if (response.ok) {
+        fetchLocations();
+      }
+    } catch (error) {
+      console.error('Error deleting location:', error);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: 'Übersicht' },
     { id: 'subscription', label: 'Vertrag & Subscription' },
-    { id: 'locations', label: 'Standorte' },
+    { id: 'locations', label: `Standorte (${locations.length})` },
     { id: 'branding', label: 'Branding' },
     { id: 'billing', label: 'Abrechnung' }
   ];
@@ -1375,13 +1475,203 @@ const TenantDetailModal = ({ tenant, onClose, onUpdate, backendUrl }) => {
           )}
 
           {activeTab === 'locations' && (
-            <div className="text-center py-8">
-              <h3 className={`text-lg font-medium mb-2 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                Standorte
-              </h3>
-              <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
-                Verwalten Sie Standorte für diesen Tenant.
-              </p>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className={`text-lg font-medium ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                  Standorte verwalten
+                </h3>
+                <button
+                  onClick={() => setShowAddLocation(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b00a26] transition-colors"
+                >
+                  <Plus className="w-4 h-4" />
+                  Neuer Standort
+                </button>
+              </div>
+
+              {/* Add Location Form */}
+              {showAddLocation && (
+                <form onSubmit={handleAddLocation} className={`p-4 rounded-lg border ${
+                  theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Standort-Code *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newLocation.location_code}
+                        onChange={(e) => setNewLocation({...newLocation, location_code: e.target.value.toUpperCase()})}
+                        placeholder="z.B. BERN01"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Stationsname *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={newLocation.station_name}
+                        onChange={(e) => setNewLocation({...newLocation, station_name: e.target.value})}
+                        placeholder="z.B. Berlin Hauptbahnhof"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Straße
+                      </label>
+                      <input
+                        type="text"
+                        value={newLocation.street}
+                        onChange={(e) => setNewLocation({...newLocation, street: e.target.value})}
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                        }`}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          PLZ
+                        </label>
+                        <input
+                          type="text"
+                          value={newLocation.postal_code}
+                          onChange={(e) => setNewLocation({...newLocation, postal_code: e.target.value})}
+                          className={`w-full px-3 py-2 rounded-lg border ${
+                            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                          }`}
+                        />
+                      </div>
+                      <div>
+                        <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                          Stadt
+                        </label>
+                        <input
+                          type="text"
+                          value={newLocation.city}
+                          onChange={(e) => setNewLocation({...newLocation, city: e.target.value})}
+                          className={`w-full px-3 py-2 rounded-lg border ${
+                            theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Bundesland
+                      </label>
+                      <input
+                        type="text"
+                        value={newLocation.state}
+                        onChange={(e) => setNewLocation({...newLocation, state: e.target.value})}
+                        placeholder="z.B. BE, BY, NW"
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                        }`}
+                      />
+                    </div>
+                    <div>
+                      <label className={`block text-sm font-medium mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                        Land
+                      </label>
+                      <input
+                        type="text"
+                        value={newLocation.country}
+                        onChange={(e) => setNewLocation({...newLocation, country: e.target.value})}
+                        className={`w-full px-3 py-2 rounded-lg border ${
+                          theme === 'dark' ? 'bg-[#2a2a2a] border-gray-600 text-white' : 'bg-white border-gray-300'
+                        }`}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => setShowAddLocation(false)}
+                      className={`px-4 py-2 rounded-lg ${
+                        theme === 'dark' ? 'bg-gray-700 text-white hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
+                      }`}
+                    >
+                      Abbrechen
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="px-4 py-2 bg-[#d50c2d] text-white rounded-lg hover:bg-[#b00a26] disabled:opacity-50"
+                    >
+                      {loading ? 'Speichern...' : 'Standort anlegen'}
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {/* Locations List */}
+              {locationsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin w-8 h-8 border-4 border-[#d50c2d] border-t-transparent rounded-full mx-auto"></div>
+                  <p className={`mt-2 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>Lade Standorte...</p>
+                </div>
+              ) : locations.length === 0 ? (
+                <div className={`text-center py-8 rounded-lg border ${
+                  theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <MapPin className={`w-12 h-12 mx-auto mb-2 ${theme === 'dark' ? 'text-gray-600' : 'text-gray-400'}`} />
+                  <p className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
+                    Noch keine Standorte vorhanden
+                  </p>
+                  <button
+                    onClick={() => setShowAddLocation(true)}
+                    className="mt-2 text-[#d50c2d] hover:underline"
+                  >
+                    Ersten Standort anlegen
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {locations.map((loc) => (
+                    <div
+                      key={loc.location_id}
+                      className={`p-4 rounded-lg border flex justify-between items-start ${
+                        theme === 'dark' ? 'bg-[#1a1a1a] border-gray-700' : 'bg-white border-gray-200'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className={`font-mono font-bold ${theme === 'dark' ? 'text-[#d50c2d]' : 'text-[#d50c2d]'}`}>
+                            {loc.location_code}
+                          </span>
+                          <span className={theme === 'dark' ? 'text-white' : 'text-gray-900'}>
+                            {loc.station_name}
+                          </span>
+                        </div>
+                        <div className={`text-sm mt-1 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                          {[loc.street, loc.postal_code, loc.city, loc.state].filter(Boolean).join(', ') || 'Keine Adresse'}
+                        </div>
+                        <div className={`text-xs mt-1 ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                          {loc.device_count || 0} Geräte • {loc.online_device_count || 0} online
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteLocation(loc.location_id)}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        title="Standort löschen"
+                      >
+                        <XCircle className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 

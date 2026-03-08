@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends, Response
 from db.connection import get_mongo_client
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from db.connection import get_mongo_client
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, timezone
@@ -14,7 +13,11 @@ security = HTTPBearer()
 
 # MongoDB connection
 mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017/')
-db = get_mongo_client()['portal_db']
+# Note: Use get_portal_db() in functions instead of global db variable for fresh connection
+
+def get_locations_db():
+    """Get fresh portal_db connection for tenant locations"""
+    return get_mongo_client()['portal_db']
 
 class TenantLocationCreate(BaseModel):
     location_code: str  # Main Code (e.g., BERN03)
@@ -94,7 +97,7 @@ async def get_location_by_id(
 ):
     """Get a location by its ID (searches across all tenants)"""
     try:
-        location = db.tenant_locations.find_one({"location_id": location_id})
+        location = get_locations_db().tenant_locations.find_one({"location_id": location_id})
         
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
@@ -125,7 +128,7 @@ async def get_location_details(
     
     try:
         # Get location by ID
-        location = db.tenant_locations.find_one({"location_id": location_id})
+        location = get_locations_db().tenant_locations.find_one({"location_id": location_id})
         
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
@@ -240,7 +243,7 @@ async def update_opening_hours(
     """Update opening hours for a location (manual override)"""
     try:
         # Check if location exists
-        location = db.tenant_locations.find_one({"location_id": location_id})
+        location = get_locations_db().tenant_locations.find_one({"location_id": location_id})
         
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
@@ -253,7 +256,7 @@ async def update_opening_hours(
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        db.tenant_locations.update_one(
+        get_locations_db().tenant_locations.update_one(
             {"location_id": location_id},
             {"$set": update_data}
         )
@@ -313,7 +316,7 @@ async def test_opening_hours_broadcast(
         # Broadcast directly
         asyncio.create_task(manager.broadcast_to_tenant(tenant_id, message))
         
-        print(f"[TEST] Broadcast sent")
+        print("[TEST] Broadcast sent")
         
         return {
             "success": True,
@@ -333,7 +336,7 @@ async def get_google_opening_hours(
     """Get opening hours from Google Places API (Placeholder for now)"""
     try:
         # Check if location exists
-        location = db.tenant_locations.find_one({"location_id": location_id})
+        location = get_locations_db().tenant_locations.find_one({"location_id": location_id})
         
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
@@ -381,7 +384,7 @@ async def create_location_direct(
     """Create a new location with tenant_id in body (for AllLocationsTab)"""
     try:
         # Check if location code already exists for this tenant
-        existing = db.tenant_locations.find_one({
+        existing = get_locations_db().tenant_locations.find_one({
             "tenant_id": location.tenant_id,
             "location_code": location.location_code
         })
@@ -411,7 +414,7 @@ async def create_location_direct(
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        db.tenant_locations.insert_one(location_doc)
+        get_locations_db().tenant_locations.insert_one(location_doc)
         
         # Remove MongoDB _id from response
         location_doc.pop('_id', None)
@@ -442,7 +445,7 @@ async def create_tenant_location(
                 raise HTTPException(status_code=404, detail="Tenant not found")
         
         # Check if location code already exists for this tenant
-        existing = db.tenant_locations.find_one({
+        existing = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_code": location.location_code
         })
@@ -460,7 +463,7 @@ async def create_tenant_location(
             "created_by": "admin@example.com"  # TODO: Get from token
         }
         
-        db.tenant_locations.insert_one(location_doc)
+        get_locations_db().tenant_locations.insert_one(location_doc)
         
         # Remove MongoDB _id from response
         location_doc.pop('_id', None)
@@ -541,11 +544,8 @@ async def get_tenant_locations(
         
         # Get locations
         locations = []
-        cursor = db.tenant_locations.find(query).sort("location_code", 1)
-        
-        # DEBUG: Log what we find
-        import logging
-        logging.info(f"TENANT_LOCATIONS DEBUG: Query={query}, DB={db.name}, Collection={db.tenant_locations.name}")
+        db_conn = get_locations_db()
+        cursor = db_conn.tenant_locations.find(query).sort("location_code", 1)
         
         # Get devices for this tenant (or all) to calculate online status
         devices_db = get_mongo_client()['multi_tenant_admin']
@@ -593,7 +593,7 @@ async def get_tenant_location(
 ):
     """Get a specific location"""
     try:
-        location = db.tenant_locations.find_one({
+        location = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_id": location_id
         })
@@ -623,7 +623,7 @@ async def update_tenant_location(
     """Update a location"""
     try:
         # Check if location exists
-        existing = db.tenant_locations.find_one({
+        existing = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_id": location_id
         })
@@ -641,13 +641,13 @@ async def update_tenant_location(
         update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
         
         # Update location
-        db.tenant_locations.update_one(
+        get_locations_db().tenant_locations.update_one(
             {"tenant_id": tenant_id, "location_id": location_id},
             {"$set": update_data}
         )
         
         # Get updated location
-        updated_location = db.tenant_locations.find_one({
+        updated_location = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_id": location_id
         })
@@ -690,7 +690,7 @@ async def delete_tenant_location(
     """Delete a location"""
     try:
         # Check if location exists
-        existing = db.tenant_locations.find_one({
+        existing = get_locations_db().tenant_locations.find_one({
             "tenant_id": tenant_id,
             "location_id": location_id
         })
@@ -699,7 +699,7 @@ async def delete_tenant_location(
             raise HTTPException(status_code=404, detail="Location not found")
         
         # Delete location
-        db.tenant_locations.delete_one({
+        get_locations_db().tenant_locations.delete_one({
             "tenant_id": tenant_id,
             "location_id": location_id
         })
@@ -737,7 +737,7 @@ async def get_continents(
 ):
     """Get unique continents for a tenant's locations"""
     try:
-        continents = db.tenant_locations.distinct("continent", {"tenant_id": tenant_id})
+        continents = get_locations_db().tenant_locations.distinct("continent", {"tenant_id": tenant_id})
         return {
             "success": True,
             "continents": [c for c in continents if c]
@@ -757,7 +757,7 @@ async def get_countries(
         if continent:
             query["continent"] = continent
         
-        countries = db.tenant_locations.distinct("country", query)
+        countries = get_locations_db().tenant_locations.distinct("country", query)
         return {
             "success": True,
             "countries": [c for c in countries if c]
@@ -780,7 +780,7 @@ async def get_states(
         if country:
             query["country"] = country
         
-        states = db.tenant_locations.distinct("state", query)
+        states = get_locations_db().tenant_locations.distinct("state", query)
         return {
             "success": True,
             "states": [s for s in states if s]
@@ -806,7 +806,7 @@ async def get_cities(
         if state:
             query["state"] = state
         
-        cities = db.tenant_locations.distinct("city", query)
+        cities = get_locations_db().tenant_locations.distinct("city", query)
         return {
             "success": True,
             "cities": [c for c in cities if c]
@@ -822,7 +822,7 @@ async def get_locations_stats(
     """Get location statistics for a tenant"""
     try:
         # Get all locations
-        locations = list(db.tenant_locations.find({"tenant_id": tenant_id}))
+        locations = list(get_locations_db().tenant_locations.find({"tenant_id": tenant_id}))
         
         # Calculate stats
         total = len(locations)
