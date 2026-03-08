@@ -82,7 +82,7 @@ class DeviceAssignment(BaseModel):
     device_id: str
     location_code: str
     location_name: Optional[str] = None
-    device_number: Optional[str] = None
+    device_number: Optional[int] = None  # Gerätenummer als Integer
     tenant_id: Optional[str] = None
     assigned_by: Optional[str] = None
     rename_hostname: Optional[str] = None  # Neuer Hostname, falls umbenennen gewünscht
@@ -430,6 +430,7 @@ async def get_device_config(device_id: str):
 async def assign_device(assignment: DeviceAssignment):
     """
     Weist ein Gerät einer Station zu (Admin-Funktion).
+    Ändert automatisch den Hostname auf den Stationscode und startet das Gerät neu.
     """
     # Using global db
     
@@ -441,22 +442,40 @@ async def assign_device(assignment: DeviceAssignment):
     # Hole Location-Name wenn nicht angegeben
     location_name = assignment.location_name
     if not location_name:
+        # Versuche aus unified_locations
         location = await db.unified_locations.find_one(
             {"location_code": assignment.location_code},
             {"_id": 0, "location_name": 1}
         )
         if location:
             location_name = location.get("location_name")
+        else:
+            # Versuche aus portal_db.tenant_locations
+            portal_location = await portal_db.tenant_locations.find_one(
+                {"location_code": assignment.location_code},
+                {"_id": 0, "station_name": 1}
+            )
+            if portal_location:
+                location_name = portal_location.get("station_name")
+    
+    # Generiere neuen Hostname: STATIONSCODE-GERÄTENUMMER (z.B. BERN03-01)
+    device_number = assignment.device_number or 1
+    new_hostname = f"{assignment.location_code}-{str(device_number).zfill(2)}"
     
     # Update Gerät
     update_data = {
         "location_code": assignment.location_code,
         "location_name": location_name,
-        "device_number": assignment.device_number,
+        "device_number": device_number,
         "tenant_id": assignment.tenant_id,
         "assigned": True,
         "assigned_at": datetime.now(timezone.utc).isoformat(),
-        "assigned_by": assignment.assigned_by
+        "assigned_by": assignment.assigned_by,
+        "pending_hostname": new_hostname,  # Markiere als ausstehende Hostname-Änderung
+        "pending_config": {
+            "rename_hostname": new_hostname,
+            "restart_required": True
+        }
     }
     
     await db.registered_devices.update_one(
@@ -474,20 +493,41 @@ async def assign_device(assignment: DeviceAssignment):
         upsert=True
     )
     
-    # Wenn Hostname geändert werden soll, sende rename_hostname Befehl
-    hostname_command_sent = False
-    if assignment.rename_hostname:
-        command_id = f"rename-{assignment.device_id}-{datetime.now(timezone.utc).timestamp()}"
-        await db.remote_commands.insert_one({
-            "command_id": command_id,
-            "device_id": assignment.device_id,
-            "command": "rename_hostname",
-            "params": {"new_hostname": assignment.rename_hostname},
-            "status": "pending",
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "created_by": assignment.assigned_by or "admin"
-        })
-        hostname_command_sent = True
+    # === AUTOMATISCH: Hostname ändern und Neustart ===
+    timestamp = datetime.now(timezone.utc).timestamp()
+    
+    # 1. Befehl: Hostname ändern
+    rename_command_id = f"rename-{assignment.device_id}-{timestamp}"
+    await db.remote_commands.insert_one({
+        "command_id": rename_command_id,
+        "device_id": assignment.device_id,
+        "command": "rename_hostname",
+        "params": {"new_hostname": new_hostname},
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": assignment.assigned_by or "admin",
+        "auto_generated": True,
+        "reason": "station_assignment"
+    })
+    
+    # 2. Befehl: Neustart (wird nach Hostname-Änderung ausgeführt)
+    restart_command_id = f"restart-{assignment.device_id}-{timestamp}"
+    await db.remote_commands.insert_one({
+        "command_id": restart_command_id,
+        "device_id": assignment.device_id,
+        "command": "restart",
+        "params": {"delay_seconds": 5, "reason": "Hostname geändert nach Stationszuweisung"},
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": assignment.assigned_by or "admin",
+        "auto_generated": True,
+        "reason": "station_assignment",
+        "depends_on": rename_command_id  # Warte auf Hostname-Änderung
+    })
+    
+    logger.info(f"[ASSIGN] Device {assignment.device_id} assigned to {assignment.location_code}-{device_number}")
+    logger.info(f"[ASSIGN] Hostname will be changed to: {new_hostname}")
+    logger.info(f"[ASSIGN] Restart scheduled after hostname change")
     
     # Broadcast an Admins und Gerät
     await broadcast_to_admins({
@@ -495,8 +535,10 @@ async def assign_device(assignment: DeviceAssignment):
         "device_id": assignment.device_id,
         "location_code": assignment.location_code,
         "location_name": location_name,
-        "device_number": assignment.device_number,
-        "hostname_rename_pending": hostname_command_sent
+        "device_number": device_number,
+        "new_hostname": new_hostname,
+        "hostname_rename_pending": True,
+        "restart_pending": True
     })
     
     # Sende Konfiguration an Gerät wenn verbunden
@@ -507,7 +549,9 @@ async def assign_device(assignment: DeviceAssignment):
                 "config": {
                     "location_code": assignment.location_code,
                     "location_name": location_name,
-                    "device_number": assignment.device_number
+                    "device_number": device_number,
+                    "new_hostname": new_hostname,
+                    "rename_and_restart": True
                 }
             })
         except:
@@ -515,7 +559,12 @@ async def assign_device(assignment: DeviceAssignment):
     
     return {
         "success": True,
-        "message": f"Gerät {assignment.device_id} wurde {assignment.location_code}-{assignment.device_number} zugewiesen"
+        "message": f"Gerät wurde {assignment.location_code}-{str(device_number).zfill(2)} zugewiesen",
+        "new_hostname": new_hostname,
+        "actions_scheduled": [
+            "Hostname ändern zu: " + new_hostname,
+            "Neustart nach Hostname-Änderung"
+        ]
     }
 
 
@@ -1243,9 +1292,12 @@ async def get_pending_commands(device_id: str):
     Wird vom Agent alle 5 Sekunden abgefragt für Echtzeit-Befehle.
     """
     # Hole pending Befehle aus der Datenbank
+    # Suche nach device_id ODER target_devices (für Kompatibilität)
     cursor = db.remote_commands.find({
-        "target_devices": device_id,
-        "status": "pending"
+        "$or": [
+            {"device_id": device_id, "status": "pending"},
+            {"target_devices": device_id, "status": "pending"}
+        ]
     }, {"_id": 0})
     pending_cmds = await cursor.to_list(length=50)
     
