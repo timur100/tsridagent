@@ -39,6 +39,7 @@ const LocationsTabEnhanced = ({
   console.log('[LocationsTabEnhanced] VERSION 2.0 - WITH ONLINE COLUMN FIRST');
   console.log('[LocationsTabEnhanced] Received locations:', locations?.length, 'items');
   console.log('[LocationsTabEnhanced] isCustomerPortal:', isCustomerPortal);
+  console.log('[LocationsTabEnhanced] onDeleteLocation is:', typeof onDeleteLocation, onDeleteLocation ? 'defined' : 'UNDEFINED!');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'location_code', direction: 'asc' });
   const [filters, setFilters] = useState({
@@ -751,10 +752,24 @@ const LocationsTabEnhanced = ({
                             <Edit className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={(e) => {
+                            onClick={async (e) => {
                               e.stopPropagation();
-                              console.log('[LocationsTabEnhanced] Delete clicked for:', location.location_id);
-                              onDeleteLocation(location.location_id);
+                              e.preventDefault();
+                              console.log('[LocationsTabEnhanced] Delete button clicked for:', location.location_id, location.location_code);
+                              
+                              if (!window.confirm(`Standort "${location.location_code}" wirklich löschen?`)) {
+                                console.log('[LocationsTabEnhanced] Delete cancelled by user');
+                                return;
+                              }
+                              
+                              console.log('[LocationsTabEnhanced] User confirmed, calling onDeleteLocation...');
+                              
+                              if (typeof onDeleteLocation === 'function') {
+                                await onDeleteLocation(location.location_id);
+                              } else {
+                                console.error('[LocationsTabEnhanced] onDeleteLocation is not a function!');
+                                alert('Löschen-Funktion nicht verfügbar');
+                              }
                             }}
                             className={`p-2 rounded-lg transition-all ${
                               theme === 'dark'
