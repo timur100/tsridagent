@@ -1,7 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, MapPin, Circle, Search, ArrowUpDown, ArrowUp, ArrowDown, Plane, Train, Clock, Phone } from 'lucide-react';
+import { Plus, Edit, Trash2, MapPin, Circle, Search, ArrowUpDown, ArrowUp, ArrowDown, Plane, Train, Clock, Phone, AlertTriangle, X } from 'lucide-react';
 import { Card } from './ui/card';
 import { useNavigate } from 'react-router-dom';
+
+// Bestätigungs-Dialog Komponente (ersetzt window.confirm für iFrame-Kompatibilität)
+const ConfirmDeleteDialog = ({ isOpen, onClose, onConfirm, locationCode, theme }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      {/* Dialog */}
+      <div className={`relative z-10 w-full max-w-md mx-4 p-6 rounded-xl shadow-2xl ${
+        theme === 'dark' ? 'bg-[#1a1a1a] border border-gray-700' : 'bg-white'
+      }`}>
+        <div className="flex items-start gap-4">
+          <div className="flex-shrink-0 w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+            <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+          </div>
+          <div className="flex-1">
+            <h3 className={`text-lg font-semibold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+              Standort löschen?
+            </h3>
+            <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}`}>
+              Möchten Sie den Standort <span className="font-bold text-red-500">"{locationCode}"</span> wirklich löschen? 
+              Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className={`p-1 rounded-lg ${theme === 'dark' ? 'hover:bg-gray-700 text-gray-400' : 'hover:bg-gray-100 text-gray-500'}`}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={onClose}
+            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              theme === 'dark' 
+                ? 'bg-gray-700 text-white hover:bg-gray-600' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Abbrechen
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-lg font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
+          >
+            Ja, löschen
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Mapping für Bundesländer-Abkürzungen zu vollen Namen
 const STATE_NAMES = {
@@ -42,6 +100,7 @@ const LocationsTabEnhanced = ({
   console.log('[LocationsTabEnhanced] onDeleteLocation is:', typeof onDeleteLocation, onDeleteLocation ? 'defined' : 'UNDEFINED!');
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'location_code', direction: 'asc' });
+  const [deleteConfirm, setDeleteConfirm] = useState({ isOpen: false, locationId: null, locationCode: '' });
   const [filters, setFilters] = useState({
     continent: '',
     country: '',
@@ -752,24 +811,15 @@ const LocationsTabEnhanced = ({
                             <Edit className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={async (e) => {
+                            onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              console.log('[LocationsTabEnhanced] Delete button clicked for:', location.location_id, location.location_code);
-                              
-                              if (!window.confirm(`Standort "${location.location_code}" wirklich löschen?`)) {
-                                console.log('[LocationsTabEnhanced] Delete cancelled by user');
-                                return;
-                              }
-                              
-                              console.log('[LocationsTabEnhanced] User confirmed, calling onDeleteLocation...');
-                              
-                              if (typeof onDeleteLocation === 'function') {
-                                await onDeleteLocation(location.location_id);
-                              } else {
-                                console.error('[LocationsTabEnhanced] onDeleteLocation is not a function!');
-                                alert('Löschen-Funktion nicht verfügbar');
-                              }
+                              console.log('[LocationsTabEnhanced] Opening delete dialog for:', location.location_code);
+                              setDeleteConfirm({
+                                isOpen: true,
+                                locationId: location.location_id,
+                                locationCode: location.location_code
+                              });
                             }}
                             className={`p-2 rounded-lg transition-all ${
                               theme === 'dark'
@@ -791,6 +841,21 @@ const LocationsTabEnhanced = ({
           </div>
         )}
       </Card>
+      
+      {/* Bestätigungs-Dialog für Löschen */}
+      <ConfirmDeleteDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, locationId: null, locationCode: '' })}
+        onConfirm={async () => {
+          console.log('[LocationsTabEnhanced] Delete confirmed for:', deleteConfirm.locationCode);
+          if (typeof onDeleteLocation === 'function') {
+            await onDeleteLocation(deleteConfirm.locationId);
+          }
+          setDeleteConfirm({ isOpen: false, locationId: null, locationCode: '' });
+        }}
+        locationCode={deleteConfirm.locationCode}
+        theme={theme}
+      />
     </div>
   );
 };
