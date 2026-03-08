@@ -1820,6 +1820,7 @@ function Get-HardwareInfo {
         $net = Get-WmiObject -Class Win32_NetworkAdapterConfiguration | Where-Object { $_.IPEnabled -eq $true } | Select-Object -First 1
         $bios = Get-WmiObject -Class Win32_BIOS
         $csp = Get-WmiObject -Class Win32_ComputerSystemProduct
+        $baseboard = Get-WmiObject -Class Win32_BaseBoard
         
         # TeamViewer ID aus Registry
         $tvId = $null
@@ -1835,6 +1836,7 @@ function Get-HardwareInfo {
             computername = $env:COMPUTERNAME
             uuid = $csp.UUID
             bios_serial = $bios.SerialNumber
+            mainboard_serial = $baseboard.SerialNumber
             manufacturer = $cs.Manufacturer
             model = $cs.Model
             cpu = $cpu.Name
