@@ -543,6 +543,10 @@ async def get_tenant_locations(
         locations = []
         cursor = db.tenant_locations.find(query).sort("location_code", 1)
         
+        # DEBUG: Log what we find
+        import logging
+        logging.info(f"TENANT_LOCATIONS DEBUG: Query={query}, DB={db.name}, Collection={db.tenant_locations.name}")
+        
         # Get devices for this tenant (or all) to calculate online status
         devices_db = get_mongo_client()['multi_tenant_admin']
         device_query = {} if tenant_id == "all" else {"tenant_id": tenant_id}
