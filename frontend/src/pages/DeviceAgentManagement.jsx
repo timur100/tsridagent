@@ -68,7 +68,9 @@ const DeviceAgentManagement = () => {
   const [editingTemplate, setEditingTemplate] = useState(null);
   const [templateForm, setTemplateForm] = useState({ name: '', message_text: '', duration_minutes: '' });
   const [showServerSettings, setShowServerSettings] = useState(false);
-  const [customApiUrl, setCustomApiUrl] = useState(BACKEND_URL);
+  // Standard-URL für Agent-Scripte: agent.tsrid.com (via DNS auf aktuellen Server zeigend)
+  const AGENT_API_URL = 'https://agent.tsrid.com';
+  const [customApiUrl, setCustomApiUrl] = useState(AGENT_API_URL);
   const wsRef = useRef(null);
   const searchTimeoutRef = useRef(null);
 
@@ -1855,7 +1857,7 @@ const DeviceAgentManagement = () => {
                 <Button
                   size="sm"
                   onClick={() => {
-                    const script = generateAgentScript(BACKEND_URL);
+                    const script = generateAgentScript(customApiUrl);
                     // Fallback für Clipboard
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                       navigator.clipboard.writeText(script).then(() => {
@@ -1891,9 +1893,13 @@ const DeviceAgentManagement = () => {
                   Script kopieren
                 </Button>
               </div>
+              <p className="text-gray-400 text-xs mb-2">
+                Server-URL: <code className="text-cyan-400">{customApiUrl}</code>
+                <span className="text-gray-500 ml-2">(DNS: agent.tsrid.com → aktueller Server)</span>
+              </p>
               <div className="bg-[#0d0d0d] border border-[#333] rounded-lg p-4 max-h-96 overflow-y-auto">
                 <pre className="text-green-400 text-xs font-mono whitespace-pre-wrap">
-{generateAgentScript(BACKEND_URL)}
+{generateAgentScript(customApiUrl)}
                 </pre>
             </div>
           </div>
