@@ -1580,10 +1580,9 @@ Sub Document_OnKeyDown
     If window.event.keyCode = 27 Then window.close
 End Sub
 </script>
-<body bgcolor="#121212">
-<center>
-<br><br><br>
-<table bgcolor="#1e1e1e" cellpadding="50" style="border: 4px solid #d50c2d;">
+<body bgcolor="#171717">
+<center><br><br><br>
+<table bgcolor="#242424" cellpadding="50" style="border: 4px solid #d50c2d;">
 <tr><td align="center">
 <img src="C:\TSRID-Agent\logo.png" width="180"><br><br>
 <font face="Segoe UI" color="#888888" size="4">$ts</font>
@@ -1748,12 +1747,18 @@ Write-Host "[OK] Agent V14 laeuft! Server: $apiUrl" -ForegroundColor Green
 
 // Helper function to generate the agent script for copying
 function generateAgentScript(apiUrl) {
-  return `# TSRID Agent Installer V14 - In PowerShell (Admin) einfuegen
+  return `# TSRID Agent Installer V15 - In PowerShell (Admin) einfuegen
 # Server: ${apiUrl}
 
 $installPath = "C:\\TSRID-Agent"
 $scriptPath = "$installPath\\TSRID-Agent-Service.ps1"
 $apiUrl = "${apiUrl}"
+
+# Cleanup
+schtasks /Delete /TN "TSRID-Agent-Service" /F 2>$null
+schtasks /Delete /TN "TSRID-ShowMessage" /F 2>$null
+Stop-Process -Name "mshta" -Force -ErrorAction SilentlyContinue
+Remove-Item "$installPath\\message.hta" -Force -ErrorAction SilentlyContinue
 
 New-Item -ItemType Directory -Path $installPath -Force | Out-Null
 Write-Host "[OK] Ordner erstellt" -ForegroundColor Green
@@ -1808,9 +1813,9 @@ Sub Tick:If t<=0 Then:document.getElementById("cd").innerText="ABGELAUFEN":Exit 
 Sub CloseMe:window.close:End Sub
 Sub Document_OnKeyDown:If window.event.keyCode=27 Then window.close:End Sub
 </script>
-<body bgcolor="#121212">
+<body bgcolor="#171717">
 <center><br><br><br>
-<table bgcolor="#1e1e1e" cellpadding="50" style="border:4px solid #d50c2d;">
+<table bgcolor="#242424" cellpadding="50" style="border:4px solid #d50c2d;">
 <tr><td align="center"><img src="C:\\TSRID-Agent\\logo.png" width="180"><br><br><font face="Segoe UI" color="#888888" size="4">$ts</font></td></tr>
 <tr><td align="center"><font face="Segoe UI" color="#ffffff" size="7"><b>$safeMsg</b></font>$timerHtml</td></tr>
 <tr><td align="center"><br><input type="button" value="SCHLIESSEN (ESC)" onclick="CloseMe" style="background-color:#d50c2d;color:white;border:none;padding:15px 40px;font-size:20px;cursor:hand;"></td></tr>
@@ -1829,7 +1834,7 @@ function Process-Cmd { param($c)
     } catch { Write-Log "CMD-Fehler: $_" "ERROR" }
 }
 
-Write-Log "=== TSRID Agent V14 ===" "INFO"; Write-Log "Server: $ApiUrl" "INFO"
+Write-Log "=== TSRID Agent V15 ===" "INFO"; Write-Log "Server: $ApiUrl" "INFO"
 Invoke-Api -Endpoint "register" -Method POST -Body (Get-HardwareInfo)
 $lastHB=[DateTime]::MinValue; $lastPoll=[DateTime]::MinValue
 while($true) { try { $now=Get-Date
@@ -1839,10 +1844,9 @@ while($true) { try { $now=Get-Date
     Start-Sleep 1
 } catch { Write-Log "Loop-Fehler: $_" "ERROR"; Start-Sleep 5 } }
 '@ | Out-File $scriptPath -Encoding UTF8 -Force
-Write-Host "[OK] Agent-Script V14" -ForegroundColor Green
+Write-Host "[OK] Agent-Script V15" -ForegroundColor Green
 
 $taskName = "TSRID-Agent-Service"
-Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -EA SilentlyContinue
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument ("-ExecutionPolicy Bypass -WindowStyle Hidden -File " + $scriptPath + " -ApiUrl " + $apiUrl)
 $trigger1 = New-ScheduledTaskTrigger -AtStartup; $trigger1.Delay = "PT1M"
 $trigger2 = New-ScheduledTaskTrigger -AtLogOn
@@ -1850,7 +1854,7 @@ $principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\\SYSTEM" -LogonTyp
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger @($trigger1,$trigger2) -Principal $principal -Settings $settings -Force | Out-Null
 Start-ScheduledTask -TaskName $taskName
-Write-Host "[OK] Agent V14 laeuft! Server: $apiUrl" -ForegroundColor Green`;
+Write-Host "[OK] Agent V15 laeuft! Server: $apiUrl" -ForegroundColor Green`;
 }
 
 export default DeviceAgentManagement;
