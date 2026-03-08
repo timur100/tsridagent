@@ -545,6 +545,7 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
     """
     Gibt alle Standorte eines Tenants zurück mit vollständigen Details.
     Liest aus der tenants Collection (tenant_level = location).
+    Sortiert alphabetisch nach Standortname.
     """
     query = {"tenant_level": "location", "enabled": True}
     
@@ -556,7 +557,7 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
             {"tenant_id": {"$regex": f"^{tenant_id}"}}
         ]
     
-    cursor = db.tenants.find(query, {"_id": 0}).sort("display_name", 1)
+    cursor = db.tenants.find(query, {"_id": 0})
     tenant_locations = await cursor.to_list(length=500)
     
     locations = []
@@ -576,6 +577,9 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
             "city": loc.get("display_name", "").split()[-1] if loc.get("display_name") else "",
             "country": "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", "")
         })
+    
+    # Alphabetisch sortieren nach location_name
+    locations.sort(key=lambda x: x.get("location_name", "").lower())
     
     return {
         "success": True,
@@ -806,44 +810,28 @@ async def get_tenants():
     Gibt alle Tenants mit Geräteanzahl zurück.
     Liest aus der tenants collection.
     """
-    # Hole Tenants aus tenants collection - nur organization und country level
+    # Hole nur organization-level Tenants (keine Länder, Städte etc.)
     tenants_cursor = db.tenants.find(
-        {"tenant_level": {"$in": ["organization", "country", "state"]}},
+        {"tenant_level": "organization"},
         {"_id": 0, "tenant_id": 1, "name": 1, "display_name": 1, "tenant_level": 1}
     ).sort("name", 1)
     
-    all_tenants = await tenants_cursor.to_list(length=200)
-    
-    # Zähle Geräte pro Tenant (basierend auf computername prefix oder tenant_id)
-    device_counts = {}
+    all_tenants = await tenants_cursor.to_list(length=50)
     
     # Hole alle registrierten Geräte
-    devices = await db.registered_devices.find({}, {"_id": 0, "computername": 1, "tenant_id": 1}).to_list(length=1000)
-    
-    # Zähle alle Geräte für Europcar (Hauptorganisation)
+    devices = await db.registered_devices.find({}, {"_id": 0, "tenant_id": 1}).to_list(length=1000)
     total_devices = len(devices)
     
     tenants = []
     
-    # Füge Hauptorganisation "Europcar" hinzu
-    europcar_org = next((t for t in all_tenants if t.get("tenant_level") == "organization"), None)
-    if europcar_org:
-        tenants.append({
-            "tenant_id": europcar_org.get("tenant_id"),
-            "tenant_name": europcar_org.get("display_name") or europcar_org.get("name"),
-            "tenant_level": "organization",
-            "device_count": total_devices
-        })
-    
-    # Füge Länder hinzu
+    # Füge Organisationen hinzu
     for t in all_tenants:
-        if t.get("tenant_level") == "country":
-            tenants.append({
-                "tenant_id": t.get("tenant_id"),
-                "tenant_name": t.get("display_name") or t.get("name"),
-                "tenant_level": "country",
-                "device_count": 0  # TODO: Geräte pro Land zählen
-            })
+        tenants.append({
+            "tenant_id": t.get("tenant_id"),
+            "tenant_name": t.get("display_name") or t.get("name"),
+            "tenant_level": "organization",
+            "device_count": total_devices  # Alle Geräte gehören zu dieser Organisation
+        })
     
     # Falls keine Tenants gefunden, füge Standard "Europcar" hinzu
     if not tenants:
