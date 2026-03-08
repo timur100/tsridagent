@@ -41,13 +41,15 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || '';
 const DeviceAgentManagement = () => {
   const [devices, setDevices] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [tenants, setTenants] = useState([]);
+  const [deviceTypes, setDeviceTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedDevice, setSelectedDevice] = useState(null);
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [showRemoteDialog, setShowRemoteDialog] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState([]);
   const [assignForm, setAssignForm] = useState({ location_code: '', device_number: '' });
-  const [filter, setFilter] = useState({ status: 'all', assigned: 'all' });
+  const [filter, setFilter] = useState({ status: 'all', assigned: 'all', deviceType: 'all', tenant: 'all', location: 'all' });
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [stats, setStats] = useState({ total: 0, online: 0, offline: 0, assigned: 0, unassigned: 0 });
@@ -89,6 +91,9 @@ const DeviceAgentManagement = () => {
       
       if (filter.status !== 'all') params.append('status', filter.status);
       if (filter.assigned !== 'all') params.append('assigned', filter.assigned === 'assigned' ? 'true' : 'false');
+      if (filter.deviceType !== 'all') params.append('device_type', filter.deviceType);
+      if (filter.tenant !== 'all') params.append('tenant_id', filter.tenant);
+      if (filter.location !== 'all') params.append('location_code', filter.location);
       if (debouncedSearch) params.append('search', debouncedSearch);
       
       const response = await fetch(`${BACKEND_URL}/api/device-agent/devices?${params}`);
@@ -134,6 +139,32 @@ const DeviceAgentManagement = () => {
     }
   }, []);
 
+  // Fetch tenants
+  const fetchTenants = useCallback(async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/tenants`);
+      const data = await response.json();
+      if (data.success) {
+        setTenants(data.tenants || []);
+      }
+    } catch (error) {
+      console.error('Error fetching tenants:', error);
+    }
+  }, []);
+
+  // Fetch device types
+  const fetchDeviceTypes = useCallback(async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/device-agent/device-types`);
+      const data = await response.json();
+      if (data.success) {
+        setDeviceTypes(data.device_types || []);
+      }
+    } catch (error) {
+      console.error('Error fetching device types:', error);
+    }
+  }, []);
+
   // Load templates and history when Remote Dialog opens
   useEffect(() => {
     if (showRemoteDialog) {
@@ -146,6 +177,8 @@ const DeviceAgentManagement = () => {
   useEffect(() => {
     fetchDevices();
     fetchLocations();
+    fetchTenants();
+    fetchDeviceTypes();
 
     // Auto-Refresh alle 30 Sekunden für Echtzeit-Status
     const refreshInterval = setInterval(() => {
@@ -533,8 +566,8 @@ const DeviceAgentManagement = () => {
 
       {/* Filters */}
       <Card className="bg-[#1a1a1a] border-[#333] p-4 mb-6">
-        <div className="flex gap-4 items-center">
-          <div className="flex-1">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex-1 min-w-[250px]">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <Input
@@ -550,7 +583,7 @@ const DeviceAgentManagement = () => {
             value={filter.status} 
             onValueChange={(value) => setFilter({ ...filter, status: value })}
           >
-            <SelectTrigger className="w-40 bg-[#262626] border-[#444]">
+            <SelectTrigger className="w-36 bg-[#262626] border-[#444]" data-testid="filter-status">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="bg-[#262626] border-[#444]">
@@ -563,7 +596,7 @@ const DeviceAgentManagement = () => {
             value={filter.assigned} 
             onValueChange={(value) => setFilter({ ...filter, assigned: value })}
           >
-            <SelectTrigger className="w-40 bg-[#262626] border-[#444]">
+            <SelectTrigger className="w-40 bg-[#262626] border-[#444]" data-testid="filter-assigned">
               <SelectValue placeholder="Zuweisung" />
             </SelectTrigger>
             <SelectContent className="bg-[#262626] border-[#444]">
@@ -572,6 +605,72 @@ const DeviceAgentManagement = () => {
               <SelectItem value="unassigned">Nicht zugewiesen</SelectItem>
             </SelectContent>
           </Select>
+          <Select 
+            value={filter.deviceType} 
+            onValueChange={(value) => setFilter({ ...filter, deviceType: value })}
+          >
+            <SelectTrigger className="w-44 bg-[#262626] border-[#444]" data-testid="filter-device-type">
+              <SelectValue placeholder="Gerätetyp" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#262626] border-[#444]">
+              <SelectItem value="all">Alle Gerätetypen</SelectItem>
+              <SelectItem value="surface_pro_4">Surface Pro 4</SelectItem>
+              <SelectItem value="surface_pro_6">Surface Pro 6</SelectItem>
+              <SelectItem value="surface_pro_7">Surface Pro 7</SelectItem>
+              <SelectItem value="surface_go">Surface Go</SelectItem>
+              <SelectItem value="netsoxx_i5">netsoxx i5</SelectItem>
+              <SelectItem value="netsoxx_i7">netsoxx i7</SelectItem>
+              <SelectItem value="tsrid_i5">TSRID i5</SelectItem>
+              <SelectItem value="tsrid_i7">TSRID i7</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select 
+            value={filter.tenant} 
+            onValueChange={(value) => setFilter({ ...filter, tenant: value })}
+          >
+            <SelectTrigger className="w-48 bg-[#262626] border-[#444]" data-testid="filter-tenant">
+              <SelectValue placeholder="Tenant" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#262626] border-[#444] max-h-60">
+              <SelectItem value="all">Alle Tenants</SelectItem>
+              {tenants.map((tenant) => (
+                <SelectItem key={tenant.tenant_id} value={tenant.tenant_id}>
+                  {tenant.tenant_name} ({tenant.device_count})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select 
+            value={filter.location} 
+            onValueChange={(value) => setFilter({ ...filter, location: value })}
+          >
+            <SelectTrigger className="w-48 bg-[#262626] border-[#444]" data-testid="filter-location">
+              <SelectValue placeholder="Standort" />
+            </SelectTrigger>
+            <SelectContent className="bg-[#262626] border-[#444] max-h-60">
+              <SelectItem value="all">Alle Standorte</SelectItem>
+              {locations.map((loc) => (
+                <SelectItem key={loc.location_code} value={loc.location_code}>
+                  {loc.location_name || loc.location_code}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* Reset Filter Button */}
+          {(filter.status !== 'all' || filter.assigned !== 'all' || filter.deviceType !== 'all' || filter.tenant !== 'all' || filter.location !== 'all' || searchTerm) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setFilter({ status: 'all', assigned: 'all', deviceType: 'all', tenant: 'all', location: 'all' });
+                setSearchTerm('');
+              }}
+              className="bg-red-900/30 border-red-700 text-red-400 hover:bg-red-900/50"
+              data-testid="reset-filters-btn"
+            >
+              Filter zurücksetzen
+            </Button>
+          )}
         </div>
       </Card>
 
@@ -1653,7 +1752,7 @@ $AgentScript | Out-File -FilePath $ScriptPath -Encoding UTF8 -Force
 # Scheduled Task erstellen
 Write-Host "[4/5] Erstelle Scheduled Task..." -ForegroundColor Yellow
 
-$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$ScriptPath`""
+$action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File \`"$ScriptPath\`""
 $trigger = New-ScheduledTaskTrigger -AtStartup
 $principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
 $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 1)

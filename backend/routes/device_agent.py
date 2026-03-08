@@ -543,6 +543,8 @@ async def list_devices(
     status: Optional[str] = None,
     assigned: Optional[bool] = None,
     location_code: Optional[str] = None,
+    device_type: Optional[str] = None,
+    tenant_id: Optional[str] = None,
     search: Optional[str] = None,
     page: int = 1,
     limit: int = 50
@@ -551,6 +553,8 @@ async def list_devices(
     Listet registrierte Geräte mit Pagination auf.
     - page: Seitennummer (ab 1)
     - limit: Anzahl pro Seite (max 100)
+    - device_type: Gerätetyp-Filter (surface_pro_4, surface_pro_6, netsoxx_i5, netsoxx_i7, tsrid_i5, tsrid_i7)
+    - tenant_id: Tenant-Filter
     """
     # Using global db
     
@@ -579,6 +583,49 @@ async def list_devices(
         query["assigned"] = assigned
     if location_code:
         query["location_code"] = location_code
+    
+    # Gerätetyp-Filter
+    if device_type:
+        device_type_mappings = {
+            "surface_pro_4": {"hardware.model": {"$regex": "Surface Pro 4", "$options": "i"}},
+            "surface_pro_6": {"hardware.model": {"$regex": "Surface Pro 6", "$options": "i"}},
+            "surface_pro_7": {"hardware.model": {"$regex": "Surface Pro 7", "$options": "i"}},
+            "surface_go": {"hardware.model": {"$regex": "Surface Go", "$options": "i"}},
+            "netsoxx_i5": {"$and": [
+                {"hardware.manufacturer": {"$regex": "netsoxx", "$options": "i"}},
+                {"hardware.cpu": {"$regex": "i5", "$options": "i"}}
+            ]},
+            "netsoxx_i7": {"$and": [
+                {"hardware.manufacturer": {"$regex": "netsoxx", "$options": "i"}},
+                {"hardware.cpu": {"$regex": "i7", "$options": "i"}}
+            ]},
+            "tsrid_i5": {"$and": [
+                {"$or": [
+                    {"hardware.manufacturer": {"$regex": "tsrid", "$options": "i"}},
+                    {"computername": {"$regex": "^TSRID", "$options": "i"}}
+                ]},
+                {"hardware.cpu": {"$regex": "i5", "$options": "i"}}
+            ]},
+            "tsrid_i7": {"$and": [
+                {"$or": [
+                    {"hardware.manufacturer": {"$regex": "tsrid", "$options": "i"}},
+                    {"computername": {"$regex": "^TSRID", "$options": "i"}}
+                ]},
+                {"hardware.cpu": {"$regex": "i7", "$options": "i"}}
+            ]}
+        }
+        if device_type in device_type_mappings:
+            type_filter = device_type_mappings[device_type]
+            if "$and" in query:
+                query["$and"].append(type_filter)
+            elif "$or" in query:
+                query = {"$and": [query, type_filter]}
+            else:
+                query.update(type_filter)
+    
+    # Tenant-Filter
+    if tenant_id:
+        query["tenant_id"] = tenant_id
     
     # Suche in mehreren Feldern
     if search:
@@ -657,6 +704,108 @@ async def list_devices(
         "offline": len(devices) - online_count,
         "assigned": stats.get("assigned", 0),
         "unassigned": stats.get("total", 0) - stats.get("assigned", 0)
+    }
+
+
+@router.get("/device-types")
+async def get_device_types():
+    """
+    Gibt alle vorhandenen Gerätetypen mit Anzahl zurück.
+    """
+    # Aggregation für Gerätetypen
+    pipeline = [
+        {"$group": {
+            "_id": "$hardware.model",
+            "count": {"$sum": 1}
+        }},
+        {"$sort": {"count": -1}}
+    ]
+    
+    cursor = db.registered_devices.aggregate(pipeline)
+    results = await cursor.to_list(length=100)
+    
+    # Vordefinierte Typen
+    device_types = [
+        {"id": "surface_pro_4", "name": "Surface Pro 4", "count": 0},
+        {"id": "surface_pro_6", "name": "Surface Pro 6", "count": 0},
+        {"id": "surface_pro_7", "name": "Surface Pro 7", "count": 0},
+        {"id": "surface_go", "name": "Surface Go", "count": 0},
+        {"id": "netsoxx_i5", "name": "netsoxx i5", "count": 0},
+        {"id": "netsoxx_i7", "name": "netsoxx i7", "count": 0},
+        {"id": "tsrid_i5", "name": "TSRID i5", "count": 0},
+        {"id": "tsrid_i7", "name": "TSRID i7", "count": 0},
+    ]
+    
+    # Zähle dynamisch
+    for result in results:
+        model = result.get("_id") or ""
+        count = result.get("count", 0)
+        model_lower = model.lower()
+        
+        for dt in device_types:
+            if dt["id"] == "surface_pro_4" and "surface pro 4" in model_lower:
+                dt["count"] += count
+            elif dt["id"] == "surface_pro_6" and "surface pro 6" in model_lower:
+                dt["count"] += count
+            elif dt["id"] == "surface_pro_7" and "surface pro 7" in model_lower:
+                dt["count"] += count
+            elif dt["id"] == "surface_go" and "surface go" in model_lower:
+                dt["count"] += count
+    
+    return {
+        "success": True,
+        "device_types": device_types,
+        "raw_models": [{"model": r.get("_id"), "count": r.get("count")} for r in results]
+    }
+
+
+@router.get("/tenants")
+async def get_tenants():
+    """
+    Gibt alle Tenants mit Geräteanzahl zurück.
+    """
+    # Hole Tenants aus unified_locations
+    pipeline = [
+        {"$group": {
+            "_id": "$tenant_id",
+            "tenant_name": {"$first": "$tenant_name"},
+            "count": {"$sum": 1}
+        }},
+        {"$match": {"_id": {"$ne": None}}},
+        {"$sort": {"tenant_name": 1}}
+    ]
+    
+    cursor = db.unified_locations.aggregate(pipeline)
+    location_tenants = await cursor.to_list(length=100)
+    
+    # Zähle Geräte pro Tenant
+    device_pipeline = [
+        {"$group": {
+            "_id": "$tenant_id",
+            "device_count": {"$sum": 1}
+        }},
+        {"$match": {"_id": {"$ne": None}}}
+    ]
+    
+    device_cursor = db.registered_devices.aggregate(device_pipeline)
+    device_counts = await device_cursor.to_list(length=100)
+    device_count_map = {d["_id"]: d["device_count"] for d in device_counts}
+    
+    tenants = []
+    for t in location_tenants:
+        tenant_id = t.get("_id")
+        if tenant_id:
+            tenants.append({
+                "tenant_id": tenant_id,
+                "tenant_name": t.get("tenant_name") or tenant_id,
+                "location_count": t.get("count", 0),
+                "device_count": device_count_map.get(tenant_id, 0)
+            })
+    
+    return {
+        "success": True,
+        "tenants": tenants,
+        "count": len(tenants)
     }
 
 
