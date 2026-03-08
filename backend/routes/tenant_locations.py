@@ -20,12 +20,12 @@ def get_locations_db():
     return get_mongo_client()['portal_db']
 
 class TenantLocationCreate(BaseModel):
-    location_code: str  # Main Code (e.g., BERN03)
-    station_name: str  # Stationsname
-    postal_code: str  # PLZ
-    city: str  # ORT
-    street: str  # STR
-    state: str  # Bundesland (BB, BE, etc.)
+    location_code: str  # Main Code (e.g., BERN03) - PFLICHT
+    station_name: str  # Stationsname - PFLICHT
+    postal_code: Optional[str] = None  # PLZ
+    city: Optional[str] = None  # ORT
+    street: Optional[str] = None  # STR
+    state: Optional[str] = None  # Bundesland (BB, BE, etc.)
     country: Optional[str] = None  # Land
     continent: Optional[str] = None  # Kontinent
     manager: Optional[str] = None  # Manager
