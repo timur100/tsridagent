@@ -204,7 +204,7 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
   - Heartbeat alle 60 Sekunden
   - Command-Polling alle 5 Sekunden
 
-## Standortverwaltung (08.03.2026) ✅ BUGFIX
+## Standortverwaltung (08.03.2026) ✅ BUGFIX + ERWEITERUNG
 
 ### Standort-Erstellung repariert
 - **Problem:** Beim Erstellen eines neuen Standorts wurde der Standort nicht in der Liste angezeigt
@@ -212,11 +212,25 @@ Das gesamte Web-Portal wurde auf das Hetzner Dark Theme umgestellt:
   1. `LocationModal.jsx` (Zeile 2175-2187)
   2. Inline Modal in TenantDetailPage.jsx (Zeile 3299-3518)
 - **Lösung:** Inline Modal mit `false &&` deaktiviert, sodass nur `LocationModal.jsx` verwendet wird
-- **Geänderte Dateien:**
-  - `/app/frontend/src/pages/TenantDetailPage.jsx` - Inline Modal deaktiviert
-  - `/app/frontend/src/components/LocationModal.jsx` - Submit-Button auf onClick umgestellt, Logging hinzugefügt
-  - `/app/frontend/src/components/LocationsTabEnhanced.jsx` - data-testid für Add-Button
 - **Test-Status:** ✅ Verifiziert (100% Erfolgsrate)
+
+### Dynamisches Standort-Modal (NEU)
+Das Modal passt sich jetzt an die Tenant-Kategorie an:
+
+**Kategorien:**
+- **Allgemein** - Nur Basisdaten
+- **Autovermietung** - Für Europcar, Sixt, etc. (Stations-Typ, ID Checker, SN-PC, SN-SC, TV-ID, etc.)
+- **Logistik** - Für Speditionen (Lager-Code, Laderampen, Lagerkapazität, Gabelstapler)
+- **Einzelhandel** - Für Shops (Filialnummer, Verkaufsfläche, Kassen, Öffnungszeiten)
+- **Gesundheitswesen** - Für Kliniken (Einrichtungstyp, Betten, Abteilung)
+
+**Eigene Felder:**
+- Benutzer können eigene Felder mit Namen und Typ (Text, Zahl, E-Mail, Tel, Datum, URL) hinzufügen
+- Felder werden mit dem Standort in der DB gespeichert
+
+**Geänderte Dateien:**
+- `/app/frontend/src/components/LocationModal.jsx` - Komplett überarbeitet
+- `/app/backend/routes/tenant_locations.py` - Pydantic-Modelle erweitert (tenant_category, custom_fields, kategorie-spezifische Felder)
 
 ### Frontend Dashboard
 - Grid-Layout für Geräteliste (1-4 Spalten responsive)

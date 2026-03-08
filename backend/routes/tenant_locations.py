@@ -44,6 +44,23 @@ class TenantLocationCreate(BaseModel):
     tv_id: Optional[str] = None  # TV-ID
     latitude: Optional[float] = None  # GPS Latitude
     longitude: Optional[float] = None  # GPS Longitude
+    # Neue Felder für dynamisches Modal
+    tenant_category: Optional[str] = None  # Kategorie: general, car_rental, logistics, retail, healthcare
+    custom_fields: Optional[List[dict]] = None  # Benutzerdefinierte Felder [{id, name, type, value}]
+    # Kategorie-spezifische Felder (Logistik)
+    warehouse_code: Optional[str] = None
+    loading_docks: Optional[int] = None
+    storage_capacity: Optional[int] = None
+    forklift_count: Optional[int] = None
+    # Kategorie-spezifische Felder (Einzelhandel)
+    store_number: Optional[str] = None
+    sales_area: Optional[int] = None
+    cashier_count: Optional[int] = None
+    opening_hours: Optional[str] = None
+    # Kategorie-spezifische Felder (Gesundheitswesen)
+    facility_type: Optional[str] = None
+    bed_count: Optional[int] = None
+    department: Optional[str] = None
 
 class TenantLocationUpdate(BaseModel):
     location_code: Optional[str] = None
@@ -70,6 +87,23 @@ class TenantLocationUpdate(BaseModel):
     tv_id: Optional[str] = None
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+    # Neue Felder für dynamisches Modal
+    tenant_category: Optional[str] = None
+    custom_fields: Optional[List[dict]] = None
+    # Kategorie-spezifische Felder (Logistik)
+    warehouse_code: Optional[str] = None
+    loading_docks: Optional[int] = None
+    storage_capacity: Optional[int] = None
+    forklift_count: Optional[int] = None
+    # Kategorie-spezifische Felder (Einzelhandel)
+    store_number: Optional[str] = None
+    sales_area: Optional[int] = None
+    cashier_count: Optional[int] = None
+    opening_hours: Optional[str] = None
+    # Kategorie-spezifische Felder (Gesundheitswesen)
+    facility_type: Optional[str] = None
+    bed_count: Optional[int] = None
+    department: Optional[str] = None
 
 # Opening Hours Models
 class DayOpeningHours(BaseModel):
