@@ -234,6 +234,100 @@ class TestDeviceAgentAPI:
         
         # Cleanup
         requests.delete(f"{API_URL}/api/device-agent/devices/{test_device_id}", timeout=10)
+    
+    def test_station_assignment_not_overwritten_by_agent(self):
+        """
+        P0 BUG TEST: Stationszuweisung darf NICHT vom Agent überschrieben werden!
+        
+        Szenario:
+        1. Gerät registrieren
+        2. Station zuweisen (Server-seitig)
+        3. Agent sendet /register mit ANDERER location_code
+        4. Server-seitige Zuweisung MUSS erhalten bleiben!
+        """
+        test_device_id = f"P0TEST-{uuid.uuid4().hex[:6].upper()}"
+        correct_location = "TSRID00-01"
+        wrong_location = "MUCT01"  # Der alte, falsche Wert
+        
+        print(f"\n[P0 TEST] Device ID: {test_device_id}")
+        print(f"[P0 TEST] Correct location (server-assigned): {correct_location}")
+        print(f"[P0 TEST] Wrong location (agent-sent): {wrong_location}")
+        
+        # 1. Gerät registrieren
+        reg_response = requests.post(
+            f"{API_URL}/api/device-agent/register",
+            headers={"Content-Type": "application/json"},
+            json={
+                "device_id": test_device_id,
+                "computername": "P0-BUG-TEST"
+            },
+            timeout=10
+        )
+        assert reg_response.status_code == 200, "Initial registration failed"
+        
+        # 2. Station zuweisen (simuliert Admin-Zuweisung)
+        assign_response = requests.post(
+            f"{API_URL}/api/device-agent/assign",
+            headers={"Content-Type": "application/json"},
+            json={
+                "device_id": test_device_id,
+                "location_code": correct_location,
+                "location_name": "TSRID Hauptquartier",
+                "device_number": 1,
+                "tenant_id": "tsr-technologies",
+                "assigned_by": "regression-test"
+            },
+            timeout=10
+        )
+        assert assign_response.status_code == 200, \
+            f"Station assignment failed: {assign_response.status_code} - {assign_response.text}"
+        
+        # Verifiziere Zuweisung
+        device_check = requests.get(
+            f"{API_URL}/api/device-agent/devices/{test_device_id}",
+            timeout=10
+        )
+        assert device_check.status_code == 200
+        device_data = device_check.json().get('device', {})
+        assert device_data.get('assigned') == True, "Device should be assigned"
+        assert device_data.get('location_code') == correct_location, \
+            f"Location should be {correct_location}, got {device_data.get('location_code')}"
+        print(f"[P0 TEST] After assignment - location_code: {device_data.get('location_code')}, assigned: {device_data.get('assigned')}")
+        
+        # 3. Agent sendet /register mit FALSCHEM location_code
+        print(f"[P0 TEST] Now sending register with WRONG location: {wrong_location}")
+        bad_reg_response = requests.post(
+            f"{API_URL}/api/device-agent/register",
+            headers={"Content-Type": "application/json"},
+            json={
+                "device_id": test_device_id,
+                "computername": "P0-BUG-TEST",
+                "location_code": wrong_location,  # FALSCHE LOCATION!
+                "hostname": "MUCT01-01"  # Alter, falscher Hostname
+            },
+            timeout=10
+        )
+        assert bad_reg_response.status_code == 200
+        
+        # 4. Prüfe dass die Server-Zuweisung NICHT überschrieben wurde!
+        final_check = requests.get(
+            f"{API_URL}/api/device-agent/devices/{test_device_id}",
+            timeout=10
+        )
+        assert final_check.status_code == 200
+        final_data = final_check.json().get('device', {})
+        
+        print(f"[P0 TEST] Final check - location_code: {final_data.get('location_code')}, assigned: {final_data.get('assigned')}")
+        
+        assert final_data.get('assigned') == True, \
+            "assigned flag was reset! P0 BUG NOT FIXED!"
+        assert final_data.get('location_code') == correct_location, \
+            f"P0 BUG: location_code was overwritten! Expected '{correct_location}', got '{final_data.get('location_code')}'!"
+        
+        print(f"[P0 TEST] SUCCESS! Server-assigned location preserved after agent register.")
+        
+        # Cleanup
+        requests.delete(f"{API_URL}/api/device-agent/devices/{test_device_id}", timeout=10)
 
 
 class TestHealthEndpoints:

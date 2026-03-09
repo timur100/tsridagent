@@ -16,7 +16,7 @@
 
 Öffnen Sie in Ihrem Browser:
 ```
-https://station-config-hub.preview.emergentagent.com/portal/admin
+https://tablet-fleet-mgmt.preview.emergentagent.com/portal/admin
 ```
 
 ---
@@ -175,4 +175,4 @@ mongosh mongodb://localhost:27017/main_db --eval "
 
 **Jetzt können Sie alles im Admin-Portal sehen!** 🎉
 
-**URL:** https://station-config-hub.preview.emergentagent.com/portal/admin
+**URL:** https://tablet-fleet-mgmt.preview.emergentagent.com/portal/admin

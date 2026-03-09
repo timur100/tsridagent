@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://station-config-hub.preview.emergentagent.com/api/dhl"
+API_URL="https://tablet-fleet-mgmt.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Sendungs-Import Test ==="
 echo ""

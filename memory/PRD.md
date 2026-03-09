@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://station-config-hub.preview.emergentagent.com
+- **URL:** https://tablet-fleet-mgmt.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4
@@ -239,14 +239,38 @@ Das Modal passt sich jetzt an die Tenant-Kategorie an:
 - **Geänderte Dateien:**
   - `/app/backend/routes/device_agent.py` - `get_locations_by_tenant()` liest jetzt aus beiden Collections
 
+## P0 Bug Fix: Stationszuweisung wird nicht mehr überschrieben (09.03.2026) ✅ KRITISCH
+
+### Problem (Wiederkehrender Bug - 3+ Mal gemeldet)
+Nach der Zuweisung einer Station (z.B. `TSRID00-01`) wurde der `location_code` bei jedem Agent-Register wieder auf den alten Wert (z.B. `MUCT01`) zurückgesetzt.
+
+### Ursache
+Die `/register` Endpoint-Logik suchte zuerst in der falschen Collection (`device_assignments`) statt in `registered_devices`. Außerdem wurde eine Variable (`existing_device`) innerhalb der TeamViewer-Historie-Logik überschrieben, was dazu führte, dass das Gerät als "nicht zugewiesen" behandelt wurde.
+
+### Lösung
+1. **Primäre Quelle korrigiert:** Die Suche erfolgt jetzt zuerst in `registered_devices` (authoritative Quelle)
+2. **Variable-Shadowing behoben:** `existing_device` wird nicht mehr in der TeamViewer-Logik überschrieben
+3. **Priorisierte Zuweisungslogik:** Server-seitige Zuweisungen werden NIEMALS durch Agent-Daten überschrieben
+4. **Ausführliches Logging:** Jeder Schritt wird protokolliert für besseres Debugging
+
+### Geänderte Dateien
+- `/app/backend/routes/device_agent.py` - `register_device()` komplett überarbeitet
+
+### Test
+- Neuer Regression-Test: `test_station_assignment_not_overwritten_by_agent`
+- Manueller API-Test erfolgreich: Agent sendete `MUCT01`, Server behielt `TSRID00-01`
+
 ### Frontend Dashboard
 - Grid-Layout für Geräteliste (1-4 Spalten responsive)
 - Klick auf Gerät öffnet Modal mit Details
 - TV/TSRID Lampen nur grün wenn online UND Prozess läuft
 
 ## Backlog
-- Nachbestellungs-Funktion (Web)
-- Webcam-Integration für Asset-Fotos (Web)
+- (P1) PowerShell Agent Log-Datei-Sperre beheben - Write-Log Funktion hält Datei gesperrt
+- (P1) Agent-to-Agent Kommunikation innerhalb eines Tenants
+- (P1) TeamViewer-ähnliche Remote-Control Funktion
+- (P2) Nachbestellungs-Funktion (Web)
+- (P3) Webcam-Integration für Asset-Fotos (Web)
 - Mobile Echtzeit-Updates
 - Zentrale Geräte-Konfiguration vom Portal
 - Mobile App Label-Druck verifizieren (APK v2.2.4)

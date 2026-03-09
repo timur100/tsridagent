@@ -21,7 +21,7 @@ const modeManager = require('./src/services/mode-manager');
 const backgroundAgent = require('./src/services/background-agent');
 
 // Configuration
-const PREVIEW_URL = 'https://station-config-hub.preview.emergentagent.com';
+const PREVIEW_URL = 'https://tablet-fleet-mgmt.preview.emergentagent.com';
 const ADMIN_URL = PREVIEW_URL + '/portal/admin';
 const SCAN_URL = PREVIEW_URL + '/'; // Root = Scan App
 const isDev = process.env.NODE_ENV === 'development';

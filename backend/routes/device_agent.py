@@ -123,17 +123,63 @@ async def register_device(device: DeviceInfo):
     """
     Registriert ein Gerät oder aktualisiert dessen Daten.
     Das Gerät sendet alle Hardwareinformationen beim Start.
+    
+    WICHTIG: Server-seitige Zuweisungen (location_code, location_name, assigned)
+    dürfen NIEMALS durch Agent-Daten überschrieben werden!
     """
     # Using global db
     
-    # Prüfe ob bereits eine Zuweisung existiert
-    existing = await db.device_assignments.find_one({
-        "$or": [
-            {"device_id": device.device_id},
-            {"hardware_ids.uuid": device.uuid},
-            {"hardware_ids.bios_serial": device.bios_serial}
-        ]
-    })
+    # =====================================================================
+    # KRITISCH: Prüfe ZUERST in registered_devices ob das Gerät bereits existiert
+    # Dies ist die authoritative Quelle für Zuweisungsdaten!
+    # Verwende einfache device_id Abfrage als primäre Suche
+    # =====================================================================
+    existing_device = await db.registered_devices.find_one(
+        {"device_id": device.device_id}
+    )
+    
+    # Falls nicht per device_id gefunden, versuche über Hardware-IDs
+    if not existing_device and (device.uuid or device.bios_serial):
+        hardware_query = []
+        if device.uuid:
+            hardware_query.append({"hardware_ids.uuid": device.uuid})
+        if device.bios_serial:
+            hardware_query.append({"hardware_ids.bios_serial": device.bios_serial})
+        if hardware_query:
+            existing_device = await db.registered_devices.find_one({"$or": hardware_query})
+    
+    # Sekundär: Prüfe auch in device_assignments für Backup/Historie
+    existing_assignment = await db.device_assignments.find_one(
+        {"device_id": device.device_id}
+    )
+    
+    # Logge für Debugging
+    logger.info(f"[REGISTER] Device {device.device_id} - Query for existing_device")
+    logger.info(f"[REGISTER] Device {device.device_id} - existing_device found: {existing_device is not None}")
+    if existing_device:
+        logger.info(f"[REGISTER] Device {device.device_id} - existing_device.assigned: {existing_device.get('assigned')}")
+        logger.info(f"[REGISTER] Device {device.device_id} - existing_device.location_code: {existing_device.get('location_code')}")
+    
+    # Bestimme die Quelle für Zuweisungsdaten (existing)
+    # Priorität: 1. registered_devices (wenn assigned), 2. device_assignments, 3. registered_devices
+    if existing_device and existing_device.get("assigned") == True:
+        existing = existing_device
+        logger.info(f"[REGISTER] Device {device.device_id} - Using existing_device (assigned=True)")
+    elif existing_assignment and existing_assignment.get("assigned") == True:
+        existing = existing_assignment
+        logger.info(f"[REGISTER] Device {device.device_id} - Using existing_assignment (assigned=True)")
+    elif existing_device and existing_device.get("location_code"):
+        existing = existing_device
+        logger.info(f"[REGISTER] Device {device.device_id} - Using existing_device (has location)")
+    elif existing_assignment:
+        existing = existing_assignment
+        logger.info(f"[REGISTER] Device {device.device_id} - Using existing_assignment")
+    elif existing_device:
+        existing = existing_device
+        logger.info(f"[REGISTER] Device {device.device_id} - Using existing_device")
+    else:
+        existing = None
+        logger.info(f"[REGISTER] Device {device.device_id} - No existing data found")
     
     # Speichere Gerätedaten
     device_data = {
@@ -184,19 +230,19 @@ async def register_device(device: DeviceInfo):
     
     # TeamViewer ID Historie verwalten
     if device.teamviewer_id:
-        existing_device = await db.registered_devices.find_one(
+        tv_existing_device = await db.registered_devices.find_one(
             {"device_id": device.device_id},
             {"_id": 0, "teamviewer_id": 1, "teamviewer_id_history": 1}
         )
         
         # Hole oder erstelle Historie
-        tv_history = existing_device.get("teamviewer_id_history", []) if existing_device else []
+        tv_history = tv_existing_device.get("teamviewer_id_history", []) if tv_existing_device else []
         current_tv_id = str(device.teamviewer_id)
         
         # Prüfe ob ID sich geändert hat
-        if existing_device and str(existing_device.get("teamviewer_id")) != current_tv_id:
+        if tv_existing_device and str(tv_existing_device.get("teamviewer_id")) != current_tv_id:
             # Alte ID zur Historie hinzufügen
-            old_id = existing_device.get("teamviewer_id")
+            old_id = tv_existing_device.get("teamviewer_id")
             if old_id:
                 tv_history.append({
                     "teamviewer_id": str(old_id),
@@ -215,9 +261,18 @@ async def register_device(device: DeviceInfo):
         # Nur die letzten 10 Einträge behalten
         device_data["teamviewer_id_history"] = tv_history[-10:]
     
-    # Wenn Zuweisung existiert, behalte die zugewiesene Location (NICHT überschreiben!)
+    # =====================================================================
+    # KRITISCH: Server-seitige Zuweisungsdaten sind IMMER authoritative!
+    # Agent-Daten dürfen NIEMALS Server-Zuweisungen überschreiben!
+    # =====================================================================
+    
+    # Logge incoming agent data für Debugging
+    logger.info(f"[REGISTER] Device {device.device_id} - Agent sent location_code: {device.location_code}")
+    logger.info(f"[REGISTER] Device {device.device_id} - existing.assigned: {existing.get('assigned') if existing else 'None'}")
+    logger.info(f"[REGISTER] Device {device.device_id} - existing.location_code: {existing.get('location_code') if existing else 'None'}")
+    
     if existing and existing.get("assigned") == True:
-        # Gerät ist zugewiesen - behalte die Admin-Zuweisung
+        # Gerät ist zugewiesen - BEHALTE die Admin-Zuweisung, IGNORIERE Agent-Daten!
         device_data["location_code"] = existing.get("location_code")
         device_data["location_name"] = existing.get("location_name")
         device_data["device_number"] = existing.get("device_number")
@@ -225,12 +280,15 @@ async def register_device(device: DeviceInfo):
         device_data["tenant_id"] = existing.get("tenant_id")
         device_data["pending_hostname"] = existing.get("pending_hostname")
         device_data["pending_config"] = existing.get("pending_config")
+        logger.info(f"[REGISTER] Device {device.device_id} - ASSIGNED! Preserving server location: {device_data['location_code']}")
     elif existing and existing.get("location_code"):
-        # Gerät hat location aber nicht zugewiesen - behalte trotzdem
+        # Gerät hat location aber nicht zugewiesen - behalte trotzdem Server-Daten
         device_data["location_code"] = existing["location_code"]
         device_data["location_name"] = existing.get("location_name")
         device_data["device_number"] = existing.get("device_number")
         device_data["assigned"] = existing.get("assigned", False)
+        device_data["tenant_id"] = existing.get("tenant_id")
+        logger.info(f"[REGISTER] Device {device.device_id} - Has location but not assigned. Preserving: {device_data['location_code']}")
     else:
         # Neues Gerät oder ohne Zuweisung - nimm Werte vom Agent (falls vorhanden)
         device_data["assigned"] = False
@@ -238,6 +296,7 @@ async def register_device(device: DeviceInfo):
             device_data["location_code"] = device.location_code
         if device.device_number:
             device_data["device_number"] = device.device_number
+        logger.info(f"[REGISTER] Device {device.device_id} - NEW/unassigned. Using agent data: {device.location_code}")
     
     # Upsert in devices collection
     await db.registered_devices.update_one(

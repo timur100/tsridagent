@@ -79,7 +79,7 @@ function makeRequest(url, method, data = null, headers = {}) {
  * Holt die Server-URL aus der Konfiguration
  */
 function getServerUrl() {
-    return database.getConfig('server_url', 'https://station-config-hub.preview.emergentagent.com');
+    return database.getConfig('server_url', 'https://tablet-fleet-mgmt.preview.emergentagent.com');
 }
 
 /**
