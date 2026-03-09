@@ -840,21 +840,23 @@ async def get_locations_by_tenant(tenant_id: Optional[str] = None):
         if not location_code or location_code in existing_codes:
             continue
         
+        # Behalte das Original-Format aus der Datenbank
         city = loc.get("city", "")
+        station_name = loc.get("station_name", "")
         country = loc.get("country", "Deutschland")
         
         if city:
-            cities.add(city.title())
+            cities.add(city)
         if country:
             countries.add(country)
             
         locations.append({
             "location_code": location_code,
-            "location_name": loc.get("station_name", ""),
+            "location_name": station_name,  # Behalte GROSSBUCHSTABEN
             "tenant_id": loc.get("tenant_id"),
             "location_id": loc.get("location_id"),
             "country_code": loc.get("country", "DE") if loc.get("country") == "Deutschland" else loc.get("country", ""),
-            "city": city.title() if city else "",
+            "city": city,  # Behalte Original-Format
             "country": country,
             # Additional fields from new structure
             "street": loc.get("street", ""),
