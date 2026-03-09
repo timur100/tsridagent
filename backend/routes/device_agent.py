@@ -636,38 +636,60 @@ async def delete_device(device_id: str):
 async def get_locations():
     """
     Gibt alle verfügbaren Standorte für Gerätezuweisung zurück.
-    Kombiniert Daten aus key_locations und unified_locations.
+    Liest aus portal_db.tenant_locations (echte Tenant-Standorte).
     """
     locations = []
+    seen_codes = set()
     
-    # Aus key_locations
-    cursor = db.key_locations.find({}, {"_id": 0})
-    key_locs = await cursor.to_list(length=500)
-    for loc in key_locs:
-        code = loc.get("location_id") or loc.get("name", "").replace(" ", "-").upper()[:10]
+    # === Primäre Quelle: portal_db.tenant_locations (neue Struktur) ===
+    cursor = portal_db.tenant_locations.find({}, {"_id": 0})
+    tenant_locs = await cursor.to_list(length=2000)
+    
+    for loc in tenant_locs:
+        code = loc.get("location_code")
+        if not code or code in seen_codes:
+            continue
+        seen_codes.add(code)
+        
         locations.append({
             "location_code": code,
-            "location_name": loc.get("name", "Unbekannt"),
+            "location_name": loc.get("station_name", code),
             "city": loc.get("city", ""),
-            "address": loc.get("address", "")
+            "country": loc.get("country", "Deutschland"),
+            "tenant_id": loc.get("tenant_id", ""),
+            "address": loc.get("street", "")
         })
     
-    # Aus unified_locations
-    cursor = db.unified_locations.find({}, {"_id": 0})
-    unified_locs = await cursor.to_list(length=500)
-    for loc in unified_locs:
-        code = loc.get("station_code") or loc.get("name", "").replace(" ", "-").upper()[:10]
-        # Nur hinzufügen wenn nicht bereits vorhanden
-        if not any(l["location_code"] == code for l in locations):
-            locations.append({
-                "location_code": code,
-                "location_name": loc.get("name", "Unbekannt"),
-                "city": loc.get("city", ""),
-                "address": loc.get("street", "")
-            })
+    # === Sekundäre Quelle: tsrid_db.tenants (alte Struktur, nur Locations) ===
+    cursor = db.tenants.find(
+        {"tenant_level": "location", "enabled": True}, 
+        {"_id": 0}
+    )
+    old_locs = await cursor.to_list(length=2000)
+    
+    for loc in old_locs:
+        code = loc.get("location_code")
+        if not code or code in seen_codes:
+            continue
+        seen_codes.add(code)
+        
+        # Extrahiere Stadt aus display_name
+        display_name = loc.get("display_name", "")
+        city = ""
+        if display_name:
+            city = display_name.split()[0] if display_name else ""
+        
+        locations.append({
+            "location_code": code,
+            "location_name": display_name or loc.get("name", code),
+            "city": city,
+            "country": "Deutschland" if loc.get("country_code") == "DE" else loc.get("country_code", ""),
+            "tenant_id": loc.get("parent_tenant_id", ""),
+            "address": ""
+        })
     
     # Sortieren nach Name
-    locations.sort(key=lambda x: x.get("location_name", ""))
+    locations.sort(key=lambda x: x.get("location_name", "").lower())
     
     return {
         "success": True,
