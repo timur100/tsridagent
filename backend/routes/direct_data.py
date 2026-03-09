@@ -43,6 +43,8 @@ async def get_tenants(
     """
     try:
         db = get_db()
+        client = get_mongo_client()
+        portal_db = client['portal_db']
         
         # Build query - default to only organizations (real customers)
         query = {}
@@ -68,6 +70,13 @@ async def get_tenants(
         # Use skip parameter if provided, otherwise calculate from page
         actual_skip = skip if skip > 0 else (page - 1) * limit
         tenants = list(db.tenants.find(query, {"_id": 0}).skip(actual_skip).limit(limit))
+        
+        # Add dynamic location_count for each tenant
+        for tenant in tenants:
+            tenant_id = tenant.get("tenant_id") or tenant.get("id")
+            if tenant_id:
+                location_count = portal_db.tenant_locations.count_documents({"tenant_id": tenant_id})
+                tenant["location_count"] = location_count
         
         return {
             "success": True,
@@ -176,7 +185,7 @@ async def get_global_tenant_stats_route():
 @router.get("/api/tenants/{tenant_id}")
 async def get_tenant_by_id(tenant_id: str):
     """
-    Get a specific tenant by ID
+    Get a specific tenant by ID with dynamic location count
     """
     try:
         db = get_db()
@@ -187,6 +196,13 @@ async def get_tenant_by_id(tenant_id: str):
         
         if not tenant:
             raise HTTPException(status_code=404, detail="Tenant not found")
+        
+        # Dynamically calculate location_count from portal_db.tenant_locations
+        actual_tenant_id = tenant.get("tenant_id") or tenant.get("id")
+        client = get_mongo_client()
+        portal_db = client['portal_db']
+        location_count = portal_db.tenant_locations.count_documents({"tenant_id": actual_tenant_id})
+        tenant["location_count"] = location_count
         
         return {"success": True, "tenant": tenant}
     except HTTPException:
@@ -617,15 +633,18 @@ async def get_tenant_dashboard_stats(tenant_id: str):
             ]
         })
         
-        # Count locations for this tenant from tenants collection
-        # Locations are stored as tenant entries with tenant_level="location" 
-        # and their tenant_id starts with the parent organization's tenant_id
-        total_locations = db.tenants.count_documents({
-            "tenant_level": "location",
-            "tenant_id": {"$regex": f"^{tenant_id}"}
-        })
+        # Count locations for this tenant from multiple sources
+        # 1. First check portal_db.tenant_locations (primary source for new locations)
+        total_locations = portal_db.tenant_locations.count_documents({"tenant_id": tenant_id})
         
-        # If no locations found via tenant_id prefix, try europcar_stations or key_locations
+        # 2. If no locations found, check tsrid_db.tenants (legacy source)
+        if total_locations == 0:
+            total_locations = db.tenants.count_documents({
+                "tenant_level": "location",
+                "tenant_id": {"$regex": f"^{tenant_id}"}
+            })
+        
+        # 3. If still no locations, try europcar_stations or key_locations
         if total_locations == 0:
             total_locations = multi_tenant_db.europcar_stations.count_documents({
                 "$or": [
