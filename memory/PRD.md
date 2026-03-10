@@ -8,7 +8,7 @@ Mobile App für Zebra TC78 + Web-Portal für Asset-Management, Label-Druck, Barc
 ### Web Portal
 - **Theme:** Hetzner Dark (fest)
 - **Status:** Live
-- **URL:** https://tablet-fleet-mgmt.preview.emergentagent.com
+- **URL:** https://electron-regula-hub.preview.emergentagent.com
 
 ### Mobile App
 - **Version:** 2.2.4
@@ -265,10 +265,74 @@ Die `/register` Endpoint-Logik suchte zuerst in der falschen Collection (`device
 - Klick auf Gerät öffnet Modal mit Details
 - TV/TSRID Lampen nur grün wenn online UND Prozess läuft
 
+## Electron Agent Management (10.03.2026) ✅ UI IMPLEMENTIERT
+
+### Übersicht
+Neue Management-Seite für die Desktop-basierte Electron ID-Verifikations-Anwendung mit Regula 7028M.111 Scanner-Integration.
+
+### Zugriff
+- **URL:** `/admin/electron-agents`
+- **Theme:** Hetzner Dark Mode
+
+### Implementierte Features
+
+#### Dashboard (Übersicht-Tab)
+- **Statistik-Karten:** 6 KPI-Karten (Gesamt, Online, Offline, Pending Updates, Neueste Version, Versionen)
+- **Versions-Verteilung:** Balkendiagramm mit Prozentanzeige
+- **Plattform-Verteilung:** Windows/macOS/Linux Übersicht
+- **Geräte nach Tenant:** Auflistung der registrierten Geräte pro Mandant
+- **Schnellaktionen:** Buttons für häufige Aktionen
+
+#### Geräte-Tab
+- **Filter:** Status, Plattform, Version, Textsuche
+- **Geräte-Karten:** Responsive Grid (1-4 Spalten)
+- **Scanner-Status:** Anzeige ob Scanner verbunden
+- **Detail-Modal:** Vollständige Geräteinformationen
+
+#### Versionen-Tab
+- **Versionsliste:** Mit Badges (Aktuell, Preview, Pflicht)
+- **Release Notes:** Anzeige der Änderungen
+- **Download-Counter:** Statistik pro Version
+- **Aktionen:** Push-Update, Löschen
+
+#### Scanner Integration Tab
+- **Regula 7028M.111 Info:** Modell, Features (Weißlicht, UV, IR, RFID)
+- **Integration Status:** Electron Wrapper, SDK, Auto-Update, Build Pipeline
+- **Technische Details:** Versionen, API-Endpoints
+
+#### Update-Verlauf Tab
+- **Historie:** Gepushte Updates mit Zielversion, Geräteanzahl, Erzwungen-Status
+
+### Backend API
+- `GET /api/electron-agent/stats` - Dashboard-Statistiken
+- `GET /api/electron-agent/versions` - Versionsliste
+- `POST /api/electron-agent/versions` - Version erstellen
+- `DELETE /api/electron-agent/versions/{version}` - Version löschen
+- `GET /api/electron-agent/devices` - Geräteliste
+- `POST /api/electron-agent/devices/register` - Gerät registrieren
+- `POST /api/electron-agent/devices/heartbeat` - Heartbeat
+- `POST /api/electron-agent/updates/push` - Update pushen
+- `GET /api/electron-agent/updates/history` - Update-Historie
+- `GET /api/electron-agent/stats/version-matrix` - Version-Matrix
+
+### Geänderte Dateien
+- `/app/frontend/src/pages/ElectronAgentManagement.jsx` - Neue UI im Hetzner Dark Theme
+- `/app/frontend/src/App.js` - Route hinzugefügt
+- `/app/backend/routes/electron_agent.py` - Backend API (bereits vorhanden)
+
+### Electron App (electron-agent/)
+- **main.js:** Hauptprozess mit BrowserWindow, Auto-Updater, IPC-Handler
+- **preload.js:** contextBridge API (getAppInfo, Scanner, Updates)
+- **scanner/regula.js:** Regula SDK Integration (HTTPS API)
+- **package.json:** Build-Scripts für Win/Mac/Linux
+
 ## Backlog
+- (P0) **Electron Build Pipeline:** CI/CD für automatische Electron-Builds
+- (P0) **Regula Scanner-Test:** Integration mit echtem 7028M.111 Scanner testen
 - (P1) PowerShell Agent Log-Datei-Sperre beheben - Write-Log Funktion hält Datei gesperrt
+- (P1) PowerShell Agent geht intermittierend offline
+- (P1) RustDesk Integration für Remote-Control
 - (P1) Agent-to-Agent Kommunikation innerhalb eines Tenants
-- (P1) TeamViewer-ähnliche Remote-Control Funktion
 - (P2) Nachbestellungs-Funktion (Web)
 - (P3) Webcam-Integration für Asset-Fotos (Web)
 - Mobile Echtzeit-Updates

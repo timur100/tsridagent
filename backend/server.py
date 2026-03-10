@@ -95,6 +95,7 @@ from routes.assets import router as assets_router
 from routes.health_monitor import router as health_monitor_router
 from routes.label_printer import router as label_printer_router
 from routes.helpdesk import router as helpdesk_router
+from routes.electron_agent import router as electron_agent_router
 
 # Performance utilities
 from utils.db_indexes import create_indexes
@@ -310,6 +311,9 @@ app.include_router(scanner_pin_router)
 
 # Helpdesk (Security & Technical Support)
 app.include_router(helpdesk_router)
+
+# Electron Agent Management
+app.include_router(electron_agent_router)
 
 # Service Proxy (for accessing microservices externally)
 app.include_router(service_proxy_router)

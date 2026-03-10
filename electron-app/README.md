@@ -172,7 +172,7 @@ Electron App
 │   ├── Printer Handlers
 │   └── IPC Bridge
 ├── Renderer Process (Web)
-│   └── Lädt: https://tablet-fleet-mgmt.preview.emergentagent.com
+│   └── Lädt: https://electron-regula-hub.preview.emergentagent.com
 └── Preload Script
     └── Exposes APIs to Web Content
 ```

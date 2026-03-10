@@ -337,7 +337,7 @@ Nach der Integration:
    ```
 3. **Dashboard öffnen:**
    ```
-   https://tablet-fleet-mgmt.preview.emergentagent.com/portal/admin/id-checks
+   https://electron-regula-hub.preview.emergentagent.com/portal/admin/id-checks
    ```
 
 **Erwartetes Ergebnis:**

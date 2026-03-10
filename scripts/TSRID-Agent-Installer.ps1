@@ -5,7 +5,7 @@
 # ANLEITUNG: In PowerShell (Administrator) einfuegen und Enter druecken
 # ============================================================
 
-$ApiUrl = "https://tablet-fleet-mgmt.preview.emergentagent.com"
+$ApiUrl = "https://electron-regula-hub.preview.emergentagent.com"
 $InstallPath = "C:\TSRID-Agent"
 $ScriptPath = "$InstallPath\TSRID-Agent-Service.ps1"
 $LogPath = "$InstallPath\agent.log"
@@ -28,7 +28,7 @@ Write-Host "[3/5] Erstelle Agent-Script..." -ForegroundColor Yellow
 
 $AgentScript = @'
 # TSRID Agent Service V16
-$ApiUrl = "https://tablet-fleet-mgmt.preview.emergentagent.com"
+$ApiUrl = "https://electron-regula-hub.preview.emergentagent.com"
 $LogFile = "C:\TSRID-Agent\agent.log"
 $HeartbeatInterval = 30
 

@@ -9,6 +9,7 @@ import SecurityHelpdesk from './pages/SecurityHelpdesk';
 import TechnicalHelpdesk from './pages/TechnicalHelpdesk';
 import TenantSecurityPortal from './pages/TenantSecurityPortal';
 import DeviceAgentManagement from './pages/DeviceAgentManagement';
+import ElectronAgentManagement from './pages/ElectronAgentManagement';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Toaster } from 'react-hot-toast';
@@ -39,6 +40,9 @@ function App() {
             
             {/* Device Agent Management */}
             <Route path="/admin/devices" element={<DeviceAgentManagement />} />
+            
+            {/* Electron Agent Management */}
+            <Route path="/admin/electron-agents" element={<ElectronAgentManagement />} />
             
             {/* Main Verification Interface (default) */}
             <Route path="*" element={

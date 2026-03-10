@@ -41,7 +41,7 @@
       "node": "20.18.0",
       "env": {
         "DEVICE_TYPE": "zebra-tc78",
-        "API_URL": "https://tablet-fleet-mgmt.preview.emergentagent.com"
+        "API_URL": "https://electron-regula-hub.preview.emergentagent.com"
       }
     }
   },

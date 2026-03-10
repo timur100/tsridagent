@@ -12,7 +12,7 @@ import os
 import uuid
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://tablet-fleet-mgmt.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://electron-regula-hub.preview.emergentagent.com').rstrip('/')
 
 
 class TestInventoryItemsAPI:

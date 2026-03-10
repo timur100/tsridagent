@@ -1,6 +1,6 @@
 #!/bin/bash
 
-API_URL="https://tablet-fleet-mgmt.preview.emergentagent.com/api/dhl"
+API_URL="https://electron-regula-hub.preview.emergentagent.com/api/dhl"
 
 echo "=== DHL Live API Test mit aktiven Keys ==="
 echo ""

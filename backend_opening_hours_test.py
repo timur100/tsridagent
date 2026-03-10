@@ -14,7 +14,7 @@ import os
 import time
 
 # Backend URL from environment
-BACKEND_URL = "https://tablet-fleet-mgmt.preview.emergentagent.com"
+BACKEND_URL = "https://electron-regula-hub.preview.emergentagent.com"
 API_BASE = f"{BACKEND_URL}/api"
 
 class OpeningHoursTester:

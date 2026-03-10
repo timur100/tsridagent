@@ -69,7 +69,7 @@ Nach dem ersten Start der App:
 
 ### API-Verbindung
 Die App verbindet sich mit:
-`https://tablet-fleet-mgmt.preview.emergentagent.com`
+`https://electron-regula-hub.preview.emergentagent.com`
 
 ---
 
