@@ -51,6 +51,8 @@ const ElectronAgentManagement = () => {
   const [versions, setVersions] = useState([]);
   const [updateHistory, setUpdateHistory] = useState([]);
   const [versionMatrix, setVersionMatrix] = useState([]);
+  const [latestBuilds, setLatestBuilds] = useState({});
+  const [downloadLoading, setDownloadLoading] = useState({});
   const [stats, setStats] = useState({
     total_devices: 0,
     online_devices: 0,
@@ -94,20 +96,22 @@ const ElectronAgentManagement = () => {
   const fetchAllData = useCallback(async () => {
     setLoading(true);
     try {
-      const [statsRes, versionsRes, devicesRes, matrixRes, historyRes] = await Promise.all([
+      const [statsRes, versionsRes, devicesRes, matrixRes, historyRes, buildsRes] = await Promise.all([
         fetch(`${BACKEND_URL}/api/electron-agent/stats`),
         fetch(`${BACKEND_URL}/api/electron-agent/versions?include_preview=true`),
         fetch(`${BACKEND_URL}/api/electron-agent/devices?limit=100`),
         fetch(`${BACKEND_URL}/api/electron-agent/stats/version-matrix`),
-        fetch(`${BACKEND_URL}/api/electron-agent/updates/history`)
+        fetch(`${BACKEND_URL}/api/electron-agent/updates/history`),
+        fetch(`${BACKEND_URL}/api/electron-agent/builds/latest`)
       ]);
       
-      const [statsData, versionsData, devicesData, matrixData, historyData] = await Promise.all([
+      const [statsData, versionsData, devicesData, matrixData, historyData, buildsData] = await Promise.all([
         statsRes.json(),
         versionsRes.json(),
         devicesRes.json(),
         matrixRes.json(),
-        historyRes.json()
+        historyRes.json(),
+        buildsRes.json()
       ]);
       
       if (statsData.success) setStats(statsData.stats);
@@ -115,6 +119,7 @@ const ElectronAgentManagement = () => {
       if (devicesData.success) setDevices(devicesData.devices || []);
       if (matrixData.success) setVersionMatrix(matrixData.matrix || []);
       if (historyData.success) setUpdateHistory(historyData.history || []);
+      if (buildsData.success) setLatestBuilds(buildsData.builds || {});
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Fehler beim Laden der Daten');
@@ -122,6 +127,28 @@ const ElectronAgentManagement = () => {
       setLoading(false);
     }
   }, []);
+
+  // Fetch download link and trigger download
+  const handleDownload = async (platform) => {
+    setDownloadLoading(prev => ({ ...prev, [platform]: true }));
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/electron-agent/download/${platform}`);
+      const data = await response.json();
+      
+      if (data.success && data.available) {
+        // Open download URL in new tab
+        window.open(data.download_url, '_blank');
+        toast.success(`Download für ${platform.toUpperCase()} gestartet`);
+      } else {
+        // Show setup instructions
+        toast.error(data.message || 'Download nicht verfügbar');
+      }
+    } catch (error) {
+      toast.error('Fehler beim Abrufen des Download-Links');
+    } finally {
+      setDownloadLoading(prev => ({ ...prev, [platform]: false }));
+    }
+  };
 
   // Initial data load + auto-refresh
   useEffect(() => {
@@ -596,99 +623,140 @@ const ElectronAgentManagement = () => {
               
               <div className="space-y-3">
                 {/* Windows Download */}
-                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.win ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-500/20 rounded-lg">
                       <Monitor className="w-6 h-6 text-blue-400" />
                     </div>
                     <div>
-                      <div className="font-bold">Windows</div>
+                      <div className="font-bold flex items-center gap-2">
+                        Windows
+                        {latestBuilds.win && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                            v{latestBuilds.win.version}
+                          </Badge>
+                        )}
+                      </div>
                       <div className="text-xs text-gray-400">Windows 10/11 (64-bit)</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       size="sm"
-                      className="bg-blue-600 hover:bg-blue-700"
-                      onClick={() => toast.success('Windows Installer wird vorbereitet... (Build Pipeline erforderlich)')}
+                      className={latestBuilds.win ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
+                      onClick={() => handleDownload('win')}
+                      disabled={downloadLoading.win}
+                      data-testid="download-win-exe"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.win ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .exe
-                    </Button>
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="border-blue-500/50 text-blue-400"
-                      onClick={() => toast.success('Portable Version wird vorbereitet...')}
-                    >
-                      Portable
                     </Button>
                   </div>
                 </div>
 
                 {/* macOS Download */}
-                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.mac ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-gray-500/20 rounded-lg">
                       <Cpu className="w-6 h-6 text-gray-400" />
                     </div>
                     <div>
-                      <div className="font-bold">macOS</div>
+                      <div className="font-bold flex items-center gap-2">
+                        macOS
+                        {latestBuilds.mac && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                            v{latestBuilds.mac.version}
+                          </Badge>
+                        )}
+                      </div>
                       <div className="text-xs text-gray-400">macOS 11+ (Intel & Apple Silicon)</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       size="sm"
-                      className="bg-gray-600 hover:bg-gray-700"
-                      onClick={() => toast.success('macOS DMG wird vorbereitet...')}
+                      className={latestBuilds.mac ? "bg-green-600 hover:bg-green-700" : "bg-gray-600 hover:bg-gray-700"}
+                      onClick={() => handleDownload('mac')}
+                      disabled={downloadLoading.mac}
+                      data-testid="download-mac-dmg"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.mac ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .dmg
                     </Button>
                   </div>
                 </div>
 
                 {/* Linux Download */}
-                <div className="flex items-center justify-between p-4 bg-[#262626] rounded-lg border border-[#444] hover:border-cyan-500/50 transition-colors">
+                <div className={`flex items-center justify-between p-4 bg-[#262626] rounded-lg border transition-colors ${latestBuilds.linux ? 'border-green-500/50 hover:border-green-400' : 'border-[#444] hover:border-cyan-500/50'}`}>
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-orange-500/20 rounded-lg">
                       <Terminal className="w-6 h-6 text-orange-400" />
                     </div>
                     <div>
-                      <div className="font-bold">Linux</div>
+                      <div className="font-bold flex items-center gap-2">
+                        Linux
+                        {latestBuilds.linux && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/50 text-xs">
+                            v{latestBuilds.linux.version}
+                          </Badge>
+                        )}
+                      </div>
                       <div className="text-xs text-gray-400">Ubuntu, Debian, Fedora (64-bit)</div>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     <Button 
                       size="sm"
-                      className="bg-orange-600 hover:bg-orange-700"
-                      onClick={() => toast.success('Linux AppImage wird vorbereitet...')}
+                      className={latestBuilds.linux ? "bg-green-600 hover:bg-green-700" : "bg-orange-600 hover:bg-orange-700"}
+                      onClick={() => handleDownload('linux')}
+                      disabled={downloadLoading.linux}
+                      data-testid="download-linux-appimage"
                     >
-                      <Download className="w-4 h-4 mr-1" />
+                      {downloadLoading.linux ? (
+                        <RefreshCw className="w-4 h-4 mr-1 animate-spin" />
+                      ) : (
+                        <Download className="w-4 h-4 mr-1" />
+                      )}
                       .AppImage
-                    </Button>
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="border-orange-500/50 text-orange-400"
-                      onClick={() => toast.success('.deb Package wird vorbereitet...')}
-                    >
-                      .deb
                     </Button>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm text-yellow-300">
-                    <strong>Build Pipeline erforderlich:</strong> Die Download-Links werden aktiv, sobald die CI/CD-Pipeline eingerichtet ist. Kontaktieren Sie den Administrator.
+              {/* Build Status Info */}
+              {Object.keys(latestBuilds).length > 0 ? (
+                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <CheckCircle className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-green-300">
+                      <strong>Builds verfügbar!</strong> Klicken Sie auf den Download-Button für Ihre Plattform.
+                    </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm text-yellow-300">
+                      <strong>Build Pipeline einrichten:</strong> 
+                      <ol className="mt-2 space-y-1 list-decimal list-inside">
+                        <li>Electron-Code zu GitHub pushen</li>
+                        <li>GitHub Actions Workflow aktivieren</li>
+                        <li>Version-Tag erstellen (z.B. v1.0.0)</li>
+                        <li>Downloads erscheinen automatisch hier</li>
+                      </ol>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Card>
 
             {/* Installation Instructions */}

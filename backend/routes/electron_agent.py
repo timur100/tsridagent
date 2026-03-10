@@ -520,3 +520,246 @@ async def create_feature(feature: Dict[str, Any]):
         "success": True,
         "feature": {k: v for k, v in doc.items() if k != "_id"}
     }
+
+
+# =====================================
+# BUILD & DOWNLOAD MANAGEMENT
+# =====================================
+
+# Collection for builds
+builds_collection = electron_db['builds']
+
+class BuildCreate(BaseModel):
+    version: str
+    platform: str  # win, mac, linux
+    artifact_url: str
+    artifact_size: int = 0
+    sha256: Optional[str] = None
+    release_notes: str = ""
+    is_stable: bool = True
+
+class BuildNotify(BaseModel):
+    version: str
+    release_url: str
+    artifacts: Dict[str, str]
+
+
+@router.get("/builds")
+async def get_builds(
+    platform: Optional[str] = None,
+    version: Optional[str] = None,
+    limit: int = 20
+):
+    """Get available builds"""
+    query = {}
+    if platform and platform != 'all':
+        query["platform"] = platform
+    if version:
+        query["version"] = version
+    
+    builds = list(builds_collection.find(query, {"_id": 0}).sort("created_at", -1).limit(limit))
+    
+    return {
+        "success": True,
+        "builds": builds,
+        "count": len(builds)
+    }
+
+
+@router.get("/builds/latest")
+async def get_latest_builds():
+    """Get latest build for each platform"""
+    platforms = ["win", "mac", "linux"]
+    latest = {}
+    
+    for platform in platforms:
+        build = builds_collection.find_one(
+            {"platform": platform, "is_stable": True},
+            {"_id": 0},
+            sort=[("created_at", -1)]
+        )
+        if build:
+            latest[platform] = build
+    
+    return {
+        "success": True,
+        "builds": latest
+    }
+
+
+@router.get("/download/{platform}")
+async def get_download_link(platform: str):
+    """Get download link for a specific platform"""
+    valid_platforms = {
+        "win": ["win", "windows", "win32"],
+        "mac": ["mac", "macos", "darwin"],
+        "linux": ["linux"]
+    }
+    
+    # Normalize platform
+    normalized = None
+    for key, aliases in valid_platforms.items():
+        if platform.lower() in aliases:
+            normalized = key
+            break
+    
+    if not normalized:
+        raise HTTPException(status_code=400, detail=f"Invalid platform: {platform}")
+    
+    # Get latest stable build
+    build = builds_collection.find_one(
+        {"platform": normalized, "is_stable": True},
+        {"_id": 0},
+        sort=[("created_at", -1)]
+    )
+    
+    if not build:
+        # Return placeholder if no build exists yet
+        return {
+            "success": True,
+            "available": False,
+            "message": "Build nicht verfügbar. Build Pipeline muss eingerichtet werden.",
+            "platform": normalized,
+            "setup_instructions": {
+                "step1": "GitHub Repository mit electron-agent/ Code erstellen",
+                "step2": "GitHub Actions Workflow (.github/workflows/build.yml) pushen",
+                "step3": "Tag erstellen (z.B. v1.0.0) um Build zu starten",
+                "step4": "Build wird automatisch hier verfügbar sein"
+            }
+        }
+    
+    # Increment download counter
+    builds_collection.update_one(
+        {"build_id": build["build_id"]},
+        {"$inc": {"download_count": 1}}
+    )
+    
+    return {
+        "success": True,
+        "available": True,
+        "platform": normalized,
+        "version": build["version"],
+        "download_url": build["artifact_url"],
+        "file_size": build.get("artifact_size", 0),
+        "sha256": build.get("sha256"),
+        "release_notes": build.get("release_notes", ""),
+        "created_at": build.get("created_at")
+    }
+
+
+@router.post("/builds")
+async def create_build(build: BuildCreate):
+    """Register a new build (called by CI/CD)"""
+    doc = {
+        "build_id": str(uuid.uuid4()),
+        "version": build.version,
+        "platform": build.platform,
+        "artifact_url": build.artifact_url,
+        "artifact_size": build.artifact_size,
+        "sha256": build.sha256,
+        "release_notes": build.release_notes,
+        "is_stable": build.is_stable,
+        "download_count": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": "ci-pipeline"
+    }
+    
+    builds_collection.insert_one(doc)
+    
+    logger.info(f"New build registered: {build.version} for {build.platform}")
+    
+    return {
+        "success": True,
+        "build": {k: v for k, v in doc.items() if k != "_id"}
+    }
+
+
+@router.post("/builds/notify")
+async def notify_build_complete(notification: BuildNotify):
+    """Receive notification from GitHub Actions when build completes"""
+    created_builds = []
+    
+    for platform, filename in notification.artifacts.items():
+        doc = {
+            "build_id": str(uuid.uuid4()),
+            "version": notification.version.lstrip('v'),
+            "platform": platform,
+            "artifact_url": f"{notification.release_url.replace('/tag/', '/download/')}/{filename}",
+            "artifact_filename": filename,
+            "release_url": notification.release_url,
+            "is_stable": True,
+            "download_count": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "github-actions"
+        }
+        
+        builds_collection.insert_one(doc)
+        created_builds.append({k: v for k, v in doc.items() if k != "_id"})
+    
+    # Also create a version entry if it doesn't exist
+    version_num = notification.version.lstrip('v')
+    existing = versions_collection.find_one({"version": version_num})
+    if not existing:
+        versions_collection.insert_one({
+            "version_id": str(uuid.uuid4()),
+            "version": version_num,
+            "platform": "all",
+            "release_notes": f"Auto-created from GitHub release {notification.version}",
+            "is_mandatory": False,
+            "is_preview": False,
+            "download_count": 0,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_by": "github-actions"
+        })
+    
+    logger.info(f"Build notification received for {notification.version}: {len(created_builds)} artifacts")
+    
+    return {
+        "success": True,
+        "builds": created_builds,
+        "version": version_num
+    }
+
+
+@router.delete("/builds/{build_id}")
+async def delete_build(build_id: str):
+    """Delete a build"""
+    result = builds_collection.delete_one({"build_id": build_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Build not found")
+    
+    return {
+        "success": True,
+        "message": "Build deleted"
+    }
+
+
+# Manual build registration for testing
+@router.post("/builds/manual")
+async def register_manual_build(
+    version: str,
+    platform: str,
+    download_url: str,
+    release_notes: str = ""
+):
+    """Manually register a build for testing purposes"""
+    doc = {
+        "build_id": str(uuid.uuid4()),
+        "version": version,
+        "platform": platform,
+        "artifact_url": download_url,
+        "release_notes": release_notes,
+        "is_stable": True,
+        "download_count": 0,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_by": "manual"
+    }
+    
+    builds_collection.insert_one(doc)
+    
+    return {
+        "success": True,
+        "build": {k: v for k, v in doc.items() if k != "_id"}
+    }
+
